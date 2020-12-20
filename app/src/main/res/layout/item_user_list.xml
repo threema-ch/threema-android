@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ch.threema.app.ui.CheckableConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/messagelist_item_height"
+	android:background="@drawable/listitem_background_selector"
+	android:paddingLeft="@dimen/listitem_standard_margin_left_right"
+	android:paddingRight="@dimen/listitem_standard_margin_left_right">
+
+	<!-- avatar -->
+
+	<include layout="@layout/avatar_view_checkable_constrained"/>
+
+	<!-- first line -->
+
+	<ch.threema.app.emojis.EmojiTextView
+		android:id="@+id/name"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:text="Name"
+		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/avatar_view"
+		app:layout_constraintRight_toLeftOf="@+id/verification_level"
+		app:layout_constraintBottom_toTopOf="@+id/subject"
+		app:layout_constraintHorizontal_bias="0"
+		app:layout_constrainedWidth="true"
+		app:layout_constraintVertical_chainStyle="packed"/>
+
+	<ch.threema.app.ui.VerificationLevelImageView
+		android:id="@+id/verification_level"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:baselineAlignBottom="true"
+		android:visibility="visible"
+		app:srcCompat="@drawable/ic_verification_full"
+		app:layout_constraintBaseline_toBaselineOf="@id/name"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/name" />
+
+	<!-- second line -->
+
+	<TextView
+		android:id="@+id/subject"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:text="Subject"
+		android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+		app:layout_constraintTop_toBottomOf="@id/name"
+		app:layout_constraintLeft_toRightOf="@id/avatar_view"
+		app:layout_constraintRight_toLeftOf="@+id/last_message_icon"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintHorizontal_bias="0"
+		app:layout_constrainedWidth="true"
+		app:layout_constraintVertical_chainStyle="packed"/>
+
+	<ImageView
+		android:id="@+id/last_message_icon"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginRight="5dp"
+		android:tint="?attr/textColorSecondary"
+		app:srcCompat="@drawable/ic_chat_filled"
+		app:layout_constraintBottom_toBottomOf="@id/subject"
+		app:layout_constraintLeft_toRightOf="@id/subject"
+		app:layout_constraintRight_toLeftOf="@+id/date"/>
+
+	<TextView
+		android:id="@+id/date"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.Light"
+		app:layout_constraintBottom_toBottomOf="@id/subject"
+		app:layout_constraintLeft_toRightOf="@id/last_message_icon"
+		app:layout_constraintRight_toLeftOf="@+id/blocked_contact"/>
+
+	<ImageView
+		android:id="@+id/blocked_contact"
+		android:layout_width="18dp"
+		android:layout_height="18dp"
+		android:layout_marginLeft="5dip"
+		android:tint="@color/material_red"
+		android:visibility="visible"
+		app:srcCompat="@drawable/ic_block"
+		app:layout_constraintBottom_toBottomOf="@id/subject"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/date"/>
+
+</ch.threema.app.ui.CheckableConstraintLayout>
+

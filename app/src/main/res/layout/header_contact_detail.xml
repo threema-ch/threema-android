@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/content_frame"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+	<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:paddingRight="16dp"
+			android:paddingLeft="16dp">
+
+		<ch.threema.app.ui.SectionHeaderView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="10dp"
+				android:text="@string/title_threemaid"/>
+
+		<LinearLayout
+				android:id="@+id/threemaid_layout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="7dp"
+				android:clickable="true">
+
+			<TextView
+					android:id="@+id/threema_id"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginRight="16dp"
+					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+					android:singleLine="true"/>
+
+			<ch.threema.app.ui.VerificationLevelImageView
+					android:id="@+id/verification_level_image"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_vertical" />
+
+			<ImageButton
+				android:id="@+id/verification_information_icon"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:padding="16dp"
+				android:contentDescription="@string/new_wizard_more_information"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:tint="?attr/textColorSecondary"
+				app:srcCompat="@drawable/ic_info_outline" />
+
+		</LinearLayout>
+
+		<ch.threema.app.ui.SectionHeaderView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="5dp"
+				android:text="@string/title_keyfingerprint"/>
+
+		<TextView
+				android:id="@+id/key_fingerprint"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+				android:paddingTop="10dp"
+				android:singleLine="false"/>
+
+
+		<LinearLayout
+				android:id="@+id/nickname_container"
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+
+			<ch.threema.app.ui.SectionHeaderView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:paddingTop="10dp"
+					android:text="@string/title_public_nickname"/>
+
+			<ch.threema.app.emojis.EmojiTextView
+					android:id="@+id/public_nickname"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="10dp"
+					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+					android:singleLine="true"/>
+		</LinearLayout>
+
+		<LinearLayout
+				android:id="@+id/synchronize_contact_container"
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+			<ch.threema.app.ui.SectionHeaderView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="10dp"
+					android:layout_marginBottom="5dp"
+					android:text="@string/synchronize_contact"/>
+
+			<RelativeLayout
+							android:id="@+id/linked_contact_container"
+							android:orientation="vertical"
+							android:layout_width="match_parent"
+							android:layout_height="48dp"
+							android:background="@drawable/listitem_background_selector">
+
+				<ImageView
+					android:id="@+id/linked_contact"
+					android:visibility="visible"
+					android:layout_centerVertical="true"
+					android:layout_width="40dp"
+					android:layout_height="40dp"
+					app:srcCompat="@drawable/ic_contact"/>
+
+				<ch.threema.app.emojis.EmojiTextView
+						android:id="@+id/linked_name"
+						android:text=""
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+						android:singleLine="true"
+						android:layout_marginRight="5dip"
+						android:layout_marginLeft="16dip"
+						android:layout_toRightOf="@id/linked_contact"
+						android:layout_toLeftOf="@+id/linked_type_icon"
+						android:layout_alignWithParentIfMissing="true"
+						android:layout_centerVertical="true"
+						android:ellipsize="marquee"/>
+
+				<ImageView
+						android:id="@+id/linked_type_icon"
+						android:layout_width="28dp"
+						android:layout_height="28dp"
+						android:layout_alignParentRight="true"
+						android:layout_alignWithParentIfMissing="true"
+						android:layout_centerVertical="true"
+						android:adjustViewBounds="true"
+						android:src="@mipmap/ic_launcher"/>
+
+			</RelativeLayout>
+
+			<CheckBox
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/exclude_contact"
+					android:id="@+id/synchronize_contact"
+					android:paddingTop="10dp"
+					android:paddingBottom="10dp"
+					android:textSize="16sp"
+					android:checked="false"
+					android:visibility="visible"/>
+
+		</LinearLayout>
+		<LinearLayout
+				android:id="@+id/group_members_title_container"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="5dp"
+				android:orientation="vertical"
+				android:visibility="visible">
+
+			<ch.threema.app.ui.SectionHeaderView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="10dp"
+					android:text="@string/group_membership_title"/>
+
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

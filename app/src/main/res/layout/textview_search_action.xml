@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+          android:id="@+id/counter"
+          android:layout_width="wrap_content"
+          android:layout_height="?attr/actionBarSize"
+          android:gravity="center_vertical|right"
+          android:minHeight="?attr/actionBarSize"
+          android:minWidth="30dp"
+          android:paddingRight="6dp"
+          android:text="0 / 0"
+          android:textColor="?attr/textColorSecondary"
+          android:textSize="11dp">
+
+</TextView>

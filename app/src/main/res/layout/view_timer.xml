@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/container"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_marginTop="16dp"
+	android:background="@drawable/shape_mediaviewer_caption_background"
+	android:paddingBottom="4dp"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp"
+	android:paddingTop="4dp"
+	android:visibility="visible">
+
+	<FrameLayout
+		android:layout_width="18dp"
+		android:layout_height="18dp"
+		android:layout_gravity="center_vertical"
+		android:layout_marginRight="8dp">
+
+	<ImageView
+		android:layout_width="18dp"
+		android:layout_height="18dp"
+		app:srcCompat="@drawable/ic_circle"
+		android:tint="@color/material_red"/>
+
+	<ch.threema.app.ui.CircularProgressBar
+		android:id="@+id/progress_circular"
+		android:layout_width="18dp"
+		android:layout_height="18dp"
+		app:progressbar_progress="0"
+		app:progressbar_max="100"
+		app:progressbar_width="2dp"
+		app:progressbar_color="@android:color/white"
+		app:background_color="@android:color/transparent"
+		app:background_width="2dp"
+		app:border_width="2dp"
+		android:clickable="false"
+		android:layout_gravity="center"/>
+
+	</FrameLayout>
+
+	<TextView
+		android:id="@+id/counter"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:text="0:00"
+		android:textColor="@android:color/white"
+		android:textSize="18dp"/>
+
+</LinearLayout>
+

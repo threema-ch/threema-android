@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:id="@+id/group_sender_view"
+			  android:layout_height="wrap_content"
+			  android:layout_width="match_parent"
+			  android:minHeight="16sp"
+			  android:paddingLeft="@dimen/chat_bubble_margin_start"
+			  android:paddingRight="@dimen/chat_bubble_margin_end"
+			  android:layout_marginTop="-2dp"
+			  android:layout_marginBottom="3dp"
+			  android:layout_gravity="left|top"
+			  android:gravity="center_vertical"
+			  android:visibility="gone">
+
+	<ch.threema.app.emojis.EmojiTextView
+			android:id="@+id/group_sender_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:textColor="@color/chat_sender_text"
+			android:textSize="?attr/font_medium"
+			android:textStyle="bold"
+			/>
+
+</LinearLayout>

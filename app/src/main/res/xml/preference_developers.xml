@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:key="pref_key_developers"
+                  android:persistent="true"
+                  android:title="Developer Settings">
+	<PreferenceCategory
+		android:key="pref_key_generate"
+		android:title="Generate Data">
+		<Preference
+			android:key="@string/preferences__generate_voip_messages"
+			android:title="Generate VoIP Messages"/>
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:key="pref_key_quotes_v2"
+		android:title="Quotes">
+		<Preference
+			android:key="@string/preferences__generate_test_quotes"
+			android:title="Generate Test Quotes"/>
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:key="pref_key_poi"
+		android:title="POI">
+		<EditTextPreference
+			android:key="@string/preferences__poi_host"
+			android:title="POI Host Override"
+			android:summary="Will default to 'poi.threema.ch' if not set."/>
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:key="pref_key_various"
+		android:title="Various">
+		<Preference
+			android:key="@string/preferences__remove_menu"
+			android:title="Remove Developer Menu"/>
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema-Oproep</string>
+    <string name="voip_hangup">Ophangen</string>
+    <string name="voip_toggle_mic">Microfoon in-/uitschakelen</string>
+    <string name="voip_toggle_speaker">Luidspreker in-/uitschakelen</string>
+    <string name="voip_switch_cam">Camera wisselen</string>
+    <string name="voip_switch_cam_front">Gewisseld naar camera voor</string>
+    <string name="voip_switch_cam_rear">Gewisseld naar camera achter</string>
+    <string name="voip_toggle_video">Videomodus schakelen</string>
+    <string name="voip_call_confirm">Wil je %1$s bellen?</string>
+    <string name="voip_error_call">Fout tijdens Threema-Oproep</string>
+    <string name="voip_error_init_call">Fout tijdens oproepinitialisatie</string>
+    <string name="voip_notification_title">Ontvangen Threema-Oproep</string>
+    <string name="voip_notification_text">%1$s doet een oproep</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Initialiseren</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Verbinden</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Verbinding verbreken</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Bellen</string>
+    <string name="voip_mic_enable">Microfoon inschakelen</string>
+    <string name="voip_mic_disable">Microfoon uitschakelen</string>
+    <string name="voip_checking_compatibility">Controleren of deze contactpersoon oproepen via Threema kan ontvangen</string>
+    <string name="voip_incompatible">Deze contactpersoon kan nog geen oproepen via Threema ontvangen.</string>
+    <string name="voip_call_status_unavailable">Ontvanger is niet beschikbaar</string>
+    <string name="voip_call_status_rejected">Oproep afgewezen</string>
+    <string name="voip_call_status_busy">Ontvanger is in gesprek</string>
+    <string name="voip_call_status_busy_short">In gesprek</string>
+    <string name="voip_call_status_disabled">Threema oproepen zijn uitgeschakeld door de ontvanger</string>
+    <string name="voip_call_status_missed">Oproep gemist</string>
+    <string name="voip_call_finished_outbox">Uitgaande oproep</string>
+    <string name="voip_call_finished_inbox">Ontvangen oproep</string>
+    <string name="voip_call_status_aborted">Oproep afgebroken</string>
+    <string name="voip_return_call">Terugbellen</string>
+    <string name="voip_accept">Accepteren</string>
+    <string name="voip_reject">Afwijzen</string>
+    <string name="voip_speakerphone">Speaker</string>
+    <string name="voip_wired_headset">Headset</string>
+    <string name="voip_earpiece">Telefoon</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Niet beschikbaar</string>
+    <string name="voip_call_finished">Threema-oproep is beëindigd</string>
+    <string name="voip_another_call">Kan niet verbinden. Er is een andere Threema-oproep actief.</string>
+    <string name="voip_prefs_title_aec">Echo-onderdrukking</string>
+    <string name="voip_prefs_aec_sw">Software echo-onderdrukking</string>
+    <string name="voip_prefs_aec_hw">Hardware echo-onderdrukking</string>
+    <string name="voip_connection_failed">Er kon geen verbinding worden gemaakt.</string>
+    <string name="voip_connection_lost">Verbinding verbroken</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Mobiele oproepen afwijzen</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Mobiele oproepen afwijzen wanneer een Threema-oproep actief is.</string>
+    <string name="voip_contact_not_found">Geen Threema-contactpersoon gevonden voor dit nummer</string>
+    <string name="voip_another_pstn_call">Kon oproep niet initiëren. Er is nog een normale oproep actief.</string>
+    <string name="voip_call_status_off_hours">Oproep kantooruren</string>
+    <string name="voip_peer_video_disabled">Video-oproepen zijn door de andere partij uitgeschakeld.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>
+    <string name="voip_prefs_webrtc_debug_summary">Gebruik dit hulpprogramma om problemen met het instellen van verbindingen voor oproepen op te lossen</string>
+    <string name="voip_webrtc_debug">WebRTC Diagnostics</string>
+    <string name="voip_webrtc_debug_intro">Druk op de knop \"Start\" om de test uit te voeren.</string>
+    <string name="voip_webrtc_debug_start">Start</string>
+    <string name="voip_webrtc_debug_done">Gereed. Als u problemen ondervindt met het opzetten van een oproepverbinding, stuur deze uitvoergegevens dan naar Threema-ondersteuning.</string>
+    <string name="voip_webrtc_debug_copied">Gekopieerd naar klembord</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Kopiëren naar klembord</string>
+</resources>

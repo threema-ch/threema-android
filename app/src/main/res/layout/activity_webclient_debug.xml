@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="?android:windowBackground"
+              android:orientation="vertical">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<LinearLayout
+		android:id="@+id/webclient_diagnostics_header"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<TextView
+			android:id="@+id/webclient_diagnostics_intro"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="8dp"
+			android:text="@string/webclient_diagnostics_intro"/>
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/webclient_diagnostics_start"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="6dp"
+			android:text="@string/webclient_diagnostics_start"/>
+	</LinearLayout>
+
+	<ListView
+		android:id="@+id/webclient_diagnostics_event_log"
+		android:layout_margin="8dp"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"/>
+
+	<LinearLayout
+		android:id="@+id/webclient_diagnostics_footer"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<ProgressBar
+			android:id="@+id/webclient_diagnostics_loading"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:visibility="gone"/>
+		<TextView
+			android:id="@+id/webclient_diagnostics_done"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:layout_marginLeft="8dp"
+			android:layout_marginBottom="8dp"
+			android:text="@string/webclient_diagnostics_done"
+			android:visibility="gone"/>
+
+		<LinearLayout
+			android:id="@+id/webclient_diagnostics_footer_buttons"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="gone"
+			android:orientation="horizontal">
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/webclient_diagnostics_copy_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="6dp"
+				android:text="@string/voip_webrtc_debug_copy_clipboard"
+				android:maxLines="3"
+				android:singleLine="false"
+				android:layout_gravity="left"
+				android:layout_weight="1"/>
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/webclient_diagnostics_send_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="6dp"
+				android:text="@string/send_to_support"
+				android:maxLines="3"
+				android:singleLine="false"
+				android:layout_gravity="right"
+				android:layout_weight="1"/>
+		</LinearLayout>
+
+	</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:orientation="horizontal"
+		android:gravity="center_vertical"
+		android:paddingTop="@dimen/dialog_margin_below_title"
+		android:paddingLeft="@dimen/edittext_padding"
+		android:paddingRight="@dimen/edittext_padding"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent">
+
+	<ch.threema.app.ui.AvatarEditView
+		android:id="@+id/avatar_edit_view"
+		android:layout_width="72dp"
+		android:layout_height="72dp"
+		android:layout_marginRight="16dip"
+		android:contentDescription="@string/profile_picture"
+		android:visibility="visible"/>
+
+	<LinearLayout
+			android:orientation="vertical"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent">
+
+		<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/firstname_layout"
+				android:hint="@string/first_name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				app:endIconMode="clear_text">
+
+		<ch.threema.app.emojis.EmojiEditText
+				android:id="@+id/first_name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:capitalize="words"
+				android:textColor="?android:textColorPrimary"
+				android:textStyle="normal"
+				android:singleLine="true"
+				android:nextFocusRight="@+id/last_name"
+				android:maxLines="1"
+				android:inputType="textPersonName"
+				android:imeOptions="actionNext"
+				android:maxLength="50">
+			<requestFocus />
+		</ch.threema.app.emojis.EmojiEditText>
+
+		</com.google.android.material.textfield.TextInputLayout>
+
+		<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/lastname_layout"
+				android:hint="@string/last_name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				app:endIconMode="clear_text">
+
+		<ch.threema.app.emojis.EmojiEditText
+				android:id="@+id/last_name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:capitalize="words"
+				android:textColor="?android:textColorPrimary"
+				android:textStyle="normal"
+				android:singleLine="true"
+				android:nextFocusRight="@+id/first_name"
+				android:maxLines="1"
+				android:inputType="textPersonName"
+				android:imeOptions="actionNext"
+				android:maxLength="50"
+				/>
+
+		</com.google.android.material.textfield.TextInputLayout>
+
+	</LinearLayout>
+
+</LinearLayout>

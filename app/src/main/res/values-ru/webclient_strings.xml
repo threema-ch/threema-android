@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Недействительные данные QR кода</string>
+    <string name="webclient_init_session">Начать новую сессию</string>
+    <string name="webclient_sessions_really_delete">Вы действительно хотите удалить эту сессию Threema Web?</string>
+    <string name="webclient_last_usage">Последнее использование: %s</string>
+    <string name="webclient_created_at">Время создания: %1$s (%2$s)</string>
+    <string name="webclient_active_since">Активно с: %s</string>
+    <string name="webclient_enable">Включить Threema Web</string>
+    <string name="webclient_no_sessions_found">Для подключения, зайдите на сайт <b>https://web.threema.ch</b> с вашего компьютера и нажмите кнопку для сканирования QR-кода.</string>
+    <string name="webclient_session_rename">Переименовать сессию</string>
+    <string name="webclient_session_label">Новое имя</string>
+    <string name="webclient_session_start">Начать сессию</string>
+    <string name="webclient_session_stop">Остановить сессию</string>
+    <string name="webclient_persistent">Постоянный</string>
+    <string name="webclient_disposable">Доступно</string>
+    <string name="webclient_unnamed_session">Сессия без имени</string>
+    <string name="webclient_session_remove">Удалить сессию</string>
+    <string name="webclient_welcome_title">Общайтесь с вашего компьютера!</string>
+    <string name="webclient_welcome_explain">Threema Web позволяет общаться с вашего компьютера или ноутбука, давая вам полный доступ ко всем контактам, мультимедиа и чатам.\n\n<b>Все коммуникации между телефоном и компьютером защищены сквозным шифрованием</b> и используют прямое подключение, если оба телефона и компьютер находятся в одной сети.\n\nПожалуйста, обратите внимание: Threema Web может вызывать дополнительный разряд батареи, пока он активен. Вы можете включить или отключить его в любое время.</string>
+    <string name="webclient_launch">Запустить Threema Web</string>
+    <string name="webclient_qr_scan_message">Пожалуйста, отсканируйте QR-код, отображаемый на компьютере.</string>
+    <string name="webclient_invalid_qr_code">Неправильный QR-код</string>
+    <string name="webclient_new_connection_toast">Сессия Threema Web запущена</string>
+    <string name="webclient_protocol_error">Ошибка протокола</string>
+    <string name="webclient_protocol_version_to_old">Как это работает</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Ваше приложение не поддерживает эту версию Threema Web. Попросите администратора своего экземпляра Threema Web перейти на последнюю версию.</string>
+    <string name="webclient_protocol_version_too_new_threema">Ваше приложение не поддерживает эту версию Threema Web. Используйте более новую версию Threema Web.</string>
+    <string name="webclient_session_already_exists">Сеанс, соответствующий сканированному вами QR-коду, уже существует. Перезагрузите Threema Web в веб-браузере и повторите попытку.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Хотите запустить эту сессию Threema Web?</string>
+	<string name="webclient_cannot_restore">Не удается восстановить сессию Threema Web</string>
+	<string name="webclient_disabled">служба Threema Web не активирована</string>
+    <string name="webclient_cannot_start">Не удается запустить сеанс Threema Web</string>
+    <string name="webclient_constrained_by_mdm">Сервер не утвержден администратором.</string>
+    <string name="webclient_clear_all_sessions">Очистить все сессии</string>
+    <string name="webclient_clear_all_sessions_confirm">Действительно остановить и удалить все сессии Threema Web?</string>
+    <string name="webclient_prefs_debug_tool_summary">Запустите это средство для отладки неполадок с настройкой соединения Threema Web</string>
+	<string name="webclient_diagnostics">Диагностика Threema Web</string>
+	<string name="webclient_diagnostics_start">Пуск</string>
+	<string name="webclient_diagnostics_intro">Нажмите кнопку «Пуск» для запуска теста</string>
+	<string name="webclient_diagnostics_done">Готово. Если у вас возникают неполадки с настройкой соединения Threema Web, отправьте данные в службу поддержки Threema.</string>
+</resources>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+			  android:background="?attr/emoji_picker_background_main"
+			  android:gravity="center"
+			  android:orientation="vertical">
+
+	<View android:layout_width="match_parent"
+		  android:layout_height="1dp"
+		  android:background="?attr/emoji_picker_divider"/>
+
+	<View android:layout_width="match_parent"
+		  android:layout_height="1dp"
+		  android:background="?attr/emoji_picker_top_divider"/>
+
+	<RelativeLayout android:layout_width="match_parent"
+					android:layout_height="40dp"
+					android:background="?attr/emoji_picker_background_top">
+
+		<com.google.android.material.tabs.TabLayout
+				android:id="@+id/sliding_tabs"
+				android:background="?attr/emoji_picker_background_top"
+				android:layout_width="match_parent"
+				android:layout_height="39dp"
+				android:layout_alignParentLeft="true"
+				android:layout_toLeftOf="@+id/backspace_layout"
+				app:tabMode="scrollable"
+				app:tabMaxWidth="@dimen/emoji_picker_tab_width"
+				app:tabPaddingStart="0dp"
+				app:tabPaddingEnd="0dp"
+				app:tabIndicatorHeight="2dp"
+				app:tabIconTint="?attr/textColorSecondary"/>
+
+		<View android:layout_width="match_parent"
+			  android:layout_height="1dp"
+			  android:layout_alignParentBottom="true"
+			  android:layout_toLeftOf="@+id/backspace_layout"
+			  android:background="?attr/emoji_picker_divider"/>
+
+		<FrameLayout android:id="@+id/backspace_layout"
+					 android:layout_width="wrap_content"
+					 android:layout_height="match_parent"
+					 android:layout_centerVertical="true"
+					 android:layout_alignParentRight="true"
+					 android:background="?attr/emoji_picker_background_main">
+
+		<View android:layout_width="1dp"
+				  android:layout_height="match_parent"
+				  android:layout_gravity="left"
+				  android:background="?attr/emoji_picker_divider"/>
+
+		<LinearLayout android:id="@+id/backspace_button"
+				   android:layout_width="wrap_content"
+				   android:layout_height="match_parent"
+				   android:clickable="true"
+				   android:background="?android:attr/selectableItemBackground">
+
+		<ImageView android:id="@+id/backspace_button_image"
+		           android:layout_width="wrap_content"
+		           android:layout_height="wrap_content"
+		           android:layout_gravity="center"
+		           android:layout_marginRight="16dp"
+		           android:layout_marginLeft="16dp"
+					android:contentDescription="@string/delete"
+		           app:srcCompat="@drawable/ic_backspace_outline"
+		           android:tint="?attr/textColorSecondary"/>
+		</LinearLayout>
+
+		</FrameLayout>
+
+	</RelativeLayout>
+
+	<ch.threema.app.ui.LockableViewPager
+			android:id="@+id/emoji_pager"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"/>
+
+</LinearLayout>

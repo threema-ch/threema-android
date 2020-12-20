@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+	<FrameLayout
+		android:id="@+id/remove_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:clickable="true"
+		android:focusable="false"
+		android:background="@drawable/listitem_background_selector_noripple"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:paddingTop="8dp"
+		android:paddingBottom="8dp">
+
+	<TextView
+		android:id="@+id/remove"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:clickable="false"
+		android:text="@string/remove"
+		android:textAllCaps="true"
+		android:textSize="14sp"
+		android:textStyle="bold"/>
+
+	</FrameLayout>
+
+	<FrameLayout
+		android:id="@+id/flip_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:clickable="true"
+		android:focusable="false"
+		android:background="@drawable/listitem_background_selector_noripple"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:paddingTop="8dp"
+		android:paddingBottom="8dp">
+
+	<TextView
+		android:id="@+id/flip"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:clickable="false"
+		android:text="@string/flip"
+		android:textAllCaps="true"
+		android:textSize="14sp"
+		android:textStyle="bold"/>
+
+	</FrameLayout>
+
+	<FrameLayout
+		android:id="@+id/tofront_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:clickable="true"
+		android:focusable="false"
+		android:background="@drawable/listitem_background_selector_noripple"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:paddingTop="8dp"
+		android:paddingBottom="8dp">
+
+		<TextView
+			android:id="@+id/tofront"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:clickable="false"
+			android:text="@string/to_front"
+			android:textAllCaps="true"
+			android:textSize="14sp"
+			android:textStyle="bold"/>
+
+	</FrameLayout>
+
+</LinearLayout>

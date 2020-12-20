@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:state_pressed="true">
+		<layer-list>
+			<item android:gravity="left|top">
+				<rotate
+					android:fromDegrees="-45"
+					android:pivotX="0%"
+					android:pivotY="0%"
+					android:toDegrees="0">
+					<shape android:shape="rectangle">
+						<solid android:color="@color/bubble_pressed_dark"/>
+						<size android:width="@dimen/chat_bubble_arrow_size" android:height="@dimen/chat_bubble_arrow_size"/>
+					</shape>
+				</rotate>
+			</item>
+			<item android:bottom="@dimen/chat_bubble_offset_pos"
+			      android:left="@dimen/chat_bubble_arrow_width"
+			      android:right="@dimen/chat_bubble_offset_pos">
+				<shape android:shape="rectangle">
+					<corners android:topRightRadius="@dimen/chat_bubble_border_radius"
+					         android:bottomLeftRadius="@dimen/chat_bubble_border_radius"
+					         android:bottomRightRadius="@dimen/chat_bubble_border_radius"/>
+					<solid android:color="@color/bubble_pressed_dark"/>
+				</shape>
+			</item>
+		</layer-list>
+	</item>
+	<item android:state_activated="true">
+		<layer-list>
+			<item android:gravity="left|top">
+				<rotate
+					android:fromDegrees="-45"
+					android:pivotX="0%"
+					android:pivotY="0%"
+					android:toDegrees="0">
+					<shape android:shape="rectangle">
+						<solid android:color="@color/bubble_selected_dark"/>
+						<size android:width="@dimen/chat_bubble_arrow_size" android:height="@dimen/chat_bubble_arrow_size"/>
+					</shape>
+				</rotate>
+			</item>
+			<item android:bottom="@dimen/chat_bubble_offset_pos"
+			      android:left="@dimen/chat_bubble_arrow_width"
+			      android:right="@dimen/chat_bubble_offset_pos">
+				<shape android:shape="rectangle">
+					<corners android:topRightRadius="@dimen/chat_bubble_border_radius"
+					         android:bottomLeftRadius="@dimen/chat_bubble_border_radius"
+					         android:bottomRightRadius="@dimen/chat_bubble_border_radius"/>
+					<solid android:color="@color/bubble_selected_dark"/>
+				</shape>
+			</item>
+		</layer-list>
+	</item>
+	<item>
+		<layer-list>
+			<item android:gravity="left|top">
+				<rotate
+					android:fromDegrees="-45"
+					android:pivotX="0%"
+					android:pivotY="0%"
+					android:toDegrees="0">
+					<shape android:shape="rectangle">
+						<solid android:color="@color/dark_bubble_recv"/>
+						<size android:width="@dimen/chat_bubble_arrow_size" android:height="@dimen/chat_bubble_arrow_size"/>
+					</shape>
+				</rotate>
+			</item>
+			<item android:bottom="@dimen/chat_bubble_offset_pos"
+			      android:left="@dimen/chat_bubble_arrow_width_shadow"
+			      android:right="@dimen/chat_bubble_offset_pos">
+				<shape android:shape="rectangle">
+					<corners android:topRightRadius="@dimen/chat_bubble_border_radius"
+					         android:bottomLeftRadius="@dimen/chat_bubble_border_radius"
+					         android:bottomRightRadius="@dimen/chat_bubble_border_radius"/>
+					<solid android:color="@color/dark_bubble_recv"/>
+				</shape>
+			</item>
+		</layer-list>
+	</item>
+</selector>

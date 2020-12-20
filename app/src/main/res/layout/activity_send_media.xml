@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                android:id="@+id/activity_parent"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:orientation="vertical">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<RelativeLayout
+		android:id="@+id/background_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="2"
+		android:visibility="invisible">
+
+		<FrameLayout
+			android:id="@+id/cardview"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_alignParentTop="true"
+			android:orientation="vertical">
+
+			<ScrollView
+				android:id="@+id/wallpaper_scroll"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_gravity="top"
+				android:fillViewport="true">
+
+				<FrameLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content">
+
+					<pl.droidsonroids.gif.GifImageView
+						android:id="@+id/gif_image"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:layout_gravity="center"
+						android:adjustViewBounds="false"
+						android:scaleType="fitCenter"
+						android:visibility="gone"/>
+
+					<ImageView
+						android:id="@+id/preview_image"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:adjustViewBounds="true"
+						android:scaleType="center"/>
+
+					<ProgressBar
+						android:id="@+id/progress"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:visibility="gone"/>
+
+					<ch.threema.app.camera.VideoEditView
+						android:id="@+id/video_edit_view"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:visibility="invisible"/>
+
+				</FrameLayout>
+
+			</ScrollView>
+
+		</FrameLayout>
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/edit_panel"
+			android:layout_alignParentTop="true"
+			android:layout_width="match_parent"
+			android:layout_height="48dp"
+			android:background="#77000000">
+
+			<ImageButton
+				android:id="@+id/flip"
+				style="?android:attr/borderlessButtonStyle"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:tint="@android:color/white"
+				android:contentDescription="@string/flip"
+				android:background="@drawable/selector_compose_button"
+				app:srcCompat="@drawable/ic_flip_outline"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toLeftOf="@+id/rotate"
+				app:layout_constraintTop_toTopOf="parent"
+				/>
+
+			<ImageButton
+				android:id="@+id/rotate"
+				style="?android:attr/borderlessButtonStyle"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:tint="@android:color/white"
+				android:contentDescription="@string/rotate"
+				android:background="@drawable/selector_compose_button"
+				app:srcCompat="@drawable/ic_rotate_right_outline"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintLeft_toRightOf="@id/flip"
+				app:layout_constraintRight_toLeftOf="@+id/crop"
+				/>
+
+			<ImageButton
+				android:id="@+id/crop"
+				style="?android:attr/borderlessButtonStyle"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:tint="@android:color/white"
+				android:contentDescription="@string/crop"
+				android:background="@drawable/selector_compose_button"
+				app:srcCompat="@drawable/ic_crop_outline"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintLeft_toRightOf="@id/rotate"
+				app:layout_constraintRight_toLeftOf="@+id/edit"
+				/>
+
+			<ImageButton
+				android:id="@+id/edit"
+				style="?android:attr/borderlessButtonStyle"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:tint="@android:color/white"
+				android:contentDescription="@string/edit"
+				android:background="@drawable/selector_compose_button"
+				app:srcCompat="@drawable/ic_magic_wand_white_24dp"
+				app:layout_constraintLeft_toRightOf="@id/crop"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toTopOf="parent"
+				/>
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+		<FrameLayout
+			android:id="@+id/bottom_panel"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_above="@+id/gridview"
+			android:layout_alignWithParentIfMissing="true"
+			android:paddingTop="4dp"
+			android:paddingBottom="4dp"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:background="#77000000">
+
+			<ch.threema.app.ui.ComposeEditText
+				android:id="@+id/caption_edittext"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingBottom="4dp"
+				android:paddingTop="3dp"
+				android:paddingLeft="@dimen/emoji_button_width"
+				android:paddingRight="45dp"
+				android:layout_marginRight="56dp"
+				android:layout_gravity="bottom"
+				android:background="@drawable/bubble_compose_dark_outline"
+				android:hint="@string/add_caption_hint"
+				android:maxLength="1000"
+				android:maxLines="@integer/message_edittext_max_lines"
+				android:ellipsize="end"
+				android:minHeight="@dimen/input_text_height"
+				android:nextFocusRight="@+id/attach_button"
+				android:nextFocusLeft="@+id/emoji_button"
+				android:scrollHorizontally="false"
+				android:textSize="16sp">
+				<requestFocus />
+			</ch.threema.app.ui.ComposeEditText>
+
+			<ch.threema.app.emojis.EmojiButton
+				android:id="@+id/emoji_button"
+				style="?android:attr/borderlessButtonStyle"
+				android:layout_width="@dimen/emoji_button_width"
+				android:layout_height="@dimen/emoji_button_width"
+				android:layout_marginBottom="5dp"
+				android:layout_gravity="left|bottom"
+				android:background="@drawable/selector_compose_button"
+				android:contentDescription="@string/select_emoji"
+				android:padding="8dp"
+				android:drawablePadding="0dip"
+				android:focusable="true"
+				android:nextFocusRight="@+id/caption_edittext"/>
+
+			<androidx.appcompat.widget.AppCompatImageButton
+				android:id="@+id/camera_button"
+				style="?android:attr/borderlessButtonStyle"
+				android:layout_width="@dimen/emoji_button_width"
+				android:layout_height="@dimen/emoji_button_width"
+				android:layout_gravity="bottom|right"
+				android:layout_marginBottom="4dp"
+				android:layout_marginRight="59dp"
+				android:background="@drawable/selector_compose_button"
+				android:contentDescription="@string/take_photo"
+				android:nextFocusRight="@+id/send_button"
+				android:padding="8dp"
+				android:drawablePadding="0dip"
+				android:focusable="true"
+				app:tint="@android:color/white"
+				app:srcCompat="@drawable/ic_camera_outline"/>
+
+			<ch.threema.app.ui.SendButton
+				android:id="@+id/send_button"
+				android:layout_width="@dimen/input_text_height"
+				android:layout_height="@dimen/input_text_height"
+				android:layout_gravity="bottom|right"
+				android:clickable="true"
+				android:focusable="true"
+				android:foreground="@drawable/selector_avatar"
+				app:buttonTheme="1"/>
+
+		</FrameLayout>
+
+		<ch.threema.app.ui.draggablegrid.DynamicGridView
+			android:id="@+id/gridview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:drawSelectorOnTop="false"
+			android:gravity="center"
+			android:horizontalSpacing="0dp"
+			android:listSelector="@drawable/media_gallery_item_selector"
+			android:numColumns="@integer/gridview_num_columns"
+			android:verticalSpacing="0dp"
+			android:background="#77000000"/>
+
+	</RelativeLayout>
+
+	<ViewStub
+		android:id="@+id/emoji_stub"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:inflatedId="@+id/emoji_picker"
+		android:layout="@layout/emoji_picker_layout"/>
+
+</LinearLayout>

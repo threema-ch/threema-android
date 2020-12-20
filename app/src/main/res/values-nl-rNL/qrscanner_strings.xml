@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">Plaats een QR-code in de rechthoek van de zoeker om de code te scannen.</string>
+    <string name="msg_camera_framework_bug">Geen toegang tot Android-camera. Controleer of er toestemming is gegeven voor toegang tot de camera of start uw toestel opnieuw op.</string>
+</resources>

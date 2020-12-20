@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:state_checked="true">
+			<objectAnimator android:propertyName="scaleX"
+			                android:duration="150"
+			                android:valueFrom="0f"
+			                android:valueTo="1f"
+			                android:startOffset="75"
+			                android:valueType="floatType"/>
+	</item>
+	<item>
+			<objectAnimator android:propertyName="scaleX"
+			                android:duration="150"
+			                android:valueFrom="1f"
+			                android:valueTo="0f"
+			                android:valueType="floatType"/>
+	</item>
+</selector>

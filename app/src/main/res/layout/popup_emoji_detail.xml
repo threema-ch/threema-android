@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:card_view="http://schemas.android.com/apk/res-auto"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:background="@android:color/transparent">
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/cardview"
+		android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/emoji_popup_cardview_margin_bottom"
+		android:layout_marginTop="@dimen/emoji_popup_cardview_margin_top"
+		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
+		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
+		card_view:cardCornerRadius="6dp"
+		card_view:cardElevation="@dimen/emoji_popup_cardview_margin_bottom">
+
+	<ImageView
+			android:id="@+id/image_original"
+			android:layout_width="@dimen/emoji_popup_emoji_size"
+			android:layout_height="@dimen/emoji_popup_emoji_size"
+			android:layout_margin="@dimen/emoji_popup_image_margin"
+			android:clickable="true"
+			android:background="@drawable/listitem_background_selector_noripple"
+			android:focusable="false"/>
+
+	</com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

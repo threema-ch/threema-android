@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/root"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="?selectableItemBackground">
+
+		<androidx.constraintlayout.widget.Guideline
+			android:id="@+id/gdContent"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			app:layout_constraintGuide_begin="@dimen/lp_guide_content_margin"/>
+
+		<androidx.constraintlayout.widget.Guideline
+			android:id="@+id/gdMarginEnd"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			app:layout_constraintGuide_end="@dimen/lp_guide_end_margin"/>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="?attr/divider_color"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="@id/gdContent"
+			app:layout_constraintTop_toTopOf="parent"/>
+
+		<TextView
+			android:id="@+id/name"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/lp_default_margin"
+			android:paddingBottom="@dimen/lp_default_margin"
+			android:ellipsize="end"
+			android:maxLines="1"
+			android:textAppearance="@style/Threema.TextAppearance.Body2"
+			app:layout_constraintEnd_toEndOf="@id/gdMarginEnd"
+			app:layout_constraintStart_toStartOf="@id/gdContent"
+			app:layout_constraintTop_toTopOf="parent"
+			android:text="@string/lp_poi_copyright"/>
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

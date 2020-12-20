@@ -1,0 +1,355 @@
+syntax = "proto3";
+
+package safe;
+
+option java_package = "ch.threema.protobuf";
+
+import "common.proto";
+
+// Threema Safe
+// ------------
+//
+// All strings are UTF-8 encoded.
+
+
+
+// Threema Safe backup contents.
+message Backup {
+  // Version of the format
+  // References: `info.version`
+  uint32 version = 1;
+
+  // Metadata about the device which created the backup
+  // References: `info.device`
+  string device = 2;
+
+  // The private key associated with the Threema ID
+  // References: `user.privatekey`
+  bytes private_key = 3;
+
+  // The user's profile
+  // Note: The data MUST be inlined!
+  UserProfile user_profile = 4;
+
+  // Contacts
+  // References: `contacts[]`
+  repeated Contact contacts = 5;
+
+  // Groups
+  // References: `groups[]`
+  repeated Group groups = 6;
+
+  // Distribution lists
+  // References: `distributionlists[]`
+  repeated DistributionList distribution_lists = 7;
+
+  // App settings
+  // References: `settings`
+  Settings settings = 8;
+}
+
+
+
+// The user's profile.
+message UserProfile {
+  // Nickname
+  // References: `user.nickname`
+  string nickname = 1;
+
+  // Profile image
+  // References: `user.profilePic`
+  common.Image profile_image = 2;
+
+  // Profile image share policy
+  // References: `user.profilePicRelease[]`
+  enum ProfileImageSharePolicy {
+    // Don't share
+    NOBODY = 0;
+    // Share with everyone
+    EVERYONE = 1;
+    // Share with a limited amount of contacts explicitly listed
+    ALLOW_LIST = 2;
+  }
+  ProfileImageSharePolicy profile_image_share_policy = 3;
+
+  // Contact IDs the profile image may be shared with. Should only be filled
+  // when the `ProfileImageSharePolicy` is `ALLOW_LIST`.
+  // References: `user.profilePicRelease[]`
+  repeated string profile_image_share_with = 4;
+
+  // External entities linked with the identity
+  // References: `user.links[]`
+  repeated IdentityLink identity_links = 5;
+}
+
+// Threema contact.
+message Contact {
+  // Threema ID of the contact
+  // References: `contacts[].identity`
+  string identity = 1;
+
+  // Public key of the contact
+  // References: `contacts[].publickey`
+  bytes public_key = 2;
+
+  // Unix-ish timestamp in milliseconds when the contact has been created
+  // (added) locally.
+  // References: `contacts[].createdAt`
+  uint64 created_at = 3;
+
+  // Verification level of the contact
+  // References: `contacts[].verification`
+  enum VerificationLevel {
+    // Unverified, public key has been obtained from the server
+    UNVERIFIED = 0;
+    // Verified with one of the account links via the server, or the contact
+    // has been obtained via the Work API.
+    SERVER_VERIFIED = 1;
+    // Verified, public key has been obtained via a secure channel
+    FULLY_VERIFIED = 2;
+  }
+  VerificationLevel verification_level = 4;
+
+  // Identity type of the contact
+  // References: `contacts[].workVerified`
+  enum IdentityType {
+    // Regular contact (uses the regular Threema app)
+    REGULAR = 0;
+    // Work contact (uses the Threema work app)
+    WORK = 1;
+  }
+  IdentityType identity_type = 5;
+
+  // Display policy for the contact
+  // References: `contacts[].hidden`
+  enum DisplayPolicy {
+    // Show contact
+    SHOW = 0;
+    // Hide contact (e.g. group contact not explicitly added)
+    HIDE = 1;
+  }
+  DisplayPolicy display_policy = 6;
+
+  // Conversation category of the contact
+  // References: `contacts[].private`
+  ConversationCategory conversation_category = 7;
+
+  // Conversation visbility of the contact
+  ConversationVisibility conversation_visibility = 8;
+
+  // First name of the contact
+  // References: `contacts[].firstname`
+  oneof first_name { string first_name_value = 9; }
+
+  // Last name of the contact
+  // References: `contacts[].lastname`
+  oneof last_name { string last_name_value = 10; }
+
+  // Nickname of the contact (without `~` prefix)
+  // References: `contacts[].nickname`
+  oneof nickname { string nickname_value = 11; }
+
+  // Profile image as received from the contact
+  common.Image profile_image = 12;
+
+  // Custom profile image set by the user
+  common.Image custom_profile_image = 13;
+}
+
+// Threema contacts associated to a group.
+message Group {
+  // Unique group identity
+  // References: `groups[].id` and `groups[].creator`
+  common.GroupIdentity group_identity = 1;
+
+  // Name of the group
+  // References: `groups[].groupname`
+  string name = 2;
+
+  // Unix-ish timestamp in milliseconds when the group has been created locally
+  // References: `groups[].createdAt`
+  uint64 created_at = 3;
+
+  // Conversation category of the group
+  // References: `groups[].private`
+  ConversationCategory conversation_category = 4;
+
+  // Conversation visbility of the group
+  ConversationVisibility conversation_visibility = 5;
+
+  // The user's state within the group
+  // References: `groups[].deleted`
+  enum UserState {
+    // The user is a member (or an admin) of the group
+    MEMBER = 0;
+    // The user has been kicked from the group
+    KICKED = 1;
+    // The user left the group
+    LEFT = 2;
+  }
+  UserState user_state = 6;
+
+  // Group's profile image as received from the group's administrator
+  common.Image profile_image = 7;
+
+  // Group members (**NOT** including the user itself)
+  // References: `groups[].members`
+  repeated string member_identities = 8;
+}
+
+// Threema contacts associated to a distribution list.
+message DistributionList {
+  // Unique ID of the distribution list
+  fixed64 distribution_list_id = 1;
+
+  // Name of the distribution list
+  // References: `distributionlists[].name`
+  string name = 2;
+
+  // Unix-ish timestamp in milliseconds when the group has been created
+  // References: `distributionlists[].createdAt`
+  uint64 created_at = 3;
+
+  // Conversation category of the distribution list
+  // References: `distributionlists[].private`
+  ConversationCategory conversation_category = 4;
+
+  // Conversation visbility of the distribution list
+  ConversationVisibility conversation_visibility = 5;
+
+  // Distribution list members
+  // References: `distributionlists[].members`
+  repeated string member_identities = 6;
+}
+
+// App settings
+message Settings {
+  // Contact synchronisation policy
+  // References: `settings.syncContacts`
+  enum ContactSyncPolicy {
+    // Not synced
+    NOT_SYNCED = 0;
+    // Synced
+    SYNC = 1;
+  }
+  ContactSyncPolicy contact_sync_policy = 1;
+
+  // Unknown contacts policy
+  // References: `settings.blockUnknown`
+  enum UnknownContactPolicy {
+    // Allowed to contact the user
+    ALLOW_UNKNOWN = 0;
+    // Will be blocked by the user
+    BLOCK_UNKNOWN = 1;
+  }
+  UnknownContactPolicy unknown_contact_policy = 2;
+
+  // Read message policy (when an unread message has been read)
+  // References: `settings.readReceipts`
+  enum ReadMessagePolicy {
+    // Send *read* receipt when an unread message has been read
+    SEND_READ_RECEIPT = 0;
+    // Don't send *read* receipts
+    IGNORE_READ = 1;
+  }
+  ReadMessagePolicy read_message_policy = 3;
+
+  // Compose message policy
+  // References: `settings.sendTyping`
+  enum ComposeMessagePolicy {
+    // Send *typing* indicator when a message is being composed
+    SEND_TYPING_INDICATOR = 0;
+    // Don't send *typing* indicators
+    IGNORE_COMPOSE = 1;
+  }
+  ComposeMessagePolicy compose_message_policy = 4;
+
+  // Threema Call policy
+  // References: `settings.threemaCalls`
+  enum CallPolicy {
+    // Allow creating/receiving Threema Calls
+    ALLOW_CALL = 0;
+    // Denied from creating/receiving any Threema Calls
+    DENY_CALL = 1;
+  }
+  CallPolicy call_policy = 5;
+
+  // Threema Call connection policy
+  // References: `settings.relayThreemaCalls`
+  enum CallConnectionPolicy {
+    // Allow direct (peer-to-peer) connections for Threema Calls
+    ALLOW_DIRECT = 0;
+    // Require relayed connections for Threema Calls
+    REQUIRE_RELAY = 1;
+  }
+  CallConnectionPolicy call_connection_polity = 6;
+
+  // Screenshot policy
+  // References: `settings.disableScreenshots`
+  enum ScreenshotPolicy {
+    // Allow taking screenshots
+    ALLOW_SCREENSHOT = 0;
+    // Deny taking screenshots, if possible
+    DENY_SCREENSHOT = 1;
+  }
+  ScreenshotPolicy screenshot_policy = 7;
+
+  // Keyboard data collection policy (e.g. for personalised suggestions)
+  // References: `settings.incognitoKeyboard`
+  enum KeyboardDataCollectionPolicy {
+    // Allow keyboard input data to be collected
+    ALLOW_DATA_COLLECTION = 0;
+    // Deny collecting of keyboard input data
+    DENY_DATA_COLLECTION = 1;
+  }
+  KeyboardDataCollectionPolicy keyboard_data_collection_policy = 8;
+
+  // List of Threema IDs whose messages are blocked
+  // References: `settings.blockedContacts[]`
+  repeated string blocked_identities = 9;
+
+  // Threema IDs to be excluded when syncing
+  // References: `settings.syncExcludedIds[]`
+  repeated string exclude_from_sync_identities = 10;
+
+  // List of recently used emojis, where the most recently used Emoji comes
+  // first.
+  // References: `settings.recentEmojis[]`
+  repeated string recent_emojis = 11;
+}
+
+
+
+// Threema ID link.
+message IdentityLink {
+  // Identity link type
+  // References: `user.links[].type`, `user.links[].value`
+  oneof type {
+    // Linked with a verified telephone number (E.164 format without leading
+    // `+`)
+    string phone_number = 1;
+    // Linked with a verified email address
+    string email = 2;
+  }
+
+  // Identity link description
+  // References: `user.links[].name`
+  string description = 3;
+}
+
+// Visibility of a conversation.
+enum ConversationVisibility {
+  // Appears in the list of conversations
+  SHOW = 0;
+  // Appears in the archived list of conversations
+  ARCHIVE = 1;
+}
+
+// Category of a conversation.
+enum ConversationCategory {
+  // No specific (default) category
+  DEFAULT = 0;
+  // Protected conversation (*private chat*)
+  PROTECTED = 1;
+}
+

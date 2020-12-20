@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/notice_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/colorAccent"
+		android:orientation="vertical"
+		android:clickable="false"
+		android:visibility="visible">
+
+	<View android:layout_width="match_parent"
+	      android:layout_height="1dp"
+	      android:background="#aaffffff"/>
+
+	<TextView
+			android:id="@+id/notice_text"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="16dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:textSize="16sp"
+			android:textColor="@android:color/white"
+			android:clickable="false"
+			android:gravity="left"
+			android:text="@string/pending_sms_verification_notice"/>
+
+	<LinearLayout
+				  android:id="@+id/button_panel"
+				  android:layout_width="wrap_content"
+				  android:layout_height="wrap_content"
+				  android:padding="8dp"
+				  android:layout_gravity="right"
+				  android:orientation="horizontal">
+
+		<TextView
+				android:id="@+id/notice_button_cancel"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:textSize="15sp"
+				android:textStyle="bold"
+				android:textColor="@android:color/white"
+				android:background="?android:selectableItemBackground"
+				android:clickable="true"
+				android:textAllCaps="true"
+				android:text="@string/cancel"/>
+
+		<TextView
+				android:id="@+id/notice_button_enter_code"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:textSize="15sp"
+				android:textStyle="bold"
+				android:textColor="@android:color/white"
+				android:background="?android:selectableItemBackground"
+				android:clickable="true"
+				android:textAllCaps="true"
+				android:text="@string/enter_code_hint"/>
+
+	</LinearLayout>
+
+</LinearLayout>

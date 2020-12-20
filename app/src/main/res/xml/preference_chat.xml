@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+				  android:key="pref_key_chatdisplay"
+				  android:title="@string/prefs_chatdisplay"
+				  android:summary="@string/prefs_sum_chatdisplay"
+				  android:persistent="true">
+
+	<PreferenceCategory
+			android:title="@string/prefs_header_keyboard"
+			android:key="pref_key_keyboard">
+		<CheckBoxPreference
+				android:key="@string/preferences__enter_to_send"
+				android:summaryOff="@string/prefs_sum_enter_off"
+				android:summaryOn="@string/prefs_sum_enter_on"
+				android:title="@string/prefs_title_enter"
+				android:defaultValue="false"/>
+		<CheckBoxPreference
+				android:key="@string/preferences__fullscreen_ime"
+				android:summaryOff="@string/prefs_sum_fullscreen_ime_off"
+				android:summaryOn="@string/prefs_sum_fullscreen_ime_on"
+				android:title="@string/prefs_title_fullscreen_ime"
+				android:defaultValue="true"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory
+			android:title="@string/media"
+			android:key="pref_key_player">
+		<CheckBoxPreference
+				android:key="@string/preferences__gif_autoplay"
+				android:title="@string/prefs_gif_autoplay"
+				android:defaultValue="true"/>
+
+		<CheckBoxPreference
+				android:key="@string/preferences__proximity_sensor"
+				android:title="@string/prefs_proximity_sensor"
+				android:summary="@string/prefs_proximity_sensor_explain"
+				android:defaultValue="true"/>
+
+		<CheckBoxPreference
+				android:key="@string/preferences__image_attach_previews"
+				android:summary="@string/prefs_sum_image_attach_previews"
+				android:title="@string/prefs_title_image_attach_previews"
+				android:defaultValue="true"/>
+	</PreferenceCategory>
+
+</PreferenceScreen>

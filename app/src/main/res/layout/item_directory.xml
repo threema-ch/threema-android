@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2018 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+				android:layout_height="@dimen/listitem_contact_height"
+				android:orientation="vertical"
+				android:background="@drawable/listitem_background_selector">
+
+	<ch.threema.app.ui.InitialAvatarView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:layout_marginLeft="16dp"
+		android:layout_alignParentLeft="true"
+		android:layout_toEndOf="@id/status"
+		android:layout_centerVertical="true"
+		android:clickable="false"
+		android:contentDescription="@string/mime_contact"/>
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:layout_toRightOf="@id/avatar_view"
+		android:layout_toLeftOf="@id/status">
+
+		<ch.threema.app.ui.TextViewRobotoMedium
+			android:id="@+id/name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_toLeftOf="@+id/identity"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textColor="?android:attr/textColorPrimary"/>
+
+		<TextView
+			android:id="@+id/identity"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_alignBaseline="@id/name"
+			android:ellipsize="none"
+			android:singleLine="true"
+			android:fontFamily="sans-serif-light"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/categories"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignLeft="@id/name"
+			android:layout_alignParentLeft="true"
+			android:layout_below="@id/name"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:fontFamily="sans-serif-light"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+	</RelativeLayout>
+
+	<ImageView
+		android:id="@+id/status"
+		android:clickable="true"
+		android:background="?selectableItemBackground"
+		android:contentDescription="@string/menu_add_contact"
+		android:layout_width="60dp"
+		android:layout_height="60dp"
+		android:layout_alignParentRight="true"
+		android:padding="16dp"
+		app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
+		android:tint="?attr/textColorSecondary"
+		android:layout_centerVertical="true"
+		android:visibility="visible"
+		android:focusable="true"/>
+
+</RelativeLayout>

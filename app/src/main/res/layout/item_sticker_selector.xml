@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="@dimen/sticker_width"
+              android:layout_height="@dimen/sticker_width"
+              android:background="?attr/selectableItemBackgroundBorderless"
+              android:orientation="vertical">
+
+	<ImageView
+		android:id="@+id/sticker"
+		android:layout_width="@dimen/sticker_width"
+		android:layout_height="@dimen/sticker_width"
+		android:scaleType="centerInside"/>
+
+</LinearLayout>

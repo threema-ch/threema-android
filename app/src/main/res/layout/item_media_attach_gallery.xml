@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ch.threema.app.ui.CheckableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/content_frame"
+	android:background="?attr/gallery_attach_item_background"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<FrameLayout
+		android:id="@+id/media_frame"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:duplicateParentState="true"
+		android:stateListAnimator="@animator/selector_gallery_image">
+
+		<ch.threema.app.ui.SquareImageView
+			android:id="@+id/image_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:duplicateParentState="true"
+			android:scaleType="centerCrop"/>
+
+		<ImageView
+			android:id="@+id/load_error_indicator"
+			android:layout_width="@dimen/broken_image_icon_size"
+			android:layout_height="@dimen/broken_image_icon_size"
+			android:contentDescription="@string/error_unable_loading_media_thumb"
+			android:layout_gravity="center"
+			android:visibility="gone"
+			app:srcCompat="@drawable/ic_baseline_broken_image_24"
+			app:tint="?attr/textColorSecondary"
+			/>
+
+		<LinearLayout
+			android:id="@+id/gif_marker_container"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:background="@color/mime_type_marker_background"
+			android:gravity="left"
+			android:orientation="horizontal"
+			android:visibility="gone">
+
+			<ImageView
+				android:id="@+id/gif_icon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:srcCompat="@drawable/ic_gif_24dp"
+				app:tint="@android:color/white" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/video_marker_container"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:background="@color/mime_type_marker_background"
+			android:gravity="center"
+			android:paddingLeft="4dp"
+			android:paddingRight="4dp"
+			android:orientation="horizontal"
+			android:visibility="gone">
+
+			<ImageView
+				android:id="@+id/video_icon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="4dp"
+				app:srcCompat="@drawable/ic_videocam_black_24dp"
+				app:tint="@android:color/white" />
+
+			<TextView
+				android:id="@+id/video_duration_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="@android:color/white"
+				android:textSize="12sp"/>
+
+		</LinearLayout>
+
+	</FrameLayout>
+
+	<ch.threema.app.ui.CheckableView
+		android:id="@+id/check_box"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_gravity="top|left"
+		android:layout_margin="6dp"
+		android:background="@drawable/selector_grid_checkbox_invisible"
+		android:duplicateParentState="true"/>
+
+</ch.threema.app.ui.CheckableFrameLayout>

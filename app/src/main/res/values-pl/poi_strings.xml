@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Osada</string>
+    <string name="village">Wioska</string>
+    <string name="town">Miasteczko</string>
+    <string name="isolated_dwelling">Odosobniona osada</string>
+    <string name="island">Wyspa</string>
+    <string name="islet">Wyspeka</string>
+    <string name="suburb">Przedmieścia</string>
+    <string name="city">Miasto</string>
+    <string name="city_block">Kwartał uliczny</string>
+    <string name="neighbourhood">Dzielnica</string>
+    <string name="locality">Okolica</string>
+    <string name="state">Stan</string>
+    <string name="farm">Gospodarstwo</string>
+    <string name="street">Ulica</string>
+    <string name="country">Kraj</string>
+</resources>

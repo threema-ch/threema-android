@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			 xmlns:custom="http://schemas.android.com/apk/res-auto"
+			 android:id="@+id/content_frame"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			 android:clickable="true"
+			 android:focusable="true"
+			 android:focusableInTouchMode="false"
+			 android:foreground="?attr/selectableItemBackground">
+
+	<ch.threema.app.ui.SquareImageView
+			android:id="@+id/image_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:adjustViewBounds="true"
+			android:scaleType="centerCrop"/>
+
+	<ch.threema.app.ui.CountBoxView
+			android:id="@+id/gif_indicator"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="left|top"
+			android:layout_margin="6dp"
+			custom:textSizeOverride="10sp"
+			custom:paddingOverride="3dp"
+			android:clickable="false"
+			android:visibility="gone"
+			android:text="G"/>
+
+	<ch.threema.app.ui.CheckableView
+			android:id="@+id/check_box"
+			android:layout_width="24dp"
+			android:layout_height="24dp"
+			android:layout_gravity="bottom|right"
+			android:layout_margin="6dp"
+			android:clickable="true"
+			android:background="@drawable/selector_grid_checkbox"/>
+
+</FrameLayout>

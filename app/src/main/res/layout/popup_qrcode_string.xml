@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			 android:layout_width="match_parent"
+			 android:layout_height="match_parent"
+			 android:background="@drawable/shape_rounded_corner_popup_bg">
+
+	<pl.droidsonroids.gif.GifImageView
+			android:id="@+id/image_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginTop="@dimen/image_popup_topbottom_margin"
+			android:layout_marginBottom="@dimen/image_popup_topbottom_margin"
+			android:layout_marginLeft="@dimen/image_popup_leftright_margin"
+			android:layout_marginRight="@dimen/image_popup_leftright_margin"
+			android:adjustViewBounds="true"
+			android:scaleType="fitCenter"/>
+
+	<TextView
+			android:id="@+id/filename_view"
+			android:text="Filename"
+			android:ellipsize="middle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="4dp"
+			android:layout_marginLeft="8dp"
+			android:textSize="0sp"
+			android:textColor="@color/text_color_secondary"
+			android:singleLine="true"
+			android:layout_gravity="top"/>
+
+	<TextView
+			android:id="@+id/date_view"
+			android:text="Date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="4dp"
+			android:layout_marginRight="8dp"
+			android:textSize="0sp"
+			android:textColor="@color/text_color_secondary"
+			android:maxLines="1"
+			android:layout_gravity="bottom|right"/>
+
+</FrameLayout>

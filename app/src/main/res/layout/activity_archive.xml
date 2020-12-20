@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:id="@+id/parent_layout"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<ch.threema.app.ui.EmptyRecyclerView
+			android:id="@+id/recycler"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

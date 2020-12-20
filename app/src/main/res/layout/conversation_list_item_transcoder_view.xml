@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/top_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@drawable/shape_transcoder_overlay">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:orientation="vertical">
+
+		<ProgressBar
+			android:id="@+id/transcode_progress"
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp" />
+
+		<TextView
+			android:id="@+id/transcode_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:textColor="@android:color/black"
+			android:text="@string/converting_video"
+			android:textSize="12sp" />
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/cancel_button"
+			style="@style/Threema.Chip.VideoTranscoder"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text="@string/cancel" />
+
+	</LinearLayout>
+
+</FrameLayout>

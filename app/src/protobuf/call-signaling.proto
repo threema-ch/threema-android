@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package callsignaling;
+
+option java_package = "ch.threema.protobuf.callsignaling";
+
+// Root signaling message
+message Envelope {
+  // Random amount of padding, ignored by the receiver
+  bytes padding = 1;
+
+  oneof content {
+    VideoQualityProfile video_quality_profile = 2;
+    CaptureState capture_state_change = 3;
+  }
+}
+
+// Generic 2D resolution
+message Resolution {
+  uint32 width = 1;
+  uint32 height = 2;
+}
+
+// The app switched to a new video quality profile
+//
+// In order to be forwards-compatible, the raw configuration of the profile
+// (bitrate, resolution, etc) should also be included in this message. This
+// way, if an unknown enum value is received, the receiver can simply use the
+// raw values instead.
+message VideoQualityProfile {
+  // The quality profile
+  enum QualityProfile {
+    // Very high quality, used only when explicitly selected by the user
+    MAX = 0;
+    // High quality, used by default in non-metered networks
+    HIGH = 1;
+    // Low quality, optimize for bandwidth, used by default in metered networks
+    LOW = 2;
+  }
+  QualityProfile profile = 1;
+
+  // The max bitrate in kbps
+  uint32 max_bitrate_kbps = 2;
+  // The max resolution (in landscape orientation)
+  Resolution max_resolution = 3;
+  // The max framerate
+  uint32 max_fps = 4;
+}
+
+// Signal changes in the capturing state (e.g. video camera enabled or disabled)
+message CaptureState {
+  // The capture state of a capturing device
+  enum Mode {
+    // Off, not sending any data
+    OFF = 0;
+    // On, sending data
+    ON = 1;
+  }
+  Mode state = 1;
+
+  // The capture device type
+  enum CaptureDevice {
+    // Capturing from a camera
+    CAMERA = 0;
+
+    // Capturing from screen sharing
+    SCREEN_SHARING = 1;
+
+    // Capturing from a microphone
+    MICROPHONE = 2;
+  }
+  CaptureDevice device = 2;
+}

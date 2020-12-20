@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/avatar_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_alignParentLeft="true"
+             android:layout_centerVertical="true"
+             android:clickable="false">
+
+	<ImageView
+		android:id="@+id/avatar"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clickable="false"
+		android:visibility="visible"/>
+
+	<ImageView
+		android:id="@+id/avatar_badge"
+		android:layout_width="18dp"
+		android:layout_height="18dp"
+		android:layout_gravity="left|bottom"
+		android:clickable="false"
+		app:srcCompat="@drawable/ic_badge_work"
+		android:visibility="gone"/>
+
+</FrameLayout>

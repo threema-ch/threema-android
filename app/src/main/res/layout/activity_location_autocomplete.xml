@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     android:id="@+id/coordinator"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
+                                                     android:fitsSystemWindows="true">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fitsSystemWindows="true">
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"/>
+
+		<ch.threema.app.ui.ThreemaEditText
+			android:id="@+id/search_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:textSize="16dp"
+			android:layout_marginLeft="70dp"
+			android:layout_gravity="center_vertical"
+			android:hint="@string/lp_search_place"
+			android:inputType="textNoSuggestions|textFilter"
+			android:imeOptions="flagNoExtractUi"
+			android:textColor="@color/dark_text_color_primary"
+			android:textColorHint="@color/dark_text_color_secondary"
+			android:textCursorDrawable="@null"
+			android:cursorVisible="true">
+			<requestFocus/>
+		</ch.threema.app.ui.ThreemaEditText>
+
+
+		</FrameLayout>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<ch.threema.app.ui.EmptyRecyclerView
+		android:id="@+id/recycler"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+	<ProgressBar
+		android:id="@+id/progress"
+		android:layout_width="match_parent"
+		android:layout_height="3dp"
+		android:layout_gravity="top"
+		android:scaleY="9"
+		style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+		android:indeterminateOnly="true"
+		android:indeterminate="true"
+		android:indeterminateBehavior="repeat"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"
+		android:visibility="gone"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

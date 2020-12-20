@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:custom="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/item_container"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/listitem_background_selector"
+	android:descendantFocusability="blocksDescendants"
+	android:minHeight="18dp"
+	android:orientation="vertical"
+	android:paddingLeft="8dp"
+	android:paddingRight="8dp">
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_centerVertical="true"
+		android:duplicateParentState="true">
+
+		<CheckBox
+			android:id="@+id/choice_checkbox"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:padding="0dp"
+			android:duplicateParentState="true"
+			android:clickable="false"/>
+
+		<RadioButton
+			android:id="@+id/choice_radio"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_toRightOf="@id/choice_checkbox"
+			android:duplicateParentState="true"
+			android:clickable="false"/>
+
+		<ch.threema.app.emojis.EmojiConversationTextView
+			android:id="@+id/choice_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="8dp"
+			android:layout_marginTop="5dip"
+			android:layout_toLeftOf="@+id/vote_count"
+			android:layout_toRightOf="@id/choice_radio"
+			android:ellipsize="end"
+			android:maxLines="3"
+			android:text="Name"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:textColor="?attr/textColorPrimary" />
+
+		<ch.threema.app.ui.CountBoxView
+			android:id="@+id/vote_count"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="8dp"
+			custom:backgroundOverride="?attr/count_box_background_accent" />
+
+	</RelativeLayout>
+</ch.threema.app.ui.CheckableRelativeLayout>

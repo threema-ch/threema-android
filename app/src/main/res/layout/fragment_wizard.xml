@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+		xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/layout_wizard"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+		android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+		android:paddingBottom="@dimen/wizard_footer_height">
+
+	<com.google.android.material.appbar.AppBarLayout
+			android:id="@+id/appbar_layout"
+			android:background="@android:color/transparent"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:elevation="0dp">
+
+		<com.google.android.material.appbar.CollapsingToolbarLayout
+				android:id="@+id/collapsing_toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+			<ViewStub android:layout_width="match_parent"
+					  android:layout_height="match_parent"
+					  android:id="@+id/stub_content"
+					  android:inflatedId="@+id/layout_content"
+					  android:layout="@layout/stub_dummy"
+					  app:layout_collapseMode="pin"
+					/>
+
+		</com.google.android.material.appbar.CollapsingToolbarLayout>
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<androidx.core.widget.NestedScrollView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:paddingTop="16dp"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior"
+			app:behavior_overlapTop="52dp">
+
+		<LinearLayout android:layout_width="match_parent"
+					  android:layout_height="wrap_content"
+					  android:id="@+id/more_info_layout"
+					  android:background="?attr/selectableItemBackground"
+					  android:orientation="vertical">
+
+			<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:id="@+id/more_info_tab"
+					android:gravity="center"
+					android:background="?attr/selectableItemBackground"
+					android:orientation="horizontal">
+
+				<ImageView
+					android:id="@+id/wizard_id_icon"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					app:srcCompat="@drawable/ic_about_outline"
+					android:tint="@color/new_wizard_color_primary"
+					android:textSize="14sp"
+					android:textColor="@color/new_wizard_color_accent"/>
+
+				<TextView
+						android:id="@+id/wizard_id_info"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="8dp"
+						android:text="@string/new_wizard_more_information"
+						android:fontFamily="sans-serif-light"
+						android:textSize="14sp"
+						android:textColor="@color/new_wizard_color_accent"/>
+
+			</LinearLayout>
+
+			<TextView android:id="@+id/wizard_more_info_text"
+					  android:layout_width="match_parent"
+					  android:layout_height="wrap_content"
+					  android:layout_marginTop="16dp"
+					  style="@style/WizardSmallText"
+					  android:text=""
+					/>
+
+			<androidx.appcompat.widget.AppCompatButton
+					style="@style/WizardButtonRegular"
+					android:id="@+id/wizard_info_done"
+					android:layout_gravity="center_horizontal"
+					android:layout_marginTop="16dp"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/ok"/>
+
+		</LinearLayout>
+
+	</androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

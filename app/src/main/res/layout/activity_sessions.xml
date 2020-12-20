@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:id="@+id/parent_layout"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_alignParentBottom="true"
+			android:layout_below="@+id/switch_frame"
+			>
+
+			<ch.threema.app.ui.EmptyRecyclerView
+				android:id="@+id/recycler"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+				android:layout_marginRight="@dimen/tablet_additional_padding_left_right"/>
+
+			<LinearLayout
+				android:id="@+id/empty_frame"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:orientation="vertical"
+				android:visibility="gone">
+
+				<ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_horizontal"
+					android:layout_marginBottom="24dp"
+					android:src="@drawable/ic_phonelink_white_128dp"
+					android:tint="?attr/image_tint_default"/>
+
+				<TextView
+					android:id="@+id/empty_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="@dimen/tablet_standard_padding_left_right"
+					android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
+					android:fontFamily="sans-serif-light"
+					android:layout_gravity="center_horizontal"
+					android:gravity="center_horizontal"
+					android:text="@string/webclient_no_sessions_found"
+					android:textColor="?attr/textColorPrimary"
+					android:textSize="18sp"/>
+
+			</LinearLayout>
+
+		</FrameLayout>
+
+		<FrameLayout
+			android:id="@+id/switch_frame"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/web_sessions_switch_frame_height"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_alignParentTop="true"
+			android:background="?attr/detail_highlight_bg_color"
+			android:paddingRight="16dp">
+
+			<TextView
+				android:id="@+id/switch_text"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:layout_gravity="left"
+				android:layout_marginLeft="72dp"
+				android:fontFamily="sans-serif-medium"
+				android:gravity="center_vertical"
+				android:text="@string/off_cap"
+				android:textSize="18sp"/>
+
+			<ch.threema.app.ui.SilentSwitchCompat
+				android:id="@+id/switch_button"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:layout_gravity="center_vertical|right"
+				android:contentDescription="@string/webclient_enable"/>
+
+		</FrameLayout>
+
+	</RelativeLayout>
+
+	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+		android:id="@+id/floating"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|right"
+		android:layout_margin="@dimen/floating_button_margin"
+		android:contentDescription="@string/webclient_init_session"
+		android:text="@string/webclient_init_session"
+		app:icon="@drawable/ic_qr_code_scan"
+		android:tint="@android:color/white"
+		android:visibility="visible"
+		app:layout_anchor="@+id/recycler"
+		app:layout_anchorGravity="bottom|right|end"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

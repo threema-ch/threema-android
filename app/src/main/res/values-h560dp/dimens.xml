@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<dimen name="contact_detail_avatar_height">350dp</dimen>
+</resources>

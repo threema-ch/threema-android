@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/container"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_marginRight="4dp"
+	android:layout_marginLeft="3dp"
+	android:duplicateParentState="true"
+	android:descendantFocusability="blocksDescendants"
+	android:background="@drawable/selector_button_media_attach">
+
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/image"
+			android:layout_width="@dimen/image_attach_popup_action_icon_size"
+			android:layout_height="@dimen/image_attach_popup_action_icon_size"
+			android:importantForAccessibility="no"
+			app:tint="?attr/textColorSecondary"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toTopOf="@+id/label"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintVertical_chainStyle="packed"/>
+
+		<TextView
+			android:id="@+id/label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="4dp"
+			android:textAppearance="@style/AttachmentsLabel"
+			android:importantForAccessibility="no"
+			app:layout_constraintTop_toBottomOf="@+id/image"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

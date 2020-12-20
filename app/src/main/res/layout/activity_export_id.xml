@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/main_content"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:orientation="vertical">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<ScrollView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="@dimen/tablet_additional_padding_left_right"
+				android:paddingRight="@dimen/tablet_additional_padding_left_right"
+				android:fillViewport="true"
+				android:visibility="visible"
+				android:id="@+id/qr_container_backup">
+
+		<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingRight="16dp"
+				android:paddingLeft="16dp"
+				android:paddingBottom="16dp">
+
+			<FrameLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="10dp"
+					android:padding="1dp"
+					android:background="@drawable/qrcode_border">
+
+				<FrameLayout
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="7dp"
+						android:background="?attr/background_secondary">
+
+					<TextView
+							android:id="@+id/threemaid"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:layout_margin="8dp"
+							android:textColor="?attr/textColorPrimary"
+							android:textStyle="normal"
+							android:textSize="19sp"
+							android:text=""
+							android:textIsSelectable="true"/>
+
+				</FrameLayout>
+
+			</FrameLayout>
+
+			<FrameLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="15dp"
+					android:layout_gravity="center"
+					android:background="@drawable/qrcode_border">
+
+				<ch.threema.app.ui.SquareImageView
+						android:id="@+id/qrcode_backup"
+						android:layout_margin="20dp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center_horizontal"
+						/>
+
+			</FrameLayout>
+
+			<TextView
+					android:id="@+id/keyfingerprint"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textColor="?attr/textColorPrimary"
+					android:paddingTop="2dp"
+					android:textStyle="normal"
+					android:textSize="16sp"
+					android:text="@string/backup_id_summary"/>
+
+
+		</LinearLayout>
+
+	</ScrollView>
+</LinearLayout>

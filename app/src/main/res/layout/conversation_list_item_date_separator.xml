@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ no avatar
+-->
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/msg_list_item_status"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center_vertical"
+	android:paddingTop="0dp"
+	android:paddingBottom="5dp"
+	android:paddingLeft="3dp"
+	android:paddingRight="3dp">
+
+	<include layout="@layout/date_separator_no_elevation"/>
+
+</FrameLayout>

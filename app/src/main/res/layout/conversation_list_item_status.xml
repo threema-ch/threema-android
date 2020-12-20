@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ no avatar
+-->
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/msg_list_item_status"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:paddingBottom="5dp"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp">
+
+	<LinearLayout
+		android:id="@+id/message_block"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:background="?chat_bubble_status"
+		android:orientation="vertical"
+		android:paddingBottom="@dimen/message_status_padding_bottom"
+		android:paddingLeft="@dimen/chat_bubble_margin_end"
+		android:paddingRight="@dimen/chat_bubble_margin_end"
+		android:paddingTop="@dimen/message_status_padding_top">
+
+		<ch.threema.app.emojis.EmojiConversationTextView
+			android:id="@+id/text_view"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:autoLink="none"
+			android:gravity="center_horizontal"
+			android:maxLines="3"
+			android:ellipsize="end"
+			android:text="Text"
+			android:textColor="@color/text_color_secondary"
+			android:textSize="?attr/font_status"
+			/>
+
+	</LinearLayout>
+</LinearLayout>

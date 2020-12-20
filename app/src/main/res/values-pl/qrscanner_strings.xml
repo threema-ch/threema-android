@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">Umieść kod QR w prostokącie, aby go zeskanować.</string>
+    <string name="msg_camera_framework_bug">Nie można uzyskać dostępu do aparatu. Upewnij się, czy uprawnienia zostały prawidłowo przyznane lub uruchom urządzenie ponownie.</string>
+</resources>

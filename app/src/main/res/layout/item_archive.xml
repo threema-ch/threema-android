@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                           xmlns:app="http://schemas.android.com/apk/res-auto"
+                                           android:id="@+id/list_item"
+                                           android:layout_width="match_parent"
+                                           android:layout_height="@dimen/messagelist_item_height"
+                                           android:background="@drawable/listitem_background_selector"
+                                           android:paddingLeft="@dimen/listitem_standard_margin_left_right"
+                                           android:paddingRight="@dimen/listitem_standard_margin_left_right">
+
+	<ch.threema.app.ui.CheckableFrameLayout
+		android:id="@+id/avatar_frame"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="52dp"
+		android:layout_centerVertical="true"
+		android:duplicateParentState="true">
+
+		<ch.threema.app.ui.AvatarView
+			android:id="@+id/avatar_view"
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
+			android:layout_gravity="center_vertical"
+			android:stateListAnimator="@animator/selector_list_checkbox_bg"
+			android:duplicateParentState="true"
+			android:visibility="visible"/>
+
+		<ch.threema.app.ui.CheckableView
+			android:id="@+id/check_box"
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
+			android:layout_gravity="center_vertical"
+			android:background="?selector_list_checkbox"
+			android:stateListAnimator="@animator/selector_list_checkbox_fg"
+			android:duplicateParentState="true"/>
+
+	</ch.threema.app.ui.CheckableFrameLayout>
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:layout_toRightOf="@id/avatar_frame">
+
+		<ch.threema.app.emojis.EmojiTextView
+			android:id="@+id/from"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:text="Title"
+			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+
+		<RelativeLayout
+			android:id="@+id/latest_message_container"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/from"
+			android:visibility="visible">
+
+			<ImageView
+				android:id="@+id/delivery"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignBottom="@+id/date"
+				android:layout_alignParentRight="true"
+				android:layout_marginLeft="2dip"
+				android:tint="?attr/textColorSecondary"
+				android:visibility="visible"
+				app:srcCompat="@drawable/ic_attachment"/>
+
+			<TextView
+				android:id="@+id/date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignWithParentIfMissing="true"
+				android:layout_marginLeft="3dip"
+				android:layout_toLeftOf="@id/delivery"
+				android:fontFamily="sans-serif-light"
+				android:singleLine="true"
+				android:text="Date"
+				android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+
+			<ch.threema.app.emojis.EmojiTextView
+				android:id="@+id/group_member_name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignBottom="@+id/date"
+				android:layout_alignWithParentIfMissing="true"
+				android:fontFamily="sans-serif-light"
+				android:singleLine="true"
+				android:text="Member: "
+				android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+
+			<ImageView
+				android:id="@+id/attachment"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignBottom="@id/date"
+				android:layout_alignWithParentIfMissing="true"
+				android:layout_marginLeft="-3dp"
+				android:layout_marginRight="-3dp"
+				android:layout_toRightOf="@id/group_member_name"
+				android:tint="?attr/textColorSecondary"
+				android:visibility="visible"
+				app:srcCompat="@drawable/ic_attachment"/>
+
+			<ch.threema.app.emojis.EmojiTextView
+				android:id="@+id/subject"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignBaseline="@id/date"
+				android:layout_alignWithParentIfMissing="true"
+				android:layout_marginRight="2dp"
+				android:layout_toLeftOf="@id/date"
+				android:layout_toRightOf="@id/attachment"
+				android:ellipsize="none"
+				android:singleLine="true"
+				android:text="Subject"
+				android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+
+		</RelativeLayout>
+
+	</RelativeLayout>
+
+</ch.threema.app.ui.CheckableRelativeLayout>

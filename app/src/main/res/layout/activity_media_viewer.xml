@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/gallery_background">
+
+	<ch.threema.app.ui.LockableViewPager
+		android:id="@+id/pager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>
+
+	<LinearLayout
+		android:id="@+id/session_loading"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="top|center_horizontal"
+		android:layout_marginTop="10dp"
+		android:orientation="horizontal"
+		android:visibility="gone">
+
+		<ProgressBar
+			android:id="@+id/progress_bar"
+			style="?android:attr/progressBarStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="2dp"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10sp"
+			android:text="@string/decoding_message"
+			android:textColor="@android:color/white"/>
+	</LinearLayout>
+
+	<FrameLayout
+		android:id="@+id/caption_container"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/mediaviewer_caption_border_bottom"
+		android:layout_gravity="bottom|center_horizontal"
+		android:background="@drawable/shape_mediaviewer_caption_background"
+		android:paddingBottom="4dp"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:paddingTop="4dp"
+		android:visibility="gone">
+
+		<ch.threema.app.emojis.EmojiTextView
+			android:id="@+id/caption"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text=""
+			android:textColor="@android:color/white"
+			android:textSize="18sp"/>
+
+	</FrameLayout>
+
+	<androidx.appcompat.widget.Toolbar
+		android:id="@+id/toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="?attr/actionBarSize"
+		android:background="#77000000"
+		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+		app:popupTheme="@style/ThemeOverlay.AppCompat"/>
+
+</FrameLayout>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:key="pref_key_security"
+                  android:title="@string/prefs_security"
+                  android:persistent="true">
+
+    <PreferenceCategory
+            android:title="@string/prefs_title_access_protection"
+            android:key="pref_key_pin">
+
+		<DropDownPreference
+				android:key="@string/preferences__lock_mechanism"
+				android:title="@string/prefs_title_locking_mechanism"
+				android:icon="@drawable/ic_screen_lock_outline"
+				android:summary="@string/lock_option_none"
+				android:entries="@array/list_lock_options"
+				android:entryValues="@array/list_lock_options_values"
+				android:defaultValue="none"/>
+
+		<Preference
+				android:key="@string/preferences__pin_lock_code"
+				android:title="@string/prefs_title_pin_code"
+				android:defaultValue=""/>
+
+        <CheckBoxPreference
+				android:key="@string/preferences__lock_ui_switch"
+				android:widgetLayout="@layout/preference_switch_layout"
+                android:title="@string/prefs_title_pin_switch"
+                android:summary="@string/prefs_sum_security_pin"
+                android:defaultValue="false"/>
+
+		<DropDownPreference
+				android:key="@string/preferences__pin_lock_grace_time"
+				android:summary="@string/prefs_sum_pin_grace"
+				android:title="@string/prefs_pin_grace"
+				android:icon="@drawable/ic_timer_outline"
+				android:entries="@array/list_pin_grace_time"
+				android:entryValues="@array/list_pin_grace_time_values"
+				android:dependency="@string/preferences__lock_ui_switch"
+				android:defaultValue="-1"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="@string/prefs_masterkey"
+            android:key="pref_key_masterkey">
+
+        <CheckBoxPreference
+                android:widgetLayout="@layout/preference_switch_layout"
+                android:key="@string/preferences__masterkey_switch"
+                android:title="@string/prefs_title_masterkey_passphrase"
+                android:summary="@string/prefs_sum_passphrase"
+                android:icon="@drawable/ic_key_outline"
+                android:defaultValue="false"/>
+        <Preference
+                android:key="@string/preferences__masterkey_passphrase"
+                android:summary="@string/prefs_masterkey_passphrase"
+                android:title="@string/prefs_title_masterkey_change_passphrase"
+                android:dependency="@string/preferences__masterkey_switch"
+                android:defaultValue=""/>
+        <CheckBoxPreference
+                android:key="@string/preferences__masterkey_notification_newmsg"
+                android:summaryOff="@string/prefs_masterkey_notification_newmsg_off"
+                android:summaryOn="@string/prefs_masterkey_notification_newmsg_on"
+                android:title="@string/prefs_title_masterkey_notification_newmsg"
+                android:dependency="@string/preferences__masterkey_switch"
+                android:defaultValue="true"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Gehucht</string>
+    <string name="village">Dorp</string>
+    <string name="town">Stad</string>
+    <string name="isolated_dwelling">Afgelegen onderkomen</string>
+    <string name="island">Eiland</string>
+    <string name="islet">Eilandje</string>
+    <string name="suburb">Buitenwijk</string>
+    <string name="city">Stad</string>
+    <string name="city_block">Wijk</string>
+    <string name="neighbourhood">Buurt</string>
+    <string name="locality">Plaats</string>
+    <string name="state">Staat/provincie</string>
+    <string name="farm">Boerderij</string>
+    <string name="street">Straat</string>
+    <string name="country">Land</string>
+</resources>

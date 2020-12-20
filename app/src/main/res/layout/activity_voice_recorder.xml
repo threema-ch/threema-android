@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/transparent"
+              android:gravity="bottom"
+              android:orientation="vertical">
+
+	<SeekBar
+		android:id="@+id/seekbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/background_secondary"
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp"
+		android:thumbTint="?attr/colorAccent"
+		android:visibility="gone"
+		android:layout_gravity="bottom"/>
+
+	<RelativeLayout
+		android:id="@+id/bottom_panel"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/compose_bottom_panel_height"
+		android:background="?attr/background_secondary"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:id="@+id/button_layout"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_alignParentLeft="true"
+			android:divider="?android:attr/dividerVertical"
+			android:dividerPadding="12dip"
+			android:orientation="horizontal"
+			android:showDividers="middle">
+
+			<ImageView
+				android:id="@+id/discard_button"
+				android:layout_width="40dp"
+				android:layout_height="@dimen/compose_bottom_panel_height"
+				android:layout_gravity="center_vertical"
+				android:background="?android:selectableItemBackground"
+				android:clickable="true"
+				android:contentDescription="@string/discard"
+				android:focusable="true"
+				android:nextFocusRight="@+id/play_button"
+				android:scaleType="centerInside"
+				app:srcCompat="@drawable/ic_delete_outline"
+				app:tint="?attr/textColorSecondary" />
+
+			<ImageView
+				android:id="@+id/play_button"
+				android:layout_width="40dp"
+				android:layout_height="@dimen/compose_bottom_panel_height"
+				android:layout_gravity="center_vertical"
+				android:background="?android:selectableItemBackground"
+				android:clickable="true"
+				android:contentDescription="@string/play"
+				android:focusable="true"
+				android:nextFocusRight="@+id/pause_button"
+				android:scaleType="centerInside"
+				app:srcCompat="@drawable/ic_stop"
+				app:tint="?attr/textColorSecondary" />
+
+			<ImageView
+				android:id="@+id/pause_button"
+				android:layout_width="40dp"
+				android:layout_height="@dimen/compose_bottom_panel_height"
+				android:layout_gravity="center_vertical"
+				android:background="?android:selectableItemBackground"
+				android:clickable="true"
+				android:contentDescription="@string/pause"
+				android:focusable="true"
+				android:nextFocusRight="@+id/send_button"
+				android:scaleType="centerInside"
+				app:srcCompat="@drawable/ic_pause"
+				app:tint="?attr/textColorSecondary" />
+
+		</LinearLayout>
+
+		<FrameLayout
+			android:id="@+id/timer_container"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="8dp"
+			android:layout_toRightOf="@id/button_layout">
+
+		<com.google.android.material.card.MaterialCardView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			app:contentPaddingTop="2dp"
+			app:contentPaddingBottom="4dp"
+			app:contentPaddingLeft="2dp"
+			app:contentPaddingRight="2dp"
+			app:cardCornerRadius="4dp"
+			app:cardMaxElevation="0dp"
+			app:cardElevation="0dp"
+			app:cardBackgroundColor="?attr/cardview_background"
+			app:strokeWidth="0dp"
+			app:cardUseCompatPadding="true">
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				android:id="@+id/timer_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_marginLeft="8dp"
+				android:text="00:00"
+				android:textColor="?attr/textColorPrimary"
+				android:textSize="22sp"/>
+
+			<ImageView
+				android:id="@+id/record_image"
+				style="@android:style/Widget.Holo.Light.Button.Borderless.Small"
+				android:layout_width="20dp"
+				android:layout_height="20dp"
+				android:layout_gravity="center_vertical"
+				android:clickable="false"
+				android:contentDescription="@string/recording"
+				android:drawablePadding="0dip"
+				android:focusable="false"
+				android:scaleType="centerInside"
+				app:srcCompat="@drawable/ic_record"/>
+
+		</LinearLayout>
+
+		</com.google.android.material.card.MaterialCardView>
+
+		</FrameLayout>
+
+		<ImageView
+			android:id="@+id/bluetooth_toggle"
+			android:contentDescription="Bluetooth"
+			android:layout_height="@dimen/compose_bottom_panel_height"
+			android:layout_width="40dp"
+			android:layout_centerVertical="true"
+			android:layout_toRightOf="@id/timer_container"
+			android:background="?android:selectableItemBackground"
+			android:scaleType="centerInside"
+			app:srcCompat="@drawable/ic_bluetooth_searching_24dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:visibility="invisible"
+			app:tint="?attr/textColorSecondary" />
+
+		<ImageView
+			android:id="@+id/send_button"
+			android:layout_width="@dimen/compose_bottom_panel_height"
+			android:layout_height="@dimen/compose_bottom_panel_height"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:background="?android:selectableItemBackground"
+			android:clickable="true"
+			android:contentDescription="@string/send"
+			android:focusable="true"
+			android:scaleType="centerInside"
+			app:srcCompat="@drawable/ic_send_circle_outline"
+			app:tint="?attr/textColorSecondary" />
+
+	</RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:background="@android:color/transparent">
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/card_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="8dp"
+		android:layout_marginTop="12dp"
+		android:layout_marginRight="8dp"
+		android:layout_marginBottom="16dp"
+		app:cardBackgroundColor="?attr/background_identity_popup"
+		app:cardElevation="0dp"
+		app:contentPaddingBottom="2dp"
+		app:contentPaddingLeft="16dp"
+		app:contentPaddingRight="16dp"
+		app:contentPaddingTop="10dp">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/inner_frame"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent">
+
+			<TextView
+				android:id="@+id/identity_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="16dp"
+				android:contentDescription="@string/my_id"
+				android:text="ABCDEFGH"
+				android:textColor="?attr/textColorPrimary"
+				android:textSize="24dp"
+				app:layout_constraintBottom_toTopOf="@+id/scan_button"
+				app:layout_constraintLeft_toLeftOf="@+id/qr_image" />
+
+			<ImageView
+				android:id="@+id/share_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="5dp"
+				android:background="@drawable/selector_compose_button"
+				android:clickable="true"
+				android:contentDescription="@string/share_via"
+				android:focusable="true"
+				android:padding="4dp"
+				android:tint="?attr/textColorSecondary"
+				app:layout_constraintLeft_toRightOf="@+id/identity_label"
+				app:layout_constraintTop_toTopOf="@+id/identity_label"
+				app:srcCompat="@drawable/ic_share_outline" />
+
+			<ImageView
+				android:id="@+id/qr_image"
+				android:layout_width="100dp"
+				android:layout_height="100dp"
+				android:adjustViewBounds="false"
+				android:clickable="true"
+				android:contentDescription="@string/qr_code"
+				android:focusable="true"
+				android:foreground="?selectableItemBackground"
+				android:scaleType="fitCenter"
+				app:layout_constraintBottom_toTopOf="@+id/web_enable"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/identity_label" />
+
+			<com.google.android.material.chip.Chip
+				android:id="@+id/scan_button"
+				style="@style/Threema.Chip.Outline.Action.WithIcon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="16dp"
+				android:gravity="center_vertical"
+				android:text="@string/scan_id"
+				app:chipIcon="@drawable/ic_qr_code_scan"
+				app:ensureMinTouchTargetSize="false"
+				app:layout_constraintVertical_chainStyle="packed"
+				app:layout_constraintLeft_toRightOf="@+id/qr_image"
+				app:layout_constraintTop_toTopOf="@+id/qr_image"
+				app:layout_constraintBottom_toTopOf="@+id/profile_button" />
+
+			<com.google.android.material.chip.Chip
+				android:id="@+id/profile_button"
+				style="@style/Threema.Chip.Outline.Action.WithIcon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="16dp"
+				android:gravity="center_vertical"
+				android:text="@string/my_profile"
+				app:chipIcon="@drawable/ic_profile"
+				app:ensureMinTouchTargetSize="false"
+				app:layout_constraintTop_toBottomOf="@+id/scan_button"
+				app:layout_constraintLeft_toLeftOf="@+id/scan_button"
+				app:layout_constraintBottom_toBottomOf="@+id/qr_image" />
+
+			<!-- material switch currently has themeing problems -->
+
+			<androidx.appcompat.widget.SwitchCompat
+				android:id="@+id/web_enable"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:contentDescription="@string/webclient_enable"
+				app:ensureMinTouchTargetSize="false"
+				app:layout_constraintBaseline_toBaselineOf="@+id/web_label"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:switchPadding="0dp" />
+
+			<TextView
+				android:id="@+id/web_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="3dp"
+				android:paddingTop="6dp"
+				android:paddingBottom="6dp"
+				android:paddingLeft="2dp"
+				android:paddingRight="2dp"
+				android:background="?selectableItemBackground"
+				android:clickable="true"
+				android:focusable="true"
+				android:text="@string/webclient"
+				android:textAppearance="@style/Threema.TextAppearance.Body2"
+				app:layout_constraintTop_toBottomOf="@id/qr_image"
+				app:layout_constraintLeft_toRightOf="@+id/web_enable" />
+
+			<androidx.constraintlayout.widget.Group
+				android:id="@+id/web_controls"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:visibility="visible"
+				app:constraint_referenced_ids="web_enable, web_label" />
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+	</com.google.android.material.card.MaterialCardView>
+
+	<!-- arrow -->
+
+	<ImageView
+		android:layout_width="@dimen/identity_popup_arrow_width"
+		android:layout_height="14dp"
+		android:layout_gravity="left|top"
+		android:layout_marginLeft="@dimen/identity_popup_arrow_margin_left"
+		android:scaleType="fitXY"
+		android:tint="?attr/background_identity_popup"
+		app:srcCompat="@drawable/triangle_up" />
+
+</FrameLayout>

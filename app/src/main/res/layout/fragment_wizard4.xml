@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingTop="@dimen/wizard_contents_padding"
+				android:paddingBottom="@dimen/wizard_contents_padding">
+
+	<ch.threema.app.ui.TextViewRobotoMedium
+			style="@style/WizardTitleText"
+			android:id="@+id/wizard_welcome"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_find_friends"
+			android:layout_marginTop="8dp"/>
+
+	<TextView
+			style="@style/WizardSubTitleText"
+			android:id="@+id/scooter"
+			android:layout_below="@id/wizard_welcome"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_sync_contacts_explain"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"/>
+
+	<androidx.appcompat.widget.SwitchCompat
+			style="@style/WizardSwitch"
+			android:id="@+id/wizard_switch_sync_contacts"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/scooter"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"
+			android:checked="true"
+			android:enabled="true"
+			android:text="@string/prefs_title_sync_contacts"/>
+
+	<TextView
+		android:id="@+id/disabled_by_policy"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="4dp"
+		android:layout_below="@+id/wizard_switch_sync_contacts"
+		android:textSize="14sp"
+		android:text="@string/disabled_by_policy"
+		android:visibility="gone"/>
+
+</RelativeLayout>

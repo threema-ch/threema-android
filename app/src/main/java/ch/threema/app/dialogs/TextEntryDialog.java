@@ -1,0 +1,319 @@
+/*  _____ _
+ * |_   _| |_  _ _ ___ ___ _ __  __ _
+ *   | | | ' \| '_/ -_) -_) '  \/ _` |_
+ *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
+ *
+ * Threema for Android
+ * Copyright (c) 2014-2020 Threema GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package ch.threema.app.dialogs;
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.os.Build;
+import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialog;
+import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.LocaleService;
+import ch.threema.app.utils.DialogUtil;
+import ch.threema.client.ProtocolDefines;
+
+public class TextEntryDialog extends ThreemaDialogFragment {
+	private TextEntryDialogClickListener callback;
+	private Activity activity;
+	private AlertDialog alertDialog;
+	private LocaleService localeService;
+	private int inputFilterType, minLength = 0;
+
+	public static int INPUT_FILTER_TYPE_NONE = 0;
+	public static int INPUT_FILTER_TYPE_IDENTITY = 1;
+	public static int INPUT_FILTER_TYPE_PHONE = 2;
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int neutral, @StringRes int negative,
+	                                          String text, int inputType, int inputFilterType) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("neutral", neutral);
+		args.putInt("negative", negative);
+		args.putString("text", text);
+		args.putInt("inputType", inputType);
+		args.putInt("inputFilterType", inputFilterType);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int neutral, @StringRes int negative,
+	                                          String text, int inputType, int inputFilterType, int maxLength) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("neutral", neutral);
+		args.putInt("negative", negative);
+		args.putString("text", text);
+		args.putInt("inputType", inputType);
+		args.putInt("inputFilterType", inputFilterType);
+		args.putInt("maxLength", maxLength);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int negative,
+	                                          String text, int inputType, int inputFilterType) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putString("text", text);
+		args.putInt("inputType", inputType);
+		args.putInt("inputFilterType", inputFilterType);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int negative,
+	                                          int maxLines, int maxLength) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putInt("maxLines", maxLines);
+		args.putInt("maxLength", maxLength);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int negative,
+	                                          int maxLines, int maxLength, int minLength) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putInt("maxLines", maxLines);
+		args.putInt("maxLength", maxLength);
+		args.putInt("minLength", minLength);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public interface TextEntryDialogClickListener {
+		void onYes(String tag, String text);
+		void onNo(String tag);
+		void onNeutral(String tag);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if (callback == null) {
+			try {
+				callback = (TextEntryDialogClickListener) getTargetFragment();
+			} catch (ClassCastException e) {
+				//
+			}
+
+			// called from an activity rather than a fragment
+			if (callback == null) {
+				if (activity instanceof TextEntryDialogClickListener) {
+					callback = (TextEntryDialogClickListener) activity;
+				}
+			}
+		}
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			localeService = ThreemaApplication.getServiceManager().getLocaleService();
+		}
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		this.activity = activity;
+	}
+
+	@Override
+	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+		int title = getArguments().getInt("title");
+		int message = getArguments().getInt("message");
+		int positive = getArguments().getInt("positive");
+		int neutral = getArguments().getInt("neutral");
+		int negative = getArguments().getInt("negative");
+		String text = getArguments().getString("text", "");
+		int inputType = getArguments().getInt("inputType");
+		inputFilterType = getArguments().getInt("inputFilterType", 0);
+		int maxLength = getArguments().getInt("maxLength", 0);
+		int maxLines = getArguments().getInt("maxLines", 0);
+		minLength = getArguments().getInt("minLength", 0);
+
+		final String tag = this.getTag();
+
+		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry, null);
+
+		final EmojiEditText editText = dialogView.findViewById(R.id.edit_text);
+		final TextInputLayout editTextLayout = dialogView.findViewById(R.id.text_input_layout);
+
+		editText.setText(text);
+		if (text != null && text.length() > 0) {
+			editText.setSelection(text.length());
+		}
+
+		if (inputType != 0) {
+			editText.setInputType(inputType);
+		}
+
+		if (maxLength > 0) {
+			editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+		}
+
+		if (maxLines > 1) {
+			editText.setSingleLine(false);
+			editText.setMaxLines(maxLines);
+		}
+
+		editText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				ThreemaApplication.activityUserInteract(activity);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (minLength > 0) {
+					alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(s != null && s.length() >= minLength);
+				}
+			}
+		});
+
+		if (inputFilterType == INPUT_FILTER_TYPE_IDENTITY) {
+			editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
+		} else if (inputFilterType == INPUT_FILTER_TYPE_PHONE && localeService != null) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
+			} else {
+				editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+			}
+			editText.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(localeService.validatePhoneNumber(s.toString()));
+				}
+			});
+		}
+
+		if (message != 0) {
+			editTextLayout.setHint(getString(message));
+		}
+
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+		builder.setView(dialogView);
+
+		if (title != 0) {
+			builder.setTitle(title);
+		}
+
+		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								callback.onYes(tag, editText.getText().toString());
+							}
+				}
+		);
+		builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+								callback.onNo(tag);
+							}
+						}
+				);
+		if (neutral != 0) {
+			builder.setNeutralButton(getString(neutral),
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							callback.onNeutral(tag);
+						}
+					}
+			);
+		}
+
+		alertDialog = builder.create();
+
+		return alertDialog;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+
+		alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
+		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
+
+		if (inputFilterType == INPUT_FILTER_TYPE_PHONE || minLength > 0) {
+			alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+		}
+
+		Button neutral = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+		if (neutral != null) {
+			neutral.setTextColor(colorStateList);
+		}
+	}
+}

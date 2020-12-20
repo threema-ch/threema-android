@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:background="@drawable/call_activity_slider_background">
+
+	<ImageView
+		android:id="@+id/button_incoming_call_decline"
+		android:layout_width="@dimen/incoming_call_widget_circle_size"
+		android:layout_height="@dimen/incoming_call_widget_circle_size"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="5dp"
+		android:background="@drawable/ic_circle_lockscreen_semi"
+		android:clickable="false"
+		android:contentDescription="@string/voip_reject"
+		android:scaleType="center"
+		app:srcCompat="@drawable/ic_call_end_outline"
+		android:tint="@color/voip_end_call_tint"/>
+
+	<ImageView
+		android:id="@+id/button_incoming_call_answer"
+		android:layout_width="@dimen/incoming_call_widget_circle_size"
+		android:layout_height="@dimen/incoming_call_widget_circle_size"
+		android:layout_alignParentRight="true"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="5dp"
+		android:background="@drawable/ic_circle_lockscreen_semi"
+		android:clickable="false"
+		android:contentDescription="@string/voip_accept"
+		android:scaleType="center"
+		app:srcCompat="@drawable/ic_phone_locked_outline"
+		android:tint="@color/voip_accept_call_tint"/>
+
+	<View
+		android:id="@+id/dummy"
+		android:layout_width="@dimen/incoming_call_widget_circle_size"
+		android:layout_height="@dimen/incoming_call_widget_circle_size"
+		android:layout_centerInParent="true"
+		android:visibility="invisible"/>
+
+	<ImageView
+		android:id="@+id/decline_arrow0"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toLeftOf="@id/dummy"
+		android:layout_centerVertical="true"
+		android:scaleX="-1"
+		android:tint="@android:color/white"
+		android:src="@drawable/ic_next_alpha"/>
+
+	<ImageView
+		android:id="@+id/decline_arrow1"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toLeftOf="@id/dummy"
+		android:layout_marginRight="9dp"
+		android:layout_centerVertical="true"
+		android:scaleX="-1"
+		android:tint="@android:color/white"
+		android:src="@drawable/ic_next_alpha"/>
+
+	<ImageView
+		android:id="@+id/decline_arrow2"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toLeftOf="@id/dummy"
+		android:layout_marginRight="18dp"
+		android:layout_centerVertical="true"
+		android:scaleX="-1"
+		android:tint="@android:color/white"
+		android:src="@drawable/ic_next_alpha"/>
+
+	<ImageView
+		android:id="@+id/answer_arrow0"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toRightOf="@id/dummy"
+		android:layout_centerVertical="true"
+		android:tint="@android:color/white"
+		android:src="@drawable/ic_next_alpha"/>
+
+	<ImageView
+		android:id="@+id/answer_arrow1"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toRightOf="@id/dummy"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="9dp"
+		android:tint="@android:color/white"
+		android:src="@drawable/ic_next_alpha"/>
+
+	<ImageView
+		android:id="@+id/answer_arrow2"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_toRightOf="@id/dummy"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="18dp"
+		android:tint="@android:color/white"
+		android:src="@drawable/ic_next_alpha"/>
+
+</RelativeLayout>

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package common;
+
+option java_package = "ch.threema.protobuf";
+
+// Threema Blob to be uploaded/downloaded from the Blob server.
+message Blob {
+  // Blob ID as given by the Blob server
+  bytes id = 1;
+
+  // Nonce used for encrypting/decrypting the Blob.
+  // Note: May be omitted if unambigously defined by the context.
+  bytes nonce = 2;
+
+  // Secret (or public) key used for encrypting/decrypting the Blob.
+  // Note: May be omitted if unambigously defined by the context.
+  bytes key = 3;
+}
+
+// Generic image.
+message Image {
+  // Format type of the image
+  enum Type {
+    JPEG = 0;
+  }
+  Type type = 1;
+
+  // The image's source
+  oneof source {
+    // The image's data needs to be downloaded from the Blob server
+    Blob blob = 2;
+
+    // The image's data is inlined.
+    // Note: This MUST only be used when explicitly allowed.
+    //       Almost always use a global/device group shared Blob instead!
+    bytes data = 3;
+  }
+}
+
+// Unique group identity.
+message GroupIdentity {
+  // Group id as chosen by the group's creator
+  fixed64 group_id = 1;
+
+  // Threema ID of the group's creator
+  string creator_identity = 2;
+}
+

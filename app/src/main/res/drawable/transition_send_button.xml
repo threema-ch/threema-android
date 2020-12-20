@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<!-- Note: Android 4 does not like vector drawables here -->
+<transition xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:drawable="@drawable/ic_send_grey600_24dp"/>
+	<item android:drawable="@drawable/ic_keyboard_voice_grey600_24dp"/>
+</transition>

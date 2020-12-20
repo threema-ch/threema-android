@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:paddingTop="@dimen/dialog_margin_below_title">
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/text_input_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:endIconMode="clear_text"
+		android:paddingLeft="@dimen/edittext_padding"
+		android:paddingRight="@dimen/edittext_padding">
+
+		<ch.threema.app.emojis.EmojiEditText
+			android:id="@+id/edit_text"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:singleLine="true">
+			<requestFocus />
+		</ch.threema.app.emojis.EmojiEditText>
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+</FrameLayout>

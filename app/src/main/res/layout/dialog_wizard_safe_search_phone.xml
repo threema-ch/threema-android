@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:padding="@dimen/wizard_contents_padding">
+
+	<TextView
+		style="@style/WizardSmallText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:gravity="center_horizontal"
+		android:text="@string/safe_search_id_title"/>
+
+	<LinearLayout
+		android:id="@+id/safe_phone_layout"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/wizard_default_view_height"
+		android:layout_marginTop="16dp"
+		android:orientation="horizontal">
+
+		<ImageView
+			style="@style/WizardEditTextIcon"
+			android:layout_width="@dimen/wizard_default_view_height"
+			android:layout_height="@dimen/wizard_default_view_height"
+			app:srcCompat="@drawable/ic_call_outline"/>
+
+		<ch.threema.app.emojis.EmojiEditText
+			android:id="@+id/safe_phone"
+			style="@style/WizardEditText"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/wizard_default_view_height"
+			android:hint="@string/linked_mobile"
+			android:inputType="phone"
+			/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/safe_email_layout"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/wizard_default_view_height"
+		android:layout_marginTop="16dp"
+		android:orientation="horizontal">
+
+		<ImageView
+			style="@style/WizardEditTextIcon"
+			android:layout_width="@dimen/wizard_default_view_height"
+			android:layout_height="@dimen/wizard_default_view_height"
+			app:srcCompat="@drawable/ic_email_outline"/>
+
+		<ch.threema.app.emojis.EmojiEditText
+			android:id="@+id/safe_email"
+			style="@style/WizardEditText"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/wizard_default_view_height"
+			android:hint="@string/linked_email"
+			android:inputType="textEmailAddress"
+			/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="32dp"
+		android:orientation="horizontal">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/cancel"
+			style="@style/WizardButtonInverse"
+			android:layout_width="wrap_content"
+			android:layout_marginRight="4dp"
+			android:layout_weight="1"
+			android:text="@string/cancel"/>
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/ok"
+			style="@style/WizardButtonRegular"
+			android:layout_width="wrap_content"
+			android:layout_marginLeft="4dp"
+			android:layout_weight="1"
+			android:text="@string/ok"/>
+
+	</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Aldeia</string>
+    <string name="village">Vila</string>
+    <string name="town">Cidade</string>
+    <string name="isolated_dwelling">Moradia isolada</string>
+    <string name="island">Ilha</string>
+    <string name="islet">Ilhota</string>
+    <string name="suburb">Subúrbio</string>
+    <string name="city">Cidade</string>
+    <string name="city_block">Quadra urbana</string>
+    <string name="neighbourhood">Bairro</string>
+    <string name="locality">Localidade</string>
+    <string name="state">Estado</string>
+    <string name="farm">Fazenda</string>
+    <string name="street">Rua</string>
+    <string name="country">País</string>
+</resources>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+												 xmlns:app="http://schemas.android.com/apk/res-auto"
+												 android:id="@+id/main_content"
+												 android:layout_width="match_parent"
+												 android:layout_height="match_parent"
+												 android:orientation="vertical">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/avatar_container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:clickable="true"
+		android:focusable="true"
+		app:cardBackgroundColor="?attr/cardview_background"
+		app:cardCornerRadius="@dimen/cardview_border_radius"
+		app:cardElevation="3dp"
+		app:contentPaddingBottom="16dp"
+		app:contentPaddingLeft="15dp"
+		app:contentPaddingRight="15dp"
+		app:contentPaddingTop="12dp">
+
+	<TextView
+		android:id="@+id/text_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+		android:text="Title"/>
+
+	</com.google.android.material.card.MaterialCardView>
+
+	<androidx.core.widget.NestedScrollView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+			android:layout_marginRight="@dimen/tablet_additional_padding_left_right">
+
+		<HorizontalScrollView
+				android:id="@+id/horizontalScrollView1"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:layout_gravity="center_horizontal"
+				android:scrollbarStyle="insideOverlay"
+				android:scrollbarSize="@dimen/scrollbar_size"
+				android:layout_marginTop="4dp"
+				android:layout_marginBottom="4dp">
+
+			<TableLayout
+					android:id="@+id/matrix_data"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingLeft="8dp"
+					android:paddingRight="8dp"
+					android:paddingTop="4dp"
+					android:paddingBottom="4dp"
+					android:baselineAligned="true">
+
+				<TableRow
+						android:id="@+id/header_row_name"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content">
+
+					<View
+							android:layout_width="match_parent"
+							android:layout_height="match_parent">
+					</View>
+
+					<View
+							android:layout_width="match_parent"
+							android:layout_height="match_parent">
+					</View>
+
+					<include layout="@layout/row_cell_ballot_matrix_name"/>
+					<include layout="@layout/row_cell_ballot_matrix_name"/>
+
+				</TableRow>
+
+				<TableRow
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content">
+
+					<include layout="@layout/row_cell_ballot_matrix_choice_label"/>
+					<include layout="@layout/row_cell_ballot_matrix_choice_sum"/>
+					<include layout="@layout/row_cell_ballot_matrix_choice"/>
+					<include layout="@layout/row_cell_ballot_matrix_choice"/>
+				</TableRow>
+				<TableRow
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content">
+
+					<include layout="@layout/row_cell_ballot_matrix_choice_label"/>
+					<include layout="@layout/row_cell_ballot_matrix_choice_sum"/>
+					<include layout="@layout/row_cell_ballot_matrix_choice"/>
+					<include layout="@layout/row_cell_ballot_matrix_choice"/>
+				</TableRow>
+
+			</TableLayout>
+
+		</HorizontalScrollView>
+
+	</androidx.core.widget.NestedScrollView>
+
+	</LinearLayout>

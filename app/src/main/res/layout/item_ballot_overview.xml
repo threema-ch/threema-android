@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:custom="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/item_container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/messagelist_item_height"
+                android:background="@drawable/listitem_background_selector"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/tablet_additional_padding_left_right"
+                android:paddingRight="@dimen/tablet_additional_padding_left_right">
+
+	<ch.threema.app.ui.AvatarView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:layout_marginLeft="16dp"
+		android:layout_centerVertical="true"
+		android:foreground="@drawable/selector_avatar"
+		android:clickable="true"
+		android:contentDescription="@string/show_contact"
+		/>
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/avatar_view"
+		android:layout_centerVertical="true"
+		android:paddingLeft="@dimen/listitem_standard_margin_left_right"
+		android:paddingRight="@dimen/listitem_standard_margin_left_right">
+
+		<ch.threema.app.emojis.EmojiConversationTextView
+			android:id="@+id/ballot_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_marginRight="5dip"
+			android:layout_toLeftOf="@+id/ballot_state"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:text="Name"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textColor="?android:textColorPrimary"/>
+
+		<TextView
+			android:id="@+id/ballot_state"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignBaseline="@id/ballot_name"
+			android:layout_alignParentRight="true"
+			android:ellipsize="none"
+			android:fontFamily="sans-serif-light"
+			android:singleLine="true"
+			android:text="open"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/ballot_creator"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_below="@id/ballot_name"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:text="~ECHOECHO"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/ballot_creator_spacer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignBaseline="@id/ballot_creator"
+			android:layout_marginLeft="5dip"
+			android:layout_marginRight="5dip"
+			android:layout_toRightOf="@id/ballot_creator"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:text="-"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<TextView
+			android:id="@+id/ballot_creation_date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignBaseline="@id/ballot_creator"
+			android:layout_toLeftOf="@+id/ballot_updates"
+			android:layout_toRightOf="@id/ballot_creator_spacer"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:text="12.12.1212"
+			android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+		<ch.threema.app.ui.CountBoxView
+			android:id="@+id/ballot_updates"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignBaseline="@+id/ballot_creator"
+			android:layout_alignParentRight="true"
+			custom:backgroundOverride="?attr/count_box_background_accent"/>
+
+	</RelativeLayout>
+</RelativeLayout>

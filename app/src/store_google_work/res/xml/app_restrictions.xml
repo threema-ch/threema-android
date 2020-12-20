@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+	<restriction
+		android:description="@string/restriction_license_username_desc"
+		android:key="th_license_username"
+		android:restrictionType="string"
+		android:title="@string/restriction_license_username"/>
+
+	<restriction
+		android:description="@string/restriction_license_password_desc"
+		android:key="th_license_password"
+		android:restrictionType="string"
+		android:title="@string/restriction_license_password"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_nickname_desc"
+		android:key="th_nickname"
+		android:restrictionType="string"
+		android:title="@string/restriction_nickname"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_firstname_desc"
+		android:key="th_firstname"
+		android:restrictionType="string"
+		android:title="@string/restriction_firstname"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_lastname_desc"
+		android:key="th_lastname"
+		android:restrictionType="string"
+		android:title="@string/restriction_lastname"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_csi_desc"
+		android:key="th_csi"
+		android:restrictionType="string"
+		android:title="@string/restriction_csi"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_category_desc"
+		android:key="th_category"
+		android:restrictionType="string"
+		android:title="@string/restriction_category"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_email_desc"
+		android:key="th_linked_email"
+		android:restrictionType="string"
+		android:title="@string/restriction_email"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_phone_desc"
+		android:key="th_linked_phone"
+		android:restrictionType="string"
+		android:title="@string/restriction_phone"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_contact_sync_desc"
+		android:key="th_contact_sync"
+		android:restrictionType="bool"
+		android:title="@string/restriction_contact_sync"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_readonly_profile_desc"
+		android:key="th_readonly_profile"
+		android:restrictionType="bool"
+		android:title="@string/restriction_readonly_profile"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_block_unknown_desc"
+		android:key="th_block_unknown"
+		android:restrictionType="bool"
+		android:title="@string/restriction_block_unknown"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_id_backup_desc"
+		android:key="th_id_backup"
+		android:restrictionType="string"
+		android:title="@string/restriction_id_backup"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_id_backup_password_desc"
+		android:key="th_id_backup_password"
+		android:restrictionType="string"
+		android:title="@string/restriction_id_backup_password"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_save_to_gallery_desc"
+		android:key="th_disable_save_to_gallery"
+		android:restrictionType="bool"
+		android:title="@string/restriction_save_to_gallery"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_screenshots_desc"
+		android:key="th_disable_screenshots"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_screenshots"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_add_contact_desc"
+		android:key="th_disable_add_contact"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_add_contact"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_backups_desc"
+		android:key="th_disable_backups"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_backups"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_export_desc"
+		android:key="th_disable_export"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_export"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_message_preview_desc"
+		android:key="th_disable_message_preview"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_message_preview"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_send_profile_picture_desc"
+		android:key="th_disable_send_profile_picture"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_send_profile_picture"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_calls_desc"
+		android:key="th_disable_calls"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_calls"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_skip_wizard_desc"
+		android:key="th_skip_wizard"
+		android:restrictionType="bool"
+		android:title="@string/restriction_skip_wizard"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_create_group_desc"
+		android:key="th_disable_create_group"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_create_group"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_safe_enable_desc"
+		android:key="th_safe_enable"
+		android:restrictionType="bool"
+		android:title="@string/restriction_safe_enable"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_server_url_desc"
+		android:key="th_safe_server_url"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_server_url"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_server_username_desc"
+		android:key="th_safe_server_username"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_server_username"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_server_password_desc"
+		android:key="th_safe_server_password"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_server_password"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_password_desc"
+		android:key="th_safe_password"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_password"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_safe_restore_enable_desc"
+		android:key="th_safe_restore_enable"
+		android:restrictionType="bool"
+		android:title="@string/restriction_safe_restore_enable"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_restore_id_desc"
+		android:key="th_safe_restore_id"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_restore_id"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_web_desc"
+		android:key="th_disable_web"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_web"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_id_export_desc"
+		android:key="th_disable_id_export"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_id_export"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_data_backups_desc"
+		android:key="th_disable_data_backups"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_data_backups"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_hide_inactive_ids_desc"
+		android:key="th_hide_inactive_ids"
+		android:restrictionType="bool"
+		android:title="@string/restriction_hide_inactive_ids"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_web_hosts_desc"
+		android:key="th_web_hosts"
+		android:restrictionType="string"
+		android:title="@string/restriction_web_hosts"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_share_media_desc"
+		android:key="th_disable_share_media"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_share_media"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_password_pattern_desc"
+		android:key="th_safe_password_pattern"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_password_pattern"/>
+
+	<restriction
+		android:defaultValue=""
+		android:description="@string/restriction_safe_password_message_desc"
+		android:key="th_safe_password_message"
+		android:restrictionType="string"
+		android:title="@string/restriction_safe_password_message"/>
+
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_video_calls_desc"
+		android:key="th_disable_video_calls"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_video_calls"/>
+
+</restrictions>

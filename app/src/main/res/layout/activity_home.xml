@@ -1,0 +1,55 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/main_content"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".activities.HomeActivity"
+	android:visibility="invisible">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<include layout="@layout/toolbar_home"/>
+
+			<include layout="@layout/connection_indicator"/>
+
+		</FrameLayout>
+
+		<include layout="@layout/view_sms_notice"/>
+
+		<include layout="@layout/view_ongoing_call_notice"/>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<include
+		layout="@layout/content_home"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"
+		app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/appbar"/>
+
+	<com.google.android.material.bottomnavigation.BottomNavigationView
+		android:id="@+id/bottom_navigation"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:menu="@menu/activity_home_bottom_navigation"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

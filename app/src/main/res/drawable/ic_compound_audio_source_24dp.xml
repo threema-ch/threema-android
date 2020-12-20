@@ -1,0 +1,43 @@
+<layer-list
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+		android:id="@+id/compoundBackgroundItem"
+		android:drawable="@drawable/ripple_call_button"/>
+
+	<!-- TODO tinting is ineffective with vector drawables - find another way -->
+	<item android:id="@+id/moreIndicatorItem">
+		<bitmap
+			android:gravity="center"
+			android:src="@drawable/ic_toolbar_arrow_whitespace"
+			android:tint="@android:color/white"/>
+	</item>
+
+	<item android:id="@+id/bluetoothItem">
+		<bitmap
+			android:gravity="center"
+			android:src="@drawable/ic_bluetooth_searching_24dp"
+			android:tint="@android:color/white"/>
+	</item>
+
+	<item android:id="@+id/handsetItem">
+		<bitmap
+			android:gravity="center"
+			android:src="@drawable/ic_phone_in_talk_24dp"
+			android:tint="@android:color/white"/>
+	</item>
+
+	<item android:id="@+id/headsetItem">
+		<bitmap
+			android:gravity="center"
+			android:src="@drawable/ic_headset_mic_24dp"
+			android:tint="@android:color/white"/>
+	</item>
+
+	<item android:id="@+id/speakerphoneItem">
+		<bitmap
+			android:gravity="center"
+			android:src="@drawable/ic_volume_up_24dp"
+			android:tint="@android:color/white"/>
+	</item>
+
+</layer-list>

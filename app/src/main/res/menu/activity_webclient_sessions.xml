@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/menu_clear_all"
+		android:enabled="true"
+		android:orderInCategory="30"
+		android:title="@string/webclient_clear_all_sessions"
+		app:showAsAction="never"
+		/>
+
+	<item
+		android:id="@+id/menu_help"
+		android:enabled="true"
+		android:orderInCategory="50"
+		android:title="@string/support"
+		app:showAsAction="never"
+		/>
+
+</menu>

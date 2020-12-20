@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+         avatar on left
+-->
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/msg_list_item_recv"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+	android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+	android:paddingRight="@dimen/chat_bubble_container_padding_left_right"
+	android:descendantFocusability="blocksDescendants"
+	android:clickable="false"
+	>
+
+	<FrameLayout
+			android:id="@+id/message_block"
+			android:minHeight="@dimen/avatar_size_mini"
+			android:alpha="0.9"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:paddingLeft="@dimen/chat_bubble_border_padding_arrow"
+			android:paddingTop="@dimen/chat_bubble_border_padding"
+			android:paddingBottom="@dimen/chat_bubble_border_padding"
+			android:paddingRight="@dimen/chat_bubble_border_padding"
+			android:background="?chat_bubble_recv"
+			android:contentDescription="@string/is_typing">
+
+		<ch.threema.app.ui.TypingIndicatorImageView
+				android:layout_width="24dp"
+				android:layout_height="24dp"
+				android:layout_marginLeft="4dp"
+				android:layout_marginRight="4dp"
+				android:layout_gravity="center"
+				android:visibility="visible"/>
+
+	</FrameLayout>
+</FrameLayout>

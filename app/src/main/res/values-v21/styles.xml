@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="Theme.Threema.VoiceRecorder" parent="AppBaseTheme">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:windowContentOverlay">@null</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:backgroundDimEnabled">true</item>
+		<item name="android:windowFullscreen">false</item>
+		<item name="android:statusBarColor">@android:color/transparent</item>
+		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
+		<item name="background_secondary">@color/activity_background_secondary</item>
+		<item name="colorAccent">@color/accent_light</item>
+	</style>
+
+	<style name="Theme.Threema.VoiceRecorder.Dark" parent="AppBaseTheme.Dark">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:windowContentOverlay">@null</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:backgroundDimEnabled">true</item>
+		<item name="android:windowFullscreen">false</item>
+		<item name="android:statusBarColor">@android:color/transparent</item>
+		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
+		<item name="background_secondary">@color/dark_activity_background_secondary</item>
+		<item name="colorAccent">@color/accent_dark</item>
+	</style>
+
+	<style name="Threema.PopupTheme.TransparentStatusbar" parent="ThemeOverlay.MaterialComponents">
+		<item name="android:textColor">?attr/textColorPrimary</item>
+	</style>
+</resources>

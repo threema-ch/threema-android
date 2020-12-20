@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+<animated-vector
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:aapt="http://schemas.android.com/aapt"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:targetApi="21"
+	android:repeatMode="restart">
+
+	<aapt:attr name="android:drawable">
+		<vector
+			android:name="typing_dots"
+			android:width="24dp"
+			android:height="24dp"
+			android:viewportHeight="100"
+			android:viewportWidth="100">
+			<group
+				android:name="dot0">
+				<path
+					android:name="dot0_path"
+					android:fillAlpha="0.0"
+					android:fillColor="#000000"
+					android:pathData="M20,50m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
+			</group>
+			<group
+				android:name="dot1">
+				<path
+					android:name="dot1_path"
+					android:fillAlpha="0.0"
+					android:fillColor="#000000"
+					android:pathData="M50,50m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
+			</group>
+			<group
+				android:name="dot2">
+				<path
+					android:name="dot2_path"
+					android:fillAlpha="0.0"
+					android:fillColor="#000000"
+					android:pathData="M80,50m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
+			</group>
+		</vector>
+	</aapt:attr>
+
+	<target android:name="dot0_path">
+		<aapt:attr name="android:animation">
+			<set android:ordering="sequentially">
+				<objectAnimator
+					android:duration="100"
+					android:interpolator="@android:interpolator/linear"
+					android:propertyName="fillAlpha"
+					android:startOffset="0"
+					android:valueFrom="0f"
+					android:valueTo="0.5f"/>
+				<objectAnimator
+					android:duration="100"
+					android:interpolator="@android:interpolator/linear"
+					android:propertyName="fillAlpha"
+					android:startOffset="300"
+					android:valueFrom="0.5f"
+					android:valueTo="0f"/>
+			</set>
+		</aapt:attr>
+	</target>
+
+	<target android:name="dot1_path">
+		<aapt:attr name="android:animation">
+			<set android:ordering="sequentially">
+				<objectAnimator
+					android:duration="100"
+					android:interpolator="@android:interpolator/linear"
+					android:propertyName="fillAlpha"
+					android:startOffset="300"
+					android:valueFrom="0f"
+					android:valueTo="0.5f"/>
+				<objectAnimator
+					android:duration="100"
+					android:interpolator="@android:interpolator/linear"
+					android:propertyName="fillAlpha"
+					android:startOffset="300"
+					android:valueFrom="0.5f"
+					android:valueTo="0f"/>
+			</set>
+		</aapt:attr>
+	</target>
+
+	<target android:name="dot2_path">
+		<aapt:attr name="android:animation">
+			<set android:ordering="sequentially">
+				<objectAnimator
+					android:duration="100"
+					android:interpolator="@android:interpolator/linear"
+					android:propertyName="fillAlpha"
+					android:startOffset="600"
+					android:valueFrom="0f"
+					android:valueTo="0.5f"/>
+				<objectAnimator
+					android:duration="100"
+					android:interpolator="@android:interpolator/linear"
+					android:propertyName="fillAlpha"
+					android:startOffset="300"
+					android:valueFrom="0.5f"
+					android:valueTo="0f"/>
+			</set>
+		</aapt:attr>
+	</target>
+</animated-vector>

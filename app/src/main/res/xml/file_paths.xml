@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+	<files-path name="tmp_files" path="tmp/"/>
+	<cache-path name="cache_files" path="/"/>
+	<external-path name="ext_files" path="Threema/"/>
+	<external-path name="download_files" path="Download/"/>
+</paths>

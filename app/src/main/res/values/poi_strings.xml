@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+	<string name="hamlet">Hamlet</string>
+	<string name="village">Village</string>
+	<string name="town">Town</string>
+	<string name="isolated_dwelling">Isolated Dwelling</string>
+	<string name="island">Island</string>
+	<string name="islet">Islet</string>
+	<string name="suburb">Suburb</string>
+	<string name="city">City</string>
+	<string name="city_block">City Block</string>
+	<string name="neighbourhood">Neighbourhood</string>
+	<string name="locality">Locality</string>
+	<string name="state">State</string>
+	<string name="farm">Farm</string>
+	<string name="street">Street</string>
+	<string name="country">Country</string>
+</resources>

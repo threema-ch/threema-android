@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Küçük Köy</string>
+    <string name="village">Köy</string>
+    <string name="town">Kasaba</string>
+    <string name="isolated_dwelling">İzole Konut Alanı</string>
+    <string name="island">Ada</string>
+    <string name="islet">Adacık</string>
+    <string name="suburb">Kenar mahalle</string>
+    <string name="city">Kent</string>
+    <string name="city_block">Şehir Bloğu</string>
+    <string name="neighbourhood">Komşuluk</string>
+    <string name="locality">Mekan</string>
+    <string name="state">Durum</string>
+    <string name="farm">Çiftlik</string>
+    <string name="street">Sokak</string>
+    <string name="country">Ülke</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Il code QR è nunvalaivel</string>
+    <string name="webclient_init_session">Iniziar ina nova sesida</string>
+    <string name="webclient_sessions_really_delete">Vuls ti propi stizzar questa sesida da Threema Web?</string>
+    <string name="webclient_last_usage">Utilisà l\'ultima giada: %s</string>
+    <string name="webclient_created_at">Creà: %s (%s)</string>
+    <string name="webclient_active_since">Activ dapi: %s</string>
+    <string name="webclient_enable">Activar Threema Web</string>
+    <string name="webclient_no_sessions_found">Avra il navigatur-web sin tes computer e chargia <b>https://web.threema.ch</b> per sa colliar. Clicca sin il button per scannar il code visualisà.</string>
+    <string name="webclient_session_rename">Dar in auter num a la sesida</string>
+    <string name="webclient_session_label">Nov num</string>
+    <string name="webclient_session_start">Cumenzar la sesida</string>
+    <string name="webclient_session_stop">Terminar la sesida</string>
+    <string name="webclient_persistent">memorisà</string>
+    <string name="webclient_disposable">spert</string>
+    <string name="webclient_unnamed_session">Sesida betg designada</string>
+    <string name="webclient_session_remove">Stizzar la sesida</string>
+    <string name="webclient_welcome_title">Scriver en il chat al computer</string>
+    <string name="webclient_welcome_explain">Cun Threema Web pos ti scriver en il chat a moda cumadaivla al computer u al laptop. Ti has access cumplain a tut ils contacts, las medias ed ils chats, er a conversaziuns pli veglias.\n\n<b>L\'entira communicaziun tranter il telefonin ed il computer è codada cumplettamain da fin a fin</b> e basegna ina colliaziun directa, sche tuts dus apparats sa chattan en la medema rait.\n\nInfurmaziun: Threema Web po duvrar dapli battaria. Ti pos da tut temp activar u deactivar la funcziun.</string>
+    <string name="webclient_launch">Cumenzar Threema Web</string>
+    <string name="webclient_qr_scan_message">Scannescha il code QR che vegn visualisà al computer.</string>
+    <string name="webclient_invalid_qr_code">Il code QR da Threema Web è nunvalaivel</string>
+    <string name="webclient_new_connection_toast">Cumenzà la sesida da Threema Web</string>
+    <string name="webclient_protocol_error">Sbagl da protocol</string>
+    <string name="webclient_protocol_version_to_old">Tia app na sustegna betg questa versiun da Threema Web. P.pl. installar ina versiun pli nova da Threema.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Tia app na sustegna betg questa versiun da Threema Web. P.pl. dumandar l\'administratur da tes Threema Web d\'installar la versiun la pli nova.</string>
+    <string name="webclient_protocol_version_too_new_threema">Tia app na sustegna betg questa versiun da Threema Web. P.pl. duvrar ina versiun pli nova da Threema Web.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Vuls ti cumenzar ussa questa sesida da Threema Web?</string>
+    <string name="webclient_clear_all_sessions">Stizzar tut las sesidas</string>
+    <string name="webclient_clear_all_sessions_confirm">Vuls ti propi stizzar tut las sesidas da Threema Web?</string>
+</resources>

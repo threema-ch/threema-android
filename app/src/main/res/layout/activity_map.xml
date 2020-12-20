@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/coordinator"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fitsSystemWindows="false"
+	android:visibility="invisible">
+
+	<com.mapbox.mapboxsdk.maps.MapView
+		android:id="@+id/map"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		mapbox:mapbox_cameraZoom="4"
+		mapbox:mapbox_uiLogo="false"
+		mapbox:mapbox_uiAttribution="false"
+		mapbox:mapbox_uiCompass="true"
+		mapbox:mapbox_uiCompassFadeFacingNorth="false"
+		mapbox:mapbox_uiCompassGravity="top|right"
+		mapbox:mapbox_uiCompassMarginTop="@dimen/map_compass_margin_top"
+		mapbox:mapbox_uiCompassMarginRight="@dimen/map_compass_margin_right"/>
+
+	<RelativeLayout
+		android:id="@+id/map_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:fitsSystemWindows="true">
+
+		<com.google.android.material.card.MaterialCardView
+			android:id="@+id/cardview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_marginBottom="6dp"
+			android:layout_marginLeft="5dp"
+			android:layout_marginRight="5dp"
+			app:cardElevation="4dp">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:paddingBottom="8dp"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
+				android:paddingTop="10dp">
+
+				<TextView
+					android:id="@+id/location_name"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Location Name"
+					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+
+				<TextView
+					android:id="@+id/location_coordinates"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="2dp"
+					android:text="Coordinates"
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+
+				<com.google.android.material.chip.Chip
+					android:id="@+id/open_chip"
+					style="@style/Widget.MaterialComponents.Chip.Action"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:text="@string/open_in_maps_app"
+					android:textColor="@android:color/white"
+					app:chipBackgroundColor="?attr/colorAccent"
+					app:chipIcon="@drawable/ic_location_on_filled"
+					app:chipIconTint="@android:color/white"
+					app:chipMinHeight="36dp"
+					app:chipCornerRadius="18dp"
+					app:chipStartPadding="8dp"/>
+
+			</LinearLayout>
+
+		</com.google.android.material.card.MaterialCardView>
+
+		<ch.threema.app.ui.VerticalTextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_above="@+id/cardview"
+			android:layout_alignParentLeft="true"
+			android:layout_marginBottom="16dp"
+			android:background="#AAFFFFFF"
+			android:gravity="bottom"
+			android:paddingBottom="2dp"
+			android:paddingLeft="4dp"
+			android:paddingRight="4dp"
+			android:paddingTop="2dp"
+			android:text="@string/lp_map_copyright"
+			android:textColor="#FF111111"
+			android:textSize="11dp"/>
+
+		<ImageButton
+			android:id="@+id/center_map"
+			android:layout_width="@dimen/lp_button_my_location_size"
+			android:layout_height="@dimen/lp_button_my_location_size"
+			android:layout_above="@+id/cardview"
+			android:layout_alignParentRight="true"
+			android:layout_marginBottom="@dimen/lp_default_margin"
+			android:layout_marginRight="@dimen/lp_default_margin"
+			android:background="@drawable/circle_white"
+			android:elevation="4dp"
+			android:tint="@color/text_color_secondary"
+			app:srcCompat="@drawable/ic_gps_fixed"
+			tools:ignore="ContentDescription"/>
+
+	</RelativeLayout>
+
+</FrameLayout>

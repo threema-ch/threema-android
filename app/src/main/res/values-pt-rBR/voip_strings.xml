@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Chamada do Threema</string>
+    <string name="voip_hangup">Desligar</string>
+    <string name="voip_toggle_mic">Ativar/desativar microfone</string>
+    <string name="voip_toggle_speaker">Ativar/desativar alto-falante</string>
+    <string name="voip_switch_cam">Alterar câmera</string>
+    <string name="voip_switch_cam_front">Alterado para câmera dianteira</string>
+    <string name="voip_switch_cam_rear">Alterado para câmera traseira</string>
+    <string name="voip_toggle_video">Alternar modo de vídeo</string>
+    <string name="voip_call_confirm">Deseja ligar para %1$s?</string>
+    <string name="voip_error_call">Erro durante a ligação do Threema</string>
+    <string name="voip_error_init_call">Erro ao inicializar chamada</string>
+    <string name="voip_notification_title">Chamada do Threema Recebida</string>
+    <string name="voip_notification_text">%1$s está ligando</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Iniciar</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Conectando</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Desconectando</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Tocando</string>
+    <string name="voip_mic_enable">Habilitar microfone</string>
+    <string name="voip_mic_disable">Desabilitar microfone</string>
+    <string name="voip_checking_compatibility">Verificando se este contato pode receber chamadas do Threema</string>
+    <string name="voip_incompatible">Este contato ainda não pode receber chamadas do Threema.</string>
+    <string name="voip_call_status_unavailable">Destinatário da ligação indisponível</string>
+    <string name="voip_call_status_rejected">Chamada rejeitada</string>
+    <string name="voip_call_status_busy">Destinatário da ligação ocupado</string>
+    <string name="voip_call_status_busy_short">Ocupado</string>
+    <string name="voip_call_status_disabled">Ligações do Threema desabilitadas pelo destinatário</string>
+    <string name="voip_call_status_missed">Chamada perdida</string>
+    <string name="voip_call_finished_outbox">Chamada realizada</string>
+    <string name="voip_call_finished_inbox">Chamada recebida</string>
+    <string name="voip_call_status_aborted">Chamada abortada</string>
+    <string name="voip_return_call">Retornar chamada</string>
+    <string name="voip_accept">Aceitar</string>
+    <string name="voip_reject">Rejeitar</string>
+    <string name="voip_speakerphone">Viva-voz</string>
+    <string name="voip_wired_headset">Fone de ouvido</string>
+    <string name="voip_earpiece">Telefone</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Indisponível</string>
+    <string name="voip_call_finished">A chamada do Threema terminou</string>
+    <string name="voip_another_call">Não foi possível conectar. Outra Chamada do Threema está ativa no momento.</string>
+    <string name="voip_prefs_title_aec">Cancelamento de eco</string>
+    <string name="voip_prefs_aec_sw">Cancelamento de eco do software</string>
+    <string name="voip_prefs_aec_hw">Cancelamento de eco do hardware</string>
+    <string name="voip_connection_failed">Não foi possível estabelecer a conexão.</string>
+    <string name="voip_connection_lost">Conexão perdida</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Rejeitar chamadas de celular</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Rejeitar chamas recebidas de celular enquanto uma Chamada do Threema estiver ativa.</string>
+    <string name="voip_contact_not_found">Nenhum contato do Threema encontrado com este número.</string>
+    <string name="voip_another_pstn_call">Não foi possível iniciar a ligação. Uma ligação por telefone regular ainda está ativa.</string>
+    <string name="voip_call_status_off_hours">Chamada durante folga</string>
+    <string name="voip_peer_video_disabled">As chamadas de vídeo foram desativadas pelo outro participante.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">Diagnóstico WebRTC</string>
+    <string name="voip_prefs_webrtc_debug_summary">Inicie esta ferramenta para depurar problemas com a configuração de uma conexão por chamada de voz</string>
+    <string name="voip_webrtc_debug">Diagnóstico WebRTC</string>
+    <string name="voip_webrtc_debug_intro">Pressione o botão \"Iniciar\" para começar o teste.</string>
+    <string name="voip_webrtc_debug_start">Iniciar</string>
+    <string name="voip_webrtc_debug_done">Pronto. Se você tiver problemas com o estabelecimento da conexão da chamada, envie este resultado para o suporte do Threema.</string>
+    <string name="voip_webrtc_debug_copied">Copiado à área de transferência.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Copiar à área de transferência</string>
+</resources>

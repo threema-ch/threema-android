@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/message_block"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center_horizontal"
+	android:background="?attr/bubble_date_separator"
+	android:orientation="vertical"
+	android:paddingBottom="@dimen/message_status_padding_bottom"
+	android:paddingLeft="@dimen/chat_bubble_margin_end"
+	android:paddingRight="@dimen/chat_bubble_margin_end"
+	android:paddingTop="@dimen/message_status_padding_top">
+
+	<TextView
+		android:id="@+id/text_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:autoLink="none"
+		android:gravity="center_horizontal"
+		android:maxLines="1"
+		android:textAppearance="@style/DateSeparatorText"
+		/>
+
+</LinearLayout>

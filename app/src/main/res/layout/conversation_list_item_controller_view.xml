@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<ImageView
+			android:id="@+id/icon"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:maxHeight="@dimen/avatar_size_small"
+			android:maxWidth="@dimen/avatar_size_small"
+			android:padding="8dp"
+			android:layout_gravity="center"
+			android:clickable="false"
+			android:scaleType="centerCrop"
+			android:visibility="gone"
+			android:background="@drawable/circle_status_icon_color"/>
+
+	<ProgressBar
+			android:id="@+id/progress"
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
+			android:indeterminate="true"
+			android:indeterminateOnly="true"
+			android:clickable="false"
+			android:layout_gravity="center"
+			android:visibility="gone"/>
+
+	<ch.threema.app.ui.CircularProgressBar
+			android:id="@+id/progress_determinate"
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
+			app:progressbar_progress="0"
+			app:progressbar_max="100"
+			app:progressbar_width="@dimen/conversation_controller_progress_stroke_width"
+			app:progressbar_color="?attr/colorAccent"
+			app:background_color="?attr/secondary_accent_color"
+			app:background_width="@dimen/conversation_controller_progress_stroke_width"
+			app:border_width="@dimen/conversation_controller_progress_border_width"
+			android:clickable="false"
+			android:layout_gravity="center"
+			android:visibility="gone"/>
+
+</merge>

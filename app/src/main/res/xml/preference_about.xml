@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:key="pref_key_about"
+	android:persistent="true"
+	android:title="@string/menu_about">
+
+
+	<PreferenceCategory
+		android:key="pref_key_legal"
+		android:title="@string/menu_legal">
+
+		<Preference
+			android:key="@string/preferences__licenses"
+			android:title="@string/os_licenses" />
+		<Preference
+			android:key="@string/preferences__privacy_policy"
+			android:title="@string/privacy_policy" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_about_header"
+		android:title="@string/threema_version">
+
+		<Preference android:key="@string/preferences__about" />
+		<Preference android:key="@string/preferences__device_info" />
+
+		<Preference android:key="@string/preferences__work_license_name"
+			android:title="@string/username_hint"/>
+
+		<Preference
+			android:key="@string/preferences__check_updates"
+			android:title="@string/check_updates" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_feedback_header"
+		android:title="@string/feedback">
+
+		<Preference
+			android:key="@string/preferences__rate"
+			android:icon="@drawable/ic_star_outline_24dp"
+			android:fragment="ch.threema.app.preference.SettingsRateFragment"
+			android:title="@string/rate_title" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_feedback_credits"
+		android:title="@string/credits">
+
+		<Preference
+			android:key="@string/preferences__translators"
+			android:title="@string/translators" />
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_troubleshooting"
+		android:title="@string/prefs_troubleshooting">
+
+		<Preference
+			android:key="@string/preferences__troubleshooting"
+			android:title="@string/prefs_troubleshooting"
+			android:icon="@drawable/ic_bug_outline"/>
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

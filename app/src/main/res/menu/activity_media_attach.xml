@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/menu_search"
+		android:icon="@drawable/ic_search_outline"
+		app:iconTint="?android:textColorSecondary"
+		android:visible="false"
+		android:title="@string/search"
+		app:showAsAction="always|collapseActionView"
+		app:actionViewClass="ch.threema.app.ui.ThreemaSearchView" />
+
+	<item
+		android:id="@+id/menu_select_from_gallery"
+		android:orderInCategory="50"
+		android:title="@string/select_from_gallery"
+		app:showAsAction="never"
+		/>
+</menu>

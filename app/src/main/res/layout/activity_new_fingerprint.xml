@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:id="@+id/layout_wizard_intro"
+			 android:layout_width="match_parent"
+			 android:layout_height="match_parent"
+			 android:fillViewport="true">
+
+	<include layout="@layout/background_new_wizard"/>
+
+	<RelativeLayout android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+					android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+					android:paddingTop="@dimen/wizard_contents_padding"
+					android:paddingBottom="@dimen/wizard_contents_padding"
+					android:layout_marginBottom="32dp">
+
+		<ch.threema.app.ui.TextViewRobotoMedium
+				style="@style/WizardTitleText"
+				android:id="@+id/wizard_welcome"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerHorizontal="true"
+				android:gravity="center_horizontal"
+				android:text="@string/new_wizard_welcome"
+				android:layout_marginTop="8dp"/>
+
+		<TextView
+				style="@style/WizardSubTitleText"
+				android:id="@+id/scooter"
+				android:layout_below="@id/wizard_welcome"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerHorizontal="true"
+				android:gravity="center_horizontal"
+				android:text="@string/new_wizard_move_finger"
+				android:layout_marginTop="@dimen/wizard_paragraph_height"/>
+
+		<ProgressBar
+				android:id="@+id/wizard1_swipe_progress"
+				android:importantForAccessibility="no"
+				android:layout_width="match_parent"
+				android:layout_height="2dp"
+				android:layout_marginLeft="16dp"
+				android:layout_marginRight="16dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="4dp"
+				android:layout_below="@id/scooter"
+				android:layout_gravity="center_horizontal"
+				style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+				android:progressDrawable="@drawable/layerlist_progressbar"
+				android:indeterminate="false"
+				android:longClickable="false"/>
+
+		<FrameLayout
+				android:id="@+id/thumb_layout"
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:layout_marginTop="8dp"
+				android:layout_below="@id/wizard1_swipe_progress"
+				android:layout_gravity="center_horizontal"
+		        android:contentDescription="@string/new_wizard_move_finger"
+				>
+
+			<ch.threema.app.ui.NewWizardFingerPrintView
+					android:id="@+id/wizard1_finger_print"
+					android:importantForAccessibility="no"
+					android:background="@color/new_wizard_alpha_background"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"/>
+
+			<ImageView
+					android:id="@+id/finger_overlay"
+					android:importantForAccessibility="no"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:layout_marginLeft="48dp"
+					android:layout_gravity="center_horizontal|bottom"
+					app:srcCompat="@drawable/ic_finger_with_circles"
+					/>
+		</FrameLayout>
+
+	</RelativeLayout>
+
+	<FrameLayout android:layout_width="wrap_content"
+				 android:layout_height="wrap_content"
+				 android:layout_gravity="bottom"
+				 android:id="@+id/more_info_layout"
+				 android:background="?attr/selectableItemBackground"
+				 android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
+				 android:layout_marginRight="@dimen/wizard_contents_padding_horizontal">
+
+		<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="16dp"
+				android:gravity="center"
+				android:orientation="horizontal">
+
+			<ImageView
+				android:id="@+id/wizard_id_icon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:srcCompat="@drawable/ic_info_outline"
+				android:tint="@color/new_wizard_color_primary"
+				android:textSize="14sp"
+				android:textColor="@color/new_wizard_color_accent"/>
+
+			<TextView
+					android:id="@+id/wizard_id_info"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="8dp"
+					android:text="@string/new_wizard_more_information"
+					android:fontFamily="sans-serif-light"
+					android:textSize="14sp"
+					android:textColor="@color/new_wizard_color_accent"/>
+
+		</LinearLayout>
+
+	</FrameLayout>
+
+</FrameLayout>

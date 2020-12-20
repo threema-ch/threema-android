@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema Çağrısı</string>
+    <string name="voip_hangup">Telefonu kapatmak</string>
+    <string name="voip_toggle_mic">Mikrofonu aç / kapat</string>
+    <string name="voip_toggle_speaker">Hoparlörü aç / kapat</string>
+    <string name="voip_switch_cam">Kamerayı değiştir</string>
+    <string name="voip_switch_cam_front">Ön kameraya geçildi</string>
+    <string name="voip_switch_cam_rear">Arka kameraya geçildi</string>
+    <string name="voip_toggle_video">Video modunu Aç / Kapat</string>
+    <string name="voip_call_confirm">%1$s\'i aramak istiyor musunuz ?</string>
+    <string name="voip_error_call">Threema çağrısı sırasında hata</string>
+    <string name="voip_error_init_call">Çağrı başlatılırken hata oluştu</string>
+    <string name="voip_notification_title">Gelen Threema Çağrısı</string>
+    <string name="voip_notification_text">%1$s arıyor</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Başlatılıyor</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Bağlanıyor</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Bağlantı kesilmesi</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Çalıyor</string>
+    <string name="voip_mic_enable">Mikrofonu etkinleştir</string>
+    <string name="voip_mic_disable">Mikrofonu devre dışı bırak</string>
+    <string name="voip_checking_compatibility">Bu kişinin Threema çağrıları alıp alamayacağını kontrol etme</string>
+    <string name="voip_incompatible">Bu kişi henüz Threema çağrılarını alamıyor.</string>
+    <string name="voip_call_status_unavailable">Çağrı alıcısı uygun değil</string>
+    <string name="voip_call_status_rejected">Arama reddedildi</string>
+    <string name="voip_call_status_busy">Çağrı alıcı meşgul</string>
+    <string name="voip_call_status_busy_short">Meşgul</string>
+    <string name="voip_call_status_disabled">Threema çağrıları alıcı tarafından devre dışı bırakıldı</string>
+    <string name="voip_call_status_missed">Cevapsız Çağrı</string>
+    <string name="voip_call_finished_outbox">Giden Çağrı</string>
+    <string name="voip_call_finished_inbox">Gelen Çağrı</string>
+    <string name="voip_call_status_aborted">Çağrı İptal Edildi</string>
+    <string name="voip_return_call">Geri arama</string>
+    <string name="voip_accept">Kabul etmek</string>
+    <string name="voip_reject">Reddetmek</string>
+    <string name="voip_speakerphone">Hoparlör</string>
+    <string name="voip_wired_headset">Kulaklık</string>
+    <string name="voip_earpiece">Telefon</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Müsait değil</string>
+    <string name="voip_call_finished">Threema görüşmesi sona erdi</string>
+    <string name="voip_another_call">Bağlanılamıyor. Şu anda başka bir Threema Call aktif.</string>
+    <string name="voip_prefs_title_aec">Yankı giderme</string>
+    <string name="voip_prefs_aec_sw">Yazılım yankı iptali</string>
+    <string name="voip_prefs_aec_hw">Donanım yankı iptali</string>
+    <string name="voip_connection_failed">Bağlantı kurulamadı</string>
+    <string name="voip_connection_lost">Bağlantı koptu</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Mobil aramaları reddet</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Bir Threema Call etkinken gelen mobil aramaları reddetme.</string>
+    <string name="voip_contact_not_found">Bu numara için Threema kişisi bulunamadı.</string>
+    <string name="voip_another_pstn_call">Çağrı başlatılamıyor. Normal bir telefon görüşmesi hala etkindir.</string>
+    <string name="voip_call_status_off_hours">Mesai saatleri dışında çağrı</string>
+    <string name="voip_peer_video_disabled">Video görüşmeleri karşı taraf tarafından devre dışı bırakıldı.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC Hata Teşhisi</string>
+    <string name="voip_prefs_webrtc_debug_summary">Sesli arama bağlantısı kurma ile ilgili sorunları gidermek için bu aracı başlatın</string>
+    <string name="voip_webrtc_debug">WebRTC Hata Teşhisi</string>
+    <string name="voip_webrtc_debug_intro">Testi başlatmak için \"Başlat\" düğmesine basın.</string>
+    <string name="voip_webrtc_debug_start">Başlat</string>
+    <string name="voip_webrtc_debug_done">Bitti. Çağrı bağlantısı oluşturma ile ilgili sorunlar yaşıyorsanız, lütfen bu çıkışı Threema desteğine gönderin.</string>
+    <string name="voip_webrtc_debug_copied">Panoya kopyalama tamamlandı.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Panoya kopyala</string>
+</resources>

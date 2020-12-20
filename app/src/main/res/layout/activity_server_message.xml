@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:orientation="vertical"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:padding="16dp">
+
+	<ScrollView
+				android:id="@+id/top_view"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:background="@android:color/transparent">
+
+		<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+			<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/server_message_title"
+					android:textSize="24sp"
+					android:textColor="?attr/colorAccent"
+					android:fontFamily="sans-serif"
+					/>
+
+			<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="16dp"
+					android:text="todo"
+					android:id="@+id/server_message_text"
+					android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+					/>
+
+		</LinearLayout>
+	</ScrollView>
+
+	<LinearLayout
+			android:id="@+id/button_bar_layout"
+			style="?android:attr/buttonBarStyle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right"
+			android:orientation="horizontal">
+
+	<com.google.android.material.button.MaterialButton
+				android:id="@+id/close_button"
+				android:layout_width="0dp"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:text="@string/close"/>
+
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#eaeaea">
+
+	<RelativeLayout android:layout_width="match_parent"
+				android:layout_height="48dp"
+				android:background="@color/accent_light"
+				android:paddingLeft="16dp"
+				android:paddingRight="0dp">
+
+	<TextView android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:layout_alignParentLeft="true"
+			  android:layout_centerVertical="true"
+			  android:textSize="20sp"
+			  android:text="@string/app_name"
+			  android:textColor="@color/material_primary"
+			  android:layout_toEndOf="@+id/widget_edit"
+			/>
+
+	<ImageView
+		android:id="@+id/widget_edit"
+		android:layout_width="56dp"
+		android:layout_height="48dp"
+		android:layout_centerVertical="true"
+		android:layout_alignParentRight="true"
+		android:src="@drawable/ic_chat_bubble_bitmap_24dp"
+		android:tint="@android:color/white"
+		android:scaleType="centerInside"/>
+
+	</RelativeLayout>
+
+	<FrameLayout
+				 android:layout_width="match_parent"
+				 android:layout_height="match_parent">
+
+	<ListView android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:id="@+id/widget_list" />
+
+	<TextView
+			  android:id="@+id/empty_view"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:paddingLeft="16dp"
+			  android:paddingRight="16dp"
+			  android:gravity="center"
+			  android:textColor="@color/text_color_secondary"
+			  android:text="@string/no_unread_messages"
+			  android:textSize="14sp" />
+
+	</FrameLayout>
+
+</LinearLayout>

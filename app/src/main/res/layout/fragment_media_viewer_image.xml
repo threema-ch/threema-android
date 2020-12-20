@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/gallery_background">
+
+	<ImageView
+			android:id="@+id/preview_image"
+			android:scaleType="fitCenter"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"/>
+
+	<com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+            android:id="@+id/subsampling_image"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+	<TextView
+			android:id="@+id/empty_text"
+			android:paddingLeft="10dp"
+			android:paddingRight="10dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:gravity="center_horizontal"
+			android:fontFamily="sans-serif-light"
+			android:textColor="@android:color/white"
+			android:textSize="18sp"
+			android:visibility="gone"/>
+
+</FrameLayout>

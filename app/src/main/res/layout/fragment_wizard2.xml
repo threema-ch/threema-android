@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal"
+				android:paddingTop="@dimen/wizard_contents_padding"
+				android:paddingBottom="@dimen/wizard_contents_padding">
+
+	<ch.threema.app.ui.TextViewRobotoMedium
+			style="@style/WizardTitleText"
+			android:id="@+id/wizard_welcome"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:layout_centerHorizontal="true"
+			android:text="@string/new_wizard_choose_nickname"
+			android:layout_marginTop="8dp"/>
+
+	<TextView
+			style="@style/WizardSubTitleText"
+			android:id="@+id/scooter"
+			android:layout_below="@id/wizard_welcome"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_nickname_explain"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"/>
+
+	<LinearLayout
+			android:id="@+id/wizard_edit1_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"
+			android:layout_below="@id/scooter"
+			android:orientation="horizontal">
+
+		<ImageView
+			style="@style/WizardEditTextIcon"
+			android:layout_width="@dimen/wizard_default_view_height"
+			android:layout_height="@dimen/wizard_default_view_height"
+			app:srcCompat="@drawable/ic_person_outline"/>
+
+		<ch.threema.app.emojis.EmojiEditText
+				style="@style/WizardEditText"
+				android:id="@+id/wizard_edit1"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/wizard_default_view_height"
+				android:hint="@string/new_wizard_hint_enter_nickname"
+				android:imeOptions="actionDone"
+				android:inputType="textNoSuggestions"/>
+
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/disabled_by_policy"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="4dp"
+		android:layout_below="@+id/wizard_edit1_layout"
+		android:textSize="14sp"
+		android:text="@string/disabled_by_policy"
+		android:visibility="gone"/>
+
+</RelativeLayout>

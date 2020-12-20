@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Registrazione messaggio</string>
+    <string name="recording_stopped_title">Registrazione arrestata</string>
+    <string name="recording_stopped_message">Vuoi inviare subito il messaggio vocale registrato?</string>
+    <string name="recording_canceled">La registrazione è stata annullata a causa di un errore sconosciuto.</string>
+    <string name="cancel_recording">Annulla registrazione</string>
+    <string name="cancel_recording_message">Vuoi davvero annullare la registrazione?</string>
+    <string name="stop">Arresta</string>
+</resources>

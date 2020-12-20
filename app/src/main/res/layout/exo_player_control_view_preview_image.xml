@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:background="@android:color/transparent">
+
+	<FrameLayout
+		android:id="@+id/play_pause_layout"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_gravity="center"
+		android:background="@drawable/ic_circle_lockscreen_semi_dark">
+
+		<ImageButton
+			android:id="@id/exo_play"
+			android:layout_width="56dp"
+			android:layout_height="56dp"
+			android:padding="12dp"
+			android:background="@drawable/ic_circle_lockscreen_semi_dark"
+			android:contentDescription="@string/play"
+			android:scaleType="fitXY"
+			android:tint="@android:color/white"
+			app:srcCompat="@drawable/ic_play" />
+
+		<ImageButton
+			android:id="@id/exo_pause"
+			android:layout_width="56dp"
+			android:layout_height="56dp"
+			android:padding="12dp"
+			android:background="@drawable/ic_circle_lockscreen_semi_dark"
+			android:contentDescription="@string/pause"
+			android:scaleType="fitXY"
+			android:tint="@android:color/white"
+			app:srcCompat="@drawable/ic_pause" />
+
+	</FrameLayout>
+
+</FrameLayout>

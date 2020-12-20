@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/coordinator"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fitsSystemWindows="true">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@id/appbar_layout"
+		android:layout_width="match_parent"
+		android:layout_height="100dp"
+		android:background="@android:color/transparent">
+
+		<com.google.android.material.appbar.CollapsingToolbarLayout
+			android:id="@id/collapsing_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@android:color/transparent"
+			app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:id="@id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				android:visibility="invisible"
+				app:menu="@menu/activity_media_attach"
+				app:navigationIcon="@null"
+				app:layout_collapseMode="pin">
+
+				<LinearLayout
+					android:id="@+id/toolbar_title"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:clickable="false"
+					android:focusable="true"
+					android:background="?attr/selectableItemBackgroundBorderless">
+
+					<TextView
+						android:id="@+id/toolbar_title_text"
+						android:layout_width="wrap_content"
+						android:layout_height="match_parent"
+						android:textColor="?android:textColorPrimary"
+						android:textSize="18sp"
+						android:ellipsize="middle"/>
+
+					<ImageView
+						android:id="@+id/dropdown_icon"
+						android:layout_width="wrap_content"
+						android:layout_height="match_parent"
+						app:srcCompat="@drawable/ic_arrow_down_filled"
+						app:tint="?attr/image_tint_default"
+						android:contentDescription="@string/filter_by_album"/>
+
+				</LinearLayout>
+
+			</com.google.android.material.appbar.MaterialToolbar>
+
+		</com.google.android.material.appbar.CollapsingToolbarLayout>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
+		android:id="@+id/bottom_sheet_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="?attr/actionBarSize">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@id/bottom_sheet"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			style="?attr/bottomSheetStyle"
+			android:paddingLeft="4dp"
+			android:paddingRight="4dp"
+			app:behavior_hideable="true"
+			app:behavior_saveFlags="all"
+			android:clipToPadding="false"
+			app:layout_behavior="@string/bottom_sheet_behavior">
+
+			<ImageView
+				android:id="@+id/drag_handle"
+				android:layout_width="28dp"
+				android:layout_height="@dimen/drag_handle_height"
+				android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
+				android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
+				android:importantForAccessibility="no"
+				android:src="?attr/bottomsheet_grapple"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintBottom_toTopOf="@id/media_grid_recycler" />
+
+			<ch.threema.app.ui.GridRecyclerView
+				android:id="@+id/media_grid_recycler"
+				android:layout_height="0dp"
+				android:layout_width="0dp"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/drag_handle" />
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+	<ViewStub android:id="@+id/stub"
+		android:inflatedId="@+id/control_panel"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/control_panel_height"
+		android:layout_gravity="bottom"/>
+
+	<FrameLayout
+		android:id="@+id/date_separator_container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="top|center_horizontal"
+		android:paddingTop="5dp"
+		android:paddingBottom="3dp"
+		android:paddingLeft="3dp"
+		android:paddingRight="3dp"
+		android:layout_marginTop="?attr/actionBarSize"
+		android:visibility="invisible"
+		android:clipToPadding="false">
+
+		<include layout="@layout/date_separator" />
+	</FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

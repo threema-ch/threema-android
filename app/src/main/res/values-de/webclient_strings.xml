@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="webclient_qr_scan_error">QR-Code ungültig</string>
+	<string name="webclient_init_session">Neue Sitzung einleiten</string>
+	<string name="webclient_sessions_really_delete">Möchten Sie diese Threema Web-Sitzung wirklich löschen?</string>
+	<string name="webclient_last_usage">Zuletzt genutzt: %s</string>
+	<string name="webclient_active_since">Aktiv seit: %s</string>
+	<string name="webclient_created_at">Erstellt am: %1$s (%2$s)</string>
+	<string name="webclient_enable">Threema Web aktivieren</string>
+	<string name="webclient_no_sessions_found">Zum Verbinden, öffnen Sie den Internet-Browser auf Ihrem PC und rufen Sie https://web.threema.ch auf. Tippen Sie auf den untenstehenden Button, um den angezeigten Code zu scannen.</string>
+	<string name="webclient_session_rename">Sitzung umbenennen</string>
+	<string name="webclient_session_label">Neuer Name</string>
+	<string name="webclient_session_start">Sitzung starten</string>
+	<string name="webclient_session_stop">Sitzung stoppen</string>
+	<string name="webclient_unnamed_session">Unbenannte Sitzung</string>
+	<string name="webclient_persistent">gespeichert</string>
+	<string name="webclient_disposable">nicht gespeichert</string>
+	<string name="webclient_session_remove">Sitzung entfernen</string>
+	<string name="webclient_welcome_title">Vom PC aus chatten</string>
+	<string name="webclient_welcome_explain">Mit Threema Web können Sie bequem von Ihrem PC oder Notebook aus chatten. Dabei haben Sie vollen Zugriff auf alle Kontakte, Medien und Chats, auch auf frühere Unterhaltungen.\n\n<b>Die gesamte Kommunikation zwischen Handy und PC ist vollständig Ende-zu-Ende verschlüsselt</b> und benutzt eine direkte Verbindung, wenn sich beide Geräte im gleichen Netzwerk befinden.\n\nHinweis: Wenn Threema Web aktiv ist, kann der Batterieverbrauch höher sein. Sie können die Funktion aber jederzeit ein- oder ausschalten.</string>
+	<string name="webclient_launch">Threema Web starten</string>
+	<string name="webclient_qr_scan_message">Scannen Sie den QR-Code, der auf dem PC angezeigt wird.</string>
+	<string name="webclient_invalid_qr_code">Ungültiger Threema Web QR Code</string>
+	<string name="webclient_new_connection_toast">Threema Web-Sitzung gestartet</string>
+	<string name="webclient_protocol_error">Protokoll-Fehler</string>
+	<string name="webclient_protocol_version_to_old">Threema Web ist nicht kompatibel mit dieser App. Bitte aktualisieren Sie Threema auf die neueste Version.</string>
+	<string name="webclient_really_start_webclient_by_payload_body">Möchten Sie diese Threema Web-Sitzung jetzt starten?</string>
+	<string name="webclient_cannot_restore">Kann die Threema Web-Sitzung nicht wieder aufnehmen</string>
+	<string name="webclient_disabled">Threema Web ist deaktiviert</string>
+	<string name="webclient_clear_all_sessions">Alle Sitzungen löschen</string>
+	<string name="webclient_clear_all_sessions_confirm">Möchten Sie wirklich alle Threema Web-Sitzungen löschen?</string>
+	<string name="webclient_prefs_debug_tool_summary">Werkzeug, um Probleme beim Aufbau der Threema Web-Verbindung zu analysieren</string>
+	<string name="webclient_diagnostics">Threema Web Diagnose</string>
+	<string name="webclient_diagnostics_start">Start</string>
+	<string name="webclient_diagnostics_intro">Tippen Sie auf den «Start»-Button um den Test zu starten.</string>
+	<string name="webclient_diagnostics_done">Beendet. Falls Probleme beim Aufbau der Threema Web-Verbindung haben, senden Sie dieses Log bitte an den Threema-Support.</string>
+	<string name="webclient_cannot_start">Threema Web-Sitzung kann nicht gestartet werden</string>
+	<string name="webclient_constrained_by_mdm">Server wurde nicht durch den Administrator freigegeben.</string>
+</resources>

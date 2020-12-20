@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="?android:attr/listPreferredItemHeight"
+				android:paddingLeft="24dp"
+				android:paddingRight="24dp">
+
+	<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true">
+
+		<TextView
+				android:id="@+id/type"
+				android:text="Subject"
+				android:textAllCaps="true"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:singleLine="true"
+				android:textSize="@dimen/blue_header_text_size"
+				android:textStyle="bold"
+				android:layout_alignParentLeft="true"
+				android:ellipsize="end"/>
+
+		<TextView
+				android:id="@+id/number"
+				android:text="Type"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="16sp"
+				android:singleLine="true"
+				android:layout_alignParentLeft="true"
+				android:layout_below="@id/type"
+				android:ellipsize="end"/>
+
+	</RelativeLayout>
+
+</RelativeLayout>

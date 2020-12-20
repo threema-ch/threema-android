@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:layout_height="@dimen/ballot_matrix_cell_height"
+		android:layout_width="@dimen/ballot_matrix_cell_width">
+
+	<LinearLayout
+		android:id="@+id/cell"
+		android:layout_height="@dimen/ballot_matrix_cell_height"
+		android:layout_width="@dimen/ballot_matrix_cell_width"
+        android:background="?attr/detail_highlight_bg_color"
+        android:layout_marginBottom="@dimen/ballot_matrix_cell_border"
+        android:layout_marginRight="@dimen/ballot_matrix_cell_border"
+		android:layout_gravity="center"
+        android:gravity="center">
+
+        <ImageView
+	        android:id="@+id/voting_value_1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:tint="?attr/textColorPrimary"
+	        app:srcCompat="@drawable/ic_check"/>
+
+        <TextView
+            android:id="@+id/voting_value_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"/>
+
+
+        <TextView
+            android:id="@+id/voting_value_none"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""/>
+
+	</LinearLayout>
+</LinearLayout>

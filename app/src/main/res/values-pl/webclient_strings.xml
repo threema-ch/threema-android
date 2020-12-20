@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Nieprawidłowe dane kodu QR</string>
+    <string name="webclient_init_session">Rozpocznij nową sesję*</string>
+    <string name="webclient_sessions_really_delete">Czy na pewno chcesz usunąć tę sesję Threema Web?</string>
+    <string name="webclient_last_usage">Ostatnia wizyta: %s</string>
+    <string name="webclient_created_at">Utworzono: %1$s (%2$s)</string>
+    <string name="webclient_active_since">Aktywny od: %s</string>
+    <string name="webclient_enable">Włącz Threema Web</string>
+    <string name="webclient_no_sessions_found">Aby się połączyć, odwiedź adres <b>https://web.threema.ch</b> w przeglądarce swojego komputera i dotknij przycisku poniżej, aby zeskanować kod.</string>
+    <string name="webclient_session_rename">Zmień nazwę sesji</string>
+    <string name="webclient_session_label">Nowa nazwa</string>
+    <string name="webclient_session_start">Rozpocznij sesję</string>
+    <string name="webclient_session_stop">Zatrzymaj sesję</string>
+    <string name="webclient_persistent">trwały</string>
+    <string name="webclient_disposable">tymczasowy</string>
+    <string name="webclient_unnamed_session">Sesja bez nazwy</string>
+    <string name="webclient_session_remove">Usuń sesję</string>
+    <string name="webclient_welcome_title">Rozmawiaj ze swojego komputera!</string>
+    <string name="webclient_welcome_explain">Threema Web pozwala Ci rozmawiać ze swojego komputera stacjonarnego lub notebooka, dając Ci jednocześnie dostęp do wszystkich Twoich kontaktów, multimediów, chatów, a nawet wcześniejszych konwersacji.\n\n<b>Wszystkie transmisje danych pomiędzy telefonem i komputerem są w pełni szyfrowane na zasadzie end to end</b> i wykorzystują bezpośrednie połączenie, jeśli telefon i komputer znajdują się w tej samej sieci.\n\nUwaga: W czasie aktywności Threema Web może powodować większe zużycie baterii. Możesz włączyć lub wyłączyć aplikację w dowolnej chwili.</string>
+    <string name="webclient_launch">Uruchom Threema Web teraz</string>
+    <string name="webclient_qr_scan_message">Zeskanuj kod QR wyświetlony w komputerze.</string>
+    <string name="webclient_invalid_qr_code">Nieprawidłowy kod QR Threema Web</string>
+    <string name="webclient_new_connection_toast">Sesja Threema Web rozpoczęta</string>
+    <string name="webclient_protocol_error">Błąd protokołu</string>
+    <string name="webclient_protocol_version_to_old">Twoja aplikacja nie obsługuje tej wersji Threema Web. Zaktualizuj Threema do najnowszej wersji.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Twoja aplikacja nie obsługuje tej wersji Threema Web. Poproś administratora twojej kopii Threema Web o dokonanie aktualizacji do najnowszej wersji.</string>
+    <string name="webclient_protocol_version_too_new_threema">Twoja aplikacja nie obsługuje tej wersji Threema Web. Użyj nowej wersji Threema Web.</string>
+    <string name="webclient_session_already_exists">Sesja zeskanowanego kodu QR już istnieje. Przeładuj Threema Web w przeglądarce i spróbuj ponownie.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Czy chcesz teraz rozpocząć tę sesję Threema Web?</string>
+    <string name="webclient_cannot_restore">Nie można przywrócić sesji Threema Web</string>
+    <string name="webclient_disabled">Threema Web nie jest włączona</string>
+    <string name="webclient_cannot_start">Nie można uruchomić sesji Threema Web</string>
+    <string name="webclient_constrained_by_mdm">Serwer nie został zatwierdzony przez administratora.</string>
+    <string name="webclient_clear_all_sessions">Wyczyść wszystkie sesje</string>
+    <string name="webclient_clear_all_sessions_confirm">Czy na pewno chcesz zatrzymać i usunąć wszystkie sesje Threema Web?</string>
+    <string name="webclient_prefs_debug_tool_summary">Uruchom to narzędzie, aby rozpoznać problemy z połączeniem Threema Web</string>
+    <string name="webclient_diagnostics">Diagnostyka Threema Web</string>
+    <string name="webclient_diagnostics_start">Start</string>
+    <string name="webclient_diagnostics_intro">Wciśnij przycisk Start, aby rozpocząć test.</string>
+    <string name="webclient_diagnostics_done">Gotowe. Jeśli masz problemy z ustanowieniem połączenia Threema Web, wyślij ten wyniki do działu wsparcia Threema.</string>
+</resources>

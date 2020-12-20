@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ avatar on right
+-->
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/msg_list_item_send"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+	android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+	android:paddingRight="@dimen/chat_bubble_container_padding_left_right">
+
+	<LinearLayout
+		android:id="@+id/message_block"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:paddingRight="@dimen/chat_bubble_border_padding_arrow"
+		android:paddingTop="@dimen/chat_bubble_border_padding"
+		android:paddingBottom="@dimen/chat_bubble_border_padding"
+		android:paddingLeft="@dimen/chat_bubble_border_padding"
+		android:background="?chat_bubble_send"
+		android:orientation="vertical">
+
+		<include layout="@layout/conversation_bubble_header"/>
+
+		<FrameLayout
+			android:id="@+id/content_block"
+			android:layout_width="@dimen/media_thumbnail_min_width"
+			android:layout_height="wrap_content"
+			android:foreground="?attr/bubble_selector_overlay"
+			android:minHeight="@dimen/media_thumbnail_min_height">
+
+			<ImageView
+				android:id="@+id/attachment_image_view"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_gravity="center"
+				android:scaleType="fitXY"
+				android:adjustViewBounds="true"
+				android:contentDescription="@string/attach_picture"
+				android:visibility="gone"/>
+
+			<ch.threema.app.ui.ControllerView
+				android:id="@+id/controller"
+				android:layout_width="@dimen/avatar_size_small"
+				android:layout_height="@dimen/avatar_size_small"
+				android:layout_gravity="center"/>
+
+			<ch.threema.app.ui.TranscoderView
+				android:id="@+id/transcoder_view"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:minHeight="@dimen/media_thumbnail_min_height"
+				android:visibility="gone"/>
+
+		</FrameLayout>
+
+		<ch.threema.app.emojis.EmojiConversationTextView
+			android:id="@+id/text_view"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="6dp"
+			android:paddingLeft="@dimen/chat_bubble_margin_end"
+			android:paddingRight="@dimen/chat_bubble_margin_start"
+			android:textColor="?android:textColorPrimary"
+			android:textSize="?attr/font_large"
+			android:visibility="gone"/>
+
+		<include layout="@layout/conversation_bubble_footer_send"/>
+
+	</LinearLayout>
+
+</RelativeLayout>

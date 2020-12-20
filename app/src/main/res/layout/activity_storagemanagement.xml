@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/content"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+	<androidx.core.widget.NestedScrollView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_gravity="fill_vertical"
+			android:layout_marginBottom="?attr/actionBarSize"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+				android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+				>
+
+			<LinearLayout android:layout_width="match_parent"
+						  android:layout_height="wrap_content"
+						  android:layout_margin="16dp"
+						  android:orientation="vertical"
+					>
+
+				<TextView android:id="@+id/storage_explain"
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+						  android:layout_marginBottom="16dp"
+						  android:textAppearance="?android:textAppearanceMedium"
+						  android:text="@string/storage_explain"/>
+
+				<FrameLayout android:id="@+id/storage_full"
+							 android:layout_width="match_parent"
+							 android:layout_height="40dp"
+							 android:background="@color/material_indigo"
+							 android:layout_marginBottom="16dp">
+
+					<FrameLayout android:id="@+id/storage_threema"
+								 android:layout_width="1dp"
+								 android:layout_height="match_parent"
+								 android:minWidth="1dp"
+								 android:layout_gravity="left"
+								 android:background="@color/material_red"/>
+
+					<FrameLayout android:id="@+id/storage_empty"
+								 android:layout_width="0dp"
+								 android:layout_height="match_parent"
+								 android:layout_gravity="right"
+								 android:background="@color/material_green"/>
+
+					<ProgressBar android:id="@+id/progressbar"
+								 android:layout_width="wrap_content"
+								 android:layout_height="match_parent"
+								 android:padding="2dp"
+								 android:layout_gravity="center"
+								 android:indeterminate="true"/>
+
+				</FrameLayout>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content">
+
+					<FrameLayout android:id="@+id/legend_total"
+								 android:layout_width="12dp"
+								 android:layout_height="12dp"
+								 android:layout_alignParentLeft="true"
+								 android:layout_centerVertical="true"
+								 android:layout_marginRight="6dp"
+								 android:background="?attr/textColorPrimary">
+
+						<View android:layout_width="9dp"
+							  android:layout_height="9dp"
+							  android:layout_gravity="center"
+							  android:background="?android:windowBackground"/>
+
+					</FrameLayout>
+
+					<TextView android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_toRightOf="@id/legend_total"
+							  android:layout_toLeftOf="@+id/total_view"
+							  android:ellipsize="end"
+							  android:text="@string/storage_total"/>
+
+					<TextView android:id="@+id/total_view"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_alignParentRight="true"
+							  android:text=""/>
+
+				</RelativeLayout>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content">
+
+					<View android:id="@+id/legend_in_use"
+						  android:layout_width="12dp"
+						  android:layout_height="12dp"
+						  android:layout_alignParentLeft="true"
+						  android:layout_centerVertical="true"
+						  android:layout_marginRight="6dp"
+						  android:background="@color/material_indigo"/>
+
+					<TextView android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_toRightOf="@id/legend_in_use"
+							  android:layout_toLeftOf="@+id/in_use_view"
+							  android:ellipsize="end"
+							  android:text="@string/storage_total_in_use"/>
+
+					<TextView android:id="@+id/in_use_view"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_alignParentRight="true"
+							  android:text=""/>
+
+				</RelativeLayout>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content">
+
+					<View android:id="@+id/legend_free"
+						  android:layout_width="12dp"
+						  android:layout_height="12dp"
+						  android:layout_alignParentLeft="true"
+						  android:layout_centerVertical="true"
+						  android:layout_marginRight="6dp"
+						  android:background="@color/material_green"/>
+
+					<TextView android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_toRightOf="@id/legend_free"
+							  android:layout_toLeftOf="@+id/free_view"
+							  android:ellipsize="end"
+							  android:text="@string/storage_total_free"/>
+
+					<TextView android:id="@+id/free_view"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_alignParentRight="true"
+							  android:text=""/>
+
+				</RelativeLayout>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content">
+
+					<View android:id="@+id/legend_usage"
+						  android:layout_width="12dp"
+						  android:layout_height="12dp"
+						  android:layout_centerVertical="true"
+						  android:layout_alignParentLeft="true"
+						  android:layout_marginRight="6dp"
+						  android:background="@color/material_red"/>
+
+					<TextView android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_toRightOf="@id/legend_usage"
+							  android:layout_toLeftOf="@+id/usage_view"
+							  android:ellipsize="end"
+							  android:text="@string/storage_threema"/>
+
+					<TextView android:id="@+id/usage_view"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_alignParentRight="true"
+							  android:text=""/>
+
+				</RelativeLayout>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:layout_marginTop="16dp"
+								android:layout_marginBottom="16dp"
+								android:orientation="horizontal">
+
+					<TextView
+							android:id="@+id/delete_explain"
+							android:layout_alignParentLeft="true"
+							android:layout_toLeftOf="@+id/time_spinner"
+							android:layout_centerVertical="true"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:textAppearanceMedium"
+							android:text="@string/delete_media_files_time"/>
+
+					<Spinner
+							android:id="@+id/time_spinner"
+							android:layout_alignParentRight="true"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"/>
+
+				</RelativeLayout>
+
+				<com.google.android.material.button.MaterialButton android:id="@+id/delete_button"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/delete_data"
+						android:layout_gravity="right"/>
+
+			</LinearLayout>
+
+			<LinearLayout android:layout_width="match_parent"
+						  android:layout_height="wrap_content"
+						  android:layout_marginLeft="16dp"
+						  android:layout_marginRight="16dp"
+						  android:orientation="vertical">
+
+				<TextView android:id="@+id/messages_delete_explain"
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+						  android:layout_marginBottom="16dp"
+						  android:textAppearance="?android:textAppearanceMedium"
+						  android:text="@string/messages_delete_explain"/>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content">
+
+					<TextView android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_alignParentLeft="true"
+							  android:layout_toLeftOf="@+id/num_messages_view"
+							  android:ellipsize="end"
+							  android:text="@string/num_messages"/>
+
+					<TextView android:id="@+id/num_messages_view"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:layout_alignParentRight="true"
+							  android:text=""/>
+
+				</RelativeLayout>
+
+				<RelativeLayout android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:layout_marginTop="16dp"
+								android:layout_marginBottom="16dp"
+								android:orientation="horizontal">
+
+					<TextView
+							android:id="@+id/delete_messages_explain"
+							android:layout_alignParentLeft="true"
+							android:layout_toLeftOf="@+id/time_spinner_messages"
+							android:layout_centerVertical="true"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:textAppearanceMedium"
+							android:text="@string/delete_messages_explain"/>
+
+					<Spinner
+							android:id="@+id/time_spinner_messages"
+							android:layout_alignParentRight="true"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"/>
+
+				</RelativeLayout>
+
+				<com.google.android.material.button.MaterialButton
+						android:id="@+id/delete_button_messages"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/delete_message"
+						android:layout_gravity="right"/>
+
+				<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Fatal"
+					android:id="@+id/delete_everything_button"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="16dp"
+					android:layout_marginBottom="16dp"
+
+					android:text="@string/delete_id_title"
+					android:layout_gravity="left"/>
+
+			</LinearLayout>
+		</LinearLayout>
+	</androidx.core.widget.NestedScrollView>
+
+	<include layout="@layout/toolbar_view"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/control_panel"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:clickable="false"
+	android:background="?attr/background_secondary">
+
+	<View
+		android:id="@id/divider"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/control_panel_divider" />
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/select_panel"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clickable="false">
+
+		<LinearLayout
+			android:id="@+id/control_buttons"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="left"
+			android:orientation="horizontal"
+			android:visibility="visible"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent">
+
+			<ch.threema.app.mediaattacher.ControlPanelButton
+				android:id="@+id/cancel"
+				android:layout_width="@dimen/media_attach_button_size"
+				android:layout_height="@dimen/media_attach_button_size"
+				app:labelIcon="@drawable/ic_close"
+				app:labelText="@string/cancel" />
+
+			<ch.threema.app.mediaattacher.ControlPanelButton
+				android:id="@+id/select"
+				android:layout_width="@dimen/media_attach_button_size"
+				android:layout_height="@dimen/media_attach_button_size"
+				app:labelIcon="@drawable/ic_baseline_add_24"
+				app:labelText="@string/add"
+				app:strokeColor="?attr/colorAccent"
+				app:fillColor="?attr/colorAccent"
+				app:fillColorAlpha="0x1A"
+				app:foregroundColor="?attr/colorAccent"/>
+
+		</LinearLayout>
+
+		<Button
+			android:id="@+id/select_counter_button"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:textSize="12sp"
+			android:translationX="10dp"
+			android:layout_marginTop="4dp"
+			android:singleLine="true"
+			android:padding="0dp"
+			app:layout_constraintEnd_toEndOf="@+id/control_buttons"
+			app:layout_constraintHorizontal_bias="1.0"
+			app:layout_constraintStart_toStartOf="@+id/control_buttons"
+			app:layout_constraintTop_toTopOf="parent"
+			android:background="@drawable/selector_media_send_counterbubble"
+			android:textAppearance="@style/AttachmentsLabel"
+			android:contentDescription="@string/selection_counter_label" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

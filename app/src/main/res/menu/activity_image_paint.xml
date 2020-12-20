@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<group
+		android:id="@+id/group_commands">
+
+		<item
+			android:id="@+id/item_undo"
+			android:enabled="true"
+			android:icon="@drawable/ic_undo_outline"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="50"
+			android:title="@string/undo"
+			app:showAsAction="always"
+			/>
+
+	</group>
+
+	<group
+		android:id="@+id/group_tools">
+
+		<item
+			android:id="@+id/item_draw"
+			android:enabled="true"
+			android:icon="@drawable/ic_brush"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="55"
+			android:title="@string/draw"
+			app:showAsAction="always"
+			/>
+
+		<item
+			android:id="@+id/item_pencil"
+			android:enabled="true"
+			android:icon="@drawable/ic_pencil_outline"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="57"
+			android:title="@string/pencil"
+			app:showAsAction="always"
+			/>
+
+		<item
+			android:id="@+id/item_stickers"
+			android:enabled="true"
+			android:icon="@drawable/ic_mood_outline"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="60"
+			android:title="@string/stickers"
+			app:showAsAction="always"
+			/>
+
+		<item
+			android:id="@+id/item_text"
+			android:enabled="true"
+			android:icon="@drawable/ic_font_download_outline"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="65"
+			android:title="@string/text"
+			app:showAsAction="always"
+			/>
+
+		<item
+			android:id="@+id/item_palette"
+			android:enabled="true"
+			android:icon="@drawable/ic_color_lens_24px"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="70"
+			android:title="@string/palette"
+			android:visible="true"
+			app:showAsAction="always"
+			/>
+
+	</group>
+
+</menu>

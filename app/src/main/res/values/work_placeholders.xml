@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<string name="private_threema_download" tools:ignore="MissingTranslation"/>
+	<string name="directory_title" translatable="false"/>
+	<string name="directory_empty_view_text" translatable="false"/>
+	<string name="directory_search" translatable="false"/>
+</resources>

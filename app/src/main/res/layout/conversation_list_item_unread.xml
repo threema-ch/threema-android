@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/msg_list_item_unread"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="@dimen/unread_messages_margin_top"
+		android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+		android:orientation="vertical">
+
+	<LinearLayout
+			android:id="@+id/message_block"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center"
+			android:paddingLeft="@dimen/chat_bubble_margin_end"
+			android:paddingRight="@dimen/chat_bubble_margin_end"
+			android:paddingTop="@dimen/unread_messages_padding_top"
+			android:paddingBottom="@dimen/unread_messages_padding_bottom"
+			android:background="?attr/unread_messages_bg_color"
+			android:orientation="horizontal">
+
+		<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="left"
+				android:gravity="left"
+				android:src="@drawable/ic_navigation_expand"
+				android:tint="?attr/unread_messages_text_color"
+				android:layout_weight="1"/>
+
+		<TextView
+				android:id="@+id/text_view"
+				android:text="@string/unread_messages"
+				android:singleLine="true"
+				android:autoLink="none"
+				android:layout_gravity="center"
+				android:gravity="center_horizontal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textColor="?attr/unread_messages_text_color"
+				android:textSize="?attr/font_status"
+				android:textStyle="bold"
+				android:textAllCaps="true"
+				android:layout_weight="2"/>
+
+		<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="right"
+				android:gravity="right"
+				android:src="@drawable/ic_navigation_expand"
+				android:tint="?attr/unread_messages_text_color"
+				android:layout_weight="1"/>
+
+	</LinearLayout>
+</LinearLayout>

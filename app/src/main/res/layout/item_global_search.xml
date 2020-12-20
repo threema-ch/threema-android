@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+				android:layout_height="@dimen/listitem_contact_height"
+				android:orientation="vertical"
+				android:background="@drawable/listitem_background_selector">
+
+	<ch.threema.app.ui.AvatarView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:layout_marginLeft="16dp"
+		android:layout_centerVertical="true"
+		android:foreground="@drawable/selector_avatar"
+		android:clickable="false"
+		android:importantForAccessibility="no"
+		android:layout_alignParentLeft="true"
+		/>
+
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_toRightOf="@id/avatar_view"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp">
+
+		<ch.threema.app.ui.TextViewRobotoMedium
+			android:id="@+id/name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_toLeftOf="@+id/date"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textColor="?android:attr/textColorPrimary"
+			android:text="title"/>
+
+		<TextView
+			android:id="@+id/date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_alignBaseline="@id/name"
+			android:ellipsize="none"
+			android:singleLine="true"
+			android:fontFamily="sans-serif-light"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="date"/>
+
+		<ch.threema.app.emojis.EmojiTextView
+			android:id="@+id/snippet"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignLeft="@id/name"
+			android:layout_alignParentLeft="true"
+			android:layout_below="@id/name"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:fontFamily="sans-serif-light"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="excerpt"/>
+
+	</RelativeLayout>
+
+</RelativeLayout>

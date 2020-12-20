@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<resources>
+	<dimen name="message_fragment_width">500dp</dimen>
+</resources>

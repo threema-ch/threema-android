@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:top="@dimen/wizard_edittext_hint_padding" android:drawable="@drawable/shape_edittext"/>
+</layer-list>

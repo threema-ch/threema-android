@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<integer name="left_pane_weight">4</integer>
+	<integer name="right_pane_weight">6</integer>
+
+	<dimen name="side_margin">0dp</dimen>
+	<dimen name="side_margin_negative">0dp</dimen>
+	<dimen name="header_vertical_padding">0dp</dimen>
+
+	<dimen name="text_size_body">14sp</dimen>
+</resources>

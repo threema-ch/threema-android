@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/control_panel"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@android:color/transparent">
+
+	<View
+		android:id="@+id/divider1"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="#03777777"
+		android:importantForAccessibility="no" />
+
+	<View
+		android:id="@+id/divider2"
+		android:layout_marginTop="1dp"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="#12777777"
+		android:importantForAccessibility="no" />
+
+	<View
+		android:id="@+id/divider3"
+		android:layout_marginTop="2dp"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="#40777777"
+		android:importantForAccessibility="no" />
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="@dimen/media_attach_control_panel_shadow_size"
+		android:background="?attr/background_secondary"
+		android:importantForAccessibility="no"
+		android:clickable="false">
+
+		<HorizontalScrollView
+			android:id="@+id/attach_panel"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_gravity="center_horizontal"
+			android:fillViewport="true"
+			android:clickable="false"
+			android:importantForAccessibility="no"
+			android:scrollbarSize="@dimen/scrollbar_size">
+
+			<LinearLayout
+				android:id="@+id/attach_options_container"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:paddingLeft="4dp"
+				android:paddingRight="4dp"
+				android:orientation="horizontal"
+				android:importantForAccessibility="no"
+				android:visibility="visible">
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_gallery"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:labelIcon="@drawable/ic_image_outline"
+					app:foregroundColor="@android:color/white"
+					app:fillColor="@color/material_red"
+					app:labelText="@string/media" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_file"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:labelIcon="@drawable/ic_file_outline"
+					app:fillColor="@color/material_teal"
+					app:foregroundColor="@android:color/white"
+					app:labelText="@string/attach_document" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_location"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:labelIcon="@drawable/ic_map_marker_outline"
+					app:fillColor="@color/material_blue"
+					app:foregroundColor="@android:color/white"
+					app:labelText="@string/attach_location" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_poll"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:labelIcon="@drawable/ic_poll_outline"
+					app:fillColor="@color/material_lime"
+					app:foregroundColor="@android:color/white"
+					app:labelText="@string/attach_ballot" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_contact"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:labelIcon="@drawable/ic_person_outline"
+					app:fillColor="@color/material_orange"
+					app:foregroundColor="@android:color/white"
+					app:labelText="@string/mime_contact" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_qr_code"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:fillColor="@color/material_green"
+					app:foregroundColor="@android:color/white"
+					app:labelIcon="@drawable/ic_qr_code"
+					app:labelText="@string/qr_code" />
+
+			</LinearLayout>
+
+		</HorizontalScrollView>
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/send_panel"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:importantForAccessibility="no"
+			android:visibility="gone">
+
+			<LinearLayout
+				android:id="@+id/control_buttons"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="left"
+				android:orientation="horizontal"
+				android:importantForAccessibility="no"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent">
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/cancel"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:clickable="true"
+					android:focusable="true"
+					app:labelIcon="@drawable/ic_close"
+					app:labelText="@string/cancel" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/edit"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:clickable="true"
+					android:focusable="true"
+					app:labelIcon="@drawable/ic_pencil_outline"
+					app:labelText="@string/edit" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/send"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:clickable="true"
+					android:focusable="true"
+					app:labelIcon="@drawable/ic_send_outline"
+					app:labelText="@string/send"
+					app:strokeColor="?attr/colorAccent"
+					app:fillColor="?attr/colorAccent"
+					app:fillColorAlpha="0x1A"
+					app:foregroundColor="?attr/colorAccent" />
+
+			</LinearLayout>
+
+			<Button
+				android:id="@+id/select_counter_button"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:textSize="12sp"
+				android:translationX="10dp"
+				android:layout_marginTop="4dp"
+				android:singleLine="true"
+				android:padding="0dp"
+				app:layout_constraintEnd_toEndOf="@+id/control_buttons"
+				app:layout_constraintHorizontal_bias="1.0"
+				app:layout_constraintStart_toStartOf="@+id/control_buttons"
+				app:layout_constraintTop_toTopOf="parent"
+				android:background="@drawable/selector_media_send_counterbubble"
+				android:textAppearance="@style/AttachmentsLabel"
+				android:contentDescription="@string/selection_counter_label" />
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+	</FrameLayout>
+
+</FrameLayout>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/parent_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/transparent_activity_overlay">
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/bottom_sheet"
+		style="?attr/bottomSheetStyle"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clipToPadding="false"
+		android:outlineProvider="bounds"
+		app:behavior_hideable="true"
+		app:behavior_peekHeight="256dp"
+		app:behavior_saveFlags="all"
+		app:elevation="16dp"
+		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+		<androidx.core.widget.NestedScrollView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent">
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+
+				<ImageView
+					android:id="@+id/drag_handle"
+					android:layout_width="28dp"
+					android:layout_height="4dp"
+					android:layout_marginTop="12dp"
+					android:importantForAccessibility="no"
+					android:src="?attr/bottomsheet_grapple"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent"
+					app:layout_constraintTop_toTopOf="parent" />
+
+				<FrameLayout
+					android:id="@+id/search_container"
+					android:layout_width="match_parent"
+					android:layout_height="@dimen/directory_search_bar_height"
+					android:layout_gravity="top"
+					android:layout_marginLeft="16dp"
+					android:layout_marginTop="4dp"
+					android:layout_marginRight="16dp"
+					android:layout_marginBottom="12dp"
+					android:background="?android:windowBackground"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent"
+					app:layout_constraintTop_toBottomOf="@id/drag_handle">
+
+					<ch.threema.app.ui.ThreemaSearchView
+						android:id="@+id/search"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center_vertical"
+						android:background="?compose_edittext_bubble"
+						android:textColor="?android:textColorPrimary"
+						app:defaultQueryHint="@string/global_search"
+						app:iconifiedByDefault="false"
+						app:queryHint="@string/global_search">
+
+						<requestFocus />
+					</ch.threema.app.ui.ThreemaSearchView>
+
+					<ProgressBar
+						android:id="@+id/progress"
+						style="@style/Widget.AppCompat.ProgressBar"
+						android:layout_width="28dp"
+						android:layout_height="28dp"
+						android:layout_gravity="center_vertical|right"
+						android:layout_marginRight="52dp"
+						android:indeterminate="true"
+						android:maxWidth="28dp"
+						android:maxHeight="28dp"
+						android:visibility="gone" />
+
+				</FrameLayout>
+
+				<TextView
+					android:id="@+id/empty_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:paddingLeft="16dp"
+					android:paddingRight="16dp"
+					android:text="@string/global_search_empty_view_text"
+					android:textAppearance="@style/Threema.TextAppearance.Body1"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent"
+					app:layout_constraintTop_toBottomOf="@+id/search_container" />
+
+				<androidx.recyclerview.widget.RecyclerView
+					android:id="@+id/recycler_chats"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent"
+					app:layout_constraintTop_toBottomOf="@+id/search_container" />
+
+				<androidx.recyclerview.widget.RecyclerView
+					android:id="@+id/recycler_groups"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent"
+					app:layout_constraintTop_toBottomOf="@+id/recycler_chats" />
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+		</androidx.core.widget.NestedScrollView>
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

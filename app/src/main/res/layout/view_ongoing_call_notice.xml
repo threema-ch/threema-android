@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/ongoing_call_layout"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="?attr/colorAccent"
+	android:clickable="false"
+	android:orientation="vertical"
+	android:visibility="visible"
+	android:animateLayoutChanges="true">
+
+	<RelativeLayout
+		android:id="@+id/button_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:clickable="false"
+		android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:paddingTop="8dp"
+		android:paddingBottom="8dp">
+
+		<LinearLayout
+			android:id="@+id/call_container"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@+id/call_hangup"
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:background="?android:selectableItemBackground"
+			android:clickable="true"
+			android:orientation="horizontal"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp">
+
+			<ImageView
+				android:id="@+id/call_image"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="left|center_vertical"
+				android:layout_marginRight="8dp"
+				android:contentDescription="@string/call_ongoing"
+				android:tint="@android:color/white"
+				app:srcCompat="@drawable/ic_phone_locked_outline" />
+
+			<TextView
+				android:id="@+id/call_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:text="@string/call_ongoing"
+				android:textColor="@android:color/white"
+				android:textSize="16sp" />
+
+			<TextView
+				android:id="@+id/call_divider"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:clickable="false"
+				android:text=" - "
+				android:textColor="@android:color/white"
+				android:textSize="16sp" />
+
+			<Chronometer
+				android:id="@+id/call_duration"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:textColor="@android:color/white"
+				android:textSize="16sp" />
+
+		</LinearLayout>
+
+		<TextView
+			android:id="@+id/call_hangup"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="?android:selectableItemBackground"
+			android:clickable="true"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
+			android:text="@string/voip_hangup"
+			android:textAllCaps="true"
+			android:textColor="@android:color/white"
+			android:textSize="15sp"
+			android:textStyle="bold"/>
+
+	</RelativeLayout>
+
+</LinearLayout>

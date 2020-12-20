@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<ch.threema.app.ui.AvatarView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:duplicateParentState="true"
+		android:stateListAnimator="@animator/selector_list_checkbox_bg"
+		android:visibility="visible"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="@+id/name"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<ch.threema.app.ui.CheckableView
+		android:id="@+id/check_box"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:background="?selector_list_checkbox"
+		android:duplicateParentState="true"
+		android:stateListAnimator="@animator/selector_list_checkbox_fg"
+		app:layout_constraintBottom_toBottomOf="@id/avatar_view"
+		app:layout_constraintLeft_toLeftOf="@id/avatar_view"
+		app:layout_constraintRight_toRightOf="@id/avatar_view"
+		app:layout_constraintTop_toTopOf="@id/avatar_view" />
+
+</merge>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/parent_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+			android:background="@android:color/transparent">
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/card_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/tablet_standard_padding_left_right"
+		android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
+		app:cardBackgroundColor="?attr/background_secondary"
+		app:cardElevation="0dp"
+		app:contentPaddingBottom="4dp"
+		app:contentPaddingLeft="12dp"
+		app:contentPaddingRight="12dp"
+		app:contentPaddingTop="4dp">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:id="@+id/work_life_warning"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="?attr/background_primary"
+			android:orientation="vertical"
+			android:paddingLeft="4dp"
+			android:paddingRight="4dp"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
+			android:layout_marginTop="8dp"
+			android:visibility="gone">
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="4dp"
+				android:layout_gravity="left|center_vertical"
+				android:tint="?attr/textColorPrimary"
+				app:srcCompat="@drawable/ic_info_outline"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginLeft="4dp"
+				android:singleLine="true"
+				android:text="@string/work_life_dnd_active"/>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="?attr/background_primary"
+			android:orientation="vertical"
+			android:paddingLeft="4dp"
+			android:paddingRight="4dp"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
+			android:layout_marginTop="8dp">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="4dp"
+				android:layout_marginLeft="4dp"
+				android:text="@string/prefs_notification_sound"/>
+
+			<FrameLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<RadioGroup
+					android:id="@+id/sound_radio_group"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:layout_marginLeft="0dp">
+
+					<RadioButton
+						android:id="@+id/radio_sound_default"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/notifications_default"/>
+
+					<TextView
+						android:id="@+id/text_sound_default"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="4dp"
+						android:layout_marginLeft="32dp"
+						android:text="a"/>
+
+					<RadioButton
+						android:id="@+id/radio_sound_none"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/notifications_mute"/>
+
+					<RadioButton
+						android:id="@+id/radio_sound_custom"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/notifications_choose_sound"/>
+
+					<TextView
+						android:id="@+id/text_sound"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="4dp"
+						android:layout_marginLeft="32dp"
+						android:text="a"/>
+
+				</RadioGroup>
+
+				<ImageButton
+					android:id="@+id/prefs_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="right|top"
+					android:background="?android:attr/selectableItemBackground"
+					android:contentDescription="@string/menu_settings"
+					android:padding="4dp"
+					app:srcCompat="@drawable/ic_settings_outline_24dp"
+					android:visibility="visible"/>
+
+			</FrameLayout>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:background="?attr/background_primary"
+			android:orientation="vertical"
+			android:paddingLeft="4dp"
+			android:paddingRight="4dp"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="4dp"
+				android:layout_marginLeft="4dp"
+				android:text="@string/dnd"/>
+
+			<FrameLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<RadioGroup
+					android:id="@+id/duration_radio_group"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="left">
+
+					<RadioButton
+						android:id="@+id/radio_silent_off"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/switched_off"/>
+
+					<RadioButton
+						android:id="@+id/radio_silent_except_mentions"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/off_unless_i_was_mentioned"
+						android:visibility="gone"/>
+
+					<RadioButton
+						android:id="@+id/radio_silent_unlimited"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/switched_on"/>
+
+					<RadioButton
+						android:id="@+id/radio_silent_limited"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/notifications_for_x_hours"/>
+
+				</RadioGroup>
+
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="right|bottom"
+					android:gravity="right"
+					android:orientation="horizontal">
+
+					<ImageButton
+						android:id="@+id/duration_minus"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="4dp"
+						android:layout_marginRight="12dp"
+						android:background="?android:attr/selectableItemBackground"
+						android:contentDescription="@string/minus"
+						android:padding="4dp"
+						app:srcCompat="@drawable/ic_remove_circle_black_24dp"
+						android:visibility="visible"/>
+
+					<ImageButton
+						android:id="@+id/duration_plus"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:background="?android:attr/selectableItemBackground"
+						android:contentDescription="@string/plus"
+						android:padding="4dp"
+						app:srcCompat="@drawable/ic_add_circle_black_24dp"
+						android:visibility="visible"/>
+
+				</LinearLayout>
+
+			</FrameLayout>
+
+		</LinearLayout>
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/done_button"
+			style="@style/Threema.AlertDialog.ButtonStyle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right"
+			android:text="@string/menu_done"/>
+
+	</LinearLayout>
+
+	</com.google.android.material.card.MaterialCardView>
+</ScrollView>

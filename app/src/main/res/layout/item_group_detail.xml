@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/group_detail_list_item_size"
+                android:background="?attr/selectableItemBackground">
+
+	<ch.threema.app.ui.AvatarView
+		android:id="@+id/avatar_view"
+		android:visibility="visible"
+		android:layout_centerVertical="true"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"/>
+
+	<ch.threema.app.emojis.EmojiTextView
+			android:id="@+id/group_name"
+			android:text="Name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+			android:singleLine="true"
+			android:layout_marginRight="5dip"
+			android:layout_marginLeft="16dip"
+			android:layout_toRightOf="@id/avatar_view"
+			android:layout_toLeftOf="@id/threemaid"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_centerVertical="true"
+			android:ellipsize="marquee"/>
+
+	<TextView
+			android:id="@+id/threemaid"
+			android:text="XYZ678AB"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+			android:singleLine="true"
+			android:layout_marginLeft="10dip"
+			android:layout_alignParentRight="true"
+			android:layout_alignWithParentIfMissing="true"
+			android:layout_alignBottom="@+id/group_name"
+			android:layout_marginBottom="1dp"/>
+
+</RelativeLayout>
+

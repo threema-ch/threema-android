@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:id="@+id/parent_layout"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"
+		android:scrollbarAlwaysDrawVerticalTrack="true"
+		android:fillViewport="true"
+		android:background="?android:windowBackground">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="@dimen/tablet_standard_padding_left_right"
+			android:paddingRight="@dimen/tablet_standard_padding_left_right"
+			android:paddingBottom="@dimen/wizard_contents_padding"
+			android:paddingTop="@dimen/wizard_contents_padding"
+			android:orientation="vertical">
+
+			<ch.threema.app.ui.TextViewRobotoMedium
+				android:id="@+id/webclient_welcome"
+				style="@style/WizardTitleText"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="8dp"
+				android:gravity="center_horizontal"
+				android:text="@string/webclient_welcome_title"/>
+
+			<TextView
+				android:id="@+id/webclient_explain"
+				style="@style/WizardSmallText"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="@dimen/wizard_small_paragraph_height"
+				android:gravity="center_horizontal"
+				android:text="@string/webclient_welcome_explain"/>
+
+			<TextView
+				android:id="@+id/webclient_link"
+				style="@style/WizardSmallText"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="@dimen/wizard_small_paragraph_height"
+				android:linksClickable="true"
+				android:clickable="true"
+				android:gravity="center_horizontal"
+				android:text=""/>
+
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/launch_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/wizard_small_paragraph_height"
+				android:layout_gravity="center_horizontal"
+				android:text="@string/webclient_launch"/>
+
+		</LinearLayout>
+
+	</ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

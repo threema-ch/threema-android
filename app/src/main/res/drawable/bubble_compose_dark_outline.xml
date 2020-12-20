@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+	<item>
+		<shape
+			android:shape="rectangle">
+			<corners android:radius="@dimen/edittext_bubble_border_radius"/>
+			<padding
+				android:bottom="@dimen/chat_bubble_border_padding"
+				android:left="16dp"
+				android:right="16dp"
+				android:top="@dimen/chat_bubble_border_padding"/>
+			<stroke android:color="@android:color/white" android:width="0.6dp" />
+		</shape>
+	</item>
+</layer-list>

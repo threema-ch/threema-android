@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/layout_wizard_intro"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:fillViewport="true">
+
+	<include layout="@layout/background_new_wizard"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:layout_marginTop="32dp"
+		android:gravity="center_horizontal"
+		android:orientation="vertical"
+		android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+		android:paddingRight="@dimen/wizard_contents_padding_horizontal">
+
+		<ImageView
+			android:id="@+id/three_dots"
+			android:importantForAccessibility="no"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:transitionName="@string/transition_name_dots"/>
+
+		<TextView
+			android:id="@+id/wizard_privacy_policy_explain"
+			style="@style/WizardSmallText"
+			android:layout_marginTop="32dp"
+			android:textSize="15dp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/privacy_policy_explain"/>
+
+		<androidx.appcompat.widget.AppCompatCheckBox
+			android:id="@+id/wizard_switch_accept_privacy_policy"
+			style="@style/WizardSwitchSmallText"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textSize="15dp"
+			android:layout_marginTop="16dp"
+			android:checked="false"
+			android:enabled="true"
+			android:text="@string/prefs_title_accept_privacy_policy"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/button_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_gravity="bottom"
+		android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
+		android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
+		android:layout_marginBottom="@dimen/wizard_contents_padding">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/setup_threema"
+			style="@style/WizardButtonRegular"
+			android:layout_width="match_parent"
+			android:text="@string/new_wizard_setup_threema"/>
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/restore_backup"
+			style="@style/WizardButtonInverse"
+			android:layout_width="match_parent"
+			android:layout_marginTop="16dp"
+			android:text="@string/menu_restore"/>
+
+	</LinearLayout>
+
+</FrameLayout>

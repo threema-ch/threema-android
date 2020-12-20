@@ -1,0 +1,248 @@
+# To enable ProGuard in your project, edit project.properties
+# to define the proguard.config property as described in that file.
+#
+# Add project specific ProGuard rules here.
+# By default, the flags in this file are appended to flags specified
+# in ${sdk.dir}/tools/proguard/proguard-android.txt
+# You can edit the include path and order by changing the ProGuard
+# include property in project.properties.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# Add any project specific keep options here:
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+-dontpreverify
+#-flattenpackagehierarchy
+-repackageclasses
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-allowaccessmodification
+-verbose
+
+-keeppackagenames ch.threema.**
+-keeppackagenames org.saltyrtc.**
+
+-dontnote android.net.http.*
+-dontnote org.apache.commons.codec.**
+-dontnote org.apache.http.**
+
+# Fix bug on Samsung, Wiko (and other) devices running Android 4.2
+# See also: https://code.google.com/p/android/issues/detail?id=78377
+# http://stackoverflow.com/questions/24809580/noclassdeffounderror-android-support-v7-internal-view-menu-menubuilder/26641388#26641388
+# new version for appcompat >=23.1.1
+#-keep class !android.support.v7.view.menu.*MenuBuilder*, android.support.v7.** { *; }
+#-keep interface android.support.v7.** { *; }
+#-dontwarn android.support.v7.**
+
+# See: https://stackoverflow.com/questions/30562330/using-appcompat-layout-behavior-with-string-appbar-scrolling-view-behavior
+#-keep class com.google.android.material.** { *; }
+#-keep interface com.google.android.material.** { *; }
+#-dontwarn android.support.design.**
+
+
+# For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+# We want to keep methods in Activity that could be used in the XML attribute onClick
+-keepclassmembers class * extends android.app.Activity {
+   public void *(android.view.View);
+}
+
+# For enumeration classes, see http://proguard.sourceforge.net/manual/examples.html#enumerations
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# for google play services
+-keep class * extends java.util.ListResourceBundle {
+    protected java.lang.Object[][] getContents();
+}
+
+# Keep SafeParcelable value, needed for reflection. This is required to support backwards
+# compatibility of some classes.
+-keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
+    public static final *** NULL;
+}
+
+# Keep the names of classes/members we need for client functionality.
+-keepnames @com.google.android.gms.common.annotation.KeepName class *
+-keepclassmembernames class * {
+    @com.google.android.gms.common.annotation.KeepName *;
+}
+
+# config needed for sqlcipher
+-keep class * implements android.os.Parcelable {
+public static final android.os.Parcelable$Creator *;
+}
+
+-keepclassmembers class **.R$* {
+public static <fields>;
+}
+
+# SQLCipher
+-keep,includedescriptorclasses class net.sqlcipher.** { *; }
+-keep,includedescriptorclasses interface net.sqlcipher.** { *; }
+
+# for zxing
+-keep class com.google.zxing.client.android.camera.open.**
+-keep class com.google.zxing.client.android.camera.exposure.**
+-keep class com.google.zxing.client.android.common.executor.**
+
+# As described in tools/proguard/examples/android.pro - ignore all warnings.
+#-dontwarn android.support.v4.**
+# Missing annotations are harmless.
+-dontwarn sun.misc.Unsafe
+-dontwarn javax.annotation.**
+# Ignore invalid constant ref.  See
+# https://groups.google.com/d/topic/guava-discuss/YCZzeCiIVoI/discussion
+-dontwarn com.google.common.collect.MinMaxPriorityQueue
+
+# threema-specific
+-dontwarn org.mockito.**
+-dontwarn sun.reflect.**
+-dontwarn android.test.**
+-dontwarn class.org.junit.**
+-dontwarn android.app.**
+-dontwarn android.support.**
+-dontwarn android.view.**
+-dontwarn android.widget.**
+-dontwarn com.google.common.primitives.**
+-dontwarn **CompatHoneycomb
+-dontwarn **CompatHoneycombMR2
+-dontwarn **CompatCreatorHoneycombMR2
+-dontwarn java.beans.**
+
+# WebRTC fails to build due to missing dependencies
+# "Warning: org.webrtc.SoftwareVideoDecoderFactory: can't find referenced class org.webrtc.LibvpxVp8Decoder"
+-dontwarn org.webrtc.**
+
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+
+# remove android log calls below error
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+    public static *** i(...);
+    public static *** w(...);
+}
+
+# remaining options from proguard-android-optimize.txt
+-renamesourcefileattribute SourceFile
+-keepattributes *Annotation*,SourceFile,LineNumberTable
+-keep public class com.google.android.vending.licensing.ILicensingService
+
+# keep setters in Views so that animations can still work.
+# see http://proguard.sourceforge.net/manual/examples.html#beans
+-keepclassmembers public class * extends android.view.View {
+   void set*(***);
+   *** get*();
+}
+
+# Jackson
+-keepattributes Signature,*Annotation*,EnclosingMethod
+-keep class com.fasterxml.jackson.databind.ObjectMapper {
+    public <methods>;
+    protected <methods>;
+}
+-keep class com.fasterxml.jackson.databind.ObjectWriter {
+    public ** writeValueAsString(**);
+}
+-keepnames class com.fasterxml.jackson.** { *; }
+-keepnames interface com.fasterxml.jackson.** { *; }
+-keep class org.codehaus.** { *; }
+-dontwarn org.w3c.dom.**
+-dontwarn de.tavendo.autobahn.**
+-dontwarn com.fasterxml.jackson.databind.ext.PathDeserializer**
+
+# Msgpack
+-keep class org.msgpack.core.** { *; }
+-keep class org.msgpack.value.** { *; }
+
+# SLF4J
+-keep class org.slf4j.**
+-dontwarn org.slf4j.impl.StaticMDCBinder
+-dontwarn org.slf4j.impl.StaticMarkerBinder
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+-keepattributes *Annotation*
+
+# WebRTC
+-keep class org.webrtc.** { *; }
+
+# Messages are serialized using reflection
+-keep class ch.threema.app.webclient.messages.** { *; }
+
+# Keep our own searchview visible
+-keep public class * extends androidx.appcompat.widget.SearchView {*;}
+
+# https://stackoverflow.com/questions/44145786/thousands-of-strange-crashes-in-new-google-play-console-version
+-keep class * extends android.app.Application {*;}
+
+# from https://github.com/ohmae/preference-activity-compat
+-keep public class * extends androidx.preference.PreferenceFragmentCompat
+
+# https://stackoverflow.com/questions/51006967/androidx-build-fails-in-release-mode-regarding-appcomponentfactory
+-keep class androidx.core.app.CoreComponentFactory { *; }
+
+# Firebase analytics removal
+-dontwarn com.google.firebase.analytics.connector.AnalyticsConnector
+
+# keep camera classes - 1.0.0-alpha03 causes VerifyError in Android 4.4
+-keep class androidx.camera.** { *; }
+
+# respect DoNotOptimize annotations in soloader used by mapbox - causes VerifyError in Android 4.4
+-keep,allowobfuscation @interface com.facebook.soloader.DoNotOptimize
+-keep @com.facebook.soloader.DoNotOptimize class *
+-keepclassmembers class * {
+    @com.facebook.soloader.DoNotOptimize *;
+}
+
+# protobuf uses reflection
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
+  <fields>;
+}
+
+# glide image loading
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep class * extends com.bumptech.glide.module.AppGlideModule {
+ <init>(...);
+}
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+-keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
+  *** rewind();
+}
+
+# For reasons unknown to us, starting with the 4.5 release branch, a release build
+# would throw an exception on app start:
+#
+#   java.lang.VerifyError: Verifier rejected class ch.threema.client.f1:
+#     void ch.threema.client.f1.d(ch.threema.client.x0) failed to verify: void ch.threema.client.f1.d(ch.threema.client.x0):
+#     [0x1A3] expected to be within a catch-all for an instruction where a monitor is held (declaration of 'ch.threema.client.f1' appears in base.apk)
+#
+# Adding this line fixes the problem. It's most probably a bug in the R8 optimizer
+# that's triggered by this file, the NonceFactory wasn't modified since 2017...
+# Maybe we can remove this again with a future build toolchain.
+-keep class ch.threema.client.NonceFactory { *; }

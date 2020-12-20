@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+            android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+			android:background="?android:windowBackground">
+
+	<RelativeLayout
+			android:id="@+id/layout_parent_top"
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="24dp">
+
+		<ch.threema.app.ui.TextViewRobotoMedium
+				style="@style/WizardTitleText"
+				android:id="@+id/unlock_masterkey_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/masterkey_title"
+				android:gravity="center_horizontal"
+				android:layout_centerHorizontal="true"
+				android:textColor="?attr/textColorPrimary"
+				/>
+
+		<TextView
+				android:id="@+id/layout_top"
+				android:layout_below="@id/unlock_masterkey_title"
+				android:textAppearance="?android:textAppearanceMedium"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal"
+				android:layout_centerHorizontal="true"
+				android:layout_marginTop="16dp"
+				android:text="@string/masterkey_body"
+				android:textColor="?attr/textColorPrimary"
+				android:paddingBottom="5dp"
+				/>
+
+		<LinearLayout android:id="@+id/unlock_layout"
+					  android:layout_width="match_parent"
+					  android:layout_height="wrap_content"
+					  android:layout_marginTop="16dp"
+					  android:gravity="center_vertical"
+					  android:layout_below="@id/layout_top"
+					  android:orientation="horizontal">
+
+			<ImageView
+				android:id="@+id/unlock_logo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_marginRight="8dp"
+				app:srcCompat="@drawable/ic_key_outline"
+				android:tint="?attr/textColorSecondary"/>
+
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/passphrase_layout"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="5dp"
+				android:layout_weight="2"
+				android:layout_gravity="center_vertical"
+				android:hint="@string/masterkey_passphrase_hint"
+				app:counterEnabled="false"
+				app:passwordToggleEnabled="true"
+				app:errorEnabled="true">
+
+				<ch.threema.app.ui.ThreemaTextInputEditText
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/passphrase"
+					android:inputType="textPassword|textNoSuggestions"
+					android:imeOptions="actionGo"
+					android:singleLine="true">
+					<requestFocus />
+				</ch.threema.app.ui.ThreemaTextInputEditText>
+
+			</com.google.android.material.textfield.TextInputLayout>
+
+			<ImageView
+				android:id="@+id/unlock_button"
+				android:layout_width="36dp"
+				android:layout_height="36dp"
+				android:layout_marginLeft="8dp"
+				android:layout_gravity="center_vertical"
+				android:background="@drawable/circle_transparent"
+				android:contentDescription="@string/edit"
+				android:rotation="180"
+				android:scaleType="center"
+				android:tint="?attr/colorAccent"
+				app:srcCompat="@drawable/ic_arrow_left"
+				android:enabled="false"
+				android:clickable="false"/>
+
+		</LinearLayout>
+
+		<TextView
+				android:id="@+id/unlock_info"
+				android:textAppearance="?android:textAppearanceSmall"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/unlock_layout"
+				android:layout_marginBottom="5dp"
+				android:text="@string/masterkey_lock_explain"
+				android:textColor="?attr/textColorPrimary"
+				app:drawableLeftCompat="@drawable/ic_info_outline"
+				android:drawablePadding="10dp"
+				/>
+
+	</RelativeLayout>
+
+</ScrollView>

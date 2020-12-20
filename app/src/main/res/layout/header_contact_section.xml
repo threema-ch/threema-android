@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical">
+
+<RelativeLayout android:id="@+id/share_container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/listitem_contact_height"
+                android:background="@drawable/listitem_background_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/listitem_contacts_margin_left_right"
+                android:paddingRight="@dimen/listitem_contacts_margin_left_right">
+
+	<ImageView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="34dp"
+		android:contentDescription="@string/title_invite_friend"
+		android:scaleType="center"
+		android:tint="?attr/textColorSecondary"
+		app:srcCompat="@drawable/ic_share_outline"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:layout_toRightOf="@id/avatar_view"
+		android:text="@string/title_invite_friend"
+		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+
+</RelativeLayout>
+</LinearLayout>

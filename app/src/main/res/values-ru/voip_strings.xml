@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Звонок Threema</string>
+    <string name="voip_hangup">Завершить</string>
+    <string name="voip_toggle_mic">Переключить микрофон</string>
+    <string name="voip_toggle_speaker">Переключить динамик</string>
+    <string name="voip_switch_cam">Переключить камеру</string>
+    <string name="voip_switch_cam_front">Переключено на переднюю камеру</string>
+    <string name="voip_switch_cam_rear">Переключено на заднюю камеру</string>
+    <string name="voip_toggle_video">Переключить режим видео</string>
+    <string name="voip_call_confirm">Хотите позвонить пользователю %1$s?</string>
+    <string name="voip_error_call">Ошибка во время звонка Threema</string>
+    <string name="voip_error_init_call">Ошибка инициализации звонка</string>
+    <string name="voip_notification_title">Входящий звонок Threema</string>
+    <string name="voip_notification_text">Вызывает %1$s</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Инициализация</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Соединение</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Разъединение</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Звоним</string>
+    <string name="voip_mic_enable">Включить микрофон</string>
+    <string name="voip_mic_disable">Отключить микрофон</string>
+    <string name="voip_checking_compatibility">Проверка возможности приема звонков Threema контактом...</string>
+    <string name="voip_incompatible">Этот контакт пока не может принимать звонки Threema.</string>
+    <string name="voip_call_status_unavailable">Адресат звонка недоступен</string>
+    <string name="voip_call_status_rejected">Звонок отклонен</string>
+    <string name="voip_call_status_busy">Адресат звонка занят</string>
+    <string name="voip_call_status_busy_short">Занято</string>
+    <string name="voip_call_status_disabled">Звонки Threema отключены адресатом</string>
+    <string name="voip_call_status_missed">Пропущенный звонок</string>
+    <string name="voip_call_finished_outbox">Исходящий звонок</string>
+    <string name="voip_call_finished_inbox">Входящий звонок</string>
+    <string name="voip_call_status_aborted">Звонок прерван</string>
+    <string name="voip_return_call">Перезвонить</string>
+    <string name="voip_accept">Принять</string>
+    <string name="voip_reject">Отклонить</string>
+    <string name="voip_speakerphone">Спикерфон</string>
+    <string name="voip_wired_headset">Гарнитура</string>
+    <string name="voip_earpiece">Телефон</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Недоступно</string>
+    <string name="voip_call_finished">Звонок Threema завершен</string>
+    <string name="voip_another_call">Не удается соединиться. Совершается другой звонок Threema.</string>
+    <string name="voip_prefs_title_aec">Эхокомпенсация</string>
+    <string name="voip_prefs_aec_sw">Программная эхокомпенсация</string>
+    <string name="voip_prefs_aec_hw">Аппаратная эхокомпенсация</string>
+    <string name="voip_connection_failed">Не удалось установить соединение.</string>
+    <string name="voip_connection_lost">Соединение утеряно</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Отклонять звонки с мобильных</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Отклонять входящие звонки с мобильных, когда совершается звонок Threema.</string>
+    <string name="voip_contact_not_found">По этому номеру не найден контакт Threema.</string>
+    <string name="voip_another_pstn_call">Не удается запустить звонок. Выполняется обычный телефонный звонок.</string>
+    <string name="voip_call_status_off_hours">Звонок в нерабочее время</string>
+    <string name="voip_peer_video_disabled">Видеозвонки отключены собеседником.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">Диагностика WebRTC</string>
+    <string name="voip_prefs_webrtc_debug_summary">Запустите это средство для отладки неполадок с настройкой соединения для голосовой связи</string>
+    <string name="voip_webrtc_debug">Диагностика WebRTC</string>
+    <string name="voip_webrtc_debug_intro">Нажмите кнопку «Пуск» для запуска теста</string>
+    <string name="voip_webrtc_debug_start">Пуск</string>
+    <string name="voip_webrtc_debug_done">Готово. Если у вас возникают неполадки с настройкой соединения для звонков, отправьте данные в службу поддержки Threema.</string>
+    <string name="voip_webrtc_debug_copied">Данные скопированы в буфер обмена.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Копировать в буфер обмена</string>
+</resources>

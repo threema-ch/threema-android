@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/parent_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<com.google.android.material.appbar.MaterialToolbar
+			android:id="@+id/toolbar"
+			style="?attr/materialToolbarStyle"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			app:navigationIcon="@drawable/ic_arrow_left"/>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<androidx.core.widget.NestedScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<com.google.android.material.card.MaterialCardView
+			android:id="@+id/card_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="16dp"
+			app:cardBackgroundColor="@color/light_bubble_send"
+			app:cardCornerRadius="16dp"
+			app:cardElevation="0dp"
+			app:contentPadding="4dp">
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="12dp"
+				android:layout_marginRight="12dp">
+
+				<ch.threema.app.emojis.EmojiConversationTextView
+					android:id="@+id/text_view"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:linksClickable="true"
+					android:textColor="?android:textColorPrimary"
+					android:textSize="?attr/font_large"
+					android:textIsSelectable="true"
+					app:layout_constraintBottom_toTopOf="@+id/footer"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent"
+					app:layout_constraintTop_toTopOf="parent" />
+
+				<FrameLayout
+					android:id="@+id/footer"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:layout_marginLeft="-8dp"
+					android:layout_marginRight="-8dp"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintRight_toRightOf="parent">
+
+				</FrameLayout>
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+		</com.google.android.material.card.MaterialCardView>
+
+	</androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/scroll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent">
+
+	<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="@dimen/dialog_margin_below_title"
+			android:paddingLeft="@dimen/edittext_padding"
+			android:paddingRight="@dimen/edittext_padding">
+
+		<TextView
+				android:id="@+id/message_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:textSize="16sp"
+				android:text="@string/enter_code_sum"
+				/>
+
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/lastname_layout"
+			android:hint="@string/enter_code_hint"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/dialog_margin_top"
+			app:endIconMode="clear_text">
+
+		<ch.threema.app.emojis.EmojiEditText
+				android:id="@+id/code_edittext"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:singleLine="true"
+				android:inputType="numberDecimal"
+				android:maxLength="6"
+				android:textIsSelectable="false">
+			<requestFocus />
+		</ch.threema.app.emojis.EmojiEditText>
+
+		</com.google.android.material.textfield.TextInputLayout>
+
+		<TextView
+				android:id="@+id/no_code_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:textSize="16sp"
+				android:layout_marginTop="16dp"
+				android:text="@string/no_sms_received"
+				/>
+
+		<com.google.android.material.button.MaterialButton
+					android:id="@+id/request_call"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/dialog_margin_top"
+					app:drawableLeftCompat="@drawable/ic_call_outline"
+					android:drawableTint="@android:color/white"
+					android:drawablePadding="8dp"
+					android:text="@string/verify_phonecall_text"
+					/>
+
+	</LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Frazione</string>
+    <string name="village">Villaggio</string>
+    <string name="town">Cittadina</string>
+    <string name="isolated_dwelling">Dimora isolata</string>
+    <string name="island">Isola</string>
+    <string name="islet">Isoletta</string>
+    <string name="suburb">Sobborgo</string>
+    <string name="city">Città</string>
+    <string name="city_block">Quartiere</string>
+    <string name="neighbourhood">Rione</string>
+    <string name="locality">Località</string>
+    <string name="state">Stato</string>
+    <string name="farm">Fattoria</string>
+    <string name="street">Strada</string>
+    <string name="country">Nazione</string>
+</resources>

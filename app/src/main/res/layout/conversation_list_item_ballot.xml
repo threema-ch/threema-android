@@ -1,0 +1,40 @@
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="4dp"
+		android:layout_marginBottom="4dp">
+
+	<ch.threema.app.ui.ControllerView
+			android:id="@+id/controller"
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentLeft="true"
+			android:contentDescription="@string/ballot_placeholder"/>
+
+	<ch.threema.app.emojis.EmojiConversationTextView
+			android:id="@+id/text_view"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+			android:layout_toRightOf="@id/controller"
+			android:linksClickable="false"
+			android:text="Title"
+			android:textColor="?android:textColorPrimary"
+			android:textSize="?attr/font_large"/>
+
+	<TextView
+			android:id="@+id/secondary_text_view"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+			android:layout_below="@id/text_view"
+			android:layout_alignLeft="@id/text_view"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:text="Tap"
+			android:textColor="?attr/textColorSecondary"
+			android:textSize="?attr/font_medium"/>
+
+</RelativeLayout>

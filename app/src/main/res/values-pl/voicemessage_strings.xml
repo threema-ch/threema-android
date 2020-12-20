@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Nagrywanie wiadomości</string>
+    <string name="recording_stopped_title">Nagrywanie zakończone</string>
+    <string name="recording_stopped_message">Czy chcesz wysłać nagraną wiadomość głosową teraz?</string>
+    <string name="recording_canceled">Nagrywanie zostało przerwane w wyniku nieznanego błędu.</string>
+    <string name="cancel_recording">Anuluj nagrywanie</string>
+    <string name="cancel_recording_message">Czy na pewno chcesz anulować nagrywanie?</string>
+    <string name="stop">Stop</string>
+</resources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ avatar on right
+-->
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/msg_list_item_send"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:minHeight="@dimen/chat_bubble_minheight"
+	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+	android:paddingRight="@dimen/chat_bubble_container_padding_left_right"
+	android:descendantFocusability="blocksDescendants">
+
+	<LinearLayout
+			android:id="@+id/message_block"
+			android:minWidth="@dimen/chat_bubble_minwidth"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_marginLeft="@dimen/chat_bubble_opposite_inset"
+			android:paddingRight="@dimen/chat_bubble_border_padding_arrow"
+			android:paddingTop="@dimen/chat_bubble_border_padding"
+			android:paddingBottom="@dimen/chat_bubble_border_padding"
+			android:paddingLeft="@dimen/chat_bubble_border_padding"
+			android:background="?attr/chat_bubble_send"
+			android:orientation="vertical">
+
+		<include layout="@layout/conversation_bubble_header"/>
+
+		<FrameLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingLeft="@dimen/chat_bubble_margin_end"
+				android:paddingRight="@dimen/chat_bubble_margin_start">
+
+			<ch.threema.app.emojis.EmojiConversationTextView
+					android:id="@+id/text_view"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:linksClickable="true"
+					android:textColor="?android:textColorPrimary"
+					android:textSize="?attr/font_large"
+					android:ellipsize="end"
+					android:maxLength="750" />
+
+		</FrameLayout>
+
+		<TextView
+			android:id="@+id/read_on_text"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="@dimen/chat_bubble_margin_start"
+			android:paddingRight="@dimen/chat_bubble_margin_end"
+			android:text="@string/read_on"
+			android:textColor="?colorAccent"
+			android:textSize="?attr/font_large"/>
+
+		<include layout="@layout/conversation_bubble_footer_send"/>
+
+	</LinearLayout>
+
+</RelativeLayout>

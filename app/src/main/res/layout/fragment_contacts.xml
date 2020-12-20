@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ch.threema.app.ui.LockingSwipeRefreshLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/swipe_container"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<FrameLayout android:layout_width="match_parent"
+				 android:layout_height="match_parent"
+				 android:background="?android:windowBackground">
+
+		<ListView
+				android:id="@android:id/list"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:fastScrollEnabled="true"
+				android:fastScrollAlwaysVisible="true"
+				android:listSelector="@drawable/listitem_background_selector"
+				android:footerDividersEnabled="true"
+				android:scrollbarStyle="outsideOverlay"/>
+
+		<FrameLayout
+			android:id="@+id/initial_sticky_layout"
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/listitem_contact_height"
+			android:paddingLeft="16dp"
+			android:background="?android:windowBackground">
+
+			<ch.threema.app.emojis.EmojiTextView
+				android:id="@+id/initial_sticky"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="left|center_vertical"
+				android:textColor="@null"
+				android:textAppearance="@style/Threema.Material.Header.Big.Text"
+				android:text=""/>
+			<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
+		</FrameLayout>
+
+		<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+				android:id="@+id/floating"
+				app:icon="@drawable/ic_add_white_24dp"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_margin="@dimen/floating_button_margin"
+				android:layout_gravity="bottom|right"
+				android:contentDescription="@string/menu_add_contact"
+				android:text="@string/menu_add_contact"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_anchor="@id/pager"
+				app:layout_anchorGravity="bottom|right|end"
+				android:clickable="true"/>
+
+	</FrameLayout>
+
+</ch.threema.app.ui.LockingSwipeRefreshLayout>

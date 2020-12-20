@@ -1,0 +1,43 @@
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/compose_activity_parent"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<LinearLayout android:layout_width="fill_parent"
+				  android:layout_height="fill_parent"
+				  android:layout_weight="1"
+				  android:orientation="horizontal">
+
+		<FrameLayout android:layout_width="wrap_content"
+					 android:layout_height="fill_parent">
+
+			<FrameLayout android:id="@+id/messages"
+						 android:layout_height="fill_parent"
+						 android:layout_width="@dimen/message_fragment_width"/>
+
+			<View
+					android:layout_width="6dp"
+					android:layout_height="fill_parent"
+					android:layout_gravity="right"
+					android:background="?attr/multipane_shadow"/>
+
+		</FrameLayout>
+
+		<FrameLayout android:id="@+id/compose"
+					 android:layout_height="fill_parent"
+					 android:layout_width="fill_parent"/>
+
+	</LinearLayout>
+
+	<ViewStub
+			android:id="@+id/emoji_stub"
+			android:inflatedId="@+id/emoji_picker"
+			android:layout="@layout/emoji_picker_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+
+</LinearLayout>

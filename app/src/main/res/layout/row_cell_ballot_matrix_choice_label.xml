@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content"
+		android:layout_height="@dimen/ballot_matrix_cell_height">
+
+	<RelativeLayout
+			android:id="@+id/cell"
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/ballot_matrix_cell_height"
+			android:paddingRight="4dp">
+
+		<ch.threema.app.ui.HintedTextView
+				android:id="@+id/choice_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:gravity="right"
+				android:maxLines="2"
+				android:maxWidth="@dimen/ballot_matrix_label_maxwidth"
+				android:background="?attr/selectableItemBackground"
+				android:clickable="true"
+				android:ellipsize="end"/>
+
+	</RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item android:drawable="@drawable/shape_grid_checkbox_selected"/>
+	<item>
+		<inset android:drawable="@drawable/ic_done_white_24dp"
+		       android:insetRight="3dp"
+		       android:insetTop="3dp"
+		       android:insetLeft="3dp"
+		       android:insetBottom="3dp"/>
+	</item>
+</layer-list>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/menu_search_messages"
+		android:icon="@drawable/ic_search_outline"
+		app:iconTint="?android:textColorSecondary"
+		android:orderInCategory="10"
+		android:title="@string/search"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_threema_call"
+		android:icon="@drawable/ic_phone_locked_outline"
+		app:iconTint="?android:textColorSecondary"
+		android:orderInCategory="20"
+		android:title="@string/threema_call"
+		app:showAsAction="always" />
+
+	<item
+		android:id="@+id/menu_muted"
+		android:icon="@drawable/ic_notifications_active_outline"
+		app:iconTint="?android:textColorSecondary"
+		android:orderInCategory="30"
+		android:title="@string/notifications_settings"
+		android:visible="true"
+		app:showAsAction="ifRoom"/>
+
+	<item
+		android:id="@+id/menu_shortcut"
+		android:orderInCategory="50"
+		android:title="@string/add_shortcut"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_block_contact"
+		android:orderInCategory="60"
+		android:title="@string/block_contact"
+		android:visible="false"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_empty_chat"
+		android:orderInCategory="65"
+		android:title="@string/empty_chat_title"
+		android:visible="true"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_delete_distribution_list"
+		android:orderInCategory="70"
+		android:title="@string/really_delete_distribution_list"
+		android:visible="false"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_wallpaper"
+		android:orderInCategory="75"
+		android:title="@string/prefs_title_wallpaper_switch"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_gallery"
+		android:orderInCategory="80"
+		android:title="@string/media_gallery"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_ballot_window_show"
+		android:orderInCategory="90"
+		android:title="@string/ballot_window_show"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/menu_ballot_show_all"
+		android:orderInCategory="95"
+		android:title="@string/ballot_overview"
+		app:showAsAction="never"/>
+
+</menu>

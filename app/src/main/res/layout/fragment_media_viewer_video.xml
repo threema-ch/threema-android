@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:background="@color/gallery_background">
+
+	<ImageView
+		android:id="@+id/image"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"/>
+
+	<ch.threema.app.ui.ZoomableExoPlayerView
+		android:id="@+id/video_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:surface_type="texture_view"
+		android:visibility="gone"/>
+
+	<ProgressBar
+		android:id="@+id/progress_bar"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_gravity="center"
+		android:indeterminate="true"
+		android:visibility="gone"/>
+
+	<TextView
+		android:id="@+id/empty_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:gravity="center_horizontal"
+		android:background="#55000000"
+		android:paddingLeft="10dp"
+		android:paddingRight="10dp"
+		android:fontFamily="sans-serif-light"
+		android:textColor="@android:color/white"
+		android:textSize="18sp"
+		android:visibility="gone"/>
+
+</FrameLayout>

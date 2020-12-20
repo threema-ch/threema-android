@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     xmlns:tools="http://schemas.android.com/tools"
+                                                     android:id="@+id/coordinator"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
+                                                     android:fitsSystemWindows="true">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fitsSystemWindows="true">
+
+		<com.google.android.material.appbar.CollapsingToolbarLayout
+			android:id="@+id/collapsingToolbarLayout"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:contentScrim="?attr/colorPrimary"
+			app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+			app:titleEnabled="false">
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="?attr/background_primary"
+				android:fitsSystemWindows="true"
+				app:layout_collapseMode="parallax"
+				app:layout_collapseParallaxMultiplier="0.4">
+
+				<FrameLayout
+					android:id="@+id/map_container"
+					android:layout_width="match_parent"
+					android:layout_height="0dp"
+					app:layout_constraintBottom_toTopOf="@+id/send_location_container"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintTop_toTopOf="parent">
+
+					<com.mapbox.mapboxsdk.maps.MapView
+						android:id="@+id/map"
+						app:mapbox_cameraZoom="16"
+						app:mapbox_uiCompass="false"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"/>
+
+					<ImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_marginBottom="22dp"
+						android:clickable="false"
+						android:focusable="false"
+						app:srcCompat="@drawable/ic_map_center_marker"
+						android:contentDescription="@string/location_placeholder"/>
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="left|bottom"
+						android:textSize="11dp"
+						android:paddingTop="2dp"
+						android:paddingBottom="2dp"
+						android:paddingLeft="4dp"
+						android:paddingRight="4dp"
+						android:background="#AAFFFFFF"
+						android:textColor="#FF111111"
+						android:text="@string/lp_map_copyright"/>
+
+				</FrameLayout>
+
+				<ImageButton
+					android:id="@+id/center_map"
+					android:layout_width="@dimen/lp_button_my_location_size"
+					android:layout_height="@dimen/lp_button_my_location_size"
+					android:layout_marginRight="@dimen/lp_default_margin"
+					android:layout_marginBottom="@dimen/lp_default_margin"
+					android:background="@drawable/circle_white"
+					android:elevation="4dp"
+					android:tint="@color/text_color_secondary"
+					app:layout_constraintBottom_toBottomOf="@id/map_container"
+					app:layout_constraintRight_toRightOf="@id/map_container"
+					app:srcCompat="@drawable/ic_gps_fixed"
+					tools:ignore="ContentDescription"/>
+
+				<FrameLayout
+					android:id="@+id/send_location_container"
+					android:layout_width="match_parent"
+					android:layout_height="64dp"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintLeft_toLeftOf="parent"
+					app:layout_constraintLeft_toRightOf="parent"
+					android:background="?attr/selectableItemBackground"
+					android:contentDescription="@string/lp_select_this_place"
+					android:clickable="true"
+					android:focusable="true">
+
+					<ImageView
+						android:id="@+id/send_location_icon"
+						android:layout_width="@dimen/lp_icon_size_small"
+						android:layout_height="@dimen/lp_icon_size_small"
+						android:layout_marginLeft="@dimen/lp_guide_start_margin"
+						android:contentDescription="@string/lp_select_this_place"
+						android:layout_gravity="left|center_vertical"
+						app:srcCompat="@drawable/ic_map_marker_outline"
+						app:tint="?android:textColorSecondary"
+						android:clickable="false"/>
+
+					<TextView
+						android:id="@+id/send_location_text"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="@dimen/lp_guide_content_margin"
+						android:text="@string/lp_select_this_place"
+						android:textAppearance="@style/Threema.TextAppearance.Subtitle1"
+						android:textColor="?android:textColorPrimary"
+						android:layout_gravity="left|center_vertical"
+						android:clickable="false"/>
+
+					<androidx.core.widget.ContentLoadingProgressBar
+						android:id="@+id/loading_progressbar"
+						style="@style/Widget.AppCompat.ProgressBar"
+						android:layout_width="@dimen/lp_icon_size_small"
+						android:layout_height="@dimen/lp_icon_size_small"
+						android:layout_marginRight="@dimen/lp_guide_end_margin"
+						android:indeterminate="true"
+						android:visibility="gone"
+						android:layout_gravity="right|center_vertical"/>
+
+				</FrameLayout>
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+			<androidx.appcompat.widget.Toolbar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				app:layout_collapseMode="pin"
+				app:title="@string/send_location" />
+
+			<com.google.android.material.card.MaterialCardView
+				android:id="@+id/search_container"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/lp_card_search_height"
+				android:layout_marginLeft="@dimen/lp_card_search_margin_horizontal"
+				android:layout_marginTop="@dimen/lp_card_search_margin_top"
+				android:layout_marginRight="@dimen/lp_card_search_margin_horizontal"
+				app:cardCornerRadius="@dimen/edittext_bubble_border_radius"
+				app:cardBackgroundColor="?attr/background_primary"
+				app:cardElevation="4dp"
+				app:layout_collapseMode="parallax"
+				app:layout_collapseParallaxMultiplier="0.7">
+
+				<ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_vertical"
+					android:layout_marginLeft="@dimen/lp_card_search_content_start_margin"
+					android:contentDescription="@string/search"
+					app:tint="?android:textColorSecondary"
+					app:srcCompat="@drawable/ic_search_outline" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_vertical"
+					android:layout_marginLeft="@dimen/lp_card_search_content_margin"
+					android:text="@string/search"
+					android:textAppearance="@style/Threema.TextAppearance.Body1"
+					android:textColor="?android:textColorSecondary" />
+
+			</com.google.android.material.card.MaterialCardView>
+
+		</com.google.android.material.appbar.CollapsingToolbarLayout>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<androidx.core.widget.NestedScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="?attr/background_secondary"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/poi_list_description"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="@dimen/lp_guide_start_margin"
+				android:layout_marginTop="@dimen/lp_default_margin"
+				android:layout_marginBottom="8dp"
+				android:text="@string/lp_or_select_nearby"
+				android:textAppearance="@style/Threema.TextAppearance.Body2"
+				android:textColor="?android:textColorSecondary" />
+
+			<ch.threema.app.ui.EmptyRecyclerView
+				android:id="@+id/poi_list"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				app:layout_behavior="@string/appbar_scrolling_view_behavior"
+				tools:listitem="@layout/item_location_picker_place" />
+
+		</LinearLayout>
+	</androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

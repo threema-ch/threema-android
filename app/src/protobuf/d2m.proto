@@ -1,0 +1,460 @@
+syntax = "proto3";
+
+package d2m;
+
+option java_package = "ch.threema.protobuf.d2m";
+
+// Device to Mediator Protocol
+// ===========================
+//
+// General Information
+// -------------------
+//
+// Encryption format: 24 byte nonce prepended, followed by an NaCl box.
+//
+// All strings are UTF-8 encoded.
+//
+// Terminology
+// -----------
+//
+// - `MK`: Mediator Key (Client)
+// - `MPK`: Mediator Path Key (Client)
+// - `TPK`: Temporary Path Key (Server)
+// - `Box(A, B)`: A NaCl box encrypted with A and B
+// - `Device ID`: Refers to the *Mediator Device ID*
+//
+// Common Header
+// -------------
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |     Type      |                   Reserved                    |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Payload                          ...
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Type: 1 byte (u8)
+//
+//   Identifies the payload type contained in the `Payload` field.
+//
+// Reserved: 3 byte
+//
+//   Should be set to all `0`s and ignored by the receiver.
+//
+// Payload: 0..65532 byte
+//
+//   A payload, which can look differently depending on the payload type.
+
+
+// Send along client information when connecting to the mediator server.
+//
+// This message is serialized, hex-encoded (lowercase) and then used as the
+// WebSocket path.
+//
+// Type: n/a
+// Direction: Client -> Server
+message ClientUrlInfo {
+    // 32 byte mediator path public key
+    bytes mpk = 1;
+
+    // Server group, as assigned by the server when the Threema identity has
+    // been created.
+    uint32 server_group = 2;
+}
+
+
+// Proxy a message to/from the chat server.
+//
+// Name: Proxy
+// Type: 0x00
+// Direction: Client <-> Server
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                             Data                           ...
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Data: 0..65532 byte
+//
+//   The data to be proxied to/from the chat server, encrypted by following
+//   the Chat Server Protocol.
+
+
+
+// Initial message from the server, containing an authentication challenge.
+//
+// Type: 0x10
+// Direction: Client <-- Server
+message ServerHello {
+  // Highest protocol version the server supports
+  uint32 version = 1;
+
+  // 32 byte temporary public key
+  bytes tpk = 2;
+
+  // 32 byte random challenge
+  bytes challenge = 3;
+}
+
+// Policy determining the device slot's lifetime.
+enum DeviceSlotExpirationPolicy {
+  // The device slot should be removed shortly after the device
+  // disconnected. However, there should be a delay of several minutes to
+  // ensure that the device can reconnect if it disconnected unintentionally.
+  VOLATILE = 0;
+  // The device slot should be kept as long as possible
+  PERSISTENT = 1;
+}
+
+// Initial message from the client, containing the authentication challenge
+// response and additional login information.
+//
+// Type: 0x11
+// Direction: Client --> Server
+message ClientHello {
+  // Protocol version which the client has selected
+  uint32 version = 1;
+
+  // Challenge response (72 bytes) for authentication.
+  //
+  // The response is created using NaCl box encryption:
+  //
+  //   Box(MPK.secret, TPK.public)
+  //    .encrypt(data=<challenge>, nonce=<random>)
+  //
+  // The nonce is then prepended to the encrypted challenge.
+  //
+  //   nonce (24 bytes) || encrypted-box (16 + 32 bytes)
+  bytes response = 2;
+
+  // Unique device id
+  fixed64 device_id = 3;
+
+  // Policy to be applied in case the device id is not registered on the server
+  // and all device slots have been exhausted.
+  enum DeviceSlotsExhaustedPolicy {
+    // Terminate the connection
+    REJECT = 0;
+    // Drop the least recently used device
+    DROP_LEAST_RECENT = 1;
+  }
+  DeviceSlotsExhaustedPolicy device_slots_exhausted_policy = 4;
+
+  // Policy determining the device slot's lifetime
+  DeviceSlotExpirationPolicy device_slot_expiration_policy = 5;
+
+  // Device info (`d2d.DeviceInfo`), encrypted by `MK.secret`
+  bytes encrypted_device_info = 6;
+}
+
+// Parts of the server's configuration and the device slot state.
+//
+// Type: 0x12
+// Direction: Client <-- Server
+message ServerInfo {
+  // Maximum number of device slots
+  uint32 max_device_slots = 1;
+
+  // Informs the device about its device slot state on the server
+  enum DeviceSlotState {
+    // A new device slot has been allocated for the device (i.e. the device's
+    // id was not registered on the server).
+    NEW = 0;
+    // An existing device slot has been reused for the device (i.e. the
+    // device's id is already registered on the server).
+    EXISTING = 1;
+  }
+  DeviceSlotState device_slot_state = 2;
+
+  // Device data shared among devices (`SharedDeviceData`), encrypted by
+  // `MK.secret`.
+  bytes encrypted_shared_device_data = 3;
+}
+
+
+
+// The device's reflection queue on the server has been fully transmitted to
+// the device.
+//
+// Note: This does not mean that reflected messages have already been
+//       acknowledged by the device!
+//
+// Type: 0x20
+// Direction: Client <-- Server
+message ReflectionQueueDry {
+}
+
+// The device's role has been promoted to leader, indicating that the device
+// should now request to receive and reflect messages from the chat server.
+//
+// Type: 0x21
+// Direction: Client <-- Server
+message RolePromotedToLeader {
+}
+
+
+
+// Request device information of all devices.
+//
+// Type: 0x30
+// Direction: Client --> Server
+message GetDevicesInfo {
+}
+
+// Device information of all devices.
+//
+// Type: 0x31
+// Direction: Client <-- Server
+message DevicesInfo {
+  // Device id to (augmented) device info map of all devices.
+  message AugmentedDeviceInfo {
+    // Device info (`d2d.DeviceInfo`), encrypted by `MK.secret`.
+    bytes encrypted_device_info = 1;
+
+    // Unix-ish timestamp in milliseconds containing the most recent login
+    // time of the device.
+    uint64 last_login_at = 2;
+
+    // Expiration policy of the device.
+    DeviceSlotExpirationPolicy device_slot_expiration_policy = 3;
+  }
+  map<fixed64, AugmentedDeviceInfo> augmented_device_info = 1;
+}
+
+// Request to drop a device and free its device slot.
+//
+// Type: 0x32
+// Direction: Client --> Server
+message DropDevice {
+  // Unique device id
+  fixed64 device_id = 1;
+}
+
+// Acknowledges that a device has been dropped and the device slot has been
+// free'd.
+//
+// Type: 0x33
+// Direction: Client <-- Server
+message DropDeviceAck {
+  // Unique device id
+  fixed64 device_id = 1;
+}
+
+// Set the shared device data which is being sent to each device during login.
+//
+// Type: 0x34
+// Direction: Client --> Server
+message SetSharedDeviceData {
+  // Device data shared among devices (`SharedDeviceData`), encrypted by
+  // `MK.secret`.
+  bytes encrypted_shared_device_data = 1;
+}
+
+
+
+// Acquires a device group lock for an atomic operation shared across the
+// device group.
+//
+// Reflection messages from the device to the mediator server will only be
+// reflected once the transaction is committed.
+//
+// Type: 0x40
+// Direction: Client --> Server
+message BeginTransaction {
+  // The transaction scope (`TransactionScope` in D2D), encrypted by
+  // `MK.secret`
+  bytes encrypted_scope = 1;
+}
+
+// Acknowledges that the device group lock has been acquired and that the
+// transaction has been started.
+//
+// Type: 0x41
+// Direction: Client <-- Server
+message BeginTransactionAck {
+}
+
+// Commits a transaction, releases a device group lock.
+//
+// Type: 0x42
+// Direction: Client --> Server
+message CommitTransaction {
+}
+
+// Acknowledges that the transaction has been committed and that the device
+// group lock has been released.
+//
+// Type: 0x43
+// Direction: Client <-- Server
+message CommitTransactionAck {
+}
+
+// A `BeginTransaction` request is rejected because another transaction is
+// already in process.
+//
+// Type: 0x44
+// Direction: Client <-- Server
+message TransactionRejected {
+  // The device that currently holds the lock
+  fixed64 device_id = 1;
+
+  // The encrypted transaction scope associated with the currently locked transaction
+  bytes encrypted_scope = 2;
+}
+
+// When a transaction ends (either because it was committed or because the
+// device disconnected), this message is sent to all connected devices except
+// for the device that committed the transaction.
+//
+// This can be used by the other devices as a "retry signal" if a previous
+// "BeginTransaction" attempt was unsuccessful.
+//
+// Type: 0x45
+// Direction: Client <-- Server
+message TransactionEnded {
+  // The device that held the lock up until now
+  fixed64 device_id = 1;
+
+  // The encrypted transaction scope associated with the transaction that just ended
+  bytes encrypted_scope = 2;
+}
+
+
+
+// Reflect a message into the reflection queue of all other devices.
+//
+// Name: Reflect
+// Type: 0x80
+// Direction: Client --> Server
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |    HL = 8     |                   Reserved                    |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                          Reflect ID                           |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Envelope                         ...
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Header Length (HL): 1 byte (u8)
+//
+//   Contains the length of the header, including the header length field
+//   itself (but not the common header), excluding the envelope.
+//   Currently, this value will always be set to `8`.
+//
+// Reserved: 3 byte
+//
+//   Should be set to all `0`s and ignored by the receiver.
+//
+// Reflect ID: 4 byte (u32, little endian)
+//
+//   Unique number (per connection) used for acknowledgement.
+//
+// Envelope: 0..65276 byte
+//
+//   The protobuf-encoded and encrypted data to be reflected, encrypted by `MK.secret`.
+//   See `d2d.proto` for details on the `Envelope` contents.
+
+
+// Acknowledges that a message to be reflected to all other devices has been
+// stored in their respective reflection queues.
+//
+// Name: ReflectAck
+// Type: 0x81
+// Direction: Client <-- Server
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Reserved                            |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                          Reflect ID                           |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Timestamp                           |
+// |                                                               |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Reserved: 4 byte
+//
+//   Should be set to all `0`s and ignored by the receiver.
+//
+// Reflect ID: 4 byte (u32, little endian)
+//
+//   Refers to the `Reflect ID` as sent in the `Reflect` message.
+//
+// Timestamp: 8 byte (u64, little endian)
+//
+//   Unix-ish timestamp in milliseconds when the message has been stored in
+//   the reflection queue of the mediator server.
+
+
+// Deliver a message from the device's reflection queue.
+//
+// Name: Reflected
+// Type: 0x82
+// Direction: Client <-- Server
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |    HL = 8     |                   Reserved                    |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                         Reflected ID                          |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Timestamp                           |
+// |                                                               |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Envelope                        ...
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Header Length (HL): 1 byte (u8)
+//
+//   Contains the length of the header, including the header length field
+//   itself (but not the common header), excluding the envelope.
+//   Currently, this value will always be set to `16`.
+//
+// Reserved: 3 byte
+//
+//   Should be set to all `0`s and ignored by the receiver.
+//
+// Reflected ID: 4 byte (u32, little endian)
+//
+//   Monotonically increasing unique number (per device slot) used for
+//   acknowledgement. May wrap.
+//
+// Timestamp: 8 byte (u64, little endian)
+//
+//   Unix-ish timestamp in milliseconds when the message has been stored in
+//   the reflection queue of the mediator server.
+//
+// Envelope: 0..65276 byte
+//
+//   The protobuf-encoded and encrypted data to be reflected, encrypted by `MK.secret`.
+//   See `d2d.proto` for details on the `Envelope` contents.
+
+
+// Acknowledges that a reflected message has been processed by the device.
+//
+// Name: ReflectedAck
+// Type: 0x83
+// Direction: Client --> Server
+//
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           Reserved                            |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                         Reflected ID                          |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// Reserved: 4 byte
+//
+//   Should be set to all `0`s and ignored by the receiver.
+//
+// Reflected ID: 4 byte (u32, little endian)
+//
+//   Refers to the `Reflected ID` as sent in the `Reflected` message.
+

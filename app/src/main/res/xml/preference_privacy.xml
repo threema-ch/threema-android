@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:key="pref_key_privacy"
+                  android:persistent="true"
+                  android:summary="@string/prefs_sum_privacy"
+                  android:title="@string/prefs_privacy">
+
+	<PreferenceCategory
+		android:key="pref_key_conatcts"
+		android:title="@string/prefs_header_contacts">
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="@string/preferences__sync_contacts"
+			android:summaryOff="@string/prefs_sum_sync_contacts_off"
+			android:summaryOn="@string/prefs_sum_sync_contacts_on"
+			android:title="@string/prefs_title_sync_contacts"
+			android:icon="@drawable/ic_sync_outline"
+			android:widgetLayout="@layout/preference_switch_layout"/>
+
+		<Preference
+			android:dependency="@string/preferences__sync_contacts"
+			android:key="@string/preferences__validate_contacts"
+			android:summary="@string/prefs_sum_validate_contacts"
+			android:title="@string/prefs_validate_contacts"/>
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="@string/preferences__block_unknown"
+			android:summaryOff="@string/prefs_sum_block_unknown_off"
+			android:summaryOn="@string/prefs_sum_block_unknown_on"
+			android:title="@string/prefs_title_block_unknown"
+			android:icon="@drawable/ic_block"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_chat"
+		android:title="@string/prefs_header_chat">
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__read_receipts"
+			android:title="@string/prefs_title_read_receipts"/>
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__typing_indicator"
+			android:title="@string/prefs_title_typing_indicator"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_lists"
+		android:title="@string/prefs_header_lists">
+
+		<Preference
+			android:enabled="true"
+			android:key="pref_excluded_sync_identities"
+			android:summary="@string/prefs_sum_excluded_sync_identities"
+			android:title="@string/prefs_title_excluded_sync_identities"/>
+
+		<Preference
+			android:enabled="true"
+			android:key="pref_black_list"
+			android:summary="@string/prefs_sum_black_list"
+			android:title="@string/prefs_title_black_list"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_other"
+		android:title="@string/prefs_header_other">
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="@string/preferences__hide_screenshots"
+			android:summary="@string/prefs_summary_hide_screenshots"
+			android:icon="@drawable/ic_screenshot_outline"
+			android:title="@string/prefs_title_hide_screenshots"/>
+
+		<Preference
+			android:key="@string/preferences__hide_screenshots_notice"
+			android:summary="@string/prefs_summary_hide_screenshots_notice"
+			android:icon="@drawable/ic_info_outline"/>
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="@string/preferences__incognito_keyboard"
+			android:icon="@drawable/ic_keyboard_outline"
+			android:summary="@string/prefs_sum_incognito_keyboard"
+			android:title="@string/prefs_title_incognito_keyboard"/>
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__direct_share"
+			android:summary="@string/prefs_sum_direct_share"
+			android:title="@string/prefs_title_direct_share"/>
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__show_unread_badge"
+			android:summary="@string/prefs_sum_show_unread_badge"
+			android:title="@string/prefs_title_show_unread_badge"/>
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="@string/preferences__disable_smart_replies"
+			android:summary="@string/prefs_sum_disable_smart_replies"
+			android:title="@string/prefs_title_disable_smart_replies"/>
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

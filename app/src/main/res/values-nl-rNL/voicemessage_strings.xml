@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Bericht opnemen</string>
+    <string name="recording_stopped_title">Opname gestopt</string>
+    <string name="recording_stopped_message">Wilt u het opgenomen gesproken bericht versturen?</string>
+    <string name="recording_canceled">Opname is onderbroken vanwege een onbekende fout.</string>
+    <string name="cancel_recording">Opname annuleren</string>
+    <string name="cancel_recording_message">Weet u zeker dat u de opname wilt annuleren?</string>
+    <string name="stop">Stoppen</string>
+</resources>

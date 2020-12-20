@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:id="@+id/top_view"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+	<include layout="@layout/background_new_wizard"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:paddingBottom="@dimen/wizard_contents_padding"
+		android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+		android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+		android:paddingTop="@dimen/wizard_contents_padding">
+
+		<TextView
+			android:id="@+id/safe_restore_title"
+			style="@style/WizardTitleText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:gravity="center_horizontal"
+			android:text="@string/safe_restore"/>
+
+		<TextView
+			android:id="@+id/safe_restore_subtitle"
+			style="@style/WizardSmallText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginTop="16dp"
+			android:gravity="center_horizontal"
+			android:text="@string/safe_restore_enter_id"/>
+
+		<TextView
+			android:id="@+id/forgot_id"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="4dp"
+			android:layout_marginTop="24dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:gravity="right"
+			android:text="@string/forgot_your_id"
+			android:textColor="@color/new_wizard_color_accent"
+			android:textSize="14sp"/>
+
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/safe_id_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:hintAnimationEnabled="false"
+			app:hintEnabled="false">
+
+			<ch.threema.app.ui.ThreemaTextInputEditText
+				android:id="@+id/safe_edit_id"
+				style="@style/WizardEditText"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:hint="@string/safe_threema_id"
+				android:inputType="textWebEditText"
+				android:singleLine="true">
+
+			</ch.threema.app.ui.ThreemaTextInputEditText>
+
+		</com.google.android.material.textfield.TextInputLayout>
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/advanced_options"
+			style="@style/WizardButtonInverse"
+			android:layout_width="wrap_content"
+			android:layout_marginTop="16dp"
+			android:text="@string/safe_advanced_options"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal|bottom"
+		android:layout_marginBottom="@dimen/wizard_contents_padding"
+		android:gravity="bottom"
+		android:orientation="horizontal"
+		android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+		android:paddingRight="@dimen/wizard_contents_padding_horizontal">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/backup_restore_other_button"
+			style="@style/WizardButtonInverse"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_gravity="bottom|left"
+			android:layout_marginRight="8dp"
+			android:layout_weight="1"
+			android:text="@string/backup_other_restore_options"/>
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/safe_restore_button"
+			style="@style/WizardButtonRegular"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_gravity="bottom|right"
+			android:layout_marginLeft="8dp"
+			android:layout_weight="1"
+			android:text="@string/restore"/>
+
+	</LinearLayout>
+
+</FrameLayout>

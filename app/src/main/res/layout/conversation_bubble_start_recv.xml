@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ch.threema.app.ui.AvatarView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/avatar_view"
+	android:layout_width="@dimen/avatar_size_small"
+	android:layout_height="@dimen/avatar_size_small"
+	android:clickable="true"
+	android:foreground="@drawable/selector_avatar"
+	android:contentDescription="@string/threema_contact"/>

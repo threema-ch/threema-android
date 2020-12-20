@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/gallery_background">
+
+	<ImageView
+		android:id="@+id/preview_image"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:scaleType="fitCenter"/>
+
+	<ProgressBar
+		android:id="@+id/progress_bar"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_gravity="center"
+		android:indeterminate="true"
+		android:visibility="gone"/>
+
+	<pl.droidsonroids.gif.GifImageView
+		android:id="@+id/gif_view"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"/>
+
+	<TextView
+		android:id="@+id/empty_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:fontFamily="sans-serif-light"
+		android:gravity="center_horizontal"
+		android:paddingLeft="10dp"
+		android:paddingRight="10dp"
+		android:textColor="@android:color/white"
+		android:textSize="18sp"
+		android:visibility="gone"/>
+
+	<TextView
+		android:id="@+id/filename_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal|top"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:layout_marginTop="96dp"
+		android:textAlignment="center"
+		android:textColor="@color/dark_text_color_secondary"
+		android:textSize="16sp"
+		android:visibility="gone"/>
+
+	<include layout="@layout/exo_player_control_view"/>
+
+</FrameLayout>
