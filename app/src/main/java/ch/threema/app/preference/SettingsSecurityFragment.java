@@ -100,38 +100,17 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		hiddenChatsListService = ThreemaApplication.getServiceManager().getHiddenChatsListService();
 
 		addPreferencesFromResource(R.xml.preference_security);
-		preferenceScreen = (PreferenceScreen) findPreference("pref_key_security");
-
-		if (preferenceScreen == null) {
-			return;
-		}
-		// disable prefs for now - we will re-enable them when prefs are unlocked
-		preferenceScreen.setEnabled(false);
-
-		// ask for pin before entering
-		if (preferenceService.getLockMechanism().equals(LockingMech_NONE)) {
-			onCreateUnlocked();
-		} else {
-			if ((preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_PIN)) && !preferenceService.isPinSet()) {
-				// fix misconfiguration
-				preferenceService.setLockMechanism(LockingMech_NONE);
-				onCreateUnlocked();
-			} else {
-				if (savedInstanceState == null) {
-					HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
-				}
-			}
-		}
+		preferenceScreen = findPreference("pref_key_security");
 	}
 
 	private void onCreateUnlocked() {
 		logger.debug("### onCreateUnlocked");
-		preferenceScreen.setEnabled(true);
+		fragmentView.setVisibility(View.VISIBLE);
 
-		uiLockSwitchPreference = (TwoStatePreference) findPreference(getResources().getString(R.string.preferences__lock_ui_switch));
-		lockMechanismPreference = (DropDownPreference) findPreference(getResources().getString(R.string.preferences__lock_mechanism));
+		uiLockSwitchPreference = findPreference(getResources().getString(R.string.preferences__lock_ui_switch));
+		lockMechanismPreference = findPreference(getResources().getString(R.string.preferences__lock_mechanism));
 		pinPreference = findPreference(getResources().getString(R.string.preferences__pin_lock_code));
-		gracePreference = (DropDownPreference) findPreference(getResources().getString(R.string.preferences__pin_lock_grace_time));
+		gracePreference = findPreference(getResources().getString(R.string.preferences__pin_lock_grace_time));
 
 		//get pin switch pref from service!
 		uiLockSwitchPreference.setChecked(preferenceService.isAppLockEnabled());
@@ -349,15 +328,33 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 				preferenceService.setPin(null);
 				break;
 		}
-
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+		logger.debug("### onViewCreated");
+
+		// we make the complete fragment invisible until it's been unlocked
 		fragmentView = view;
+		fragmentView.setVisibility(View.INVISIBLE);
 
 		preferenceFragmentCallbackInterface.setToolbarTitle(R.string.prefs_security);
 		super.onViewCreated(view, savedInstanceState);
+
+		// ask for pin before entering
+		if (preferenceService.getLockMechanism().equals(LockingMech_NONE)) {
+			onCreateUnlocked();
+		} else {
+			if ((preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_PIN)) && !preferenceService.isPinSet()) {
+				// fix misconfiguration
+				preferenceService.setLockMechanism(LockingMech_NONE);
+				onCreateUnlocked();
+			} else {
+				if (savedInstanceState == null) {
+					HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -478,7 +475,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 				@Override
 				public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
 					super.onAuthenticationSucceeded(result);
-					Snackbar.make(fragmentView, R.string.biometric_authnetication_successful, Snackbar.LENGTH_LONG).show();
+					Snackbar.make(fragmentView, R.string.biometric_authentication_successful, Snackbar.LENGTH_LONG).show();
 
 					lockMechanismPreference.setValue(PreferenceService.LockingMech_BIOMETRIC);
 					if (uiLockSwitchPreference.isChecked()) {

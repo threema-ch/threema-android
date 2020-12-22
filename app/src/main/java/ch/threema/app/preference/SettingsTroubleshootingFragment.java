@@ -62,6 +62,7 @@ import ch.threema.app.FcmRegistrationIntentService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
+import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -85,6 +86,7 @@ import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -589,8 +591,22 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 							ConfigUtils.getFullAppVersion(getActivity()) + "\n" +
 							userService.getIdentity(), receiver);
 
-					messageService.sendMedia(Collections.singletonList(new MediaItem(Uri.fromFile(zipFile), MediaItem.TYPE_NONE)),
-						Collections.singletonList(receiver));
+					MediaItem mediaItem = new MediaItem(Uri.fromFile(zipFile), MediaItem.TYPE_NONE);
+					mediaItem.setFilename(zipFile.getName());
+					mediaItem.setMimeType(MimeUtil.MIME_TYPE_ZIP);
+
+					messageService.sendMedia(Collections.singletonList(mediaItem),
+						Collections.singletonList(receiver), new RecipientListBaseActivity.SendCompletionHandler() {
+							@Override
+							public void onError(String errorMessage) {
+								RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.an_error_occurred_during_send, Toast.LENGTH_LONG).show());
+							}
+
+							@Override
+							public void onCompleted() {
+								RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.message_sent, Toast.LENGTH_LONG).show());
+							}
+						});
 				} catch (Exception e) {
 					return e;
 				}

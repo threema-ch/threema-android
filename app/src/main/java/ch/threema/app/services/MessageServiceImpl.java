@@ -34,7 +34,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.DocumentsContract;
-import android.provider.OpenableColumns;
 import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 import android.widget.Toast;
@@ -3655,17 +3654,14 @@ public class MessageServiceImpl implements MessageService {
 		for (MediaItem mediaItem : mediaItems) {
 			final Map<MessageReceiver, AbstractMessageModel> messageModels = new HashMap<>();
 
-			final FileDataModel fileDataModel = createFileDataModel(
-				context,
-				mediaItem.getUri(),
-				context.getContentResolver(),
-				null,
-				mediaItem.getMimeType(),
-				mediaItem.getRenderingType()
-			);
+			final FileDataModel fileDataModel = createFileDataModel(context, mediaItem);
+			if (fileDataModel == null) {
+				logger.info("Unable to create FileDataModel");
+				continue;
+			}
 
 			if (!createMessagesAndSetPending(mediaItem, resolvedReceivers, messageModels, fileDataModel)) {
-				logger.debug("Unable to create messages ");
+				logger.info("Unable to create messages ");
 				continue;
 			}
 
@@ -3681,7 +3677,7 @@ public class MessageServiceImpl implements MessageService {
 
 			final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel);
 			if (contentData != null) {
-				if (encryptAndSend(mediaItem, resolvedReceivers, messageModels, fileDataModel, thumbnailData, contentData)) {
+				if (encryptAndSend(resolvedReceivers, messageModels, fileDataModel, thumbnailData, contentData)) {
 					successfulMessageModel = messageModels.get(resolvedReceivers[0]);
 				}
 			} else {
@@ -3728,38 +3724,7 @@ public class MessageServiceImpl implements MessageService {
 	 * Update the FileDataModel with data from the MediaItem such as file name and rendering type
 	 */
 	private void updateFileDataModel(@NonNull MediaItem mediaItem, @NonNull FileDataModel fileDataModel) {
-		fileDataModel.setCaption(mediaItem.getCaption());
-		fileDataModel.isDownloaded(true);
-		if (TestUtil.empty(mediaItem.getFilename())) {
-			fileDataModel.setFileName(FileUtil.getDefaultFilename(mediaItem.getMimeType()));
-		} else {
-			fileDataModel.setFileName(mediaItem.getFilename());
-		}
 
-		switch (mediaItem.getType()) {
-			case TYPE_VOICEMESSAGE:
-				fileDataModel.setFileName(FileUtil.getDefaultFilename(mediaItem.getMimeType())); // the internal temporary file name is of no use to the recipient
-				fileDataModel.setRenderingType(FileData.RENDERING_MEDIA);
-				break;
-			case TYPE_GIF:
-				fileDataModel.setRenderingType(FileData.RENDERING_MEDIA);
-				break;
-			case TYPE_NONE:
-				// "regular" file messages
-				fileDataModel.setRenderingType(FileData.RENDERING_DEFAULT);
-				break;
-			default:
-				if (mediaItem.getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE) {
-					// images with scale type "send as file" get the default rendering type and a file name
-					fileDataModel.setRenderingType(FileData.RENDERING_DEFAULT);
-					mediaItem.setType(TYPE_NONE);
-				} else {
-					// unlike with "real" files we override the filename for regular images with a generic one to prevent privacy leaks
-					// this mimics the behavior of traditional image messages that did not have a filename at all
-					fileDataModel.setFileName(FileUtil.getDefaultFilename(mediaItem.getMimeType()));
-				}
-				break;
-		}
 	}
 
 	/**
@@ -3953,7 +3918,6 @@ public class MessageServiceImpl implements MessageService {
 
 	/**
 	 * Encrypt content and thumbnail data, upload blobs and queue messages for the specified MediaItem
-	 * @param mediaItem MediaItem to send
 	 * @param resolvedReceivers MessageReceivers to send the MediaItem to
 	 * @param messageModels MessageModels for above MessageReceivers
 	 * @param fileDataModel fileDataModel for this message
@@ -3962,7 +3926,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @return true if the message was queued successfully, false otherwise. Note that errors that occur during sending are not handled here.
 	 */
 	@WorkerThread
-	private boolean encryptAndSend(@NonNull MediaItem mediaItem,
+	private boolean encryptAndSend(
 	                       @NonNull MessageReceiver[] resolvedReceivers,
 	                       @NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
 	                       @NonNull FileDataModel fileDataModel,
@@ -4168,89 +4132,89 @@ public class MessageServiceImpl implements MessageService {
 		return true;
 	}
 
-	public FileDataModel createFileDataModel(
-		Context context,
-		Uri uri,
-		ContentResolver contentResolver,
-		Map<String, Object> metaData,
-		String mimeTypeOverride,
-		@FileData.RenderingType Integer renderingTypeOverride
-	) {
-		String filename = null, mimeType = mimeTypeOverride;
-		int size = 0;
-		boolean isError = false;
+	public @Nullable FileDataModel createFileDataModel(Context context, MediaItem mediaItem) {
+		ContentResolver contentResolver = context.getContentResolver();
+		String mimeType = mediaItem.getMimeType();
+		String filename = mediaItem.getFilename();
 
-		if ("file".equalsIgnoreCase(uri.getScheme())) {
-			File file = new File(uri.getPath());
+		if (mediaItem.getUri() == null) {
+			return null;
+		}
 
-			filename = file.getName();
-			size = (int) file.length();
+		if ("file".equalsIgnoreCase(mediaItem.getUri().getScheme())) {
+			if (TestUtil.empty(filename)) {
+				File file = new File(mediaItem.getUri().getPath());
+
+				filename = file.getName();
+			}
 		} else {
-			// assuming content uri
-			{
+			if (TestUtil.empty(filename) || TestUtil.empty(mimeType)) {
 				String[] proj = {
 					DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-					DocumentsContract.Document.COLUMN_SIZE,
 					DocumentsContract.Document.COLUMN_MIME_TYPE
 				};
 
-				try (Cursor cursor = contentResolver.query(uri, proj, null, null, null)) {
+				try (Cursor cursor = contentResolver.query(mediaItem.getUri(), proj, null, null, null)) {
 					if (cursor != null && cursor.moveToFirst()) {
-						filename = cursor.getString(
-							cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
-						size = cursor.getInt(
-							cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE));
-						if (mimeTypeOverride == null || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeTypeOverride)) {
+						if (TestUtil.empty(filename)) {
+							filename = cursor.getString(
+								cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
+						}
+						if (TestUtil.empty(mimeType) || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeType)) {
 							mimeType = cursor.getString(
 								cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE));
 						}
 					}
 				} catch (Exception e) {
-					isError = true;
-				}
-			}
-
-			if (isError) {
-				String[] proj = {
-					OpenableColumns.DISPLAY_NAME,
-					OpenableColumns.SIZE
-				};
-
-				try (Cursor cursor = contentResolver.query(uri, proj, null, null, null)) {
-					if (cursor != null && cursor.moveToFirst()) {
-						filename = cursor.getString(
-							cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-						size = cursor.getInt(
-							cursor.getColumnIndex(OpenableColumns.SIZE));
-					}
-				} catch (Exception e) {
-					//
+					logger.error("Unable to query content provider", e);
 				}
 			}
 		}
 
 		if (TestUtil.empty(mimeType) || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeType)) {
-			mimeType = FileUtil.getMimeTypeFromUri(context, uri);
+			mimeType = FileUtil.getMimeTypeFromUri(context, mediaItem.getUri());
 		}
 
-		if (filename == null) {
-			filename = uri.getLastPathSegment();
+		@FileData.RenderingType int renderingType = mediaItem.getRenderingType();
+
+		// rendering type overrides
+		switch (mediaItem.getType()) {
+			case TYPE_VOICEMESSAGE:
+				filename = FileUtil.getDefaultFilename(mediaItem.getMimeType()); // the internal temporary file name is of no use to the recipient
+				renderingType = FileData.RENDERING_MEDIA;
+				break;
+			case TYPE_GIF:
+				renderingType = FileData.RENDERING_MEDIA;
+				break;
+			case TYPE_NONE:
+				// "regular" file messages
+				renderingType = FileData.RENDERING_DEFAULT;
+				break;
+			default:
+				if (mediaItem.getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE) {
+					// images with scale type "send as file" get the default rendering type and a file name
+					renderingType = FileData.RENDERING_DEFAULT;
+					mediaItem.setType(TYPE_NONE);
+				} else {
+					// unlike with "real" files we override the filename for regular images with a generic one to prevent privacy leaks
+					// this mimics the behavior of traditional image messages that did not have a filename at all
+					filename = FileUtil.getDefaultFilename(mediaItem.getMimeType()); // the internal temporary file name is of no use to the recipient
+				}
+				break;
 		}
 
-		// hack: inputcontent uris don't contain a filename. generate one.
-		if ("inputcontent".equalsIgnoreCase(filename)) {
-			if (MimeUtil.isGifFile(mimeType)) {
-				filename = FileUtil.getMediaFilenamePrefix() + ".gif";
-			}
+		if (TestUtil.empty(filename)) {
+			filename = FileUtil.getDefaultFilename(mimeType);
 		}
 
-		@FileData.RenderingType int renderingType = FileData.RENDERING_DEFAULT;
-
-		if (renderingTypeOverride != null) {
-			renderingType = renderingTypeOverride;
-		}
-
-		return new FileDataModel(mimeType, null, 0, filename, renderingType, null, false, metaData);
+		return new FileDataModel(mimeType,
+			null,
+			0,
+			filename,
+			renderingType,
+			mediaItem.getCaption(),
+			true,
+			null);
 	}
 
 	/**

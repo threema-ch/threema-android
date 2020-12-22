@@ -1121,8 +1121,8 @@ public class ComposeMessageFragment extends Fragment implements
 					@Override
 					public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
 
-						logger.debug("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
-						logger.debug("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
+						logger.info("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
+						logger.info("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
 
 						if (insets.getSystemWindowInsetBottom() == insets.getStableInsetBottom()) {
 							activity.onSoftKeyboardClosed();

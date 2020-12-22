@@ -8,66 +8,11 @@
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true">
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@id/appbar_layout"
-		android:layout_width="match_parent"
-		android:layout_height="100dp"
-		android:background="@android:color/transparent">
-
-		<com.google.android.material.appbar.CollapsingToolbarLayout
-			android:id="@id/collapsing_toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:background="@android:color/transparent"
-			app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-			<com.google.android.material.appbar.MaterialToolbar
-				android:id="@id/toolbar"
-				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
-				android:visibility="invisible"
-				app:menu="@menu/activity_media_attach"
-				app:navigationIcon="@null"
-				app:layout_collapseMode="pin">
-
-				<LinearLayout
-					android:id="@+id/toolbar_title"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:orientation="horizontal"
-					android:clickable="false"
-					android:focusable="true"
-					android:background="?attr/selectableItemBackgroundBorderless">
-
-					<TextView
-						android:id="@+id/toolbar_title_text"
-						android:layout_width="wrap_content"
-						android:layout_height="match_parent"
-						android:textColor="?android:textColorPrimary"
-						android:textSize="18sp"
-						android:ellipsize="middle"/>
-
-					<ImageView
-						android:id="@+id/dropdown_icon"
-						android:layout_width="wrap_content"
-						android:layout_height="match_parent"
-						app:srcCompat="@drawable/ic_arrow_down_filled"
-						app:tint="?attr/image_tint_default"
-						android:contentDescription="@string/filter_by_album"/>
-
-				</LinearLayout>
-
-			</com.google.android.material.appbar.MaterialToolbar>
-
-		</com.google.android.material.appbar.CollapsingToolbarLayout>
-
-	</com.google.android.material.appbar.AppBarLayout>
-
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:id="@+id/bottom_sheet_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_marginTop="?attr/actionBarSize">
+		android:layout_marginTop="20dp">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:id="@id/bottom_sheet"
@@ -106,6 +51,51 @@
 		</androidx.constraintlayout.widget.ConstraintLayout>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@id/appbar_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:elevation="0dp">
+
+		<com.google.android.material.appbar.MaterialToolbar
+			android:id="@id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:visibility="invisible"
+			app:menu="@menu/activity_media_attach"
+			app:navigationIcon="@null">
+
+			<LinearLayout
+				android:id="@+id/toolbar_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:clickable="false"
+				android:focusable="true"
+				android:background="?attr/selectableItemBackgroundBorderless">
+
+				<TextView
+					android:id="@+id/toolbar_title_text"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:textColor="?android:textColorPrimary"
+					android:textSize="18sp"
+					android:ellipsize="middle"/>
+
+				<ImageView
+					android:id="@+id/dropdown_icon"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					app:srcCompat="@drawable/ic_arrow_down_filled"
+					app:tint="?attr/image_tint_default"
+					android:contentDescription="@string/filter_by_album"/>
+
+			</LinearLayout>
+
+		</com.google.android.material.appbar.MaterialToolbar>
+
+	</com.google.android.material.appbar.AppBarLayout>
 
 	<ViewStub android:id="@+id/stub"
 		android:inflatedId="@+id/control_panel"

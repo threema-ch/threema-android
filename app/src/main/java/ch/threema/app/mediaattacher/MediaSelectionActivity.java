@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
@@ -127,6 +128,15 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 				finish();
 			}
 		});
+	}
+
+	/**
+	 * Check if the media attacher's selectable media grid can be shown
+	 * @return true if option has been enabled by user and permissions are available
+	 */
+	@Override
+	protected boolean shouldShowMediaGrid() {
+		return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	@Override

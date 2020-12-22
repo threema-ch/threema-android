@@ -973,8 +973,8 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="username_hint">Usuário</string>
     <string name="lock_option_biometric">Biométrico</string>
     <string name="biometric_enter_authentication">Para desbloquear, faça a autenticação</string>
-    <string name="biometric_authnetication_failed">Falha na autenticação</string>
-    <string name="biometric_authnetication_successful">Autenticação bem-sucedida</string>
+    <string name="biometric_authentication_failed">Falha na autenticação</string>
+    <string name="biometric_authentication_successful">Autenticação bem-sucedida</string>
     <string name="work_safe_forced_explain">Seu administrador permitiu o Threema Safe no seu dispositivo.</string>
     <string name="pin_locked_cannot_send">Aplicativo bloqueado. Não é possível enviar.</string>
     <string name="prefs_summary_hide_screenshots_notice">Observação: por motivos de privacidade, miniaturas e capturas de tela são sempre impedidas quando a proteção do aplicativo estiver habilitada</string>

@@ -978,8 +978,8 @@ almacenado.</string>
     <string name="username_hint">Nom. usuario</string>
     <string name="lock_option_biometric">Biométrico</string>
     <string name="biometric_enter_authentication">Para desbloquear debe autenticarse</string>
-    <string name="biometric_authnetication_failed">Error de autenticación</string>
-    <string name="biometric_authnetication_successful">Autenticación realizada</string>
+    <string name="biometric_authentication_failed">Error de autenticación</string>
+    <string name="biometric_authentication_successful">Autenticación realizada</string>
     <string name="work_safe_forced_explain">El administrador ha habilitado Threema Safe en su dispositivo.</string>
     <string name="pin_locked_cannot_send">Envío no permitido: aplicación bloqueada.</string>
     <string name="prefs_summary_hide_screenshots_notice">Aviso: Por razones de privacidad, se bloquean las imágenes en miniatura y las capturas de pantalla cuando la protección de la aplicación está habilitada.</string>

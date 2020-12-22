@@ -968,8 +968,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="username_hint">Nom d\'utilisateur</string>
     <string name="lock_option_biometric">Biométrique</string>
     <string name="biometric_enter_authentication">Pour déverrouiller, veuillez vous authentifier</string>
-    <string name="biometric_authnetication_failed">Échec d\'authentification</string>
-    <string name="biometric_authnetication_successful">Bien authentifié</string>
+    <string name="biometric_authentication_failed">Échec d\'authentification</string>
+    <string name="biometric_authentication_successful">Bien authentifié</string>
     <string name="work_safe_forced_explain">Vous administrateur a activé Threema Safe pour votre appareil.</string>
     <string name="pin_locked_cannot_send">L\'application est verrouillée. Envoi impossible.</string>
     <string name="prefs_summary_hide_screenshots_notice">Remarque : pour des raisons de confidentialité, les vignettes et captures d\'écran sont toujours bloqués lorsque la protection de l\'application est activée.</string>

@@ -988,8 +988,8 @@ messaggi ogni 15 minuti.</string>
     <string name="username_hint">Nome utente</string>
     <string name="lock_option_biometric">Biometrica</string>
     <string name="biometric_enter_authentication">Autenticarsi per sbloccare</string>
-    <string name="biometric_authnetication_failed">Impossibile autenticare</string>
-    <string name="biometric_authnetication_successful">Autenticazione riuscita</string>
+    <string name="biometric_authentication_failed">Impossibile autenticare</string>
+    <string name="biometric_authentication_successful">Autenticazione riuscita</string>
     <string name="work_safe_forced_explain">Il tuo amministratore ha attivato Threema Safe sul tuo dispositivo.</string>
     <string name="pin_locked_cannot_send">L\'app è bloccata. Invio non possibile.</string>
     <string name="prefs_summary_hide_screenshots_notice">Nota: per motivi di privacy, anteprime e screenshot non sono mai abilitate quando la protezione app è attivata</string>

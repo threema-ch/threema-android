@@ -1093,8 +1093,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="username_hint">Username</string>
 	<string name="lock_option_biometric">Biometrisch</string>
 	<string name="biometric_enter_authentication">Zum Entsperren bitte authentisieren</string>
-	<string name="biometric_authnetication_failed">Die Authentisierung ist fehlgeschlagen</string>
-	<string name="biometric_authnetication_successful">Sie wurden erfolgreich authentisiert</string>
+	<string name="biometric_authentication_failed">Die Authentisierung ist fehlgeschlagen</string>
+	<string name="biometric_authentication_successful">Sie wurden erfolgreich authentisiert</string>
 	<string name="work_safe_forced_explain">Ihr Administrator hat Threema Safe für Ihr Gerät aktiviert.</string>
 	<string name="pin_locked_cannot_send">App gesperrt. Senden nicht möglich.</string>
 	<string name="prefs_summary_hide_screenshots_notice">Aus Privatsphäre-Gründen werden Miniaturansichten und Screenshots bei aktivierter App-Sperre immer verhindert.</string>

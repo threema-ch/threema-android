@@ -990,8 +990,8 @@ Threema anonymně?</string>
     <string name="username_hint">Uživ. jméno</string>
     <string name="lock_option_biometric">Biometrický</string>
     <string name="biometric_enter_authentication">Pro odemknutí se autorizujte</string>
-    <string name="biometric_authnetication_failed">Chyba autorizace</string>
-    <string name="biometric_authnetication_successful">Úspěšně autorizováno</string>
+    <string name="biometric_authentication_failed">Chyba autorizace</string>
+    <string name="biometric_authentication_successful">Úspěšně autorizováno</string>
     <string name="work_safe_forced_explain">Váš správce povolil službu Threema Safe pro vaše zařízení.</string>
     <string name="pin_locked_cannot_send">Nelze odeslat. Aplikace je uzamčena.</string>
     <string name="prefs_summary_hide_screenshots_notice">Upozornění: Při zapnuté ochraně soukromí se nebudou vytvářet náhledy obrázků ani nebude možné ukládání snímků obrazovky</string>

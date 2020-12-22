@@ -967,8 +967,8 @@
     <string name="username_hint">Имя польз-ля</string>
     <string name="lock_option_biometric">Биометрия</string>
     <string name="biometric_enter_authentication">Для разблокирования выполните аутентификацию</string>
-    <string name="biometric_authnetication_failed">Сбой аутентификации</string>
-    <string name="biometric_authnetication_successful">Аутентификация успешно пройдена</string>
+    <string name="biometric_authentication_failed">Сбой аутентификации</string>
+    <string name="biometric_authentication_successful">Аутентификация успешно пройдена</string>
     <string name="work_safe_forced_explain">Ваш администратор активировал Threema Safe для вашего устройства.</string>
     <string name="pin_locked_cannot_send">Приложение заблокировано. Отправка невозможна.</string>
     <string name="prefs_summary_hide_screenshots_notice">Примечание. В целях защиты конфиденциальности при активированной защите приложения блокируются миниатюры и снимки экрана.</string>

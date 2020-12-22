@@ -1018,8 +1018,8 @@
 	<string name="username_hint">Username</string>
 	<string name="lock_option_biometric">Biometric</string>
 	<string name="biometric_enter_authentication">To unlock, please authenticate</string>
-	<string name="biometric_authnetication_failed">Authnetication failed</string>
-	<string name="biometric_authnetication_successful">Successfully authenticated</string>
+	<string name="biometric_authentication_failed">Authentication failed</string>
+	<string name="biometric_authentication_successful">Successfully authenticated</string>
 	<string name="work_safe_forced_explain">Your administrator enabled Threema Safe for your device.</string>
 	<string name="pin_locked_cannot_send">The app is locked. Cannot send.</string>
 	<string name="prefs_summary_hide_screenshots_notice">For privacy reasons, thumbnails and screenshots are always prevented when "App lock" is enabled in security settings</string>

@@ -966,8 +966,8 @@ Co plaschan ils novs emojis a tai?</string>
     <string name="username_hint">Num d\'utilisader</string>
     <string name="lock_option_biometric">biometric</string>
     <string name="biometric_enter_authentication">P.pl. autentifitgar per debloccar</string>
-    <string name="biometric_authnetication_failed">Igl ha dà in sbagl cun s\'autentifitgar</string>
-    <string name="biometric_authnetication_successful">Reussì da s\'autentifitgar</string>
+    <string name="biometric_authentication_failed">Igl ha dà in sbagl cun s\'autentifitgar</string>
+    <string name="biometric_authentication_successful">Reussì da s\'autentifitgar</string>
     <string name="work_safe_forced_explain">Tes administratur ha activà Threema Safe per tes apparat.</string>
     <string name="pin_locked_cannot_send">L\'app è bloccada. Betg pussaivel da trametter.</string>
     <string name="prefs_summary_hide_screenshots_notice">Avis: Per motivs da la sfera privata vegnan adina impedidas miniaturas e screenshots, cura ch\'è activà la protecziun da l\'app.</string>

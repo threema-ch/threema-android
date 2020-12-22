@@ -969,8 +969,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="username_hint">Gebruikersnaam</string>
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Verifieer om te ontgrendelen</string>
-    <string name="biometric_authnetication_failed">Verificatie is mislukt</string>
-    <string name="biometric_authnetication_successful">Verifiëren is gelukt</string>
+    <string name="biometric_authentication_failed">Verificatie is mislukt</string>
+    <string name="biometric_authentication_successful">Verifiëren is gelukt</string>
     <string name="work_safe_forced_explain">Uw administrator heeft uw apparaat toestemming gegeven Threema Safe te gebruiken.</string>
     <string name="pin_locked_cannot_send">De app is vergrendeld. Kan niet verzenden.</string>
     <string name="prefs_summary_hide_screenshots_notice">Let op: vanwege privacyredenen worden miniaturen en screenshots altijd geblokkeerd wanneer de appbescherming is ingeschakeld.</string>

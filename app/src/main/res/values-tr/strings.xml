@@ -1000,8 +1000,8 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="username_hint">Kullanıcı Adı</string>
     <string name="lock_option_biometric">Biyometrik</string>
     <string name="biometric_enter_authentication">Kilidi açmak için lütfen kimlik doğrulaması yapın</string>
-    <string name="biometric_authnetication_failed">Kimlik doğrulama başarısız oldu</string>
-    <string name="biometric_authnetication_successful">Başarıyla doğrulandı</string>
+    <string name="biometric_authentication_failed">Kimlik doğrulama başarısız oldu</string>
+    <string name="biometric_authentication_successful">Başarıyla doğrulandı</string>
     <string name="work_safe_forced_explain">Yöneticiniz cihazınız için Threema Safe\'i etkinleştirdi.</string>
     <string name="pin_locked_cannot_send">Uygulama kilitli. Gönderilemiyor.</string>
     <string name="prefs_summary_hide_screenshots_notice">Gizlilik nedeniyle, güvenlik ayarlarında erişim koruması etkinleştirildiğinde küçük resimler ve ekran görüntüleri her zaman önlenir.</string>

@@ -22,6 +22,8 @@
 package ch.threema.app.mediaattacher;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +37,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
-import android.transition.TransitionManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -55,7 +56,6 @@ import android.widget.TextView;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
@@ -74,7 +74,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.PopupMenuWrapper;
 import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.cursoradapter.widget.CursorAdapter;
@@ -96,6 +95,7 @@ import ch.threema.app.ui.MediaGridItemDecoration;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.OnKeyboardBackRespondingSearchView;
 import ch.threema.app.ui.SingleToast;
+import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -291,6 +291,22 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 			});
 		}
+
+		this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+				// adjust height of bottom sheet container to snap smack below toolbar
+				CoordinatorLayout bottomSheetContainer = findViewById(R.id.bottom_sheet_container);
+				int topMargin = toolbar.getHeight() - getResources().getDimensionPixelSize(R.dimen.drag_handle_height) -
+					(getResources().getDimensionPixelSize(R.dimen.drag_handle_topbottom_margin) * 2);
+
+				CoordinatorLayout.LayoutParams bottomSheetContainerLayoutParams = (CoordinatorLayout.LayoutParams) bottomSheetContainer.getLayoutParams();
+				bottomSheetContainerLayoutParams.setMargins(0, topMargin, 0, 0);
+				bottomSheetContainer.setLayoutParams(bottomSheetContainerLayoutParams);
+			}
+		});
 	}
 
 	protected void setMenu() {
@@ -423,8 +439,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	protected void setListeners() {
-		CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-		collapsingToolbarLayout.setOnClickListener(this);
+		this.appBarLayout.setOnClickListener(this);
 
 		this.searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
 			@Override
@@ -477,6 +492,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		}
 
 		BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+		bottomSheetBehavior.setExpandedOffset(50);
 		bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 			@Override
 			public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -508,8 +524,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	public void onItemLongClick(View view, int position, MediaAttachItem mediaAttachItem) {
 		Intent intent = new Intent(this, MediaPreviewActivity.class);
 		intent.putExtra(MediaPreviewActivity.EXTRA_PARCELABLE_MEDIA_ITEM, mediaAttachItem);
-		startActivity(intent);
-		overridePendingTransition(R.anim.medium_fade_in, R.anim.medium_fade_out);
+		AnimationUtil.startActivity(this, view, intent);
 	}
 
 	@UiThread
@@ -649,16 +664,18 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				menuTitleFrame.setClickable(true);
 				searchView.findViewById(R.id.search_button).setClickable(true);
 
+				toolbar.setAlpha(0f);
 				toolbar.setVisibility(View.VISIBLE);
+				toolbar.animate()
+					.alpha(1f)
+					.setDuration(100)
+					.setListener(null);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_expanded));
+					toolbar.postDelayed(
+						() -> getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_expanded)),
+						50
+					);
 				}
-
-				ConstraintSet constraintSet = new ConstraintSet();
-				constraintSet.clone(bottomSheetLayout);
-				constraintSet.connect(R.id.media_grid_recycler, ConstraintSet.TOP, R.id.bottom_sheet, ConstraintSet.TOP, 0);
-				TransitionManager.beginDelayedTransition(rootView);
-				constraintSet.applyTo(bottomSheetLayout);
 
 				if (mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty()) {
 					controlPanel.animate().translationY(controlPanel.getHeight());
@@ -674,21 +691,21 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				dateView.setVisibility(View.GONE);
 				dragHandle.setVisibility(View.VISIBLE);
 
-				ConstraintSet constraintSet2 = new ConstraintSet();
-				constraintSet2.clone(bottomSheetLayout);
-				constraintSet2.connect(R.id.drag_handle, ConstraintSet.TOP, R.id.bottom_sheet, ConstraintSet.TOP, pixelmargin);
-				constraintSet2.connect(R.id.drag_handle, ConstraintSet.BOTTOM, R.id.media_grid_recycler, ConstraintSet.TOP, pixelmargin);
-				constraintSet2.connect(R.id.media_grid_recycler, ConstraintSet.TOP, R.id.drag_handle, ConstraintSet.BOTTOM, 0);
-				TransitionManager.beginDelayedTransition(rootView);
-				constraintSet2.applyTo(bottomSheetLayout);
-
-				toolbar.setVisibility(View.GONE);
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					toolbar.postDelayed(
-						() -> getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed)),
-						50
-					);
-				}
+				toolbar.setAlpha(1f);
+				toolbar.animate()
+					.alpha(0f)
+					.setDuration(100)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							toolbar.setVisibility(View.GONE);
+						}
+					});
+				toolbar.postDelayed(() -> {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+					}
+				}, 50);
 				break;
 			case STATE_COLLAPSED:
 				dateView.setVisibility(View.GONE);

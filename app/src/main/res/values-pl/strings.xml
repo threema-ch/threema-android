@@ -985,8 +985,8 @@ anonimowo?</string>
     <string name="username_hint">Nazwa użytkownika</string>
     <string name="lock_option_biometric">Biometryczna</string>
     <string name="biometric_enter_authentication">Aby odblokować, dokonaj uwierzytelnienia</string>
-    <string name="biometric_authnetication_failed">Uwierzytelnianie nieudane</string>
-    <string name="biometric_authnetication_successful">Uwierzytelnianie udane</string>
+    <string name="biometric_authentication_failed">Uwierzytelnianie nieudane</string>
+    <string name="biometric_authentication_successful">Uwierzytelnianie udane</string>
     <string name="work_safe_forced_explain">Twój administrator włączył Threema Safe dla Twojego urządzenia.</string>
     <string name="pin_locked_cannot_send">Aplikacja jest zablokowana. Nie można wysłać.</string>
     <string name="prefs_summary_hide_screenshots_notice">Uwaga: W trosce o prywatność miniaturki i zrzuty ekranu są dezaktywowane, gdy włączona jest ochrona aplikacji.</string>

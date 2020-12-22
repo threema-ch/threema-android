@@ -70,6 +70,6 @@ public class MediaPreviewActivity extends FragmentActivity {
 	@Override
 	public void finish() {
 		super.finish();
-		overridePendingTransition(R.anim.medium_fade_in, R.anim.medium_fade_out);
+		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 	}
 }

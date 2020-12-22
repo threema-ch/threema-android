@@ -248,6 +248,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	private static final String LANDSCAPE_HEIGHT = "kbd_landscape_height";
 	private final Set<OnSoftKeyboardChangedListener> softKeyboardChangedListeners = new HashSet<>();
 	private boolean softKeyboardOpen = false;
+	private int minKeyboardSize;
 
 	public interface OnSoftKeyboardChangedListener {
 		void onKeyboardHidden();
@@ -281,13 +282,19 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	public void onSoftKeyboardOpened(int softKeyboardHeight) {
-		this.softKeyboardOpen = true;
-		saveSoftKeyboardHeight(softKeyboardHeight);
+		logger.info("Soft keyboard opened. Height = " + softKeyboardHeight + " Min = " + minKeyboardSize);
 
-		notifySoftKeyboardShown();
+		if (softKeyboardHeight >= minKeyboardSize) {
+			this.softKeyboardOpen = true;
+			saveSoftKeyboardHeight(softKeyboardHeight);
+
+			notifySoftKeyboardShown();
+		}
 	}
 
 	public void onSoftKeyboardClosed() {
+		logger.info("Soft keyboard closed");
+
 		this.softKeyboardOpen = false;
 
 		notifySoftKeyboardHidden();
@@ -344,9 +351,11 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 	public void saveSoftKeyboardHeight(int softKeyboardHeight) {
 		if (ConfigUtils.isLandscape(this)) {
+			logger.info("Keyboard height (landscape): " + softKeyboardHeight);
 			PreferenceManager.getDefaultSharedPreferences(this)
 				.edit().putInt(LANDSCAPE_HEIGHT, softKeyboardHeight).apply();
 		} else {
+			logger.info("Keyboard height (portrait): " + softKeyboardHeight);
 			PreferenceManager.getDefaultSharedPreferences(this)
 				.edit().putInt(PORTRAIT_HEIGHT, softKeyboardHeight).apply();
 		}
@@ -359,7 +368,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 			PreferenceManager.getDefaultSharedPreferences(this).getInt(LANDSCAPE_HEIGHT, getResources().getDimensionPixelSize(R.dimen.default_emoji_picker_height_landscape)) :
 			PreferenceManager.getDefaultSharedPreferences(this).getInt(PORTRAIT_HEIGHT, getResources().getDimensionPixelSize(R.dimen.default_emoji_picker_height));
 
-		if (defaultSoftKeyboardHeight < getResources().getDimensionPixelSize(R.dimen.min_keyboard_size)) {
+		if (defaultSoftKeyboardHeight < minKeyboardSize) {
 			defaultSoftKeyboardHeight = getResources().getDimensionPixelSize(isLandscape ?
 				R.dimen.default_emoji_picker_height_landscape :
 				R.dimen.default_emoji_picker_height);
@@ -376,6 +385,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	public void resetKeyboard() {
+		minKeyboardSize = getResources().getDimensionPixelSize(R.dimen.min_keyboard_size);
 		removeAllListeners();
 		softKeyboardOpen = false;
 	}
