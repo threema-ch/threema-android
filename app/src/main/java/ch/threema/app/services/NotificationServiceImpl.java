@@ -1902,6 +1902,7 @@ public class NotificationServiceImpl implements NotificationService {
 		final NotificationCompat.Builder builder = this.createImageLabelingProgressNotification();
 		if (builder != null) {
 			builder.setProgress(maxProgress, currentProgress, false);
+			builder.setContentText(currentProgress + "/" + maxProgress);
 			this.notificationManager.notify(ThreemaApplication.IMAGE_LABELING_NOTIFICATION_ID, builder.build());
 		}
 	}

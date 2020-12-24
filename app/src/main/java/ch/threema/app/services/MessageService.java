@@ -22,12 +22,10 @@
 package ch.threema.app.services;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,7 +52,6 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
-import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 /**
@@ -126,12 +123,6 @@ public interface MessageService {
 
 	String getCorrelationId();
 
-	AbstractMessageModel sendFile(final InputStream fileStream,
-	                                     Bitmap thumbnail,
-	                                     FileDataModel fileDataModel,
-	                                     String correlationId,
-	                                     MessageReceiver receiver,
-	                                     CompletionHandler completionHandler) throws Exception;
 	@WorkerThread
 	AbstractMessageModel sendMedia(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers);
 	@WorkerThread

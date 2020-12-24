@@ -1002,7 +1002,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 							if (videoFile.exists() && videoFile.length() > 0) {
 								final Uri videoUri = Uri.fromFile(videoFile);
 								if (videoUri != null) {
-									final int position = addItem(MediaItem.TYPE_VIDEO_CAM, videoUri, 0, "");
+									final int position = addItemFromCamera(MediaItem.TYPE_VIDEO_CAM, videoUri, 0);
 									showBigImage(position);
 									break;
 								}
@@ -1017,7 +1017,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 									exifRotation = (int) BitmapUtil.rotationForImage(this, cameraUri).getRotation();
 									logger.debug("*** ExifRotation: " + exifRotation);
 								} else {
-									// TODO
 									if (bigImageView != null) {
 										bigImageView.setVisibility(View.GONE);
 									}
@@ -1026,7 +1025,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 									}
 								}
 
-								final int position = addItem(MediaItem.TYPE_IMAGE_CAM, cameraUri, exifRotation, "");
+								final int position = addItemFromCamera(MediaItem.TYPE_IMAGE_CAM, cameraUri, exifRotation);
 								showBigImage(position);
 
 								break;
@@ -1087,7 +1086,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	@UiThread
-	private int addItem(int type, Uri imageUri, int imageRotation, String imageCaption) {
+	private int addItemFromCamera(int type, Uri imageUri, int imageRotation) {
 		if (mediaItems.size() >= MAX_SELECTABLE_IMAGES) {
 			Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 		}
@@ -1095,7 +1094,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		MediaItem item = new MediaItem(imageUri, type);
 		item.setRotation(imageRotation);
 		item.setExifRotation(imageRotation);
-		item.setCaption(imageCaption);
+
+		if (type == MediaItem.TYPE_VIDEO_CAM) {
+			item.setMimeType(MimeUtil.MIME_TYPE_VIDEO_MP4);
+		} else {
+			item.setMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+		}
 
 		if (sendMediaGridAdapter != null) {
 			sendMediaGridAdapter.add(item);

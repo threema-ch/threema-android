@@ -43,6 +43,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.services.messageplayer.WebClientMessagePlayer;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
 import ch.threema.app.webclient.Protocol;
@@ -174,7 +175,7 @@ public class BlobRequestHandler extends MessageReceiver {
 					//noinspection EnumSwitchStatementWhichMissesCases
 					switch (messageModel.getType()) {
 						case VOICEMESSAGE:
-							mime = "audio/aac";
+							mime = MimeUtil.MIME_TYPE_AUDIO_AAC;
 							name = filename + VoiceRecorderActivity.VOICEMESSAGE_FILE_EXTENSION;
 							break;
 						case FILE:
@@ -183,11 +184,11 @@ public class BlobRequestHandler extends MessageReceiver {
 							name = Message.fixFileName(ownFileName == null ? filename : ownFileName, mime);
 							break;
 						case VIDEO:
-							mime = "video/mp4";
+							mime = MimeUtil.MIME_TYPE_VIDEO_MP4;
 							name = filename + ".mp4";
 							break;
 						case IMAGE:
-							mime = "image/jpeg";
+							mime = MimeUtil.MIME_TYPE_IMAGE_JPG;
 							name = filename + ".jpg";
 							break;
 						default:

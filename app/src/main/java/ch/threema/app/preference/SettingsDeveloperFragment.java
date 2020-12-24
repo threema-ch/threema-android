@@ -31,6 +31,7 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Date;
 
 import androidx.annotation.Nullable;
@@ -42,6 +43,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
@@ -55,6 +57,8 @@ import ch.threema.client.voip.VoipCallAnswerData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
+
+import static ch.threema.app.ThreemaApplication.getAppContext;
 
 public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	private static final Logger logger = LoggerFactory.getLogger(SettingsDeveloperFragment.class);
@@ -88,6 +92,10 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 		generateRecursiveQuote.setSummary("Create the test identities " + TEST_IDENTITY_1 + " and "
 			+ TEST_IDENTITY_2 + " and add some test quotes.");
 		generateRecursiveQuote.setOnPreferenceClickListener(this::generateTestQuotes);
+
+		// Delete labels database
+		final Preference deleteLabelsDb = findPreference(getResources().getString(R.string.preferences__labels_delete));
+		deleteLabelsDb.setOnPreferenceClickListener(this::deleteMediaLabelsDatabase);
 
 		// Remove developer menu
 		final Preference removeMenuPreference = findPreference(getResources().getString(R.string.preferences__remove_menu));
@@ -240,6 +248,48 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 			protected void onPostExecute(@Nullable Exception e) {
 				if (e == null) {
 					showOk("Test quotes created!");
+				} else {
+					showError(e);
+				}
+			}
+		}.execute();
+		return true;
+	}
+
+	@UiThread
+	@SuppressLint("StaticFieldLeak")
+	private boolean deleteMediaLabelsDatabase(Preference preference) {
+		new AsyncTask<Void, Void, Exception>() {
+			@Override
+			protected Exception doInBackground(Void... voids) {
+				try {
+					final String[] files = new String[] {
+						MediaItemsRoomDatabase.DATABASE_NAME,
+						MediaItemsRoomDatabase.DATABASE_NAME + "-shm",
+						MediaItemsRoomDatabase.DATABASE_NAME + "-wal",
+					};
+					for (String filename : files) {
+						final File databasePath = getAppContext().getDatabasePath(filename);
+						if (databasePath.exists() && databasePath.isFile()) {
+							logger.info("Removing file {}", filename);
+							if (!databasePath.delete()) {
+								logger.warn("Could not remove file {}", filename);
+							}
+						} else {
+							logger.debug("File {} not found", filename);
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Exception while deleting media labels database");
+					return e;
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Exception e) {
+				if (e == null) {
+					showOk("Database deleted");
 				} else {
 					showError(e);
 				}

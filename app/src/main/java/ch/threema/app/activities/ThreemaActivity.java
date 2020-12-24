@@ -45,7 +45,6 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 	final static public int ACTIVITY_ID_VERIFY_MOBILE = 20005;
 	final static public int ACTIVITY_ID_CONTACT_DETAIL = 20007;
 	final static public int ACTIVITY_ID_UNLOCK_MASTER_KEY = 20008;
-	final static public int ACTIVITY_ID_PICK_IMAGE = 20009;
 	final static public int ACTIVITY_ID_PICK_CAMERA = 20011;
 	final static public int ACTIVITY_ID_PICK_CAMERA_INTERNAL = 20012;
 	final static public int ACTIVITY_ID_SET_PASSPHRASE = 20013;

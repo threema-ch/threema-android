@@ -64,15 +64,29 @@ public class MediaRepository {
 		final String[] imageProjection = this.getImageProjection();
 		final String[] videoProjection = this.getVideoProjection();
 
-		final Cursor imageCursor = appContext.getContentResolver()
-			.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageProjection, null, null, MediaStore.Images.Media.DATE_MODIFIED + " DESC");
-		final Cursor videoCursor = appContext.getContentResolver()
-			.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, videoProjection, null, null, MediaStore.Video.Media.DATE_MODIFIED + " DESC");
-
 		final List<MediaAttachItem> mediaList = new ArrayList<>();
 
-		addToMediaResults(imageCursor, mediaList,  false);
-		addToMediaResults(videoCursor, mediaList, true);
+		// Process images
+		try (Cursor imageCursor = appContext.getContentResolver().query(
+			MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+			imageProjection,
+			null,
+			null,
+			MediaStore.Images.Media.DATE_MODIFIED + " DESC"
+		)) {
+			addToMediaResults(imageCursor, mediaList, false);
+		}
+
+		// Process videos
+		try (Cursor videoCursor = appContext.getContentResolver().query(
+			MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+			videoProjection,
+			null,
+			null,
+			MediaStore.Video.Media.DATE_MODIFIED + " DESC"
+		)) {
+			addToMediaResults(videoCursor, mediaList, true);
+		}
 
 		// Sort media list from most recent descending
 		Collections.sort(mediaList, (o1, o2) -> Double.compare(o2.getDateModified(), o1.getDateModified()));
@@ -112,7 +126,7 @@ public class MediaRepository {
 
 	/**
 	 * Consume the cursor and add the entries to the provided media list.
-	 * After this method was called, the cursor is closed and should not be re-used.
+	 * The cursor will not be closed, make sure to run this method inside a try-with-resources block!
 	 */
 	@SuppressLint("NewApi")
 	@WorkerThread
@@ -156,7 +170,6 @@ public class MediaRepository {
 					mediaList.add(item);
 //				}
 			}
-			cursor.close();
 		}
 	}
 }

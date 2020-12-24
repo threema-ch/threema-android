@@ -950,7 +950,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			if (ConfigUtils.isPlayServicesInstalled(getAppContext())) {
 				cleanupOldLabelDatabase();
 
-				if (preferenceStore.getBoolean(getAppContext().getString(R.string.preferences__image_attach_previews))) {
+				if (preferenceStore.getBoolean(getAppContext().getString(R.string.preferences__image_labeling))) {
 					scheduleImageLabelingWork();
 				}
 			}

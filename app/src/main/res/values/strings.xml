@@ -1172,7 +1172,7 @@
 	<string name="an_error_occurred_during_send">An error occurred sending one or more messages.</string>
 	<string name="state_processing">processing</string>
 	<string name="passphrase_locked">Passphrase is locked</string>
-	<string name="image_labeling_new">New: Image recognition</string>
+	<string name="image_labeling_new">New: Image search</string>
 	<string name="tooltip_image_labeling">To find any particular visual media in your gallery, simply enter a term that describes the content and select it from the list of identified labels.</string>
 	<string name="selected_media">Your selection</string>
 	<string name="attach_gif">Gif</string>
@@ -1198,8 +1198,10 @@
 	<string name="show_text">Show text</string>
 	<string name="only_images_or_videos">Only images or videos can be selected</string>
 	<string name="media_gallery_gifs">GIFs</string>
-	<string name="notification_channel_image_labeling">Image labeling progress</string>
-	<string name="notification_channel_image_labeling_desc">Threema does media gallery image classification in the background</string>
-	<string name="notification_image_labeling_desc">Media gallery image classification in progress…</string>
+	<string name="notification_channel_image_labeling">Image indexing progress</string>
+	<string name="notification_channel_image_labeling_desc">Performing indexing of public gallery images in the background</string>
+	<string name="notification_image_labeling_desc">Media gallery indexing</string>
 	<string name="no_media_found_global">No media found on this device</string>
+	<string name="prefs_sum_image_labeling">Enable searching public images in your gallery by keywords</string>
+	<string name="prefs_image_labeling">Image search</string>
 </resources>

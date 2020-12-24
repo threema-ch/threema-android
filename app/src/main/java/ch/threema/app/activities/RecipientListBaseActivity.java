@@ -29,12 +29,14 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.DocumentsContract;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -410,7 +412,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								if (!(textIntent.contains("---") && textIntent.contains("WhatsApp"))) {
 									// whatsapp forwards media as rfc822 with a footer
 									// strip this footer
-									addFileToSend(MimeUtil.MIME_TYPE_TEXT, Uri.fromParts("text", textIntent, null));
+									mediaItems.add(new MediaItem(uri, MimeUtil.MIME_TYPE_TEXT, textIntent));
 								}
 							}
 						}
@@ -427,21 +429,41 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 							if (uri != null) {
 								// send text as file
-								addFileToSend("x-text/plain", uri);
+								addMediaItem("x-text/plain", uri);
 								if (textIntent != null) {
 									captionText = textIntent;
 								}
 							} else if (textIntent != null) {
-								addFileToSend(MimeUtil.MIME_TYPE_TEXT, Uri.fromParts("text", textIntent, null));
+								mediaItems.add(new MediaItem(uri, MimeUtil.MIME_TYPE_TEXT, textIntent));
 							}
 						} else {
-							// any other mime type
-							if (isForwardAsFile) {
-								// TODO
-								// force forwarding of jpegs as a file if requested
-								type = "x-threema/file";
+							if (uri != null) {
+								if ("content".equalsIgnoreCase(uri.getScheme())) {
+									// query database for correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*"
+									String[] proj = {
+										DocumentsContract.Document.COLUMN_MIME_TYPE
+									};
+
+									try (Cursor cursor = getContentResolver().query(uri, proj, null, null, null)) {
+										if (cursor != null && cursor.moveToFirst()) {
+											String mimeType = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE));
+											if (!TestUtil.empty(mimeType)) {
+												type = mimeType;
+											}
+										}
+									} catch (Exception e) {
+										logger.error("Unable to query content provider", e);
+									}
+								}
+
+								// any other mime type
+								if (isForwardAsFile) {
+									// TODO
+									// force forwarding of jpegs as a file if requested
+									type = "x-threema/file";
+								}
+								addMediaItem(type, uri);
 							}
-							addFileToSend(type, uri);
 						}
 					} else {
 						// try ClipData
@@ -452,9 +474,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								CharSequence text = clipData.getItemAt(i).getText();
 
 								if (uri1 != null) {
-									addFileToSend(type, uri1);
+									addMediaItem(type, uri1);
 								} else if (!TestUtil.empty(text)) {
-									addFileToSend(MimeUtil.MIME_TYPE_TEXT, Uri.fromParts("text", text.toString(), null));
+									mediaItems.add(new MediaItem(uri, MimeUtil.MIME_TYPE_TEXT, text.toString()));
 								}
 							}
 						}
@@ -485,7 +507,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 					// skip user selection if recipient is already known
 					if (uri != null && "smsto".equals(uri.getScheme())) {
-						addFileToSend(MimeUtil.MIME_TYPE_TEXT, Uri.fromParts("text", intent.getStringExtra("sms_body"), null));
+						mediaItems.add(new MediaItem(uri, MimeUtil.MIME_TYPE_TEXT, intent.getStringExtra("sms_body")));
 
 						final ContactModel contactModel = ContactLookupUtil.phoneNumberToContact(this, contactService, uri.getSchemeSpecificPart());
 
@@ -519,7 +541,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							{
 								String text = dataUri.getQueryParameter("text");
 								if (!TestUtil.empty(text)) {
-									addFileToSend(MimeUtil.MIME_TYPE_TEXT, Uri.fromParts("text", text, null));
+									mediaItems.add(new MediaItem(dataUri, MimeUtil.MIME_TYPE_TEXT, text));
 								}
 
 								String targetIdentity;
@@ -549,7 +571,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								if (mimeType == null) {
 									mimeType = type;
 								}
-								addFileToSend(mimeType, uri);
+								addMediaItem(mimeType, uri);
 							}
 						}
 
@@ -585,11 +607,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		setupUI();
 	}
 
-	private void addFileToSend(String mimeType, Uri uri) {
-		if (uri == null) {
-			return;
-		}
-
+	private void addMediaItem(String mimeType, @NonNull Uri uri) {
 		if ("file".equals(uri.getScheme())) {
 			String path = uri.getPath();
 			File applicationDir = new File(getApplicationInfo().dataDir);
@@ -732,7 +750,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	private void sendSharedMedia(final MessageReceiver[] messageReceivers, final Intent intent) {
 		if (messageReceivers.length == 1 && mediaItems.size() == 1 && MimeUtil.isTextFile(mediaItems.get(0).getMimeType())) {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getUri().getSchemeSpecificPart());
+			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getCaption());
 			startComposeActivity(intent);
 		} else if (messageReceivers.length > 1 || mediaItems.size() > 0) {
 			new Thread(() -> messageService.sendMedia(mediaItems, Arrays.asList(messageReceivers))).start();

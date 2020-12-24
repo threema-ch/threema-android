@@ -53,6 +53,7 @@ public class MimeUtil {
 	public static final String MIME_TYPE_IMAGE_HEIC = "image/heic";
 	public static final String MIME_TYPE_IMAGE_TIFF = "image/tiff";
 	public static final String MIME_TYPE_VIDEO_MPEG = "video/mpeg";
+	public static final String MIME_TYPE_VIDEO_MP4 = "video/mp4";
 	public static final String MIME_TYPE_VIDEO_AVC = "video/avc";
 	public static final String MIME_TYPE_AUDIO_AAC = "audio/aac";
 	public static final String MIME_TYPE_AUDIO_MIDI = "audio/midi";

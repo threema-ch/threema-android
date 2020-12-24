@@ -33,6 +33,12 @@
 			android:summary="@string/prefs_sum_save_media"
 			android:title="@string/prefs_save_media"/>
 
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__image_labeling"
+			android:summary="@string/prefs_sum_image_labeling"
+			android:title="@string/prefs_image_labeling"/>
+
 	</PreferenceCategory>
 
 	<PreferenceCategory

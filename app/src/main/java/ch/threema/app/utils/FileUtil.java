@@ -64,6 +64,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.camera.CameraActivity;
 import ch.threema.app.filepicker.FilePickerActivity;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.FileServiceImpl;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -546,9 +547,8 @@ public class FileUtil {
 			mimeType = MimeUtil.MIME_TYPE_DEFAULT;
 		}
 
-		return getMediaFilenamePrefix() +
-			"." +
-			MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+		String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+		return getMediaFilenamePrefix() + "." + extension;
 	}
 
 	public static String sanitizeFileName(String filename) {

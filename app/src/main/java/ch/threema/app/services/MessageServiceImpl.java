@@ -50,7 +50,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -624,41 +623,6 @@ public class MessageServiceImpl implements MessageService {
 		}
 	}
 
-	@Override
-	@Deprecated
-	public AbstractMessageModel sendFile(
-		final @NonNull InputStream fileStream,
-	    @Nullable Bitmap thumbnail,
-	    @NonNull FileDataModel fileDataModel,
-	    String correlationId,
-	    @NonNull MessageReceiver receiver,
-	    @Nullable CompletionHandler completionHandler
-	) throws Exception {
-		if (fileStream != null && fileStream.available() > 0) {
-			int fileStreamLength = fileStream.available();
-
-			if (ConfigUtils.checkAvailableMemory(fileStreamLength + NaCl.BOXOVERHEAD)) {
-				try {
-					byte[] fileData = new byte[fileStreamLength + NaCl.BOXOVERHEAD];
-					IOUtils.readFully(fileStream, fileData, NaCl.BOXOVERHEAD, fileStreamLength);
-					return this.sendFileMessage(fileData,
-						fileDataModel,
-						thumbnail,
-						fileStreamLength,
-						correlationId,
-						receiver,
-						completionHandler);
-				} catch (OutOfMemoryError e) {
-					throw new ThreemaException(context.getString(R.string.error_out_of_memory));
-				}
-			} else {
-				throw new ThreemaException(context.getString(R.string.error_out_of_memory));
-			}
-		} else {
-			throw new FileNotFoundException(context.getString(R.string.cannot_open_file));
-		}
-	}
-
 	private void resendFileMessage(final AbstractMessageModel messageModel,
 								  final MessageReceiver receiver,
 								  final CompletionHandler completionHandler) throws Exception {
@@ -807,213 +771,6 @@ public class MessageServiceImpl implements MessageService {
 				return this.success;
 			}
 		});
-	}
-
-	private AbstractMessageModel sendFileMessage(final byte[] fileData,
-	                                             final FileDataModel fileDataModel,
-	                                             final Bitmap thumbnail,
-	                                             final long fileSize,
-	                                             final String correlationId,
-	                                             final MessageReceiver receiver,
-	                                             final CompletionHandler completionHandler) throws Exception {
-		final String tag = "sendFileMessage";
-		logger.info(tag + ": start");
-
-		if (fileData != null) {
-			// For now, we default to PNG thumbnails for everything but JPGs
-			// TODO use PNG only for images that do not contain transparency
-			final String thumbnailMimeType = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(fileDataModel.getMimeType()) ?
-				MimeUtil.MIME_TYPE_IMAGE_JPG :
-				MimeUtil.MIME_TYPE_IMAGE_PNG;
-
-			final AbstractMessageModel messageModel = receiver.createLocalModel(
-				MessageType.FILE,
-				MimeUtil.getContentTypeFromMimeType(fileDataModel.getMimeType()),
-				new Date()
-			);
-			this.cache(messageModel);
-
-			messageModel.setOutbox(true);
-			messageModel.setState(MessageState.PENDING);
-
-			fileDataModel.isDownloaded(true);
-			fileDataModel.setThumbnailMimeType(thumbnailMimeType);
-
-			messageModel.setFileData(fileDataModel);
-			messageModel.setCorrelationId(correlationId);
-
-			//set as saved!
-			messageModel.setSaved(true);
-
-			receiver.saveLocalModel(messageModel);
-			this.fireOnCreatedMessage(messageModel);
-
-			//enqueue processing and uploading stuff...
-			this.messageSendingService.addToQueue(new MessageSendingService.MessageSendingProcess() {
-				public byte[] blobIdThumbnail;
-				public byte[] blobId;
-				public MessageReceiver.EncryptResult thumbnailEncryptResult;
-				public MessageReceiver.EncryptResult encryptResult;
-				public boolean success = false;
-				public byte[] thumbnailData;
-				@Override
-				public MessageReceiver getReceiver() {
-					return receiver;
-				}
-
-				@Override
-				public AbstractMessageModel getMessageModel() {
-					return messageModel;
-				}
-
-				@Override
-				public boolean send() throws Exception {
-					SendMachine sendMachine = getSendMachine(messageModel);
-
-					sendMachine.reset()
-							.next(new SendMachineProcess() {
-								@Override
-								public void run() throws Exception {
-									thumbnailData = null;
-
-									if (thumbnail != null) {
-										// write thumbnail first
-										if (MimeUtil.MIME_TYPE_IMAGE_JPG.equals(fileDataModel.getThumbnailMimeType())) {
-											thumbnailData = BitmapUtil.bitmapToJpegByteArray(thumbnail);
-										} else {
-											thumbnailData = BitmapUtil.bitmapToPngByteArray(thumbnail);
-										}
-										fileService.writeConversationMediaThumbnail(messageModel, thumbnailData);
-									}
-									fileService.writeConversationMedia(messageModel, fileData, NaCl.BOXOVERHEAD, (int)fileSize);
-								}
-							})
-							.next(new SendMachineProcess() {
-								@Override
-								public void run() throws Exception {
-									if (getReceiver().sendMediaData()) {
-										// note that encryptFileData will overwrite contents of fileData
-										encryptResult = getReceiver().encryptFileData(fileData);
-
-										if (encryptResult.getData() == null || encryptResult.getSize() == 0) {
-											throw new Exception("File data encrypt failed");
-										}
-									}
-								}
-							})
-							.next(new SendMachineProcess() {
-								@Override
-								public void run() throws Exception {
-									//do not upload if sendMediaData Disabled (Distribution Lists)
-									if (getReceiver().sendMediaData()) {
-										BlobUploader blobUploader = initUploader(getMessageModel(), encryptResult.getData());
-										blobUploader.setProgressListener(new ProgressListener() {
-												@Override
-												public void updateProgress(int progress) {
-													updateMessageLoadingProgress(messageModel, progress);
-												}
-
-											@Override
-											public void onFinished(boolean success) {
-												setMessageLoadingFinished(messageModel, success);
-											}
-										});
-										blobId = blobUploader.upload();
-										logger.debug("blobId = " + Utils.byteArrayToHexString(blobId));
-									}
-								}
-							})
-							.next(new SendMachineProcess() {
-								@Override
-								public void run() throws Exception {
-									//do not upload if sendMediaData Disabled (Distribution Lists)
-									if (getReceiver().sendMediaData()) {
-										if (thumbnailData != null) {
-											thumbnailEncryptResult = getReceiver().encryptFileThumbnailData(thumbnailData, encryptResult.getKey());
-
-											if (thumbnailEncryptResult.getData() != null) {
-												BlobUploader blobUploader = initUploader(getMessageModel(), thumbnailEncryptResult.getData());
-												blobUploader.setProgressListener(new ProgressListener() {
-													@Override
-													public void updateProgress(int progress) {
-														updateMessageLoadingProgress(messageModel, progress);
-													}
-
-													@Override
-													public void onFinished(boolean success) {
-														setMessageLoadingFinished(messageModel, success);
-													}
-												});
-												blobIdThumbnail = blobUploader.upload();
-												logger.debug("blobIdThumbnail = " + Utils.byteArrayToHexString(blobIdThumbnail));
-
-												fireOnModifiedMessage(messageModel);
-											}
-											else {
-												throw new Exception("Thumbnail encrypt failed");
-											}
-										}
-									}
-								}
-							})
-							.next(new SendMachineProcess() {
-								@Override
-								public void run() throws Exception {
-									if (getReceiver().createBoxedFileMessage(
-											blobIdThumbnail,
-											blobId,
-											encryptResult,
-											messageModel
-									)) {
-										updateMessageState(messageModel,
-											getReceiver().sendMediaData() && getReceiver().offerRetry() ?
-												MessageState.SENDING :
-												MessageState.SENT, null);
-
-										//save updated model
-										save(messageModel);
-									} else {
-										throw new Exception("Failed to create box");
-									}
-								}
-							})
-							.next(new SendMachineProcess() {
-								@Override
-								public void run() throws Exception {
-									messageModel.setSaved(true);
-									// Verify current saved state
-									updateMessageState(messageModel,
-										getReceiver().sendMediaData() && getReceiver().offerRetry() ?
-											MessageState.SENDING :
-											MessageState.SENT, null);
-
-									if (!getReceiver().sendMediaData()) {
-										// update status for message that stay local
-										fireOnModifiedMessage(messageModel);
-									}
-
-									if (completionHandler != null) {
-										completionHandler.sendComplete(messageModel);
-									}
-
-									success = true;
-								}
-							});
-
-					if(this.success) {
-						removeSendMachine(sendMachine);
-					}
-					return this.success;
-				}
-			});
-
-			if (completionHandler != null)
-				completionHandler.sendQueued(messageModel);
-
-			return messageModel;
-		}
-
-		return null;
 	}
 
 	@Override
@@ -3651,7 +3408,30 @@ public class MessageServiceImpl implements MessageService {
 		// resolve receivers to account for distribution lists
 		final MessageReceiver[] resolvedReceivers = MessageUtil.addDistributionListReceivers(messageReceivers.toArray(new MessageReceiver[0]));
 
+		logger.info("sendMedia: Sending " + mediaItems.size() + " items to " + resolvedReceivers.length + " receivers");
+
 		for (MediaItem mediaItem : mediaItems) {
+			if (MimeUtil.isTextFile(mediaItem.getMimeType())) {
+				String text = mediaItem.getCaption();
+				if (!TestUtil.empty(text)) {
+					for (MessageReceiver messageReceiver : resolvedReceivers) {
+						try {
+							successfulMessageModel = sendText(text, messageReceiver);
+							if (successfulMessageModel != null) {
+								logger.info("Text successfuly sent");
+							} else {
+								logger.info("Text send failed");
+							}
+						} catch (Exception e) {
+							logger.error("Could not send text message", e);
+						}
+					}
+				} else {
+					logger.info("Text is empty");
+				}
+				continue;
+			}
+
 			final Map<MessageReceiver, AbstractMessageModel> messageModels = new HashMap<>();
 
 			final FileDataModel fileDataModel = createFileDataModel(context, mediaItem);
@@ -3661,15 +3441,16 @@ public class MessageServiceImpl implements MessageService {
 			}
 
 			if (!createMessagesAndSetPending(mediaItem, resolvedReceivers, messageModels, fileDataModel)) {
-				logger.info("Unable to create messages ");
+				logger.info("Unable to create messages");
 				continue;
 			}
 
 			final byte[] thumbnailData = generateThumbnailData(mediaItem, fileDataModel);
-
-			writeThumbnails(messageModels, resolvedReceivers, thumbnailData);
-
-			updateFileDataModel(mediaItem, fileDataModel);
+			if (thumbnailData != null) {
+				writeThumbnails(messageModels, resolvedReceivers, thumbnailData);
+			} else {
+				logger.info("Unable to write thumbnails");
+			}
 
 			if (!allChatsArePrivate(resolvedReceivers)) {
 				saveToGallery(mediaItem);
@@ -3681,11 +3462,14 @@ public class MessageServiceImpl implements MessageService {
 					successfulMessageModel = messageModels.get(resolvedReceivers[0]);
 				}
 			} else {
+				logger.info("Error encrypting and sending");
 				markAsTerminallyFailed(resolvedReceivers, messageModels);
 			}
 		}
 
 		if (successfulMessageModel != null) {
+			logger.info("sendMedia: Send successful.");
+
 			sendProfilePicture(resolvedReceivers);
 
 			if (sendCompletionHandler != null) {
@@ -3693,11 +3477,13 @@ public class MessageServiceImpl implements MessageService {
 			}
 		} else {
 			final String errorString = context.getString(R.string.an_error_occurred_during_send);
+			logger.info("sendMedia: " + errorString);
 			RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, errorString, Toast.LENGTH_LONG).show());
 			if (sendCompletionHandler != null) {
 				sendCompletionHandler.onError(errorString);
 			}
 		}
+
 		return successfulMessageModel;
 	}
 
@@ -3718,13 +3504,6 @@ public class MessageServiceImpl implements MessageService {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Update the FileDataModel with data from the MediaItem such as file name and rendering type
-	 */
-	private void updateFileDataModel(@NonNull MediaItem mediaItem, @NonNull FileDataModel fileDataModel) {
-
 	}
 
 	/**
@@ -3931,14 +3710,9 @@ public class MessageServiceImpl implements MessageService {
 	                       @NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
 	                       @NonNull FileDataModel fileDataModel,
 	                       @Nullable byte[] thumbnailData,
-	                       @Nullable byte[] contentData) {
-		if (contentData == null) {
-			logger.debug("No content to send");
-			return false;
-		}
-
-		final MessageReceiver.EncryptResult thumbnailEncryptResult[] = new MessageReceiver.EncryptResult[1];
-		final MessageReceiver.EncryptResult contentEncryptResult[] = new MessageReceiver.EncryptResult[1];
+	                       @NonNull byte[] contentData) {
+		final MessageReceiver.EncryptResult[] thumbnailEncryptResult = new MessageReceiver.EncryptResult[1];
+		final MessageReceiver.EncryptResult[] contentEncryptResult = new MessageReceiver.EncryptResult[1];
 
 		thumbnailEncryptResult[0] = null;
 		contentEncryptResult[0] = null;
@@ -3968,6 +3742,7 @@ public class MessageServiceImpl implements MessageService {
 			AbstractMessageModel messageModel = messageModels.get(messageReceiver);
 			if (messageModel == null) {
 				// no messagemodel has been created for this receiver - skip
+				logger.info("Mo MessageCodel could be created for this receiver - skip");
 				continue;
 			}
 

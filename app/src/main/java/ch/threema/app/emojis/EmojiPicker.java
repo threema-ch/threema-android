@@ -144,7 +144,7 @@ public class EmojiPicker extends LinearLayout {
 		final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
 		setLayoutParams(params);
 
-		logger.debug("Show EmojiPicker. Height = " + height);
+		logger.info("Show EmojiPicker. Height = " + height);
 
 		setVisibility(VISIBLE);
 

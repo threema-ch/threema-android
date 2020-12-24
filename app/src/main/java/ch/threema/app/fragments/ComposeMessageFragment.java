@@ -924,7 +924,9 @@ public class ComposeMessageFragment extends Fragment implements
 			this.emojiButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					logger.info("Emoji button clicked");
 					if (activity.isSoftKeyboardOpen()) {
+						logger.info("Show emoji picker after keyboard close");
 						activity.runOnSoftKeyboardClose(new Runnable() {
 							@Override
 							public void run() {
@@ -943,6 +945,7 @@ public class ComposeMessageFragment extends Fragment implements
 					} else {
 						if (emojiPicker != null) {
 							if (emojiPicker.isShown()) {
+								logger.info("EmojPicker currently shown. Closing.");
 								if (ConfigUtils.isLandscape(activity) &&
 									!ConfigUtils.isTabletLayout() &&
 									preferenceService.isFullscreenIme()) {
@@ -954,6 +957,7 @@ public class ComposeMessageFragment extends Fragment implements
 									}
 								}
 							} else {
+								logger.info("Show emoji picker immediately");
 								emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
 							}
 						}

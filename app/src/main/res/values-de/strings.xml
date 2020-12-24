@@ -1258,7 +1258,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="an_error_occurred_during_send">Beim Versand einer oder mehrerer Nachrichten ist ein Fehler aufgetreten.</string>
 	<string name="state_processing">wird verarbeitet</string>
 	<string name="passphrase_locked">Die Passphrase ist gesperrt</string>
-	<string name="image_labeling_new">Neu: Bilderkennung</string>
+	<string name="image_labeling_new">Neu: Bildersuche</string>
 	<string name="tooltip_image_labeling">Um ein bestimmtes visuelles Medium in Ihrer Galerie zu finden, geben Sie einfach einen Begriff ein, der den Inhalt beschreibt oder wählen Sie ihn aus der Liste der gefundenen Beschreibungen aus.</string>
 	<string name="error_unable_loading_media_thumb">Vorschau kann nicht geladen werden</string>
 	<string name="select">Auswählen</string>
@@ -1269,5 +1269,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="show_text">Text anzeigen</string>
 	<string name="only_images_or_videos">Nur Bilder und Videos können ausgewählt werden</string>
 	<string name="media_gallery_gifs">GIFs</string>
+	<string name="notification_channel_image_labeling">Fortschritt der Bilder-Indexierung</string>
+	<string name="notification_channel_image_labeling_desc">Bilder in der Galerie werden im Hintergrund indexiert</string>
+	<string name="notification_image_labeling_desc">Bilder-Indexierung</string>
 	<string name="no_media_found_global">Auf diesem Gerät wurden keine Medien gefunden</string>
+	<string name="prefs_sum_image_labeling">Stichwort-Suche für die öffentlichen Bilder in Ihrer Galerie ermöglichen</string>
+	<string name="prefs_image_labeling">Bildersuche</string>
 </resources>

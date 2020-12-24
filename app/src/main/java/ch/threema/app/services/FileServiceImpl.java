@@ -120,7 +120,7 @@ public class FileServiceImpl implements FileService {
 
 	private final static String JPEG_EXTENSION = ".jpg";
 	private final static String MPEG_EXTENSION = ".mp4";
-	private final static String VOICEMESSAGE_EXTENSION = ".m4a";
+	public final static String VOICEMESSAGE_EXTENSION = ".aac";
 	private final static String THUMBNAIL_EXTENSION = "_T";
 	private final static String WALLPAPER_FILENAME = "/wallpaper" + JPEG_EXTENSION;
 

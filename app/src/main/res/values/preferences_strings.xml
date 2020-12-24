@@ -170,6 +170,8 @@
 	<string name="preferences__camera_permission_request_shown" translatable="false">pref_camera_permission_request_shown</string>
 	<string name="preferences__disable_smart_replies" translatable="false">pref_disable_smart_replies</string>
 	<string name="preferences__poi_host" translatable="false">pref_poi_host</string>
+	<string name="preferences__labels_delete" translatable="false">pref_labels_delete</string>
 	<string name="preferences__last_syncadapter_run" translatable="false">pref_last_syncadapter_run</string>
 	<string name="preferences__image_labeling_tooltip_shown" translatable="false">pref_image_labeling_tooltip_shown</string>
+	<string name="preferences__image_labeling" translatable="false">pref_key_image_labeling</string>
 </resources>

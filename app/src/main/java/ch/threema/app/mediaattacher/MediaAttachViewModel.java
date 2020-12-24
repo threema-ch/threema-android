@@ -57,6 +57,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.mediaattacher.data.FailedMediaItemsDAO;
 import ch.threema.app.mediaattacher.data.ImageLabelListConverter;
 import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
 import ch.threema.app.mediaattacher.data.PersistentMediaItemsDAO;
@@ -120,7 +121,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 				// Check whether search can be shown
 				if (ConfigUtils.isPlayServicesInstalled(this.application) &&
 					sharedPreferences != null &&
-					sharedPreferences.getBoolean(application.getString(R.string.preferences__image_attach_previews), false)) {
+					sharedPreferences.getBoolean(application.getString(R.string.preferences__image_labeling), false)) {
 					this.checkLabelingComplete();
 				}
 			});
@@ -161,8 +162,10 @@ public class MediaAttachViewModel extends AndroidViewModel {
 		new Thread(() -> {
 			// Open database
 			final PersistentMediaItemsDAO mediaItemsDAO;
+			final FailedMediaItemsDAO failedMediaItemsDAO;
 			try {
 				mediaItemsDAO = MediaItemsRoomDatabase.getDatabase(application).mediaItemsDAO();
+				failedMediaItemsDAO = MediaItemsRoomDatabase.getDatabase(application).failedMediaItemsDAO();
 			} catch (MasterKeyLockedException e) {
 				logger.error("Could not access database", e);
 				return;
@@ -173,11 +176,12 @@ public class MediaAttachViewModel extends AndroidViewModel {
 
 			// Get label count from database
 			final int labeledMediaCount = mediaItemsDAO.getRowCount();
+			final int failedMediaCount = failedMediaItemsDAO.getRowCount();
 
 			// Get the media count (by this time, it should be ready because
 			// this method is called after `initialLoadDone` fires)
 			final List<MediaAttachItem> allMediaValue = Objects.requireNonNull(this.allMedia.getValue());
-			final int totalMediaSize = Functional.filter(allMediaValue, (IPredicateNonNull<MediaAttachItem>) ImageLabelingWorker::mediaCanBeLabeled).size();
+			final int totalMediaSize = Functional.filter(allMediaValue, (IPredicateNonNull<MediaAttachItem>) ImageLabelingWorker::mediaCanBeLabeled).size() - failedMediaCount;
 
 			final float labeledRatio = (float) labeledMediaCount / (float) totalMediaSize;
 			if (labeledRatio > 0.9) {

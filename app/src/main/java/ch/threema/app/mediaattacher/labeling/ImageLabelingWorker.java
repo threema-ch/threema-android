@@ -25,6 +25,7 @@ import android.Manifest;
 import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.SystemClock;
 
 import com.google.android.gms.tasks.Task;
@@ -40,6 +41,7 @@ import net.sqlcipher.database.SQLiteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,12 +60,15 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.mediaattacher.MediaAttachItem;
 import ch.threema.app.mediaattacher.MediaRepository;
+import ch.threema.app.mediaattacher.data.FailedMediaItemEntity;
+import ch.threema.app.mediaattacher.data.FailedMediaItemsDAO;
 import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
 import ch.threema.app.mediaattacher.data.PersistentMediaItem;
 import ch.threema.app.mediaattacher.data.PersistentMediaItemsDAO;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.RandomUtil;
+import ch.threema.client.Utils;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.logging.ThreemaLogger;
 
@@ -77,14 +82,15 @@ public class ImageLabelingWorker extends Worker {
 	// Non-static logger (so that a prefix can be set)
 	private final Logger logger = LoggerFactory.getLogger(ImageLabelingWorker.class);
 
-	// Threema services
-	private final NotificationService notificationService;
+	// Context
+	private final Context appContext;
 
 	// Media on device
 	private final MediaRepository repository;
 
 	// Database
 	private final PersistentMediaItemsDAO mediaItemsDAO;
+	private final FailedMediaItemsDAO failedMediaDAO;
 
 	// Image labeling
 	private final ImageLabeler labeler;
@@ -116,22 +122,13 @@ public class ImageLabelingWorker extends Worker {
 			((ThreemaLogger)logger).setPrefix("id=" + RandomUtil.generateInsecureRandomAsciiString(6));
 		}
 
-		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.error("Could not get service manager");
-			onStopped();
-			throw new IllegalStateException("Could not get service manager");
-		}
-		this.notificationService = serviceManager.getNotificationService();
-		if (this.notificationService == null) {
-			logger.error("Could not get notification service");
-			onStopped();
-			throw new IllegalStateException("Could not get notification service");
-		}
+		this.appContext = getApplicationContext();
 
 		// Get database reference
 		try {
-			this.mediaItemsDAO = MediaItemsRoomDatabase.getDatabase(ThreemaApplication.getAppContext()).mediaItemsDAO();
+			this.mediaItemsDAO = MediaItemsRoomDatabase.getDatabase(this.appContext).mediaItemsDAO();
+			this.failedMediaDAO = MediaItemsRoomDatabase.getDatabase(this.appContext).failedMediaItemsDAO();
+
 		} catch (MasterKeyLockedException e) {
 			logger.error("Could not get media items database, master key locked", e);
 			onStopped();
@@ -143,7 +140,7 @@ public class ImageLabelingWorker extends Worker {
 		}
 
 		// Initialize media repository
-		this.repository = new MediaRepository(appContext);
+		this.repository = new MediaRepository(this.appContext);
 
 		// Create labeler
 		final ImageLabelerOptions options = new ImageLabelerOptions.Builder()
@@ -189,9 +186,9 @@ public class ImageLabelingWorker extends Worker {
 	@NonNull
 	@WorkerThread
 	public Result doWork() {
-		if (!(ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+		if (!(ContextCompat.checkSelfPermission(this.appContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
 			// we do not currently have permission to read storage - get out of here
-			logger.info("Unable to label images. Permission denied.");
+			logger.warn("Unable to label images. Permission denied.");
 			this.cancelled = false;
 			this.onFinish();
 
@@ -199,14 +196,31 @@ public class ImageLabelingWorker extends Worker {
 			return Result.success();
 		}
 
+		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Could not get service manager");
+			this.cancelled = false;
+			this.onFinish();
+			// This might be due to the masterkey, maybe it'll be unlocked later
+			return Result.retry();
+		}
+		final NotificationService notificationService = serviceManager.getNotificationService();
+		if (notificationService == null) {
+			logger.error("Could not get notification service");
+			this.cancelled = false;
+			this.onFinish();
+			return Result.failure();
+		}
+
 		// Synchronize on a global static lock, because a cancelled task may still
 		// be running when a replacing task starts.
+		logger.info("Waiting for lock");
 		synchronized (globalLock) {
-			logger.info("Starting...");
+			logger.info("Starting");
 			long startTime = SystemClock.elapsedRealtime();
 
 			// Make this a foreground service with a progress notification
-			final Notification notification = this.notificationService.createImageLabelingProgressNotification().build();
+			final Notification notification = notificationService.createImageLabelingProgressNotification().build();
 			if (notification == null) {
 				logger.error("Could not create notification");
 				return Result.failure();
@@ -220,11 +234,12 @@ public class ImageLabelingWorker extends Worker {
 			final List<MediaAttachItem> allMediaCache = repository.getMediaFromMediaStore();
 			this.mediaCount = allMediaCache.size();
 			logger.info("Found {} media items", this.mediaCount);
-			this.notificationService.updateImageLabelingProgressNotification(0, this.mediaCount);
+			notificationService.updateImageLabelingProgressNotification(0, this.mediaCount);
 
 			// Label images without labels
 			int imageCounter = 0;
 			int unlabeledCounter = 0;
+			int skippedCounter = 0;
 			for (MediaAttachItem mediaItem : allMediaCache) {
 				// Check whether we were stopped
 				if (this.isStopped()) {
@@ -233,13 +248,18 @@ public class ImageLabelingWorker extends Worker {
 				}
 
 				// Update notification
-				this.notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
+				notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
 
 				// Update progress
 				this.progress++;
 
 				// We're only interested in image media
 				if (mediaCanBeLabeled(mediaItem)) {
+					if (failedMediaDAO.get(mediaItem.getId()) != null) {
+						logger.info("Item " + mediaItem.getId() + " failed to load previously. Skipping");
+						skippedCounter++;
+						continue;
+					}
 					imageCounter++;
 				} else {
 					continue;
@@ -253,9 +273,17 @@ public class ImageLabelingWorker extends Worker {
 					// Load image from filesystem
 					InputImage image;
 					try {
-						image = InputImage.fromFilePath(ThreemaApplication.getAppContext(), mediaItem.getUri());
+						final Uri uri = mediaItem.getUri();
+						// TODO(ANDR-1318): Make this logging less verbose!
+						final String hashedFilename = Utils.byteArrayToSha256HexString(mediaItem.getDisplayName().getBytes(StandardCharsets.UTF_8));
+						logger.info("Loading image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
+						image = InputImage.fromFilePath(this.appContext, uri);
+						logger.info("Loaded image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
 					} catch (Exception e) {
 						logger.warn("Exception, could not generate input image from file path: {}", e.getMessage());
+						logger.info("Unable to load Item " + mediaItem.getId() + ". Adding to list of failed items");
+
+						failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
 						if (e.getCause() != null) {
 							logger.warn("  Caused by: {}", e.getCause().getMessage());
 						}
@@ -298,18 +326,18 @@ public class ImageLabelingWorker extends Worker {
 			}
 
 			// Update notification
-			this.notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
+			notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
 
 			final long secondsElapsedLabeling = (SystemClock.elapsedRealtime() - startTime) / 1000;
 			if (this.isStopped()) {
 				logger.info("Aborting now after {}s, because work was cancelled", secondsElapsedLabeling);
 				return Result.failure();
 			} else {
-				logger.info("Processed {} unlabeled images among {} total images", unlabeledCounter, imageCounter);
+				logger.info("Processed {} unlabeled images among {} total and {} skipped images", unlabeledCounter, imageCounter, skippedCounter);
 				logger.info("Labeling work done after {}s, starting cleanup", secondsElapsedLabeling);
 			}
 
-			// Delete labels from database that belong to nonexisting media items
+			// Delete labels from database that belong to nonexistent media items
 			List<PersistentMediaItem> currentlyStoredLabels = mediaItemsDAO.getAllItemsByAscIdOrder();
 			if (currentlyStoredLabels != null) {
 				Collections.sort(allMediaCache, (o1, o2) -> Double.compare(o1.getId(), o2.getId()));
@@ -324,7 +352,7 @@ public class ImageLabelingWorker extends Worker {
 						indexStoredMediaItemsList++;
 					} else if (storedItemIDCurrent < retrievedItemIDCurrent) {
 						// No match, discard entry in labels database
-						logger.info("deleting media labels for id {}", currentlyStoredLabels.get(indexStoredLabelsList).getId());
+						logger.info("Deleting media labels for id {}", currentlyStoredLabels.get(indexStoredLabelsList).getId());
 						mediaItemsDAO.deleteMediaItemById(currentlyStoredLabels.get(indexStoredLabelsList).getId());
 						indexStoredLabelsList++;
 					} else {

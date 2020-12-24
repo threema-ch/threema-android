@@ -34,12 +34,14 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 @Database(
-	entities = {PersistentMediaItem.class},
-	version = 1,
+	entities = {PersistentMediaItem.class, FailedMediaItemEntity.class},
+	version = 2,
 	exportSchema = false
 )
 @TypeConverters({ImageLabelListConverter.class})
@@ -49,8 +51,17 @@ public abstract class MediaItemsRoomDatabase extends RoomDatabase {
 	public static final String DATABASE_NAME = "media_items.db";
 
 	public abstract PersistentMediaItemsDAO mediaItemsDAO();
+	public abstract FailedMediaItemsDAO failedMediaItemsDAO();
 
 	private static volatile MediaItemsRoomDatabase db;
+
+	static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+		@Override
+		public void migrate(SupportSQLiteDatabase database) {
+			database.execSQL("CREATE TABLE `failed_media_items` (`id` INTEGER NOT NULL, "
+				+ "`timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+		}
+	};
 
 	public static MediaItemsRoomDatabase getDatabase(final Context context) throws MasterKeyLockedException, SQLiteException {
 		if (db == null) {
@@ -65,6 +76,7 @@ public abstract class MediaItemsRoomDatabase extends RoomDatabase {
 					}
 					db = Room
 						.databaseBuilder(context.getApplicationContext(), MediaItemsRoomDatabase.class, DATABASE_NAME)
+						.addMigrations(MIGRATION_1_2)
 						.openHelperFactory(factory)
 						.build();
 				}
