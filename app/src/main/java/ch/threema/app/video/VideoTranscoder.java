@@ -193,6 +193,8 @@ public class VideoTranscoder {
 					public void run() {
 						if (result == SUCCESS) {
 							listener.onSuccess(mStats);
+						} else if (result == CANCELED) {
+							listener.onCanceled();
 						} else {
 							listener.onFailure();
 						}
@@ -245,6 +247,8 @@ public class VideoTranscoder {
 
 		if (setupSuccess && transcoderResult == SUCCESS && cleanupSuccess) {
 			this.listener.onSuccess(mStats);
+		} else if (transcoderResult == CANCELED) {
+			this.listener.onCanceled();
 		} else {
 			this.listener.onFailure();
 		}
@@ -1140,9 +1144,9 @@ public class VideoTranscoder {
 			}
 		}
 
-		// TODO: Some devices that cannot properly read a video file's bitrate using MediaMetadataRetriever
 		if (false) {
 			// broken device
+			logger.info("Broken device that cannot properly read a video file's bitrate using MediaMetadataRetriever");
 			return mOutputVideoBitRate;
 		} else {
 			return Math.min(inputBitRate, mOutputVideoBitRate);
@@ -1153,6 +1157,8 @@ public class VideoTranscoder {
 		void onSuccess(Stats stats);
 
 		void onProgress(int progress);
+
+		void onCanceled();
 
 		void onFailure();
 

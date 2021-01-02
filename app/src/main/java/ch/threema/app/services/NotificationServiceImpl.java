@@ -1906,4 +1906,9 @@ public class NotificationServiceImpl implements NotificationService {
 			this.notificationManager.notify(ThreemaApplication.IMAGE_LABELING_NOTIFICATION_ID, builder.build());
 		}
 	}
+
+	@Override
+	public void cancelImageLabelingProgressNotification() {
+		this.notificationManager.cancel(ThreemaApplication.IMAGE_LABELING_NOTIFICATION_ID);
+	}
 }

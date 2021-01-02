@@ -113,7 +113,7 @@ import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
 import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.camera.CameraUtil.isBlacklistedCamera;
+import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
 import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
 
@@ -206,7 +206,7 @@ public class ConfigUtils {
 	}
 
 	public static boolean supportsVideoCapture() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isBlacklistedCamera();
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isInternalCameraSupported();
 	}
 
 	public static boolean supportsPictureInPicture(Context context) {

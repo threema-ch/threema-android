@@ -46,6 +46,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -143,6 +144,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected ImageLabelsIndexHashMap labelsIndexHashMap;
 	protected int peekHeightNumElements = 1;
 
+	private boolean isDragging = false;
+
 	// Locks
 	private final Object filterMenuLock = new Object();
 	private final Object firstTimeTooltipLock = new Object();
@@ -225,7 +228,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.searchView = (SearchView) searchItem.getActionView();
 		this.searchAutoComplete = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
 		this.menuTitleFrame = findViewById(R.id.toolbar_title);
-		this.menuTitle = findViewById(R.id.toolbar_title_text);
+		this.menuTitle = findViewById(R.id.toolbar_title_textview);
 		this.bottomSheetLayout = findViewById(R.id.bottom_sheet);
 		this.mediaAttachRecyclerView = findViewById(R.id.media_grid_recycler);
 		this.dragHandle = findViewById(R.id.drag_handle);
@@ -646,11 +649,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	public void updateUI(int state){
-		int pixelmargin = Math.round(TypedValue.applyDimension(
-			TypedValue.COMPLEX_UNIT_DIP,
-			8,
-			MediaSelectionBaseActivity.this.getResources().getDisplayMetrics()
-		));
+		Animation animation;
 		switch (state) {
 			case STATE_HIDDEN:
 				finish();
@@ -664,12 +663,22 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				menuTitleFrame.setClickable(true);
 				searchView.findViewById(R.id.search_button).setClickable(true);
 
+				animation = toolbar.getAnimation();
+				if (animation != null) {
+					animation.cancel();
+				}
+
 				toolbar.setAlpha(0f);
 				toolbar.setVisibility(View.VISIBLE);
 				toolbar.animate()
 					.alpha(1f)
 					.setDuration(100)
-					.setListener(null);
+					.setListener(new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						toolbar.setVisibility(View.VISIBLE);
+					}
+				});
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 					toolbar.postDelayed(
 						() -> getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_expanded)),
@@ -684,28 +693,43 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 
 				// Maybe show "new feature" tooltip
-				RuntimeUtil.runOnUiThreadDelayed(this::maybeShowFirstTimeToolTip, 1500);
+				toolbar.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						maybeShowFirstTimeToolTip();
+					}
+				}, 1500);
+
+				isDragging = false;
 
 				break;
 			case STATE_DRAGGING:
-				dateView.setVisibility(View.GONE);
-				dragHandle.setVisibility(View.VISIBLE);
+				if (!isDragging) {
+					isDragging = true;
 
-				toolbar.setAlpha(1f);
-				toolbar.animate()
-					.alpha(0f)
-					.setDuration(100)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							toolbar.setVisibility(View.GONE);
-						}
-					});
-				toolbar.postDelayed(() -> {
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+					dateView.setVisibility(View.GONE);
+					dragHandle.setVisibility(View.VISIBLE);
+
+					animation = toolbar.getAnimation();
+					if (animation != null) {
+						animation.cancel();
 					}
-				}, 50);
+					toolbar.setAlpha(1f);
+					toolbar.animate()
+						.alpha(0f)
+						.setDuration(100)
+						.setListener(new AnimatorListenerAdapter() {
+							@Override
+							public void onAnimationEnd(Animator animation) {
+								toolbar.setVisibility(View.GONE);
+							}
+						});
+					toolbar.postDelayed(() -> {
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+							getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+						}
+					}, 50);
+				}
 				break;
 			case STATE_COLLAPSED:
 				dateView.setVisibility(View.GONE);
@@ -713,6 +737,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				menuTitleFrame.setClickable(false);
 				searchView.findViewById(R.id.search_button).setClickable(false);
 				controlPanel.animate().translationY(0);
+				isDragging = false;
 			default:
 				break;
 		}

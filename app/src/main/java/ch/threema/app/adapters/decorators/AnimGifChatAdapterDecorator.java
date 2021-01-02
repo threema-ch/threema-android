@@ -136,7 +136,9 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 					this.getThumbnailWidth()
 			);
 			holder.bodyTextView.setWidth(this.getThumbnailWidth());
-			holder.attachmentImage.invalidate();
+			if (holder.attachmentImage != null) {
+				holder.attachmentImage.invalidate();
+			}
 			if (fileData.getRenderingType() == FileData.RENDERING_STICKER) {
 				holder.messageBlockView.setBackground(null);
 			} else {

@@ -22,6 +22,7 @@
 package ch.threema.app.services;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -123,10 +124,16 @@ public class PassphraseService extends Service {
 
 	private static void removePersistentNotification(Context context) {
 		logger.debug("removePersistentNotification");
-		NotificationService notificationService = ThreemaApplication.getServiceManager().getNotificationService();
-		if (notificationService != null){
-			notificationService.cancel(ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID);
-			notificationService.cancelConversationNotificationsOnLockApp();
+
+		// ServiceManager may not yet be available at this point!
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.cancel(ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID);
+
+		if (ThreemaApplication.getServiceManager() != null) {
+			NotificationService notificationService = ThreemaApplication.getServiceManager().getNotificationService();
+			if (notificationService != null){
+				notificationService.cancelConversationNotificationsOnLockApp();
+			}
 		}
 	}
 

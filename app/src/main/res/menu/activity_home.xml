@@ -10,6 +10,10 @@
 		app:iconTint="?android:textColorSecondary"
 		app:showAsAction="always"/>
 
+	<group
+		android:id="@+id/group_search"
+		android:checkableBehavior="none">
+
 	<item
 		android:id="@+id/globalsearch"
 		android:orderInCategory="15"
@@ -19,17 +23,17 @@
 		app:iconTint="?android:textColorSecondary"
 		app:showAsAction="never"/>
 
-	<item
-		android:id="@+id/menu_toggle_private_chats"
-		android:orderInCategory="20"
-		android:title="@string/title_hide_private_chats"
-		android:visible="false"
-		app:showAsAction="never"/>
+	</group>
+
+	<group
+		android:id="@+id/group_actions"
+		android:checkableBehavior="none">
 
 	<item
 		android:id="@+id/menu_new_group"
 		android:orderInCategory="30"
 		android:title="@string/title_addgroup"
+		android:icon="@drawable/ic_outline_groups"
 		android:visible="true"
 		app:showAsAction="never"/>
 
@@ -37,7 +41,21 @@
 		android:id="@+id/menu_new_distribution_list"
 		android:orderInCategory="40"
 		android:title="@string/title_add_distribution_list"
+		android:icon="@drawable/ic_outline_campaign"
 		android:visible="true"
+		app:showAsAction="never"/>
+
+	</group>
+
+	<group android:id="@+id/stuff"
+			android:checkableBehavior="none">
+
+	<item
+		android:id="@+id/menu_toggle_private_chats"
+		android:orderInCategory="20"
+		android:title="@string/title_hide_private_chats"
+		android:icon="@drawable/ic_outline_visibility"
+		android:visible="false"
 		app:showAsAction="never"/>
 
 	<item
@@ -69,26 +87,32 @@
 		android:visible="false"
 		app:showAsAction="never"/>
 
-	<item
-		android:id="@+id/threema_channel"
-		android:icon="@drawable/ic_rss_feed_outline"
-		android:orderInCategory="75"
-		android:title="@string/threema_channel"
-		app:showAsAction="never"/>
+	</group>
 
-	<item
-		android:id="@+id/settings"
-		android:icon="@drawable/ic_settings_outline_24dp"
-		android:orderInCategory="90"
-		android:title="@string/menu_settings"
-		app:showAsAction="never"/>
+	<group
+		android:id="@+id/group_help"
+		android:checkableBehavior="none">
 
-	<item
-		android:id="@+id/help"
-		android:icon="@drawable/ic_help_outline_24dp"
-		android:orderInCategory="95"
-		android:title="@string/support"
-		app:showAsAction="never"/>
+		<item
+			android:id="@+id/threema_channel"
+			android:icon="@drawable/ic_rss_feed_outline"
+			android:orderInCategory="75"
+			android:title="@string/threema_channel"
+			app:showAsAction="never"/>
 
+		<item
+			android:id="@+id/settings"
+			android:icon="@drawable/ic_settings_outline_24dp"
+			android:orderInCategory="90"
+			android:title="@string/menu_settings"
+			app:showAsAction="never"/>
 
+		<item
+			android:id="@+id/help"
+			android:icon="@drawable/ic_help_outline_24dp"
+			android:orderInCategory="95"
+			android:title="@string/support"
+			app:showAsAction="never"/>
+
+	</group>
 </menu>

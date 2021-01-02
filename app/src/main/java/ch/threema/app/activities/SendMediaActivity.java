@@ -94,6 +94,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ComposeEditText;
@@ -250,13 +251,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		Intent intent = getIntent();
 		this.pickFromCamera = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, false);
+		this.useExternalCamera = intent.getBooleanExtra(EXTRA_USE_EXTERNAL_CAMERA, false);
+		this.messageReceivers = IntentDataUtil.getMessageReceiversFromIntent(intent);
 
 		if (this.pickFromCamera && savedInstanceState == null) {
 			launchCamera();
 		}
 
-		this.useExternalCamera = intent.getBooleanExtra(EXTRA_USE_EXTERNAL_CAMERA, false);
-		this.messageReceivers = IntentDataUtil.getMessageReceiversFromIntent(intent);
 		ArrayList<Uri> urilist = intent.getParcelableArrayListExtra(EXTRA_URLILIST);
 		if (urilist != null) {
 			intent.removeExtra(EXTRA_URLILIST);
@@ -689,7 +690,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		final Intent cameraIntent;
 		final int requestCode;
-		if (!CameraUtil.isBlacklistedCamera() && !useExternalCamera) {
+		if (CameraUtil.isInternalCameraSupported() && !useExternalCamera) {
 			// use internal camera
 			cameraIntent = new Intent(this, CameraActivity.class);
 			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFilePath);
@@ -708,7 +709,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileService.getShareFileUri(cameraFile));
 			cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-			requestCode = ThreemaActivity.ACTIVITY_ID_PICK_CAMERA;
+			requestCode = ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL;
 		}
 
 		try {
@@ -882,7 +883,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 							}
 							logger.debug("type is " );
 
-							BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.rotationForImage(getApplicationContext(), fixedUri);
+							BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(getApplicationContext(), fixedUri);
 
 							MediaItem mediaItem = new MediaItem(fixedUri, type);
 							mediaItem.setExifRotation((int) exifOrientation.getRotation());
@@ -932,7 +933,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				protected List<MediaItem> doInBackground(Void... voids) {
 					for (MediaItem incomingMediaItem : incomingMediaItems) {
 						if (incomingMediaItem.getUri() != null) {
-							BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.rotationForImage(getApplicationContext(), incomingMediaItem.getUri());
+							BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(getApplicationContext(), incomingMediaItem.getUri());
 							incomingMediaItem.setExifRotation((int) exifOrientation.getRotation());
 							incomingMediaItem.setExifFlip(exifOrientation.getFlip());
 
@@ -992,7 +993,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 						}
 					});
 					break;
-				case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA:
+				case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL:
 				case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_INTERNAL:
 					ConfigUtils.setRequestedOrientation(this, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 					if (ConfigUtils.supportsVideoCapture() && intent != null && intent.getBooleanExtra(CameraActivity.EXTRA_VIDEO_RESULT, false)) {
@@ -1002,7 +1003,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 							if (videoFile.exists() && videoFile.length() > 0) {
 								final Uri videoUri = Uri.fromFile(videoFile);
 								if (videoUri != null) {
-									final int position = addItemFromCamera(MediaItem.TYPE_VIDEO_CAM, videoUri, 0);
+									final int position = addItemFromCamera(MediaItem.TYPE_VIDEO_CAM, videoUri, null);
 									showBigImage(position);
 									break;
 								}
@@ -1012,10 +1013,9 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 						if (!TestUtil.empty(this.cameraFilePath)) {
 							final Uri cameraUri = Uri.fromFile(new File(this.cameraFilePath));
 							if (cameraUri != null) {
-								int exifRotation = 0;
-								if (requestCode != ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_INTERNAL) {
-									exifRotation = (int) BitmapUtil.rotationForImage(this, cameraUri).getRotation();
-									logger.debug("*** ExifRotation: " + exifRotation);
+								BitmapUtil.ExifOrientation exifOrientation = null;
+								if (requestCode == ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
+									exifOrientation =  BitmapUtil.getExifOrientation(this, cameraUri);
 								} else {
 									if (bigImageView != null) {
 										bigImageView.setVisibility(View.GONE);
@@ -1025,7 +1025,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 									}
 								}
 
-								final int position = addItemFromCamera(MediaItem.TYPE_IMAGE_CAM, cameraUri, exifRotation);
+								final int position = addItemFromCamera(MediaItem.TYPE_IMAGE_CAM, cameraUri, exifOrientation);
 								showBigImage(position);
 
 								break;
@@ -1059,11 +1059,17 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return;
 		}
 
-		new Thread(() -> {
-			if (messageService.sendMedia(mediaItems, messageReceivers) != null) {
-				fileService.cleanTempDirs();
+		messageService.sendMediaAsync(mediaItems, messageReceivers, new MessageServiceImpl.SendResultListener() {
+			@Override
+			public void onError(String errorMessage) { }
+
+			@Override
+			public void onCompleted() {
+				new Thread(() -> {
+					fileService.cleanTempDirs();
+				}).start();
 			}
-		}).start();
+		});
 
 		setResult(RESULT_OK);
 		finish();
@@ -1086,14 +1092,16 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	@UiThread
-	private int addItemFromCamera(int type, Uri imageUri, int imageRotation) {
+	private int addItemFromCamera(int type, Uri imageUri, BitmapUtil.ExifOrientation exifOrientation) {
 		if (mediaItems.size() >= MAX_SELECTABLE_IMAGES) {
 			Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 		}
 
 		MediaItem item = new MediaItem(imageUri, type);
-		item.setRotation(imageRotation);
-		item.setExifRotation(imageRotation);
+		if (exifOrientation != null) {
+			item.setExifRotation((int) exifOrientation.getRotation());
+			item.setExifFlip(exifOrientation.getFlip());
+		}
 
 		if (type == MediaItem.TYPE_VIDEO_CAM) {
 			item.setMimeType(MimeUtil.MIME_TYPE_VIDEO_MP4);

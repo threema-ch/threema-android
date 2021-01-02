@@ -97,7 +97,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private PreferenceService preferenceService;
 	private ImageView avatarImage, avatarEditOverlay;
 	private AvatarEditListener listener;
-	private boolean hires;
+	private boolean hires, isEditable;
 
 	// the hosting fragment
 	private Fragment fragment;
@@ -153,6 +153,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 		this.avatarEditOverlay = findViewById(R.id.avatar_edit);
 		this.avatarEditOverlay.setVisibility(View.VISIBLE);
+
+		this.isEditable = true;
 	}
 
 	/**
@@ -187,7 +189,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 				boolean editable = isAvatarEditable();
 				avatarImage.setClickable(editable);
 				avatarImage.setFocusable(editable);
-				findViewById(R.id.avatar_edit).setVisibility(editable ? View.VISIBLE : View.GONE);
+				avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
 			}
 		}.execute();
 	}
@@ -225,6 +227,10 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	@SuppressLint("RestrictedApi")
 	@Override
 	public void onClick(View v) {
+		if (!isAvatarEditable()) {
+			return;
+		}
+
 		MenuBuilder menuBuilder = new MenuBuilder(getContext());
 		new MenuInflater(getContext()).inflate(R.menu.view_avatar_edit, menuBuilder);
 
@@ -516,9 +522,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 */
 	private boolean isAvatarEditable() {
 		if (this.avatarData.getContactModel() != null) {
-			return ContactUtil.canHaveCustomAvatar(this.avatarData.getContactModel()) && !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(this.avatarData.getContactModel()));
+			return isEditable && ContactUtil.canHaveCustomAvatar(this.avatarData.getContactModel()) && !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(this.avatarData.getContactModel()));
 		} else if (this.avatarData.getGroupModel() != null) {
-			return groupService.isGroupOwner(this.avatarData.getGroupModel());
+			return isEditable && groupService.isGroupOwner(this.avatarData.getGroupModel());
 		}
 		return false;
 	}
@@ -557,7 +563,12 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		}
 	}
 
+	/**
+	 * Set whether the avatar is editable (i.e. is clickable and gets an overlaid photo button or not)
+ 	 * @param avatarEditable Desired status
+	 */
 	public void setEditable(boolean avatarEditable) {
+		this.isEditable = avatarEditable;
 		this.avatarEditOverlay.setVisibility(avatarEditable ? View.VISIBLE : View.GONE);
 		this.avatarImage.setClickable(avatarEditable);
 		this.avatarImage.setFocusable(avatarEditable);

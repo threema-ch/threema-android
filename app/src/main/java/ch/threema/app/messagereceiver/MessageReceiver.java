@@ -137,46 +137,6 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, T messageModel) throws ThreemaException;
 
 	/**
-	 * send a image message
-	 * @param blobId
-	 * @param result
-	 * @param messageModel
-	 * @return
-	 * @throws ThreemaException
-	 */
-	boolean createBoxedImageMessage(byte[] blobId, EncryptResult result, T messageModel) throws ThreemaException;
-
-	/**
-	 * send a video message
-	 * @param thumbnailBlobId
-	 * @param thumbnailResult
-	 * @param videoBlobId
-	 * @param videoResult
-	 * @param duration
-	 * @param messageModel
-	 * @return
-	 * @throws ThreemaException
-	 */
-	boolean createBoxedVideoMessage(byte[] thumbnailBlobId, EncryptResult thumbnailResult,
-									byte[] videoBlobId, EncryptResult videoResult,
-									int duration,
-									T messageModel) throws ThreemaException;
-
-	/**
-	 * send a audio message
-	 * @param audioBlobId
-	 * @param audioResult
-	 * @param duration
-	 * @param messageModel
-	 * @return
-	 * @throws ThreemaException
-	 */
-	boolean createBoxedAudioMessage(byte[] audioBlobId, EncryptResult audioResult,
-									int duration,
-									T messageModel) throws ThreemaException;
-
-
-	/**
 	 * send a file message
 	 * @param thumbnailBlobId
 	 * @param fileBlobId

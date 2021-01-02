@@ -176,6 +176,8 @@ public interface FileService {
 	 */
 	void copyDecryptedFileIntoGallery(Uri sourceUri, AbstractMessageModel messageModel) throws Exception;
 
+	File getMessageFile(AbstractMessageModel messageModel);
+
 	/**
 	 * write a message (modify if needed) and return the original or modified file as byte
 	 */

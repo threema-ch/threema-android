@@ -105,15 +105,23 @@
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/quote_layout"/>
 
-	<TextView
-		android:id="@+id/read_on_text"
-		android:layout_width="wrap_content"
+	<FrameLayout
+		android:id="@+id/read_on_container"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="@string/read_on"
-		android:textColor="?colorAccent"
-		android:textSize="?attr/font_large"
+		android:visibility="gone"
 		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/text_view"
-		/>
+		app:layout_constraintLeft_toRightOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/text_view">
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/read_on_button"
+			style="@style/Threema.Chip.VideoTranscoder"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text="@string/read_on" />
+
+	</FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

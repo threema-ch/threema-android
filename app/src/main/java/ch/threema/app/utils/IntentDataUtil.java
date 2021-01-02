@@ -514,7 +514,7 @@ public class IntentDataUtil {
 	public static Intent getComposeIntentForReceivers(Context context, ArrayList<MessageReceiver> receivers) {
 		Intent intent;
 
-		if (receivers.size() == 1) {
+		if (receivers.size() >= 1) {
 			intent = addMessageReceiverToIntent(new Intent(context, ComposeMessageActivity.class), receivers.get(0));
 			intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
 		} else {

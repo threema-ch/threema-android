@@ -1204,4 +1204,8 @@
 	<string name="no_media_found_global">No media found on this device</string>
 	<string name="prefs_sum_image_labeling">Enable searching public images in your gallery by keywords</string>
 	<string name="prefs_image_labeling">Image search</string>
+	<string name="enable_formatting">Enable formatting</string>
+	<string name="original_file_no_longer_avilable">The original file is no longer accessible. Please re-send the message.</string>
+	<string name="state_transcoding">transcoding</string>
+	<string name="importing_files">Importing files</string>
 </resources>

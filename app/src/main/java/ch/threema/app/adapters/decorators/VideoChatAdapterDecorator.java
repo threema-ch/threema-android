@@ -28,6 +28,8 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,7 @@ import ch.threema.app.R;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.LinkifyUtil;
@@ -89,9 +92,9 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 			}
 		}, holder.messageBlockView);
 
-		holder.controller.setOnClickListener(new View.OnClickListener() {
+		holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
 			@Override
-			public void onClick(View v) {
+			public void onDebouncedClick(View v) {
 				int status = holder.controller.getStatus();
 
 				logger.debug("onClick status = " + status);

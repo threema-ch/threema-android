@@ -360,4 +360,9 @@ public interface NotificationService {
 	 * Update and show image labeling progress notification.
 	 */
 	void updateImageLabelingProgressNotification(int currentProgress, int maxProgress);
+
+	/**
+	 * Remove existing image labelling progress notification
+	 */
+	void cancelImageLabelingProgressNotification();
 }

@@ -26,14 +26,6 @@
 			android:summary="Will default to 'poi.threema.ch' if not set."/>
 	</PreferenceCategory>
 	<PreferenceCategory
-		android:key="pref_key_labels"
-		android:title="Image Labels">
-		<Preference
-			android:key="@string/preferences__labels_delete"
-			android:title="Delete image label database"
-			android:summary="This will delete the database with the media image labels. You may need to restart the app afterwards."/>
-	</PreferenceCategory>
-	<PreferenceCategory
 		android:key="pref_key_various"
 		android:title="Various">
 		<Preference

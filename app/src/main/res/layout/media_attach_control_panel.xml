@@ -117,9 +117,29 @@
 					app:labelIcon="@drawable/ic_qr_code"
 					app:labelText="@string/qr_code" />
 
+				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_system_camera"
+					android:layout_width="@dimen/media_attach_button_size"
+					android:layout_height="@dimen/media_attach_button_size"
+					android:layout_gravity="center_vertical"
+					app:fillColor="@color/material_brown"
+					app:foregroundColor="@android:color/white"
+					app:labelIcon="@drawable/ic_camera_outline"
+					app:labelText="@string/attach_camera" />
+
 			</LinearLayout>
 
 		</HorizontalScrollView>
+
+		<ImageView
+			android:id="@+id/more_arrow"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			app:srcCompat="@drawable/ic_arrow_forward_outline"
+			android:layout_gravity="center_vertical|right"
+			android:importantForAccessibility="no"
+			android:clickable="true"
+			android:visibility="gone"/>
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:id="@+id/send_panel"

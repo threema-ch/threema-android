@@ -377,6 +377,10 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	private void setupLocationComponent(Style style) {
 		logger.debug("setupLocationComponent");
 
+		if (style == null) {
+			return;
+		}
+
 		locationComponent = mapboxMap.getLocationComponent();
 		locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
 		locationComponent.setCameraMode(CameraMode.TRACKING);

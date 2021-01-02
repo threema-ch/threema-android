@@ -18,7 +18,8 @@
 			style="?attr/materialToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
-			app:navigationIcon="@drawable/ic_arrow_left"/>
+			app:navigationIcon="@drawable/ic_arrow_left"
+			app:menu="@menu/activity_text_chat_bubble"/>
 
 	</com.google.android.material.appbar.AppBarLayout>
 

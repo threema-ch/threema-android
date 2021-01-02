@@ -22,14 +22,21 @@
 package ch.threema.app.emojis;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.utils.ConfigUtils;
 
 public class EmojiConversationTextView extends androidx.appcompat.widget.AppCompatTextView {
 	protected final EmojiMarkupUtil emojiMarkupUtil;
+	private boolean isFade = false;
+	private boolean ignoreMarkup = false;
 
 	public EmojiConversationTextView(Context context) {
 		this(context, null);
@@ -48,10 +55,26 @@ public class EmojiConversationTextView extends androidx.appcompat.widget.AppComp
 	@Override
 	public void setText(@Nullable CharSequence text, BufferType type) {
 		if (emojiMarkupUtil != null) {
-			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, false, true), type);
+			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, this.ignoreMarkup, true), type);
 		} else {
 			super.setText(text, type);
 		}
+	}
+
+	@Override
+	protected void onDraw(Canvas canvas) {
+		if (isFade) {
+			getPaint().clearShadowLayer();
+			getPaint().setShader(
+				new LinearGradient(0,
+					getHeight(),
+					0,
+					getHeight() - (getTextSize() * 3),
+					Color.TRANSPARENT,
+					ConfigUtils.getColorFromAttribute(getContext(), android.R.attr.textColorPrimary),
+					Shader.TileMode.CLAMP));
+		}
+		super.onDraw(canvas);
 	}
 
 	@Override
@@ -61,5 +84,13 @@ public class EmojiConversationTextView extends androidx.appcompat.widget.AppComp
 		} else {
 			super.invalidateDrawable(drawable);
 		}
+	}
+
+	public void setFade(boolean isFade) {
+		this.isFade = isFade;
+	}
+
+	public void setIgnoreMarkup(boolean ignoreMarkup) {
+		this.ignoreMarkup = ignoreMarkup;
 	}
 }

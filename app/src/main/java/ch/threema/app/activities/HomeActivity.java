@@ -68,8 +68,10 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
@@ -131,6 +133,7 @@ import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
+import ch.threema.app.webclient.Config;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.client.ConnectionState;
 import ch.threema.client.ConnectionStateListener;
@@ -1170,12 +1173,28 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}.execute();
 	}
 
+	@SuppressLint("RestrictedApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_home, menu);
+
+		MenuCompat.setGroupDividerEnabled(menu, true);
+
+		try {
+			// restricted API
+			if (menu instanceof MenuBuilder) {
+				MenuBuilder menuBuilder = (MenuBuilder) menu;
+				menuBuilder.setOptionalIconsVisible(true);
+
+				ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
+			}
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
+
 		return true;
 	}
 
@@ -1284,9 +1303,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			MenuItem privateChatToggleMenuItem = menu.findItem(R.id.menu_toggle_private_chats);
 			if (privateChatToggleMenuItem != null) {
-				privateChatToggleMenuItem.setTitle(preferenceService.isPrivateChatsHidden() ?
-					R.string.title_show_private_chats :
-					R.string.title_hide_private_chats);
+				if (preferenceService.isPrivateChatsHidden()) {
+					privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility);
+					privateChatToggleMenuItem.setTitle(R.string.title_show_private_chats);
+				} else {
+					privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
+					privateChatToggleMenuItem.setTitle(R.string.title_hide_private_chats);
+				}
+				ConfigUtils.themeMenuItem(privateChatToggleMenuItem, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
 			}
 
 			Boolean addDisabled;

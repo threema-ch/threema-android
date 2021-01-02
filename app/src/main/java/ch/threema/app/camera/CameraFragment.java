@@ -236,13 +236,16 @@ public class CameraFragment extends Fragment {
 			new AsyncTask<Void, Boolean, byte[]>() {
 				@Override
 				protected void onPreExecute() {
-					ConstraintLayout constraintLayout = container.findViewById(R.id.camera_ui_container);
-
 					if (!lifecycle.getCurrentState().isAtLeast(Lifecycle.State.CREATED)) {
 						cancel(true);
 					} else {
 						progressBar.setVisibility(View.VISIBLE);
-						constraintLayout.setVisibility(View.GONE);
+						if (container != null) {
+							ConstraintLayout constraintLayout = container.findViewById(R.id.camera_ui_container);
+							if (constraintLayout != null) {
+								constraintLayout.setVisibility(View.GONE);
+							}
+						}
 					}
 				}
 

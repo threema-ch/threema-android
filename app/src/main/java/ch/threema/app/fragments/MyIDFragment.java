@@ -235,10 +235,11 @@ public class MyIDFragment extends MainFragment
 			this.nicknameTextView = fragmentView.findViewById(R.id.nickname);
 
 			if (isReadonlyProfile) {
-				fragmentView.findViewById(R.id.profile_edit).setVisibility(View.GONE);
+				this.fragmentView.findViewById(R.id.profile_edit).setVisibility(View.GONE);
+				this.avatarView.setEditable(false);
 			} else {
-				fragmentView.findViewById(R.id.profile_edit).setVisibility(View.VISIBLE);
-				fragmentView.findViewById(R.id.profile_edit).setOnClickListener(this);
+				this.fragmentView.findViewById(R.id.profile_edit).setVisibility(View.VISIBLE);
+				this.fragmentView.findViewById(R.id.profile_edit).setOnClickListener(this);
 			}
 
 			AppCompatSpinner spinner = fragmentView.findViewById(R.id.picrelease_spinner);

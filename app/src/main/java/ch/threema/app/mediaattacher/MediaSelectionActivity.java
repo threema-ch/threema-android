@@ -121,7 +121,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 				ArrayList<MediaItem> mediaItems = new ArrayList<>();
 				for (Uri uri : mediaAttachViewModel.getSelectedMediaUris()) {
 					MediaItem mediaItem = new MediaItem(uri, MimeUtil.getMimeTypeFromUri(uri), null);
-					mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), uri));
+					mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 					mediaItems.add(mediaItem);
 				}
 				setResult(ThreemaActivity.RESULT_OK, new Intent().putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems));

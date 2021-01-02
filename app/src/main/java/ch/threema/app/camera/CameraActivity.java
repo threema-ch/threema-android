@@ -113,7 +113,11 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 			teardownCamera();
 		}
 
-		super.onDestroy();
+		try {
+			super.onDestroy();
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
 	}
 
 	@Override

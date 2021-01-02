@@ -123,25 +123,22 @@ public class ContentCommitComposeEditText extends ComposeEditText {
 						getContext().startActivity(intent);
 
 					} else {
-						new Thread(() -> {
-							String caption = null;
+						String caption = null;
 
-							if (messageService != null) {
-								MediaItem mediaItem = new MediaItem(
-									uri,
-									MimeUtil.isGifFile(mimeType) ?
-										MediaItem.TYPE_GIF :
-										MediaItem.TYPE_IMAGE);
-								mediaItem.setCaption(caption);
-								mediaItem.setMimeType(mimeType);
-								mediaItem.setRenderingType(
-									MimeUtil.MIME_TYPE_IMAGE_JPG.equalsIgnoreCase(mimeType) ?
-									FileData.RENDERING_MEDIA :
-									FileData.RENDERING_STICKER);
-
-								messageService.sendMedia(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
-							}
-						}).start();
+						if (messageService != null) {
+							MediaItem mediaItem = new MediaItem(
+								uri,
+								MimeUtil.isGifFile(mimeType) ?
+									MediaItem.TYPE_GIF :
+									MediaItem.TYPE_IMAGE);
+							mediaItem.setCaption(caption);
+							mediaItem.setMimeType(mimeType);
+							mediaItem.setRenderingType(
+								MimeUtil.MIME_TYPE_IMAGE_JPG.equalsIgnoreCase(mimeType) ?
+								FileData.RENDERING_MEDIA :
+								FileData.RENDERING_STICKER);
+							messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+						}
 					}
 					return true;
 				}

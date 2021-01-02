@@ -78,13 +78,14 @@ public class LocationUtil {
 		Drawable fgDrawable = AppCompatResources.getDrawable(context, getPlaceDrawableRes(context, poi, false));
 		DrawableCompat.setTint(fgDrawable, context.getResources().getColor(R.color.lp_marker_icon));
 
-		Bitmap bitmap = Bitmap.createBitmap(bgDrawable.getIntrinsicWidth(), bgDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+		Bitmap bitmap = Bitmap.createBitmap(bgDrawable.getIntrinsicWidth(), bgDrawable.getIntrinsicHeight() * 2, Bitmap.Config.ARGB_8888);
 
 		Canvas canvas = new Canvas(bitmap);
 
-		bgDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		bgDrawable.setBounds(0, 0, canvas.getWidth(), bgDrawable.getIntrinsicHeight());
+
 		int left = (canvas.getWidth() - innerIconSize) / 2;
-		int top = (canvas.getHeight() - innerIconSize) / 3;
+		int top = (bgDrawable.getIntrinsicHeight() - innerIconSize) / 3;
 		int right = left + innerIconSize;
 		int bottom = top + innerIconSize;
 
@@ -122,5 +123,19 @@ public class LocationUtil {
 	 */
 	public static @NonNull String getPoiUrl(@NonNull PreferenceService preferenceService) {
 		return "https://" + getPoiHost(preferenceService) + "/around/%f/%f/%d/";
+	}
+
+
+	/**
+	 * Move marker bitmap up so its bottom will be at the center of the resulting bitmap
+	 * This is necessary because MapBox references the center of the marker image
+	 * @return The resulting bitmap. Will have twice the height of the originating bitmap
+	 */
+	public static Bitmap moveMarker(Bitmap inBitmap) {
+		Bitmap outBitmap = Bitmap.createBitmap(inBitmap.getWidth(), inBitmap.getHeight() * 2, Bitmap.Config.ARGB_8888);
+		Canvas bitmapCanvas = new Canvas(outBitmap);
+		Bitmap tempBitmap = inBitmap.copy(Bitmap.Config.ARGB_8888, false);
+		bitmapCanvas.drawBitmap(tempBitmap, 0, 0, null);
+		return outBitmap;
 	}
 }

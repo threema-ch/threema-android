@@ -21,9 +21,11 @@
 
 package ch.threema.app.receivers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +34,12 @@ import androidx.core.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
 
+import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -45,6 +49,7 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
 	private static final Logger logger = LoggerFactory.getLogger(ReSendMessagesBroadcastReceiver.class);
 
 	@Override
+	@SuppressLint("StaticFieldLeak")
 	public void onReceive(final Context context, final Intent intent) {
 		final PendingResult pendingResult = goAsync();
 
@@ -65,6 +70,12 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
 						try {
 							messageService.resendMessage(failedMessage, messageReceiver, null);
 						} catch (Exception e) {
+							RuntimeUtil.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(context, R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show();
+								}
+							});
 							logger.error("Exception", e);
 						}
 					}

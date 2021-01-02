@@ -89,7 +89,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 	private final @NonNull MutableLiveData<List<MediaAttachItem>> allMedia = new MutableLiveData<>(Collections.emptyList());
 	private final @NonNull MutableLiveData<List<MediaAttachItem>> currentMedia = new MutableLiveData<>(Collections.emptyList());
 
-	private final MutableLiveData<LinkedHashMap<Integer, MediaAttachItem>> selectedItems;
+	private final LinkedHashMap<Integer, MediaAttachItem> selectedItems;
 	private final MutableLiveData<List<String>> suggestionLabels = new MutableLiveData<>();
 	private final MediaRepository repository;
 	private final SavedStateHandle savedState;
@@ -106,8 +106,13 @@ public class MediaAttachViewModel extends AndroidViewModel {
 		this.savedState = savedState;
 		this.application = application;
 		this.repository = new MediaRepository(application.getApplicationContext());
-		this.selectedItems = savedState.getLiveData(KEY_SELECTED_MEDIA, new LinkedHashMap<>());
-		savedState.set(KEY_SELECTED_MEDIA, selectedItems.getValue());
+		final HashMap<Integer, MediaAttachItem> savedItems = savedState.get(KEY_SELECTED_MEDIA);
+		if (savedItems == null || savedItems.isEmpty()) {
+			this.selectedItems = new LinkedHashMap<>();
+		} else {
+			this.selectedItems = new LinkedHashMap<>(savedItems);
+		}
+		savedState.set(KEY_SELECTED_MEDIA, selectedItems);
 
 		// Fetch initial data
 		if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -233,7 +238,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 	 */
 	@UiThread
 	public void setSelectedMedia() {
-		currentMedia.setValue(new ArrayList<>(Objects.requireNonNull(selectedItems.getValue()).values()));
+		currentMedia.setValue(new ArrayList<>(Objects.requireNonNull(selectedItems).values()));
 	}
 
 	/**
@@ -248,7 +253,9 @@ public class MediaAttachViewModel extends AndroidViewModel {
 				filteredMedia.add(mediaItem);
 			}
 		}
-		currentMedia.setValue(filteredMedia);
+		if (currentMedia != null) {
+			currentMedia.setValue(filteredMedia);
+		}
 	}
 
 	/**
@@ -303,8 +310,8 @@ public class MediaAttachViewModel extends AndroidViewModel {
 
 	public ArrayList<Uri> getSelectedMediaUris() {
 		ArrayList<Uri> selectedUris = new ArrayList<>();
-		if (selectedItems.getValue() != null) {
-			for (Map.Entry<Integer, MediaAttachItem> entry : selectedItems.getValue().entrySet()) {
+		if (selectedItems != null) {
+			for (Map.Entry<Integer, MediaAttachItem> entry : selectedItems.entrySet()) {
 				selectedUris.add(entry.getValue().getUri());
 			}
 		}
@@ -316,23 +323,23 @@ public class MediaAttachViewModel extends AndroidViewModel {
 	}
 
 	public void removeSelectedMediaItem(int id) {
-		if (selectedItems.getValue() != null) {
-			selectedItems.getValue().remove(id);
-			savedState.set(KEY_SELECTED_MEDIA, selectedItems.getValue());
+		if (selectedItems != null) {
+			selectedItems.remove(id);
+			savedState.set(KEY_SELECTED_MEDIA, selectedItems);
 		}
 	}
 
 	public void addSelectedMediaItem(int id, MediaAttachItem mediaAttachItem) {
-		if (selectedItems.getValue() != null) {
-			selectedItems.getValue().put(id, mediaAttachItem);
-			savedState.set(KEY_SELECTED_MEDIA, selectedItems.getValue());
+		if (selectedItems != null) {
+			selectedItems.put(id, mediaAttachItem);
+			savedState.set(KEY_SELECTED_MEDIA, selectedItems);
 		}
 	}
 
 	public void clearSelection() {
-		if (selectedItems.getValue() != null) {
-			selectedItems.getValue().clear();
-			savedState.set(KEY_SELECTED_MEDIA, selectedItems.getValue());
+		if (selectedItems != null) {
+			selectedItems.clear();
+			savedState.set(KEY_SELECTED_MEDIA, selectedItems);
 		}
 	}
 

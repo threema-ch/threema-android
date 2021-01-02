@@ -128,10 +128,19 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 				if (m.getType() == MessageType.VOICEMESSAGE) {
 					o.setData(m.getAudioData());
 				}
+				if (m.getType() == MessageType.FILE &&
+					MimeUtil.isAudioFile(m.getFileData().getMimeType())	&&
+					m.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
+					o.setData(m.getFileData());
+				}
 			}
 			if (o != null) {
 				if (activity != null) {
-					o.setCurrentActivity(activity, messageReceiver);
+					if (o.isReceiverMatch(messageReceiver)) {
+						o.setCurrentActivity(activity, messageReceiver);
+					} else {
+						o.release();
+					}
 				}
 				this.messagePlayers.put(key, o);
 			}
@@ -163,14 +172,6 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 			});
 		}
 		return o;
-	}
-
-	@Nullable
-	private MessagePlayer getMessagePlayer(@NonNull AbstractMessageModel messageModel) {
-		synchronized (this.messagePlayers) {
-
-		}
-		return null;
 	}
 
 	private void stopOtherPlayers(AbstractMessageModel messageModel) {
@@ -237,8 +238,12 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 		synchronized (this.messagePlayers) {
 			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
 				// re-attach message players to current activity
-				entry.getValue().setCurrentActivity(activity, messageReceiver);
-				entry.getValue().resume(source);
+				if (entry.getValue().isReceiverMatch(messageReceiver)) {
+					entry.getValue().setCurrentActivity(activity, messageReceiver);
+					entry.getValue().resume(source);
+				} else {
+					entry.getValue().release();
+				}
 			}
 		}
 	}

@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -414,7 +415,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 		return new MarkerOptions()
 				.position(latLng)
 				.title(name)
-				.setIcon(IconFactory.getInstance(this).fromBitmap(bitmap))
+				.setIcon(IconFactory.getInstance(this).fromBitmap(LocationUtil.moveMarker(bitmap)))
 				.setSnippet(provider);
 	}
 

@@ -802,7 +802,8 @@ public class FileServiceImpl implements FileService {
 		return new File(getAppDataPathAbsolute(), getGroupAvatarFileName(groupModel));
 	}
 
-	private File getMessageFile(AbstractMessageModel messageModel) {
+	@Override
+	public File getMessageFile(AbstractMessageModel messageModel) {
 		return getMessageFile(messageModel, true);
 	}
 

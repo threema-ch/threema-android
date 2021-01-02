@@ -275,7 +275,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 2;
 	private static final int PERMISSION_REQUEST_ATTACH_VOICE_MESSAGE = 7;
 	private static final int PERMISSION_REQUEST_ATTACH_CAMERA = 8;
-	private static final int PERMISSION_REQUEST_ATTACH_CAMERA_EXTERNAL = 10;
 	private static final int PERMISSION_REQUEST_ATTACH_CAMERA_VIDEO = 11;
 
 	private static final int ACTIVITY_ID_VOICE_RECORDER = 9731;
@@ -741,10 +740,15 @@ public class ComposeMessageFragment extends Fragment implements
 		@Override
 		public void onScanCompleted(String scanResult) {
 			if (scanResult != null && scanResult.length() > 0) {
-				if (messageText != null) {
-					messageText.setText(scanResult);
-					messageText.setSelection(messageText.length());
-				}
+				RuntimeUtil.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (messageText != null) {
+							messageText.setText(scanResult);
+							messageText.setSelection(messageText.length());
+						}
+					}
+				});
 			}
 		}
 	};
@@ -915,7 +919,7 @@ public class ComposeMessageFragment extends Fragment implements
 					return;
 				}
 				if (ConfigUtils.requestCameraPermissions(activity, this, PERMISSION_REQUEST_ATTACH_CAMERA)) {
-					attachCamera(false);
+					attachCamera();
 				}
 			});
 			updateCameraButton();
@@ -1121,21 +1125,25 @@ public class ComposeMessageFragment extends Fragment implements
 					}
 				});
 			} else {
-				ViewCompat.setOnApplyWindowInsetsListener(activity.findViewById(R.id.compose_activity_parent).getRootView(), new OnApplyWindowInsetsListener() {
-					@Override
-					public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+				try {
+					ViewCompat.setOnApplyWindowInsetsListener(activity.getWindow().getDecorView().getRootView(), new OnApplyWindowInsetsListener() {
+						@Override
+						public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
 
-						logger.info("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
-						logger.info("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
+							logger.info("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
+							logger.info("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
 
-						if (insets.getSystemWindowInsetBottom() == insets.getStableInsetBottom()) {
-							activity.onSoftKeyboardClosed();
-						} else {
-							activity.onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
+							if (insets.getSystemWindowInsetBottom() == insets.getStableInsetBottom()) {
+								activity.onSoftKeyboardClosed();
+							} else {
+								activity.onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
+							}
+							return insets;
 						}
-						return insets;
-					}
-				});
+					});
+				} catch (NullPointerException e) {
+					logger.error("Exception", e);
+				}
 			}
 			activity.addOnSoftKeyboardChangedListener(this);
 		}
@@ -2561,7 +2569,12 @@ public class ComposeMessageFragment extends Fragment implements
 						try {
 							messageService.resendMessage(messageModel, messageReceiver, null);
 						} catch (Exception e) {
-							//show error?
+							RuntimeUtil.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(getContext(), R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show();
+								}
+							});
 						}
 					}
 				}
@@ -3480,15 +3493,12 @@ public class ComposeMessageFragment extends Fragment implements
 		return intent;
 	}
 
-	private void attachCamera(boolean useExternalCamera) {
+	private void attachCamera() {
 		Intent previewIntent = IntentDataUtil.addMessageReceiversToIntent(new Intent(activity, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
 		if (this.actionBarTitleTextView != null && this.actionBarTitleTextView.getText() != null) {
 			previewIntent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, this.actionBarTitleTextView.getText().toString());
 		}
 		previewIntent.putExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, true);
-		if (useExternalCamera) {
-			previewIntent.putExtra(SendMediaActivity.EXTRA_USE_EXTERNAL_CAMERA, useExternalCamera);
-		}
 		AnimationUtil.startActivityForResult(activity, null, previewIntent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 	}
 
@@ -4340,10 +4350,7 @@ public class ComposeMessageFragment extends Fragment implements
 					break;
 				case PERMISSION_REQUEST_ATTACH_CAMERA:
 					updateCameraButton();
-					attachCamera(false);
-					break;
-				case PERMISSION_REQUEST_ATTACH_CAMERA_EXTERNAL:
-					attachCamera(true);
+					attachCamera();
 					break;
 			}
 		} else {
@@ -4359,7 +4366,6 @@ public class ComposeMessageFragment extends Fragment implements
 					}
 					break;
 				case PERMISSION_REQUEST_ATTACH_CAMERA:
-				case PERMISSION_REQUEST_ATTACH_CAMERA_EXTERNAL:
 				case PERMISSION_REQUEST_ATTACH_CAMERA_VIDEO:
 					preferenceService.setCameraPermissionRequestShown(true);
 					if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {

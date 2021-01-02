@@ -52,87 +52,7 @@ public class CameraUtil {
 
 	// list of cameras that are incompatible with camerax
 	private static final HashSet<String> BLACKLISTED_CAMERAS = new HashSet<String>() {{
-/*		// Pixel 4
-		add("Pixel 4");
-		add("Pixel 4 XL");
-
-		// Huawei Mate 10
-		add("ALP-L29");
-		add("ALP-L09");
-		add("ALP-AL00");
-
-		// Huawei Mate 10 Pro
-		add("BLA-L29");
-		add("BLA-L09");
-		add("BLA-AL00");
-		add("BLA-A09");
-
-		// Huawei Mate 20
-		add("HMA-L29");
-		add("HMA-L09");
-		add("HMA-LX9");
-		add("HMA-AL00");
-
-		// Huawei Mate 20 Pro
-		add("LYA-L09");
-		add("LYA-L29");
-		add("LYA-AL00");
-		add("LYA-AL10");
-		add("LYA-TL00");
-		add("LYA-L0C");
-
-		// Huawei P20
-		add("EML-L29C");
-		add("EML-L09C");
-		add("EML-AL00");
-		add("EML-TL00");
-		add("EML-L29");
-		add("EML-L09");
-
-		// Huawei P20 Pro
-		add("CLT-L29C");
-		add("CLT-L29");
-		add("CLT-L09C");
-		add("CLT-L09");
-		add("CLT-AL00");
-		add("CLT-AL01");
-		add("CLT-TL01");
-		add("CLT-AL00L");
-		add("CLT-L04");
-		add("HW-01K");
-
-		// Huawei P30
-		add("ELE-L29");
-		add("ELE-L09");
-		add("ELE-AL00");
-		add("ELE-TL00");
-		add("ELE-L04");
-
-		// Huawei P30 Pro
-		add("VOG-L29");
-		add("VOG-L09");
-		add("VOG-AL00");
-		add("VOG-TL00");
-		add("VOG-L04");
-		add("VOG-AL10");
-
-		// Huawei Honor 10
-		add("COL-AL10");
-		add("COL-L29");
-		add("COL-L19");
-
-		// Huawei Honor 10 View
-		add("BKL-AL20");
-		add("BKL-L04");
-		add("BKL-L09");
-		add("BKL-AL00");
-
-		// OnePlus 3T
-		add("A3010");
-
-		// Sony Xperia 5
-		add("J9210");
-*/	}};
+	}};
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private static byte[] transformByteArray(@NonNull byte[] data, Rect cropRect, int rotation, boolean flip) throws IOException {
@@ -213,7 +133,11 @@ public class CameraUtil {
 		return MAX_QUALITY_CAMERAS.contains(Build.MODEL) ? ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY : ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY;
 	}
 
-	public static boolean isBlacklistedCamera() {
-		return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || BLACKLISTED_CAMERAS.contains(Build.MODEL);
+	/**
+	 * Return true if the internal camera is compatible with the current hardware or operating system
+	 * @return
+	 */
+	public static boolean isInternalCameraSupported() {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !BLACKLISTED_CAMERAS.contains(Build.MODEL);
 	}
 }

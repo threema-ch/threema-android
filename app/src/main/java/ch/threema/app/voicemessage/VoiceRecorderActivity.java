@@ -564,12 +564,9 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	}
 
 	private void returnData() {
-		new Thread(() -> {
-			MediaItem mediaItem = new MediaItem(uri, MimeUtil.MIME_TYPE_AUDIO_AAC, null);
-			mediaItem.setDurationMs(getDurationFromFile());
-
-			messageService.sendMedia(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
-		}).start();
+		MediaItem mediaItem = new MediaItem(uri, MimeUtil.MIME_TYPE_AUDIO_AAC, null);
+		mediaItem.setDurationMs(getDurationFromFile());
+		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
 
 		this.finish();
 	}

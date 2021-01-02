@@ -331,6 +331,7 @@ public class ImageLabelingWorker extends Worker {
 			final long secondsElapsedLabeling = (SystemClock.elapsedRealtime() - startTime) / 1000;
 			if (this.isStopped()) {
 				logger.info("Aborting now after {}s, because work was cancelled", secondsElapsedLabeling);
+				notificationService.cancelImageLabelingProgressNotification();
 				return Result.failure();
 			} else {
 				logger.info("Processed {} unlabeled images among {} total and {} skipped images", unlabeledCounter, imageCounter, skippedCounter);
@@ -372,12 +373,15 @@ public class ImageLabelingWorker extends Worker {
 	}
 
 	private void onFinish() {
+		logger.debug("onFinish() called");
+
 		// Shut down executor thread pool
-		if (!this.executor.isShutdown()) {
+/*		if (!this.executor.isShutdown()) {
 			this.logger.debug("Shut down thread pool");
 			this.executor.shutdown();
 		}
-
+		// TODO this causes a DuplicateTaskCompletionException
+*/
 		if (this.cancelled) {
 			logger.info("Cancelled after processing {}/{} media files", this.progress, this.mediaCount);
 		} else {

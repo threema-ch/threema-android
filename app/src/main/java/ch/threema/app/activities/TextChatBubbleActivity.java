@@ -65,7 +65,9 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 	private static final int CONTEXT_MENU_FORWARD = 600;
 	private static final int CONTEXT_MENU_GROUP = 22200;
 
-	private ActionMode.Callback textSelectionCallback = new ActionMode.Callback() {
+	private EmojiConversationTextView textView;
+
+	private final ActionMode.Callback textSelectionCallback = new ActionMode.Callback() {
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			return true;
@@ -180,6 +182,18 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		toolbar.setNavigationOnClickListener(view -> finish());
+		toolbar.setOnMenuItemClickListener(item -> {
+			if (item.isChecked()) {
+				item.setChecked(false);
+				textView.setIgnoreMarkup(true);
+				textView.setText(messageModel.getBody());
+			} else {
+				item.setChecked(true);
+				textView.setIgnoreMarkup(false);
+				textView.setText(messageModel.getBody());
+			}
+			return true;
+		});
 		toolbar.setTitle(title);
 
 		// TODO: replace with "toolbarNavigationButtonStyle" attribute in theme as soon as all Toolbars have been switched to Material Components
@@ -195,7 +209,7 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 		View footerView = LayoutInflater.from(this).inflate(footerLayout, null);
 		((ViewGroup) findViewById(R.id.footer)).addView(footerView);
 
-		EmojiConversationTextView textView = findViewById(R.id.text_view);
+		textView = findViewById(R.id.text_view);
 		textView.setText(messageModel.getBody());
 
 		LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, messageModel.getBody().length() < 80, false, null);

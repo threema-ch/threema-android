@@ -1275,4 +1275,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="no_media_found_global">Auf diesem Gerät wurden keine Medien gefunden</string>
 	<string name="prefs_sum_image_labeling">Stichwort-Suche für die öffentlichen Bilder in Ihrer Galerie ermöglichen</string>
 	<string name="prefs_image_labeling">Bildersuche</string>
+	<string name="enable_formatting">Formatierung aktivieren</string>
+	<string name="original_file_no_longer_avilable">Kein Zugriff mehr auf die Original-Datei. Bitte senden Sie diese Nachricht erneut.</string>
+	<string name="state_transcoding">wird transcodiert</string>
+	<string name="importing_files">Dateien werden importiert</string>
 </resources>

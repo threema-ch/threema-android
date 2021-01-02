@@ -43,6 +43,7 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.messageplayer.FileMessagePlayer;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.FileUtil;
@@ -85,26 +86,29 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData));
 
 		if (holder.controller != null) {
-			holder.controller.setOnClickListener(v -> {
-				int status = holder.controller.getStatus();
+			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
+				@Override
+				public void onDebouncedClick(View v) {
+					int status = holder.controller.getStatus();
 
-				switch (status) {
-					case ControllerView.STATUS_READY_TO_PLAY:
-					case ControllerView.STATUS_READY_TO_DOWNLOAD:
-					case ControllerView.STATUS_NONE:
-						prepareDownload(fileData, fileMessagePlayer);
-						break;
-					case ControllerView.STATUS_PROGRESSING:
-						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
-							getMessageService().cancelMessageUpload(getMessageModel());
-						} else {
-							fileMessagePlayer.cancel();
-						}
-						break;
-					case ControllerView.STATUS_READY_TO_RETRY:
-						if (onClickRetry != null) {
-							onClickRetry.onClick(getMessageModel());
-						}
+					switch (status) {
+						case ControllerView.STATUS_READY_TO_PLAY:
+						case ControllerView.STATUS_READY_TO_DOWNLOAD:
+						case ControllerView.STATUS_NONE:
+							FileChatAdapterDecorator.this.prepareDownload(fileData, fileMessagePlayer);
+							break;
+						case ControllerView.STATUS_PROGRESSING:
+							if (FileChatAdapterDecorator.this.getMessageModel().isOutbox() && (FileChatAdapterDecorator.this.getMessageModel().getState() == MessageState.PENDING || FileChatAdapterDecorator.this.getMessageModel().getState() == MessageState.SENDING)) {
+								FileChatAdapterDecorator.this.getMessageService().cancelMessageUpload(FileChatAdapterDecorator.this.getMessageModel());
+							} else {
+								fileMessagePlayer.cancel();
+							}
+							break;
+						case ControllerView.STATUS_READY_TO_RETRY:
+							if (onClickRetry != null) {
+								onClickRetry.onClick(FileChatAdapterDecorator.this.getMessageModel());
+							}
+					}
 				}
 			});
 		}

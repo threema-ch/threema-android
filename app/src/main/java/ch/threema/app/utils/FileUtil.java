@@ -58,6 +58,7 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -65,6 +66,7 @@ import ch.threema.app.camera.CameraActivity;
 import ch.threema.app.filepicker.FilePickerActivity;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.FileServiceImpl;
+import ch.threema.app.ui.MediaItem;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -558,6 +560,7 @@ public class FileUtil {
 		return null;
 	}
 
+	@WorkerThread
 	public static boolean copyFile(File source, File dest) {
 		try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(source));
 		     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest, false))) {
@@ -575,6 +578,7 @@ public class FileUtil {
 		return false;
 	}
 
+	@WorkerThread
 	public static boolean copyFile(Uri source, File dest, ContentResolver contentResolver) {
 		try (BufferedInputStream bis = new BufferedInputStream(contentResolver.openInputStream(source));
 		     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest, false))) {
@@ -665,24 +669,27 @@ public class FileUtil {
 	}
 
 	/**
-	 * Returns the filename of the object referred to by uri. If no filename can be found, generate one
+	 * Returns the filename of the object referred to by mediaItem. If no filename can be found, generate one
 	 * @param contentResolver ContentResolver
-	 * @param uri Uri of the source file
+	 * @param mediaItem MediaItem representing the source file
 	 * @return A filename
 	 */
-	public static @NonNull String getFilenameFromUri(@NonNull ContentResolver contentResolver, @NonNull Uri uri) {
+	public static @NonNull String getFilenameFromUri(@NonNull ContentResolver contentResolver, @NonNull MediaItem mediaItem) {
 		String filename = null;
 
-		if ("file".equals(uri.getScheme())) {
-			filename = uri.getLastPathSegment();
+		if ("file".equals(mediaItem.getUri().getScheme())) {
+			filename = mediaItem.getUri().getLastPathSegment();
 		} else {
-			final Cursor cursor = contentResolver.query(uri, null, null, null, null);
-			if (cursor != null && cursor.moveToNext()) {
-				filename = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+			try (final Cursor cursor = contentResolver.query(mediaItem.getUri(), null, null, null, null)) {
+				if (cursor != null && cursor.moveToNext()) {
+					filename = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+				}
+			} catch (IllegalStateException | SecurityException e) {
+				logger.error("Unable to query Content Resolver", e);
 			}
 		}
-		if (TestUtil.empty(filename)) {
-			filename = "blah";
+		if (TextUtils.isEmpty(filename)) {
+			filename = getDefaultFilename(mediaItem.getMimeType());
 		}
 		return filename;
 	}

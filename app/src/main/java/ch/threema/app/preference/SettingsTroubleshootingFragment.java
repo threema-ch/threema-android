@@ -62,7 +62,6 @@ import ch.threema.app.FcmRegistrationIntentService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
-import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -77,6 +76,7 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
@@ -595,8 +595,8 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 					mediaItem.setFilename(zipFile.getName());
 					mediaItem.setMimeType(MimeUtil.MIME_TYPE_ZIP);
 
-					messageService.sendMedia(Collections.singletonList(mediaItem),
-						Collections.singletonList(receiver), new RecipientListBaseActivity.SendCompletionHandler() {
+					messageService.sendMediaAsync(Collections.singletonList(mediaItem),
+						Collections.singletonList(receiver), new MessageServiceImpl.SendResultListener() {
 							@Override
 							public void onError(String errorMessage) {
 								RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.an_error_occurred_during_send, Toast.LENGTH_LONG).show());

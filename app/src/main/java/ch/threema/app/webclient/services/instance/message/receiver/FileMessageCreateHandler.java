@@ -149,7 +149,7 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 		mediaItem.setRenderingType(renderingType);
 
 		// Send media
-		final AbstractMessageModel model = messageService.sendMedia(Collections.singletonList(mediaItem), receivers);
+		final AbstractMessageModel model = messageService.sendMedia(Collections.singletonList(mediaItem), receivers, null);
 
 		// Remove temporary file
 		if (!file.delete()) {

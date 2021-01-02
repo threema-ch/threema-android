@@ -137,7 +137,7 @@ public class ImageViewFragment extends MediaViewFragment {
 			imageViewReference.get().setImage(ImageSource.uri(file.getPath()));
 
 			try {
-				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.rotationForImage(getContext(), Uri.fromFile(file));
+				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(getContext(), Uri.fromFile(file));
 				logger.debug("Orientation = " + exifOrientation);
 				if (exifOrientation.getRotation() != 0) {
 					imageViewReference.get().setOrientation((int) exifOrientation.getRotation());

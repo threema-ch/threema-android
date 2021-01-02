@@ -260,7 +260,7 @@ public class IconUtil {
 		long imageId = -1;
 		Bitmap thumbnailBitmap = null;
 		ContentResolver contentResolver = context.getContentResolver();
-		BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.rotationForImage(context, uri);
+		BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, uri);
 
 		if (!MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_PNG.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_HEIF.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_HEIC.equals(mimeType)) {
 			if (DocumentsContract.isDocumentUri(context, uri)) {

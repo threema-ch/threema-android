@@ -23,9 +23,12 @@ package ch.threema.app.ui.listitemholder;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.google.android.material.chip.Chip;
 
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
@@ -47,7 +50,8 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public View quoteBar;
 	public ImageView quoteThumbnail, quoteTypeImage;
 	public TranscoderView transcoderView;
-	public TextView readOnTextView;
+	public FrameLayout readOnContainer;
+	public Chip readOnButton;
 
 	public ControllerView controller;
 

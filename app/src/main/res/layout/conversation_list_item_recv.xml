@@ -47,15 +47,21 @@
 
 		</FrameLayout>
 
-		<TextView
-			android:id="@+id/read_on_text"
+		<FrameLayout
+			android:id="@+id/read_on_container"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingLeft="@dimen/chat_bubble_margin_start"
-			android:paddingRight="@dimen/chat_bubble_margin_end"
-			android:text="@string/read_on"
-			android:textColor="?colorAccent"
-			android:textSize="?attr/font_large" />
+			android:visibility="gone">
+
+			<com.google.android.material.chip.Chip
+				android:id="@+id/read_on_button"
+				style="@style/Threema.Chip.VideoTranscoder"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:text="@string/read_on" />
+
+		</FrameLayout>
 
 		<include layout="@layout/conversation_bubble_footer_recv"/>
 

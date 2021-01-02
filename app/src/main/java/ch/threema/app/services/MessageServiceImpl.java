@@ -72,6 +72,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -79,10 +80,10 @@ import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.NotAllowedException;
+import ch.threema.app.exceptions.TranscodeCanceledException;
 import ch.threema.app.listeners.MessageListener;
 import ch.threema.app.listeners.ServerMessageListener;
 import ch.threema.app.managers.ListenerManager;
@@ -614,6 +615,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
+	@WorkerThread
 	public void resendMessage(AbstractMessageModel messageModel, MessageReceiver receiver, CompletionHandler completionHandler) throws Exception {
 		NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 		notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
@@ -623,9 +625,17 @@ public class MessageServiceImpl implements MessageService {
 		}
 	}
 
+	@WorkerThread
 	private void resendFileMessage(final AbstractMessageModel messageModel,
-								  final MessageReceiver receiver,
-								  final CompletionHandler completionHandler) throws Exception {
+	                               final MessageReceiver receiver,
+	                               final CompletionHandler completionHandler) throws Exception {
+
+		// check if a message file exists that could be resent or abort immediately
+		File file = fileService.getMessageFile(messageModel);
+		if (file == null || !file.exists()) {
+			throw new Exception("Message file not present");
+		}
+
 		updateMessageState(messageModel, MessageState.PENDING, new Date());
 
 		//enqueue processing and uploading stuff...
@@ -653,119 +663,118 @@ public class MessageServiceImpl implements MessageService {
 			public boolean send() throws Exception {
 				SendMachine sendMachine = getSendMachine(messageModel);
 				sendMachine.reset()
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								File decryptedMessageFile = fileService.getDecryptedMessageFile(messageModel);
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							File decryptedMessageFile = fileService.getDecryptedMessageFile(messageModel);
 
-								if (decryptedMessageFile != null) {
+							if (decryptedMessageFile != null) {
 
-									try (FileInputStream inputStream = new FileInputStream(decryptedMessageFile)) {
-										fileDataBoxedLength = inputStream.available();
-										fileData = new byte[fileDataBoxedLength + NaCl.BOXOVERHEAD];
-										IOUtils.readFully(inputStream,
-											fileData,
-											NaCl.BOXOVERHEAD,
-											fileDataBoxedLength);
-									}
+								try (FileInputStream inputStream = new FileInputStream(decryptedMessageFile)) {
+									fileDataBoxedLength = inputStream.available();
+									fileData = new byte[fileDataBoxedLength + NaCl.BOXOVERHEAD];
+									IOUtils.readFully(inputStream,
+										fileData,
+										NaCl.BOXOVERHEAD,
+										fileDataBoxedLength);
+								}
+							} else {
+								throw new Exception("Message file not present");
+							}
+						}
+					})
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							encryptResult = getReceiver().encryptFileData(fileData);
+							if (encryptResult.getData() == null || encryptResult.getSize() == 0) {
+								throw new Exception("File data encrypt failed");
+							}
+						}
+					})
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							try (InputStream is = fileService.getDecryptedMessageThumbnailStream(messageModel)) {
+								if (is != null) {
+									thumbnailData = IOUtils.toByteArray(is);
 								} else {
-									// TODO: we should abort upload here instead of trying again
-									throw new Exception("Message file not present");
+									thumbnailData = null;
+								}
+							} catch (Exception e) {
+								logger.debug("No thumbnail for file message");
+							}
+						}
+					})
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							BlobUploader blobUploader = initUploader(getMessageModel(), encryptResult.getData());
+							blobUploader.setProgressListener(new ProgressListener() {
+								@Override
+								public void updateProgress(int progress) {
+									updateMessageLoadingProgress(messageModel, progress);
+								}
+
+								@Override
+								public void onFinished(boolean success) {
+									setMessageLoadingFinished(messageModel, success);
+								}
+							});
+							blobId = blobUploader.upload();
+						}
+					})
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							if (thumbnailData != null) {
+								thumbnailEncryptResult = getReceiver().encryptFileThumbnailData(thumbnailData, encryptResult.getKey());
+
+								if (thumbnailEncryptResult.getData() != null) {
+									BlobUploader blobUploader = initUploader(getMessageModel(), thumbnailEncryptResult.getData());
+									blobUploader.setProgressListener(new ProgressListener() {
+										@Override
+										public void updateProgress(int progress) {
+											updateMessageLoadingProgress(messageModel, progress);
+										}
+
+										@Override
+										public void onFinished(boolean success) {
+											setMessageLoadingFinished(messageModel, success);
+										}
+									});
+									blobIdThumbnail = blobUploader.upload();
+								} else {
+									throw new Exception("Thumbnail encrypt failed");
 								}
 							}
-						})
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								encryptResult = getReceiver().encryptFileData(fileData);
-								if (encryptResult.getData() == null || encryptResult.getSize() == 0) {
-									throw new Exception("File data encrypt failed");
-								}
-							}
-						})
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								try (InputStream is = fileService.getDecryptedMessageThumbnailStream(messageModel)) {
-									if (is != null) {
-										thumbnailData = IOUtils.toByteArray(is);
-									} else {
-										thumbnailData = null;
-									}
-								} catch (Exception e) {
-									logger.debug("No thumbnail for file message");
-								}
-							}
-						})
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								BlobUploader blobUploader = initUploader(getMessageModel(), encryptResult.getData());
-								blobUploader.setProgressListener(new ProgressListener() {
-									@Override
-									public void updateProgress(int progress) {
-										updateMessageLoadingProgress(messageModel, progress);
-									}
+						}
+					})
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							getReceiver().createBoxedFileMessage(
+								blobIdThumbnail,
+								blobId,
+								encryptResult,
+								messageModel
+							);
+							save(messageModel);
+						}
+					})
+					.next(new SendMachineProcess() {
+						@Override
+						public void run() throws Exception {
+							updateMessageState(messageModel, MessageState.SENDING, null);
 
-									@Override
-									public void onFinished(boolean success) {
-										setMessageLoadingFinished(messageModel, success);
-									}
-								});
-								blobId = blobUploader.upload();
-							}
-						})
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								if (thumbnailData != null) {
-									thumbnailEncryptResult = getReceiver().encryptFileThumbnailData(thumbnailData, encryptResult.getKey());
+							if (completionHandler != null)
+								completionHandler.sendComplete(messageModel);
 
-									if (thumbnailEncryptResult.getData() != null) {
-										BlobUploader blobUploader = initUploader(getMessageModel(), thumbnailEncryptResult.getData());
-										blobUploader.setProgressListener(new ProgressListener() {
-											@Override
-											public void updateProgress(int progress) {
-												updateMessageLoadingProgress(messageModel, progress);
-											}
+							success = true;
+						}
+					});
 
-											@Override
-											public void onFinished(boolean success) {
-												setMessageLoadingFinished(messageModel, success);
-											}
-										});
-										blobIdThumbnail = blobUploader.upload();
-									} else {
-										throw new Exception("Thumbnail encrypt failed");
-									}
-								}
-							}
-						})
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								getReceiver().createBoxedFileMessage(
-										blobIdThumbnail,
-										blobId,
-										encryptResult,
-										messageModel
-								);
-								save(messageModel);
-							}
-						})
-						.next(new SendMachineProcess() {
-							@Override
-							public void run() throws Exception {
-								updateMessageState(messageModel, MessageState.SENDING, null);
-
-								if (completionHandler != null)
-									completionHandler.sendComplete(messageModel);
-
-								success = true;
-							}
-						});
-
-				if(this.success) {
+				if (this.success) {
 					removeSendMachine(sendMachine);
 				}
 				return this.success;
@@ -3377,33 +3386,51 @@ public class MessageServiceImpl implements MessageService {
 
 	/******************************************************************************************************/
 
-	/**
-	 * Send media messages of any kind to an arbitrary number of receivers
-	 * @param mediaItems List of MediaItems to be sent
-	 * @param messageReceivers List of MessageReceivers
-	 * @return AbstractMessageModel of a successfully queued message, null if no message could be queued
-	 */
-	@WorkerThread
-	@Override
-	public AbstractMessageModel sendMedia(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers) {
-		return sendMedia(mediaItems, messageReceivers, null);
+	public interface SendResultListener {
+		void onError(String errorMessage);
+		void onCompleted();
 	}
 
 	/**
 	 * Send media messages of any kind to an arbitrary number of receivers
 	 * @param mediaItems List of MediaItems to be sent
 	 * @param messageReceivers List of MessageReceivers
-	 * @param sendCompletionHandler Handler to notify when messages are queued
 	 * @return AbstractMessageModel of a successfully queued message, null if no message could be queued
 	 */
+	@AnyThread
+	@Override
+	public void sendMediaAsync(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers) {
+		sendMediaAsync(mediaItems, messageReceivers, null);
+	}
+
+	/**
+	 * Send media messages of any kind to an arbitrary number of receivers
+	 * @param mediaItems List of MediaItems to be sent
+	 * @param messageReceivers List of MessageReceivers
+	 * @param sendResultListener Listener to notify when messages are queued
+	 * @return AbstractMessageModel of a successfully queued message, null if no message could be queued
+	 */
+	@AnyThread
+	@Override
+	public void sendMediaAsync(
+		@NonNull final List<MediaItem> mediaItems,
+		@NonNull final List<MessageReceiver> messageReceivers,
+		@Nullable final SendResultListener sendResultListener
+	) {
+		ThreemaApplication.sendMessageExecutorService.submit(() -> {
+			sendMedia(mediaItems, messageReceivers, sendResultListener);
+		});
+	}
+
 	@WorkerThread
 	@Override
 	public AbstractMessageModel sendMedia(
-		@NonNull List<MediaItem> mediaItems,
-		@NonNull List<MessageReceiver> messageReceivers,
-		@Nullable RecipientListBaseActivity.SendCompletionHandler sendCompletionHandler
+		@NonNull final List<MediaItem> mediaItems,
+		@NonNull final List<MessageReceiver> messageReceivers,
+		@Nullable final SendResultListener sendResultListener
 	) {
 		AbstractMessageModel successfulMessageModel = null;
+		int failedCounter = 0;
 
 		// resolve receivers to account for distribution lists
 		final MessageReceiver[] resolvedReceivers = MessageUtil.addDistributionListReceivers(messageReceivers.toArray(new MessageReceiver[0]));
@@ -3411,6 +3438,7 @@ public class MessageServiceImpl implements MessageService {
 		logger.info("sendMedia: Sending " + mediaItems.size() + " items to " + resolvedReceivers.length + " receivers");
 
 		for (MediaItem mediaItem : mediaItems) {
+			logger.info("sendMedia: Now sending item of type " + mediaItem.getType());
 			if (MimeUtil.isTextFile(mediaItem.getMimeType())) {
 				String text = mediaItem.getCaption();
 				if (!TestUtil.empty(text)) {
@@ -3418,15 +3446,18 @@ public class MessageServiceImpl implements MessageService {
 						try {
 							successfulMessageModel = sendText(text, messageReceiver);
 							if (successfulMessageModel != null) {
-								logger.info("Text successfuly sent");
+								logger.info("Text successfully sent");
 							} else {
+								failedCounter++;
 								logger.info("Text send failed");
 							}
 						} catch (Exception e) {
+							failedCounter++;
 							logger.error("Could not send text message", e);
 						}
 					}
 				} else {
+					failedCounter++;
 					logger.info("Text is empty");
 				}
 				continue;
@@ -3437,11 +3468,13 @@ public class MessageServiceImpl implements MessageService {
 			final FileDataModel fileDataModel = createFileDataModel(context, mediaItem);
 			if (fileDataModel == null) {
 				logger.info("Unable to create FileDataModel");
+				failedCounter++;
 				continue;
 			}
 
 			if (!createMessagesAndSetPending(mediaItem, resolvedReceivers, messageModels, fileDataModel)) {
 				logger.info("Unable to create messages");
+				failedCounter++;
 				continue;
 			}
 
@@ -3449,41 +3482,52 @@ public class MessageServiceImpl implements MessageService {
 			if (thumbnailData != null) {
 				writeThumbnails(messageModels, resolvedReceivers, thumbnailData);
 			} else {
-				logger.info("Unable to write thumbnails");
+				logger.info("Unable to generate thumbnails");
 			}
 
 			if (!allChatsArePrivate(resolvedReceivers)) {
 				saveToGallery(mediaItem);
 			}
 
-			final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel);
-			if (contentData != null) {
-				if (encryptAndSend(resolvedReceivers, messageModels, fileDataModel, thumbnailData, contentData)) {
-					successfulMessageModel = messageModels.get(resolvedReceivers[0]);
+			try {
+				final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel);
+				if (contentData != null) {
+					if (encryptAndSend(resolvedReceivers, messageModels, fileDataModel, thumbnailData, contentData)) {
+						successfulMessageModel = messageModels.get(resolvedReceivers[0]);
+					} else {
+						throw new ThreemaException("Error encrypting and sending");
+					}
+				} else {
+					logger.info("Error encrypting and sending");
+					failedCounter++;
+					markAsTerminallyFailed(resolvedReceivers, messageModels);
 				}
-			} else {
-				logger.info("Error encrypting and sending");
+			} catch (ThreemaException e) {
+				if (!(e instanceof TranscodeCanceledException)) {
+					logger.error("Exception", e);
+					failedCounter++;
+				} else {
+					logger.info("Video transcoding canceled");
+					// canceling is not really a failure
+				}
 				markAsTerminallyFailed(resolvedReceivers, messageModels);
 			}
 		}
 
-		if (successfulMessageModel != null) {
+		if (failedCounter == 0) {
 			logger.info("sendMedia: Send successful.");
-
 			sendProfilePicture(resolvedReceivers);
-
-			if (sendCompletionHandler != null) {
-				sendCompletionHandler.onCompleted();
+			if (sendResultListener != null) {
+				sendResultListener.onCompleted();
 			}
 		} else {
 			final String errorString = context.getString(R.string.an_error_occurred_during_send);
-			logger.info("sendMedia: " + errorString);
+			logger.info(errorString);
 			RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, errorString, Toast.LENGTH_LONG).show());
-			if (sendCompletionHandler != null) {
-				sendCompletionHandler.onError(errorString);
+			if (sendResultListener != null) {
+				sendResultListener.onError(errorString);
 			}
 		}
-
 		return successfulMessageModel;
 	}
 
@@ -3518,13 +3562,16 @@ public class MessageServiceImpl implements MessageService {
 	private @Nullable byte[] generateContentData(@NonNull MediaItem mediaItem,
 	                                             @NonNull MessageReceiver[] resolvedReceivers,
 	                                             @NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
-	                                             @NonNull FileDataModel fileDataModel) {
+	                                             @NonNull FileDataModel fileDataModel) throws ThreemaException {
 		switch (mediaItem.getType()) {
 			case TYPE_VIDEO:
 				// fallthrough
 			case TYPE_VIDEO_CAM:
-				if (transcodeVideo(mediaItem, resolvedReceivers, messageModels, fileDataModel)) {
+				@VideoTranscoder.TranscoderResult int result = transcodeVideo(mediaItem, resolvedReceivers, messageModels);
+				if (result == VideoTranscoder.SUCCESS) {
 					return getContentData(mediaItem);
+				} else if (result == VideoTranscoder.CANCELED) {
+					throw new TranscodeCanceledException();
 				}
 				break;
 			case TYPE_IMAGE:
@@ -3631,7 +3678,7 @@ public class MessageServiceImpl implements MessageService {
 				break;
 			case MediaItem.TYPE_IMAGE:
 				// images are always sent as JPGs - so use this for thumbnails - except for stickers which may have a format containing transparency
-				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.rotationForImage(context, mediaItem.getUri());
+				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, mediaItem.getUri());
 				mediaItem.setExifRotation((int) exifOrientation.getRotation());
 				mediaItem.setExifFlip(exifOrientation.getFlip());
 				if (mediaItem.getRenderingType() == RENDERING_STICKER) {
@@ -3997,17 +4044,16 @@ public class MessageServiceImpl implements MessageService {
 	 * @param mediaItem
 	 * @param resolvedReceivers
 	 * @param messageModels
-	 * @param fileDataModel
-	 * @return true if transcoding was successful, false otherwise
+	 * @return Result of transcoding
 	 */
 	@WorkerThread
-	private boolean transcodeVideo(MediaItem mediaItem, MessageReceiver[] resolvedReceivers, Map<MessageReceiver, AbstractMessageModel> messageModels, FileDataModel fileDataModel) {
+	private @VideoTranscoder.TranscoderResult int transcodeVideo(MediaItem mediaItem, MessageReceiver[] resolvedReceivers, Map<MessageReceiver, AbstractMessageModel> messageModels) {
 		final MessagePlayerService messagePlayerService;
 		try {
 			messagePlayerService = getServiceManager().getMessagePlayerService();
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
-			return false;
+			return VideoTranscoder.FAILURE;
 		}
 
 		boolean needsTrimming = videoNeedsTrimming(mediaItem);
@@ -4018,7 +4064,7 @@ public class MessageServiceImpl implements MessageService {
 			logger.error("Error getting target bitrate", e);
 			// skip this MediaItem
 			markAsTerminallyFailed(resolvedReceivers, messageModels);
-			return false;
+			return VideoTranscoder.FAILURE;
 		}
 
 		if (targetBitrate == -1) {
@@ -4026,7 +4072,7 @@ public class MessageServiceImpl implements MessageService {
 			logger.error("Video file ist too large");
 			// skip this MediaItem
 			markAsTerminallyFailed(resolvedReceivers, messageModels);
-			return false;
+			return VideoTranscoder.FAILURE;
 		}
 
 		if (needsTrimming || targetBitrate > 0) {
@@ -4045,7 +4091,7 @@ public class MessageServiceImpl implements MessageService {
 				logger.error("Unable to open temp file");
 				// skip this MediaItem
 				markAsTerminallyFailed(resolvedReceivers, messageModels);
-				return false;
+				return VideoTranscoder.FAILURE;
 			}
 
 			final VideoTranscoder.Builder transcoderBuilder = new VideoTranscoder.Builder(mediaItem.getUri(), outputFile);
@@ -4091,6 +4137,14 @@ public class MessageServiceImpl implements MessageService {
 				}
 
 				@Override
+				public void onCanceled() {
+					for (Map.Entry<MessageReceiver, AbstractMessageModel> entry : messageModels.entrySet()) {
+						AbstractMessageModel messageModel = entry.getValue();
+						messagePlayerService.setTranscodeFinished(messageModel, true, null);
+					}
+				}
+
+				@Override
 				public void onSuccess(VideoTranscoder.Stats stats) {
 					if (stats != null) {
 						logger.debug(stats.toString());
@@ -4105,7 +4159,7 @@ public class MessageServiceImpl implements MessageService {
 				public void onFailure() {
 					for (Map.Entry<MessageReceiver, AbstractMessageModel> entry : messageModels.entrySet()) {
 						AbstractMessageModel messageModel = entry.getValue();
-						messagePlayerService.setTranscodeFinished(messageModel, false, "Failure"); // TODO reason
+						messagePlayerService.setTranscodeFinished(messageModel, false, "Failure");
 					}
 				}
 			});
@@ -4119,12 +4173,12 @@ public class MessageServiceImpl implements MessageService {
 			}
 
 			if (transcoderResult != VideoTranscoder.SUCCESS) {
-				return false;
+				return transcoderResult;
 			}
 
 			mediaItem.setUri(Uri.fromFile(outputFile));
 		}
-		return true;
+		return VideoTranscoder.SUCCESS;
 	}
 
 	/**

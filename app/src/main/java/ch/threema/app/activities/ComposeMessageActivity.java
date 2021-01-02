@@ -90,7 +90,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		//check master key
 		MasterKey masterKey = ThreemaApplication.getMasterKey();
 
-		if (!(masterKey != null && masterKey.isLocked()) && !checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE)) {
+		if (!(masterKey != null && masterKey.isLocked())) {
 			this.initActivity(this.bundle);
 		}
 	}
@@ -102,6 +102,8 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		}
 
 		logger.debug("initActivity");
+
+		checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE);
 
 		this.getFragments();
 
@@ -118,6 +120,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 			composeMessageFragment = new ComposeMessageFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).commit();
 		}
+
 
 		return true;
 	}
@@ -218,9 +221,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 				if (resultCode == RESULT_OK) {
 					serviceManager.getScreenLockService().setAuthenticated(true);
-					if (!this.initActivity(this.bundle)) {
-						finish();
-					}
 				} else {
 					finish();
 				}

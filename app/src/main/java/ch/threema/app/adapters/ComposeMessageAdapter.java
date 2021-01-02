@@ -403,7 +403,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.quoteThumbnail = itemView.findViewById(R.id.quote_thumbnail);
 					holder.quoteTypeImage = itemView.findViewById(R.id.quote_type_image);
 					holder.transcoderView = itemView.findViewById(R.id.transcoder_view);
-					holder.readOnTextView = itemView.findViewById(R.id.read_on_text);
+					holder.readOnContainer = itemView.findViewById(R.id.read_on_container);
+					holder.readOnButton = itemView.findViewById(R.id.read_on_button);
 				}
 				itemView.setTag(holder);
 			}

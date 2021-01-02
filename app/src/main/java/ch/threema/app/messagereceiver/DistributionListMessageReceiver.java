@@ -131,34 +131,10 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 		return this.handleSendImage(messageModel);
 	}
 
-	@Override
-	public boolean createBoxedImageMessage(final byte[] blobId, final EncryptResult result, final DistributionListMessageModel messageModel) throws ThreemaException {
-		return this.handleSendImage(messageModel);
-	}
-
 	private boolean handleSendImage(DistributionListMessageModel model) {
 		model.setIsQueued(true);
 		distributionListService.setIsArchived(distributionListModel, false);
 		return true;
-	}
-
-	@Override
-	public boolean createBoxedVideoMessage(final byte[] thumbnailBlobId,
-	                                       final EncryptResult thumbnailResult,
-	                                       final byte[] videoBlobId,
-	                                       final EncryptResult videoResult,
-	                                       final int duration,
-	                                       final DistributionListMessageModel messageModel) throws ThreemaException {
-		return this.handleSendImage(messageModel);
-	}
-
-	@Override
-	public boolean createBoxedAudioMessage(final byte[] audioBlobId,
-										   final EncryptResult audioResult,
-										   final int duration,
-										   final DistributionListMessageModel messageModel) throws ThreemaException {
-
-		return this.handleSendImage(messageModel);
 	}
 
 	@Override

@@ -40,6 +40,8 @@ import android.database.ContentObserver;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -69,6 +71,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +80,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.HandlerCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
@@ -201,7 +205,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_TIMESTAMP = "timestamp";
 	public static final String INTENT_DATA_EDITFOCUS = "editfocus";
 	public static final String INTENT_DATA_GROUP = "group";
-	public static final String INTENT_IS_GROUP_CHAT = "isGroupChat";
 	public static final String INTENT_DATA_DISTRIBUTION_LIST = "distribution_list";
 	public static final String INTENT_DATA_QRCODE = "qrcodestring";
 	public static final String INTENT_DATA_QRCODE_TYPE_OK = "qrcodetypeok";
@@ -229,7 +232,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int NEW_MESSAGE_LOCKED_NOTIFICATION_ID = 725;
 	public static final int NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID = 726;
 	public static final int SAFE_FAILED_NOTIFICATION_ID = 727;
-	public static final int IMMEDIATE_PUSH_NOTIFICATION_ID = 728;
 	public static final int SERVER_MESSAGE_NOTIFICATION_ID = 730;
 	public static final int NOT_ENOUGH_DISK_SPACE_NOTIFICATION_ID = 731;
 	public static final int UNSENT_MESSAGE_NOTIFICATION_ID = 732;
@@ -242,7 +244,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int INCOMING_CALL_NOTIFICATION_ID = 800;
 
 	private static final String THREEMA_APPLICATION_LISTENER_TAG = "al";
-	public static final String AES_KEY_BACKUP_FILE = "keybackup.bin";
 	public static final String AES_KEY_FILE = "key.dat";
 	public static final String ECHO_USER_IDENTITY = "ECHOECHO";
 	public static final String PHONE_LINKED_PLACEHOLDER = "***";
@@ -263,7 +264,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static final int WORK_SYNC_JOB_ID = 63339;
 
 	private static final String WORKER_IDENTITY_STATES_PERIODIC_NAME = "IdentityStates";
-	private static final String WORKER_IMAGE_LABELS_PERIODIC = "ImageLabelsPeriodic";
+	public static final String WORKER_IMAGE_LABELS_PERIODIC = "ImageLabelsPeriodic";
 
 	private static Context context;
 
@@ -278,6 +279,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
 
 	public static String uriScheme;
+
+	public static ExecutorService sendMessageExecutorService = Executors.newFixedThreadPool(4);
 
 	private static boolean checkAppReplacingState(Context context) {
 		// workaround https://code.google.com/p/android/issues/detail?id=56296
@@ -303,6 +306,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 				.detectLeakedSqlLiteObjects()
 				.detectLeakedClosableObjects()
+				.penaltyLog()
 				.penaltyListener(Executors.newSingleThreadExecutor(), v -> {
 					logger.info("STRICTMODE VMPolicy: " + v.getCause());
 					logStackTrace(v.getStackTrace());

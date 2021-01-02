@@ -262,7 +262,9 @@
 	</style>
 
 	<style name="Threema.TextAppearance.Chip.VideoTranscoder" parent="Threema.TextAppearance.Chip">
-		<item name="android:textSize">12sp</item>
+		<item name="android:textSize">14sp</item>
+		<item name="android:fontFamily">sans-serif-condensed</item>
+		<item name="android:letterSpacing">0</item>
 	</style>
 
 	<style name="Threema.TextAppearance.Subtitle1" parent="@style/TextAppearance.MaterialComponents.Subtitle1"/>
@@ -680,7 +682,7 @@
 		<item name="chipBackgroundColor">?attr/colorAccent</item>
 		<item name="chipCornerRadius">14dp</item>
 		<item name="chipMinTouchTargetSize">36dp</item>
-		<item name="chipMinHeight">26dp</item>
+		<item name="chipMinHeight">28dp</item>
 	</style>
 
 	<style name="Threema.OutlinedButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">

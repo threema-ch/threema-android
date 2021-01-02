@@ -35,7 +35,6 @@ import com.google.android.search.verification.client.SearchActionVerificationCli
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import androidx.annotation.RequiresApi;
@@ -48,7 +47,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 
 public class VoiceActionService extends SearchActionVerificationClientService {
@@ -128,7 +126,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 		MediaItem mediaItem = new MediaItem(uri, MediaItem.TYPE_VOICEMESSAGE);
 		mediaItem.setCaption(caption);
 
-		messageService.sendMedia(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver), new RecipientListBaseActivity.SendCompletionHandler() {
+		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver), new MessageServiceImpl.SendResultListener() {
 			@Override
 			public void onError(String errorMessage) {
 				logger.debug("Error sending audio message: " + errorMessage);
@@ -180,33 +178,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 				}
 			}
 		}
-
-		/* TODO - we don't want to do app indexing - privacy leak
-		// Completion token helps Google App match which voice action this completion status is for.
-		final String completionToken = intent.getStringExtra(
-				IntentUtils.INTENT_EXTRA_COMPLETION_TOKEN);
-		final Uri msgUri = …; // Set to the uri deep linking to the sent message.
-		Thing thing = new Thing.Builder()
-				.setName("Message to Jane at 2:27pm")
-				.setUrl(msgUri)
-				.build();
-
-		boolean status = isVerified;
-
-		GoogleApiClient mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-		mClient.connect();
-		Action sendAction = new Action.Builder("http://schema.org/CommunicateAction")
-				.setActionStatus(status ? Action.STATUS_TYPE_COMPLETED : Action.STATUS_TYPE_FAILED)
-				.setObject(thing)
-				.put("completionToken", completionToken)
-				.put(".private:isDeviceOnly", true)
-				.build();
-		AppIndex.AppIndexApi.start(mClient, sendAction);
-		AppIndex.AppIndexApi.end(mClient, sendAction);
-		mClient.disconnect();
-		*/
 	}
-
 
 /*	@Override
 	public boolean isTestingMode() {

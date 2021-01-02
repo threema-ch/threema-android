@@ -26,7 +26,7 @@
 			android:layout_gravity="center_horizontal"
 			android:textColor="@android:color/black"
 			android:text="@string/converting_video"
-			android:textSize="12sp" />
+			android:textAppearance="@style/Threema.TextAppearance.Chip.VideoTranscoder"/>
 
 		<com.google.android.material.chip.Chip
 			android:id="@+id/cancel_button"
@@ -34,6 +34,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
+			android:layout_marginTop="2dp"
 			android:text="@string/cancel" />
 
 	</LinearLayout>

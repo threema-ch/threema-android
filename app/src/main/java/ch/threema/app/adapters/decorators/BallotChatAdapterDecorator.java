@@ -101,7 +101,9 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 			}, holder.messageBlockView);
 
-			holder.controller.setImageResource(R.drawable.ic_poll_outline);
+			if (holder.controller != null) {
+				holder.controller.setImageResource(R.drawable.ic_poll_outline);
+			}
 
 		} catch (NotAllowedException x) {
 			logger.error("Exception", x);

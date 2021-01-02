@@ -22,6 +22,7 @@
 package ch.threema.app.mediaattacher;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -40,6 +41,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.ImageViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
@@ -88,7 +90,7 @@ public class ControlPanelButton extends FrameLayout {
 
 	private void setForegroundColor(@ColorInt int color) {
 		this.labelTextView.setTextColor(color);
-		this.labelImageView.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+		ImageViewCompat.setImageTintList(this.labelImageView, ColorStateList.valueOf(color));
 	}
 
 	private void setFillAndStrokeColor(@ColorInt int fillColor, @ColorInt int strokeColor, int fillColorAlpha) {

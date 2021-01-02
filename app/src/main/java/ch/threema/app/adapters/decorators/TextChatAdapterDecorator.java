@@ -24,6 +24,9 @@ package ch.threema.app.adapters.decorators;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 
@@ -31,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.threema.app.activities.TextChatBubbleActivity;
+import ch.threema.app.emojis.EmojiConversationTextView;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
@@ -46,8 +50,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 	private static final Logger logger = LoggerFactory.getLogger(ChatAdapterDecorator.class);
 	private static final int MAX_TEXT_BUBBLE_CONTENTS_LENGTH = 640;
 
-	private int quoteType;
-
+	private final int quoteType;
 
 	public TextChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
 		super(context, messageModel, helper);
@@ -73,18 +76,23 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.bodyTextView.setText(formatTextString(messageText, this.filterString));
 			}
 
-			if (holder.readOnTextView != null) {
+			if (holder.readOnContainer != null) {
 				if (messageText != null && messageText.length() > MAX_TEXT_BUBBLE_CONTENTS_LENGTH) {
-					// todo append an ellipsis even though the text capacity has been reached
-					holder.readOnTextView.setVisibility(View.VISIBLE);
-					holder.readOnTextView.setOnClickListener(view -> {
+					if (holder.bodyTextView instanceof EmojiConversationTextView) {
+						((EmojiConversationTextView) holder.bodyTextView).setFade(true);
+					}
+					holder.readOnContainer.setVisibility(View.VISIBLE);
+					holder.readOnButton.setOnClickListener(view -> {
 						Intent intent = new Intent(helper.getFragment().getContext(), TextChatBubbleActivity.class);
 						IntentDataUtil.append(this.getMessageModel(), intent);
 						helper.getFragment().startActivity(intent);
 					});
 				} else {
-					holder.readOnTextView.setVisibility(View.GONE);
-					holder.readOnTextView.setOnClickListener(null);
+					if (holder.bodyTextView instanceof EmojiConversationTextView) {
+						((EmojiConversationTextView) holder.bodyTextView).setFade(false);
+					}
+					holder.readOnContainer.setVisibility(View.GONE);
+					holder.readOnButton.setOnClickListener(null);
 				}
 			}
 

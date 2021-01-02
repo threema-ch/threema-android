@@ -22,6 +22,8 @@
 package ch.threema.app.mediaattacher;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -37,7 +39,10 @@ import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -54,6 +59,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import ch.threema.app.QRScannerUtil;
 import ch.threema.app.R;
@@ -63,6 +69,7 @@ import ch.threema.app.actions.SendAction;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ballot.BallotWizardActivity;
+import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.listeners.QRCodeScanListener;
@@ -97,6 +104,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	private static final int PERMISSION_REQUEST_ATTACH_CONTACT = 2;
 	private static final int PERMISSION_REQUEST_QR_READER = 3;
 	private static final int PERMISSION_REQUEST_ATTACH_FROM_GALLERY = 4;
+	private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
 
 	protected static final int REQUEST_CODE_ATTACH_FROM_GALLERY = 2454;
 
@@ -105,8 +113,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 	private ConstraintLayout sendPanel;
 	private LinearLayout attachPanel;
-	private ControlPanelButton attachGalleryButton, attachLocationButton, attachQRButton, attachBallotButton, attachContactButton, attachFileButton, sendButton, editButton, cancelButton;
+	private ControlPanelButton attachGalleryButton, attachLocationButton, attachQRButton, attachBallotButton, attachContactButton, attachFileButton, sendButton, editButton, cancelButton, attachFromExternalCameraButton;
 	private Button selectCounterButton;
+	private ImageView moreArrowView;
+	private HorizontalScrollView scrollView;
 
 	private MessageReceiver messageReceiver;
 	private MessageService messageService;
@@ -132,6 +142,35 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				return true;
 			}
 			return false;
+		});
+
+		this.scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+				// we shortly display an arrow hinting users at more options that are available when scrolling
+				// of course, we do this only when some buttons are obscured
+				View child = (View) scrollView.getChildAt(0);
+				if (child != null) {
+					int childWidth = (child).getWidth();
+					if (scrollView.getWidth() < (childWidth + scrollView.getPaddingLeft() + scrollView.getPaddingRight())) {
+						if (moreArrowView != null) {
+							moreArrowView.setVisibility(View.VISIBLE);
+							moreArrowView.animate()
+								.alpha(0f)
+								.setStartDelay(1500)
+								.setDuration(500)
+								.setListener(new AnimatorListenerAdapter() {
+									@Override
+									public void onAnimationEnd(Animator animation) {
+										moreArrowView.setVisibility(View.GONE);
+									}
+								});
+						}
+					}
+				}
+			}
 		});
 	}
 
@@ -163,6 +202,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		this.controlPanel = findViewById(R.id.control_panel);
 		this.sendPanel = findViewById(R.id.send_panel);
 		this.attachPanel = findViewById(R.id.attach_options_container);
+		this.scrollView = findViewById(R.id.attach_panel);
 
 		// Horizontal buttons in the panel
 		this.attachGalleryButton = attachPanel.findViewById(R.id.attach_gallery);
@@ -171,6 +211,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		this.attachQRButton = attachPanel.findViewById(R.id.attach_qr_code);
 		this.attachBallotButton = attachPanel.findViewById(R.id.attach_poll);
 		this.attachContactButton = attachPanel.findViewById(R.id.attach_contact);
+		this.attachFromExternalCameraButton = attachPanel.findViewById(R.id.attach_system_camera);
 
 		// Send/edit/cancel buttons
 		this.sendButton = sendPanel.findViewById(R.id.send);
@@ -182,9 +223,24 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		this.controlPanel.setOnClickListener(null);
 		this.sendPanel.setOnClickListener(null);
 
+		// additional decoration
+		this.moreArrowView = findViewById(R.id.more_arrow);
+		this.moreArrowView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (scrollView != null) {
+					scrollView.smoothScrollTo(65535, 0);
+				}
+			}
+		});
+
 		// If the media grid is shown, we don't need the gallery button
 		if (shouldShowMediaGrid()) {
 			this.attachGalleryButton.setVisibility(View.GONE);
+		}
+
+		if (attachFromExternalCameraButton != null && !CameraUtil.isInternalCameraSupported()) {
+			this.attachFromExternalCameraButton.setVisibility(View.GONE);
 		}
 	}
 
@@ -199,6 +255,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		editButton.setOnClickListener(this);
 		cancelButton.setOnClickListener(this);
 		selectCounterButton.setOnClickListener(this);
+		attachFromExternalCameraButton.setOnClickListener(this);
 	}
 	/* end setup methods */
 
@@ -212,6 +269,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 
 		if (count > 0) {
+			if (moreArrowView != null) {
+				moreArrowView.setVisibility(View.GONE);
+			}
+
 			if (sendPanel.getVisibility() == View.GONE) {
 				attachPanel.setVisibility(View.GONE);
 				sendPanel.setVisibility(View.VISIBLE);
@@ -335,10 +396,15 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					attachImageFromGallery();
 				}
 				break;
+			case R.id.attach_system_camera:
+				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA)) {
+					attachFromExternalCamera();
+				}
 			default:
 				break;
 		}
 	}
+
 	/* end section action methods */
 
 	/* start section callback methods */
@@ -361,6 +427,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					break;
 				case PERMISSION_REQUEST_ATTACH_FROM_GALLERY:
 					attachImageFromGallery();
+					break;
+				case PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA:
+					attachFromExternalCamera();
 					break;
 			}
 		} else {
@@ -386,6 +455,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 						showPermissionRationale(R.string.permission_storage_required);
 					}
 					break;
+				case PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA:
+					if (!ActivityCompat.shouldShowRequestPermissionRationale(MediaAttachActivity.this, Manifest.permission.CAMERA)) {
+						showPermissionRationale(R.string.permission_camera_photo_required);
+					}
 			}
 		}
 	}
@@ -420,6 +493,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					onEdit(FileUtil.getUrisFromResult(intent));
 					break;
 				case ThreemaActivity.ACTIVITY_ID_CREATE_BALLOT:
+					// fallthrough
+				case ThreemaActivity.ACTIVITY_ID_SEND_MEDIA:
 					finish();
 					break;
 				case ThreemaActivity.ACTIVITY_ID_PICK_FILE:
@@ -475,7 +550,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			String mimeType = MimeUtil.getMimeTypeFromUri(uri);
 			if (MimeUtil.isVideoFile(mimeType) || MimeUtil.isImageFile(mimeType)) {
 				MediaItem mediaItem = new MediaItem(uri, mimeType, null);
-				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), uri));
+				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 				mediaItems.add(mediaItem);
 			}
 		}
@@ -498,15 +573,13 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 		for (Uri uri : list) {
 			MediaItem mediaItem = new MediaItem(uri, MimeUtil.getMimeTypeFromUri(uri), null);
-			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), uri));
+			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 			mediaItems.add(mediaItem);
 		}
 
 		if (mediaItems.size() > 0) {
-			new Thread(() -> {
-				messageService.sendMedia(mediaItems, Collections.singletonList(messageReceiver));
-				finish();
-			}).start();
+			messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
+			finish();
 		}
 	}
 
@@ -529,6 +602,14 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		};
 
 		FileUtil.selectFile(this, null, mimeTypes, REQUEST_CODE_ATTACH_FROM_GALLERY, true, MAX_BLOB_SIZE, null);
+	}
+
+	private void attachFromExternalCamera() {
+		Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
+		intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+		intent.putExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, true);
+		intent.putExtra(SendMediaActivity.EXTRA_USE_EXTERNAL_CAMERA, true);
+		AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 	}
 
 	private void createBallot() {
@@ -617,18 +698,16 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			return;
 		}
 
-		new Thread(() -> {
-			List<MediaItem> mediaItems = new ArrayList<>(uriList.size());
-			for(int i = 0; i < uriList.size(); i++) {
-				MediaItem mediaItem = new MediaItem(uriList.get(i), MediaItem.TYPE_NONE);
-				if (captions != null) {
-					mediaItem.setCaption(captions.get(i));
-				}
-				mediaItems.add(mediaItem);
+		List<MediaItem> mediaItems = new ArrayList<>(uriList.size());
+		for(int i = 0; i < uriList.size(); i++) {
+			MediaItem mediaItem = new MediaItem(uriList.get(i), MediaItem.TYPE_NONE);
+			if (captions != null) {
+				mediaItem.setCaption(captions.get(i));
 			}
-			messageService.sendMedia(mediaItems, Collections.singletonList(messageReceiver));
-			finish();
-		}).start();
+			mediaItems.add(mediaItem);
+		}
+		messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
+		finish();
 	}
 
 	private boolean validateSendingPermission() {

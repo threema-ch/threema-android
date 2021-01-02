@@ -133,6 +133,7 @@ public class ControllerView extends FrameLayout {
 		status = STATUS_NONE;
 	}
 
+	@UiThread
 	public void setPlay() {
 		logger.debug("setPlay");
 		if (status != STATUS_READY_TO_PLAY) {
@@ -142,6 +143,7 @@ public class ControllerView extends FrameLayout {
 		}
 	}
 
+	@UiThread
 	public void setBroken() {
 		logger.debug("setBroken");
 		if (status != STATUS_BROKEN) {
@@ -151,6 +153,7 @@ public class ControllerView extends FrameLayout {
 		}
 	}
 
+	@UiThread
 	public void setPause() {
 		logger.debug("setPause");
 		setImageResource(R.drawable.ic_pause);

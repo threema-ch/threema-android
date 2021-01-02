@@ -38,6 +38,7 @@ import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ImageViewUtil;
@@ -79,27 +80,30 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 		this.setOnClickListener(view -> viewImage(getMessageModel(), holder.attachmentImage), holder.messageBlockView);
 
 		if (holder.controller != null) {
-			holder.controller.setOnClickListener(v -> {
-				int status = holder.controller.getStatus();
+			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
+				@Override
+				public void onDebouncedClick(View v) {
+					int status = holder.controller.getStatus();
 
-				switch (status) {
-					case ControllerView.STATUS_PROGRESSING:
-						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
-							getMessageService().cancelMessageUpload(getMessageModel());
-						} else {
-							imageMessagePlayer.cancel();
-						}
-						break;
-					case ControllerView.STATUS_READY_TO_RETRY:
-						if (onClickRetry != null) {
-							onClickRetry.onClick(getMessageModel());
-						}
-						break;
-					case ControllerView.STATUS_READY_TO_DOWNLOAD:
-						imageMessagePlayer.open();
-						break;
-					default:
-						viewImage(getMessageModel(), holder.attachmentImage);
+					switch (status) {
+						case ControllerView.STATUS_PROGRESSING:
+							if (ImageChatAdapterDecorator.this.getMessageModel().isOutbox() && (ImageChatAdapterDecorator.this.getMessageModel().getState() == MessageState.PENDING || ImageChatAdapterDecorator.this.getMessageModel().getState() == MessageState.SENDING)) {
+								ImageChatAdapterDecorator.this.getMessageService().cancelMessageUpload(ImageChatAdapterDecorator.this.getMessageModel());
+							} else {
+								imageMessagePlayer.cancel();
+							}
+							break;
+						case ControllerView.STATUS_READY_TO_RETRY:
+							if (onClickRetry != null) {
+								onClickRetry.onClick(ImageChatAdapterDecorator.this.getMessageModel());
+							}
+							break;
+						case ControllerView.STATUS_READY_TO_DOWNLOAD:
+							imageMessagePlayer.open();
+							break;
+						default:
+							ImageChatAdapterDecorator.this.viewImage(ImageChatAdapterDecorator.this.getMessageModel(), holder.attachmentImage);
+					}
 				}
 			});
 		}

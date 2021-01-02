@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -171,11 +172,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			listAdapter.getFilter().filter(newText);
 		}
 		return true;
-	}
-
-	public interface SendCompletionHandler {
-		void onError(String errorMessage);
-		void onCompleted();
 	}
 
 	public int getLayoutResource() {
@@ -734,7 +730,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private void copySelectedFiles() {
 		for (int i = 0; i < mediaItems.size(); i++) {
 			MediaItem mediaItem = mediaItems.get(i);
-			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem.getUri()));
+			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 
 			if ("content".equals(mediaItem.getUri().getScheme())) {
 				try {
@@ -753,7 +749,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getCaption());
 			startComposeActivity(intent);
 		} else if (messageReceivers.length > 1 || mediaItems.size() > 0) {
-			new Thread(() -> messageService.sendMedia(mediaItems, Arrays.asList(messageReceivers))).start();
+			messageService.sendMediaAsync(mediaItems, Arrays.asList(messageReceivers));
 			startComposeActivity(intent);
 		} else {
 			startComposeActivity(intent);
@@ -910,7 +906,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					new AsyncTask<Void, Void, Void>() {
 						@Override
 						protected void onPreExecute() {
-							GenericProgressDialog.newInstance(R.string.copy_message_action, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_FILECOPY);
+							GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_FILECOPY);
 						}
 
 						@Override
@@ -1107,7 +1103,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	 * Message action frontends
 	 */
 
-	@WorkerThread
+	@AnyThread
 	private void sendMediaMessage(final MessageReceiver[] messageReceivers, final Uri uri, final String caption, final int type, @Nullable final String mimeType, @FileData.RenderingType final int renderingType) {
 		final MediaItem mediaItem = new MediaItem(uri, type);
 		if (mimeType != null) {
@@ -1117,7 +1113,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			mediaItem.setRenderingType(renderingType);
 		}
 		mediaItem.setCaption(caption);
-		messageService.sendMedia(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers), null);
+		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));
 	}
 
 	@WorkerThread

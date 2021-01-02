@@ -93,10 +93,6 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 			+ TEST_IDENTITY_2 + " and add some test quotes.");
 		generateRecursiveQuote.setOnPreferenceClickListener(this::generateTestQuotes);
 
-		// Delete labels database
-		final Preference deleteLabelsDb = findPreference(getResources().getString(R.string.preferences__labels_delete));
-		deleteLabelsDb.setOnPreferenceClickListener(this::deleteMediaLabelsDatabase);
-
 		// Remove developer menu
 		final Preference removeMenuPreference = findPreference(getResources().getString(R.string.preferences__remove_menu));
 		removeMenuPreference.setSummary("Hide the developer menu from the settings.");
@@ -248,48 +244,6 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 			protected void onPostExecute(@Nullable Exception e) {
 				if (e == null) {
 					showOk("Test quotes created!");
-				} else {
-					showError(e);
-				}
-			}
-		}.execute();
-		return true;
-	}
-
-	@UiThread
-	@SuppressLint("StaticFieldLeak")
-	private boolean deleteMediaLabelsDatabase(Preference preference) {
-		new AsyncTask<Void, Void, Exception>() {
-			@Override
-			protected Exception doInBackground(Void... voids) {
-				try {
-					final String[] files = new String[] {
-						MediaItemsRoomDatabase.DATABASE_NAME,
-						MediaItemsRoomDatabase.DATABASE_NAME + "-shm",
-						MediaItemsRoomDatabase.DATABASE_NAME + "-wal",
-					};
-					for (String filename : files) {
-						final File databasePath = getAppContext().getDatabasePath(filename);
-						if (databasePath.exists() && databasePath.isFile()) {
-							logger.info("Removing file {}", filename);
-							if (!databasePath.delete()) {
-								logger.warn("Could not remove file {}", filename);
-							}
-						} else {
-							logger.debug("File {} not found", filename);
-						}
-					}
-				} catch (Exception e) {
-					logger.error("Exception while deleting media labels database");
-					return e;
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Exception e) {
-				if (e == null) {
-					showOk("Database deleted");
 				} else {
 					showError(e);
 				}

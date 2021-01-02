@@ -56,11 +56,11 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 	private static final String LISTENER_TAG = "decorator";
 	private MessagePlayer audioMessagePlayer;
-	private PowerManager powerManager;
-	private PowerManager.WakeLock audioPlayerWakelock;
+	private final PowerManager powerManager;
+	private final PowerManager.WakeLock audioPlayerWakelock;
 
 	public AudioChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-		super(context, messageModel, helper);
+		super(context.getApplicationContext(), messageModel, helper);
 		this.powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
 		this.audioPlayerWakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BuildConfig.APPLICATION_ID + ":AudioPlayer");
 	}
@@ -295,7 +295,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 								RuntimeUtil.runOnUiThread(() -> {
 									if (holder.position == position) {
 										if (holder.seekBar != null) {
-											holder.seekBar.setMax(audioMessagePlayer.getDuration());
+											holder.seekBar.setMax(holder.messagePlayer.getDuration());
 										}
 										updateProgressCount(holder, pos);
 

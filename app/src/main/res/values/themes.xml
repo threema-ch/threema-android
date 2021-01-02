@@ -568,6 +568,7 @@
 	</style>
 
 	<style name="Theme.MediaAttacher.Dark" parent="Theme.Threema.WithToolbar.Dark">
+		<item name="android:windowNoTitle">true</item>
 		<item name="colorPrimary">@android:color/transparent</item>
 		<item name="shape_border_toprounded_square">@drawable/shape_border_toprounded_square_dark</item>
 		<item name="gallery_attach_item_background">@color/list_item_background_checked_dark</item>
@@ -575,7 +576,6 @@
 		<item name="android:windowIsTranslucent">true</item>
 		<item name="android:windowAnimationStyle">@android:style/Animation</item>
 		<item name="android:colorBackgroundCacheHint">@null</item>
-		<item name="android:windowNoTitle">true</item>
 		<item name="colorBackgroundFloating">@android:color/transparent</item>
 		<item name="attach_button_background">@color/attach_button_background_dark</item>
 	</style>

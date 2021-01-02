@@ -453,7 +453,7 @@ public class BitmapUtil {
 	 */
 	@SuppressLint("InlinedApi")
 	@WorkerThread
-	public static ExifOrientation rotationForImage(Context context, Uri uri) {
+	public static ExifOrientation getExifOrientation(Context context, Uri uri) {
 		ExifOrientation retVal = new ExifOrientation(FLIP_NONE, 0);
 
 		if (uri != null) {

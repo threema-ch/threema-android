@@ -60,8 +60,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.MediaItem;
@@ -73,7 +76,7 @@ import ch.threema.app.video.VideoTimelineCache;
 
 import static com.google.android.exoplayer2.C.TIME_END_OF_SOURCE;
 
-public class VideoEditView extends FrameLayout {
+public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver {
 	private static final Logger logger = LoggerFactory.getLogger(VideoEditView.class);
 
 	private static final int MOVING_NONE = 0;
@@ -119,6 +122,8 @@ public class VideoEditView extends FrameLayout {
 		int progressWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_progress_width);
 
 		this.touchTargetWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_touch_target_width);
+
+		((LifecycleOwner)context).getLifecycle().addObserver(this);
 
 		LayoutInflater.from(context).inflate(R.layout.view_video_edit, this, true);
 
@@ -350,28 +355,6 @@ public class VideoEditView extends FrameLayout {
 				}
 		}
 		return super.onTouchEvent(event);
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		if (thumbnailThread != null && thumbnailThread.isAlive()) {
-			thumbnailThread.interrupt();
-		}
-
-		if (videoView != null) {
-			if (videoView.getPlayer() != null) {
-				videoView.setPlayer(null);
-			}
-		}
-
-		if (videoPlayer != null) {
-			videoPlayer.stop();
-			videoPlayer.release();
-		}
-
-		this.context = null;
-
-		super.onDetachedFromWindow();
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -623,5 +606,26 @@ public class VideoEditView extends FrameLayout {
 			return (int) (videoCurrentPosition * this.timelineGridLayout.getWidth() / videoItem.getDurationMs());
 		}
 		return 0;
+	}
+
+
+	@Override
+	public void onDestroy(@NonNull LifecycleOwner owner) {
+		if (thumbnailThread != null && thumbnailThread.isAlive()) {
+			thumbnailThread.interrupt();
+		}
+
+		if (videoView != null) {
+			if (videoView.getPlayer() != null) {
+				videoView.setPlayer(null);
+			}
+		}
+
+		if (videoPlayer != null) {
+			videoPlayer.stop();
+			videoPlayer.release();
+		}
+
+		this.context = null;
 	}
 }
