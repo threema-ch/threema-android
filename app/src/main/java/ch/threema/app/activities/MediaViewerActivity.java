@@ -65,6 +65,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.fragments.mediaviews.AudioViewFragment;
 import ch.threema.app.fragments.mediaviews.FileViewFragment;
@@ -92,10 +93,13 @@ import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 
 
-public class MediaViewerActivity extends ThreemaToolbarActivity {
+public class MediaViewerActivity extends ThreemaToolbarActivity implements
+	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
+
 	private static final Logger logger = LoggerFactory.getLogger(MediaViewerActivity.class);
 
 	private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 1;
@@ -439,11 +443,25 @@ public class MediaViewerActivity extends ThreemaToolbarActivity {
 
 	private void shareMedia() {
 		AbstractMessageModel messageModel = this.getCurrentMessageModel();
+		ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
+			getString(R.string.share_image),
+			R.string.add_caption_hint, messageModel.getCaption(),
+			R.string.send, R.string.cancel, true);
+		alertDialog.setData(messageModel);
+		alertDialog.show(getSupportFragmentManager(), null);
+	}
+
+	@Override
+	public void onYes(String tag, Object data, String text) {
+		AbstractMessageModel messageModel = (MessageModel) data;
 		Uri shareUri = fileService.copyToShareFile(messageModel, currentMediaFile);
 		messageService.shareMediaMessages(this,
-				new ArrayList<>(Collections.singletonList(messageModel)),
-				new ArrayList<>(Collections.singletonList(shareUri)));
+			new ArrayList<>(Collections.singletonList(messageModel)),
+			new ArrayList<>(Collections.singletonList(shareUri)), text);
 	}
+
+	@Override
+	public void onNo(String tag) {}
 
 	public void viewMediaInGallery() {
 		AbstractMessageModel messageModel = this.getCurrentMessageModel();

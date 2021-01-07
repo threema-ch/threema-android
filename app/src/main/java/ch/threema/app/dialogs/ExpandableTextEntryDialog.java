@@ -88,6 +88,10 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		object = o;
 	}
 
+	public void setCallback(ExpandableTextEntryDialogClickListener callback) {
+		this.callback = callback;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

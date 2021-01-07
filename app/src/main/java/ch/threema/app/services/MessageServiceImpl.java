@@ -3042,7 +3042,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public boolean shareMediaMessages(final Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris) {
+	public boolean shareMediaMessages(final Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris, String caption) {
 		if (TestUtil.required(context, models, shareFileUris)) {
 			if (models.size() > 0 && shareFileUris.size() > 0) {
 				Intent intent;
@@ -3060,6 +3060,9 @@ public class MessageServiceImpl implements MessageService {
 					intent.setType(getMimeTypeString(model));
 					if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(shareFileUri.getScheme())) {
 						intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					}
+					if (!TestUtil.empty(caption)) {
+						intent.putExtra(Intent.EXTRA_TEXT, caption);
 					}
 				} else {
 					intent = new Intent(Intent.ACTION_SEND_MULTIPLE);

@@ -193,7 +193,7 @@ public interface MessageService {
 	 */
 	long getTotalMessageCount();
 
-	boolean shareMediaMessages(Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris);
+	boolean shareMediaMessages(Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris, String caption);
 	boolean viewMediaMessage(Context context, AbstractMessageModel model, Uri uri);
 	boolean shareTextMessage(Context context, AbstractMessageModel model);
 	AbstractMessageModel getMessageModelFromId(int id, String type);

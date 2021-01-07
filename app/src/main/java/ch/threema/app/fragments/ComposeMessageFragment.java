@@ -145,6 +145,7 @@ import ch.threema.app.adapters.ComposeMessageAdapter;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.asynctasks.EmptyChatAsyncTask;
 import ch.threema.app.cache.ThumbnailCache;
+import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.MessageDetailDialog;
@@ -258,7 +259,8 @@ public class ComposeMessageFragment extends Fragment implements
 	EmojiPicker.EmojiPickerListener,
 	MentionSelectorPopup.MentionSelectorListener,
 	OpenBallotNoticeView.VisibilityListener,
-	ThreemaToolbarActivity.OnSoftKeyboardChangedListener {
+	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
+	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(ComposeMessageFragment.class);
 
@@ -3211,9 +3213,7 @@ public class ComposeMessageFragment extends Fragment implements
 					fileService.loadDecryptedMessageFiles(selectedMessages, new FileService.OnDecryptedFilesComplete() {
 						@Override
 						public void complete(ArrayList<Uri> uris) {
-							messageService.shareMediaMessages(activity,
-								new ArrayList<>(selectedMessages),
-								new ArrayList<>(uris));
+							shareMediaMessages(uris);
 						}
 
 						@Override
@@ -3241,9 +3241,7 @@ public class ComposeMessageFragment extends Fragment implements
 							if (messageModel.getType() == MessageType.FILE) {
 								filename = messageModel.getFileData().getFileName();
 							}
-							messageService.shareMediaMessages(activity,
-									new ArrayList<>(Collections.singletonList(messageModel)),
-									new ArrayList<>(Collections.singletonList(fileService.getShareFileUri(decryptedFile, filename))));
+							shareMediaMessages(Collections.singletonList(fileService.getShareFileUri(decryptedFile, filename)));
 						} else {
 							messageService.shareTextMessage(activity, messageModel);
 						}
@@ -3256,6 +3254,30 @@ public class ComposeMessageFragment extends Fragment implements
 				});
 			}
 		}
+	}
+
+	private void shareMediaMessages(List<Uri> uris) {
+		if (selectedMessages.size() == 1) {
+			ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
+				getString(R.string.share_image),
+				R.string.add_caption_hint, selectedMessages.get(0).getCaption(),
+				R.string.send, R.string.cancel, true);
+			alertDialog.setData(uris);
+			alertDialog.setCallback(this);
+			alertDialog.show(getParentFragmentManager(), null);
+		} else {
+			messageService.shareMediaMessages(activity,
+				new ArrayList<>(selectedMessages),
+				new ArrayList<>(uris), null);
+		}
+	}
+
+	@Override
+	public void onYes(String tag, Object data, String text) {
+		List<Uri> uris = (List<Uri>) data;
+		messageService.shareMediaMessages(activity,
+			new ArrayList<>(selectedMessages),
+			new ArrayList<>(uris), text);
 	}
 
 	@Override
