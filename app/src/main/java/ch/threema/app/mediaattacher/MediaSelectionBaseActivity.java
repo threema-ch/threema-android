@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -38,7 +38,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -99,7 +98,6 @@ import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.localcrypto.MasterKey;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI;
@@ -202,7 +200,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 		// Initialize UI
 		this.setLayout();
-		this.setMenu();
+		this.setDropdownMenu();
 		this.setListeners();
 	}
 
@@ -295,6 +293,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			});
 		}
 
+		ConfigUtils.addIconsToOverflowMenu(this, this.toolbar.getMenu());
+
 		this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
@@ -312,7 +312,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		});
 	}
 
-	protected void setMenu() {
+	protected void setDropdownMenu() {
 		this.bucketFilterMenu = new PopupMenuWrapper(this, menuTitle);
 
 		if (mediaAttachViewModel.getToolBarTitle() == null) {

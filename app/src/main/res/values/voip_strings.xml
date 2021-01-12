@@ -46,6 +46,11 @@
 	<string name="voip_prefs_title_aec">Echo Cancellation</string>
 	<string name="voip_prefs_aec_sw">Software echo cancellation</string>
 	<string name="voip_prefs_aec_hw">Hardware echo cancellation</string>
+	<string name="voip_prefs_title_video_codec">Video Codecs</string>
+	<string name="voip_prefs_video_aec_hw">Hardware accelerated</string>
+	<string name="voip_prefs_video_codec_no_vp8">Disable VP8</string>
+	<string name="voip_prefs_video_codec_no_h264hip">Disable H264-HiP</string>
+	<string name="voip_prefs_video_codec_sw">Software codecs</string>
 	<string name="voip_connection_failed">Connection could not be established</string>
 	<string name="voip_connection_lost">Connection lost</string>
 	<string name="prefs_voip_reject_incoming_calls_title">Reject mobile calls</string>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -55,6 +55,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
+import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -186,15 +187,17 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 			if (item.isChecked()) {
 				item.setChecked(false);
 				textView.setIgnoreMarkup(true);
-				textView.setText(messageModel.getBody());
+				setText(messageModel);
 			} else {
 				item.setChecked(true);
 				textView.setIgnoreMarkup(false);
-				textView.setText(messageModel.getBody());
+				setText(messageModel);
 			}
 			return true;
 		});
 		toolbar.setTitle(title);
+
+		ConfigUtils.addIconsToOverflowMenu(this, toolbar.getMenu());
 
 		// TODO: replace with "toolbarNavigationButtonStyle" attribute in theme as soon as all Toolbars have been switched to Material Components
 		toolbar.getNavigationIcon().setColorFilter(getResources().getColor(
@@ -210,9 +213,7 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 		((ViewGroup) findViewById(R.id.footer)).addView(footerView);
 
 		textView = findViewById(R.id.text_view);
-		textView.setText(messageModel.getBody());
-
-		LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, messageModel.getBody().length() < 80, false, null);
+		setText(messageModel);
 
 		// display date
 		CharSequence s = MessageUtil.getDisplayDate(this, messageModel, true);
@@ -225,6 +226,11 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 			// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
 			textView.setCustomSelectionActionModeCallback(textSelectionCallback);
 		}
+	}
+
+	private void setText(AbstractMessageModel messageModel) {
+		textView.setText(QuoteUtil.getMessageBody(messageModel, false));
+		LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, messageModel.getBody().length() < 80, false, null);
 	}
 
 	@Override

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -53,6 +53,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
@@ -369,11 +370,17 @@ public class MediaViewerActivity extends ThreemaToolbarActivity {
 		}
 	}
 
+	@SuppressLint("RestrictedApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
 		getMenuInflater().inflate(R.menu.activity_media_viewer, menu);
+
+		try {
+			MenuBuilder menuBuilder = (MenuBuilder) menu;
+			menuBuilder.setOptionalIconsVisible(true);
+		} catch (Exception ignored) {}
 
 		if (AppRestrictionUtil.isShareMediaDisabled(this)) {
 			menu.findItem(R.id.menu_save).setVisible(false);

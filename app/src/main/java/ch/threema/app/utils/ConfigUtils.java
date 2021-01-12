@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.utils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -83,10 +84,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
@@ -684,7 +687,11 @@ public class ConfigUtils {
 			android.content.res.Configuration conf = res.getConfiguration();
 			if ("pt".equals(confLanguage)) {
 				conf.locale = new Locale(confLanguage, "BR");
-			} else {
+			}
+			else if ("zh".equals(confLanguage)) {
+				conf.locale = new Locale(confLanguage, "CN");
+			}
+			else {
 				conf.locale = new Locale(confLanguage);
 			}
 			res.updateConfiguration(conf, dm);
@@ -1263,5 +1270,27 @@ public class ConfigUtils {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Configure menu to display icons and dividers. Call this in onCreateOptionsMenu()
+	 * @param context Context - required for themeing, set to null if you want the icon color not to be touched
+	 * @param menu Menu to configure
+	 */
+	@SuppressLint("RestrictedApi")
+	public static void addIconsToOverflowMenu(@Nullable Context context, @NonNull Menu menu) {
+		MenuCompat.setGroupDividerEnabled(menu, true);
+
+		try {
+			// restricted API
+			if (menu instanceof MenuBuilder) {
+				MenuBuilder menuBuilder = (MenuBuilder) menu;
+				menuBuilder.setOptionalIconsVisible(true);
+
+				if (context != null) {
+					ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(context, R.attr.textColorSecondary));
+				}
+			}
+		} catch (Exception ignored) {}
 	}
 }

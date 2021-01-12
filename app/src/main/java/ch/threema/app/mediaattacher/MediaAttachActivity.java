@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,6 +36,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -59,7 +60,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import ch.threema.app.QRScannerUtil;
 import ch.threema.app.R;
@@ -547,7 +547,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	public void onEdit(final ArrayList<Uri> uriList) {
 		ArrayList<MediaItem> mediaItems = new ArrayList<>(uriList.size());
 		for (Uri uri: uriList) {
-			String mimeType = MimeUtil.getMimeTypeFromUri(uri);
+			String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
 			if (MimeUtil.isVideoFile(mimeType) || MimeUtil.isImageFile(mimeType)) {
 				MediaItem mediaItem = new MediaItem(uri, mimeType, null);
 				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
@@ -572,7 +572,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 
 		for (Uri uri : list) {
-			MediaItem mediaItem = new MediaItem(uri, MimeUtil.getMimeTypeFromUri(uri), null);
+			MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(this, uri), null);
 			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 			mediaItems.add(mediaItem);
 		}
@@ -596,12 +596,22 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	}
 
 	private void attachImageFromGallery() {
-		final String[] mimeTypes = {
-			MimeUtil.MIME_TYPE_IMAGE,
-			MimeUtil.MIME_TYPE_VIDEO
-		};
+		try {
+			Intent getContentIntent = new Intent();
+			getContentIntent.setType(MimeUtil.MIME_TYPE_VIDEO);
+			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
+			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
+			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
+			Intent pickIntent = new Intent(Intent.ACTION_PICK);
+			pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
+			Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.select_from_gallery));
+			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
 
-		FileUtil.selectFile(this, null, mimeTypes, REQUEST_CODE_ATTACH_FROM_GALLERY, true, MAX_BLOB_SIZE, null);
+			startActivityForResult(chooserIntent, REQUEST_CODE_ATTACH_FROM_GALLERY);
+		} catch (Exception e) {
+			logger.debug("Exception", e);
+			Toast.makeText(this, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void attachFromExternalCamera() {
@@ -700,7 +710,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 		List<MediaItem> mediaItems = new ArrayList<>(uriList.size());
 		for(int i = 0; i < uriList.size(); i++) {
-			MediaItem mediaItem = new MediaItem(uriList.get(i), MediaItem.TYPE_NONE);
+			MediaItem mediaItem = new MediaItem(uriList.get(i), MediaItem.TYPE_FILE);
 			if (captions != null) {
 				mediaItem.setCaption(captions.get(i));
 			}

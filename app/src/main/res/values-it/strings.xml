@@ -1034,10 +1034,8 @@ messaggi ogni 15 minuti.</string>
     <string name="delete">Elimina</string>
     <string name="num_archived_chats">%d chat archiviate</string>
     <string name="continue_recording">Continua registrazione</string>
-    <string name="whatsnew_title">Ecco %s 4.0</string>
-    <string name="whatsnew_headline">Da oggi %1$s è ancora più bello e più facile da usare. Poiché non è più dipendente da applicazioni esterne, la tua privacy è garantita.\n\nIl modernissimo design Material è più intuitivo: per effettuare le diverse azioni sono necessari meno passaggi.\n\nTocca \"Per saperne di più\" e scoprirai molto di più sulle nuove emozionanti caratteristiche di %1$s 4.0.</string>
+    <string name="whatsnew_title">Ecco %s 4.5</string>
     <string name="whatsnew2_title">Quali sono le novità?</string>
-    <string name="whatsnew2_body">&lt;p>• Elenco messaggi: ti basta fare scorrere il dito a sinistra per archiviare una chat&lt;/p>&lt;p>• Elenco chat: fai scorrere il dito a destra per citare un messaggio&lt;/p>&lt;p>• Sblocca %1$s direttamente con il meccanismo di blocco biometrico del tuo telefono&lt;/p>&lt;p>• %1$s non fa più affidamento su Google Maps o su un\'applicazione esterna di mappe per condividere i luoghi, i PDI o per visualizzare le cartine&lt;/p>&lt;p>• Questa versione è ora dotata di un lettore codice QR e di un\'applicazione incorporata per fotocamera. Per usare queste caratteristiche, permetti a %1$s di accedere alla fotocamera. I plugin di %1$s non sono più necessari e possono essere disinstallati senza problemi.&lt;/p></string>
     <string name="tooltip_identity_popup">Tocca qui per visualizzare rapidamente il tuo Threema ID o per scansionare gli ID di altre persone</string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>

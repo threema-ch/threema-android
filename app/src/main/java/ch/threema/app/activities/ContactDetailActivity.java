@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -56,6 +57,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.palette.graphics.Palette;
@@ -624,6 +626,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		contactEditDialog.show(getSupportFragmentManager(), DIALOG_TAG_EDIT);
 	}
 
+	@SuppressLint("RestrictedApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -633,6 +636,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 
 		getMenuInflater().inflate(R.menu.activity_contact_detail, menu);
+		try {
+			MenuBuilder menuBuilder = (MenuBuilder) menu;
+			menuBuilder.setOptionalIconsVisible(true);
+		} catch (Exception ignored) {}
 
 		return true;
 	}

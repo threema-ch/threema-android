@@ -580,7 +580,7 @@
 	<string name="everything">everything</string>
 	<string name="delete_media_files_time">Delete media and files older than:</string>
 	<string name="storage_explain">If you run out of free space, you can delete older encrypted media files to make
-		room. Thumbnails will still be kept.</string>
+		room. Thumbnails will still be kept. Note that this is not an automatic process. Unless you hit one of the buttons below, nothing will be deleted.</string>
 	<string name="delete_data">Delete data now</string>
 	<string name="delete_date_confirm_message">If you continue, the files will be deleted and only thumbnails will be
 		kept.</string>
@@ -758,7 +758,7 @@
 	<string name="selection_counter_label" tools:ignore="PluralsCandidate">%d image(s) selected</string>
 	<string name="verification_started">Verification started</string>
 	<string name="cannot_open_file">Could not open file</string>
-	<string name="prefs_title_image_attach_previews">Image quick select</string>
+	<string name="prefs_title_image_attach_previews">Media quick select</string>
 	<string name="prefs_sum_image_attach_previews">Display a list of recently added images in the attachments popup</string>
 	<string name="prefs_title_direct_share">Direct Share</string>
 	<string name="prefs_sum_direct_share">Display recent chats when sharing from other apps</string>
@@ -1064,10 +1064,22 @@
 	<string name="delete">Delete</string>
 	<string name="num_archived_chats">%d archived chats</string>
 	<string name="continue_recording">Continue recording</string>
-	<string name="whatsnew_title">Welcome to %s 4.0</string>
-	<string name="whatsnew_headline">%1$s is now even more beautiful and easier to use while further protecting your privacy by removing dependencies on external apps.\n\nThe modern Material design is more intuitive and requires less taps to get things done.\n\nTap on «learn more» to find out more about some of the exciting new features in %1$s 4.0.</string>
+	<string name="whatsnew_title">Welcome to %s 4.5</string>
+	<string name="whatsnew_headline">%1$s 4.5 brings a whole new media experience.\n\nThe media drawer interface received a major overhaul and now features an optional machine learning based image search.\n\nFurthermore, we added global text search across all chats, improved message quoting and more.</string>
 	<string name="whatsnew2_title">What\'s new?</string>
-	<string name="whatsnew2_body">&lt;p>• Message list: Simply swipe to the left to archive a chat&lt;/p>&lt;p>• Chat list: Swipe to the right to quote a message&lt;/p>&lt;p>• Unlock %1$s directly with your phone\'s biometric lock mechanism&lt;/p>&lt;p>• %1$s no longer relies on Google Maps or an external maps application to share locations, POIs or display maps&lt;/p>&lt;p>• This release now includes a QR code scanner and a built-in camera application. To use these features, please allow %1$s to access the camera. The %1$s plugins are no longer required and can be safely uninstalled.&lt;/p></string>
+	<string name="whatsnew2_body">
+		<![CDATA[
+		<p><b>Media Drawer</b>: Tap the paper-clip icon to browse your media files in a scrollable drawer. In case you don\'t want the drawer to open up automatically with the most recent media, disable the image quick select option in the chat settings at <i>Settings / Chat / Media quick select</i>.</p>
+		<p><b>Image Search</b>: Search your images for common objects, activities, and places.<br>The image recognition is based on a local machine learning model and does not send data to Threema\'s server or any third party. As analyzing images is a rather expensive task and may take a long time, the option is disabled by default. You will find it at <i>Settings / Media & Storage / Image Search</i>.</p>
+		<p><b>Sending media files</b>: Send images with individual resolutions without having to change the global settings.</p>
+		<p><b>Video editor</b>: Trim videos before sending. Furthermore, the video transcoding process has been improved and now works in the background.</p>
+		<p><b>Save to gallery</b>: On Android 10 and above, media is now stored in the system\'s <i>Pictures, Video, Music,</i> and <i>Documents</i> folders due to new «Scoped Storage» requirements by Google.</p>
+		<p><b>Global search</b>: Search for text across all chats. Simply tap on <i>Menu / Search chats</i> when on %1$s\'s home screen.</p>
+		<p><b>Quotes</b>: %1$s now allows you to quote any type of media, including images, videos and voice messages.</p>
+		<p><b>100 new emojis</b>: Check the long-awaited fondue &#129749;</p>
+		<p><b>Large texts</b>: To keep the chat interface lean, messages with a lot of text show in a truncated chat bubble and can be expanded on demand.</p>
+		]]>
+	</string>
 	<string name="tooltip_identity_popup">Tap here to quickly display your Threema ID or to scan other people\'s IDs</string>
 	<string name="tap_to_start">Tap here to start %s now.</string>
 	<string name="two_years">2 years</string>
@@ -1208,4 +1220,6 @@
 	<string name="original_file_no_longer_avilable">The original file is no longer accessible. Please re-send the message.</string>
 	<string name="state_transcoding">transcoding</string>
 	<string name="importing_files">Importing files</string>
+	<string name="tooltip_image_resolution_hint">Adjust image resolutions.</string>
+	<string name="image_labeling_stuck_error">The indexing process for image search got stuck and was cancelled. Please retry later.</string>
 </resources>

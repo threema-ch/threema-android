@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2020 Threema GmbH
+ * Copyright (c) 2019-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -52,17 +52,19 @@ public class MediaItem implements Parcelable {
 	@FileData.RenderingType int renderingType;
 	@PreferenceService.ImageScale private int imageScale; // desired image scale
 	private String filename;
+	private boolean deleteAfterUse;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({TYPE_NONE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE})
+	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT})
 	public @interface MediaType {}
-	public static final int TYPE_NONE = 0;
+	public static final int TYPE_FILE = 0;
 	public static final int TYPE_IMAGE = 1;
 	public static final int TYPE_VIDEO = 2;
 	public static final int TYPE_IMAGE_CAM = 3;
 	public static final int TYPE_VIDEO_CAM = 4;
 	public static final int TYPE_GIF = 5;
 	public static final int TYPE_VOICEMESSAGE = 6;
+	public static final int TYPE_TEXT = 7;
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
 
@@ -71,6 +73,15 @@ public class MediaItem implements Parcelable {
 
 		this.type = type;
 		this.uri = uri;
+	}
+
+	public MediaItem(Uri uri, @MediaType int type, String mimeType, String caption) {
+		init();
+
+		this.type = type;
+		this.uri = uri;
+		this.mimeType = mimeType;
+		this.caption = caption;
 	}
 
 	public MediaItem(Uri uri, String mimeType, String caption) {
@@ -87,7 +98,7 @@ public class MediaItem implements Parcelable {
 		} else if (MimeUtil.isAudioFile(mimeType) && mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_AAC)) {
 			this.type = TYPE_VOICEMESSAGE;
 		} else {
-			this.type = TYPE_NONE;
+			this.type = TYPE_FILE;
 			this.renderingType = FileData.RENDERING_DEFAULT;
 		}
 
@@ -109,6 +120,7 @@ public class MediaItem implements Parcelable {
 		this.renderingType = FileData.RENDERING_MEDIA;
 		this.imageScale = ImageScale_DEFAULT;
 		this.filename = null;
+		this.deleteAfterUse = false;
 	}
 
 
@@ -127,6 +139,7 @@ public class MediaItem implements Parcelable {
 		renderingType = in.readInt();
 		imageScale = in.readInt();
 		filename = in.readString();
+		deleteAfterUse = in.readInt() != 0;
 	}
 
 	@Override
@@ -145,6 +158,7 @@ public class MediaItem implements Parcelable {
 		dest.writeInt(renderingType);
 		dest.writeInt(imageScale);
 		dest.writeString(filename);
+		dest.writeInt(deleteAfterUse ? 1 : 0);
 	}
 
 	@Override
@@ -284,5 +298,17 @@ public class MediaItem implements Parcelable {
 
 	public void setFilename(@Nullable String filename) {
 		this.filename = filename;
+	}
+
+	public boolean getDeleteAfterUse() {
+		return deleteAfterUse;
+	}
+
+	/**
+	 * Set this flag if the file is temporary and can be deleted after use
+	 * @param deleteAfterUse 1 to signal the file is expendable, 0 otherwise
+	 */
+	public void setDeleteAfterUse(boolean deleteAfterUse) {
+		this.deleteAfterUse = deleteAfterUse;
 	}
 }

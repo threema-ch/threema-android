@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -99,6 +99,10 @@ public class EmojiMarkupUtil {
 	}
 
 	public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean singleScale) {
+		return addTextSpans(context, text, textView, ignoreMarkup, ignoreMarkup, singleScale);
+	}
+
+	public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean ignoreMentions, boolean singleScale) {
 		if (text == null) {
 			return "";
 		}
@@ -151,13 +155,15 @@ public class EmojiMarkupUtil {
 			}
 		}
 
-		if (!ignoreMarkup) {
+		if (!ignoreMentions) {
 			if (textView == null) {
 				builder = new SpannableStringBuilder(applyTextMentionMarkup(text));
 			} else {
 				builder = applyMentionMarkup(context, builder);
 			}
+		}
 
+		if (!ignoreMarkup) {
 			MarkupParser.getInstance().markify(builder);
 		}
 

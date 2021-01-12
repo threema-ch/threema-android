@@ -92,7 +92,7 @@
 					android:layout_width="@dimen/media_attach_button_size"
 					android:layout_height="@dimen/media_attach_button_size"
 					android:layout_gravity="center_vertical"
-					app:labelIcon="@drawable/ic_poll_outline"
+					app:labelIcon="@drawable/ic_outline_rule"
 					app:fillColor="@color/material_lime"
 					app:foregroundColor="@android:color/white"
 					app:labelText="@string/attach_ballot" />

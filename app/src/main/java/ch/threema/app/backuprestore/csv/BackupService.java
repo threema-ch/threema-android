@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -205,7 +206,7 @@ public class BackupService extends Service {
 				Uri backupUri = this.fileService.getBackupUri();
 				String filename = "threema-backup_" + userService.getIdentity() + "_" + now.getTime() + "_1";
 
-				if ("file".equals(backupUri.getScheme())) {
+				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(backupUri.getScheme())) {
 					zipFile = DocumentFile.fromFile(new File(backupUri.getPath(), INCOMPLETE_BACKUP_FILENAME_PREFIX + filename + ".zip"));
 					success = true;
 				} else {

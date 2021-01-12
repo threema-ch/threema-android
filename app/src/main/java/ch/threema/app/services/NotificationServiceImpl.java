@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1910,5 +1910,23 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void cancelImageLabelingProgressNotification() {
 		this.notificationManager.cancel(ThreemaApplication.IMAGE_LABELING_NOTIFICATION_ID);
+	}
+
+	@Override
+	public void showImageLabelingWorkerStuckNotification() {
+		String msg = context.getString(R.string.image_labeling_stuck_error);
+
+		NotificationCompat.Builder builder =
+			new NotificationBuilderWrapper(this.context, NOTIFICATION_CHANNEL_IMAGE_LABELING, null)
+				.setSmallIcon(R.drawable.ic_image_labeling)
+				.setTicker(msg)
+				.setLocalOnly(true)
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setCategory(NotificationCompat.CATEGORY_ERROR)
+				.setColor(this.context.getResources().getColor(R.color.material_red))
+				.setContentTitle(this.context.getString(R.string.app_name))
+				.setContentText(msg)
+				.setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
+		this.notify(ThreemaApplication.WEB_RESUME_FAILED_NOTIFICATION_ID, builder);
 	}
 }

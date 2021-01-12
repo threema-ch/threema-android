@@ -830,7 +830,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="selection_counter_label">%d Bild(er) ausgewählt</string>
 	<string name="verification_started">Überprüfung gestartet</string>
 	<string name="cannot_open_file">Konnte Datei nicht öffnen</string>
-	<string name="prefs_title_image_attach_previews">Bilder-Schnellauswahl</string>
+	<string name="prefs_title_image_attach_previews">Medien-Schnellauswahl</string>
 	<string name="prefs_sum_image_attach_previews">Eine Liste der neuesten Bilder im Hinzufügen-Popup anzeigen</string>
 	<string name="prefs_title_direct_share">Direct Share</string>
 	<string name="prefs_sum_direct_share">Beim Teilen aus anderen Apps letzte Chats anzeigen</string>
@@ -1139,10 +1139,22 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="delete">Löschen</string>
 	<string name="num_archived_chats">%d archivierte Chats</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="whatsnew_title">Willkommen bei %s 4.0</string>
-	<string name="whatsnew_headline">%1$s ist jetzt noch schöner und noch einfacher zu bedienen. Gleichzeitig ist Ihre Privatsphäre durch die weiter reduzierten Abhängigkeiten von externen Apps noch besser geschützt.\n\nDas moderne Material-Design ist noch intuitiver und benötigt für die wichtigsten Funktionen weniger Schritte.\n\nTippen Sie auf «Mehr erfahren» um weitere Informationen über einige der spannenden neuen Features von %1$s 4.0 zu erhalten.</string>
+	<string name="whatsnew_title">Wilkommen bei %s 4.5</string>
+	<string name="whatsnew_headline">%1$s bringt ein komplett neues Medienerlebnis.\n\nDie Medien-Schnellauswahl wurde neu gestaltet und bietet jetzt neben diversen Filtermöglichkeiten eine optionale, machine-learning basierte Bildersuche.\n\nAusserdem haben wir eine globale Textsuche über alle Chats eingeführt, das Zitieren verbessert und vieles mehr.</string>
 	<string name="whatsnew2_title">Was ist neu?</string>
-	<string name="whatsnew2_body">&lt;p>• Nachrichtenliste: Wischen Sie nach links, um einen Chat zu archivieren&lt;/p>&lt;p>• Im Chat: Wischen Sie nach rechts, um eine Nachricht zu zitieren&lt;/p>&lt;p>• Entsperren Sie %1$s direkt mit dem biometrischen Mechanismus Ihres Handys&lt;/p>&lt;p>• %1$s benötigt nun weder Google Maps noch eine andere externe Karten-App, um Standorte oder POIs zu teilen oder Karten anzuzeigen&lt;/p>&lt;p>• Diese Version enthält eine eingebaute Kamera-App und einen QR-Code-Scanner. Um diese Funktionen zu nutzen, erlauben Sie %1$s bitte Zugriff auf die Kamera. Die bisherigen Threema-Plugins werden nicht mehr benötigt und können deinstalliert werden.&lt;/p></string>
+	<string name="whatsnew2_body">
+		<![CDATA[
+		<p><b>Medien-Schnellauswahl</b>: Klicken Sie auf die Büroklammer, um Ihre Medien übersichtlich in einem ausziehbaren Slider anzuzeigen. Sie können diese Funktion in den Chat-Einstellungen auch deaktivieren: <i>Einstellungen / Chat / Medien-Schnellauswahl</i>.</p>
+		<p><b>Bildersuche</b>: Durchsuchen Sie Ihre Bilder nach gängigen Objekten, Aktivitäten und Orten. Die Bilderkennung basiert auf einem lokalen Machine-Learning-Modell und sendet keine Daten an uns oder andere Drittparteien. Da die Indexierung relativ viele Ressourcen benötigt und einige Zeit dauert, ist die Bildersuche standardmässig deaktiviert. Sie können sie unter <i>Threema-Einstellungen / Medien & Speicher / Bildersuche</i> einschalten.</p>
+		<p><b>Medien versenden</b>: Bilder können nun mit individuell unterschiedlichen Auflösungen gesendet werden, ohne die globalen Einstellungen zu ändern.</p>
+		<p><b>Video-Editor</b>: Schneiden Sie Videos vor dem Versand zu. Ausserdem wurde der Video-Konvertierungsprozess verbessert, so dass er im Hintergrund laufen kann.</p>
+		<p><b>In Galerie speichern</b>: Aufgrund neuer Anforderungen von Google, werden die Dateien ab Android 10 in den allgemeinen Medien-Ordnern des Systems abgelegt (<i>Pictures, Video, Music,</i> und <i>Documents</i>).</p>
+		<p><b>Globale Suche</b>: Suchen Sie in allen Chats nach Text. Sie können eine globale Suche vom %1$s-Heimbildschirm aus über <i>Menü / Chats durchsuchen</i> starten.</p>
+		<p><b>Zitate</b>: %1$s ermöglicht es jetzt, sämtliche Arten von Medien zu zitieren, einschliesslich Bildern, Videos oder Sprachnachrichten.</p>
+		<p><b>100 Neue Emojis</b>: Darunter das lange erwartete Fondue &#129749;</p>
+		<p><b>Lange Texte</b>: Um den Chat übersichtlich zu halten, werden sehr lange Textnachrichten gekürzt dargestellt und können auf Abruf vollständig angezeigt werden. Dabei ist es auch möglich, die Formatierungen zu deaktivieren.</p>
+		]]>
+	</string>
 	<string name="tooltip_identity_popup">Tippen Sie hier, um schnell Ihre Threema-ID anzuzeigen oder die IDs von anderen Personen zu scannen</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
 	<string name="two_years">2 Jahre</string>
@@ -1279,4 +1291,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="original_file_no_longer_avilable">Kein Zugriff mehr auf die Original-Datei. Bitte senden Sie diese Nachricht erneut.</string>
 	<string name="state_transcoding">wird transcodiert</string>
 	<string name="importing_files">Dateien werden importiert</string>
+	<string name="tooltip_image_resolution_hint">Bildauflösung individuell anpassen.</string>
+	<string name="image_labeling_stuck_error">Der Indexierungsprozess für die Bildersuche ist stehen geblieben und wurde abgebrochen. Versuchen Sie es später nochmals.</string>
+	<string name="max_selectable_media_exceeded">Es können maximal %d Objekte aufs Mal versendet werden.</string>
 </resources>

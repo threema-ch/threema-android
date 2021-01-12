@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -208,6 +208,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		// Show settings
 		this.addToLog("Enabled: calls=" + preferenceService.isVoipEnabled() + " video=" + preferenceService.isVideoCallsEnabled());
 		this.addToLog("Settings: aec=" + preferenceService.getAECMode() +
+			" video_codec=" + preferenceService.getVideoCodec() +
 			" video_profile=" + preferenceService.getVideoCallsProfile() +
 			" force_turn=" + preferenceService.getForceTURN());
 		this.addToLog("----------------");
@@ -229,6 +230,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		final boolean enableLevelControl = false;
 		final boolean videoCallEnabled = true;
 		final boolean useVideoHwAcceleration = true;
+		final boolean videoCodecEnableVP8 = true;
+		final boolean videoCodecEnableH264HiP = true;
 		final SdpPatcher.RtpHeaderExtensionConfig rtpHeaderExtensionConfig =
 			SdpPatcher.RtpHeaderExtensionConfig.ENABLE_WITH_ONE_AND_TWO_BYTE_HEADER;
 		final boolean forceTurn = false;
@@ -237,7 +240,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		final PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
 				false,
 				useOpenSLES, disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS, enableLevelControl,
-				videoCallEnabled, useVideoHwAcceleration,
+				videoCallEnabled, useVideoHwAcceleration, videoCodecEnableVP8, videoCodecEnableH264HiP,
 				rtpHeaderExtensionConfig,
 				forceTurn, gatherContinually, allowIpv6
 		);

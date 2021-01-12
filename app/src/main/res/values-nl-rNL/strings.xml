@@ -1015,10 +1015,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="delete">Verwijderen</string>
     <string name="num_archived_chats">%d gearchiveerde chats</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
-    <string name="whatsnew_title">Welkom bij %s 4.0</string>
-    <string name="whatsnew_headline">%1$s is nu nog fraaier en gemakkelijker in het gebruik terwijl het uw privacy nog beter beschermt omdat het niet meer afhankelijkheid is van externe apps.\n\nHet moderne Materials Design is intuïtiever en er zijn minder tikken nodig om dingen gedaan te krijgen.\n\nTik op &lt;&lt;meer informatie&gt;&gt; om de nieuwe, krachtige functies in %1$s 4.0 te ontdekken.</string>
+    <string name="whatsnew_title">Welkom bij %s 4.5</string>
     <string name="whatsnew2_title">Wat is er nieuw?</string>
-    <string name="whatsnew2_body">&lt;p>• Berichtenlijst: Archiveer een chatgesprek door naar links te vegen&lt;/p>&lt;p>• Chatlijst: Veeg naar rechts om een bericht te citeren&lt;/p>&lt;p>• %1$s rechtstreeks openen met het biometrische slot van uw telefoon&lt;/p>&lt;p>• %1$s is niet langer afhankelijk van Google Maps of van externe kaartapplicaties om locaties of interessante punten te delen of om kaarten weer te geven&lt;/p>&lt;p>• Deze versie bevat een QR-codescanner en een ingebouwde camera-app. Om deze functie te gebruiken, moet u %1$s toegang geven tot de camera. De %1$s-plugins zijn niet langer vereist en kunnen worden verwijderd.&lt;/p></string>
     <string name="tooltip_identity_popup">Tik hier om uw Threema-ID snel weer te geven of om de ID\'s van anderen te scannen</string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>

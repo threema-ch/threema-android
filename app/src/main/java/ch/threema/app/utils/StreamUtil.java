@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,7 @@
 
 package ch.threema.app.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 
@@ -41,7 +42,7 @@ public class StreamUtil {
 		InputStream inputStream = null;
 
 		if (uri != null && uri.getScheme() != null) {
-			if (uri.getScheme().equals("content")) {
+			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 				try {
 					inputStream = context.getContentResolver().openInputStream(uri);
 				} catch (FileNotFoundException e) {

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2020 Threema GmbH
+ * Copyright (c) 2015-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -37,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatRadioButton;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -224,6 +225,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 		minusButton.setEnabled(enable);
 	}
 
+	@UiThread
 	protected void updateUI() {
 		boolean isMentionsOnly = mentionOnlyChatListService.has(this.uid);
 

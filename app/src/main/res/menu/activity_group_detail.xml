@@ -25,7 +25,7 @@
 		android:id="@+id/menu_resync"
 		android:enabled="true"
 		android:icon="@drawable/ic_loop_white_24dp"
-		app:iconTint="@android:color/white"
+		app:iconTint="?attr/textColorSecondary"
 		android:orderInCategory="50"
 		android:title="@string/resync_group"
 		android:visible="false"
@@ -37,6 +37,8 @@
 		android:enabled="true"
 		android:orderInCategory="60"
 		android:title="@string/action_clone_group"
+		app:iconTint="?attr/textColorSecondary"
+		android:icon="@drawable/ic_outline_copy_all"
 		android:visible="true"
 		app:showAsAction="never"
 		/>
@@ -46,6 +48,8 @@
 		android:enabled="true"
 		android:orderInCategory="70"
 		android:title="@string/action_leave_group"
+		android:icon="@drawable/ic_outline_directions_run"
+		app:iconTint="?attr/textColorSecondary"
 		android:visible="false"
 		app:showAsAction="never"
 		/>
@@ -55,6 +59,8 @@
 		android:enabled="true"
 		android:orderInCategory="75"
 		android:title="@string/action_delete_group"
+		android:icon="@drawable/ic_delete_outline"
+		app:iconTint="?attr/textColorSecondary"
 		android:visible="false"
 		app:showAsAction="never"
 		/>

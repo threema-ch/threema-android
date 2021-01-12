@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -179,6 +179,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			regularColor = context.getResources().getColor(R.color.text_color_secondary);
 		}
 		Drawable stopwatchIcon = ConfigUtils.getThemedDrawable(getContext(), R.drawable.ic_av_timer_grey600_18dp);
+		int maxBubbleTextLength = context.getResources().getInteger(R.integer.max_bubble_text_length);
+		int maxQuoteTextLength = context.getResources().getInteger(R.integer.max_quote_text_length);
 		this.resultMapIndex = 0;
 		this.messageService = messageService;
 		this.userService = userService;
@@ -199,7 +201,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				thumbnailWidth,
 				fragment,
 				regularColor,
-				stopwatchIcon
+				stopwatchIcon,
+				maxBubbleTextLength,
+				maxQuoteTextLength
 		);
 	}
 

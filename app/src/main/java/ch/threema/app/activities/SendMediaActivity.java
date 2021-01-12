@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,6 +26,7 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -37,6 +38,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -101,6 +103,7 @@ import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SendButton;
+import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.draggablegrid.DynamicGridView;
 import ch.threema.app.utils.AnimationUtil;
@@ -112,6 +115,7 @@ import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.ThreemaException;
@@ -211,7 +215,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 						logger.info("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
 						logger.info("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
 
-						if (insets.getSystemWindowInsetBottom() == insets.getStableInsetBottom()) {
+						if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
 							onSoftKeyboardClosed();
 						} else {
 							onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
@@ -646,6 +650,34 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		} else {
 			this.backgroundLayout.setVisibility(View.VISIBLE);
 		}
+		maybeShowImageResolutionTooltip();
+	}
+
+	@UiThread
+	public void maybeShowImageResolutionTooltip() {
+		gridView.postDelayed(() -> {
+			if (sendMediaGridAdapter.holdsAdjustableImage() && !preferenceService.getIsImageResolutionTooltipShown()) {
+				int[] location = new int[2];
+				gridView.getLocationOnScreen(location);
+				location[0] += getResources().getDimensionPixelSize(R.dimen.grid_spacing);
+				location[1] += gridView.getHeight();
+
+				final TooltipPopup resolutionTooltipPopup = new TooltipPopup(this, R.string.preferences__image_resolution_tooltip_shown, R.layout.popup_tooltip_bottom_left_image_resolution, this, null);
+				resolutionTooltipPopup.show(this, gridView, getString(R.string.tooltip_image_resolution_hint), TooltipPopup.ALIGN_ABOVE_ANCHOR_ARROW_LEFT, location, 0);
+
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						RuntimeUtil.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								resolutionTooltipPopup.dismissForever();
+							}
+						});
+					}
+				}, 4000);
+			}
+		}, 2000);
 	}
 
 	private void showSettingsDropDown(final View view, final MediaItem mediaItem) {
@@ -1027,7 +1059,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 								final int position = addItemFromCamera(MediaItem.TYPE_IMAGE_CAM, cameraUri, exifOrientation);
 								showBigImage(position);
-
 								break;
 							}
 						}
@@ -1040,6 +1071,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					ArrayList<MediaItem> mediaItemsList = intent.getParcelableArrayListExtra(EXTRA_MEDIA_ITEMS);
 					if (mediaItemsList != null){
 						addItemsByMediaItem(mediaItemsList);
+						maybeShowImageResolutionTooltip();
 					}
 				default:
 					break;
@@ -1092,7 +1124,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	@UiThread
-	private int addItemFromCamera(int type, Uri imageUri, BitmapUtil.ExifOrientation exifOrientation) {
+	private int addItemFromCamera(int type, @NonNull Uri imageUri, BitmapUtil.ExifOrientation exifOrientation) {
 		if (mediaItems.size() >= MAX_SELECTABLE_IMAGES) {
 			Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 		}
@@ -1107,6 +1139,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			item.setMimeType(MimeUtil.MIME_TYPE_VIDEO_MP4);
 		} else {
 			item.setMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+		}
+
+		if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(imageUri.getScheme())) {
+			item.setDeleteAfterUse(true);
 		}
 
 		if (sendMediaGridAdapter != null) {

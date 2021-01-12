@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -38,6 +38,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -53,6 +54,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.DropDownPreference;
+import androidx.preference.Preference.SummaryProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
@@ -367,6 +369,19 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 			return true;
 		});
 
+		final DropDownPreference videoCodecPreference = (DropDownPreference) findPreference(getResources().getString(R.string.preferences__voip_video_codec));
+		assert videoCodecPreference != null;
+		final String[] videoCodecListDescription = getResources().getStringArray(R.array.list_video_codec);
+		final List<String> videoCodecValuesList = Arrays.asList(getResources().getStringArray(R.array.list_video_codec_values));
+
+		videoCodecPreference.setSummaryProvider((SummaryProvider<DropDownPreference>) preference -> {
+			CharSequence value = preference.getEntry().toString();
+			if (TextUtils.isEmpty(value)) {
+				return videoCodecListDescription[videoCodecValuesList.indexOf(PreferenceService.VIDEO_CODEC_HW)];
+			}
+			return value;
+		});
+
 		final Preference webclientDebugPreference = findPreference(getResources().getString(R.string.preferences__webclient_debug));
 		webclientDebugPreference.setOnPreferenceClickListener(preference -> {
 			Intent intent = new Intent(getActivity(), WebDiagnosticsActivity.class);
@@ -591,7 +606,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 							ConfigUtils.getFullAppVersion(getActivity()) + "\n" +
 							userService.getIdentity(), receiver);
 
-					MediaItem mediaItem = new MediaItem(Uri.fromFile(zipFile), MediaItem.TYPE_NONE);
+					MediaItem mediaItem = new MediaItem(Uri.fromFile(zipFile), MediaItem.TYPE_FILE);
 					mediaItem.setFilename(zipFile.getName());
 					mediaItem.setMimeType(MimeUtil.MIME_TYPE_ZIP);
 

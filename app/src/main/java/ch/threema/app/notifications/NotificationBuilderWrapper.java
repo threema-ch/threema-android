@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2020 Threema GmbH
+ * Copyright (c) 2018-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,6 +26,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -168,7 +169,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 			}
 		} else {
 			if (ringtone != null && ringtone.toString().length() > 4) {
-				if ("file".equals(ringtone.getScheme())) {
+				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(ringtone.getScheme())) {
 					// https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
 					ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", ringtone, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 				}
@@ -422,7 +423,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 				}
 
 				if (notificationSchema.getSoundUri() != null && notificationSchema.getSoundUri().toString().length() > 0) {
-					if ("file".equals(notificationSchema.getSoundUri().getScheme())) {
+					if (ContentResolver.SCHEME_FILE.equals(notificationSchema.getSoundUri().getScheme())) {
 						// https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
 						ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", notificationSchema.getSoundUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
 					}

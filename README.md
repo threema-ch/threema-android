@@ -98,6 +98,7 @@ There are currently six product flavors:
 | `store_threema`     | Threema Store version                         | Threema Shop   |
 | `sandbox`           | Uses sandbox test environment¹                | Allowlist      |
 | `sandbox_work`      | Uses sandbox test environment¹                | Threema Work   |
+| `red`               | Uses sandbox test environment¹                | Threema Work   |
 
 For local testing, we recommend building the `store_google` or `store_threema` build variants.
 

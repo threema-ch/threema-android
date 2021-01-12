@@ -1036,10 +1036,8 @@ Threema anonymně?</string>
     <string name="delete">Smazat</string>
     <string name="num_archived_chats">%d archivovaných chatů</string>
     <string name="continue_recording">Pokračuje nahrávání</string>
-    <string name="whatsnew_title">Vítejte v %s 4.0</string>
-    <string name="whatsnew_headline">%1$s je nyní ještě krásnější a snadněji se používá a zároveň chrání vaše soukromí tím, že odstraní závislosti na externích aplikacích.\n\nModerní „Material Design“ je více intuitivní a vyžaduje menší počet kliknutí, aby se věci pohnuly.\n\nKlepnutím na tlačítko „Další informace“ se dozvíte více o některých zajímavých nových funkcích v aplikaci %1$s 4.0.</string>
+    <string name="whatsnew_title">Vítejte v %s 4.5</string>
     <string name="whatsnew2_title">Co je nového?</string>
-    <string name="whatsnew2_body">&lt;p>• Seznam zpráv: Jednoduše přejeďte doleva, chcete-li archivovat chat &lt;/p>&lt;p>• Seznam chatu: Posunutím prstem vpravo citujete zprávu &lt;/p>&lt;p>• Odemknout %1$s s využitím biometrického zámku vašeho telefonu &lt;/p>&lt;p>• %1$s se již nebude spoléhat na Mapy Google ani na jinou externí mapovou aplikaci pro sdílení polohy, POI nebo zobrazení mapy &lt;/p>&lt;p>• Tato verze nyní obsahuje skener QR kódu a vestavěnou aplikaci fotoaparátu. Chcete-li tyto funkce používat, povolte oprávnění pro přístup k fotoaparátu %1$s . Pluginy %1$s již nejsou potřeba a můžete je odinstalovat.&lt;/p></string>
     <string name="tooltip_identity_popup">Klepnutím sem zobrazíte Vaše Threema ID nebo aktivujete scannování ID jiného uživatele</string>
     <string name="tap_to_start">Klepnutím sem spustíte %s.</string>
     <string name="two_years">2 roky</string>

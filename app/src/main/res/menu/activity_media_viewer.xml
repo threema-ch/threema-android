@@ -6,7 +6,7 @@
 			android:id="@+id/menu_gallery"
 			app:showAsAction="ifRoom"
 			android:title="@string/media_gallery"
-			android:icon="@drawable/ic_collections"
+			android:icon="@drawable/ic_outline_apps"
 			app:iconTint="@android:color/white"
 			android:orderInCategory="5"/>
 
@@ -22,6 +22,8 @@
 			android:id="@+id/menu_view"
 			app:showAsAction="never"
 			android:title="@string/view_in_gallery"
+			android:icon="@drawable/ic_collections"
+			app:iconTint="@android:color/white"
 			android:orderInCategory="30"/>
 
 	<item

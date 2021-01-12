@@ -1024,10 +1024,8 @@ almacenado.</string>
     <string name="delete">Borrar</string>
     <string name="num_archived_chats">%d chats archivados</string>
     <string name="continue_recording">Continuar grabando</string>
-    <string name="whatsnew_title">Esto es %s 4.0</string>
-    <string name="whatsnew_headline">Ahora, %1$s es aún más vistoso y más fácil de usar, a la vez que protege más su privacidad eliminando la dependencia de aplicaciones externas.\n\nEl moderno diseño con Material Design es más intuitivo y requiere menos toques para hacer las cosas.\n\nToque en \"Más información\" para más detalles sobre algunas de las nuevas y fascinantes funciones de %1$s 4.0.</string>
+    <string name="whatsnew_title">Esto es %s 4.5</string>
     <string name="whatsnew2_title">Novedades</string>
-    <string name="whatsnew2_body">&lt;p>• Lista de mensajes: para archivar un chat, simplemente deslice el dedo hacia la izquierda&lt;/p>&lt;p>• Lista de chat: deslice hacia la derecha para citar un mensaje&lt;/p>&lt;p>• Desbloquee %1$s directamente con el mecanismo de bloqueo biométrico de su teléfono&lt;/p>&lt;p>• %1$s ya no depende de Google Maps ni ninguna aplicación de mapas externa para compartir ubicaciones o puntos de interés, o para mostrar mapas &lt;/p>&lt;p>• Esta versión incluye ahora un escáner de códigos QR y una aplicación de cámara integrada. Para usar estas funciones, permita que %1$s acceda a la cámara. Los plugins de %1$s ya no son necesarios y se pueden desinstalar con seguridad.&lt;/p></string>
     <string name="tooltip_identity_popup">Toque aquí para visualizar rápidamente su ID de Threema o para escanear el ID de otras personas.</string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>

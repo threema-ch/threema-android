@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -120,7 +120,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 				v.setAlpha(0.3f);
 				ArrayList<MediaItem> mediaItems = new ArrayList<>();
 				for (Uri uri : mediaAttachViewModel.getSelectedMediaUris()) {
-					MediaItem mediaItem = new MediaItem(uri, MimeUtil.getMimeTypeFromUri(uri), null);
+					MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(MediaSelectionActivity.this, uri), null);
 					mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 					mediaItems.add(mediaItem);
 				}

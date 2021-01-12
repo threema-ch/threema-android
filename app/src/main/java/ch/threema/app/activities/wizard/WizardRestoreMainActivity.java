@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2020 Threema GmbH
+ * Copyright (c) 2018-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.activities.wizard;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -308,9 +309,9 @@ public class WizardRestoreMainActivity extends WizardBackgroundActivity implemen
 	}
 
 	private void doDataBackupRestore(final Uri uri) {
-		if (!uri.getScheme().equals("file") && this.fileService != null) {
+		if (!ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme()) && this.fileService != null) {
 			// copy "file" to cache directory first
-			GenericProgressDialog.newInstance(R.string.download, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
+			GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
 
 			new Thread(() -> {
 				final File file = fileService.copyUriToTempFile(uri, "file", "zip", true);
@@ -423,7 +424,7 @@ public class WizardRestoreMainActivity extends WizardBackgroundActivity implemen
 
 		switch (requestCode) {
 			case REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS:
-				FileUtil.selectFile(WizardRestoreMainActivity.this, null, new String[]{MimeUtil.MIME_TYPE_ZIP}, ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER, true, 0, fileService.getBackupPath().getPath());
+				FileUtil.selectFile(WizardRestoreMainActivity.this, null, new String[]{MimeUtil.MIME_TYPE_ZIP}, ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER, false, 0, fileService.getBackupPath().getPath());
 				break;
 
 			case ThreemaActivity.ACTIVITY_ID_RESTORE_KEY:

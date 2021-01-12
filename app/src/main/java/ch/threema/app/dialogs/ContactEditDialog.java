@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2020 Threema GmbH
+ * Copyright (c) 2015-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -67,12 +68,11 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 	private static final String ARG_GROUP_ID = "groupId";
 
 	private static final String BUNDLE_CROPPED_AVATAR_FILE = "cropped_avatar_file";;
-	private static final String BUNDLE_IS_AVATAR_REMOVED = "avatar_removed";
 
 	public static int CONTACT_AVATAR_HEIGHT_PX = 512;
 	public static int CONTACT_AVATAR_WIDTH_PX = 512;
 
-	private ContactEditDialogClickListener callback;
+	private WeakReference<ContactEditDialogClickListener> callbackRef = new WeakReference<>(null);
 	private Activity activity;
 	private AvatarEditView avatarEditView;
 	private File croppedAvatarFile = null;
@@ -193,17 +193,17 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		super.onCreate(savedInstanceState);
 
 		try {
-			callback = (ContactEditDialogClickListener) getTargetFragment();
+			callbackRef = new WeakReference<>((ContactEditDialogClickListener) getTargetFragment());
 		} catch (ClassCastException e) {
 			//
 		}
 
 		// called from an activity rather than a fragment
-		if (callback == null) {
+		if (callbackRef.get() == null) {
 			if (!(activity instanceof ContactEditDialogClickListener)) {
 				throw new ClassCastException("Calling fragment must implement ContactEditDialogClickListener interface");
 			}
-			callback = (ContactEditDialogClickListener) activity;
+			callbackRef = new WeakReference<>((ContactEditDialogClickListener) activity);
 		}
 	}
 
@@ -310,13 +310,17 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 
 		builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						callback.onYes(tag, editText1.getText().toString(), editText2.getText().toString(), croppedAvatarFile);
+						if (callbackRef.get() != null) {
+							callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), croppedAvatarFile);
+						}
 					}
 				}
 		);
 		builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						callback.onNo(tag);
+						if (callbackRef.get() != null) {
+							callbackRef.get().onNo(tag);
+						}
 					}
 				}
 		);
@@ -328,7 +332,9 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 
 	@Override
 	public void onCancel(@NonNull DialogInterface dialogInterface) {
-		callback.onNo(this.getTag());
+		if (callbackRef.get() != null) {
+			callbackRef.get().onNo(this.getTag());
+		}
 	}
 
 	@Override

@@ -8,6 +8,8 @@
 		android:enabled="true"
 		android:orderInCategory="30"
 		android:title="@string/webclient_clear_all_sessions"
+		android:icon="@drawable/ic_delete_outline"
+		app:iconTint="?attr/textColorSecondary"
 		app:showAsAction="never"
 		/>
 
@@ -16,6 +18,8 @@
 		android:enabled="true"
 		android:orderInCategory="50"
 		android:title="@string/support"
+		android:icon="@drawable/ic_help_outline_24dp"
+		app:iconTint="?attr/textColorSecondary"
 		app:showAsAction="never"
 		/>
 

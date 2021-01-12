@@ -1031,10 +1031,8 @@ anonimowo?</string>
     <string name="delete">Usuń</string>
     <string name="num_archived_chats">Zarchiwizowane czaty: %d</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
-    <string name="whatsnew_title">Witaj w %s 4.0</string>
-    <string name="whatsnew_headline">%1$s jest teraz jeszcze ładniejsza i łatwiejsza w obsłudze, ale dalej w równym stopniu chroni Twoją prywatność, uniezależniając się od aplikacji zewnętrznych.\n\nNowoczesny Material design jest bardziej intuicyjny i wymaga mniej dotknięć.\n\nDotknij „Więcej informacji”, aby dowiedzieć się więcej na temat nowych funkcji %1$s 4.0.</string>
+    <string name="whatsnew_title">Witaj w %s 4.5</string>
     <string name="whatsnew2_title">Co nowego?</string>
-    <string name="whatsnew2_body">&lt;p>• Lista wiadomości: Wystarczy przesunąć w lewo, żeby zarchiwizować czat&lt;/p>&lt;p>• Lista czarów: Przesuń w prawo, aby zacytować wiadomość&lt;/p>&lt;p>• Odblokuj %1$s bezpośrednio biometrycznym mechanizmem blokującym Twojego telefonu&lt;/p>&lt;p>• %1$s nie polega już na Google Maps ani zewnętrznych aplikacjach z mapami w celu udostępniania lokalizacji, POI lub wyświetlania map&lt;/p>&lt;p>• Niniejsza wersja zawiera skaner kodów QR i wbudowaną aplikację obsługującą aparat. Aby skorzystać z tych funkcji, udziel %1$s dostępu do aparatu. Wtyczki %1$s nie są już wymagane i można je bezpiecznie odinstalować..&lt;/p></string>
     <string name="tooltip_identity_popup">Dotknij tutaj, aby szybko wyświetlić swój identyfikator Threema albo zeskanować identyfikatory innych osób</string>
     <string name="tap_to_start">Dotknij tutaj, aby włączyć %s teraz.</string>
     <string name="two_years">2 lata</string>

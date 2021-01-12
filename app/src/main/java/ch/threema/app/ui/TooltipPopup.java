@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2020 Threema GmbH
+ * Copyright (c) 2018-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -155,7 +155,7 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 		return false;
 	}
 
-	private void dismissForever() {
+	public void dismissForever() {
 		if (preferenceString != null) {
 			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 			if (sharedPreferences != null) {

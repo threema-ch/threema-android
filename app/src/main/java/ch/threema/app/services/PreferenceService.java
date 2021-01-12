@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -76,6 +76,11 @@ public interface PreferenceService {
 	int PRIVACY_POLICY_ACCEPT_EXCPLICIT = 1;
 	int PRIVACY_POLICY_ACCEPT_IMPLICIT = 2;
 	int PRIVACY_POLICY_ACCEPT_UPDATE = 3;
+
+	String VIDEO_CODEC_HW = "hw";
+	String VIDEO_CODEC_NO_VP8 = "no-vp8";
+	String VIDEO_CODEC_NO_H264HIP = "no-h264hip";
+	String VIDEO_CODEC_SW = "sw";
 
 	boolean isReadReceipts();
 	void setReadReceipts(boolean value);
@@ -353,6 +358,8 @@ public interface PreferenceService {
 
 	@NonNull String getAECMode();
 
+	@NonNull String getVideoCodec();
+
 	boolean getForceTURN();
 	void setForceTURN(boolean value);
 
@@ -390,6 +397,7 @@ public interface PreferenceService {
 	void setVideoCallTooltipShown(boolean shown);
 
 	boolean getIsWorkHintTooltipShown();
+	void setIsWorkHintTooltipShown(boolean shown);
 
 	void setThreemaSafeEnabled(boolean value);
 	boolean getThreemaSafeEnabled();
@@ -493,4 +501,7 @@ public interface PreferenceService {
 
 	boolean getIsImageLabelingTooltipShown();
 	void setIsImageLabelingTooltipShown(boolean shown);
+
+	boolean getIsImageResolutionTooltipShown();
+	void setIsImageResolutionTooltipShown(boolean shown);
 }

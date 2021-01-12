@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -902,7 +902,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		final boolean disableBuiltInNS = false; // Noise suppression
 		final boolean enableLevelControl = false;
 		final boolean videoCallEnabled = this.videoEnabled;
-		final boolean videoCodecHwAcceleration = this.videoEnabled;
+		final String videoCodec = this.preferenceService.getVideoCodec();
+		final boolean videoCodecHwAcceleration = this.videoEnabled && !videoCodec.equals(PreferenceService.VIDEO_CODEC_SW);
+		final boolean videoCodecEnableVP8 =  !videoCodec.equals(PreferenceService.VIDEO_CODEC_NO_VP8);
+		final boolean videoCodecEnableH264HiP = !videoCodec.equals(PreferenceService.VIDEO_CODEC_NO_H264HIP);
 		final SdpPatcher.RtpHeaderExtensionConfig rtpHeaderExtensionConfig =
 			this.videoEnabled
 				? SdpPatcher.RtpHeaderExtensionConfig.ENABLE_WITH_ONE_AND_TWO_BYTE_HEADER
@@ -927,7 +930,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		final PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
 				false,
 				this.useOpenSLES, this.disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS, enableLevelControl,
-				videoCallEnabled, videoCodecHwAcceleration,
+				videoCallEnabled, videoCodecHwAcceleration, videoCodecEnableVP8, videoCodecEnableH264HiP,
 				rtpHeaderExtensionConfig,
 				forceTurn, gatherContinually, this.preferenceService.allowWebrtcIpv6()
 		);

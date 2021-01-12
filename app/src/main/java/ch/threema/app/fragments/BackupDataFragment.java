@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.fragments;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -203,7 +204,7 @@ public class BackupDataFragment extends Fragment implements
 			}
 		} else {
 			Intent intent = new Intent(getContext(), FilePickerActivity.class);
-			if ("file".equals(backupUri.getScheme())) {
+			if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(backupUri.getScheme())) {
 				intent.putExtra(INTENT_DATA_DEFAULT_PATH, backupUri.getPath());
 			}
 			intent.putExtra(INTENT_DATA_SELECT_DIRECTORY, true);

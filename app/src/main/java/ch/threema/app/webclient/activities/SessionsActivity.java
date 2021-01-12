@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2020 Threema GmbH
+ * Copyright (c) 2016-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -895,6 +895,9 @@ public class SessionsActivity extends ThreemaToolbarActivity
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		this.getMenuInflater().inflate(R.menu.activity_webclient_sessions, menu);
+
+		ConfigUtils.addIconsToOverflowMenu(this, menu);
+
 		return true;
 	}
 

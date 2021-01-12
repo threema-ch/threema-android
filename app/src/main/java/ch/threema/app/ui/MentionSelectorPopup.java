@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -74,7 +74,6 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 	private ComposeEditText editText;
 	private int dividersHeight, viewableSpaceHeight;
 	private int popupY, popupX;
-	private boolean locked = false;
 	private TextWatcher textWatcher = new TextWatcher() {
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -260,25 +259,11 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 
 	@Override
 	public void dismiss() {
-		if (!this.locked) {
-			if (this.editText != null) {
-				this.editText.removeTextChangedListener(textWatcher);
-				this.editText.setLocked(false);
-			}
-			super.dismiss();
+		if (this.editText != null) {
+			this.editText.removeTextChangedListener(textWatcher);
+			this.editText.setLocked(false);
 		}
-	}
-
-	public void lock() {
-		this.locked = true;
-	}
-
-	public void unlock() {
-		this.locked = false;
-	}
-
-	public boolean isLocked() {
-		return this.locked;
+		super.dismiss();
 	}
 
 	public interface MentionSelectorListener {

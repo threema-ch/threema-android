@@ -93,6 +93,7 @@
 	<string name="preferences__profile_pic_upload_data" translatable="false">pref_profile_pic_upload_data</string>
 	<string name="preferences__receive_profilepics" translatable="false">pref_receive_profilepics</string>
 	<string name="preferences__voip_echocancel" translatable="false">pref_voip_echocancel</string>
+	<string name="preferences__voip_video_codec" translatable="false">pref_voip_video_codec</string>
 	<string name="preferences__voip_force_turn" translatable="false">pref_voip_force_turn</string>
 	<string name="preferences__voip_ringtone" translatable="false">pref_voip_ringtone</string>
 	<string name="preferences__voip_vibration" translatable="false">pref_voip_vibration</string>
@@ -174,4 +175,5 @@
 	<string name="preferences__last_syncadapter_run" translatable="false">pref_last_syncadapter_run</string>
 	<string name="preferences__image_labeling_tooltip_shown" translatable="false">pref_image_labeling_tooltip_shown</string>
 	<string name="preferences__image_labeling" translatable="false">pref_key_image_labeling</string>
+	<string name="preferences__image_resolution_tooltip_shown" translatable="false">pref_image_resolution_tooltip_shown</string>
 </resources>

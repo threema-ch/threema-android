@@ -150,6 +150,7 @@
 	<dimen name="drag_handle_topbottom_margin">8dp</dimen>
 	<dimen name="gallery_drawer_corner_radius">15dp</dimen>
 	<dimen name="broken_image_icon_size">32dp</dimen>
+	<dimen name="send_items_grid_action_icon_margin">3dp</dimen>
 
 	<!-- wizard -->
 	<dimen name="wizard_contents_padding">16dp</dimen>

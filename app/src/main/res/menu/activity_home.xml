@@ -33,7 +33,7 @@
 		android:id="@+id/menu_new_group"
 		android:orderInCategory="30"
 		android:title="@string/title_addgroup"
-		android:icon="@drawable/ic_outline_groups"
+		android:icon="@drawable/ic_group_outline"
 		android:visible="true"
 		app:showAsAction="never"/>
 
@@ -41,7 +41,7 @@
 		android:id="@+id/menu_new_distribution_list"
 		android:orderInCategory="40"
 		android:title="@string/title_add_distribution_list"
-		android:icon="@drawable/ic_outline_campaign"
+		android:icon="@drawable/ic_bullhorn_outline"
 		android:visible="true"
 		app:showAsAction="never"/>
 

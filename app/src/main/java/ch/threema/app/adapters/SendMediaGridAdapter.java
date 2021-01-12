@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2020 Threema GmbH
+ * Copyright (c) 2015-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -62,7 +62,7 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 	private final LayoutInflater layoutInflater;
 	private final int itemWidth;
 	private final ClickListener clickListener;
-
+	private boolean holdsResolutionAdjustableImage = false;
 
 	public static final int VIEW_TYPE_NORMAL = 0;
 	public static final int VIEW_TYPE_ADD = 1;
@@ -82,7 +82,7 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 		this.clickListener = clickListener;
 	}
 
-	private static class SendMediaHolder extends AbstractListItemHolder {
+	public static class SendMediaHolder extends AbstractListItemHolder {
 		public ImageView imageView, deleteView, brokenView, settingsView;
 		public LinearLayout qualifierView;
 		public int itemType;
@@ -175,6 +175,15 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 			rotateAndFlipImageView(holder.imageView, item);
 		}
 		return itemView;
+	}
+
+	public boolean holdsAdjustableImage() {
+		for (MediaItem item : items) {
+			if (item.getType() == MediaItem.TYPE_IMAGE) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void rotateAndFlipImageView(ImageView imageView, MediaItem item) {

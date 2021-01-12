@@ -87,6 +87,12 @@
 			android:key="@string/preferences__webrtc_debug"
 			android:summary="@string/voip_prefs_webrtc_debug_summary"
 			android:title="@string/voip_prefs_webrtc_debug"/>
+		<DropDownPreference
+			android:defaultValue="hw"
+			android:entries="@array/list_video_codec"
+			android:entryValues="@array/list_video_codec_values"
+			android:key="@string/preferences__voip_video_codec"
+			android:title="@string/voip_prefs_title_video_codec"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_webclient"

@@ -1019,10 +1019,8 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="delete">Excluir</string>
     <string name="num_archived_chats">%d conversas arquivadas</string>
     <string name="continue_recording">Continuar gravação</string>
-    <string name="whatsnew_title">Boas-vindas ao %s 4.0</string>
-    <string name="whatsnew_headline">%1$s ficou ainda mais bonito e fácil de usar ao mesmo tempo em que protege mais a sua privacidade ao remover dependências a aplicativos externos.\n\nO design do material moderno é mais intuitivo e exige menos toques para fazer as coisas.\n\nToque em «saber mais» para ler mais sobre alguns dos novos recursos incríveis do %1$s 4.0.</string>
+    <string name="whatsnew_title">Boas-vindas ao %s 4.5</string>
     <string name="whatsnew2_title">Quais novidades?</string>
-    <string name="whatsnew2_body">&lt;p>• Lista de mensagens: deslize para a esquerda para arquivar um chat&lt;/p>&lt;p>• Lista de chat: deslize para a direita para citar uma mensagem&lt;/p>&lt;p>• Desbloqueie %1$s diretamente com o mecanismo de bloqueio biométrico do seu telefone&lt;/p>&lt;p>• %1$s não depende mais do Google Maps ou de aplicativos de mapas externos para compartilhar localizações, POIs ou exibir mapas&lt;/p>&lt;p>• Essa versão agora inclui um scanner de código QR e um aplicativo de câmera embutido. Para usar esses recursos, permita que tenhamos %1$s acesso à câmera. Os plugins %1$s não são mais necessários e podem ser desinstalados com segurança.&lt;/p></string>
     <string name="tooltip_identity_popup">Toque aqui para exibir a sua ID do Threema ou escanear IDs de outras pessoas</string>
     <string name="tap_to_start">Toque aqui para iniciar o %s agora.</string>
     <string name="two_years">2 anos</string>
@@ -1122,7 +1120,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="prefs_sum_disable_smart_replies">Inibir Respostas Inteligentes nas notificações do Android</string>
     <string name="prefs_title_disable_smart_replies">Desativar Respostas Inteligentes</string>
     <string name="url_warning_body_alt">O nome do host do link que você está prestes a abrir é suspeito.\n\nIsso pode ser uma tentativa para fazer com que você abra um site que finge ser outro.\n\nGostaria de continuar mesmo assim?</string>
-    <string name="read_on">Ler mais...</string>
+    <string name="read_on">Ler mais…</string>
     <string name="forward_text">Encaminhar mensagem</string>
     <string name="an_error_occurred_during_send">Ocorreu um erro ao enviar uma ou mais mensagens.</string>
     <string name="state_processing">processando</string>

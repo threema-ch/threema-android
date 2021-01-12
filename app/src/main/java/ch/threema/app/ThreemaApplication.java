@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -40,8 +40,6 @@ import android.database.ContentObserver;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -80,9 +78,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
-import androidx.core.os.HandlerCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.multidex.MultiDexApplication;
@@ -307,6 +305,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				.detectLeakedSqlLiteObjects()
 				.detectLeakedClosableObjects()
 				.penaltyLog()
+				.penaltyDeath()
 				.penaltyListener(Executors.newSingleThreadExecutor(), v -> {
 					logger.info("STRICTMODE VMPolicy: " + v.getCause());
 					logStackTrace(v.getStackTrace());
@@ -1083,6 +1082,52 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 		try {
 			final WorkManager workManager = WorkManager.getInstance(context);
+			final NotificationService notificationService = serviceManager.getNotificationService();
+
+			LiveData<List<WorkInfo>> oneTimeLabelingWorkInfo;
+			LiveData<List<WorkInfo>> periodicTimeLabelingWorkInfo;
+
+			// observe worker states and cancel if blocked
+			oneTimeLabelingWorkInfo = workManager.getWorkInfosByTagLiveData(ImageLabelingWorker.UNIQUE_WORK_NAME);
+			periodicTimeLabelingWorkInfo = workManager.getWorkInfosByTagLiveData(WORKER_IMAGE_LABELS_PERIODIC);
+
+			oneTimeLabelingWorkInfo.observe(ProcessLifecycleOwner.get(), workInfos -> {
+				// If there are no matching work infos, do nothing
+				if (workInfos == null || workInfos.isEmpty()) {
+					return;
+				}
+
+				// We only care about the first output status.
+				// Every continuation has only one worker tagged TAG_OUTPUT
+				WorkInfo workInfo = workInfos.get(0);
+				WorkInfo.State state = workInfo.getState();
+				logger.debug("workstate one time label work " + state);
+				if (state == WorkInfo.State.BLOCKED) {
+					logger.info("Cancel image one time labeling work, worker is blocked");
+					workManager.cancelUniqueWork(ImageLabelingWorker.UNIQUE_WORK_NAME);
+					notificationService.showImageLabelingWorkerStuckNotification();
+				}
+			} );
+
+			periodicTimeLabelingWorkInfo.observe(ProcessLifecycleOwner.get(), workInfos -> {
+				// If there are no matching work infos, do nothing
+				if (workInfos == null || workInfos.isEmpty()) {
+					return;
+				}
+
+				// We only care about the first output status.
+				// Every continuation has only one worker tagged TAG_OUTPUT
+				WorkInfo workInfo = workInfos.get(0);
+				WorkInfo.State state = workInfo.getState();
+
+				logger.debug("workstate periodic label work " + state);
+				if (state == WorkInfo.State.BLOCKED) {
+					logger.info("Cancel periodic image labeling work, worker is blocked");
+					workManager.cancelUniqueWork(WORKER_IMAGE_LABELS_PERIODIC);
+					notificationService.showImageLabelingWorkerStuckNotification();
+				}
+			});
+
 
 			// Only run if storage and battery are both not low
 			final Constraints.Builder constraintsLabelingWork = new Constraints.Builder()

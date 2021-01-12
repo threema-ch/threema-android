@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020 Threema GmbH
+  ~ All rights reserved.
+  -->
+<!-- TODO: move to build.gradle -->
+<resources>
+	<string name="google_app_id" translatable="false">1:480681303521:android:6ec12987090e0e4f9fc6a0</string>
+	<string name="gcm_defaultSenderId" translatable="false">480681303521</string>
+	<string name="default_web_client_id" translatable="false">480681303521-dhlrmu6jot4ho92k37hoi8c8db9690no.apps.googleusercontent.com</string>
+	<string name="firebase_database_url" translatable="false">https://threema-red.firebaseio.com</string>
+	<string name="google_api_key" translatable="false">AIzaSyCEZ9OiIrh6zgz6RTQmk7zbEm_-8_vRj2U</string>
+	<string name="google_crash_reporting_api_key" translatable="false">AIzaSyCEZ9OiIrh6zgz6RTQmk7zbEm_-8_vRj2U</string>
+	<string name="project_id" translatable="false">threema-red</string>
+</resources>

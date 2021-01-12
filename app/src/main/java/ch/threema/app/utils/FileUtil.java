@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -41,16 +41,16 @@ import android.text.format.Formatter;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.camera.CameraActivity;
 import ch.threema.app.filepicker.FilePickerActivity;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.FileServiceImpl;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -106,16 +105,6 @@ public class FileUtil {
 			intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
 			intent.putExtra("android.content.extra.FANCY", true);
 			intent.putExtra("android.content.extra.SHOW_FILESIZE", true);
-			if (initialPath != null) {
-				// hack to set initial path for Intent.ACTION_OPEN_DOCUMENT
-				String externalStorageDir = Environment.getExternalStorageDirectory().getPath();
-				if (initialPath.startsWith(externalStorageDir) && initialPath.length() > externalStorageDir.length()) {
-					Uri uri = Uri.parse("content://com.android.externalstorage.documents/document/primary%3A" + Uri.encode(initialPath.substring(externalStorageDir.length() + 1)));
-
-					intent.putExtra("android.provider.extra.INITIAL_URI", uri);
-					intent.setData(uri);
-				}
-			}
 		}
 		else {
 			intent = new Intent();
@@ -243,59 +232,57 @@ public class FileUtil {
 		return validatedUris;
 	}
 
-	public static String getMimeTypeFromPath(String path) {
-		String contentType = null;
+	/**
+	 * Get the mime type by looking at the filename's extension
+	 * @param path filename or complete path of the file
+	 * @return Mime Type or application/octet-stream if a mime type could not be determined from the extension
+	 */
+	@NonNull
+	public static String getMimeTypeFromPath(@Nullable String path) {
+		String mimeType = null;
 
 		if (path != null) {
-			if (isAnimGif(path)) {
-				contentType = MimeUtil.MIME_TYPE_IMAGE_GIF;
-			} else {
-				MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-				String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-				if (TextUtils.isEmpty(extension)) {
-					// getMimeTypeFromExtension() doesn't handle spaces in filenames nor can it handle
-					// urlEncoded strings. Let's try one last time at finding the extension.
-					int dotPos = path.lastIndexOf('.');
-					if (0 <= dotPos) {
-						extension = path.substring(dotPos + 1);
-					}
-				}
-				if (!TextUtils.isEmpty(extension)) {
-					contentType = mimeTypeMap.getMimeTypeFromExtension(extension.toLowerCase());
-				}
-				if (extension.equalsIgnoreCase("opus")) {
-					// whatsapp ogg files
-					contentType = "audio/ogg";
-				} else if (extension.equalsIgnoreCase("gpx")) {
-					// https://issuetracker.google.com/issues/37120151
-					contentType = "application/gpx+xml";
-				} else if (extension.equalsIgnoreCase("pkpass")) {
-					contentType = "application/vnd.apple.pkpass";
+			String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+			if (TextUtils.isEmpty(extension)) {
+				// getMimeTypeFromExtension() doesn't handle spaces in filenames nor can it handle
+				// urlEncoded strings. Let's try one last time at finding the extension.
+				int dotPos = path.lastIndexOf('.');
+				if (0 <= dotPos) {
+					extension = path.substring(dotPos + 1);
 				}
 			}
+			if (!TextUtils.isEmpty(extension)) {
+				mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+			}
+			if (extension.equalsIgnoreCase("opus")) {
+				// whatsapp ogg files
+				mimeType = "audio/ogg";
+			} else if (extension.equalsIgnoreCase("gpx")) {
+				// https://issuetracker.google.com/issues/37120151
+				mimeType = "application/gpx+xml";
+			} else if (extension.equalsIgnoreCase("pkpass")) {
+				mimeType = "application/vnd.apple.pkpass";
+			}
 		}
-		if (TestUtil.empty(contentType)) {
+		if (TestUtil.empty(mimeType)) {
 			return MimeUtil.MIME_TYPE_DEFAULT;
 		}
-		return contentType;
+		return mimeType;
 	}
 
-	public static String getMimeTypeFromUri(Context context, Uri uri) {
+	@Nullable
+	public static String getMimeTypeFromUri(@NonNull Context context, @Nullable Uri uri) {
 		if (uri != null) {
-			if (isAnimGif(context.getContentResolver(), uri)) {
-				return MimeUtil.MIME_TYPE_IMAGE_GIF;
-			} else {
-				String path;
-				ContentResolver cr = context.getContentResolver();
-				String type = cr.getType(uri);
+			ContentResolver contentResolver = context.getContentResolver();
+			String type = contentResolver.getType(uri);
 
-				if (TestUtil.empty(type) || MimeUtil.MIME_TYPE_DEFAULT.equals(type)) {
-					path = FileUtil.getRealPathFromURI(context, uri);
+			if (TestUtil.empty(type) || MimeUtil.MIME_TYPE_DEFAULT.equals(type)) {
+//				path = FileUtil.getRealPathFromURI(context, uri);
+				String filename = FileUtil.getFilenameFromUri(contentResolver, uri);
 
-					return getMimeTypeFromPath(path);
-				}
-				return type;
+				return getMimeTypeFromPath(filename);
 			}
+			return type;
 		}
 		return null;
 	}
@@ -314,7 +301,7 @@ public class FileUtil {
 			if(info != null && info.providerInfo != null)
 			{
 				final String authority = info.providerInfo.authority;
-				if(isMediaDocument(Uri.parse("content://" + authority)))
+				if(isMediaDocument(Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + authority)))
 					return true;
 			}
 		}
@@ -327,7 +314,7 @@ public class FileUtil {
 	 */
 	public static Uri getFixedContentUri(Context context, Uri inUri) {
 		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-			if ("content".equals(inUri.getScheme()) && inUri.toString().toUpperCase().contains("%3A")) {
+			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(inUri.getScheme()) && inUri.toString().toUpperCase().contains("%3A")) {
 				String path = getRealPathFromURI(context, inUri);
 
 				if (!TestUtil.empty(path)) {
@@ -365,7 +352,7 @@ public class FileUtil {
 					} else {
 						try {
 							final Uri contentUri = ContentUris.withAppendedId(
-								Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+								Uri.parse(ContentResolver.SCHEME_CONTENT + "://downloads/public_downloads"), Long.parseLong(id));
 							return getDataColumn(context, contentUri, null, null);
 						} catch (NumberFormatException e) {
 							logger.info("Unable to extract document ID. Giving up.");
@@ -398,7 +385,7 @@ public class FileUtil {
 				return getDataColumn(context, contentUri, selection, selectionArgs);
 			}
 			// MediaStore (and general)
-		} else if ("content".equalsIgnoreCase(uri.getScheme())) {
+		} else if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 			// Return the remote address
 			if (isGooglePhotosUri(uri))
 				return uri.getLastPathSegment();
@@ -406,7 +393,7 @@ public class FileUtil {
 			return getDataColumn(context, uri, null, null);
 		}
 		// File
-		else if ("file".equalsIgnoreCase(uri.getScheme())) {
+		else if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) {
 			return uri.getPath();
 		}
 		return null;
@@ -452,27 +439,6 @@ public class FileUtil {
 				cursor.close();
 		}
 		return data;
-	}
-
-	public static boolean isAnimGif(String path) {
-		File file = new File(path);
-
-		return isAnimGif(file);
-	}
-
-	public static boolean isAnimGif(File file) {
-		if(file == null || !file.exists() || !file.isFile()) {
-			return false;
-		}
-
-		byte[] buffer = new byte[4];
-		try (InputStream is = new FileInputStream(file)){
-			is.read(buffer);
-		} catch (Exception x) {
-			logger.error("Exception", x);
-			return false;
-		}
-		return isAnimGif(buffer);
 	}
 
 	public static boolean isAnimGif(ContentResolver contentResolver, Uri uri) {
@@ -561,38 +527,30 @@ public class FileUtil {
 	}
 
 	@WorkerThread
-	public static boolean copyFile(File source, File dest) {
-		try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(source));
-		     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest, false))) {
-
-			byte[] buf = new byte[4096];
-			bis.read(buf);
-
-			do {
-				bos.write(buf);
-			} while (bis.read(buf) != -1);
-
+	public static boolean copyFile(@NonNull File source, @NonNull File dest) {
+		try (InputStream  inputStream = new FileInputStream(source);
+		     OutputStream outputStream = new FileOutputStream(dest))
+		{
+			IOUtils.copy(inputStream, outputStream);
 			return true;
-		} catch (IOException ignore) { }
-
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
 		return false;
 	}
 
 	@WorkerThread
-	public static boolean copyFile(Uri source, File dest, ContentResolver contentResolver) {
-		try (BufferedInputStream bis = new BufferedInputStream(contentResolver.openInputStream(source));
-		     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dest, false))) {
-
-			byte[] buf = new byte[4096];
-			bis.read(buf);
-
-			do {
-				bos.write(buf);
-			} while (bis.read(buf) != -1);
-
-			return true;
-		} catch (IOException ignore) { }
-
+	public static boolean copyFile(@NonNull Uri source, @NonNull File dest, @NonNull ContentResolver contentResolver) {
+		try (InputStream  inputStream = contentResolver.openInputStream(source);
+		     OutputStream outputStream = new FileOutputStream(dest))
+		{
+			if (inputStream != null) {
+				IOUtils.copy(inputStream, outputStream);
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
 		return false;
 	}
 
@@ -675,21 +633,34 @@ public class FileUtil {
 	 * @return A filename
 	 */
 	public static @NonNull String getFilenameFromUri(@NonNull ContentResolver contentResolver, @NonNull MediaItem mediaItem) {
+		String filename = getFilenameFromUri(contentResolver, mediaItem.getUri());
+
+		if (TextUtils.isEmpty(filename)) {
+			filename = getDefaultFilename(mediaItem.getMimeType());
+		}
+		return filename;
+	}
+
+	/**
+	 * Returns the filename of the object referred to by uriby querying the content resolver
+	 * @param contentResolver ContentResolver
+	 * @param uri Uri pointing at the object
+	 * @return A filename or null if none is found
+	 */
+	@Nullable
+	public static String getFilenameFromUri(ContentResolver contentResolver, Uri uri) {
 		String filename = null;
 
-		if ("file".equals(mediaItem.getUri().getScheme())) {
-			filename = mediaItem.getUri().getLastPathSegment();
+		if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) {
+			filename = uri.getLastPathSegment();
 		} else {
-			try (final Cursor cursor = contentResolver.query(mediaItem.getUri(), null, null, null, null)) {
+			try (final Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
 				if (cursor != null && cursor.moveToNext()) {
 					filename = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
 				}
 			} catch (IllegalStateException | SecurityException e) {
 				logger.error("Unable to query Content Resolver", e);
 			}
-		}
-		if (TextUtils.isEmpty(filename)) {
-			filename = getDefaultFilename(mediaItem.getMimeType());
 		}
 		return filename;
 	}

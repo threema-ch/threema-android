@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2020 Threema GmbH
+ * Copyright (c) 2015-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,6 +24,7 @@ package ch.threema.app.activities;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.UiThread;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.storage.models.GroupModel;
 
@@ -59,6 +60,7 @@ public class GroupNotificationsActivity extends NotificationsActivity {
 	}
 
 	@Override
+	@UiThread
 	protected void updateUI() {
 		super.updateUI();
 	}

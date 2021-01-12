@@ -1,82 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-
-	<item
-		android:id="@+id/menu_search_messages"
-		android:icon="@drawable/ic_search_outline"
-		app:iconTint="?android:textColorSecondary"
-		android:orderInCategory="10"
-		android:title="@string/search"
-		app:showAsAction="never"/>
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<item
 		android:id="@+id/menu_threema_call"
 		android:icon="@drawable/ic_phone_locked_outline"
-		app:iconTint="?android:textColorSecondary"
-		android:orderInCategory="20"
+		android:orderInCategory="10"
 		android:title="@string/threema_call"
+		app:iconTint="?android:textColorSecondary"
 		app:showAsAction="always" />
 
 	<item
 		android:id="@+id/menu_muted"
 		android:icon="@drawable/ic_notifications_active_outline"
-		app:iconTint="?android:textColorSecondary"
-		android:orderInCategory="30"
+		android:orderInCategory="20"
 		android:title="@string/notifications_settings"
 		android:visible="true"
-		app:showAsAction="ifRoom"/>
+		app:iconTint="?android:textColorSecondary"
+		app:showAsAction="ifRoom" />
 
-	<item
-		android:id="@+id/menu_shortcut"
-		android:orderInCategory="50"
-		android:title="@string/add_shortcut"
-		app:showAsAction="never"/>
+	<group
+		android:id="@+id/group_search"
+		android:checkableBehavior="none">
 
-	<item
-		android:id="@+id/menu_block_contact"
-		android:orderInCategory="60"
-		android:title="@string/block_contact"
-		android:visible="false"
-		app:showAsAction="never"/>
+		<item
+			android:id="@+id/menu_search_messages"
+			android:icon="@drawable/ic_search_outline"
+			android:orderInCategory="30"
+			android:title="@string/search"
+			app:iconTint="?android:textColorSecondary"
+			app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_empty_chat"
-		android:orderInCategory="65"
-		android:title="@string/empty_chat_title"
-		android:visible="true"
-		app:showAsAction="never"/>
+	</group>
 
-	<item
-		android:id="@+id/menu_delete_distribution_list"
-		android:orderInCategory="70"
-		android:title="@string/really_delete_distribution_list"
-		android:visible="false"
-		app:showAsAction="never"/>
+	<group
+		android:id="@+id/group_media"
+		android:checkableBehavior="none">
 
-	<item
-		android:id="@+id/menu_wallpaper"
-		android:orderInCategory="75"
-		android:title="@string/prefs_title_wallpaper_switch"
-		app:showAsAction="never"/>
+		<item
+			android:id="@+id/menu_shortcut"
+			android:icon="@drawable/ic_outline_add_to_home_screen"
+			android:orderInCategory="50"
+			android:title="@string/add_shortcut"
+			app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_gallery"
-		android:orderInCategory="80"
-		android:title="@string/media_gallery"
-		app:showAsAction="never"/>
+		<item
+			android:id="@+id/menu_wallpaper"
+			android:icon="@drawable/ic_wallpaper_outline"
+			android:orderInCategory="70"
+			android:title="@string/prefs_title_wallpaper_switch"
+			app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_ballot_window_show"
-		android:orderInCategory="90"
-		android:title="@string/ballot_window_show"
-		app:showAsAction="never"/>
+		<item
+			android:id="@+id/menu_gallery"
+			android:icon="@drawable/ic_collections"
+			android:orderInCategory="75"
+			android:title="@string/media_gallery"
+			app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_ballot_show_all"
-		android:orderInCategory="95"
-		android:title="@string/ballot_overview"
-		app:showAsAction="never"/>
+	</group>
+
+	<group
+		android:id="@+id/group_ballot"
+		android:checkableBehavior="none">
+
+		<item
+			android:id="@+id/menu_ballot_window_show"
+			android:icon="@drawable/ic_outline_visibility"
+			android:orderInCategory="80"
+			android:title="@string/ballot_window_show"
+			app:showAsAction="never" />
+
+		<item
+			android:id="@+id/menu_ballot_show_all"
+			android:icon="@drawable/ic_outline_rule"
+			android:orderInCategory="85"
+			android:title="@string/ballot_overview"
+			app:showAsAction="never" />
+
+	</group>
+
+	<group
+		android:id="@+id/group_delete"
+		android:checkableBehavior="none">
+
+		<item
+			android:id="@+id/menu_block_contact"
+			android:icon="@drawable/ic_block"
+			android:orderInCategory="90"
+			android:title="@string/block_contact"
+			android:visible="false"
+			app:showAsAction="never" />
+
+		<item
+			android:id="@+id/menu_empty_chat"
+			android:icon="@drawable/ic_outline_delete_sweep"
+			android:orderInCategory="94"
+			android:title="@string/empty_chat_title"
+			android:visible="true"
+			app:showAsAction="never" />
+
+		<item
+			android:id="@+id/menu_delete_distribution_list"
+			android:icon="@drawable/ic_delete_outline"
+			android:orderInCategory="97"
+			android:title="@string/really_delete_distribution_list"
+			android:visible="false"
+			app:showAsAction="never" />
+
+	</group>
 
 </menu>

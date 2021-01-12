@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,7 @@
 
 package ch.threema.app.voip.activities;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -104,7 +105,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			if (getString(R.string.call_mime_type).equals(intent.getType())) {
 				Uri uri = intent.getData();
-				if (uri != null && "content".equals(uri.getScheme())) {
+				if (uri != null && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 					try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
 						if (cursor != null && cursor.moveToNext()) {
 							String contactIdentity = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.RawContacts.Data.DATA1));

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,6 +28,7 @@ public class BuildFlavor {
 	private final static String FLAVOR_STORE_GOOGLE_WORK = "store_google_work";
 	private final static String FLAVOR_SANDBOX = "sandbox";
 	private final static String FLAVOR_SANDBOX_WORK = "sandbox_work";
+	private final static String FLAVOR_RED = "red";
 
 	public enum LicenseType {
 		NONE, GOOGLE, SERIAL, GOOGLE_WORK
@@ -104,6 +105,11 @@ public class BuildFlavor {
 				case FLAVOR_SANDBOX_WORK:
 					sandbox = true;
 					name = "Sandbox Work";
+					licenseType = LicenseType.GOOGLE_WORK;
+					break;
+				case FLAVOR_RED:
+					sandbox = true;
+					name = "Red";
 					licenseType = LicenseType.GOOGLE_WORK;
 					break;
 				default:

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -50,6 +50,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -96,12 +97,12 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private FileService fileService;
 	private PreferenceService preferenceService;
 	private ImageView avatarImage, avatarEditOverlay;
-	private AvatarEditListener listener;
+	private WeakReference<AvatarEditListener> listenerRef = new WeakReference<>(null);
 	private boolean hires, isEditable;
 
 	// the hosting fragment
-	private Fragment fragment;
-	private AppCompatActivity activity;
+	private WeakReference<Fragment> fragmentRef = new WeakReference<>(null);
+	private WeakReference<AppCompatActivity> activityRef = new WeakReference<>(null);
 
 	// the VieModel containing all data for this view
 	public AvatarEditViewModel avatarData;
@@ -206,22 +207,23 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 //		ListenerManager.profileListeners.add(this.profileListener);
 	}
 
+	@Nullable
 	private AppCompatActivity getActivity() {
 		return getActivity(getContext());
 	}
 
+	@Nullable
 	private AppCompatActivity getActivity(@NonNull Context context) {
-		if (activity == null) {
+		if (activityRef.get() == null) {
 			if (context instanceof ContextWrapper) {
 				if (context instanceof AppCompatActivity) {
-					activity = (AppCompatActivity) context;
-				}
-				else {
-					activity = getActivity(((ContextWrapper) context).getBaseContext());
+					activityRef = new WeakReference<>((AppCompatActivity) context);
+				} else {
+					activityRef = new WeakReference<>(getActivity(((ContextWrapper) context).getBaseContext()));
 				}
 			}
 		}
-		return activity;
+		return activityRef.get();
 	}
 
 	@SuppressLint("RestrictedApi")
@@ -295,8 +297,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private void removeAvatar() {
 		loadDefaultAvatar(avatarData.getContactModel(), avatarData.getGroupModel());
 
-		if (listener != null) {
-			listener.onAvatarRemoved();
+		if (listenerRef.get() != null) {
+			listenerRef.get().onAvatarRemoved();
 		} else {
 			new AsyncTask<Void, Void, Void>() {
 				@Override
@@ -420,8 +422,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 					if (avatarData.getCroppedFile() != null && avatarData.getCroppedFile().exists() && avatarData.getCroppedFile().length() > 0) {
 						bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX, true);
 						if (bitmap != null) {
-							if (listener != null) {
-								listener.onAvatarSet(avatarData.getCroppedFile());
+							if (listenerRef.get() != null) {
+								listenerRef.get().onAvatarSet(avatarData.getCroppedFile());
 							} else {
 								if (this.avatarData.getContactModel() != null) {
 									try {
@@ -532,11 +534,11 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	/**** Getters and Setters *****/
 
 	public void setFragment(@NonNull Fragment fragment) {
-		this.fragment = fragment;
+		this.fragmentRef = new WeakReference<>(fragment);
 	}
 
 	public @Nullable Fragment getFragment() {
-		return this.fragment;
+		return this.fragmentRef.get();
 	}
 
 	public void setContactModel(@NonNull ContactModel contactModel) {
@@ -580,7 +582,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 * @param listener AvatarEditListener that wants to know about changes
 	 */
 	public void setListener(AvatarEditListener listener) {
-		this.listener = listener;
+		this.listenerRef = new WeakReference<>(listener);
 	}
 
 	public void setHires(boolean hires) {

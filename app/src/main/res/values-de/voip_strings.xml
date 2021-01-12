@@ -40,6 +40,11 @@
 	<string name="voip_prefs_title_aec">Echo-Unterdrückung</string>
 	<string name="voip_prefs_aec_sw">Software Echo-Unterdrückung</string>
 	<string name="voip_prefs_aec_hw">Hardware Echo-Unterdrückung</string>
+	<string name="voip_prefs_title_video_codec">Video-Codecs</string>
+	<string name="voip_prefs_video_aec_hw">Hardwarebeschleunigt</string>
+	<string name="voip_prefs_video_codec_no_vp8">VP8 deaktiviert</string>
+	<string name="voip_prefs_video_codec_no_h264hip">H264-HiP deaktiviert</string>
+	<string name="voip_prefs_video_codec_sw">Software-Codecs</string>
 	<string name="voip_connection_failed">Verbindung konnte nicht aufgebaut werden.</string>
 	<string name="voip_connection_lost">Verbindung wurde unterbrochen</string>
 	<string name="prefs_voip_reject_incoming_calls_title">Mobiltelefon-Anrufe zurückweisen</string>

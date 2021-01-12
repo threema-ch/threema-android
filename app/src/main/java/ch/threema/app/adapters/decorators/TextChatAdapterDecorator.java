@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,15 +24,13 @@ package ch.threema.app.adapters.decorators;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.activities.TextChatBubbleActivity;
 import ch.threema.app.emojis.EmojiConversationTextView;
 import ch.threema.app.fragments.ComposeMessageFragment;
@@ -48,7 +46,6 @@ import ch.threema.storage.models.GroupMessageModel;
 
 public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 	private static final Logger logger = LoggerFactory.getLogger(ChatAdapterDecorator.class);
-	private static final int MAX_TEXT_BUBBLE_CONTENTS_LENGTH = 640;
 
 	private final int quoteType;
 
@@ -62,7 +59,6 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 		if(holder.bodyTextView != null) {
-
 			holder.bodyTextView.setMovementMethod(LinkMovementMethod.getInstance());
 			String messageText = this.getMessageModel().getBody();
 
@@ -71,13 +67,16 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 			}, holder.messageBlockView);
 
 			if (quoteType != QuoteUtil.QUOTE_TYPE_NONE) {
-				configureQuote(holder, this.getMessageModel());
+				QuoteUtil.QuoteContent quoteContent = configureQuote(holder, this.getMessageModel());
+				if (quoteContent != null) {
+					messageText = quoteContent.bodyText;
+				}
 			} else {
 				holder.bodyTextView.setText(formatTextString(messageText, this.filterString));
 			}
 
 			if (holder.readOnContainer != null) {
-				if (messageText != null && messageText.length() > MAX_TEXT_BUBBLE_CONTENTS_LENGTH) {
+				if (messageText != null && messageText.length() > helper.getMaxBubbleTextLength()) {
 					if (holder.bodyTextView instanceof EmojiConversationTextView) {
 						((EmojiConversationTextView) holder.bodyTextView).setFade(true);
 					}
@@ -106,7 +105,8 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 	}
 
-	private void configureQuote(final ComposeMessageHolder holder, final AbstractMessageModel messageModel) {
+	@Nullable
+	private QuoteUtil.QuoteContent configureQuote(final ComposeMessageHolder holder, final AbstractMessageModel messageModel) {
 		QuoteUtil.QuoteContent content = QuoteUtil.getQuoteContent(
 			messageModel,
 			this.helper.getMessageReceiver().getType(),
@@ -119,9 +119,9 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 		);
 
 		if (content != null) {
-			if (holder.secondaryTextView != null) {
-				holder.secondaryTextView.setText(
-					formatTextString(content.quotedText, this.filterString));
+			if (holder.secondaryTextView instanceof EmojiConversationTextView) {
+				holder.secondaryTextView.setText(formatTextString(content.quotedText, this.filterString));
+				((EmojiConversationTextView) holder.secondaryTextView).setFade(content.quotedText.length() > helper.getMaxQuoteTextLength());
 			}
 
 			ContactModel contactModel = this.helper.getContactService().getByIdentity(content.identity);
@@ -179,6 +179,6 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 			}
 		}
+		return content;
 	}
-
 }

@@ -5,4 +5,6 @@
 	<!-- image preview activity -->
 	<integer name="gridview_num_columns">5</integer>
 	<integer name="message_edittext_max_lines">2</integer>
+	<integer name="max_bubble_text_length">800</integer>
+	<integer name="max_quote_text_length">480</integer>
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -68,10 +68,8 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
@@ -133,7 +131,6 @@ import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
-import ch.threema.app.webclient.Config;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.client.ConnectionState;
 import ch.threema.client.ConnectionStateListener;
@@ -587,16 +584,17 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					isWhatsNewShown = true; // make sure this is set false if no whatsnew activity is shown - otherwise pin lock will be skipped once
 
 					// Do not show whatsnew for users of the previous 4.0x version
-					int previous = preferenceService.getLatestVersion() % 1000;
+/*					int previous = preferenceService.getLatestVersion() % 1000;
 
-/*					if (previous < 494) {
-						Intent intent = new Intent(this, WhatsNewActivity.class);
+					if (previous < 494) {
+*/						Intent intent = new Intent(this, WhatsNewActivity.class);
 						startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 						overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-					} else {
-*/						isWhatsNewShown = false;
-/*					}
-*/					preferenceService.setLatestVersion(this);
+/*					} else {
+						isWhatsNewShown = false;
+					}
+*/
+					preferenceService.setLatestVersion(this);
 				}
 			}
 		}
@@ -1173,7 +1171,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}.execute();
 	}
 
-	@SuppressLint("RestrictedApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -1181,19 +1178,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_home, menu);
 
-		MenuCompat.setGroupDividerEnabled(menu, true);
-
-		try {
-			// restricted API
-			if (menu instanceof MenuBuilder) {
-				MenuBuilder menuBuilder = (MenuBuilder) menu;
-				menuBuilder.setOptionalIconsVisible(true);
-
-				ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
+		ConfigUtils.addIconsToOverflowMenu(this, menu);
 
 		return true;
 	}
@@ -1567,7 +1552,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						return;
 					}
 					this.startMainActivity(null);
-
 					showWhatsNew();
 				}
 				break;

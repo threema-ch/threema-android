@@ -73,7 +73,7 @@
 					android:textColor="?attr/textColorSecondary"
 					android:textSize="?attr/font_status"
 					android:ellipsize="end"
-					android:maxLength="264" />
+					android:maxLength="@integer/max_quote_text_length" />
 
 			</LinearLayout>
 
@@ -101,7 +101,7 @@
 		android:textColor="?android:textColorPrimary"
 		android:textSize="?attr/font_large"
 		android:ellipsize="end"
-		android:maxLength="640"
+		android:maxLength="@integer/max_bubble_text_length"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/quote_layout"/>
 

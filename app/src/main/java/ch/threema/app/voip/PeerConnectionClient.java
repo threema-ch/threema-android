@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -242,6 +242,9 @@ public class PeerConnectionClient {
 		final boolean videoCallEnabled;
 		final boolean videoCodecHwAcceleration;
 
+		final boolean videoCodecEnableVP8;
+		final boolean videoCodecEnableH264HiP;
+
 		// RTP
 		@NonNull final SdpPatcher.RtpHeaderExtensionConfig rtpHeaderExtensionConfig;
 
@@ -275,6 +278,8 @@ public class PeerConnectionClient {
 			boolean enableLevelControl,
 			boolean videoCallEnabled,
 			boolean videoCodecHwAcceleration,
+			boolean videoCodecEnableVP8,
+			boolean videoCodecEnableH264HiP,
 			@NonNull SdpPatcher.RtpHeaderExtensionConfig rtpHeaderExtensionConfig,
 			boolean forceTurn,
 			boolean gatherContinually,
@@ -293,6 +298,8 @@ public class PeerConnectionClient {
 			// Video
 			this.videoCallEnabled = videoCallEnabled;
 			this.videoCodecHwAcceleration = videoCodecHwAcceleration;
+			this.videoCodecEnableVP8 = videoCodecEnableVP8;
+			this.videoCodecEnableH264HiP = videoCodecEnableH264HiP;
 
 			// RTP
 			this.rtpHeaderExtensionConfig = rtpHeaderExtensionConfig;
@@ -564,9 +571,11 @@ public class PeerConnectionClient {
 		final VideoEncoderFactory encoderFactory;
 		final VideoDecoderFactory decoderFactory;
 		if (peerConnectionParameters.videoCodecHwAcceleration && this.eglBaseContext != null) {
-			logger.info("Using video HW acceleration");
-			final boolean enableIntelVp8Encoder = true; // TODO parametrize
-			final boolean enableH264HighProfile = true; // TODO parametrize
+			logger.info("Video codec: HW acceleration (VP8={}, H264HiP={})",
+				peerConnectionParameters.videoCodecEnableVP8,
+				peerConnectionParameters.videoCodecEnableH264HiP);
+			final boolean enableIntelVp8Encoder = peerConnectionParameters.videoCodecEnableVP8;
+			final boolean enableH264HighProfile = peerConnectionParameters.videoCodecEnableH264HiP;
 			encoderFactory = new DefaultVideoEncoderFactory(
 					this.eglBaseContext,
 					enableIntelVp8Encoder,
@@ -574,7 +583,7 @@ public class PeerConnectionClient {
 			);
 			decoderFactory = new DefaultVideoDecoderFactory(this.eglBaseContext);
 		} else {
-			logger.info("Video HW acceleration disabled or not available");
+			logger.info("Video codec: SW acceleration");
 			encoderFactory = new SoftwareVideoEncoderFactory();
 			decoderFactory = new SoftwareVideoDecoderFactory();
 		}

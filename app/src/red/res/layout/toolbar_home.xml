@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.Toolbar
+		xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/main_toolbar"
+		android:layout_height="?attr/actionBarSize"
+		android:layout_width="match_parent"
+		android:paddingLeft="@dimen/navigation_icon_padding"
+		app:navigationIcon="@drawable/ic_account_circle_black_24dp"
+		app:layout_scrollFlags="enterAlways">
+
+	<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="left|center_vertical">
+
+		<androidx.appcompat.widget.AppCompatImageView
+				android:id="@+id/toolbar_logo_main"
+				android:layout_width="wrap_content"
+				android:layout_height="24dp"
+				android:scaleType="centerCrop"
+				android:adjustViewBounds="true"/>
+
+	</FrameLayout>
+
+</androidx.appcompat.widget.Toolbar>

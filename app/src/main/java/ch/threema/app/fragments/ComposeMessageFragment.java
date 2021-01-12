@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -283,7 +283,8 @@ public class ComposeMessageFragment extends Fragment implements
 	private static final long MESSAGE_PAGE_SIZE = 100;
 	private static final int SCROLLBUTTON_VIEW_TIMEOUT = 3000;
 	private static final int SMOOTHSCROLL_THRESHOLD = 10;
-	private static final int MAX_SELECTED_ITEMS = 50;
+	private static final int MAX_SELECTED_ITEMS = 100; // may not be larger than MESSAGE_PAGE_SIZE
+	private static final int MAX_FORWARDABLE_ITEMS = 50;
 	private static final int CONTEXT_MENU_BOLD = 700;
 	private static final int CONTEXT_MENU_ITALIC = 701;
 	private static final int CONTEXT_MENU_STRIKETHRU = 702;
@@ -1133,7 +1134,7 @@ public class ComposeMessageFragment extends Fragment implements
 							logger.info("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
 							logger.info("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
 
-							if (insets.getSystemWindowInsetBottom() == insets.getStableInsetBottom()) {
+							if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
 								activity.onSoftKeyboardClosed();
 							} else {
 								activity.onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
@@ -1674,19 +1675,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 							dismissMentionPopup();
 							mentionPopup = new MentionSelectorPopup(getActivity(), this, groupService, this.contactService, this.userService, this.preferenceService, groupModel);
-							mentionPopup.show(getActivity(), this.messageText, emojiButton.getWidth());
-							messageText.post(() -> {
-								// reset keyboard to default (text) mode
-								mentionPopup.lock();
-								EditTextUtil.hideSoftKeyboard(messageText);
-								EditTextUtil.showSoftKeyboard(messageText);
-								messageText.postDelayed(new Runnable() {
-									@Override
-									public void run() {
-										mentionPopup.unlock();
-									}
-								}, 400);
-							});
+							mentionPopup.show(getActivity(), this.messageText, emojiButton.getWidth());;
 						}
 					}
 				}
@@ -2723,7 +2712,7 @@ public class ComposeMessageFragment extends Fragment implements
 				selectedMessages.remove(messageModel);
 				convListView.setItemChecked(position, false);
 			} else {
-				if (convListView.getCheckedItemCount() <= MAX_SELECTED_ITEMS) {
+				if (convListView.getCheckedItemCount() < MAX_SELECTED_ITEMS) {
 					// add this to selection
 					selectedMessages.add(messageModel);
 					convListView.setItemChecked(position, true);
@@ -3326,6 +3315,8 @@ public class ComposeMessageFragment extends Fragment implements
 		this.setupToolbar();
 
 		super.onCreateOptionsMenu(menu, inflater);
+
+		ConfigUtils.addIconsToOverflowMenu(getContext(), menu);
 	}
 
 	@Override
@@ -3398,7 +3389,18 @@ public class ComposeMessageFragment extends Fragment implements
 			@Override
 			protected void onPostExecute(Long openBallots) {
 				showOpenBallotWindowMenuItem.setVisible(openBallots > 0L);
-				showOpenBallotWindowMenuItem.setTitle(preferenceService.getBallotOverviewHidden() ? R.string.ballot_window_show : R.string.ballot_window_hide);
+
+				if (preferenceService.getBallotOverviewHidden()) {
+					showOpenBallotWindowMenuItem.setIcon(R.drawable.ic_outline_visibility);
+					showOpenBallotWindowMenuItem.setTitle(R.string.ballot_window_show);
+				} else {
+					showOpenBallotWindowMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
+					showOpenBallotWindowMenuItem.setTitle(R.string.ballot_window_hide);
+				}
+				Context context = getContext();
+				if (context != null) {
+					ConfigUtils.themeMenuItem(showOpenBallotWindowMenuItem, ConfigUtils.getColorFromAttribute(context, R.attr.textColorSecondary));
+				}
 			}
 		}.execute();
 
@@ -3733,7 +3735,7 @@ public class ComposeMessageFragment extends Fragment implements
 			showText.setVisible(false);
 
 			if (selectedMessages.size() > 1) {
-				boolean isForwardable = true;
+				boolean isForwardable = selectedMessages.size() <= MAX_FORWARDABLE_ITEMS;
 				boolean isMedia = true;
 				boolean isTextOnly = true;
 				boolean isShareable = true;
@@ -3868,7 +3870,7 @@ public class ComposeMessageFragment extends Fragment implements
 				inflater.inflate(R.menu.action_compose_message, menu);
 			}
 
-			ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+			ConfigUtils.addIconsToOverflowMenu(null, menu);
 
 			decItem = menu.findItem(R.id.menu_message_dec);
 			ackItem = menu.findItem(R.id.menu_message_ack);
@@ -4380,7 +4382,7 @@ public class ComposeMessageFragment extends Fragment implements
 	/* properly dispose of popups */
 
 	private void dismissMentionPopup() {
-		if (this.mentionPopup != null && !this.mentionPopup.isLocked()) {
+		if (this.mentionPopup != null) {
 			try {
 				this.mentionPopup.dismiss();
 			} catch( final IllegalArgumentException e){

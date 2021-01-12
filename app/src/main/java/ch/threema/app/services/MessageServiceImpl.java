@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -180,10 +180,11 @@ import static ch.threema.app.ThreemaApplication.getServiceManager;
 import static ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT;
 import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
 import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
+import static ch.threema.app.ui.MediaItem.TYPE_FILE;
 import static ch.threema.app.ui.MediaItem.TYPE_GIF;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
-import static ch.threema.app.ui.MediaItem.TYPE_NONE;
+import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
 import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
@@ -2976,7 +2977,7 @@ public class MessageServiceImpl implements MessageService {
 						intent.putExtra(ThreemaApplication.INTENT_DATA_FORWARD_AS_FILE, true);
 					}
 					intent.setType(getMimeTypeString(model));
-					if ("content".equals(shareFileUri.getScheme())) {
+					if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(shareFileUri.getScheme())) {
 						intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 					}
 				} else {
@@ -2987,7 +2988,7 @@ public class MessageServiceImpl implements MessageService {
 
 					intent.setType(getLeastCommonDenominatorMimeType(models));
 					if (firstShareFileUri != null) {
-						if ("content".equals(firstShareFileUri.getScheme())) {
+						if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(firstShareFileUri.getScheme())) {
 							intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 						}
 					}
@@ -3020,7 +3021,7 @@ public class MessageServiceImpl implements MessageService {
 				mimeType = MimeUtil.MIME_TYPE_IMAGE;
 			}
 			intent.setDataAndType(uri, mimeType);
-			if (uri.getScheme().equals("content")) {
+			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 				intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_ACTIVITY_NEW_TASK);
 			} else if (!(context instanceof Activity)) {
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -3439,7 +3440,7 @@ public class MessageServiceImpl implements MessageService {
 
 		for (MediaItem mediaItem : mediaItems) {
 			logger.info("sendMedia: Now sending item of type " + mediaItem.getType());
-			if (MimeUtil.isTextFile(mediaItem.getMimeType())) {
+			if (TYPE_TEXT == mediaItem.getType()) {
 				String text = mediaItem.getCaption();
 				if (!TestUtil.empty(text)) {
 					for (MessageReceiver messageReceiver : resolvedReceivers) {
@@ -3491,6 +3492,10 @@ public class MessageServiceImpl implements MessageService {
 
 			try {
 				final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel);
+
+				// delete temporary file
+				deleteTemporaryFile(mediaItem);
+
 				if (contentData != null) {
 					if (encryptAndSend(resolvedReceivers, messageModels, fileDataModel, thumbnailData, contentData)) {
 						successfulMessageModel = messageModels.get(resolvedReceivers[0]);
@@ -3626,7 +3631,7 @@ public class MessageServiceImpl implements MessageService {
 				// fallthrough
 			case TYPE_GIF:
 				// fallthrough
-			case TYPE_NONE:
+			case TYPE_FILE:
 				// "regular" file messages
 				return getContentData(mediaItem);
 			default:
@@ -3681,13 +3686,14 @@ public class MessageServiceImpl implements MessageService {
 				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, mediaItem.getUri());
 				mediaItem.setExifRotation((int) exifOrientation.getRotation());
 				mediaItem.setExifFlip(exifOrientation.getFlip());
-				if (mediaItem.getRenderingType() == RENDERING_STICKER) {
-					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
-					thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, true, false, true);
-				} else {
+				boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType());
+				if (hasNoTransparency && mediaItem.getRenderingType() != RENDERING_STICKER) {
 					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
-					thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, true, !MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType()), true);
+				} else {
+					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
 				}
+				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, true, false, true);
+
 				if (thumbnailBitmap != null) {
 					thumbnailBitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
 						thumbnailBitmap,
@@ -3715,7 +3721,7 @@ public class MessageServiceImpl implements MessageService {
 				// voice messages do not have thumbnails
 				thumbnailBitmap = null;
 				break;
-			case MediaItem.TYPE_NONE:
+			case MediaItem.TYPE_FILE:
 				// just an arbitrary file
 				thumbnailBitmap = null;
 				break;
@@ -3963,7 +3969,7 @@ public class MessageServiceImpl implements MessageService {
 			return null;
 		}
 
-		if ("file".equalsIgnoreCase(mediaItem.getUri().getScheme())) {
+		if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
 			if (TestUtil.empty(filename)) {
 				File file = new File(mediaItem.getUri().getPath());
 
@@ -4006,9 +4012,12 @@ public class MessageServiceImpl implements MessageService {
 				renderingType = FileData.RENDERING_MEDIA;
 				break;
 			case TYPE_GIF:
-				renderingType = FileData.RENDERING_MEDIA;
+				if (renderingType == FileData.RENDERING_DEFAULT) {
+					// do not override stickers
+					renderingType = FileData.RENDERING_MEDIA;
+				}
 				break;
-			case TYPE_NONE:
+			case TYPE_FILE:
 				// "regular" file messages
 				renderingType = FileData.RENDERING_DEFAULT;
 				break;
@@ -4016,7 +4025,7 @@ public class MessageServiceImpl implements MessageService {
 				if (mediaItem.getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE) {
 					// images with scale type "send as file" get the default rendering type and a file name
 					renderingType = FileData.RENDERING_DEFAULT;
-					mediaItem.setType(TYPE_NONE);
+					mediaItem.setType(TYPE_FILE);
 				} else {
 					// unlike with "real" files we override the filename for regular images with a generic one to prevent privacy leaks
 					// this mimics the behavior of traditional image messages that did not have a filename at all
@@ -4069,13 +4078,17 @@ public class MessageServiceImpl implements MessageService {
 
 		if (targetBitrate == -1) {
 			// will not fit
-			logger.error("Video file ist too large");
+			logger.info("Video file ist too large");
 			// skip this MediaItem
 			markAsTerminallyFailed(resolvedReceivers, messageModels);
 			return VideoTranscoder.FAILURE;
 		}
 
+		logger.info("Target bitrate = {}", targetBitrate);
+
 		if (needsTrimming || targetBitrate > 0) {
+			logger.info("Video needs transcoding");
+
 			// set models to TRANSCODING state
 			for (Map.Entry<MessageReceiver, AbstractMessageModel> entry : messageModels.entrySet()) {
 				AbstractMessageModel messageModel = entry.getValue();
@@ -4165,18 +4178,19 @@ public class MessageServiceImpl implements MessageService {
 			});
 
 			// for camera files - remove original file
-			if (mediaItem.getType() == TYPE_VIDEO_CAM) {
-				String path = FileUtil.getRealPathFromURI(context, mediaItem.getUri());
-				if (path != null) {
-					FileUtil.deleteFileOrWarn(path, "media item", logger);
-				}
-			}
+			deleteTemporaryFile(mediaItem);
 
 			if (transcoderResult != VideoTranscoder.SUCCESS) {
+				// failure
+				logger.info("Transcoding failure");
 				return transcoderResult;
 			}
 
+			// mark transcoded file as expendable
+			mediaItem.setDeleteAfterUse(true);
 			mediaItem.setUri(Uri.fromFile(outputFile));
+		} else {
+			logger.info("No transcoding necessary");
 		}
 		return VideoTranscoder.SUCCESS;
 	}
@@ -4190,6 +4204,22 @@ public class MessageServiceImpl implements MessageService {
 		final byte[] random = new byte[16];
 		new SecureRandom().nextBytes(random);
 		return Utils.byteArrayToHexString(random);
+	}
+
+	@AnyThread
+	private void deleteTemporaryFile(MediaItem mediaItem) {
+		if (mediaItem.getDeleteAfterUse()) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					if (mediaItem.getUri() != null && ContentResolver.SCHEME_FILE.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
+						if (mediaItem.getUri().getPath() != null) {
+							FileUtil.deleteFileOrWarn(mediaItem.getUri().getPath(), null, logger);
+						}
+					}
+				}
+			}).start();
+		}
 	}
 
 	/**

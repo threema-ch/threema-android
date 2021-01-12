@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -45,6 +46,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -54,6 +57,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import androidx.work.ForegroundInfo;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import ch.threema.app.ThreemaApplication;
@@ -204,6 +208,7 @@ public class ImageLabelingWorker extends Worker {
 			// This might be due to the masterkey, maybe it'll be unlocked later
 			return Result.retry();
 		}
+
 		final NotificationService notificationService = serviceManager.getNotificationService();
 		if (notificationService == null) {
 			logger.error("Could not get notification service");
@@ -240,12 +245,31 @@ public class ImageLabelingWorker extends Worker {
 			int imageCounter = 0;
 			int unlabeledCounter = 0;
 			int skippedCounter = 0;
+			final Timer lockTimer = new Timer();
+			TimerTask timeoutTask = null;
+
 			for (MediaAttachItem mediaItem : allMediaCache) {
 				// Check whether we were stopped
 				if (this.isStopped()) {
 					logger.info("Work was cancelled");
 					break;
 				}
+
+				// Schedule new lock timer for each image to be processed, cancel worker if we get stuck.
+				if (timeoutTask != null) {
+					timeoutTask.cancel();
+				}
+
+				timeoutTask = new TimerTask() {
+					@Override
+					public void run() {
+						logger.debug("cancel image labeling worker, timed out");
+						WorkManager.getInstance(getApplicationContext()).cancelUniqueWork(UNIQUE_WORK_NAME);
+						notificationService.showImageLabelingWorkerStuckNotification();
+					}
+				};
+				lockTimer.purge();
+				lockTimer.schedule(timeoutTask, 30 * DateUtils.SECOND_IN_MILLIS);
 
 				// Update notification
 				notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
@@ -324,6 +348,9 @@ public class ImageLabelingWorker extends Worker {
 					}
 				}
 			}
+
+			timeoutTask.cancel();
+			lockTimer.purge();
 
 			// Update notification
 			notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);

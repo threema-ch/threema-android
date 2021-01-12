@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2020 Threema GmbH
+ * Copyright (c) 2015-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -119,8 +119,10 @@ public class BackupChatServiceImpl implements BackupChatService {
 						break;
 					case FILE:
 						FileDataModel fileDataModel = m.getFileData();
-						saveMedia = fileDataModel != null && fileDataModel.isDownloaded();
-						filename = fileDataModel != null ? fileDataModel.getFileName() : "file";
+						saveMedia = fileDataModel.isDownloaded();
+						filename = TestUtil.empty(fileDataModel.getFileName()) ?
+							FileUtil.getDefaultFilename(fileDataModel.getMimeType()) :
+							m.getApiMessageId() + "-" + fileDataModel.getFileName();
 						extension = "";
 						break;
 					case LOCATION:

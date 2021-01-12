@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1025,6 +1025,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public @NonNull String getVideoCodec() {
+		String mode = this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_video_codec));
+		if (mode != null) {
+			return mode;
+		}
+		return PreferenceService.VIDEO_CODEC_HW;
+	}
+
+	@Override
 	public boolean getForceTURN() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_force_turn));
 	}
@@ -1144,6 +1153,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean getIsWorkHintTooltipShown() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__tooltip_work_hint_shown));
+	}
+
+	@Override
+	public void setIsWorkHintTooltipShown(boolean shown) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_work_hint_shown), shown);
 	}
 
 	@Override
@@ -1528,5 +1542,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setIsImageLabelingTooltipShown(boolean shown) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__image_labeling_tooltip_shown), shown);
+	}
+
+	@Override
+	public boolean getIsImageResolutionTooltipShown() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__image_resolution_tooltip_shown));
+	}
+
+	@Override
+	public void setIsImageResolutionTooltipShown(boolean shown) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__image_resolution_tooltip_shown), shown);
 	}
 }

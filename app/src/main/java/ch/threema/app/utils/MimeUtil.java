@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2020 Threema GmbH
+ * Copyright (c) 2015-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -242,16 +242,5 @@ public class MimeUtil {
 				break;
 		}
 		return mimeType;
-	}
-
-	/**
-	 * Get the mime type of the file referenced to by the specified Uri
-	 * @param uri A content Uri identifying content
-	 * @return A MIME type for the content, or null if the URL is invalid or the type is unknown
-	 */
-	@Nullable
-	public static String getMimeTypeFromUri(Uri uri) {
-		ContentResolver cR = getAppContext().getContentResolver();
-		return cR.getType(uri);
 	}
 }

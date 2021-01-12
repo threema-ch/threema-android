@@ -12,7 +12,7 @@
 		android:id="@+id/menu_ballot_vote"
 		android:orderInCategory="20"
 		android:title="@string/ballot_vote"
-		android:icon="@drawable/ic_vote_outline"
+		android:icon="@drawable/ic_outline_rule"
 		app:showAsAction="never"/>
 
 	<item

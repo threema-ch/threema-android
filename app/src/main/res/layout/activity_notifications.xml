@@ -47,8 +47,8 @@
 				android:layout_height="wrap_content"
 				android:layout_marginLeft="4dp"
 				android:layout_gravity="left|center_vertical"
-				android:tint="?attr/textColorPrimary"
-				app:srcCompat="@drawable/ic_info_outline"/>
+				app:srcCompat="@drawable/ic_info_outline"
+				app:tint="?attr/textColorPrimary" />
 
 			<TextView
 				android:layout_width="wrap_content"
@@ -86,7 +86,7 @@
 
 				<RadioGroup
 					android:id="@+id/sound_radio_group"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:layout_marginLeft="0dp">
 
@@ -94,14 +94,18 @@
 						android:id="@+id/radio_sound_default"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_marginRight="32dp"
+						android:singleLine="true"
 						android:text="@string/notifications_default"/>
 
 					<TextView
 						android:id="@+id/text_sound_default"
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="4dp"
 						android:layout_marginLeft="32dp"
+						android:ellipsize="end"
+						android:singleLine="true"
 						android:text="a"/>
 
 					<RadioButton
@@ -122,6 +126,8 @@
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="4dp"
 						android:layout_marginLeft="32dp"
+						android:ellipsize="end"
+						android:singleLine="true"
 						android:text="a"/>
 
 				</RadioGroup>
@@ -192,6 +198,7 @@
 						android:id="@+id/radio_silent_limited"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_marginRight="84dp"
 						android:text="@string/notifications_for_x_hours"/>
 
 				</RadioGroup>

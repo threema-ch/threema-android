@@ -185,6 +185,7 @@
 		<item>Rumantsch</item>
 		<item>Čeština</item>
 		<item>Türkçe</item>
+		<item>简</item> <!-- Chinese simplified -->
 	</string-array>
 	<!--suppress CheckTagEmptyBody -->
 	<string-array name="list_language_override_values">
@@ -201,6 +202,7 @@
 		<item>rm</item>
 		<item>cs</item>
 		<item>tr</item>
+		<item>zh</item> <!-- Chinese simplified -->
 	</string-array>
 	<string-array name="picrelease_choices">
 		<item>@string/picrelease_nobody</item>
@@ -214,6 +216,19 @@
 	</string-array>
 	<string-array name="list_echocancel_values">
 		<item>hw</item>
+		<item>sw</item>
+	</string-array>
+
+	<string-array name="list_video_codec">
+		<item>@string/voip_prefs_video_aec_hw</item>
+		<item>@string/voip_prefs_video_codec_no_vp8</item>
+		<item>@string/voip_prefs_video_codec_no_h264hip</item>
+		<item>@string/voip_prefs_video_codec_sw</item>
+	</string-array>
+	<string-array name="list_video_codec_values">
+		<item>hw</item>
+		<item>no-vp8</item>
+		<item>no-h264hip</item>
 		<item>sw</item>
 	</string-array>
 

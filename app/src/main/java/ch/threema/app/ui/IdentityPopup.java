@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2020 Threema GmbH
+ * Copyright (c) 2019-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -41,6 +41,8 @@ import com.google.android.material.chip.Chip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.ref.WeakReference;
+
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 import ch.threema.app.R;
@@ -65,7 +67,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 	private static final Logger logger = LoggerFactory.getLogger(IdentityPopup.class);
 
 	private Context context;
-	private Activity activity;
+	private WeakReference<Activity> activityRef = new WeakReference<>(null);
 	private ImageView qrCodeView;
 	private QRCodeService qrCodeService;
 	private SwitchCompat webEnableView;
@@ -114,14 +116,14 @@ public class IdentityPopup extends DimmingPopupWindow {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(context, SessionsActivity.class);
-				AnimationUtil.startActivity(activity, v, intent);
+				AnimationUtil.startActivity(activityRef.get(), v, intent);
 				dismiss();
 			}
 		});
 		popupLayout.findViewById(R.id.share_button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ShareUtil.shareContact(activity, null);
+				ShareUtil.shareContact(activityRef.get(), null);
 			}
 		});
 
@@ -172,12 +174,14 @@ public class IdentityPopup extends DimmingPopupWindow {
 	private void scanQR() {
 		Intent intent = new Intent(context, AddContactActivity.class);
 		intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
-		activity.startActivity(intent);
-		activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+		if (activityRef.get() != null) {
+			activityRef.get().startActivity(intent);
+			activityRef.get().overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+		}
 	}
 
 	private void zoomQR(View v) {
-		new QRCodePopup(context, activity.getWindow().getDecorView(), null).show(v, null);
+		new QRCodePopup(context, activityRef.get().getWindow().getDecorView(), null).show(v, null);
 	}
 
 	/**
@@ -187,7 +191,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 	 * @param location center location of navigation icon in toolbar
 	 */
 	public void show(Activity activity, final View toolbarView, int[] location, ProfileButtonListener profileButtonListener) {
-		this.activity = activity;
+		this.activityRef = new WeakReference<>(activity);
 		this.profileButtonListener = profileButtonListener;
 
 		int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.navigation_icon_size) / 2;

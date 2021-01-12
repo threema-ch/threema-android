@@ -11,7 +11,7 @@
     <string name="title_enter_id">ID Yaz</string>
     <string name="title_invite_friend">Arkadaşını Davet Et</string>
     <string name="invite_via">Arkadaşınızı … ile davet et</string>
-    <string name="invite_email_body">Merhaba, \ n \ nKullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma programı% 1 $ s kullanıyorum. \ N \ n Threema Kimliğim: https://threema.id/%2$s\n\n% 1 $ yoluyla iletişim kuralım s! \ n \ n Hoşçakal, \ n</string>
+    <string name="invite_email_body">Merhaba,\n\nKullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma uygulaması%1$s kullanıyorum.\n\nThreema Kimliğim: https://threema.id/%2$s\n\n%1$ üzerinden iletişim kuralım s!\n\nHoşçakal,\n</string>
     <string name="invite_sms_body">Selam! Güvenli ve gizlilikle uyumlu bir şekilde iletişim kurmak için % 1 $ s kullanalım! Threema kimliğim: https://threema.id/% 2 $ s</string>
     <string name="invite_email_subject">Threema. Özelinizi koruyan güvenli mesajlaşma programı.</string>
     <string name="enter_id_hint">"Threema ID yaz. "</string>
@@ -747,7 +747,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="restore_disable_energy_saving">Lütfen cihazınızı şarj cihazına bağlayın ve cihazınızın yedekleme veya geri yükleme işlemini kesintiye uğratmasını önlemek için tüm enerji tasarrufu seçeneklerini devre dışı bırakın.</string>
     <string name="draft">taslak</string>
     <string name="prefs_bigger_single_emojis">Daha büyük emojiler</string>
-    <string name="wizard1_sync_work">Threema Work verilerinin senkronizasyonu...</string>
+    <string name="wizard1_sync_work">Threema Work verilerinin senkronizasyonu…</string>
     <string name="notification_hidden_text">İçerik gizlendi</string>
     <string name="really_reset_ringtones">Bildirim sesi ayarlarını gerçekten varsayılanlara sıfırlamak ister misiniz?</string>
     <string name="reset_ringtones_confirm">Bildirim sesi ayarları sıfırlandı.</string>
@@ -810,7 +810,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="menu_send_profilpic_off">Profil resmi alıcısı olarak kaldır</string>
     <string name="menu_send_profilpic_now">Profil resmini şimdi gönder</string>
     <string name="profile_picture_sent">Profil resmi gönderildi</string>
-    <string name="sending_messages">Gönderiliyor...</string>
+    <string name="sending_messages">Gönderiliyor…</string>
     <string name="backup_data_media_confirm">Büyük ortam dosyalarını yerel bir ZIP yedeklemesine kaydetmek, cihazınızın CPU ve bellek kapasitesini aşabilir ve çok uzun sürebilir. Yedekleme çalışırken Threema mesaj göndermez veya almaz. Her halükarda devam et?</string>
     <string name="backup_data_cancelled">Yedekleme iptal edildi</string>
     <string name="service_manager_not_available">Threema başlatılamadı. Lütfen cihazınızı kapatıp tekrar açın.</string>
@@ -1046,10 +1046,8 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="delete">Sil</string>
     <string name="num_archived_chats">%d arşivlenmiş sohbet</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="whatsnew_title">%s 4.0 sürümüne hoş geldiniz</string>
-    <string name="whatsnew_headline">%1$s artık daha güzel ve kullanımı daha kolayken, harici uygulamalardaki bağımlılıkları kaldırarak gizliliğinizi daha da koruyor.\n\nModern Materyal tasarımı daha sezgiseldir ve işleri yapmak için daha az dokunuş gerektirir. %1$s\n\n4.0\'daki bazı heyecan verici yeni özellikler hakkında daha fazla bilgi edinmek için «daha fazla bilgi edinin» üzerine dokunun.</string>
+    <string name="whatsnew_title">%s 4.5 sürümüne hoş geldiniz</string>
     <string name="whatsnew2_title">Ne var ne yok?</string>
-    <string name="whatsnew2_body">velt; p&gt; • Mesaj listesi: Bir sohbeti arşivlemek için sadece sola kaydırın &lt; / p> &lt; p> • Sohbet listesi: Mesaj göndermek için sağa kaydırın &lt; / p> &lt; p> •Telefonunuzun biyometrik kilit mekanizmasıyla %1$s doğrudan kilidini açın  lt; / p> &lt; p> • %1$s artık yerleri, İÇN\'leri paylaşmak veya haritaları görüntülemek için Google Haritalar\'a veya harici bir harita uygulamasına güvenmiyor &lt; / p> &lt; p> • Bu sürümde artık bir QR kod tarayıcı ve yerleşik bir kamera uygulaması var. Bu özellikleri kullanmak için lütfen %1$s cihazının kameraya erişmesineizin verin. %1$s eklentiler artık gerekli değildir ve güvenle kaldırılabilir. ve lt; / p></string>
     <string name="tooltip_identity_popup">Threema ID\'nizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
     <string name="tap_to_start">%s\'i şimdi başlatmak için buraya hafifçe vurun.</string>
     <string name="two_years">2 yıl</string>

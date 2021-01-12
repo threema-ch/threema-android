@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2020 Threema GmbH
+ * Copyright (c) 2014-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -130,6 +130,8 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		protected int regularColor;
 		private final Map<String, ContactCache> contacts = new HashMap<String, ContactCache>();
 		private final Drawable stopwatchIcon;
+		private final int maxBubbleTextLength;
+		private final int maxQuoteTextLength;
 
 		public Helper(
 			String myIdentity,
@@ -147,7 +149,9 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			int thumbnailWidth,
 			Fragment fragment,
 			int regularColor,
-			Drawable stopwatchIcon) {
+			Drawable stopwatchIcon,
+			int maxBubbleTextLength,
+			int maxQuoteTextLength) {
 			this.myIdentity = myIdentity;
 			this.messageService = messageService;
 			this.userService = userService;
@@ -164,6 +168,8 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			this.fragment = fragment;
 			this.regularColor = regularColor;
 			this.stopwatchIcon = stopwatchIcon;
+			this.maxBubbleTextLength = maxBubbleTextLength;
+			this.maxQuoteTextLength = maxQuoteTextLength;
 		}
 
 		public Fragment getFragment() {
@@ -232,6 +238,14 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 		public Drawable getStopwatchIcon() {
 			return stopwatchIcon;
+		}
+
+		public int getMaxBubbleTextLength() {
+			return maxBubbleTextLength;
+		}
+
+		public int getMaxQuoteTextLength() {
+			return maxQuoteTextLength;
 		}
 
 		public void setMessageReceiver(MessageReceiver messageReceiver) {
