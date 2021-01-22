@@ -27,7 +27,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.SystemClock;
-import android.text.format.DateUtils;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -46,18 +45,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import androidx.work.ForegroundInfo;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import ch.threema.app.ThreemaApplication;
@@ -245,8 +243,6 @@ public class ImageLabelingWorker extends Worker {
 			int imageCounter = 0;
 			int unlabeledCounter = 0;
 			int skippedCounter = 0;
-			final Timer lockTimer = new Timer();
-			TimerTask timeoutTask = null;
 
 			for (MediaAttachItem mediaItem : allMediaCache) {
 				// Check whether we were stopped
@@ -254,22 +250,6 @@ public class ImageLabelingWorker extends Worker {
 					logger.info("Work was cancelled");
 					break;
 				}
-
-				// Schedule new lock timer for each image to be processed, cancel worker if we get stuck.
-				if (timeoutTask != null) {
-					timeoutTask.cancel();
-				}
-
-				timeoutTask = new TimerTask() {
-					@Override
-					public void run() {
-						logger.debug("cancel image labeling worker, timed out");
-						WorkManager.getInstance(getApplicationContext()).cancelUniqueWork(UNIQUE_WORK_NAME);
-						notificationService.showImageLabelingWorkerStuckNotification();
-					}
-				};
-				lockTimer.purge();
-				lockTimer.schedule(timeoutTask, 30 * DateUtils.SECOND_IN_MILLIS);
 
 				// Update notification
 				notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
@@ -295,17 +275,34 @@ public class ImageLabelingWorker extends Worker {
 					unlabeledCounter++;
 
 					// Load image from filesystem
+					Future<InputImage> imageFuture;
 					InputImage image;
 					try {
 						final Uri uri = mediaItem.getUri();
-						// TODO(ANDR-1318): Make this logging less verbose!
 						final String hashedFilename = Utils.byteArrayToSha256HexString(mediaItem.getDisplayName().getBytes(StandardCharsets.UTF_8));
-						logger.info("Loading image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
-						image = InputImage.fromFilePath(this.appContext, uri);
-						logger.info("Loaded image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
+						imageFuture = executor.submit(() -> InputImage.fromFilePath(appContext, uri));
+
+						try {
+							// TODO(ANDR-1318): Make this logging less verbose!
+							logger.info("Loading image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
+							image = imageFuture.get(30, TimeUnit.SECONDS);    // give it a timeout of 30s, otherwise skip and remember bad item
+							logger.info("Loaded image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
+						} catch (TimeoutException e) {
+							imageFuture.cancel(true);
+							logger.info("Item " + hashedFilename.substring(0, 8) + " cannot be labeled due to timeout");
+							failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
+							skippedCounter++;
+							continue;
+						}
+
+						if (image.getHeight() < 32 || image.getWidth() < 32 ) {
+							logger.info("Item " + hashedFilename.substring(0, 8) + " cannot be labeled due to tiny size.");
+							failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
+							skippedCounter++;
+							continue;
+						}
 					} catch (Exception e) {
 						logger.warn("Exception, could not generate input image from file path: {}", e.getMessage());
-						logger.info("Unable to load Item " + mediaItem.getId() + ". Adding to list of failed items");
 
 						failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
 						if (e.getCause() != null) {
@@ -348,9 +345,6 @@ public class ImageLabelingWorker extends Worker {
 					}
 				}
 			}
-
-			timeoutTask.cancel();
-			lockTimer.purge();
 
 			// Update notification
 			notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);

@@ -116,8 +116,6 @@ public class TranscoderView extends FrameLayout {
 	}
 
 	public void setProgress(int progress) {
-		logger.debug("setProgress");
-
 		if (progress > PROGRESS_MAX) {
 			progress = PROGRESS_MAX;
 		}

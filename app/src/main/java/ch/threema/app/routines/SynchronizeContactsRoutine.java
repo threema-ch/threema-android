@@ -171,12 +171,11 @@ public class SynchronizeContactsRoutine implements Runnable {
 			Map<String, APIConnector.MatchIdentityResult> foundIds = this.apiConnector.matchIdentities(
 					emails, phoneNumbers, this.localeService.getCountryIsoCode(), false, identityStore, matchTokenStore);
 
-			final List<String> preSynchronizedIdentities = new ArrayList<String>();
+			final List<String> preSynchronizedIdentities = new ArrayList<>();
 
 			if(this.fullSync()) {
 				List<String> synchronizedIdentities = this.contactService.getSynchronizedIdentities();
 				if (synchronizedIdentities != null) {
-					preSynchronizedIdentities.clear();
 					preSynchronizedIdentities.addAll(synchronizedIdentities);
 				}
 			}
@@ -190,18 +189,18 @@ public class SynchronizeContactsRoutine implements Runnable {
 					}
 					return;
 				}
+
+				// Do not add own ID as contact
 				if (TestUtil.compare(id.getKey(), this.userService.getIdentity())) {
-					//do not save me as contact
 					continue;
 				}
 
+				// Do not sync contacts on exclude list
 				if(this.excludedSyncList != null && this.excludedSyncList.has(id.getKey())) {
-					//do not sync id
 					continue;
 				}
 
 				if(this.processingIdentities != null && this.processingIdentities.size() > 0 && !this.processingIdentities.contains(id.getKey())) {
-					//do not sync contact!
 					continue;
 				}
 

@@ -1521,7 +1521,17 @@ public class ComposeMessageFragment extends Fragment implements
 						if (isQuotePanelShown() && abstractMessageModel.equals(quoteInfo.messageModel)) {
 							closeQuoteMode();
 						} else {
-							startQuoteMode(abstractMessageModel);
+							startQuoteMode(abstractMessageModel, new Runnable() {
+								@Override
+								public void run() {
+									RuntimeUtil.runOnUiThread(new Runnable() {
+										@Override
+										public void run() {
+											EditTextUtil.showSoftKeyboard(messageText);
+										}
+									});
+								}
+							});
 						}
 					}
 				}
@@ -3140,9 +3150,13 @@ public class ComposeMessageFragment extends Fragment implements
 					@Override
 					public void complete(File decryptedFile) {
 						if (decryptedFile != null) {
+							String filename = null;
+							if (messageModel.getType() == MessageType.FILE) {
+								filename = messageModel.getFileData().getFileName();
+							}
 							messageService.shareMediaMessages(activity,
 									new ArrayList<>(Collections.singletonList(messageModel)),
-									new ArrayList<>(Collections.singletonList(fileService.getShareFileUri(decryptedFile))));
+									new ArrayList<>(Collections.singletonList(fileService.getShareFileUri(decryptedFile, filename))));
 						} else {
 							messageService.shareTextMessage(activity, messageModel);
 						}
@@ -3167,7 +3181,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private void startQuoteMode(AbstractMessageModel messageModel) {
+	private void startQuoteMode(AbstractMessageModel messageModel, Runnable onFinishRunnable) {
 		if (messageModel == null) {
 			messageModel = selectedMessages.get(0);
 		}
@@ -3218,7 +3232,7 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			}
 
-			AnimationUtil.expand(quoteInfo.quotePanel);
+			AnimationUtil.expand(quoteInfo.quotePanel, onFinishRunnable);
 		}
 	}
 
@@ -3457,6 +3471,12 @@ public class ComposeMessageFragment extends Fragment implements
 		if (TestUtil.required(this.blockMenuItem, this.blackListIdentityService, this.contactModel)) {
 			boolean state = this.blackListIdentityService.has(this.contactModel.getIdentity());
 			this.blockMenuItem.setTitle(state ? getString(R.string.unblock_contact) : getString(R.string.block_contact));
+			this.blockMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
+			this.mutedMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			this.mutedMenuItem.setVisible(!state);
+
+			this.callItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_ALWAYS);
+
 			updateVoipCallMenuItem(!state);
 		}
 	}
@@ -3945,7 +3965,7 @@ public class ComposeMessageFragment extends Fragment implements
 					mode.finish();
 					break;
 				case R.id.menu_message_quote:
-					startQuoteMode(null);
+					startQuoteMode(null, null);
 					mode.finish();
 					break;
 				case R.id.menu_show_text:

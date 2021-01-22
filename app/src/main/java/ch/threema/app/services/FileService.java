@@ -323,7 +323,7 @@ public interface FileService {
 	 */
 	Uri copyToShareFile(AbstractMessageModel currentModel, File decodedFile);
 
-	Uri getShareFileUri(File destFile);
+	Uri getShareFileUri(File destFile, String filename);
 
 	long getInternalStorageUsage();
 

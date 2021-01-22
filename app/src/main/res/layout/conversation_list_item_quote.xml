@@ -110,9 +110,11 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:visibility="gone"
+		android:paddingTop="36dp"
+		android:background="?attr/chat_bubble_fade_send"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintLeft_toRightOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/text_view">
+		app:layout_constraintBottom_toBottomOf="@id/text_view">
 
 		<com.google.android.material.chip.Chip
 			android:id="@+id/read_on_button"

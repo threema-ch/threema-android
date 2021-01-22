@@ -44,23 +44,27 @@
 					android:ellipsize="end"
 					android:maxLength="@integer/max_bubble_text_length" />
 
-		</FrameLayout>
-
-		<FrameLayout
-			android:id="@+id/read_on_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:visibility="gone">
-
-			<com.google.android.material.chip.Chip
-				android:id="@+id/read_on_button"
-				style="@style/Threema.Chip.VideoTranscoder"
-				android:layout_width="wrap_content"
+			<FrameLayout
+				android:id="@+id/read_on_container"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:text="@string/read_on" />
+				android:paddingTop="36dp"
+				android:background="?attr/chat_bubble_fade_send"
+				android:layout_gravity="bottom"
+				android:visibility="gone">
+
+				<com.google.android.material.chip.Chip
+					android:id="@+id/read_on_button"
+					style="@style/Threema.Chip.VideoTranscoder"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_horizontal"
+					android:text="@string/read_on" />
+
+			</FrameLayout>
 
 		</FrameLayout>
+
 
 		<include layout="@layout/conversation_bubble_footer_send"/>
 

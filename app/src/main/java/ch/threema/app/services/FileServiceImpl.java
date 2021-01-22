@@ -80,6 +80,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.cache.ThumbnailCache;
@@ -517,7 +518,7 @@ public class FileServiceImpl implements FileService {
 	public boolean removeMessageFiles(AbstractMessageModel messageModel, boolean withThumbnails) {
 		boolean success = false;
 
-		File messageFile = this.getMessageFile(messageModel, false);
+		File messageFile = this.getMessageFile(messageModel);
 		if(messageFile != null && messageFile.exists()) {
 			if(messageFile.delete()) {
 				success = true;
@@ -565,7 +566,7 @@ public class FileServiceImpl implements FileService {
 		return null;
 	}
 
-	public File getDecryptedMessageFile(AbstractMessageModel messageModel, @Nullable String filename) throws Exception {
+	public File getDecryptedMessageFile(@NonNull AbstractMessageModel messageModel, @Nullable String filename) throws Exception {
 		if (filename == null) {
 			return getDecryptedMessageFile(messageModel);
 		}
@@ -574,7 +575,7 @@ public class FileServiceImpl implements FileService {
 		if (is != null) {
 			FileOutputStream fos = null;
 			try {
-				File decrypted = new File(ConfigUtils.useContentUris() ? this.getTempPath() : this.getExtTmpPath(), filename);
+				File decrypted = new File(ConfigUtils.useContentUris() ? this.getTempPath() : this.getExtTmpPath(), messageModel.getApiMessageId() + "-" + filename);
 				fos = new FileOutputStream(decrypted);
 
 				IOUtils.copy(is, fos);
@@ -774,14 +775,6 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
-	private File getMessageFile(AbstractMessageModel messageModel, boolean shouldExist) {
-		String uid = this.convert(messageModel.getUid());
-		if (TestUtil.empty(uid)) {
-			return null;
-		}
-		return new File(getAppDataPathAbsolute(), "." + uid);
-	}
-
 	private String convert(String uid) {
 		if (TestUtil.empty(uid)) {
 			return uid;
@@ -804,7 +797,11 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public File getMessageFile(AbstractMessageModel messageModel) {
-		return getMessageFile(messageModel, true);
+		String uid = this.convert(messageModel.getUid());
+		if (TestUtil.empty(uid)) {
+			return null;
+		}
+		return new File(getAppDataPathAbsolute(), "." + uid);
 	}
 
 	private File getMessageThumbnail(AbstractMessageModel messageModel) {
@@ -839,7 +836,7 @@ public class FileServiceImpl implements FileService {
 			return false;
 		}
 
-		File messageFile = this.getMessageFile(messageModel, false);
+		File messageFile = this.getMessageFile(messageModel);
 
 		if(messageFile == null) {
 			return false;
@@ -1255,27 +1252,38 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Uri copyToShareFile(AbstractMessageModel model, File srcFile) {
+	public Uri copyToShareFile(AbstractMessageModel messageModel, File srcFile) {
 		// copy file to public dir
-		if (model != null) {
+		if (messageModel != null) {
 			if (srcFile != null && srcFile.exists()) {
-				String destFilePrefix = FileUtil.getMediaFilenamePrefix(model);
-				String destFileExtension = getMediaFileExtension(model);
+				String destFilePrefix = FileUtil.getMediaFilenamePrefix(messageModel);
+				String destFileExtension = getMediaFileExtension(messageModel);
 				File destFile = copyUriToTempFile(Uri.fromFile(srcFile), destFilePrefix, destFileExtension, !ConfigUtils.useContentUris());
 
-				return getShareFileUri(destFile);
+				String filename = null;
+				if (messageModel.getType() == MessageType.FILE) {
+					filename = messageModel.getFileData().getFileName();
+				}
+
+				return getShareFileUri(destFile, filename);
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * Get an Uri for the destination file that can be shared to other apps. On Android 5+ our own content provider will be used to serve the file.
+	 * @param destFile File to get an Uri for
+	 * @param filename Desired filename for this file. Can be different from the filename of destFile
+	 * @return Uri (Content Uri on Android 5+, File Uri otherwise)
+	 */
 	@Override
-	public Uri getShareFileUri(File destFile) {
+	public Uri getShareFileUri(@NonNull File destFile, @Nullable String filename) {
 		if (destFile != null) {
 			// see https://code.google.com/p/android/issues/detail?id=76683
 			if (ConfigUtils.useContentUris()) {
 				/* content uri */
-				return FileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile);
+				return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
 			} else {
 				/* file uri */
 				return Uri.fromFile(destFile);
@@ -1341,7 +1349,7 @@ public class FileServiceImpl implements FileService {
 				}
 
 				if (file != null) {
-					shareFileUris.add(getShareFileUri(file));
+					shareFileUris.add(getShareFileUri(file, null));
 					continue;
 				}
 			} catch (Exception ignore) {

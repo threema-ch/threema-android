@@ -41,7 +41,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-import ch.threema.app.QRScannerUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;

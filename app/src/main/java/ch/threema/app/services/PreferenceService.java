@@ -53,6 +53,9 @@ public interface PreferenceService {
 	int ImageScale_ORIGINAL = 4;
 	int ImageScale_SEND_AS_FILE = 5;
 
+	@IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL})
+	@interface VideoSize {}
+	int VideoSize_DEFAULT = -1;
 	int VideoSize_SMALL = 0;
 	int VideoSize_MEDIUM = 1;
 	int VideoSize_ORIGINAL = 2;

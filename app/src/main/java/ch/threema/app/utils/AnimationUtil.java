@@ -62,6 +62,10 @@ public class AnimationUtil {
 	private static final Logger logger = LoggerFactory.getLogger(AnimationUtil.class);
 
 	public static void expand(final View v) {
+		expand(v, null);
+	}
+
+	public static void expand(final View v, final Runnable onFinishRunnable) {
 		v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		final int targetHeight = v.getMeasuredHeight();
 
@@ -85,6 +89,22 @@ public class AnimationUtil {
 
 		// 2dp/ms
 		a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density) * 2);
+		if (onFinishRunnable != null) {
+			a.setAnimationListener(new Animation.AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					onFinishRunnable.run();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+			});
+		}
 		v.startAnimation(a);
 	}
 

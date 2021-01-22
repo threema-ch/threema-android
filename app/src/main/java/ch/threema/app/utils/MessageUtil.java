@@ -292,11 +292,13 @@ public class MessageUtil {
 						|| fromState == MessageState.DELIVERED;
 			case SENDFAILED:
 				return fromState == MessageState.SENDING
-						|| fromState == MessageState.PENDING;
+						|| fromState == MessageState.PENDING
+						|| fromState == MessageState.TRANSCODING;
 			case SENT:
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.SENDFAILED
-						|| fromState == MessageState.PENDING;
+						|| fromState == MessageState.PENDING
+						|| fromState == MessageState.TRANSCODING;
 			case USERACK:
 				return true;
 			case USERDEC:
@@ -305,7 +307,8 @@ public class MessageUtil {
 				return fromState == MessageState.SENDFAILED;
 			case SENDING:
 				return fromState == MessageState.SENDFAILED
-						|| fromState == MessageState.PENDING;
+						|| fromState == MessageState.PENDING
+						|| fromState == MessageState.TRANSCODING;
 			default:
 				logger.debug("message state " + toState.toString() + " not handled");
 				return false;

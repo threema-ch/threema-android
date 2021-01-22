@@ -40,7 +40,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+import ch.threema.app.NamedFileProvider;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -78,7 +78,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 					Intent installIntent;
 
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-						uri = FileProvider.getUriForFile(DownloadApkActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", downloadState.getDestinationFile());
+						uri = NamedFileProvider.getUriForFile(DownloadApkActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", downloadState.getDestinationFile(), null);
 						installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
 						installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 						installIntent.setData(uri);

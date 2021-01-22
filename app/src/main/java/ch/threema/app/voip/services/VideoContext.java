@@ -56,7 +56,8 @@ public class VideoContext {
 	// Local state
 	private @Nullable EglBase eglBase;
 	private @Nullable CameraVideoCapturer cameraVideoCapturer;
-	private String[] cameraNames;
+	private volatile String frontCameraName;
+	private volatile String backCameraName;
 	private @CameraOrientation int cameraOrientation;
 	private @Nullable ProxyVideoSink localVideoSink;
 	private @Nullable ProxyVideoSink remoteVideoSink;
@@ -69,7 +70,6 @@ public class VideoContext {
 		this.eglBase = EglBase.create();
 		this.localVideoSink = new ProxyVideoSink("Local");
 		this.remoteVideoSink = new ProxyVideoSink("Remote");
-		this.cameraNames = new String[]{null, null};
 	}
 
 	/**
@@ -107,12 +107,20 @@ public class VideoContext {
 		this.cameraOrientation = cameraOrientation;
 	}
 
-	public @NonNull String[] getCameraNames() {
-		return cameraNames;
+	public @Nullable String getFrontCameraName() {
+		return frontCameraName;
 	}
 
-	public void setCameraNames(@NonNull String[] cameraNames) {
-		this.cameraNames = cameraNames;
+	public @Nullable String getBackCameraName() {
+		return backCameraName;
+	}
+
+	public void setFrontCameraName(@Nullable String frontCameraName) {
+		this.frontCameraName = frontCameraName;
+	}
+
+	public void setBackCameraName(@Nullable String backCameraName) {
+		this.backCameraName = backCameraName;
 	}
 
 	@NonNull
@@ -133,7 +141,7 @@ public class VideoContext {
 	}
 
 	public boolean hasMultipleCameras() {
-		return cameraNames[0] != null && cameraNames[1] != null;
+		return frontCameraName != null && backCameraName != null;
 	}
 
 	/**

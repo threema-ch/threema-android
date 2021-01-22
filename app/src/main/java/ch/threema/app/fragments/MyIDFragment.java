@@ -155,7 +155,25 @@ public class MyIDFragment extends MainFragment
 
 	private ProfileListener profileListener = new ProfileListener() {
 		@Override
-		public void onAvatarChanged() {}
+		public void onAvatarChanged() {
+			// a profile picture has been set so it's safe to assume user wants others to see his pic
+			if (!isDisabledProfilePicReleaseSettings) {
+				if (preferenceService != null && preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_NOBODY) {
+					preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_EVERYONE);
+					RuntimeUtil.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (isAdded() && !isDetached() && fragmentView != null) {
+								AppCompatSpinner spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+								if (spinner != null) {
+									spinner.setSelection(preferenceService.getProfilePicRelease());
+								}
+							}
+						}
+					});
+				}
+			}
+		}
 
 		@Override
 		public void onAvatarRemoved() {}
@@ -271,6 +289,9 @@ public class MyIDFragment extends MainFragment
 
 			reloadNickname();
 		}
+
+		ListenerManager.profileListeners.add(this.profileListener);
+
 		return fragmentView;
 	}
 
@@ -278,16 +299,19 @@ public class MyIDFragment extends MainFragment
 	public void onStart() {
 		super.onStart();
 		ListenerManager.smsVerificationListeners.add(this.smsVerificationListener);
-		ListenerManager.profileListeners.add(this.profileListener);
 	}
 
 	@Override
 	public void onStop() {
-		ListenerManager.profileListeners.remove(this.profileListener);
 		ListenerManager.smsVerificationListeners.remove(this.smsVerificationListener);
 		super.onStop();
 	}
 
+	@Override
+	public void onDestroyView() {
+		ListenerManager.profileListeners.remove(this.profileListener);
+		super.onDestroyView();
+	}
 
 	private void updatePendingState(final View fragmentView, boolean force) {
 		logger.debug("*** updatePendingState");

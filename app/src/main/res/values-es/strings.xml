@@ -979,7 +979,7 @@ almacenado.</string>
     <string name="lock_option_biometric">Biométrico</string>
     <string name="biometric_enter_authentication">Para desbloquear debe autenticarse</string>
     <string name="biometric_authentication_failed">Error de autenticación</string>
-    <string name="biometric_authentication_successful">Autenticación realizada</string>
+    <string name="biometric_authentication_successful">Autenticado correctamente</string>
     <string name="work_safe_forced_explain">El administrador ha habilitado Threema Safe en su dispositivo.</string>
     <string name="pin_locked_cannot_send">Envío no permitido: aplicación bloqueada.</string>
     <string name="prefs_summary_hide_screenshots_notice">Aviso: Por razones de privacidad, se bloquean las imágenes en miniatura y las capturas de pantalla cuando la protección de la aplicación está habilitada.</string>
@@ -994,8 +994,8 @@ almacenado.</string>
     <string name="voice_action_title">Acciones vocales</string>
     <string name="voice_action_body">La acción vocal se está procesando.</string>
     <string name="permission_camera_photo_required">Para tomar fotos, conceda acceso a la cámara.</string>
-    <string name="global_search">Búsqueda global</string>
-    <string name="global_search_empty_view_text">Introduzca por lo menos dos caracteres para buscar en todos los mensajes y contactos</string>
+    <string name="global_search">Buscar en chats</string>
+    <string name="global_search_empty_view_text">Introduzca al menos dos caracteres para buscar en los mensajes</string>
     <string name="my_id">Mi ID</string>
     <string name="profile_picture_and_nickname">Foto de perfil y alias</string>
     <string name="lp_select_this_place">Seleccionar este lugar</string>
@@ -1017,15 +1017,29 @@ almacenado.</string>
     <string name="add_contact_enter_id_hint">Introduzca el ID de Threema del contacto que desea añadir</string>
     <string name="notification_channel_new_contact">Contactos nuevos</string>
     <string name="notification_channel_new_contact_desc">Notificación sobre contactos nuevos</string>
-    <string name="notification_contact_has_joined">%1$s se ha unido a %2$s. Toque aquí para enviar un mensaje.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d contactos se han unido a %2$s: %3$s. Toque aquí para enviarles un mensaje.</string>
+    <string name="notification_contact_has_joined">%1$s se unió a %2$s. Toque aquí para enviar un mensaje.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d contactos se unieron a %2$s: %3$s. Toque aquí para enviarles un mensaje.</string>
     <string name="system_default">Estándar del sistema</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
     <string name="num_archived_chats">%d chats archivados</string>
     <string name="continue_recording">Continuar grabando</string>
     <string name="whatsnew_title">Esto es %s 4.5</string>
+    <string name="whatsnew_headline">%1$s 4.5 ofrece una nueva experiencia multimedia.\n\nLa interfaz de cajón de medios recibió una sobrecarga importante y ahora incluye un aprendizaje automático opcional basado en la búsqueda de imágenes.\n\nAdemás, añadimos la búsqueda de texto global en todos los chats, hemos mejorado la cita de mensajes, etc.</string>
     <string name="whatsnew2_title">Novedades</string>
+    <string name="whatsnew2_body">
+        <![CDATA[
+		<p><b>Cajón de medios</b>: Toque el icono de clip para examinar tus archivos multimedia en un cajón desplazable. Si no quiere que el cajón se abra automáticamente con los archivos multimedia más recientes, deshabilite la opción de selección rápida de imagen en los ajustes del chat, en <i>Ajustes / Chat / Selección rápida de medios</i>.</p>
+		<p><b>Búsqueda de imágenes</b>: Busca objetos comunes, actividades y lugares en las imágenes.<br>El reconocimiento de imágenes se basa en un modelo de aprendizaje automático y no envía datos al servidor de Threema ni a un tercero. Puesto que analizar imágenes es una tarea bastante costosa y puede tardar bastante tiempo, la opción está deshabilitada de forma predeterminada. La encontrarás en <i>Ajustes / Medios y almacenamiento / Búsqueda de imágenes</i>.</p>
+		<p><b>Enviar archivos de medios</b>: Envía imágenes con resoluciones independientes sin tener que cambiar los ajustes globales.</p>
+		<p><b>Editor de vídeo</b>: Recorta vídeos antes de enviarlos. Además, el proceso de transcodificación de vídeos se ha mejorado y ahora funciona en segundo plano.</p>
+		<p><b>Guardar en la galería</b>: En Android 10 y posteriores, los medios se almacenan en las carpetas del sistema <i>Imágenes, Vídeo, Música</i> y <i>Documentos</i> debido a los nuevos requisitos «Almacenamiento específico» de Google.</p>
+		<p><b>Búsqueda global</b>: Busca texto en todos los chats. Solo tienes que tocar en <i>Menú / Buscar chats</i> cuando estés en la pantalla de inicio de %1$s.</p>
+		<p><b>Citas</b>: %1$s ahora permite citar cualquier tipo de medio, incluidas imágenes, vídeos y mensajes de voz.</p>
+		<p><b>100 nuevos emojis</b>: Echa un vistazo a la esperada \"fondue\" &#129749;</p>
+		<p><b>Textos grandes</b>: Para mantener ordenada la interfaz del chat, los mensajes con mucho texto se muestran en una burbuja de chat truncada y se puede ampliar a voluntad.</p>
+		]]>
+    </string>
     <string name="tooltip_identity_popup">Toque aquí para visualizar rápidamente su ID de Threema o para escanear el ID de otras personas.</string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
@@ -1066,7 +1080,7 @@ almacenado.</string>
     <string name="media_files">Archivos</string>
     <string name="auto_download_limit_explain">Nota: los vídeos y archivos que ocupen más de %s siempre se descargarán bajo demanda.</string>
     <string name="quoted_message_deleted">El mensaje citado ya no está disponible.</string>
-    <string name="searching">Buscando...</string>
+    <string name="searching">Buscando…</string>
     <string name="prefs_work_life_balance">No molestar</string>
     <string name="prefs_title_working_days">Días laborables</string>
     <string name="prefs_working_days_sum">Seleccionar días laborables</string>
@@ -1130,7 +1144,7 @@ almacenado.</string>
     <string name="an_error_occurred_during_send">Se ha producido un error al enviar uno o más mensajes.</string>
     <string name="state_processing">procesando</string>
     <string name="passphrase_locked">La frase de contraseña está bloqueada.</string>
-    <string name="image_labeling_new">Nuevo: Reconocimiento de imagen</string>
+    <string name="image_labeling_new">Nuevo: Búsqueda de imagen</string>
     <string name="tooltip_image_labeling">Para buscar un elemento visual concreto en su galería, introduzca un término que describa el contenido y selecciónelo en la lista de etiquetas identificadas.</string>
     <string name="selected_media">Su selección</string>
     <string name="attach_gif">Gif</string>
@@ -1149,4 +1163,23 @@ almacenado.</string>
     <string name="max_selectable_media_exceeded">No se pueden enviar más de %d objetos a la vez.</string>
     <string name="error_unable_loading_media_thumb">Error. No se pudo cargar la imagen del objeto.</string>
     <string name="select">Seleccionar</string>
+    <string name="filter_list">Filtrar lista</string>
+    <string name="hint_filter_list">Introducir texto de filtro</string>
+    <string name="add">Añadir</string>
+    <string name="threema_message_from">Mensaje de %s</string>
+    <string name="show_text">Mostrar texto</string>
+    <string name="only_images_or_videos">Solo se pueden seleccionar imágenes o vídeos</string>
+    <string name="media_gallery_gifs">GIF</string>
+    <string name="notification_channel_image_labeling">Progreso de indexación de imagen</string>
+    <string name="notification_channel_image_labeling_desc">Realizando indexación de imágenes de galería pública en el fondo</string>
+    <string name="notification_image_labeling_desc">Indexación de galería de medios</string>
+    <string name="no_media_found_global">No se encontraron medios en este dispositivo</string>
+    <string name="prefs_sum_image_labeling">Habilitar búsqueda de imágenes públicas en la galería por palabras clave</string>
+    <string name="prefs_image_labeling">Buscar imágenes</string>
+    <string name="enable_formatting">Habilitar formato</string>
+    <string name="original_file_no_longer_avilable">Ya no se puede acceder al archivo original. Vuelva a enviar el mensaje.</string>
+    <string name="state_transcoding">transcodificación</string>
+    <string name="importing_files">Importando archivos</string>
+    <string name="tooltip_image_resolution_hint">Ajusta la resolución de imágenes.</string>
+    <string name="image_labeling_stuck_error">El proceso de indexación de la búsqueda de imágenes se atascó y se canceló. Inténtelo más tarde.</string>
 </resources>

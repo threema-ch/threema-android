@@ -75,8 +75,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 659
-        versionName "4.5-beta5"
+        versionCode 660
+        versionName "4.5-beta6"
         resValue "string", "version_name_suffix", ""
         resValue "string", "app_name", "Threema"
         resValue "string", "uri_scheme", "threema"
@@ -86,7 +86,7 @@ android {
         resValue "string", "package_name", applicationId
         resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.profile"
         resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.call"
-        resValue "integer", "max_group_size", "100"
+        resValue "integer", "max_group_size", "256"
         resValue "string", "shop_download_filename", "Threema-update.apk"
         buildConfigField "String", "CHAT_SERVER_PREFIX", "\"g-\""
         buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.\""
@@ -141,7 +141,7 @@ android {
         }
         store_threema { }
         store_google_work {
-            versionName "4.5k-beta5"
+            versionName "4.5k-beta6"
             applicationId "ch.threema.app.work"
             testApplicationId 'ch.threema.app.work.test'
             resValue "string", "package_name", applicationId
@@ -178,7 +178,7 @@ android {
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
         }
         sandbox_work {
-            versionName "4.5k-beta5"
+            versionName "4.5k-beta6"
             applicationId "ch.threema.app.sandbox.work"
             testApplicationId 'ch.threema.app.sandbox.work.test'
 
@@ -189,7 +189,7 @@ android {
             resValue "string", "contact_action_url", "threema.id"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
-            resValue "integer", "max_group_size", "100"
+            resValue "integer", "max_group_size", "256"
             resValue "string", "shop_download_filename", ""
 
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
@@ -208,7 +208,7 @@ android {
             ]
         }
         red { // Essentially like sandbox work, but with a different icon and accent color, used for internal testing
-            versionName "4.5r-beta5"
+            versionName "4.5r-beta6"
             applicationId "ch.threema.app.red"
             testApplicationId 'ch.threema.app.red.test'
 
@@ -219,7 +219,7 @@ android {
             resValue "string", "contact_action_url", "threema.id"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.call"
-            resValue "integer", "max_group_size", "100"
+            resValue "integer", "max_group_size", "256"
             resValue "string", "shop_download_filename", ""
 
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""

@@ -178,12 +178,16 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 			}
 
-			long size = this.getMessageModel().getFileData().getFileSize();
-			if (size > 0) {
-				if (duration > 0) {
-					datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
-				} else {
-					datePrefixString = Formatter.formatShortFileSize(getContext(), size);
+			if (this.getMessageModel().getFileData().isDownloaded()) {
+				datePrefixString = "";
+			} else {
+				long size = this.getMessageModel().getFileData().getFileSize();
+				if (size > 0) {
+					if (duration > 0) {
+						datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
+					} else {
+						datePrefixString = Formatter.formatShortFileSize(getContext(), size);
+					}
 				}
 			}
 
@@ -276,7 +280,6 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 					@Override
 					public void onStatusUpdate(final int progress) {
 						RuntimeUtil.runOnUiThread(() -> {
-							logger.debug("**** Status update {}", progress);
 							holder.transcoderView.setProgress(progress);
 						});
 					}

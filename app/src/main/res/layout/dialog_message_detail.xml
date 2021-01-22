@@ -150,4 +150,32 @@
 		android:visibility="gone"
 		/>
 
+	<TextView
+		android:id="@+id/filesize_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/file_size"
+		android:layout_marginTop="4dp"
+		app:layout_constraintTop_toBottomOf="@id/filetype_text"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="@+id/filesize_data"
+		app:layout_constrainedWidth="true"
+		app:layout_constraintHorizontal_bias="0"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
+		android:visibility="gone"
+		/>
+
+	<TextView
+		android:id="@+id/filesize_data"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text=""
+		app:layout_constraintBaseline_toBaselineOf="@id/filesize_text"
+		app:layout_constraintRight_toRightOf="parent"
+		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
+		android:visibility="gone"
+		/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

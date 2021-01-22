@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
-import ch.threema.app.QRScannerUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;

@@ -2971,11 +2971,6 @@ public class MessageServiceImpl implements MessageService {
 
 					intent = new Intent(Intent.ACTION_SEND);
 					intent.putExtra(Intent.EXTRA_STREAM, shareFileUri);
-					if (model.getType() == MessageType.FILE &&
-						model.getFileData() != null &&
-						model.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT) {
-						intent.putExtra(ThreemaApplication.INTENT_DATA_FORWARD_AS_FILE, true);
-					}
 					intent.setType(getMimeTypeString(model));
 					if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(shareFileUri.getScheme())) {
 						intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -3493,9 +3488,6 @@ public class MessageServiceImpl implements MessageService {
 			try {
 				final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel);
 
-				// delete temporary file
-				deleteTemporaryFile(mediaItem);
-
 				if (contentData != null) {
 					if (encryptAndSend(resolvedReceivers, messageModels, fileDataModel, thumbnailData, contentData)) {
 						successfulMessageModel = messageModels.get(resolvedReceivers[0]);
@@ -3665,7 +3657,6 @@ public class MessageServiceImpl implements MessageService {
 			case MediaItem.TYPE_VIDEO:
 				// fallthrough
 			case MediaItem.TYPE_VIDEO_CAM:
-				fileDataModel.setFileName(FileUtil.getMediaFilenamePrefix() + ".mp4");
 				// add duration to metadata
 				long trimmedDuration = mediaItem.getDurationMs();
 				if (mediaItem.getEndTimeMs() != TIME_UNDEFINED && (mediaItem.getEndTimeMs() != 0L || mediaItem.getStartTimeMs() != 0L)) {
@@ -3795,7 +3786,7 @@ public class MessageServiceImpl implements MessageService {
 			AbstractMessageModel messageModel = messageModels.get(messageReceiver);
 			if (messageModel == null) {
 				// no messagemodel has been created for this receiver - skip
-				logger.info("Mo MessageCodel could be created for this receiver - skip");
+				logger.info("Mo MessageModel could be created for this receiver - skip");
 				continue;
 			}
 
@@ -4008,7 +3999,7 @@ public class MessageServiceImpl implements MessageService {
 		// rendering type overrides
 		switch (mediaItem.getType()) {
 			case TYPE_VOICEMESSAGE:
-				filename = FileUtil.getDefaultFilename(mediaItem.getMimeType()); // the internal temporary file name is of no use to the recipient
+				filename = FileUtil.getDefaultFilename(mimeType); // the internal temporary file name is of no use to the recipient
 				renderingType = FileData.RENDERING_MEDIA;
 				break;
 			case TYPE_GIF:
@@ -4029,7 +4020,7 @@ public class MessageServiceImpl implements MessageService {
 				} else {
 					// unlike with "real" files we override the filename for regular images with a generic one to prevent privacy leaks
 					// this mimics the behavior of traditional image messages that did not have a filename at all
-					filename = FileUtil.getDefaultFilename(mediaItem.getMimeType()); // the internal temporary file name is of no use to the recipient
+					filename = FileUtil.getDefaultFilename(mimeType); // the internal temporary file name is of no use to the recipient
 				}
 				break;
 		}
@@ -4067,8 +4058,13 @@ public class MessageServiceImpl implements MessageService {
 
 		boolean needsTrimming = videoNeedsTrimming(mediaItem);
 		int targetBitrate;
+		@PreferenceService.VideoSize int desiredVideoSize = preferenceService.getVideoSize();
+		if (mediaItem.getVideoSize() != PreferenceService.VideoSize_DEFAULT) {
+			desiredVideoSize = mediaItem.getVideoSize();
+		}
+
 		try {
-			targetBitrate = VideoConfig.getTargetVideoBitrate(context, mediaItem, preferenceService.getVideoSize());
+			targetBitrate = VideoConfig.getTargetVideoBitrate(context, mediaItem, desiredVideoSize);
 		} catch (ThreemaException e) {
 			logger.error("Error getting target bitrate", e);
 			// skip this MediaItem

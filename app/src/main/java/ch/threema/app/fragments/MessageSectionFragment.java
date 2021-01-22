@@ -753,7 +753,7 @@ public class MessageSectionFragment extends MainFragment
 						intent.setType(MimeUtil.MIME_TYPE_ZIP);
 						intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject) + " " + conversationModel.getReceiver().getDisplayName());
 						intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.chat_history_attached) + "\n\n" + getString(R.string.share_conversation_body));
-						intent.putExtra(Intent.EXTRA_STREAM, fileService.getShareFileUri(tempMessagesFile));
+						intent.putExtra(Intent.EXTRA_STREAM, fileService.getShareFileUri(tempMessagesFile, null));
 						intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
 						RuntimeUtil.runOnUiThread(() -> {

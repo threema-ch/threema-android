@@ -51,6 +51,7 @@ public class MessageState extends Converter {
 					return MessageState.USERACK;
 				case USERDEC:
 					return MessageState.USERDEC;
+				case TRANSCODING:
 				case PENDING:
 					return MessageState.PENDING;
 				case SENDING:

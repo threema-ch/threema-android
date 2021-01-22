@@ -109,10 +109,10 @@
 		android:baselineAlignBottom="true"
 		app:srcCompat="@drawable/ic_block"
 		android:contentDescription="@string/blocked"
-		android:tint="@color/material_red"
 		android:visibility="visible"
 		app:layout_constraintBottom_toBottomOf="@id/name"
-		app:layout_constraintRight_toRightOf="parent" />
+		app:layout_constraintRight_toRightOf="parent"
+		app:tint="@color/material_red" />
 
 	<!-- second line -->
 

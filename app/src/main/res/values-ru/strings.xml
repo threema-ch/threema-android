@@ -983,8 +983,8 @@
     <string name="voice_action_title">Голосовые действия</string>
     <string name="voice_action_body">Выполняется обработка голосового действия</string>
     <string name="permission_camera_photo_required">Чтобы сделать фото, предоставьте доступ к камере</string>
-    <string name="global_search">Глобальный поиск</string>
-    <string name="global_search_empty_view_text">Введите не менее двух символов для поиска во всех сообщениях и контактах</string>
+    <string name="global_search">Поиск в чатах</string>
+    <string name="global_search_empty_view_text">Введите не менее двух символов для поиска в сообщениях</string>
     <string name="my_id">Мой ID</string>
     <string name="profile_picture_and_nickname">Аватар и ник</string>
     <string name="lp_select_this_place">Выбрать это место</string>
@@ -1006,15 +1006,29 @@
     <string name="add_contact_enter_id_hint">Введите Threema ID контакта, который вы хотите добавить</string>
     <string name="notification_channel_new_contact">Новые контакты</string>
     <string name="notification_channel_new_contact_desc">Уведомления о новых контактах</string>
-    <string name="notification_contact_has_joined">%1$s присоедин. к %2$s. Коснитесь, чтобы отправить сообщение.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d контакта(ов) присоединились к %2$s: %3$s. Коснитесь, чтобы отправить им сообщение.</string>
+    <string name="notification_contact_has_joined">%1$s присоед. к %2$s. Коснитесь, чтобы отправить сообщение.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d контакта(ов) присоед. к %2$s: %3$s. Коснитесь, чтобы отправить им сообщение.</string>
     <string name="system_default">Системный по умолчан.</string>
     <string name="open_in_maps_app">Открыть в прил. «Карты»</string>
     <string name="delete">Удалить</string>
     <string name="num_archived_chats">Архивированных чатов: %d</string>
     <string name="continue_recording">Продолжить запись</string>
     <string name="whatsnew_title">Добро пожаловать в %s 4.5</string>
+    <string name="whatsnew_headline">Версия %1$s 4.5 кардинально расширяет возможности работы с мультимедиа.\n\nИнтерфейс панели мультимедиа был полностью переработан и теперь включает дополнительную функцию поиска по изображениям с алгоритмом машинного обучения.\n\nКроме того, мы добавили функцию глобального текстового поиска по всем чатам, улучшили цитирование сообщений и др.</string>
     <string name="whatsnew2_title">Что нового?</string>
+    <string name="whatsnew2_body">
+        <![CDATA[
+		<p><b>Панель мультимедиа</b>: Коснитесь значка скрепки для просмотра своих мультимедийных файлов в панели с возможностью прокрутки. Если вы не хотите, чтобы панель раскрывалась автоматически, показывая последние просмотренные мультимедийные файлы, отключите параметр быстрого выбора изображений в настройках чата — меню <i>Настройки / Чат / Быстрый выбор изображения</i>.</p>
+		<p><b>Поиск изображений</b>: Выполняйте в своих изображениях поиск стандартных объектов, действий и мест.<br>Распознавание изображений основано на локальной модели машинного обучения и не передает данные на сервер Threema или третьим лицам. Поскольку анализ изображений — это довольно ресурсоемкая задача, выполнение которой может занять долгое время, по умолчанию этот параметр отключен. Для доступа к нему откройте меню <i>Настройки / Мультимедиа / Поиск изображений</i>.</p>
+		<p><b>Отправка мультимедийных файлов</b>: Отправляйте изображения с нужным разрешением без необходимости менять общие настройки.</p>
+		<p><b>Видеоредактор</b>: Выполняйте обрезку видео перед их отправкой. Кроме того, мы доработали процесс перекодировки видео, и теперь он работает в фоновом режиме.</p>
+		<p><b>Сохранение в галерее</b>: Из-за новых требований компании Google (концепция «Scoped Storage») в системе Android 10 и выше мультимедийные файлы теперь хранятся в системных папках <i>Изображения, Видео, Музыка</i> и <i>Документы</i>.</p>
+		<p><b>Глобальный поиск</b>: Поиск текста по всем чатам. На главном экране %1$s коснитесь <i>Меню / Поиск в чатах</i>.</p>
+		<p><b>Цитаты</b>: %1$s теперь позволяет цитировать любые мультимедийные сообщения, в том числе изображения, видео и голосовые сообщения.</p>
+		<p><b>100 новых эмодзи</b>: Ознакомьтесь с долгожданным набором &#129749;</p>
+		<p><b>Крупные тексты</b>: Чтобы не загромождать интерфейс чата, мы теперь показываем сообщения с большим количеством текста в усеченном пузырьке чата, который при необходимости можно развернуть.</p>
+		]]>
+    </string>
     <string name="tooltip_identity_popup">Коснитесь здесь, чтобы быстро показать свой Threema ID или сканировать ID других пользователей</string>
     <string name="tap_to_start">Коснитесь здесь, чтобы запустить %s.</string>
     <string name="two_years">2 года</string>
@@ -1119,7 +1133,7 @@
     <string name="an_error_occurred_during_send">При отправке одного или нескольких сообщений произошла ошибка.</string>
     <string name="state_processing">идет обработка</string>
     <string name="passphrase_locked">Кодовая фраза заблокирована</string>
-    <string name="image_labeling_new">Новинка: распознавание изображений</string>
+    <string name="image_labeling_new">Новинка: поиск изображений</string>
     <string name="tooltip_image_labeling">Чтобы найти в галерее нужное визуальное мультимедиа, введите слово, описывающее его содержимое, и выберите его из списка идентифицированных меток.</string>
     <string name="selected_media">Ваш выбор</string>
     <string name="attach_gif">GIF</string>
@@ -1138,4 +1152,23 @@
     <string name="max_selectable_media_exceeded">Одновременно можно отправить не более %d объектов.</string>
     <string name="error_unable_loading_media_thumb">Произошла ошибка. Не удалось загрузить эскиз мультимедиа</string>
     <string name="select">Выбрать</string>
+    <string name="filter_list">Список фильтров</string>
+    <string name="hint_filter_list">Введите текст фильтра</string>
+    <string name="add">Добавить</string>
+    <string name="threema_message_from">Сообщение от %s</string>
+    <string name="show_text">Показать текст</string>
+    <string name="only_images_or_videos">Можно выбирать только изображения или видео</string>
+    <string name="media_gallery_gifs">GIF-файлы</string>
+    <string name="notification_channel_image_labeling">Ход индексирования изображений</string>
+    <string name="notification_channel_image_labeling_desc">В фоновом режиме выполняется индексирование изображений в общедоступной галерее</string>
+    <string name="notification_image_labeling_desc">Индексируем галерею мультимедиа</string>
+    <string name="no_media_found_global">На устройстве не найдены файлы мультимедиа</string>
+    <string name="prefs_sum_image_labeling">Включите поиск общедоступных изображений в вашей галерее по ключевым словам</string>
+    <string name="prefs_image_labeling">Поиск изображений</string>
+    <string name="enable_formatting">Включить форматирование</string>
+    <string name="original_file_no_longer_avilable">Исходный файл больше не доступен. Отправьте сообщение повторно.</string>
+    <string name="state_transcoding">перекодируем</string>
+    <string name="importing_files">импортируем файлы</string>
+    <string name="tooltip_image_resolution_hint">Коррекция разрешения изображений.</string>
+    <string name="image_labeling_stuck_error">Процесс индексирования для поиска по изображениям завис и был отменен. Повторите попытку позже.</string>
 </resources>

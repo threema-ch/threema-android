@@ -142,7 +142,7 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 			this.videoViewRef.get().setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
 				@Override
 				public void onVisibilityChange(int visibility) {
-//					VideoViewFragment.this.showUi(visibility == View.VISIBLE);
+					VideoViewFragment.this.showUi(visibility == View.VISIBLE);
 				}
 			});
 			this.videoViewRef.get().setVisibility(View.GONE);

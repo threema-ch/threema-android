@@ -36,7 +36,11 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.client.file.FileData;
 
 import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
+import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
 
+/**
+ * This class holds all meta information about a media item to be sent
+ */
 public class MediaItem implements Parcelable {
 	@MediaType private int type;
 	private Uri uri;
@@ -51,6 +55,7 @@ public class MediaItem implements Parcelable {
 	private String mimeType;
 	@FileData.RenderingType int renderingType;
 	@PreferenceService.ImageScale private int imageScale; // desired image scale
+	@PreferenceService.VideoSize private int videoSize; // desired video scale factor
 	private String filename;
 	private boolean deleteAfterUse;
 
@@ -119,6 +124,7 @@ public class MediaItem implements Parcelable {
 		this.mimeType = MimeUtil.MIME_TYPE_DEFAULT;
 		this.renderingType = FileData.RENDERING_MEDIA;
 		this.imageScale = ImageScale_DEFAULT;
+		this.videoSize = VideoSize_DEFAULT;
 		this.filename = null;
 		this.deleteAfterUse = false;
 	}
@@ -138,6 +144,7 @@ public class MediaItem implements Parcelable {
 		mimeType = in.readString();
 		renderingType = in.readInt();
 		imageScale = in.readInt();
+		videoSize = in.readInt();
 		filename = in.readString();
 		deleteAfterUse = in.readInt() != 0;
 	}
@@ -157,6 +164,7 @@ public class MediaItem implements Parcelable {
 		dest.writeString(mimeType);
 		dest.writeInt(renderingType);
 		dest.writeInt(imageScale);
+		dest.writeInt(videoSize);
 		dest.writeString(filename);
 		dest.writeInt(deleteAfterUse ? 1 : 0);
 	}
@@ -290,6 +298,14 @@ public class MediaItem implements Parcelable {
 
 	public void setImageScale(@PreferenceService.ImageScale int imageScale) {
 		this.imageScale = imageScale;
+	}
+
+	public @PreferenceService.VideoSize int getVideoSize() {
+		return videoSize;
+	}
+
+	public void setVideoSize(@PreferenceService.VideoSize int videoSize) {
+		this.videoSize = videoSize;
 	}
 
 	public @Nullable String getFilename() {

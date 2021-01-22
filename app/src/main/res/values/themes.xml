@@ -159,6 +159,8 @@
 		<!-- bubble theme -->
 		<item name="chat_bubble_recv">@drawable/bubble_recv_selector_light</item>
 		<item name="chat_bubble_send">@drawable/bubble_send_selector_light</item>
+		<item name="chat_bubble_fade_recv">@drawable/bubble_fade_recv_selector_light</item>
+		<item name="chat_bubble_fade_send">@drawable/bubble_fade_send_selector_light</item>
 		<item name="chat_bubble_status">@drawable/bubble_status_selector_light</item>
 		<item name="send_button_background">@drawable/ic_circle_send_light</item>
 		<item name="compose_container">@color/activity_background_secondary</item>
@@ -372,6 +374,8 @@
 		<!-- bubble theme -->
 		<item name="chat_bubble_recv">@drawable/bubble_recv_selector_dark</item>
 		<item name="chat_bubble_send">@drawable/bubble_send_selector_dark</item>
+		<item name="chat_bubble_fade_recv">@drawable/bubble_fade_recv_selector_dark</item>
+		<item name="chat_bubble_fade_send">@drawable/bubble_fade_send_selector_dark</item>
 		<item name="chat_bubble_status" >@drawable/bubble_status_selector_dark</item>
 		<item name="send_button_background">@drawable/ic_circle_send_dark</item>
 		<item name="compose_container">@color/dark_material_primary</item>

@@ -620,7 +620,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 			@Override
 			public void complete(File decodedFile) {
 				hideProgressBar(progressBar);
-				messageService.viewMediaMessage(getApplicationContext(), m, fileService.getShareFileUri(decodedFile));
+				messageService.viewMediaMessage(getApplicationContext(), m, fileService.getShareFileUri(decodedFile, null));
 			}
 
 			@Override

@@ -153,6 +153,23 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 	};
 
+	private final AvatarEditView.AvatarEditListener avatarEditViewListener = new AvatarEditView.AvatarEditListener() {
+		@Override
+		public void onAvatarSet(File avatarFile1) {
+			groupDetailViewModel.setAvatarFile(avatarFile1);
+			groupDetailViewModel.setIsAvatarRemoved(false);
+			setScrimColor();
+		}
+
+		@Override
+		public void onAvatarRemoved() {
+			groupDetailViewModel.setAvatarFile(null);
+			groupDetailViewModel.setIsAvatarRemoved(true);
+			avatarEditView.setDefaultAvatar(null, groupModel);
+			setScrimColor();
+		}
+	};
+
 	private class SelectorInfo {
 		public View view;
 		public ContactModel contactModel;
@@ -313,22 +330,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				this.avatarEditView.loadAvatarForModel(null, groupModel);
 			}
 		}
-		this.avatarEditView.setListener(new AvatarEditView.AvatarEditListener() {
-			@Override
-			public void onAvatarSet(File avatarFile1) {
-				groupDetailViewModel.setAvatarFile(avatarFile1);
-				groupDetailViewModel.setIsAvatarRemoved(false);
-				setScrimColor();
-			}
-
-			@Override
-			public void onAvatarRemoved() {
-				groupDetailViewModel.setAvatarFile(null);
-				groupDetailViewModel.setIsAvatarRemoved(true);
-				avatarEditView.setDefaultAvatar(null, groupModel);
-				setScrimColor();
-			}
-		});
+		this.avatarEditView.setListener(this.avatarEditViewListener);
 
 		((AppBarLayout) findViewById(R.id.appbar)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
 			@Override

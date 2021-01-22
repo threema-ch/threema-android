@@ -11,7 +11,7 @@
     <string name="title_enter_id">ID Yaz</string>
     <string name="title_invite_friend">Arkadaşını Davet Et</string>
     <string name="invite_via">Arkadaşınızı … ile davet et</string>
-    <string name="invite_email_body">Merhaba,\n\nKullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma uygulaması%1$s kullanıyorum.\n\nThreema Kimliğim: https://threema.id/%2$s\n\n%1$ üzerinden iletişim kuralım s!\n\nHoşçakal,\n</string>
+    <string name="invite_email_body">Merhaba,\n\nKullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma uygulaması %1$s kullanıyorum.\n\nThreema Kimliğim: https://threema.id/%2$s\n\n%1$s üzerinden iletişim kuralım s!\n\nHoşçakal,\n</string>
     <string name="invite_sms_body">Selam! Güvenli ve gizlilikle uyumlu bir şekilde iletişim kurmak için % 1 $ s kullanalım! Threema kimliğim: https://threema.id/% 2 $ s</string>
     <string name="invite_email_subject">Threema. Özelinizi koruyan güvenli mesajlaşma programı.</string>
     <string name="enter_id_hint">"Threema ID yaz. "</string>
@@ -104,11 +104,7 @@
     <string name="wizard2_email_linking">"E-postayı kimliğinize Bağlayın "</string>
     <string name="wizard2_phone_hint">Cep telefonu numaranızı yazınız.</string>
     <string name="wizard2_phone_number_confirm_title">Numarayı Onay</string>
-    <string name="wizard2_phone_number_confirm">Şu Adrese bir SMS göndermek üzereyiz:
-
- {%1$s}
-
- Bu numara doğru mu?</string>
+    <string name="wizard2_phone_number_confirm">Şu Adrese bir SMS göndermek üzereyiz: {%1$s} Bu numara doğru mu?</string>
     <string name="wizard2_phone_linking">Telefon numarasını kimliğinize bağlayın</string>
     <string name="wizard3_nickname_hint">Takma adınızı yazınız</string>
     <string name="set_nickname_title">Adını ayarla</string>
@@ -1016,8 +1012,8 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="voice_action_title">Sesli İşlemler</string>
     <string name="voice_action_body">Sesli işlem işleniyor</string>
     <string name="permission_camera_photo_required">Fotoğraf çekmek için lütfen kameraya erişime izin verin</string>
-    <string name="global_search">Global arama</string>
-    <string name="global_search_empty_view_text">Tüm mesajlarda ve kişilerde aramak için en az iki karakter girin</string>
+    <string name="global_search">Sohbetlerde Ara</string>
+    <string name="global_search_empty_view_text">en az iki karakter girin en az iki karakter girin</string>
     <string name="my_id">Benim kimliğim</string>
     <string name="profile_picture_and_nickname">Profil resmi ve takma ad</string>
     <string name="lp_select_this_place">Bu yeri seçin</string>
@@ -1039,14 +1035,15 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="add_contact_enter_id_hint">Lütfen eklemek istediğiniz kişinin Threema ID\'sini girin</string>
     <string name="notification_channel_new_contact">Yeni kişiler</string>
     <string name="notification_channel_new_contact_desc">Yeni kişiler hakkında bildirim</string>
-    <string name="notification_contact_has_joined">%1$s katıldı %2$s . Mesaj göndermek için buraya dokunun.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d kişi %2$s : %3$s grubuna katıldı. Onlara mesaj göndermek için buraya hafifçe vurun.</string>
+    <string name="notification_contact_has_joined">%1$s,%2$s \'ye katıldı. Mesaj göndermek için buraya dokunun.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d kişi %2$s:%3$s \'e katıldı. Onlara bir mesaj göndermek için buraya dokunun.</string>
     <string name="system_default">Sistem varsayılanı</string>
     <string name="open_in_maps_app">Haritalar uygulamasında aç</string>
     <string name="delete">Sil</string>
     <string name="num_archived_chats">%d arşivlenmiş sohbet</string>
     <string name="continue_recording">Kayda devam et</string>
     <string name="whatsnew_title">%s 4.5 sürümüne hoş geldiniz</string>
+    <string name="whatsnew_headline">%1$s 4.5 yepyeni bir medya deneyimi getiriyor.\n\nMedya çekmecesi arayüzü büyük bir revizyondan geçti ve şimdi isteğe bağlı bir makine öğrenimi tabanlı görsel arama özelliği sunuyor.\n\nAyrıca, tüm sohbetlere genel metin arama, iyileştirilmiş mesaj alıntıları ve daha fazlasını ekledik.</string>
     <string name="whatsnew2_title">Ne var ne yok?</string>
     <string name="tooltip_identity_popup">Threema ID\'nizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
     <string name="tap_to_start">%s\'i şimdi başlatmak için buraya hafifçe vurun.</string>
@@ -1065,7 +1062,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="seconds">Saniye</string>
     <string name="minutes">Dakika</string>
     <string name="and">ve</string>
-    <string name="edit_type_content_description">%1$s%2$s öğesini görüntüleme veya düzenleme</string>
+    <string name="edit_type_content_description">görüntüleyin veya düzenleyin %1$s %2$s öğesini görüntüleyin veya düzenleyin</string>
     <string name="group">Grup</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p> Gizlilik Politikamız aşağıdaki değişikliği yansıtacak şekilde güncellendi: </p> <p> %1$s artık harita ve İÇN verileri sağlamak için Google Play ve Google Haritalar\'a bağlı değil. </p> Lütfen gizlilik politikasının tamamını <a href="%2$s"> burada </a> inceleyin .]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Play Hizmetleri yüklü değil. «Push» konumuna geçilemiyor.</string>
@@ -1152,7 +1149,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="an_error_occurred_during_send">Bir veya daha fazla mesaj gönderilirken hata oluştu.</string>
     <string name="state_processing">İşleme</string>
     <string name="passphrase_locked">Parola Kilitlendi</string>
-    <string name="image_labeling_new">Yeni: Görüntü Tanıma</string>
+    <string name="image_labeling_new">Yeni: Görsel Arama</string>
     <string name="tooltip_image_labeling">Galerinizde belirli bir görsel medyayı bulmak için, içeriği tanımlayan bir terim girin ve tanımlanmış etiketler listesinden seçim yapınız.</string>
     <string name="selected_media">Seçiminiz</string>
     <string name="attach_gif">GIF</string>
@@ -1171,4 +1168,23 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="max_selectable_media_exceeded">Bir seferde %d nesneden fazlası gönderilemez.</string>
     <string name="error_unable_loading_media_thumb">Hata. Medya Küçük Resmi yüklenemedi</string>
     <string name="select">Seçiniz</string>
+    <string name="filter_list">Listeyi filtrele</string>
+    <string name="hint_filter_list">Filtre metni girin</string>
+    <string name="add">Ekle</string>
+    <string name="threema_message_from">%s tarafından gönderilen mesaj</string>
+    <string name="show_text">Metni göster</string>
+    <string name="only_images_or_videos">Yalnızca resimler veya videolar seçilebilir</string>
+    <string name="media_gallery_gifs">GIF\'ler</string>
+    <string name="notification_channel_image_labeling">Görüntü indeksleme ilerlemesi</string>
+    <string name="notification_channel_image_labeling_desc">Arka planda genel galeri resimlerinin indekslenmesi</string>
+    <string name="notification_image_labeling_desc">Medya galerisi indeksleme</string>
+    <string name="no_media_found_global">Bu cihazda hiçbir medya bulunamadı</string>
+    <string name="prefs_sum_image_labeling">Galerinizdeki genel resimleri anahtar kelimelere göre aramayı etkinleştirin</string>
+    <string name="prefs_image_labeling">Görsel arama</string>
+    <string name="enable_formatting">Biçimlendirmeyi etkinleştir</string>
+    <string name="original_file_no_longer_avilable">Orijinal dosyaya artık erişilemez. Lütfen mesajı tekrar gönderin.</string>
+    <string name="state_transcoding">Kod dönüştürme</string>
+    <string name="importing_files">Dosyaları içe aktarma</string>
+    <string name="tooltip_image_resolution_hint">Görüntü çözünürlüklerini ayarlayın.</string>
+    <string name="image_labeling_stuck_error">Görsel arama için indeksleme işlemi takıldı ve iptal edildi. Lütfen daha sonra tekrar deneyin.</string>
 </resources>

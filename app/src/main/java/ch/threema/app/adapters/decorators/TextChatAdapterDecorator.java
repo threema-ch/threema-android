@@ -72,14 +72,11 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 					messageText = quoteContent.bodyText;
 				}
 			} else {
-				holder.bodyTextView.setText(formatTextString(messageText, this.filterString));
+				holder.bodyTextView.setText(formatTextString(messageText, this.filterString, helper.getMaxBubbleTextLength() + 8));
 			}
 
 			if (holder.readOnContainer != null) {
 				if (messageText != null && messageText.length() > helper.getMaxBubbleTextLength()) {
-					if (holder.bodyTextView instanceof EmojiConversationTextView) {
-						((EmojiConversationTextView) holder.bodyTextView).setFade(true);
-					}
 					holder.readOnContainer.setVisibility(View.VISIBLE);
 					holder.readOnButton.setOnClickListener(view -> {
 						Intent intent = new Intent(helper.getFragment().getContext(), TextChatBubbleActivity.class);
@@ -87,9 +84,6 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 						helper.getFragment().startActivity(intent);
 					});
 				} else {
-					if (holder.bodyTextView instanceof EmojiConversationTextView) {
-						((EmojiConversationTextView) holder.bodyTextView).setFade(false);
-					}
 					holder.readOnContainer.setVisibility(View.GONE);
 					holder.readOnButton.setOnClickListener(null);
 				}
@@ -120,7 +114,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 
 		if (content != null) {
 			if (holder.secondaryTextView instanceof EmojiConversationTextView) {
-				holder.secondaryTextView.setText(formatTextString(content.quotedText, this.filterString));
+				holder.secondaryTextView.setText(formatTextString(content.quotedText, this.filterString, helper.getMaxQuoteTextLength() + 8));
 				((EmojiConversationTextView) holder.secondaryTextView).setFade(content.quotedText.length() > helper.getMaxQuoteTextLength());
 			}
 
@@ -154,7 +148,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 			}
 
 			if (content.bodyText != null) {
-				holder.bodyTextView.setText(formatTextString(content.bodyText, this.filterString));
+				holder.bodyTextView.setText(formatTextString(content.bodyText, this.filterString, helper.getMaxBubbleTextLength() + 8));
 				holder.bodyTextView.setVisibility(View.VISIBLE);
 			} else {
 				holder.bodyTextView.setText("");

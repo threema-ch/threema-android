@@ -213,7 +213,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String EXTRA_FLIP = "flip";
 	public static final String EXTRA_EXIF_ORIENTATION = "rotateExif";
 	public static final String EXTRA_EXIF_FLIP = "flipExif";
-	public static final String INTENT_DATA_FORWARD_AS_FILE = "forward_as_file";
 	public static final String INTENT_DATA_CHECK_ONLY = "check";
 	public static final String INTENT_DATA_ANIM_CENTER = "itemPos";
 	public static final String INTENT_DATA_PICK_FROM_CAMERA = "useCam";
@@ -305,7 +304,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				.detectLeakedSqlLiteObjects()
 				.detectLeakedClosableObjects()
 				.penaltyLog()
-				.penaltyDeath()
 				.penaltyListener(Executors.newSingleThreadExecutor(), v -> {
 					logger.info("STRICTMODE VMPolicy: " + v.getCause());
 					logStackTrace(v.getStackTrace());

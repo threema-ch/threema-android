@@ -90,7 +90,7 @@ public class VideoTranscoder {
 	/**
 	 * How long to wait for the next buffer to become available in microseconds.
 	 */
-	private static final int TIMEOUT_USEC = 2500;
+	private static final int TIMEOUT_USEC = 10000;
 
 	private final Context mContext;
 	private final Uri mSrcUri;
@@ -420,9 +420,9 @@ public class VideoTranscoder {
 		mStats.outputFileSize = Math.round(new File(mOutputFilePath).length() / 1024. / 1000 * 10) / 10.;
 		mStats.timeToTranscode = Math.round(((System.currentTimeMillis() - mStartTime) / 1000.) * 10) / 10.;
 
-		logger.warn("Input file: {}MB", mStats.inputFileSize);
-		logger.warn("Output file: {}MB", mStats.outputFileSize);
-		logger.warn("Time to encode: {}s", mStats.timeToTranscode);
+		logger.info("Input file: {}MB", mStats.inputFileSize);
+		logger.info("Output file: {}MB", mStats.outputFileSize);
+		logger.info("Time to encode: {}s", mStats.timeToTranscode);
 	}
 
 	private void cleanup() throws Exception {
@@ -439,8 +439,7 @@ public class VideoTranscoder {
 				mInputVideoComponent.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing videoExtractor");
-			logger.error("Exception", e);
+			logger.error("error while releasing videoExtractor", e);
 			exception = e;
 		}
 		try {
@@ -448,8 +447,7 @@ public class VideoTranscoder {
 				mInputAudioComponent.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing audioExtractor");
-			logger.error("Exception", e);
+			logger.error("error while releasing audioExtractor", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -460,8 +458,7 @@ public class VideoTranscoder {
 				mVideoDecoder.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing videoDecoder");
-			logger.error("Exception", e);
+			logger.error("error while releasing videoDecoder", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -471,8 +468,7 @@ public class VideoTranscoder {
 				mOutputSurface.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing outputSurface");
-			logger.error("Exception", e);
+			logger.error("error while releasing outputSurface", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -483,8 +479,7 @@ public class VideoTranscoder {
 				mVideoEncoder.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing videoEncoder");
-			logger.error("Exception", e);
+			logger.error("error while releasing videoEncoder", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -495,8 +490,7 @@ public class VideoTranscoder {
 				mAudioDecoder.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing audioDecoder");
-			logger.error("Exception", e);
+			logger.error("error while releasing audioDecoder", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -507,8 +501,7 @@ public class VideoTranscoder {
 				mAudioEncoder.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing audioEncoder");
-			logger.error("Exception", e);
+			logger.error("error while releasing audioEncoder", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -519,8 +512,7 @@ public class VideoTranscoder {
 				mMuxer.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing muxer");
-			logger.error("Exception", e);
+			logger.error("error while releasing muxer", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -530,8 +522,7 @@ public class VideoTranscoder {
 				mInputSurface.release();
 			}
 		} catch (Exception e) {
-			logger.error("error while releasing inputSurface");
-			logger.error("Exception", e);
+			logger.error("error while releasing inputSurface", e);
 			if (exception == null) {
 				exception = e;
 			}
@@ -558,7 +549,7 @@ public class VideoTranscoder {
 			return false;
 		}
 
-		logger.debug("{} decoder: returned input buffer: {}", type, decoderInputBufferIndex);
+		logger.trace("{} decoder: returned input buffer: {}", type, decoderInputBufferIndex);
 
 		MediaExtractor extractor = component.getMediaExtractor();
 		int chunkSize = extractor.readSampleData(
@@ -568,8 +559,8 @@ public class VideoTranscoder {
 
 		long sampleTime = extractor.getSampleTime();
 
-		logger.debug("{} extractor: returned buffer of chunkSize {}", type, chunkSize);
-		logger.debug("{} extractor: returned buffer for sampleTime {}", type, sampleTime);
+		logger.trace("{} extractor: returned buffer of chunkSize {}", type, chunkSize);
+		logger.trace("{} extractor: returned buffer for sampleTime {}", type, sampleTime);
 
 		if (mTrimEndTime > 0 && sampleTime > (mTrimEndTime * 1000)) {
 			logger.debug("The current sample is over the trim time. Lets stop.");
@@ -648,9 +639,9 @@ public class VideoTranscoder {
 			return POLLING_ERROR;
 		}
 
-		logger.debug("video decoder: returned output buffer: {}", decoderOutputBufferIndex);
-		logger.debug("video decoder: returned buffer of size {}", videoDecoderOutputBufferInfo.size);
-		logger.debug("video decoder: returned buffer for time {}", videoDecoderOutputBufferInfo.presentationTimeUs);
+		logger.trace("video decoder: returned output buffer: {}", decoderOutputBufferIndex);
+		logger.trace("video decoder: returned buffer of size {}", videoDecoderOutputBufferInfo.size);
+		logger.trace("video decoder: returned buffer for time {}", videoDecoderOutputBufferInfo.presentationTimeUs);
 
 		int percentage = (int) ((videoDecoderOutputBufferInfo.presentationTimeUs - outputStartTimeUs) * 100 / outputDurationUs);
 		if (percentage > progress) {
@@ -672,7 +663,7 @@ public class VideoTranscoder {
 			mOutputSurface.drawImage(false);
 			mInputSurface.setPresentationTime(videoDecoderOutputBufferInfo.presentationTimeUs * 1000);
 			mInputSurface.swapBuffers();
-			logger.debug("video encoder: notified of new frame");
+			logger.trace("video encoder: notified of new frame");
 		}
 
 		if ((videoDecoderOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
@@ -712,8 +703,8 @@ public class VideoTranscoder {
 			return;
 		}
 
-		logger.debug("audio decoder: returned output buffer: {}", decoderOutputBufferIndex);
-		logger.debug("audio decoder: returned buffer of size {}", audioDecoderOutputBufferInfo.size);
+		logger.trace("audio decoder: returned output buffer: {}", decoderOutputBufferIndex);
+		logger.trace("audio decoder: returned buffer of size {}", audioDecoderOutputBufferInfo.size);
 
 		if ((audioDecoderOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
 			logger.debug("audio decoder: codec config buffer");
@@ -721,8 +712,8 @@ public class VideoTranscoder {
 			return;
 		}
 
-		logger.debug("audio decoder: returned buffer for time {}", audioDecoderOutputBufferInfo.presentationTimeUs);
-		logger.debug("audio decoder: output buffer is now pending: {}", mPendingAudioDecoderOutputBufferIndex);
+		logger.trace("audio decoder: returned buffer for time {}", audioDecoderOutputBufferInfo.presentationTimeUs);
+		logger.trace("audio decoder: output buffer is now pending: {}", mPendingAudioDecoderOutputBufferIndex);
 
 		mPendingAudioDecoderOutputBufferIndex = decoderOutputBufferIndex;
 		mStats.audioDecodedFrameCount++;
@@ -733,7 +724,7 @@ public class VideoTranscoder {
 	 * @return
 	 */
 	private boolean feedPendingAudioBufferToEncoder(MediaCodec.BufferInfo audioDecoderOutputBufferInfo) {
-		logger.debug("audio decoder: attempting to process pending buffer: {}", mPendingAudioDecoderOutputBufferIndex);
+		logger.trace("audio decoder: attempting to process pending buffer: {}", mPendingAudioDecoderOutputBufferIndex);
 
 		int encoderInputBufferIndex = mAudioEncoder.dequeueInputBuffer(TIMEOUT_USEC);
 
@@ -742,7 +733,7 @@ public class VideoTranscoder {
 			return false;
 		}
 
-		logger.debug("audio encoder: returned input buffer: {}", encoderInputBufferIndex);
+		logger.trace("audio encoder: returned input buffer: {}", encoderInputBufferIndex);
 
 		ByteBuffer encoderInputBuffer =
 			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
@@ -754,9 +745,9 @@ public class VideoTranscoder {
 		int chunkSize = Math.min(audioDecoderOutputBufferInfo.size, encoderInputBuffer.capacity());
 		long presentationTime = audioDecoderOutputBufferInfo.presentationTimeUs;
 
-		logger.debug("audio decoder: processing pending buffer: {}", mPendingAudioDecoderOutputBufferIndex);
-		logger.debug("audio decoder: pending buffer of size {}", chunkSize);
-		logger.debug("audio decoder: pending buffer for time {}", presentationTime);
+		logger.trace("audio decoder: processing pending buffer: {}", mPendingAudioDecoderOutputBufferIndex);
+		logger.trace("audio decoder: pending buffer of size {}", chunkSize);
+		logger.trace("audio decoder: pending buffer for time {}", presentationTime);
 
 		if (chunkSize >= 0) {
 			ByteBuffer decoderOutputBuffer = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
@@ -827,9 +818,9 @@ public class VideoTranscoder {
 //            throw new IllegalStateException("should have added track before processing output");
 //        }
 
-		logger.debug("video encoder: returned output buffer: {}", encoderOutputBufferIndex);
-		logger.debug("video encoder: returned buffer of size {}", videoEncoderOutputBufferInfo.size);
-		logger.debug("video encoder: returned buffer for time {}", videoEncoderOutputBufferInfo.presentationTimeUs);
+		logger.trace("video encoder: returned output buffer: {}", encoderOutputBufferIndex);
+		logger.trace("video encoder: returned buffer of size {}", videoEncoderOutputBufferInfo.size);
+		logger.trace("video encoder: returned buffer for time {}", videoEncoderOutputBufferInfo.presentationTimeUs);
 
 		ByteBuffer encoderOutputBuffer =
 			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
@@ -890,9 +881,9 @@ public class VideoTranscoder {
 //            throw new IllegalStateException("should have added track before processing output");
 //        }
 
-		logger.debug("audio encoder: returned output buffer: {}", encoderOutputBufferIndex);
-		logger.debug("audio encoder: returned buffer of size {}", audioEncoderOutputBufferInfo.size);
-		logger.debug("audio encoder: returned buffer for time {}", audioEncoderOutputBufferInfo.presentationTimeUs);
+		logger.trace("audio encoder: returned output buffer: {}", encoderOutputBufferIndex);
+		logger.trace("audio encoder: returned buffer of size {}", audioEncoderOutputBufferInfo.size);
+		logger.trace("audio encoder: returned buffer for time {}", audioEncoderOutputBufferInfo.presentationTimeUs);
 
 		if (audioEncoderOutputBufferInfo.size != 0) {
 			ByteBuffer encoderOutputBuffer = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?

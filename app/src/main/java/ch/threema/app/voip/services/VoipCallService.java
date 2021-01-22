@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
-import org.webrtc.PeerConnectionFactory;
 import org.webrtc.RTCStatsCollectorCallback;
 import org.webrtc.RTCStatsReport;
 import org.webrtc.SessionDescription;
@@ -1661,7 +1660,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@Override
 	@AnyThread
 	public void onLocalDescription(long callId, final SessionDescription sdp) {
-		logger.trace("{}: onLocalDescription", callId);
+		logger.info("{}: onLocalDescription", callId);
 		RuntimeUtil.runInAsyncTask(() -> {
 			synchronized (VoipCallService.this) {
 				final CallStateSnapshot callState = voipStateService.getCallState();
@@ -1686,7 +1685,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@Override
 	@AnyThread
 	public void onRemoteDescriptionSet(long callId) {
-		logger.trace("{}: onRemoteDescriptionSet", callId);
+		logger.info("{}: onRemoteDescriptionSet", callId);
 
 		if (this.peerConnectionClient == null) {
 			logger.error("{}: Cannot create answer: peerConnectionClient is not initialized", callId);
@@ -2148,14 +2147,17 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 							this.commonVideoQualityProfile
 						);
 						this.isCapturing = true;
-						VoipUtil.sendVoipBroadcast(getAppContext(), CallActivity.ACTION_OUTGOING_VIDEO_STARTED);
 						if (videoCapturer instanceof CameraVideoCapturer) {
 							// query cameras
-							if (this.voipStateService.getVideoContext() != null) {
-								this.voipStateService.getVideoContext().setCameraNames(VideoCapturerUtil.getFirstCameraNames(getAppContext()));
-								this.voipStateService.getVideoContext().setCameraVideoCapturer((CameraVideoCapturer) videoCapturer);
+							final VideoContext videoContext = this.voipStateService.getVideoContext();
+							if (videoContext != null) {
+								Pair<String,String> primaryCameraNames = VideoCapturerUtil.getPrimaryCameraNames(getAppContext());
+								videoContext.setFrontCameraName(primaryCameraNames.first);
+								videoContext.setBackCameraName(primaryCameraNames.second);
+								videoContext.setCameraVideoCapturer((CameraVideoCapturer) videoCapturer);
 							}
 						}
+						VoipUtil.sendVoipBroadcast(getAppContext(), CallActivity.ACTION_OUTGOING_VIDEO_STARTED);
 					}
 				}
 			}
@@ -2279,37 +2281,48 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			logger.debug("Switching camera");
 			switchCamInProgress.set(true);
 
-			final @VideoContext.CameraOrientation int newCameraOrientation = this.voipStateService.getVideoContext().getCameraOrientation() == CAMERA_FRONT ? CAMERA_BACK : CAMERA_FRONT;
-			final String newCameraName = this.voipStateService.getVideoContext().getCameraNames()[newCameraOrientation];
-			if (newCameraName != null) {
-				capturer.switchCamera(new CameraVideoCapturer.CameraSwitchHandler() {
-					@Override
-					public void onCameraSwitchDone(boolean isFront) {
-						voipStateService.getVideoContext().setCameraOrientation(newCameraOrientation);
-
-						logger.info("Switched camera to {}", isFront ? "front cam" : "rear cam");
-
-						VoipUtil.sendVoipBroadcast(getApplicationContext(), CallActivity.ACTION_CAMERA_CHANGED);
-
-						Toast.makeText(
-							getAppContext(),
-							isFront ? R.string.voip_switch_cam_front : R.string.voip_switch_cam_rear,
-							Toast.LENGTH_SHORT
-						).show();
-						this.resetInProgress();
-					}
-
-					@Override
-					public void onCameraSwitchError(String s) {
-						logger.info("Error while switching camera: {}", s);
-						this.resetInProgress();
-					}
-
-					private void resetInProgress() {
-						switchCamInProgress.set(false);
-					}
-				}, newCameraName);
+			final @VideoContext.CameraOrientation int newCameraOrientation;
+			final String newCameraName;
+			if (this.voipStateService.getVideoContext().getCameraOrientation() == CAMERA_FRONT) {
+				newCameraOrientation = CAMERA_BACK;
+				newCameraName = this.voipStateService.getVideoContext().getBackCameraName();
+			} else {
+				newCameraOrientation = CAMERA_FRONT;
+				newCameraName = this.voipStateService.getVideoContext().getFrontCameraName();
 			}
+
+			if (newCameraName == null) {
+				logger.debug("Ignoring camera switch request, no camera with orientation='{}'", newCameraOrientation);
+				return;
+			}
+
+			capturer.switchCamera(new CameraVideoCapturer.CameraSwitchHandler() {
+				@Override
+				public void onCameraSwitchDone(boolean isFront) {
+					voipStateService.getVideoContext().setCameraOrientation(newCameraOrientation);
+
+					logger.info("Switched camera to {}", isFront ? "front cam" : "rear cam");
+
+					VoipUtil.sendVoipBroadcast(getApplicationContext(), CallActivity.ACTION_CAMERA_CHANGED);
+
+					Toast.makeText(
+						getAppContext(),
+						isFront ? R.string.voip_switch_cam_front : R.string.voip_switch_cam_rear,
+						Toast.LENGTH_SHORT
+					).show();
+					this.resetInProgress();
+				}
+
+				@Override
+				public void onCameraSwitchError(String s) {
+					logger.info("Error while switching camera: {}", s);
+					this.resetInProgress();
+				}
+
+				private void resetInProgress() {
+					switchCamInProgress.set(false);
+				}
+			}, newCameraName);
 		}
 	}
 

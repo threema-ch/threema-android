@@ -32,6 +32,7 @@ import org.webrtc.CameraVideoCapturer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 /**
  * Enumerate and initialize device cameras.
@@ -110,10 +111,13 @@ public class VideoCapturerUtil {
 
 	/**
 	 *
+	 * Returns the primary camera names as Pair of {frontcamera, backcamera}.
+	 * Currently, the first available front/backcamera is used as primary.
+	 *
 	 * @param context
-	 * @return
+	 * @return Pair of nullable camera name strings.
 	 */
-	public static String[] getFirstCameraNames(Context context) {
+	public static Pair<String, String> getPrimaryCameraNames(Context context) {
 		CameraEnumerator enumerator;
 		String frontCamera = null, backCamera = null;
 
@@ -139,6 +143,6 @@ public class VideoCapturerUtil {
 				break;
 			}
 		}
-		return new String[] {frontCamera, backCamera};
+		return new Pair<>(frontCamera, backCamera);
 	}
 }

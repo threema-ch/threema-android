@@ -53,6 +53,8 @@
 	<attr name="textColorTertiary" format="reference"/>
 	<attr name="chat_bubble_recv" format="reference"/>
 	<attr name="chat_bubble_send" format="reference"/>
+	<attr name="chat_bubble_fade_recv" format="reference"/>
+	<attr name="chat_bubble_fade_send" format="reference"/>
 	<attr name="chat_bubble_status" format="reference"/>
 	<attr name="detail_highlight_bg_color" format="reference"/>
 	<attr name="divider_color" format="reference"/>

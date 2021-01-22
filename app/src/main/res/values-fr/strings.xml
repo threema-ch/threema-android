@@ -968,8 +968,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="username_hint">Nom d\'utilisateur</string>
     <string name="lock_option_biometric">Biométrique</string>
     <string name="biometric_enter_authentication">Pour déverrouiller, veuillez vous authentifier</string>
-    <string name="biometric_authentication_failed">Échec d\'authentification</string>
-    <string name="biometric_authentication_successful">Bien authentifié</string>
+    <string name="biometric_authentication_failed">Authentification échouée</string>
+    <string name="biometric_authentication_successful">Authentification réussie</string>
     <string name="work_safe_forced_explain">Vous administrateur a activé Threema Safe pour votre appareil.</string>
     <string name="pin_locked_cannot_send">L\'application est verrouillée. Envoi impossible.</string>
     <string name="prefs_summary_hide_screenshots_notice">Remarque : pour des raisons de confidentialité, les vignettes et captures d\'écran sont toujours bloqués lorsque la protection de l\'application est activée.</string>
@@ -984,8 +984,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="voice_action_title">Commandes vocales</string>
     <string name="voice_action_body">La commande vocale est en cours de traitement</string>
     <string name="permission_camera_photo_required">Pour prendre une photo, veuillez autoriser l\'accès à l\'appareil photo</string>
-    <string name="global_search">Recherche globale</string>
-    <string name="global_search_empty_view_text">Entrez au moins deux caractères pour rechercher dans tous les messages et les contacts</string>
+    <string name="global_search">Rechercher dans les discussions</string>
+    <string name="global_search_empty_view_text">Entrez au moins deux caractères pour rechercher dans les messages</string>
     <string name="my_id">Mon ID</string>
     <string name="profile_picture_and_nickname">Photo de profil et surnom</string>
     <string name="lp_select_this_place">Sélectionner cet endroit</string>
@@ -1007,15 +1007,29 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="add_contact_enter_id_hint">Veuillez entrer l\'ID Threema du contact que vous voudriez ajouter</string>
     <string name="notification_channel_new_contact">Nouveaux contacts</string>
     <string name="notification_channel_new_contact_desc">Notification sur les nouveaux contacts</string>
-    <string name="notification_contact_has_joined">%1$s a rejoint %2$s. Touchez ici pour lui envoyer un message.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d contacts on rejoint %2$s : %3$s. Touchez ici pour leur envoyer un message.</string>
+    <string name="notification_contact_has_joined">%1$s a rejoint %2$s. Appuyez ici pour envoyer un message.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d contacts ont rejoint %2$s : %3$s. Appuyez ici pour leur envoyer un message.</string>
     <string name="system_default">Paramètre système par défaut</string>
     <string name="open_in_maps_app">Ouvrir dans l\'app de cartes</string>
     <string name="delete">Supprimer</string>
     <string name="num_archived_chats">%d chats archivés</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
-    <string name="whatsnew_title">Bienvenue chez %s 4.5</string>
+    <string name="whatsnew_title">Bienvenue dans %s 4.5</string>
+    <string name="whatsnew_headline">%1$s 4.5 apporte une expérience multimédia flambante neuve.\n\nL\'interface de tiroir de média a bénéficié d\'une refonte majeure et propose désormais une recherche d\'images optionnelle basée sur l\'apprentissage automatique.\n\nDe plus, nous avons ajouté une recherche de texte globale à travers tous les chats, une citation améliorée des messages et bien plus.</string>
     <string name="whatsnew2_title">Quoi de neuf ?</string>
+    <string name="whatsnew2_body">
+    <![CDATA[
+		<p><b>Tiroir de média</b> : Touchez l\'icône de trombone pour parcourir vos fichiers média dans un tiroir défilant. Au cas où vous ne voulez pas que le tiroir s\'ouvre automatiquement avec les médias les plus récents, désactivez l\'option Sélection rapide de l\'image depuis les paramètres de chat, dans <i>Paramètres/Chat/Sélection rapide de l\'image</i>.</p>
+		<p><b>Recherche d\'image</b> : Recherchez des objets, des activités et des lieux communs dans vos images.<br>La reconnaissance des images est basée sur un modèle d\'apprentissage automatique local et n\'envoie pas de données aux serveurs de Threema ou à tout autre tiers. Puisque l\'analyse des images est une tâche plutôt coûteuse et qui peut prendre beaucoup de temps, l\'option est désactivée par défaut. Vous pouvez y accéder depuis <i>Paramètres/Médias et stockage/Recherche d’image</i>.</p>
+		<p><b>Envoi de fichiers média</b> : Envoyez des images avec des définitions individuelles sans devoir changer les paramètres globaux.</p>
+		<p><b>Montage vidéo</b> : Découpez les vidéos avant de les envoyer. De plus, le processus de transcodage des vidéos a été amélioré et celui-ci fonctionne désormais en arrière-plan.</p>
+		<p><b>Enregistrer dans la galerie</b> : Sur Android 10 et plus récent, les médias sont maintenant stockés dans les dossiers système <i>Photos, Vidéos, Musique</i> et <i>Documents</i> à cause des nouvelles exigences de « Stockage de portée » de Google.</p>
+		<p><b>Recherche globale</b> : Recherchez du texte à travers tous les chats. Touchez simplement <i>Menu/Rechercher dans les discussions</i> lorsque vous êtes sur l\'écran d\'accueil de %1$s.</p>
+		<p><b>Citations</b> : %1$s vous permet maintenant de citer n\'importe quel type de média, y compris les images, les vidéos et les messages vocaux.</p>
+		<p><b>100 nouvelles émoticônes</b> : Découvrez la tant attendue fondue &#129749;</p>
+		<p><b>Textes longs</b> : Pour conserver une interface de chat allégée, les messages contenant beaucoup de texte s\'affichent dans une bulle de chat tronquée qui peut être développée à volonté.</p>
+    ]]>
+    </string>
     <string name="tooltip_identity_popup">Touchez ici pour afficher rapidement votre ID Threema ou scanner les ID d\'autres personnes</string>
     <string name="tap_to_start">Touchez ici pour lancer %s maintenant.</string>
     <string name="two_years">2 ans</string>
@@ -1120,7 +1134,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="an_error_occurred_during_send">Une erreur s’est produite lors de l’envoi d’un ou plusieurs messages.</string>
     <string name="state_processing">traitement</string>
     <string name="passphrase_locked">La phrase secrète est verrouillée</string>
-    <string name="image_labeling_new">Nouveau : Reconnaissance d’images</string>
+    <string name="image_labeling_new">Nouveau : Recherche d’image</string>
     <string name="tooltip_image_labeling">Pour vous aider à trouver certains médias visuels, Threema offre désormais la possibilité de rechercher et de filtrer votre galerie de médias en fonction d’un modèle local de reconnaissance d’images. Partez à la recherche !</string>
     <string name="selected_media">Votre sélection</string>
     <string name="attach_gif">Gif</string>
@@ -1139,4 +1153,23 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="max_selectable_media_exceeded">Impossible d’envoyer plus de %d objets à la fois.</string>
     <string name="error_unable_loading_media_thumb">Impossible de charger la miniature</string>
     <string name="select">Sélectionner</string>
+    <string name="filter_list">Liste de filtres</string>
+    <string name="hint_filter_list">Entrez un texte de filtre</string>
+    <string name="add">Ajouter</string>
+    <string name="threema_message_from">Message de %s</string>
+    <string name="show_text">Afficher texte</string>
+    <string name="only_images_or_videos">Seuls des images et des vidéos peuvent être sélectionnés</string>
+    <string name="media_gallery_gifs">GIF</string>
+    <string name="notification_channel_image_labeling">Indexation des images en cours</string>
+    <string name="notification_channel_image_labeling_desc">Indexation des images publiques de la galerie en arrière-plan</string>
+    <string name="notification_image_labeling_desc">Indexation de la galerie des médias</string>
+    <string name="no_media_found_global">Aucun média trouvé sur cet appareil</string>
+    <string name="prefs_sum_image_labeling">Activer la recherche par mots clés d’images publiques de votre galerie</string>
+    <string name="prefs_image_labeling">Recherche d’image</string>
+    <string name="enable_formatting">Activer le formattage</string>
+    <string name="original_file_no_longer_avilable">Le fichier original n’est plus accessible. Veuillez renvoyer le message.</string>
+    <string name="state_transcoding">transcodage</string>
+    <string name="importing_files">Importation des fichiers</string>
+    <string name="tooltip_image_resolution_hint">Ajuster les définitions des images.</string>
+    <string name="image_labeling_stuck_error">Le processus d\'indexation de la recherche d\'images s\'est bloqué et a été annulé. Veuillez réessayer plus tard.</string>
 </resources>

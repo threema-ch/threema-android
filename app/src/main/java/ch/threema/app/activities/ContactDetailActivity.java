@@ -63,7 +63,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.QRScannerUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.ContactDetailAdapter;
@@ -104,7 +104,7 @@ import ch.threema.base.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
-import static ch.threema.app.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
+import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
 
 public class ContactDetailActivity extends ThreemaToolbarActivity
 		implements LifecycleOwner,

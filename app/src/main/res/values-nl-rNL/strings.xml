@@ -10,7 +10,7 @@
     <string name="title_adduser">Contactpersoon toevoegen</string>
     <string name="title_enter_id">ID invoeren</string>
     <string name="title_invite_friend">Een vriend uitnodigen</string>
-    <string name="invite_via">Een vriend uitnodigen via...</string>
+    <string name="invite_via">Een vriend uitnodigen via…</string>
     <string name="invite_email_body">Hallo,\n\nIk gebruik %1$s, de veilige instant messenger die de privacy van haar gebruikers beschermt.\n\nMy Threema ID: https://threema.id/%2$s\n\nLaten we voortaan communiceren via %1$s!\n\nGroetjes,\n</string>
     <string name="invite_sms_body">Hallo! Laten we %1$s gebruiken om te communiceren in een beveiligde omgeving die de privacy beschermt! Mijn Threema-ID is: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. De veilige messenger die onze privacy beschermt</string>
@@ -960,7 +960,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="hide_chat_enter_message_explain">Deze chat is aangemerkt als privéchat. Voer de toegangsbescherming in om de chat te openen.</string>
     <string name="unknown">Onbekend</string>
     <string name="miui_notification_title">Belangrijk bericht over berichten op MIUI 10</string>
-    <string name="miui_notification_body">MIUI 10 schakelt standaard de geluids- en de lichtsignalen uit voor alle nieuwe berichtenkanalen (behalve voor sommige apps die door Xiaomi zijn aangewezen als &lt;&lt;belangrijk&gt;&gt;). U moet ze via uw app-specifieke instellingsschermen voor elk kanaal handmatig weer inschakelen. Neem contact op met de fabrikant van uw telefoon voor meer informatie.</string>
+    <string name="miui_notification_body">MIUI 10 schakelt standaard de geluids- en de lichtsignalen uit voor alle nieuwe berichtenkanalen (behalve voor sommige apps die door Xiaomi zijn aangewezen als \"belangrijk\"). U moet ze via uw app-specifieke instellingsschermen voor elk kanaal handmatig weer inschakelen. Neem contact op met de fabrikant van uw telefoon voor meer informatie.</string>
     <string name="dont_show_again">Niet meer weergeven</string>
     <string name="miui_notification_prefs">Instellingen MIUI</string>
     <string name="threema_safe_upload_successful">Threema Safe back-upbestand geüpload</string>
@@ -969,8 +969,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="username_hint">Gebruikersnaam</string>
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Verifieer om te ontgrendelen</string>
-    <string name="biometric_authentication_failed">Verificatie is mislukt</string>
-    <string name="biometric_authentication_successful">Verifiëren is gelukt</string>
+    <string name="biometric_authentication_failed">Niet geverifieerd</string>
+    <string name="biometric_authentication_successful">Geverifieerd</string>
     <string name="work_safe_forced_explain">Uw administrator heeft uw apparaat toestemming gegeven Threema Safe te gebruiken.</string>
     <string name="pin_locked_cannot_send">De app is vergrendeld. Kan niet verzenden.</string>
     <string name="prefs_summary_hide_screenshots_notice">Let op: vanwege privacyredenen worden miniaturen en screenshots altijd geblokkeerd wanneer de appbescherming is ingeschakeld.</string>
@@ -985,8 +985,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="voice_action_title">Stembediening</string>
     <string name="voice_action_body">Stembediening wordt verwerkt</string>
     <string name="permission_camera_photo_required">Verleen toegang tot de camera om een foto te maken</string>
-    <string name="global_search">Wereldwijd zoeken</string>
-    <string name="global_search_empty_view_text">Voer minstens twee tekens in om in alle berichten en contacten te zoeken</string>
+    <string name="global_search">Zoeken in chats</string>
+    <string name="global_search_empty_view_text">Voer minstens twee tekens in om in berichten te zoeken</string>
     <string name="my_id">Mijn ID</string>
     <string name="profile_picture_and_nickname">Profielfoto en bijnaam</string>
     <string name="lp_select_this_place">Selecteer deze plaatsen</string>
@@ -1016,7 +1016,21 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="num_archived_chats">%d gearchiveerde chats</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
     <string name="whatsnew_title">Welkom bij %s 4.5</string>
+    <string name="whatsnew_headline">%1$s 4.5 geeft je een heel nieuwe media-ervaring.\n\nDe mediafunctie is helemaal opnieuw ontworpen en heeft nu een optionele machineleerfunctie op basis van het zoeken van afbeeldingen.\n\nDaarnaast hebben we algemene zoekfuncties naar tekst voor alle chats ingevoeerd, het citeren van berichten verbeterd en nog veel meer.</string>
     <string name="whatsnew2_title">Wat is er nieuw?</string>
+    <string name="whatsnew2_body">
+        <![CDATA[
+		<p><b>Mediascherm</b>: Tik op het paperclippictogram om je mediabestanden in een scrollbaar zijscherm te bekijken. Als je niet wilt dat het zijscherm automatisch wordt geopend met de meest recente media, kun je de optie Snelle selectie uitschakelen in de chatinstellingen via <i>Instellingen / Chat / Snelle selectie media</i>.</p>
+		<p><b>Afbeeldingen zoeken</b>: Zoek in je afbeeldingen naar voorwerpen, activiteiten en locaties.<br>De afbeeldingsherkenning is gebaseerd op een lokaal machineleermodel en verzendt geen gegevens naar externe servers. Aangezien het analyseren van afbeeldingen een nogal intensieve taak kan zijn en lang kan duren, is deze optie standaard uitgeschakeld. Je kunt haar inschakelen via <i>Instellingen / Media &amp; Opslag / Afbeeldingen zoeken</i>.</p>
+		<p><b>Mediabestanden verzenden</b>: Afbeeldingen verzenden met individuele resoluties zonder de algemene instellingen te hoeven aanpassen.</p>
+		<p><b>Video bewerken</b>: Snijd video\'s bij voordat je ze verzendt. Daarnaast is het transcoderingsproces verbeterd en werkt dat nu in de achtergrond.</p>
+		<p><b>Opslaan in galerij</b>: Op Android 10 en hoger worden mediabestanden nu opgeslagen in de systeemmappen <i>Pictures, Video, Music,</i> en <i>Documents</i> vanwege de nieuwe «Scoped Storage»-vereisten van Google.</p>
+		<p><b>Algemene zoekopdrachten</b>: Zoek naar tekst in alle chats. Tik gewoon op <i>Menu / Chats zoeken</i> in het startscherm van %1$s.</p>
+		<p><b>Citaten</b>: Met %1$s kun je nu alle mediabestanden citeren, inclusief afbeeldingen, video\'s en gesproken berichten.</p>
+		<p><b>100 nieuwe emoji\'s</b>: Bekijk de langverwachte fondu &#129749;</p>
+		<p><b>Grotere tekstberichten</b>: Om het chatscherm overzichtelijk te houden, worden berichten met veel tekst ingekort in een spraakbubbel die je zelf kunt uitklappen.</p>
+		]]>
+    </string>
     <string name="tooltip_identity_popup">Tik hier om uw Threema-ID snel weer te geven of om de ID\'s van anderen te scannen</string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
@@ -1025,7 +1039,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_sum_show_unread_badge">Een badge weergeven met het aantal ongelezen berichten naast het berichtenpictogram</string>
     <string name="prefs_title_show_unread_badge">Badge ongelezen berichten</string>
     <string name="pinning_not_trusted">Certificate pinning is mislukt. Controleer of het \"Entrust Root Certification Authority - G2\"-certificaat in de gegevensopslag van uw apparaat is geïnstalleerd en geactiveerd.</string>
-    <string name="pinning_failed">Certificate pinning is mislukt. Mogelijk wordt er een \'man-in-the-middle\'-aanval uitgevoerd. Als u een adblocker, contentfilter of firewall-app zoals &lt;&lt;AdGuard&gt;&gt; hebt geïnstalleerd, schakel deze dan uit voor Threema.</string>
+    <string name="pinning_failed">Certificate pinning is mislukt. Mogelijk wordt er een \'man-in-the-middle\'-aanval uitgevoerd. Als u een adblocker, contentfilter of firewall-app zoals \"AdGuard\" hebt geïnstalleerd, schakel deze dan uit voor Threema.</string>
     <string name="open_myid_popup">Pop-upvenster voor snelle toegang openen</string>
     <string name="logo">Logo/Naar boven scrollen</string>
     <string name="quote_subj_end">Einde citaat</string>
@@ -1037,7 +1051,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_type_content_description">%1$s %2$s bekijken of bewerken</string>
     <string name="group">Groep</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Onze Privacybeleid is bijgewerkt om de volgende verandering weer te geven:</p><p>%1$s is niet langer afhankelijk van Google Play en Google Maps om kaart- en POI-gegevens te verstrekken.</p>Kijk het volledige Privacybeleid <a href="%2$s">hier</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Play Services niet geinstalleer. Kan niet overschakelen naar &lt;&lt;push&gt;&gt;.</string>
+    <string name="play_services_not_installed_unable_to_use_push">Play Services niet geinstalleer. Kan niet overschakelen naar \"push\".</string>
     <string name="unable_to_get_current_location">Kan huidige locatie niet bepalen.</string>
     <string name="lp_search_place_min_chars">Voer ten minste drie tekens in om een plaats te zoeken.</string>
     <string name="lp_search_place_no_matches">Geen overeenkomende plaatsen gevonden. Pas uw zoekopdracht aan.</string>
@@ -1121,7 +1135,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="an_error_occurred_during_send">Er is een fout opgetreden tijdens het verzenden van de berichten.</string>
     <string name="state_processing">verwerken</string>
     <string name="passphrase_locked">De wachtwoordzin is vergrendeld</string>
-    <string name="image_labeling_new">Nieuw: beeldherkenning</string>
+    <string name="image_labeling_new">Nieuw: foto\'s zoeken</string>
     <string name="tooltip_image_labeling">Om specifieke visuele mediabestanden in je galerij te vinden, voer je een zoekwoord in die de inhoud beschrijft en selecteer je het bestand uit de lijst met geïdentificeerde labels.</string>
     <string name="selected_media">Je selectie</string>
     <string name="attach_gif">Gif</string>
@@ -1140,4 +1154,23 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="max_selectable_media_exceeded">Je kunt max. %d objecten tegelijkertijd versturen</string>
     <string name="error_unable_loading_media_thumb">Fout: miniatuur van mediabestand niet geladen</string>
     <string name="select">Selecteren</string>
+    <string name="filter_list">Lijst filteren</string>
+    <string name="hint_filter_list">Filtertekst invoeren</string>
+    <string name="add">Toevoegen</string>
+    <string name="threema_message_from">Bericht van %s</string>
+    <string name="show_text">Tekst tonen</string>
+    <string name="only_images_or_videos">Alleen foto\'s of video\'s kunnen worden geselecteerd</string>
+    <string name="media_gallery_gifs">GIFS</string>
+    <string name="notification_channel_image_labeling">Voortgang foto-indexering</string>
+    <string name="notification_channel_image_labeling_desc">Indexering van openbare fotogalerijen in de achtergrond</string>
+    <string name="notification_image_labeling_desc">Mediagalerij indexeren</string>
+    <string name="no_media_found_global">Geen media gevonden op dit apparaat</string>
+    <string name="prefs_sum_image_labeling">Zoeken naar openbare foto\'s in je galerij via zoekwoorden mogelijk maken</string>
+    <string name="prefs_image_labeling">Foto zoeken</string>
+    <string name="enable_formatting">Opmaak inschakelen</string>
+    <string name="original_file_no_longer_avilable">Het oorspronkelijke bestand is niet langer beschikbaar. Verzend het bericht opnieuw.</string>
+    <string name="state_transcoding">transcoderen…</string>
+    <string name="importing_files">Bestanden importeren…</string>
+    <string name="tooltip_image_resolution_hint">Afbeeldingsresoluties aanpassen.</string>
+    <string name="image_labeling_stuck_error">Het indexeringsproces voor het zoekproces is vastgelopen en geannuleerd. Probeer het later opnieuw.</string>
 </resources>

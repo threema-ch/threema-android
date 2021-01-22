@@ -189,7 +189,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 			final int totalMediaSize = Functional.filter(allMediaValue, (IPredicateNonNull<MediaAttachItem>) ImageLabelingWorker::mediaCanBeLabeled).size() - failedMediaCount;
 
 			final float labeledRatio = (float) labeledMediaCount / (float) totalMediaSize;
-			if (labeledRatio > 0.9) {
+			if (labeledRatio > 0.8) {
 				// More than 90% labeled. Good enough, but kick off the labeller anyways if we're not at 100%.
 				if (labeledMediaCount < totalMediaSize) {
 					this.startImageLabeler();

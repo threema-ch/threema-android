@@ -985,8 +985,8 @@ anonimowo?</string>
     <string name="username_hint">Nazwa użytkownika</string>
     <string name="lock_option_biometric">Biometryczna</string>
     <string name="biometric_enter_authentication">Aby odblokować, dokonaj uwierzytelnienia</string>
-    <string name="biometric_authentication_failed">Uwierzytelnianie nieudane</string>
-    <string name="biometric_authentication_successful">Uwierzytelnianie udane</string>
+    <string name="biometric_authentication_failed">Nieudane uwierzytelnienie</string>
+    <string name="biometric_authentication_successful">Pomyślne uwierzytelnienie</string>
     <string name="work_safe_forced_explain">Twój administrator włączył Threema Safe dla Twojego urządzenia.</string>
     <string name="pin_locked_cannot_send">Aplikacja jest zablokowana. Nie można wysłać.</string>
     <string name="prefs_summary_hide_screenshots_notice">Uwaga: W trosce o prywatność miniaturki i zrzuty ekranu są dezaktywowane, gdy włączona jest ochrona aplikacji.</string>
@@ -1001,8 +1001,8 @@ anonimowo?</string>
     <string name="voice_action_title">Polecenia głosowe</string>
     <string name="voice_action_body">Polecenie głosowe jest przetwarzane</string>
     <string name="permission_camera_photo_required">Aby móc zrobić zdjęcie, zezwól na dostęp do aparatu</string>
-    <string name="global_search">Wyszukiwanie globalne</string>
-    <string name="global_search_empty_view_text">Wprowadź co najmniej dwa znaki, aby wyszukać we wszystkich wiadomościach i kontaktach</string>
+    <string name="global_search">Przeszukaj czaty</string>
+    <string name="global_search_empty_view_text">Wprowadź co najmniej dwa znaki, aby przeszukać wiadomości</string>
     <string name="my_id">Mój identyfikator</string>
     <string name="profile_picture_and_nickname">Zdjęcie profilowe i nick</string>
     <string name="lp_select_this_place">Wybierz to miejsce</string>
@@ -1024,15 +1024,27 @@ anonimowo?</string>
     <string name="add_contact_enter_id_hint">Wprowadź identyfikator Threema kontaktu, który chcesz dodać</string>
     <string name="notification_channel_new_contact">Nowe kontakty</string>
     <string name="notification_channel_new_contact_desc">Powiadomienie o nowych kontaktach</string>
-    <string name="notification_contact_has_joined">%1$s korzysta z %2$s. Dotknij tutaj, aby wysłać wiadomość.</string>
-    <string name="notification_contact_has_joined_multiple">%1$d kontakty, które dołączyły do %2$s: %3$s. Dotknij tutaj, aby wysłać im wiadomość.</string>
+    <string name="notification_contact_has_joined">Dołączono %1$s do %2$s. Dotknij tutaj, aby wysłać wiadomość.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d kontakty dołączyły do %2$s: %3$s. Dotknij tutaj, aby wysłać im wiadomość.</string>
     <string name="system_default">Domyślne ustawienia systemowe</string>
     <string name="open_in_maps_app">Otwórz w aplikacji Mapy</string>
     <string name="delete">Usuń</string>
     <string name="num_archived_chats">Zarchiwizowane czaty: %d</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
     <string name="whatsnew_title">Witaj w %s 4.5</string>
+    <string name="whatsnew_headline">%1$s 4.5 przynosi zupełnie nowe sposoby korzystania z multimediów.\n\nInterfejs szuflady na multimedia został poddany gruntownemu przebudowie i zawiera teraz opcję wyszukiwania obrazów wykorzystującą technologię uczenia maszynowego.\n\nPonadto dodaliśmy globalne wyszukiwanie tekstu we wszystkich czatach, ulepszone cytowanie wiadomości i inne funkcje.</string>
     <string name="whatsnew2_title">Co nowego?</string>
+    <string name="whatsnew2_body"><![CDATA[
+		<p><b>Szuflada na multimedia</b>: Dotknij ikony spinacza, gdy chcesz przeglądać swoje pliki multimedialne w przewijalanej szufladzie . Jeśli nie chcesz, aby szuflada otwierała się automatycznie z najnowszymi multimediami, wyłącz opcję szybkiego wyboru obrazu w ustawieniach czatu w opcji  <i>Ustawienia / Czat / Szybki wybór multimediów</i>.</p>
+		<p><b>Wyszukiwanie obrazów</b>: Przeszukuj swoje obrazy w poszukiwaniu zwykłych przedmiotów, aktywności i miejsc.<br>Rozpoznawanie obrazów opiera się na lokalnym modelu uczenia maszynowego i nie wysyła danych na serwer Threema ani do firm zewnętrznych. Ponieważ analiza obrazów jest funkcjonalnością stosunkowo kosztowną i czynność ta może zajmować dużo czasu, opcja ta jest domyślnie wyłączona. Znajdziesz ją w <i>Ustawienia / Multimedia i pamięć / Wyszukiwanie obrazów</i>.</p>
+		<p><b>Wysyłanie plików multimedialnych</b>: Wysyłaj obrazy, określając ich własną rozdzielczość, bez konieczności zmieniania ustawień globalnych.</p>
+		<p><b>Edytor filmów</b>: Przycinaj filmy przed wysłaniem. Ponadto usprawniliśmy transkodowanie filmów i proces ten przebiega teraz działa w tle.</p>
+		<p><b>Zapisz w galerii</b>: W systemie Android 10 i wyższych, multimedia są teraz przechowywane w folderach systemowych <i>Zdjęcia, Filmy, Muzyka,</i> i <i>Dokumenty</i> ze względu na nowe wymagania Google\'a dotyczące funkcji «Scoped Storage».</p>
+		<p><b>Wyszukiwanie globalne</b>: Wyszukiwanie tekstu we wszystkich czatach. Wystarczy dotknąć <i>Menu / Przeszukaj czaty</i>, gdy jesteś na ekranie głównym %1$s.</p>
+		<p><b>Cytaty</b>:%1$s teraz ta opcja pozwala Ci cytować dowolny rodzaj multimediów, w tym obrazy, filmy i wiadomości głosowe .</p>
+		<p><b>100 nowych emotek</b>: Sprawdź długo oczekiwane fondue &#129749;</p>
+		<p><b>Długie teksty</b>: aby zachować uproszczony interfejs czatu, wiadomości z dużą ilością tekstu są wyświetlane w obciętym dymku i mogą zostać rozwinięte na żądanie.</p>
+]]></string>
     <string name="tooltip_identity_popup">Dotknij tutaj, aby szybko wyświetlić swój identyfikator Threema albo zeskanować identyfikatory innych osób</string>
     <string name="tap_to_start">Dotknij tutaj, aby włączyć %s teraz.</string>
     <string name="two_years">2 lata</string>
@@ -1137,7 +1149,7 @@ anonimowo?</string>
     <string name="an_error_occurred_during_send">Wystąpił błąd podczas wysyłania jednej lub kilku wiadomości.</string>
     <string name="state_processing">przetwarzanie</string>
     <string name="passphrase_locked">Hasło jest zablokowane</string>
-    <string name="image_labeling_new">Nowość: Rozpoznawanie obrazów</string>
+    <string name="image_labeling_new">Nowość: wyszukiwanie obrazów</string>
     <string name="tooltip_image_labeling">Aby znaleźć konkretny materiał wizualny w swojej galerii, wystarczy wpisać termin opisujący jego zawartość i wybrać go z listy zidentyfikowanych etykiet.</string>
     <string name="selected_media">Twój wybór</string>
     <string name="attach_gif">Gif</string>
@@ -1156,4 +1168,23 @@ anonimowo?</string>
     <string name="max_selectable_media_exceeded">Możesz wysłać maksymalnie %d obieky(-ów) naraz</string>
     <string name="error_unable_loading_media_thumb">Błąd. Nie udało się wczytać miniaturki pliku multimedialnego</string>
     <string name="select">Zaznacz</string>
+    <string name="filter_list">Lista filtrów</string>
+    <string name="hint_filter_list">Wprowadź tekst filtru</string>
+    <string name="add">Dodaj</string>
+    <string name="threema_message_from">Wiadomość od %s</string>
+    <string name="show_text">Pokaż tekst</string>
+    <string name="only_images_or_videos">Można wybrać tylko obrazy lub filmy</string>
+    <string name="media_gallery_gifs">GIF-y</string>
+    <string name="notification_channel_image_labeling">Postęp indeksowania obrazów</string>
+    <string name="notification_channel_image_labeling_desc">Trwa indeksowanie w tle obrazów z publicznej galerii</string>
+    <string name="notification_image_labeling_desc">Indeksowanie galerii multimediów</string>
+    <string name="no_media_found_global">Nie znaleziono multimediów na tym urządzeniu</string>
+    <string name="prefs_sum_image_labeling">Włącz wyszukiwanie publicznych obrazów w Twojej galerii wg słów kluczowych</string>
+    <string name="prefs_image_labeling">Wyszukiwanie obrazów</string>
+    <string name="enable_formatting">Włącz formatowanie</string>
+    <string name="original_file_no_longer_avilable">Oryginalny plik nie jest już dostępny. Wyślij  wiadomość ponownie.</string>
+    <string name="state_transcoding">Transkodowanie</string>
+    <string name="importing_files">Importowanie plików</string>
+    <string name="tooltip_image_resolution_hint">Skoryguj rozdzielczości.</string>
+    <string name="image_labeling_stuck_error">Proces indeksacji do wyszukiwania obrazów został zatrzymany i anulowany. Spróbuj później.</string>
 </resources>

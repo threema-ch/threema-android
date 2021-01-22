@@ -535,7 +535,7 @@ public class AndroidContactUtil {
 		return false;
 	}
 
-	public boolean updateNameByAndroidContact(ContactModel contactModel) {
+	public boolean updateNameByAndroidContact(@NonNull ContactModel contactModel) {
 		String androidContactId = contactModel.getAndroidContactId();
 
 		if(TestUtil.empty(androidContactId)) {
@@ -544,11 +544,7 @@ public class AndroidContactUtil {
 
 		Uri namedContactUri = ContactUtil.getAndroidContactUri(ThreemaApplication.getAppContext(), contactModel);
 		if(TestUtil.required(contactModel, namedContactUri) && !TestUtil.empty(androidContactId)) {
-			//load name
-
-			//test
 			ContactName contactName = this.getContactName(namedContactUri);
-
 			if(TestUtil.required(contactModel, contactName)) {
 				if(!TestUtil.compare(contactModel.getFirstName(), contactName.firstName)
 						|| !TestUtil.compare(contactModel.getLastName(), contactName.lastName)) {

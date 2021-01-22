@@ -1294,4 +1294,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="tooltip_image_resolution_hint">Bildauflösung individuell anpassen.</string>
 	<string name="image_labeling_stuck_error">Der Indexierungsprozess für die Bildersuche ist stehen geblieben und wurde abgebrochen. Versuchen Sie es später nochmals.</string>
 	<string name="max_selectable_media_exceeded">Es können maximal %d Objekte aufs Mal versendet werden.</string>
+	<string name="ballot_created_successfully">Die Umfrage wurde erfolgreich erstellt.</string>
+	<string name="file_size">Dateigrösse</string>
 </resources>

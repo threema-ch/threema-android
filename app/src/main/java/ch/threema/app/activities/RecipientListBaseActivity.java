@@ -59,6 +59,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -69,6 +71,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.TaskStackBuilder;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -96,6 +99,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
@@ -117,6 +121,7 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.LocationDataModel;
+import java8.util.concurrent.CompletableFuture;
 
 import static ch.threema.app.activities.SendMediaActivity.MAX_SELECTABLE_IMAGES;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
@@ -160,6 +165,27 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private DistributionListService distributionListService;
 	private MessageService messageService;
 	private FileService fileService;
+
+	private final Runnable copyFilesRunnable = new Runnable() {
+		@Override
+		public void run() {
+			for (int i = 0; i < mediaItems.size(); i++) {
+				MediaItem mediaItem = mediaItems.get(i);
+				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
+
+				if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
+					try {
+						File file = fileService.createTempFile("rcpt", null);
+						FileUtil.copyFile(mediaItem.getUri(), file, getContentResolver());
+						mediaItem.setUri(Uri.fromFile(file));
+						mediaItem.setDeleteAfterUse(true);
+					} catch (IOException e) {
+						logger.error("Unable to copy to tmp dir", e);
+					}
+				}
+			}
+		}
+	};
 
 	@Override
 	public boolean onQueryTextSubmit(String query) {
@@ -363,10 +389,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		if (intent != null) {
 			setIntent(intent);
 
-			// set this flag to prevent file messages with image & video mime types to be forwarded as media
-			boolean isForwardAsFile = false;
 			try {
-				isForwardAsFile = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_FORWARD_AS_FILE, false);
 				this.hideRecents = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, false);
 				this.multiSelect = intent.getBooleanExtra(INTENT_DATA_MULTISELECT, true);
 			} catch (BadParcelableException e) {
@@ -455,13 +478,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 											}
 										}
 									}
-								}
-
-								// any other mime type
-								if (isForwardAsFile) {
-									// TODO
-									// force forwarding of jpegs as a file if requested
-									type = "x-threema/file";
 								}
 
 								// if text was shared along with the media item, add that too
@@ -568,14 +584,20 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					String type = intent.getType();
 
 					ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-					if (uris != null && uris.size() > 0) {
-						for (Uri uri : uris) {
-							if (uri != null) {
-								String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
-								if (mimeType == null) {
-									mimeType = type;
+					if (uris != null) {
+						for (int i = 0; i < uris.size(); i++) {
+							if (i < MAX_SELECTABLE_IMAGES) {
+								Uri uri = uris.get(i);
+								if (uri != null) {
+									String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
+									if (mimeType == null) {
+										mimeType = type;
+									}
+									addMediaItem(mimeType, uri, null);
 								}
-								addMediaItem(mimeType, uri, null);
+							} else {
+								Toast.makeText(getApplicationContext(), getString(R.string.max_selectable_media_exceeded, MAX_SELECTABLE_IMAGES), Toast.LENGTH_LONG).show();
+								break;
 							}
 						}
 
@@ -752,21 +774,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	 */
 	@WorkerThread
 	private void copySelectedFiles() {
-		for (int i = 0; i < mediaItems.size(); i++) {
-			MediaItem mediaItem = mediaItems.get(i);
-			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 
-			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
-				try {
-					File file = fileService.createTempFile("rcpt", null);
-					FileUtil.copyFile(mediaItem.getUri(), file, getContentResolver());
-					mediaItem.setUri(Uri.fromFile(file));
-					mediaItem.setDeleteAfterUse(true);
-				} catch (IOException e) {
-					logger.error("Unable to copy to tmp dir", e);
-				}
-			}
-		}
 	}
 
 	private void sendSharedMedia(final MessageReceiver[] messageReceivers, final Intent intent) {
@@ -804,14 +812,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						}
 						switch (messageModel.getType()) {
 							case IMAGE:
-								sendMediaMessage(messageReceivers, uri, captionText, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA);
+								sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null);
 								break;
 							case VIDEO:
-								sendMediaMessage(messageReceivers, uri, captionText, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA);
+								sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
 								break;
 							case VOICEMESSAGE:
 								// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
-								sendMediaMessage(messageReceivers, uri, captionText, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_DEFAULT);
+								sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_DEFAULT, null);
 								break;
 							case FILE:
 								int mediaType = MediaItem.TYPE_FILE;
@@ -832,7 +840,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 										renderingType = FileData.RENDERING_DEFAULT;
 									}
 								}
-								sendMediaMessage(messageReceivers, uri, captionText, mediaType, mimeType, renderingType);
+								sendForwardedMedia(messageReceivers, uri, captionText, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
 								break;
 							case LOCATION:
 								sendLocationMessage(messageReceivers, messageModel.getLocationData());
@@ -886,14 +894,13 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		}
 	}
 
-	@SuppressLint("StaticFieldLeak")
 	public void prepareForwardingOrSharing(final ArrayList<Object> models) {
 		if (mediaItems.size() > 0 || originalMessageModels.size() > 0) {
 			String recipientName = "";
 
 			if (!((mediaItems.size() == 1 && MimeUtil.isTextFile(mediaItems.get(0).getMimeType()))
-					|| (originalMessageModels.size() == 1 && originalMessageModels.get(0).getType() == MessageType.TEXT))) {
-				for(Object model :models) {
+				|| (originalMessageModels.size() == 1 && originalMessageModels.get(0).getType() == MessageType.TEXT))) {
+				for (Object model : models) {
 					if (recipientName.length() > 0) {
 						recipientName += ", ";
 					}
@@ -928,60 +935,49 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				} else {
 					// content shared by external apps may be referred to by content URIs. we have to copy these files first in order to be able to access it in another activity
 					String finalRecipientName = recipientName;
-					new AsyncTask<Void, Void, Void>() {
-						@Override
-						protected void onPreExecute() {
-							GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_FILECOPY);
-						}
-
-						@Override
-						protected Void doInBackground(Void... voids) {
-							copySelectedFiles();
-							return null;
-						}
-
-						@Override
-						protected void onPostExecute(Void aVoid) {
-							int numEditableMedia = 0;
-							for (MediaItem mediaItem : mediaItems) {
-								String mimeType = mediaItem.getMimeType();
-								if (MimeUtil.isImageFile(mimeType) || MimeUtil.isVideoFile(mimeType)) {
-									numEditableMedia++;
-								}
-							}
-
-							DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
-
-							if (numEditableMedia == mediaItems.size()) { // all files are images or videos
-								int size = mediaItems.size();
-								if (size > MAX_SELECTABLE_IMAGES) {
-									mediaItems.subList(MAX_SELECTABLE_IMAGES, size).clear();
-									Toast.makeText(getApplicationContext(), getString(R.string.max_selectable_media_exceeded, MAX_SELECTABLE_IMAGES),Toast.LENGTH_LONG).show();
-								}
-
-								// all files are either images or videos => redirect to SendMediaActivity
-								recipientMessageReceivers.clear();
-								for (Object model: models) {
-									MessageReceiver messageReceiver = getMessageReceiver(model);
-									if (validateSendingPermission(messageReceiver)) {
-										recipientMessageReceivers.add(messageReceiver);
+					GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_FILECOPY);
+					try {
+						CompletableFuture
+							.runAsync(copyFilesRunnable, Executors.newSingleThreadExecutor())
+							.thenRunAsync(() -> {
+								int numEditableMedia = 0;
+								for (MediaItem mediaItem : mediaItems) {
+									String mimeType = mediaItem.getMimeType();
+									if (MimeUtil.isImageFile(mimeType) || MimeUtil.isVideoFile(mimeType)) {
+										numEditableMedia++;
 									}
 								}
 
-								if (recipientMessageReceivers.size() > 0) {
-									Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(RecipientListBaseActivity.this, SendMediaActivity.class), recipientMessageReceivers.toArray(new MessageReceiver[0]));
-									intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, (ArrayList<MediaItem>) mediaItems);
-									intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, finalRecipientName);
-									startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
+								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
+
+								if (numEditableMedia == mediaItems.size()) { // all files are images or videos
+									// all files are either images or videos => redirect to SendMediaActivity
+									recipientMessageReceivers.clear();
+									for (Object model : models) {
+										MessageReceiver messageReceiver = getMessageReceiver(model);
+										if (validateSendingPermission(messageReceiver)) {
+											recipientMessageReceivers.add(messageReceiver);
+										}
+									}
+
+									if (recipientMessageReceivers.size() > 0) {
+										Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(RecipientListBaseActivity.this, SendMediaActivity.class), recipientMessageReceivers.toArray(new MessageReceiver[0]));
+										intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, (ArrayList<MediaItem>) mediaItems);
+										intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, finalRecipientName);
+										startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
+									}
+								} else {
+									// mixed media
+									ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, null, R.string.send, R.string.cancel, false);
+									alertDialog.setData(models);
+									alertDialog.show(getSupportFragmentManager(), null);
 								}
-							} else {
-								// mixed media
-								ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, null, R.string.send, R.string.cancel, false);
-								alertDialog.setData(models);
-								alertDialog.show(getSupportFragmentManager(), null);
-							}
-						}
-					}.execute();
+							}, ContextCompat.getMainExecutor(getApplicationContext()));
+					} catch (Exception e) {
+						logger.error("Exception", e);
+						finish();
+						return;
+					}
 				}
 				return;
 			}
@@ -1129,7 +1125,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	 */
 
 	@AnyThread
-	private void sendMediaMessage(final MessageReceiver[] messageReceivers, final Uri uri, final String caption, final int type, @Nullable final String mimeType, @FileData.RenderingType final int renderingType) {
+	private void sendForwardedMedia(final MessageReceiver[] messageReceivers, final Uri uri, final String caption, final int type, @Nullable final String mimeType, @FileData.RenderingType final int renderingType, final String filename) {
 		final MediaItem mediaItem = new MediaItem(uri, type);
 		if (mimeType != null) {
 			mediaItem.setMimeType(mimeType);
@@ -1138,6 +1134,19 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			mediaItem.setRenderingType(renderingType);
 		}
 		mediaItem.setCaption(caption);
+		if (!TestUtil.empty(filename)) {
+			mediaItem.setFilename(filename);
+		}
+		if (renderingType == FileData.RENDERING_MEDIA) {
+			if (type == MediaItem.TYPE_VIDEO) {
+				// do not re-transcode forwarded videos
+				mediaItem.setVideoSize(PreferenceService.VideoSize_ORIGINAL);
+			}
+			else if (type == MediaItem.TYPE_IMAGE) {
+				// do not scale forwarded images
+				mediaItem.setImageScale(PreferenceService.ImageScale_ORIGINAL);
+			}
+		}
 		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));
 	}
 

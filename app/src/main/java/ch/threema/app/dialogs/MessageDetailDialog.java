@@ -23,6 +23,7 @@ package ch.threema.app.dialogs;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -95,6 +96,8 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 			final TextView messageIdDate = dialogView.findViewById(R.id.messageid_date);
 			final TextView mimeTypeText = dialogView.findViewById(R.id.filetype_text);
 			final TextView mimeTypeMime = dialogView.findViewById(R.id.filetype_mime);
+			final TextView fileSizeText = dialogView.findViewById(R.id.filesize_text);
+			final TextView fileSizeData = dialogView.findViewById(R.id.filesize_data);
 
 			MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 			builder.setView(dialogView);
@@ -162,10 +165,18 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 					}
 				}
 
-				if (messageModel.getType() == MessageType.FILE && messageModel.getFileData() != null && !TestUtil.empty(messageModel.getFileData().getMimeType())) {
-					mimeTypeMime.setText(messageModel.getFileData().getMimeType());
-					mimeTypeMime.setVisibility(View.VISIBLE);
-					mimeTypeText.setVisibility(View.VISIBLE);
+				if (messageModel.getType() == MessageType.FILE && messageModel.getFileData() != null) {
+					if (!TestUtil.empty(messageModel.getFileData().getMimeType())) {
+						mimeTypeMime.setText(messageModel.getFileData().getMimeType());
+						mimeTypeMime.setVisibility(View.VISIBLE);
+						mimeTypeText.setVisibility(View.VISIBLE);
+					}
+
+					if (messageModel.getFileData().getFileSize() > 0) {
+						fileSizeData.setText(Formatter.formatShortFileSize(getContext(), messageModel.getFileData().getFileSize()));
+						fileSizeData.setVisibility(View.VISIBLE);
+						fileSizeText.setVisibility(View.VISIBLE);
+					}
 				}
 
 				if (!TestUtil.empty(messageModel.getApiMessageId())) {

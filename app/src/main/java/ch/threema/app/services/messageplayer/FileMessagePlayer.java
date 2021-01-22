@@ -90,7 +90,7 @@ public class FileMessagePlayer extends MessagePlayer {
 
 				if (!TestUtil.empty(mimeType) && decryptedFile.exists()) {
 					if (!FileUtil.isImageFile(getMessageModel().getFileData()) && !FileUtil.isVideoFile(getMessageModel().getFileData())) {
-						messageService.viewMediaMessage(getContext(), getMessageModel(), fileService.getShareFileUri(decryptedFile));
+						messageService.viewMediaMessage(getContext(), getMessageModel(), fileService.getShareFileUri(decryptedFile, null));
 					}
 				}
 			});

@@ -142,7 +142,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 
 	private void open(File decryptedFile, final boolean resume) {
 		this.decryptedFile = decryptedFile;
-		final Uri uri = fileService.getShareFileUri(decryptedFile);
+		final Uri uri = fileService.getShareFileUri(decryptedFile, null);
 		this.position = 0;
 
 		logger.debug("open uri = {}", uri);

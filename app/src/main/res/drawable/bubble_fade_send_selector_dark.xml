@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:state_pressed="true">
+		<shape android:shape="rectangle">
+			<gradient android:endColor="#00000000" android:startColor="@color/bubble_pressed_dark"
+				android:angle="90"/>
+		</shape>
+	</item>
+	<item android:state_activated="true">
+		<shape android:shape="rectangle">
+			<gradient android:endColor="#00000000" android:startColor="@color/bubble_selected_dark"
+				android:angle="90"/>
+		</shape>
+	</item>
+	<item>
+		<shape android:shape="rectangle">
+			<gradient android:endColor="#00000000" android:startColor="@color/dark_bubble_send"
+				android:angle="90"/>
+		</shape>
+	</item>
+</selector>

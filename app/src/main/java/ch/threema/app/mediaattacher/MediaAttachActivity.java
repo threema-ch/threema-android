@@ -61,7 +61,6 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import ch.threema.app.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
@@ -75,6 +74,7 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.listeners.QRCodeScanListener;
 import ch.threema.app.locationpicker.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.MediaItem;
@@ -85,6 +85,7 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
@@ -239,6 +240,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			this.attachGalleryButton.setVisibility(View.GONE);
 		}
 
+		if (messageReceiver instanceof DistributionListMessageReceiver) {
+			this.attachBallotButton.setVisibility(View.GONE);
+		}
+
 		if (attachFromExternalCameraButton != null && !CameraUtil.isInternalCameraSupported()) {
 			this.attachFromExternalCameraButton.setVisibility(View.GONE);
 		}
@@ -333,13 +338,16 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				0);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				if (attachGalleryButton.getVisibility() == View.VISIBLE) {
-					AnimationUtil.bubbleAnimate(attachGalleryButton, 75);
+					AnimationUtil.bubbleAnimate(attachGalleryButton, 25);
 				}
-				AnimationUtil.bubbleAnimate(attachFileButton, 75);
-				AnimationUtil.bubbleAnimate(attachQRButton, 25);
-				AnimationUtil.bubbleAnimate(attachBallotButton, 25);
-				AnimationUtil.bubbleAnimate(attachLocationButton, 25);
+				AnimationUtil.bubbleAnimate(attachFileButton, 25);
+				AnimationUtil.bubbleAnimate(attachLocationButton, 50);
+				if (attachBallotButton.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(attachBallotButton, 50);
+				}
 				AnimationUtil.bubbleAnimate(attachContactButton, 75);
+				AnimationUtil.bubbleAnimate(attachQRButton, 75);
+				AnimationUtil.bubbleAnimate(attachFromExternalCameraButton, 100);
 			}
 		}
 	}
@@ -490,7 +498,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					finish();
 					break;
 				case REQUEST_CODE_ATTACH_FROM_GALLERY:
-					onEdit(FileUtil.getUrisFromResult(intent));
+					onEdit(FileUtil.getUrisFromResult(intent, getContentResolver()));
 					break;
 				case ThreemaActivity.ACTIVITY_ID_CREATE_BALLOT:
 					// fallthrough
@@ -498,7 +506,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					finish();
 					break;
 				case ThreemaActivity.ACTIVITY_ID_PICK_FILE:
-					prepareSendFileMessage(FileUtil.getUrisFromResult(intent));
+					prepareSendFileMessage(FileUtil.getUrisFromResult(intent, getContentResolver()));
 					break;
 			}
 		}

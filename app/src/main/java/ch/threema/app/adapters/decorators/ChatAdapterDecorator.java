@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.cache.ThumbnailCache;
@@ -392,11 +393,18 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		return TextUtil.highlightMatches(this.getContext(), fullText, filterText, true, false);
 	}
 
-	CharSequence formatTextString(String string, String filterString) {
-		if (TestUtil.empty(string)) {
+	CharSequence formatTextString(@Nullable String string, String filterString) {
+		return formatTextString(string, filterString, -1);
+	}
+
+	CharSequence formatTextString(@Nullable String string, String filterString, int maxLength) {
+		if (TextUtils.isEmpty(string)) {
 			return "";
 		}
 
+		if (maxLength > 0 && string.length() > maxLength) {
+			return highlightMatches(string.substring(0, maxLength - 1), filterString);
+		}
 		return highlightMatches(string, filterString);
 	}
 

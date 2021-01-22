@@ -739,7 +739,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			}
 
 			cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileService.getShareFileUri(cameraFile));
+			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileService.getShareFileUri(cameraFile, null));
 			cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 			requestCode = ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL;
 		}

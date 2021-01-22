@@ -148,7 +148,7 @@ public class FileUtil {
 				cameraIntent.putExtra(CameraActivity.EXTRA_NO_VIDEO, true);
 			} else {
 				cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileService.getShareFileUri(cameraFile));
+				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileService.getShareFileUri(cameraFile, null));
 				cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 			}
 
@@ -174,7 +174,7 @@ public class FileUtil {
 		context.startActivity(intent);
 	}
 
-	public static @NonNull ArrayList<Uri> getUrisFromResult(@NonNull Intent intent) {
+	public static @NonNull ArrayList<Uri> getUrisFromResult(@NonNull Intent intent, ContentResolver contentResolver) {
 		Uri returnData = intent.getData();
 		ClipData clipData = null;
 		ArrayList<Uri> uriList = new ArrayList<>();
@@ -185,11 +185,28 @@ public class FileUtil {
 			for (int i = 0; i < clipData.getItemCount(); i++) {
 				ClipData.Item clipItem = clipData.getItemAt(i);
 				if (clipItem != null) {
-					uriList.add(clipItem.getUri());
+					Uri uri = clipItem.getUri();
+					if (uri != null) {
+						if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+							try {
+								contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+							} catch (Exception e) {
+								logger.error("Exception", e);
+							}
+						}
+						uriList.add(uri);
+					}
 				}
 			}
 		} else {
 			if (returnData != null) {
+				if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(returnData.getScheme())) {
+					try {
+						contentResolver.takePersistableUriPermission(returnData, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					} catch (Exception e) {
+						logger.error("Exception", e);
+					}
+				}
 				uriList.add(returnData);
 			}
 		}
@@ -481,6 +498,10 @@ public class FileUtil {
 			return "";
 		}
 
+		if (messageModel.getFileData().isDownloaded()) {
+			return "";
+		}
+
 		if (fileType != null) {
 			String datePrefixString = Formatter.formatShortFileSize(context, messageModel.getFileData().getFileSize());
 
@@ -642,7 +663,7 @@ public class FileUtil {
 	}
 
 	/**
-	 * Returns the filename of the object referred to by uriby querying the content resolver
+	 * Returns the filename of the object referred to by uri by querying the content resolver
 	 * @param contentResolver ContentResolver
 	 * @param uri Uri pointing at the object
 	 * @return A filename or null if none is found

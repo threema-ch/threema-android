@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app;
+package ch.threema.app.utils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,11 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import androidx.appcompat.app.AppCompatActivity;
+import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.qrscanner.activity.CaptureActivity;
 import ch.threema.app.services.QRCodeService;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.TestUtil;
 
 public class QRScannerUtil {
 	private static final Logger logger = LoggerFactory.getLogger(QRScannerUtil.class);

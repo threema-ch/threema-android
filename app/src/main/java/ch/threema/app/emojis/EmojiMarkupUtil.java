@@ -31,6 +31,9 @@ import android.text.style.RelativeSizeSpan;
 import android.util.Pair;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +49,8 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NameUtil;
 
 public class EmojiMarkupUtil {
+	private static final Logger logger = LoggerFactory.getLogger(EmojiMarkupUtil.class);
+
 	private static final int LARGE_EMOJI_SCALE_FACTOR = 2;
 	private static final int LARGE_EMOJI_THRESHOLD = 3;
 	public static final String MENTION_INDICATOR = "@";

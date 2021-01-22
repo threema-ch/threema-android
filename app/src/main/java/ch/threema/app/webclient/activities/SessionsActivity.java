@@ -59,7 +59,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.QRScannerUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;

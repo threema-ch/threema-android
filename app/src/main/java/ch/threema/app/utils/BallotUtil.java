@@ -23,9 +23,14 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.security.SecureRandom;
+import java.util.List;
+import java.util.Random;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -38,13 +43,18 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.messagereceiver.GroupMessageReceiver;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.client.ConnectionState;
 import ch.threema.client.MessageTooLongException;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
+@SuppressWarnings("rawtypes")
 public class BallotUtil {
 	private static final Logger logger = LoggerFactory.getLogger(BallotUtil.class);
 
@@ -172,6 +182,86 @@ public class BallotUtil {
 						}
 					}
 			);
+		}
+	}
+
+	public static void createBallot(MessageReceiver receiver, String ballotTitle, BallotModel.Type ballotType, BallotModel.Assessment ballotAssessment, List<BallotChoiceModel> ballotChoiceModelList) {
+		BallotModel ballotModel = null;
+
+		try {
+			BallotService ballotService = ThreemaApplication.getServiceManager().getBallotService();
+			BallotModel.ChoiceType choiceType = BallotModel.ChoiceType.TEXT;
+
+			switch (receiver.getType()) {
+				case MessageReceiver.Type_GROUP:
+					ballotModel = ballotService.create(
+						((GroupMessageReceiver) receiver).getGroup(),
+						ballotTitle,
+						BallotModel.State.TEMPORARY,
+						ballotAssessment,
+						ballotType,
+						choiceType);
+					break;
+
+				case MessageReceiver.Type_CONTACT:
+					ballotModel = ballotService.create(
+						((ContactMessageReceiver) receiver).getContact(),
+						ballotTitle,
+						BallotModel.State.TEMPORARY,
+						ballotAssessment,
+						ballotType,
+						choiceType);
+					break;
+				default:
+					throw new NotAllowedException("not allowed");
+			}
+
+			//generate ids
+			Random r = new SecureRandom();
+
+			int[] ids = new int[ballotChoiceModelList.size()];
+			for (int n = 0; n < ids.length; n++) {
+				int rId;
+				boolean exists;
+				do {
+					exists = false;
+					rId = Math.abs(r.nextInt());
+					for (int id : ids) {
+						if (id == rId) {
+							exists = true;
+							break;
+						}
+					}
+				}
+				while (exists);
+				ids[n] = rId;
+
+				BallotChoiceModel b = ballotChoiceModelList.get(n);
+				if (b != null) {
+					b.setOrder(n + 1);
+					if (b.getApiBallotChoiceId() <= 0) {
+						b.setApiBallotChoiceId(rId);
+					}
+				}
+			}
+
+			//add choices
+			for (BallotChoiceModel c : ballotChoiceModelList) {
+				ballotService.update(ballotModel, c);
+			}
+
+			try {
+				ballotService.modifyFinished(ballotModel);
+				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.ballot_created_successfully, Toast.LENGTH_LONG).show());
+
+			} catch (MessageTooLongException e) {
+				ballotService.remove(ballotModel);
+				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_too_long, Toast.LENGTH_LONG).show());
+				logger.error("Exception", e);
+			}
+		} catch (Exception e) {
+			RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.error, Toast.LENGTH_LONG).show());
+			logger.error("Exception", e);
 		}
 	}
 }

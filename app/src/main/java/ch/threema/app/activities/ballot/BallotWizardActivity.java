@@ -21,11 +21,9 @@
 
 package ch.threema.app.activities.ballot;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -36,12 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -49,30 +44,20 @@ import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.StepPagerStrip;
+import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LoadingUtil;
-import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.APIConnector;
-import ch.threema.client.MessageTooLongException;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
@@ -92,9 +77,8 @@ public class BallotWizardActivity extends ThreemaActivity {
 	private ImageView nextButton, copyButton, prevButton;
 	private Button nextText;
 	private MessageReceiver receiver;
-	private BallotModel ballotModel = null;
 
-	private List<BallotChoiceModel> ballotChoiceModelList = new ArrayList<>();
+	private final List<BallotChoiceModel> ballotChoiceModelList = new ArrayList<>();
 	private String ballotTitle;
 	private BallotModel.Type ballotType;
 	private BallotModel.Assessment ballotAssessment;
@@ -102,6 +86,12 @@ public class BallotWizardActivity extends ThreemaActivity {
 	private MessageService messageService;
 
 	private final List<WeakReference<BallotWizardFragment>> fragmentList = new ArrayList<>();
+	private final Runnable createBallotRunnable = new Runnable() {
+		@Override
+		public void run() {
+			BallotUtil.createBallot(receiver, ballotTitle, ballotType, ballotAssessment, ballotChoiceModelList);
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -202,70 +192,6 @@ public class BallotWizardActivity extends ThreemaActivity {
 
 	private void handleIntent() {
 		this.receiver = IntentDataUtil.getMessageReceiverFromIntent(this, getIntent());
-
-		if (this.receiver != null) {
-			this.validateNewBallot();
-		}
-	}
-
-	/**
-	 * Check the Feature Ballot of every user
-	 */
-	private void validateNewBallot() {
-
-		UpdateFeatureLevelRoutine routine = new UpdateFeatureLevelRoutine(this.contactService,
-				this.apiConnector,
-				this.ballotService.getParticipants(this.receiver),
-				new UpdateFeatureLevelRoutine.Request() {
-					@Override
-					public boolean requestToServer(int featureLevel) {
-						return !ThreemaFeature.canBallot(featureLevel);
-					}
-				});
-
-		routine.addStatusResult(new UpdateFeatureLevelRoutine.StatusResult() {
-			@Override
-			public void onFinished(final List<ContactModel> handledContacts) {
-				RuntimeUtil.runOnUiThread(() -> {
-					//ok
-					List<ContactModel> notSupportedContactModels = Functional.filter(handledContacts, new IPredicateNonNull<ContactModel>() {
-						@Override
-						public boolean apply(@NonNull ContactModel type) {
-							return !ThreemaFeature.canBallot(type.getFeatureMask());
-						}
-					});
-
-					if (notSupportedContactModels.size() > 0) {
-						String warning = null;
-						if(notSupportedContactModels.size() == 1) {
-							warning = getString(R.string.ballot_one_contact_not_supported,
-									NameUtil.getDisplayName(notSupportedContactModels.get(0)));
-						}
-						else {
-							warning = getString(R.string.ballot_x_contact_not_supported,
-									notSupportedContactModels.size());
-
-						}
-						Toast.makeText(BallotWizardActivity.this, warning, Toast.LENGTH_LONG).show();
-					}
-				});
-			}
-
-			@Override
-			public void onAbort() {
-				//use the db fields
-				RuntimeUtil.runOnUiThread(() -> {
-					//not ok, continue...
-				});
-			}
-
-			@Override
-			public void onError(final Exception x) {
-			}
-		});
-
-		//start routine
-		new Thread(routine).start();
 	}
 
 	@Override
@@ -300,15 +226,9 @@ public class BallotWizardActivity extends ThreemaActivity {
 				BallotWizardFragment1 fragment = (BallotWizardFragment1) pagerAdapter.instantiateItem(pager, pager.getCurrentItem());
 				fragment.saveUnsavedData();
 				if (this.ballotChoiceModelList.size() > 1) {
-					LoadingUtil.runInAlert(getSupportFragmentManager(),
-							R.string.ballot_create,
-							R.string.please_wait,
-							new Runnable() {
-								@Override
-								public void run() {
-									publishThread();
-								}
-							});
+					ThreemaApplication.sendMessageExecutorService.execute(createBallotRunnable);
+					setResult(RESULT_OK);
+					finish();
 				} else {
 					Toast.makeText(BallotWizardActivity.this, getString(R.string.ballot_answer_count_error), Toast.LENGTH_SHORT).show();
 				}
@@ -396,109 +316,6 @@ public class BallotWizardActivity extends ThreemaActivity {
 				this.contactService,
 				this.groupService,
 				this.identity);
-	}
-
-	@SuppressLint("StaticFieldLeak")
-	private void publishThread() {
-		//create a new model
-		new AsyncTask<Void, Void, Integer>() {
-			@Override
-			protected Integer doInBackground(Void... voids) {
-				try {
-					BallotModel.ChoiceType choiceType = BallotModel.ChoiceType.TEXT;
-
-					if (ballotModel == null) {
-						switch (receiver.getType()) {
-							case MessageReceiver.Type_GROUP:
-								ballotModel = ballotService.create(
-									((GroupMessageReceiver) receiver).getGroup(),
-									ballotTitle,
-									BallotModel.State.TEMPORARY,
-									ballotAssessment,
-									ballotType,
-									choiceType);
-
-								break;
-
-							case MessageReceiver.Type_CONTACT:
-								ballotModel = ballotService.create(
-									((ContactMessageReceiver) receiver).getContact(),
-									ballotTitle,
-									BallotModel.State.TEMPORARY,
-									ballotAssessment,
-									ballotType,
-									choiceType);
-								break;
-							default:
-								throw new NotAllowedException("not allowed");
-						}
-					} else {
-						ballotModel.setName(ballotTitle);
-						ballotModel.setType(ballotType);
-						ballotModel.setAssessment(ballotAssessment);
-						ballotService.update(ballotModel);
-					}
-
-					//generate ids
-					Random r = new SecureRandom();
-
-					int[] ids = new int[ballotChoiceModelList.size()];
-					for (int n = 0; n < ids.length; n++) {
-						int rId;
-						boolean exists;
-						do {
-							exists = false;
-							rId = Math.abs(r.nextInt());
-							for (int id : ids) {
-								if (id == rId) {
-									exists = true;
-									break;
-								}
-							}
-						}
-						while (exists);
-						ids[n] = rId;
-
-						BallotChoiceModel b = ballotChoiceModelList.get(n);
-						if (b != null) {
-							b.setOrder(n + 1);
-							if (b.getApiBallotChoiceId() <= 0) {
-								b.setApiBallotChoiceId(rId);
-							}
-						}
-					}
-
-					//add choices
-					for (BallotChoiceModel c : ballotChoiceModelList) {
-						ballotService.update(ballotModel, c);
-					}
-
-					try {
-						ballotService.modifyFinished(ballotModel);
-					} catch (MessageTooLongException e) {
-						ballotService.remove(ballotModel);
-						return R.string.message_too_long;
-					}
-
-				} catch (NotAllowedException e) {
-					logger.error("Exception", e);
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Integer error) {
-				if (error != null) {
-					Toast.makeText(BallotWizardActivity.this, error, Toast.LENGTH_LONG).show();
-					setResult(RESULT_CANCELED);
-				} else {
-					Intent intent = new Intent();
-					IntentDataUtil.append(ballotModel, intent);
-					setResult(RESULT_OK, intent);
-				}
-				finish();
-			}
-		}.execute();
 	}
 
 	public void startCopy() {

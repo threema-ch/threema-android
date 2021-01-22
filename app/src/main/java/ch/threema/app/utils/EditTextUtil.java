@@ -25,8 +25,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+
 public class EditTextUtil {
-	public static void showSoftKeyboard(View view) {
+	@UiThread
+	public static void showSoftKeyboard(@Nullable View view) {
 		if (view == null) {
 			return;
 		}
@@ -34,7 +38,8 @@ public class EditTextUtil {
 		inputManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
 	}
 
-	public static void hideSoftKeyboard(View view) {
+	@UiThread
+	public static void hideSoftKeyboard(@Nullable View view) {
 		if (view == null) {
 			return;
 		}

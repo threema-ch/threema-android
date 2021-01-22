@@ -988,7 +988,7 @@ messaggi ogni 15 minuti.</string>
     <string name="username_hint">Nome utente</string>
     <string name="lock_option_biometric">Biometrica</string>
     <string name="biometric_enter_authentication">Autenticarsi per sbloccare</string>
-    <string name="biometric_authentication_failed">Impossibile autenticare</string>
+    <string name="biometric_authentication_failed">Autenticazione non riuscita</string>
     <string name="biometric_authentication_successful">Autenticazione riuscita</string>
     <string name="work_safe_forced_explain">Il tuo amministratore ha attivato Threema Safe sul tuo dispositivo.</string>
     <string name="pin_locked_cannot_send">L\'app è bloccata. Invio non possibile.</string>
@@ -1035,6 +1035,7 @@ messaggi ogni 15 minuti.</string>
     <string name="num_archived_chats">%d chat archiviate</string>
     <string name="continue_recording">Continua registrazione</string>
     <string name="whatsnew_title">Ecco %s 4.5</string>
+    <string name="whatsnew_headline">Da oggi %1$s è ancora più bello e più facile da usare. Poiché non è più dipendente da applicazioni esterne, la tua privacy è garantita.\n\nIl modernissimo design Material è più intuitivo: per effettuare le diverse azioni sono necessari meno passaggi.\n\nTocca \"Per saperne di più\" e scoprirai molto di più sulle nuove emozionanti caratteristiche di %1$s 4.0.</string>
     <string name="whatsnew2_title">Quali sono le novità?</string>
     <string name="tooltip_identity_popup">Tocca qui per visualizzare rapidamente il tuo Threema ID o per scansionare gli ID di altre persone</string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
@@ -1159,4 +1160,23 @@ messaggi ogni 15 minuti.</string>
     <string name="max_selectable_media_exceeded">Non è possibile inviare più di %d oggetti contemporaneamente.</string>
     <string name="error_unable_loading_media_thumb">Errore. Impossibile caricare la miniatura del contenuto multimediale</string>
     <string name="select">Seleziona</string>
+    <string name="filter_list">Filtra lista</string>
+    <string name="hint_filter_list">Inserisci testo filtrato</string>
+    <string name="add">Aggiungi</string>
+    <string name="threema_message_from">Messaggio di %s</string>
+    <string name="show_text">Mostra testo</string>
+    <string name="only_images_or_videos">È possibile selezionare solo immagini o video</string>
+    <string name="media_gallery_gifs">GIF</string>
+    <string name="notification_channel_image_labeling">Indicizzazione delle immagini in corso</string>
+    <string name="notification_channel_image_labeling_desc">Le immagini della galleria vengono indicizzate in background</string>
+    <string name="notification_image_labeling_desc">Indicizzazione delle immagini</string>
+    <string name="no_media_found_global">Nessun file media trovato su questo dispositivo</string>
+    <string name="prefs_sum_image_labeling">Abilita ricerca parola chiave per le immagini pubbliche nella galleria</string>
+    <string name="prefs_image_labeling">Riconoscimento immagine</string>
+    <string name="enable_formatting">Attiva formattazione</string>
+    <string name="original_file_no_longer_avilable">L\'accesso al file originale è scaduto. Invia nuovamente questo messaggio.</string>
+    <string name="state_transcoding">transcodifica</string>
+    <string name="importing_files">Importazione dati</string>
+    <string name="tooltip_image_resolution_hint">Adattare la risoluzione dell\'immagine.</string>
+    <string name="image_labeling_stuck_error">"Il processo di indicizzazione per il riconoscimento delle immagini si è interrotto. Riprova più tardi. "</string>
 </resources>

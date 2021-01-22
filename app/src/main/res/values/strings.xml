@@ -1222,4 +1222,6 @@
 	<string name="importing_files">Importing files</string>
 	<string name="tooltip_image_resolution_hint">Adjust image resolutions.</string>
 	<string name="image_labeling_stuck_error">The indexing process for image search got stuck and was cancelled. Please retry later.</string>
+	<string name="ballot_created_successfully">The poll was successfully created.</string>
+	<string name="file_size">File size</string>
 </resources>
