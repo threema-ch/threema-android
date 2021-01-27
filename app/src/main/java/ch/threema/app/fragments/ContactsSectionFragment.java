@@ -58,11 +58,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.util.Pair;
 import androidx.core.view.MenuItemCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -156,6 +159,14 @@ public class ContactsSectionFragment
 	private LockAppService lockAppService;
 
 	private String filterQuery;
+
+	/**
+	 * Simple POJO to hold the number of contacts that were added in the last 24h / 30d.
+	 */
+	private static class RecentlyAddedCounts {
+		int last24h = 0;
+		int last30d = 0;
+	}
 
 	// Contacts changed receiver
 	private BroadcastReceiver contactsChangedReceiver = new BroadcastReceiver() {
@@ -349,6 +360,41 @@ public class ContactsSectionFragment
 		}
 	};
 
+	/**
+	 * An AsyncTask that fetches contacts and add counts in the background.
+	 *
+	 * NOTE: The ContactService needs to be passed in as a parameter!
+	 */
+	private abstract static class FetchContactsTask extends AsyncTask<ContactService, Void, Pair<List<ContactModel>, RecentlyAddedCounts>> {
+		@Override
+		protected Pair<List<ContactModel>, RecentlyAddedCounts> doInBackground(ContactService... contactServices) {
+			final ContactService contactService = contactServices[0];
+
+			// Fetch contacts
+			final List<ContactModel> allContacts = contactService.getAll();
+
+			// Count new contacts
+			final RecentlyAddedCounts counts = new RecentlyAddedCounts();
+			long now = System.currentTimeMillis();
+			long delta24h = 1000L * 3600 * 24;
+			long delta30d = delta24h * 30;
+			for (ContactModel contact : allContacts) {
+				final Date dateCreated = contact.getDateCreated();
+				if (dateCreated == null) {
+					continue;
+				}
+				if (now - dateCreated.getTime() < delta24h) {
+					counts.last24h += 1;
+				}
+				if (now - dateCreated.getTime() < delta30d) {
+					counts.last30d += 1;
+				}
+			}
+
+			return new Pair<>(allContacts, counts);
+		}
+	}
+
 	@Override
 	public void onResume() {
 		logger.debug("*** onResume");
@@ -508,16 +554,13 @@ public class ContactsSectionFragment
 			return;
 		}
 
-		new AsyncTask<Void, Void, List<ContactModel>>() {
+		new FetchContactsTask() {
 			@Override
-			protected List<ContactModel> doInBackground(Void... voids) {
-				return contactService.getAll();
-			}
-
-			@Override
-			protected void onPostExecute(List<ContactModel> contactModels) {
+			protected void onPostExecute(Pair<List<ContactModel>, RecentlyAddedCounts> result) {
+				final List<ContactModel> contactModels = result.first;
+				final RecentlyAddedCounts counts = result.second;
 				if (contactModels != null) {
-					updateContactsCounter(contactModels.size());
+					updateContactsCounter(contactModels.size(), counts);
 					if (contactModels.size() > 0) {
 						((EmptyView) listView.getEmptyView()).setup(R.string.no_matching_contacts);
 					}
@@ -535,7 +578,7 @@ public class ContactsSectionFragment
 					}
 				}
 			}
-		}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+		}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this.contactService);
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -546,28 +589,31 @@ public class ContactsSectionFragment
 		}
 
 		if (contactListAdapter != null) {
-			new AsyncTask<Void, Void, List<ContactModel>>() {
+			new FetchContactsTask() {
 				@Override
-				protected List<ContactModel> doInBackground(Void... voids) {
-					return contactService.getAll();
-				}
+				protected void onPostExecute(Pair<List<ContactModel>, RecentlyAddedCounts> result) {
+					final List<ContactModel> contactModels = result.first;
+					final RecentlyAddedCounts counts = result.second;
 
-				@Override
-				protected void onPostExecute(List<ContactModel> contactModels) {
 					if (contactModels != null && contactListAdapter != null && isAdded()) {
-						updateContactsCounter(contactModels.size());
+						updateContactsCounter(contactModels.size(), counts);
 						contactListAdapter.updateData(contactModels);
 					}
 				}
-			}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+			}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this.contactService);
 		}
 	}
 
-	private void updateContactsCounter(int numContacts) {
+	private void updateContactsCounter(int numContacts, @Nullable RecentlyAddedCounts counts) {
 		if (getActivity() != null && listView != null && isAdded()) {
 			if (contactsCounterChip != null) {
 				if (numContacts > 1) {
-					contactsCounterChip.setText(numContacts + " " + getString(R.string.title_section2));
+					final StringBuilder builder = new StringBuilder();
+					builder.append(numContacts).append(" ").append(getString(R.string.title_section2));
+					if (counts != null) {
+						builder.append(" (+").append(counts.last30d).append(" / ").append(getString(R.string.thirty_days_abbrev)).append(")");
+					}
+					contactsCounterChip.setText(builder.toString());
 					contactsCounterChip.setVisibility(View.VISIBLE);
 				} else {
 					contactsCounterChip.setVisibility(View.GONE);

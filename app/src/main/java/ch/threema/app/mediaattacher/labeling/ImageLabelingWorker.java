@@ -41,7 +41,6 @@ import net.sqlcipher.database.SQLiteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,13 +63,13 @@ import ch.threema.app.mediaattacher.MediaAttachItem;
 import ch.threema.app.mediaattacher.MediaRepository;
 import ch.threema.app.mediaattacher.data.FailedMediaItemEntity;
 import ch.threema.app.mediaattacher.data.FailedMediaItemsDAO;
+import ch.threema.app.mediaattacher.data.LabeledMediaItemEntity;
+import ch.threema.app.mediaattacher.data.LabeledMediaItemsDAO;
+import ch.threema.app.mediaattacher.data.MediaItemEntity;
 import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
-import ch.threema.app.mediaattacher.data.PersistentMediaItem;
-import ch.threema.app.mediaattacher.data.PersistentMediaItemsDAO;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.RandomUtil;
-import ch.threema.client.Utils;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.logging.ThreemaLogger;
 
@@ -91,7 +90,7 @@ public class ImageLabelingWorker extends Worker {
 	private final MediaRepository repository;
 
 	// Database
-	private final PersistentMediaItemsDAO mediaItemsDAO;
+	private final LabeledMediaItemsDAO mediaItemsDAO;
 	private final FailedMediaItemsDAO failedMediaDAO;
 
 	// Image labeling
@@ -154,7 +153,6 @@ public class ImageLabelingWorker extends Worker {
 		final int numCores = Runtime.getRuntime().availableProcessors();
 		final int minThreads = Math.min(numCores, 2);
 		final int maxThreads = Math.min(numCores, 4);
-		this.logger.debug("Starting thread pool");
 		this.executor = new ThreadPoolExecutor(
 			minThreads,
 			maxThreads,
@@ -260,7 +258,7 @@ public class ImageLabelingWorker extends Worker {
 				// We're only interested in image media
 				if (mediaCanBeLabeled(mediaItem)) {
 					if (failedMediaDAO.get(mediaItem.getId()) != null) {
-						logger.info("Item " + mediaItem.getId() + " failed to load previously. Skipping");
+						logger.info("Item {} in set label queue failed to load previously. Skipping", progress);
 						skippedCounter++;
 						continue;
 					}
@@ -279,24 +277,20 @@ public class ImageLabelingWorker extends Worker {
 					InputImage image;
 					try {
 						final Uri uri = mediaItem.getUri();
-						final String hashedFilename = Utils.byteArrayToSha256HexString(mediaItem.getDisplayName().getBytes(StandardCharsets.UTF_8));
 						imageFuture = executor.submit(() -> InputImage.fromFilePath(appContext, uri));
 
 						try {
-							// TODO(ANDR-1318): Make this logging less verbose!
-							logger.info("Loading image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
 							image = imageFuture.get(30, TimeUnit.SECONDS);    // give it a timeout of 30s, otherwise skip and remember bad item
-							logger.info("Loaded image {}/{} ({})", this.progress, this.mediaCount, hashedFilename.substring(0, 8));
 						} catch (TimeoutException e) {
 							imageFuture.cancel(true);
-							logger.info("Item " + hashedFilename.substring(0, 8) + " cannot be labeled due to timeout");
+							logger.info("Item {} in set label queue cannot be loaded from filepath in reasonable time, timeout triggered", progress);
 							failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
 							skippedCounter++;
 							continue;
 						}
 
 						if (image.getHeight() < 32 || image.getWidth() < 32 ) {
-							logger.info("Item " + hashedFilename.substring(0, 8) + " cannot be labeled due to tiny size.");
+							logger.info("Item {} in set label queue loaded as InputImage due to tiny size. width or height < 32", progress);
 							failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
 							skippedCounter++;
 							continue;
@@ -308,6 +302,7 @@ public class ImageLabelingWorker extends Worker {
 						if (e.getCause() != null) {
 							logger.warn("  Caused by: {}", e.getCause().getMessage());
 						}
+						skippedCounter++;
 						continue;
 					}
 
@@ -321,8 +316,7 @@ public class ImageLabelingWorker extends Worker {
 							for (ImageLabel label : labels) {
 								labelsListIndexes.add(String.valueOf(label.getIndex()));
 							}
-							logger.debug("Found {} labels for {}", labelsListIndexes.size(), mediaItem.getDisplayName());
-							mediaItemsDAO.insert(new PersistentMediaItem(mediaItem.getId(), labelsListIndexes));
+							mediaItemsDAO.insert(new LabeledMediaItemEntity(mediaItem.getId(), labelsListIndexes));
 						});
 
 					// We're waiting for the task to complete, because processing multiple images in parallel
@@ -340,7 +334,7 @@ public class ImageLabelingWorker extends Worker {
 						return Result.failure();
 					}
 
-					if (unlabeledCounter % 20 == 0) {
+					if (unlabeledCounter % 50 == 0) {
 						logger.info("Processed {} files…", unlabeledCounter);
 					}
 				}
@@ -359,30 +353,11 @@ public class ImageLabelingWorker extends Worker {
 				logger.info("Labeling work done after {}s, starting cleanup", secondsElapsedLabeling);
 			}
 
-			// Delete labels from database that belong to nonexistent media items
-			List<PersistentMediaItem> currentlyStoredLabels = mediaItemsDAO.getAllItemsByAscIdOrder();
-			if (currentlyStoredLabels != null) {
-				Collections.sort(allMediaCache, (o1, o2) -> Double.compare(o1.getId(), o2.getId()));
-				int indexStoredLabelsList = 0;
-				int indexStoredMediaItemsList = 0;
-				while (indexStoredLabelsList < currentlyStoredLabels.size() && indexStoredMediaItemsList < allMediaCache.size()) {
-					int storedItemIDCurrent = currentlyStoredLabels.get(indexStoredLabelsList).getId();
-					int retrievedItemIDCurrent = allMediaCache.get(indexStoredMediaItemsList).getId();
-					if (storedItemIDCurrent == retrievedItemIDCurrent) {
-						// Found match!
-						indexStoredLabelsList++;
-						indexStoredMediaItemsList++;
-					} else if (storedItemIDCurrent < retrievedItemIDCurrent) {
-						// No match, discard entry in labels database
-						logger.info("Deleting media labels for id {}", currentlyStoredLabels.get(indexStoredLabelsList).getId());
-						mediaItemsDAO.deleteMediaItemById(currentlyStoredLabels.get(indexStoredLabelsList).getId());
-						indexStoredLabelsList++;
-					} else {
-						// No match, discard first entry in long list
-						indexStoredMediaItemsList++;
-					}
-				}
-			}
+			// Delete labels from database that belong to meanwhile deleted media items
+			List<LabeledMediaItemEntity> currentlyStoredLabelItems = mediaItemsDAO.getAllItemsByAscIdOrder();
+			List<FailedMediaItemEntity> currentlyStoredBrokenItems = failedMediaDAO.getAllItemsByAscIdOrder();
+			cleanDBEntries(currentlyStoredLabelItems, allMediaCache);
+			cleanDBEntries(currentlyStoredBrokenItems, allMediaCache);
 
 			final long secondsElapsedTotal = (SystemClock.elapsedRealtime() - startTime) / 1000;
 			logger.info("Processing done, total duration was {}s", secondsElapsedTotal);
@@ -393,16 +368,39 @@ public class ImageLabelingWorker extends Worker {
 		}
 	}
 
-	private void onFinish() {
-		logger.debug("onFinish() called");
+	private void cleanDBEntries(List<? extends MediaItemEntity> currentlyStoredLabels, List<MediaAttachItem> allCurrentMedia) {
+		if (!currentlyStoredLabels.isEmpty() && allCurrentMedia != null) {
+			logger.info("clean db entries {}", currentlyStoredLabels.get(0).getClass());
+			Collections.sort(allCurrentMedia, (o1, o2) -> Double.compare(o1.getId(), o2.getId()));
+			int indexStoredLabelsList = 0;
+			int indexStoredMediaItemsList = 0;
+			while (indexStoredLabelsList < currentlyStoredLabels.size() && indexStoredMediaItemsList < allCurrentMedia.size()) {
+				int storedItemIDCurrent = currentlyStoredLabels.get(indexStoredLabelsList).getId();
+				int retrievedItemIDCurrent = allCurrentMedia.get(indexStoredMediaItemsList).getId();
+				if (storedItemIDCurrent == retrievedItemIDCurrent) {
+					// Found match!
+					indexStoredLabelsList++;
+					indexStoredMediaItemsList++;
+				} else if (storedItemIDCurrent < retrievedItemIDCurrent) {
+					// No match, discard entry in labels database
+					logger.info("Deleting media id {} entry in db ", currentlyStoredLabels.get(indexStoredLabelsList).getId());
+					mediaItemsDAO.deleteMediaItemById(currentlyStoredLabels.get(indexStoredLabelsList).getId());
+					indexStoredLabelsList++;
+				} else {
+					// No match, discard first entry in long list
+					indexStoredMediaItemsList++;
+				}
+			}
+		}
+	}
 
+	private void onFinish() {
 		// Shut down executor thread pool
-/*		if (!this.executor.isShutdown()) {
-			this.logger.debug("Shut down thread pool");
+		if (!this.executor.isShutdown()) {
+			this.logger.info("Shut down thread pool");
 			this.executor.shutdown();
 		}
-		// TODO this causes a DuplicateTaskCompletionException
-*/
+
 		if (this.cancelled) {
 			logger.info("Cancelled after processing {}/{} media files", this.progress, this.mediaCount);
 		} else {

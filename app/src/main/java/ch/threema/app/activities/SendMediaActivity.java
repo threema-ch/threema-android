@@ -38,7 +38,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -115,7 +114,6 @@ import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.ThreemaException;
@@ -174,6 +172,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private int bigImagePos = 0;
 	private boolean useExternalCamera;
 	private VideoEditView videoEditView;
+	private ImageButton settingsItem;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -582,6 +581,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				editImage();
 			}
 		});
+		settingsItem = findViewById(R.id.settings);
+		findViewById(R.id.settings).setOnClickListener(new DebouncedOnClickListener(IMAGE_ANIMATION_DURATION_MS) {
+			@Override
+			public void onDebouncedClick(View v) {
+				showSettingsDropDown(v, SendMediaActivity.this.mediaItems.get(bigImagePos));
+			}
+		});
 
 		this.editPanel = findViewById(R.id.edit_panel);
 
@@ -615,11 +621,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			@Override
 			public void onDeleteKeyClicked(MediaItem item) {
 				removeItem(item);
-			}
-
-			@Override
-			public void onSettingsKeyClicked(View view, MediaItem item) {
-				showSettingsDropDown(view, item);
 			}
 		};
 
@@ -655,27 +656,16 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 	@UiThread
 	public void maybeShowImageResolutionTooltip() {
-		gridView.postDelayed(() -> {
-			if (sendMediaGridAdapter.holdsAdjustableImage() && !preferenceService.getIsImageResolutionTooltipShown()) {
+		editPanel.postDelayed(() -> {
+			if (settingsItem.getVisibility() == View.VISIBLE && !preferenceService.getIsImageResolutionTooltipShown()) {
 				int[] location = new int[2];
-				gridView.getLocationOnScreen(location);
-				location[0] += getResources().getDimensionPixelSize(R.dimen.grid_spacing);
-				location[1] += gridView.getHeight();
+				settingsItem.getLocationOnScreen(location);
+				location[1] -= (settingsItem.getHeight() / 5);
 
-				final TooltipPopup resolutionTooltipPopup = new TooltipPopup(this, R.string.preferences__image_resolution_tooltip_shown, R.layout.popup_tooltip_bottom_left_image_resolution, this, null);
-				resolutionTooltipPopup.show(this, gridView, getString(R.string.tooltip_image_resolution_hint), TooltipPopup.ALIGN_ABOVE_ANCHOR_ARROW_LEFT, location, 0);
+				final TooltipPopup resolutionTooltipPopup = new TooltipPopup(SendMediaActivity.this, R.string.preferences__image_resolution_tooltip_shown, R.layout.popup_tooltip_top_right, SendMediaActivity.this);
+				resolutionTooltipPopup.show(this, settingsItem, getString(R.string.tooltip_image_resolution_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 6000);
 
-				new Handler().postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						RuntimeUtil.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								resolutionTooltipPopup.dismissForever();
-							}
-						});
-					}
-				}, 4000);
+				preferenceService.setIsImageResolutionTooltipShown(true);
 			}
 		}, 2000);
 	}
@@ -1307,6 +1297,9 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		if (editPanel != null) {
 			if (mediaItems.size() > 0) {
 				boolean canEdit = mediaItems.get(position).getType() == TYPE_IMAGE || mediaItems.get(position).getType() == TYPE_IMAGE_CAM;
+				boolean canSettings = mediaItems.get(position).getType() == TYPE_IMAGE;
+
+				settingsItem.setVisibility(canSettings ? View.VISIBLE : View.GONE);
 				editPanel.setVisibility(canEdit ? View.VISIBLE : View.GONE);
 			} else {
 				editPanel.setVisibility(View.GONE);

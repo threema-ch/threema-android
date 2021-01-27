@@ -1296,4 +1296,5 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="max_selectable_media_exceeded">Es können maximal %d Objekte aufs Mal versendet werden.</string>
 	<string name="ballot_created_successfully">Die Umfrage wurde erfolgreich erstellt.</string>
 	<string name="file_size">Dateigrösse</string>
+	<string name="thirty_days_abbrev">30d</string>
 </resources>

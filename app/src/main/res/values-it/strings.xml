@@ -1035,8 +1035,18 @@ messaggi ogni 15 minuti.</string>
     <string name="num_archived_chats">%d chat archiviate</string>
     <string name="continue_recording">Continua registrazione</string>
     <string name="whatsnew_title">Ecco %s 4.5</string>
-    <string name="whatsnew_headline">Da oggi %1$s è ancora più bello e più facile da usare. Poiché non è più dipendente da applicazioni esterne, la tua privacy è garantita.\n\nIl modernissimo design Material è più intuitivo: per effettuare le diverse azioni sono necessari meno passaggi.\n\nTocca \"Per saperne di più\" e scoprirai molto di più sulle nuove emozionanti caratteristiche di %1$s 4.0.</string>
+    <string name="whatsnew_headline">%1$s ti garantisce un\'esperienza mediale mai provata prima. \n\nLa selezione rapida dei file media è stata sottoposta a un redesign e offre, oltre a svariati filtri, la funzione opzionale di riconoscimento delle immagini basata sul machine learning.\n\nInoltre è stata introdotta la ricerca di testo a tappeto in tutte le chat, che rende più facile la citazione e molte altre cose.</string>
     <string name="whatsnew2_title">Quali sono le novità?</string>
+    <string name="whatsnew2_body"><![CDATA[<p><b>Selezione rapida dei media</b>: Clicca sulla graffetta per visualizzare i tuoi media in uno slider estraibile. È possibile disattivare questa funzione nelle impostazioni di chat: <i>Impostazioni / Chat / Selezione rapida media</i>.</p>
+<p><b>Riconoscimento immagini</b>: Cerca tra le tue immagini oggetti, attività e luoghi comuni. Il riconoscimento delle immagini si basa su un modello di machine learning locale e non invia dati né a Threema né a terzi. Poiché l’indicizzazione richiede tempo e risorse, il riconoscimento delle immagini è disattivato per default. Puoi attivarlo alla voce <i>Impostazioni Threema / Media & Memoria / Riconoscimento immagini</i>.</p>
+<p><b>Invio media</b>: Ora puoi inviare le tue immagini con varie risoluzioni senza dover cambiare le impostazioni generali.</p>
+<p><b>Video editor</b>: Ora puoi montare il video prima di inviarlo. Inoltre è stato migliorato il processo di conversione del video, che ora si svolge in background.</p>
+<p><b>Salvare nella galleria</b>: In base ai nuovi requisiti di Google a partire da Android 10 i file saranno salvati nei folder media generali del sistema (<i>immagini, video, musica,</i> e <i>file</i>).</p>
+<p><b>Ricerca globale</b>: Cerca il testo in tutte le chat. Avvia la ricerca globale dallo schermo di casa %1$s alla voce <i>Menu / Cerca nelle chat</i>.</p>
+<p><b>Citare un messaggio</b>: Con %1$s ora è possibile citare qualsiasi tipo di media, comprese immagini, video o messaggi vocali.</p>
+<p><b>100 nuovi emoji</b>: C’è anche l‘attesissima fondue &#129749;</p>
+<p><b>Testi lunghi</b>: Per rendere la chat più leggibile, i testi molto lunghi vengono visualizzati in forma accorciata e su richiesta possono essere visualizzati per intero. È inoltre possibile disattivare la formattazione.</p>
+]]></string>
     <string name="tooltip_identity_popup">Tocca qui per visualizzare rapidamente il tuo Threema ID o per scansionare gli ID di altre persone</string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>

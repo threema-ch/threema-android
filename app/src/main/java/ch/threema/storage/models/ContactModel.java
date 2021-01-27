@@ -25,6 +25,7 @@ import android.text.format.DateUtils;
 
 import java.util.Date;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.Contact;
 
 public class ContactModel extends Contact implements ReceiverModel {
@@ -183,7 +184,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return profilePicSent;
 	}
 
-	public Date getDateCreated() {
+	public @Nullable Date getDateCreated() {
 		return dateCreated;
 	}
 

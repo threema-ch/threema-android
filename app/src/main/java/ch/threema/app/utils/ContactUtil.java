@@ -61,7 +61,6 @@ public class ContactUtil {
 	 */
 	public static Uri getAndroidContactUri(Context context, ContactModel contactModel) {
 		if (contactModel != null) {
-			// CIDs can be numeric only
 			String contactLookupKey = contactModel.getAndroidContactId();
 
 			if (TestUtil.empty(contactLookupKey)) {
@@ -203,7 +202,6 @@ public class ContactUtil {
 				//change to active is always allowed
 				case ACTIVE:
 					return true;
-//					return oldState == ContactModel.State.TEMPORARY;
 				case INACTIVE:
 					return oldState == ContactModel.State.TEMPORARY
 							|| oldState == ContactModel.State.ACTIVE;

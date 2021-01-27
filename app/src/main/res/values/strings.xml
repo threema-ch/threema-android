@@ -1224,4 +1224,6 @@
 	<string name="image_labeling_stuck_error">The indexing process for image search got stuck and was cancelled. Please retry later.</string>
 	<string name="ballot_created_successfully">The poll was successfully created.</string>
 	<string name="file_size">File size</string>
+	<!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+	<string name="thirty_days_abbrev">30d</string>
 </resources>

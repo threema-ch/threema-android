@@ -32,6 +32,6 @@
 		android:contentDescription="@string/close"
 		android:clickable="true"
 		app:srcCompat="@drawable/ic_close"
-		android:tint="@android:color/white"/>
+		app:tint="@android:color/white" />
 
 </LinearLayout>

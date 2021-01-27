@@ -42,8 +42,8 @@ public class RingtoneUtil {
 			if (ringtone != null) {
 				try {
 					return ringtone.getTitle(context);
-				} catch (SecurityException e) {
-					return context.getString(R.string.error);
+				} catch (SecurityException | IllegalArgumentException e) {
+					return context.getString(R.string.no_filename);
 				}
 			}
 		}

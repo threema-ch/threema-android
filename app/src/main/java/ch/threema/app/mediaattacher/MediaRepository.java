@@ -59,8 +59,6 @@ public class MediaRepository {
 	 */
 	@WorkerThread
 	public List<MediaAttachItem> getMediaFromMediaStore() {
-		logger.info("getMedia from repository");
-
 		final String[] imageProjection = this.getImageProjection();
 		final String[] videoProjection = this.getVideoProjection();
 

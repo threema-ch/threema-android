@@ -21,6 +21,8 @@
 
 package ch.threema.app.mediaattacher.data;
 
+import java.util.List;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -41,4 +43,7 @@ public interface FailedMediaItemsDAO {
 
 	@Query("SELECT COUNT(*) FROM failed_media_items")
 	int getRowCount();
+
+	@Query("SELECT * FROM failed_media_items ORDER BY id ASC")
+	List<FailedMediaItemEntity> getAllItemsByAscIdOrder();
 }

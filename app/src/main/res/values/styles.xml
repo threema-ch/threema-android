@@ -710,7 +710,7 @@
 	</style>
 
 	<style name="Threema.PopupMenuStyle" parent="@style/Widget.AppCompat.PopupMenu">
-		<item name="dropdownListPreferredItemHeight">34dp</item>
+		<item name="dropdownListPreferredItemHeight">38dp</item>
 		<item name="android:paddingLeft">0dp</item>
 		<item name="android:paddingRight">-4dp</item>
 		<item name="android:layout_marginRight">0dp</item>

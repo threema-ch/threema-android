@@ -30,10 +30,10 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 @Dao
-public interface PersistentMediaItemsDAO {
+public interface LabeledMediaItemsDAO {
 
 	@Insert(onConflict = OnConflictStrategy.IGNORE)
-	void insert(PersistentMediaItem mediaItem);
+	void insert(LabeledMediaItemEntity mediaItem);
 
 	@Query("INSERT into media_items_table (id, labels) VALUES (:id, :labelList)")
 	void insert(int id, ArrayList<String> labelList);
@@ -45,10 +45,10 @@ public interface PersistentMediaItemsDAO {
 	void deleteMediaItemById(int id);
 
 	@Query("SELECT * FROM media_items_table")
-	List<PersistentMediaItem> getAll();
+	List<LabeledMediaItemEntity> getAll();
 
 	@Query("SELECT * FROM media_items_table ORDER BY id ASC")
-	List<PersistentMediaItem> getAllItemsByAscIdOrder();
+	List<LabeledMediaItemEntity> getAllItemsByAscIdOrder();
 
 	@Query("SELECT labels from media_items_table WHERE id = :id")
 	List<String> getMediaItemLabels(int id);

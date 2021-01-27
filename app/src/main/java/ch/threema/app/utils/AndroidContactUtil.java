@@ -536,14 +536,8 @@ public class AndroidContactUtil {
 	}
 
 	public boolean updateNameByAndroidContact(@NonNull ContactModel contactModel) {
-		String androidContactId = contactModel.getAndroidContactId();
-
-		if(TestUtil.empty(androidContactId)) {
-			androidContactId = contactModel.getThreemaAndroidContactId();
-		}
-
 		Uri namedContactUri = ContactUtil.getAndroidContactUri(ThreemaApplication.getAppContext(), contactModel);
-		if(TestUtil.required(contactModel, namedContactUri) && !TestUtil.empty(androidContactId)) {
+		if(TestUtil.required(contactModel, namedContactUri)) {
 			ContactName contactName = this.getContactName(namedContactUri);
 			if(TestUtil.required(contactModel, contactName)) {
 				if(!TestUtil.compare(contactModel.getFirstName(), contactName.firstName)
@@ -554,9 +548,7 @@ public class AndroidContactUtil {
 					return true;
 				}
 			}
-
 		}
-
 		return false;
 	}
 
@@ -577,26 +569,25 @@ public class AndroidContactUtil {
 			if(nameCursor.moveToFirst()) {
 				long contactId = nameCursor.getLong(nameCursor.getColumnIndex(ContactsContract.Contacts._ID));
 				contactName = this.getContactNameFromId(contactId);
-			}
 
-			// fallback
-			if (contactName == null || (contactName.firstName == null && contactName.lastName == null)) {
-				//lastname, firstname
-				String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
+				// fallback
+				if (contactName == null || (contactName.firstName == null && contactName.lastName == null)) {
+					//lastname, firstname
+					String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
 
-				if (!TestUtil.empty(alternativeSortKey)) {
-					String[] lastNameFirstName = alternativeSortKey.split(",");
-					if (lastNameFirstName != null && lastNameFirstName.length == 2) {
-						String lastName = lastNameFirstName[0].trim();
-						String firstName = lastNameFirstName[1].trim();
+					if (!TestUtil.empty(alternativeSortKey)) {
+						String[] lastNameFirstName = alternativeSortKey.split(",");
+						if (lastNameFirstName != null && lastNameFirstName.length == 2) {
+							String lastName = lastNameFirstName[0].trim();
+							String firstName = lastNameFirstName[1].trim();
 
-						if (!TestUtil.compare(lastName, "") && !TestUtil.compare(firstName, "")) {
-							contactName = new ContactName(firstName, lastName);
+							if (!TestUtil.compare(lastName, "") && !TestUtil.compare(firstName, "")) {
+								contactName = new ContactName(firstName, lastName);
+							}
 						}
 					}
 				}
 			}
-
 			nameCursor.close();
 		}
 

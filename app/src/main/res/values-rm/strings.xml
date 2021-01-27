@@ -11,10 +11,10 @@
     <string name="title_enter_id">Endatar l\'ID</string>
     <string name="title_invite_friend">Envidar amis</string>
     <string name="invite_via">Envidar via ...</string>
-    <string name="invite_email_subject">Threema. Il messenger segir che protegia tia e mia sfera privata.</string>
-    <string name="invite_email_body">Hallo\n\nTelechargia Threema, il messenger segir che protegia tia e mia sfera privata.\n\nTrametta fotos, videos, messadis discurrids e lieus; fa gruppas ed enquistas; trametta documents e datotecas en tut ils formats (PDF, GIF, MP3 eav.).\n\nLain en futur communitgar ensemen via Threema.\n\nTelechargia Threema qua: https://threema.ch/download\n\nChars salids</string>
+    <string name="invite_email_body">Hallo\n\nTelechargia %1$s, il messenger segir che protegia tia e mia sfera privata.\n\nTrametta fotos, videos, messadis discurrids e lieus; fa gruppas ed enquistas; trametta documents e datotecas en tut ils formats (PDF, GIF, MP3 eav.).\n\nLain en futur communitgar ensemen via %1$s.\n\nTelechargia %1$s qua: https://threema.ch/download\n\nChars salids\nhttps://threema.id/%2$s</string>
     <string name="invite_sms_body">Lain en futur communitgar ensemen via Threema. Telechargia qua Threema:
 https://threema.ch/download</string>
+    <string name="invite_email_subject">Threema. Il messenger segir che protegia tia e mia sfera privata.</string>
     <string name="enter_id_hint">Endatar l\'ID da Threema</string>
     <string name="account_links">Colliaziuns</string>
     <string name="menu_settings">Configuraziuns</string>
@@ -827,7 +827,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_auto_download_title">Telechargiar automaticamain las medias</string>
     <string name="prefs_auto_download_wifi">En il WLAN</string>
     <string name="prefs_auto_download_mobile">En raits mobilas</string>
-    <string name="rate_intro">Nus avain midà ad in nov design pli modern, perquai ch\'i na dat per ils emojis vegls nagins updates pli. Co plaschan ils novs emojis a tai?</string>
     <string name="rate_feedback_intro">Nus deplorain d\'udir quai. Schai p.pl. a nus tge che nus pudain far meglier.</string>
     <string name="rate_positive">Trametter recensiun</string>
     <string name="rate_title">Valitar ils novs emojis</string>
@@ -1010,6 +1009,17 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="delete">Stizzar</string>
     <string name="num_archived_chats">%d chats archivads</string>
     <string name="continue_recording">Registrar vinavant</string>
+    <string name="whatsnew_title">Tge è nov?</string>
+    <string name="whatsnew2_title">Tge è nov?</string>
+    <string name="whatsnew2_body"><![CDATA[<p><b>Selecziun sperta dals maletgs</b>: Clicca sin il fermagl per visualisar tias medias a moda survesaivla en in slider prolungabel. En las configuraziuns da chat pos ti era deactivar questa funcziun:<i>Configuraziuns / chat / selecziun sperta dals maletgs</i>.</p>
+<p><b>Tschertga da maletgs</b>: Tschertga objects, activitads e lieus currents en tes maletgs. L\'identificaziun da maletgs sa basa sin in model da machine learning local e na trametta naginas datas a nus u ad autras partidas terzas. Perquai che l\'indexaziun dovra relativamain bleras resursas e dura in mument, è la tschertga da maletgs deactivada sco standard. Ti pos activar ella sut <i>Configuraziuns / Medias ed arcun / Tschertga da maletgs</i>.</p>
+<p><b>Trametter medias</b>: Ti pos ussa trametter maletgs cun ina resoluziun individuala, senza stuair midar las configuraziuns globalas.</p>
+<p><b>Editur da videos</b>: Taglia ils videos avant che trametter els. Plinavant è il process da convertir videos vegnì meglierà, uschia ch\'el po lavurar davostiers.</p>
+<p><b>Memorisar en la gallaria</b>: Pervia da novas pretensiuns da Google vegnan - sin apparats cun Android 10 e sistems operativs pli actuals - las datotecas memorisadas en l\'ordinatur da medias general dal sistem (<i>Fotos, Videos, Musica,</i> e<i>Documents</i>).</p>
+<p><b>Tschertga globala</b>: Tschertga in text en tut ils chats. Ti pos tschertgar globalmain davent dal visur principal%1$s <i>Menu / Tschertga globala </i>.</p>
+<p><b>Citats</b>: %1$s pussibilitescha ussa da citar tut ils tips da medias, incl. maletgs, videos u messadis discurrids.</p>
+<p><b>100 emojis novs</b>: tranter auter il fondue &#129749; tant bramà;</p>
+<p><b>Texts lungs</b>: per avair la survista en il chat, vegnan scursanids messadis da text fitg lungs. Sin dumonda vegn visualisà l\'entir messadi. Igl è era pussaivel da deactivar las formataziuns.</p>]]></string>
     <string name="tooltip_identity_popup">Smatga qua per visualisar spert tia ID da Threema u per scannar las IDs dad autras persunas</string>
     <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
@@ -1061,7 +1071,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_working_days_enable_title">Regulaziun dal temp da paus</string>
     <string name="prefs_working_days_enable_sum">Na mussar nagins messadis e refusar telefonats da Threema ordaifer il temp da lavur</string>
     <string name="work_life_dnd_active">Temp da paus activ</string>
-	<string name="pencil">Rispli</string>
+    <string name="pencil">Rispli</string>
     <string name="warning">Avertiment</string>
     <string name="password_remember_warning">Tegna endament quai che ti endateschas qua! Cunquai che %s na memorisescha nagins pleds-clav sin servers, na pudain nus betg gidar tai, sche ti has emblidà il pin u la frasa d\'access.</string>
     <string name="safe_backup_tap_to_restart">Smatga sin il messadi per reaviar l\'app.</string>
@@ -1144,7 +1154,12 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="notification_channel_image_labeling_desc">Ils maletgs en la gallaria vegnan indexads davosvart</string>
     <string name="notification_image_labeling_desc">Indexaziun dals maletgs</string>
     <string name="no_media_found_global">Chattà naginas medias sin quest apparat</string>
+    <string name="prefs_sum_image_labeling">Pussibilitar la tschertga da chavazzins per ils maletgs publics en tia gallaria</string>
     <string name="prefs_image_labeling">Tschertga da maletgs</string>
     <string name="enable_formatting">Activar la formataziun</string>
+    <string name="original_file_no_longer_avilable">Nagin access pli a la datoteca originala. P.pl. trametter anc ina giada quest messadi.</string>
+    <string name="state_transcoding">vegn transcodà</string>
     <string name="importing_files">Las datotecas vegnan importadas</string>
+    <string name="tooltip_image_resolution_hint">Adattar individualmain la resoluziun</string>
+    <string name="image_labeling_stuck_error">Il process d\'indexaziun per la tschertga da maletgs è stada airi e vegnida interrutta. P.pl. empruvar pli tard anc ina giada.</string>
 </resources>

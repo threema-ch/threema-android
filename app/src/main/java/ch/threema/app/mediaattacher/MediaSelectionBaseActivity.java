@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -101,6 +100,10 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.localcrypto.MasterKey;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_BUCKET;
+import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_LABEL;
+import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_SELECTED;
+import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_TYPE;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -162,13 +165,13 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	@Override
 	public void onDestroy() {
-		logger.debug("onDestroy");
 		super.onDestroy();
 	}
 
 	@UiThread
 	protected void handleSavedInstanceState(Bundle savedInstanceState){
 		if (savedInstanceState != null) {
+			onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
 			int bottomSheetStyleState = savedInstanceState.getInt(KEY_BOTTOM_SHEET_STATE);
 			if (bottomSheetStyleState != 0) {
 				final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
@@ -289,6 +292,14 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				if (labels != null && !labels.isEmpty()) {
 					this.labelSuggestions = labels;
 					this.onLabelingComplete();
+
+					// reset last recent label filter if activity was destroyed by the system due to memory pressure etc.
+					String savedQuery = mediaAttachViewModel.getLastQuery();
+					Integer savedQueryType = mediaAttachViewModel.getLastQueryType();
+					if (savedQueryType != null && savedQueryType == FILTER_MEDIA_LABEL) {
+						mediaAttachViewModel.setMediaByLabel(savedQuery);
+						searchView.clearFocus();
+					}
 				}
 			});
 		}
@@ -397,6 +408,26 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				// Enable menu
 				menuTitleFrame.setOnClickListener(view -> bucketFilterMenu.show());
 			}
+
+			// reset last recent filter if activity was destroyed by the system due to memory pressure etc and we do not have to wait for suggestion labels.
+			String savedQuery = mediaAttachViewModel.getLastQuery();
+			Integer savedQueryType = mediaAttachViewModel.getLastQueryType();
+			if (savedQueryType != null) {
+				switch (savedQueryType) {
+					case FILTER_MEDIA_TYPE:
+						filterMediaByMimeType(savedQuery);
+						break;
+					case FILTER_MEDIA_BUCKET:
+						filterMediaByBucket(savedQuery);
+						break;
+					case FILTER_MEDIA_SELECTED:
+						filterMediaBySelectedItems();
+						break;
+					default:
+						menuTitle.setText(R.string.filter_by_album);
+						break;
+				}
+			}
 		});
 	}
 
@@ -409,26 +440,11 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		if (shouldShowMediaGrid()) {
 			// Observe the LiveData, passing in this activity as the LifecycleOwner and Observer.
 			mediaAttachViewModel.getCurrentMedia().observe(this, newMediaItems -> {
-				logger.info("getCurrentMedia {} new items", newMediaItems.size());
 				mediaAttachAdapter.setMediaItems(newMediaItems);
 
 				// Data loaded, we can now properly calculate the peek height
 				updatePeekHeight();
 			});
-
-			// if no media was set previously -> start labeling, else set control panel accordingly
-			// TODO (db): Use a better logic than an empty media list.
-			if (!Objects.requireNonNull(mediaAttachViewModel.getCurrentMedia().getValue()).isEmpty()) {
-				// activity is being rebuilt -> set previously selected items
-				onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
-				// labeling has been done previously -> set to previous query and set suggestions adapter
-				if (this.labelSuggestions != null && !this.labelSuggestions.isEmpty()) {
-					if (mediaAttachViewModel.getLabelQuery() != null) {
-						menuTitle.setText(R.string.filter_by_album);
-						searchView.setQuery(mediaAttachViewModel.getLabelQuery(), false);
-					}
-				}
-			}
 		}
 	}
 
@@ -468,7 +484,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			@Override
 			public boolean onQueryTextSubmit(String query) {
 				mediaAttachViewModel.setMediaByLabel(query);
-				searchView.setQuery(query, false);
 				searchView.clearFocus();
 				return false;
 			}
@@ -484,13 +499,10 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 		View searchViewCloseButton = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
 		if (searchViewCloseButton != null) {
-			searchViewCloseButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					mediaAttachViewModel.setAllMedia();
-					searchView.setQuery("", false);
-					searchView.requestFocus();
-				}
+			searchViewCloseButton.setOnClickListener(v -> {
+				mediaAttachViewModel.setAllMedia();
+				searchView.setQuery("", false);
+				searchView.requestFocus();
 			});
 		}
 
@@ -560,7 +572,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 					textView.setText(label);
 					view.setOnClickListener(view1 -> {
 						searchView.setQuery(label, true);
-						mediaAttachViewModel.setLabelQuery(label);
+						mediaAttachViewModel.setlastQuery(FILTER_MEDIA_LABEL, label);
 					});
 				}
 			};
@@ -572,16 +584,17 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected void resetLabelSearch() {
 		searchView.setQuery("", false);
 		searchView.setIconified(true);
-		mediaAttachViewModel.setLabelQuery(null);
 	}
 
 	public void setAllResultsGrid() {
 		mediaAttachViewModel.setAllMedia();
+		mediaAttachViewModel.clearLastQuery();
 		resetLabelSearch();
 	}
 
 	public void filterMediaByBucket(String mediaBucket) {
 		mediaAttachViewModel.setMediaByBucket(mediaBucket);
+		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_BUCKET, mediaBucket);
 		resetLabelSearch();
 	}
 
@@ -598,6 +611,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		if (mimeTypeIndex != 0) {
 			mediaAttachViewModel.setMediaByType(mimeTypeIndex);
 		}
+		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_TYPE, mimeTypeTitle);
 		resetLabelSearch();
 	}
 
@@ -605,6 +619,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		mediaAttachViewModel.setSelectedMedia();
 		searchItem.setEnabled(false);
 		searchItem.collapseActionView();
+		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_SELECTED, null);
 		resetLabelSearch();
 	}
 
@@ -693,12 +708,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 
 				// Maybe show "new feature" tooltip
-				toolbar.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						maybeShowFirstTimeToolTip();
-					}
-				}, 1500);
+				toolbar.postDelayed(() -> maybeShowFirstTimeToolTip(), 1500);
 
 				isDragging = false;
 

@@ -4,7 +4,7 @@
     <string name="webclient_init_session">Iniziar ina nova sesida</string>
     <string name="webclient_sessions_really_delete">Vuls ti propi stizzar questa sesida da Threema Web?</string>
     <string name="webclient_last_usage">Utilisà l\'ultima giada: %s</string>
-    <string name="webclient_created_at">Creà: %s (%s)</string>
+    <string name="webclient_created_at">Creà: %1$s (%2$s)</string>
     <string name="webclient_active_since">Activ dapi: %s</string>
     <string name="webclient_enable">Activar Threema Web</string>
     <string name="webclient_no_sessions_found">Avra il navigatur-web sin tes computer e chargia <b>https://web.threema.ch</b> per sa colliar. Clicca sin il button per scannar il code visualisà.</string>
@@ -26,7 +26,17 @@
     <string name="webclient_protocol_version_to_old">Tia app na sustegna betg questa versiun da Threema Web. P.pl. installar ina versiun pli nova da Threema.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Tia app na sustegna betg questa versiun da Threema Web. P.pl. dumandar l\'administratur da tes Threema Web d\'installar la versiun la pli nova.</string>
     <string name="webclient_protocol_version_too_new_threema">Tia app na sustegna betg questa versiun da Threema Web. P.pl. duvrar ina versiun pli nova da Threema Web.</string>
+    <string name="webclient_session_already_exists">La sesida dal code QR che ti has scannà exista gia. P.pl. rechargiar Threema Web en tes navigatur ed empruvar anc ina giada.</string>
     <string name="webclient_really_start_webclient_by_payload_body">Vuls ti cumenzar ussa questa sesida da Threema Web?</string>
+    <string name="webclient_cannot_restore">Betg pussaivel da restituir Threema Web</string>
+    <string name="webclient_disabled">Threema Web n\'è betg activà</string>
+    <string name="webclient_cannot_start">Betg pussaivel da cumenzar la sesida da Threema Web</string>
+    <string name="webclient_constrained_by_mdm">L\'administratur na sustegna betg il server.</string>
     <string name="webclient_clear_all_sessions">Stizzar tut las sesidas</string>
     <string name="webclient_clear_all_sessions_confirm">Vuls ti propi stizzar tut las sesidas da Threema Web?</string>
+    <string name="webclient_prefs_debug_tool_summary">Aviescha quest tool per diagnostitgar problems cun la creaziun d\'ina colliaziun da Threema Web.</string>
+    <string name="webclient_diagnostics">Tschertga da sbagls Threema Web</string>
+    <string name="webclient_diagnostics_start">Start</string>
+    <string name="webclient_diagnostics_intro">Clicca sin «Start» per iniziar il test.</string>
+    <string name="webclient_diagnostics_done">Finì. Sche ti has problems cun la creaziun d\'ina colliaziun da Threema Web, trametta quest log al support da Threema.</string>
 </resources>

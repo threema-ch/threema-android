@@ -21,26 +21,18 @@
 
 package ch.threema.app.mediaattacher.data;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
 @Entity(tableName = "failed_media_items")
-public class FailedMediaItemEntity {
-	@PrimaryKey
-	public int id;
+public class FailedMediaItemEntity extends MediaItemEntity {
+
+	@ColumnInfo(name = "timestamp")
 	private long timestamp;
 
 	public FailedMediaItemEntity(int id, long timestamp) {
-		this.id = id;
+		super(id);
 		this.timestamp = timestamp;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public long getTimestamp() {

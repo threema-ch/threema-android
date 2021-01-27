@@ -722,7 +722,7 @@ public class ComposeMessageFragment extends Fragment implements
 			// Play next audio message, if any
 			RuntimeUtil.runOnUiThread(() -> {
 				if (composeMessageAdapter != null) {
-					int index = composeMessageAdapter.getNextItem(messageModel, MessageType.VOICEMESSAGE);
+					int index = composeMessageAdapter.getNextVoiceMessage(messageModel);
 					if (index != AbsListView.INVALID_POSITION) {
 						View view = composeMessageAdapter.getView(index, null, null);
 

@@ -5,7 +5,7 @@
     <string name="town">镇</string>
     <string name="isolated_dwelling">隔离住宅</string>
     <string name="island">岛</string>
-    <string name="islet">市郊</string> <!-- whould not be same as suburb-->
+    <string name="islet">小岛</string>
     <string name="suburb">市郊</string>
     <string name="city">市</string>
     <string name="city_block">城市街区</string>

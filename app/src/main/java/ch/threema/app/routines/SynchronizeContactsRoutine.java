@@ -210,11 +210,16 @@ public class SynchronizeContactsRoutine implements Runnable {
 				final ContactMatchKeyEmail matchKeyEmail = (ContactMatchKeyEmail)id.getValue().refObjectEmail;
 				final ContactMatchKeyPhone matchKeyPhone = (ContactMatchKeyPhone)id.getValue().refObjectMobileNo;
 
-				String contactId;
-				if (matchKeyEmail != null)
+				int contactId;
+				String lookupKey;
+				if (matchKeyEmail != null) {
 					contactId = matchKeyEmail.contactId;
-				else
+					lookupKey = matchKeyEmail.lookupKey;
+				}
+				else {
 					contactId = matchKeyPhone.contactId;
+					lookupKey = matchKeyPhone.lookupKey;
+				}
 
 				//try to get the contact
 				ContactModel contact = this.contactService.getByIdentity(id.getKey());
@@ -236,7 +241,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 				//update contact name
 				contact.setIsSynchronized(true);
 				contact.setIsHidden(false);
-				contact.setAndroidContactId(contactId);
+				contact.setAndroidContactId(contactId > 0 ? lookupKey + "/" + contactId : lookupKey); // It can optionally also have a "/" and last known contact ID appended after that. This "complete" format is an important optimization and is highly recommended.
 				AndroidContactUtil.getInstance().updateNameByAndroidContact(contact);
 				AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
 
@@ -246,7 +251,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 			}
 
 			if (preSynchronizedIdentities.size() > 0) {
-				logger.debug("degrade contact(s), found " + String.valueOf(preSynchronizedIdentities.size()) + " not synchronized contacts");
+				logger.debug("degrade contact(s). found " + String.valueOf(preSynchronizedIdentities.size()) + " not synchronized contacts");
 
 				List<ContactModel> contactModels = this.contactService.getByIdentities(preSynchronizedIdentities);
 				modifiedCount += this.contactService.save(
@@ -333,6 +338,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					String id = contactCursor.getString(idColumnIndex);
 					if (Integer.parseInt(contactCursor.getString(hasPhoneNumberColumnIndex)) > 0) {
 						String lookupKey = contactCursor.getString(lookupKeyIndex);
+						int contactId = contactCursor.getInt(idColumnIndex);
 
 						try (Cursor phoneCursor = this.contentResolver.query(
 							ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -347,7 +353,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 									String phoneNumber = phoneCursor.getString(numberColumnIndex);
 									if (!TestUtil.empty(phoneNumber)) {
 										ContactMatchKeyPhone matchKey = new ContactMatchKeyPhone();
-										matchKey.contactId = lookupKey;
+										matchKey.contactId = contactId;
+										matchKey.lookupKey = lookupKey;
 										matchKey.phoneNumber = phoneNumber;
 										phones.put(phoneNumber, matchKey);
 									}
@@ -373,6 +380,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		try (Cursor emailsCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Email.CONTENT_URI,
 			new String[]{
+				ContactsContract.CommonDataKinds.Email._ID,
 				ContactsContract.CommonDataKinds.Email.LOOKUP_KEY,
 				ContactsContract.CommonDataKinds.Email.DATA
 			},
@@ -381,17 +389,20 @@ public class SynchronizeContactsRoutine implements Runnable {
 			null)) {
 
 			if (emailsCursor != null) {
+				int idColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email._ID);
 				final int lookupKeyColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LOOKUP_KEY);
 				final int emailIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
 
 				while (emailsCursor.moveToNext()) {
-					String contactId = emailsCursor.getString(lookupKeyColumnIndex);
+					int contactId = emailsCursor.getInt(idColumnIndex);
+					String lookupKey = emailsCursor.getString(lookupKeyColumnIndex);
 					String email = emailsCursor.getString(emailIndex);
 
 //				logger.debug("id: " + contactId + " email: " + email + " inDefaultDirectory: " + inDefaultDirectory);
-					if (contactId != null && !TestUtil.empty(email)) {
+					if (lookupKey != null && !TestUtil.empty(email)) {
 						ContactMatchKeyEmail matchKey = new ContactMatchKeyEmail();
 						matchKey.contactId = contactId;
+						matchKey.lookupKey = lookupKey;
 						matchKey.email = email;
 						emails.put(email, matchKey);
 					}
@@ -404,7 +415,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 
 	private class ContactMatchKey {
-		String contactId;
+		int contactId;
+		String lookupKey;
 	}
 
 	private class ContactMatchKeyEmail extends ContactMatchKey {

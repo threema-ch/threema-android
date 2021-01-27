@@ -32,6 +32,7 @@ import net.sqlcipher.database.SQLiteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
@@ -59,8 +61,8 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.mediaattacher.data.FailedMediaItemsDAO;
 import ch.threema.app.mediaattacher.data.ImageLabelListConverter;
+import ch.threema.app.mediaattacher.data.LabeledMediaItemsDAO;
 import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
-import ch.threema.app.mediaattacher.data.PersistentMediaItemsDAO;
 import ch.threema.app.mediaattacher.labeling.ImageLabelingWorker;
 import ch.threema.app.mediaattacher.labeling.ImageLabelsIndexHashMap;
 import ch.threema.app.utils.ConfigUtils;
@@ -69,6 +71,8 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * The view model used by the media attacher.
@@ -99,7 +103,16 @@ public class MediaAttachViewModel extends AndroidViewModel {
 
 	private final String KEY_SELECTED_MEDIA = "suggestion_labels";
 	private final String KEY_TOOLBAR_TITLE = "toolbar_title";
-	private final String KEY_LABEL_QUERY = "label_query";
+	private final String KEY_RECENT_QUERY = "recent_query_string";
+	private final String KEY_RECENT_QUERY_TYPE = "recent_query_type";
+
+	@Retention(SOURCE)
+	@IntDef({FILTER_MEDIA_TYPE, FILTER_MEDIA_BUCKET, FILTER_MEDIA_LABEL, FILTER_MEDIA_SELECTED})
+	public @interface FilerType {}
+	public static final int FILTER_MEDIA_TYPE = 0;
+	public static final int FILTER_MEDIA_BUCKET = 1;
+	public static final int FILTER_MEDIA_LABEL = 2;
+	public static final int FILTER_MEDIA_SELECTED = 3;
 
 	public MediaAttachViewModel(@NonNull Application application, @NonNull SavedStateHandle savedState) {
 		super(application);
@@ -118,8 +131,11 @@ public class MediaAttachViewModel extends AndroidViewModel {
 		if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 			this.fetchAllMediaFromRepository();
 			this.initialLoadDone.thenRunAsync(() -> {
-				// Update current media
-				currentMedia.postValue(this.allMedia.getValue());
+				Integer savedQuery = getLastQueryType();
+				// if no query has been set previously post all media to the ui grid live data directly, else we trigger the filter corresponding filter in MediaSelectionBaseActivity
+				if (savedQuery == null) {
+					currentMedia.postValue(this.allMedia.getValue());
+				}
 
 				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
 
@@ -166,7 +182,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 	private void checkLabelingComplete() {
 		new Thread(() -> {
 			// Open database
-			final PersistentMediaItemsDAO mediaItemsDAO;
+			final LabeledMediaItemsDAO mediaItemsDAO;
 			final FailedMediaItemsDAO failedMediaItemsDAO;
 			try {
 				mediaItemsDAO = MediaItemsRoomDatabase.getDatabase(application).mediaItemsDAO();
@@ -190,7 +206,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 
 			final float labeledRatio = (float) labeledMediaCount / (float) totalMediaSize;
 			if (labeledRatio > 0.8) {
-				// More than 90% labeled. Good enough, but kick off the labeller anyways if we're not at 100%.
+				// More than 80% labeled. Good enough, but kick off the labeller anyways if we're not at 100%.
 				if (labeledMediaCount < totalMediaSize) {
 					this.startImageLabeler();
 				}
@@ -218,7 +234,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 				logger.info("Found {} distinct labels in database", translatedLabels.size());
 				suggestionLabels.postValue(sortedLabels);
 			} else {
-				logger.info("Less than 90% labeled, considering labels incomplete");
+				logger.info("Less than 80% labeled, considering labels incomplete");
 				this.startImageLabeler();
 				suggestionLabels.postValue(Collections.emptyList());
 			}
@@ -231,6 +247,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 	@UiThread
 	public void setAllMedia() {
 		currentMedia.setValue(this.allMedia.getValue());
+		clearLastQuery();
 	}
 
 	/**
@@ -253,9 +270,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 				filteredMedia.add(mediaItem);
 			}
 		}
-		if (currentMedia != null) {
-			currentMedia.setValue(filteredMedia);
-		}
+		currentMedia.setValue(filteredMedia);
 	}
 
 	/**
@@ -358,11 +373,20 @@ public class MediaAttachViewModel extends AndroidViewModel {
 		savedState.set(KEY_TOOLBAR_TITLE, toolBarTitle);
 	}
 
-	public String getLabelQuery() {
-		return savedState.get(KEY_LABEL_QUERY);
+	public String getLastQuery() {
+		return savedState.get(KEY_RECENT_QUERY);
+	}
+	public Integer getLastQueryType() {
+		return savedState.get(KEY_RECENT_QUERY_TYPE);
 	}
 
-	public void setLabelQuery(String labelQuery) {
-		savedState.set(KEY_LABEL_QUERY, labelQuery);
+	public void setlastQuery(@FilerType int type, String labelQuery) {
+		savedState.set(KEY_RECENT_QUERY, labelQuery);
+		savedState.set(KEY_RECENT_QUERY_TYPE, type);
+	}
+
+	public void clearLastQuery() {
+		savedState.set(KEY_RECENT_QUERY, null);
+		savedState.set(KEY_RECENT_QUERY_TYPE, null);
 	}
 }

@@ -62,7 +62,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 	private final LayoutInflater layoutInflater;
 	private final int itemWidth;
 	private final ClickListener clickListener;
-	private boolean holdsResolutionAdjustableImage = false;
 
 	public static final int VIEW_TYPE_NORMAL = 0;
 	public static final int VIEW_TYPE_ADD = 1;
@@ -83,7 +82,7 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 	}
 
 	public static class SendMediaHolder extends AbstractListItemHolder {
-		public ImageView imageView, deleteView, brokenView, settingsView;
+		public ImageView imageView, deleteView, brokenView;
 		public LinearLayout qualifierView;
 		public int itemType;
 	}
@@ -117,7 +116,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 		holder.qualifierView = itemView.findViewById(R.id.qualifier_view);
 		holder.deleteView = itemView.findViewById(R.id.delete_view);
 		holder.brokenView = itemView.findViewById(R.id.broken_view);
-		holder.settingsView = itemView.findViewById(R.id.settings_view);
 		holder.position = position;
 		holder.itemType = itemType;
 
@@ -127,7 +125,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 			final MediaItem item = items.get(position);
 
 			holder.deleteView.setOnClickListener(v -> clickListener.onDeleteKeyClicked(item));
-			holder.settingsView.setOnClickListener(v -> clickListener.onSettingsKeyClicked(v, item));
 			holder.brokenView.setVisibility(View.GONE);
 
 			Glide.with(context).load(item.getUri())
@@ -143,7 +140,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 					public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
 						if (item.getType() == MediaItem.TYPE_VIDEO_CAM || item.getType() == MediaItem.TYPE_VIDEO) {
 							holder.qualifierView.setVisibility(View.VISIBLE);
-							holder.settingsView.setVisibility(View.GONE);
 
 							AppCompatImageView imageView = holder.qualifierView.findViewById(R.id.video_icon);
 							imageView.setImageResource(R.drawable.ic_videocam_black_24dp);
@@ -157,7 +153,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 							}
 						} else if (item.getType() == MediaItem.TYPE_GIF) {
 							holder.qualifierView.setVisibility(View.VISIBLE);
-							holder.settingsView.setVisibility(View.GONE);
 
 							AppCompatImageView imageView = holder.qualifierView.findViewById(R.id.video_icon);
 							imageView.setImageResource(R.drawable.ic_gif_24dp);
@@ -165,7 +160,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 							holder.qualifierView.findViewById(R.id.video_duration_text).setVisibility(View.GONE);
 						} else {
 							holder.qualifierView.setVisibility(View.GONE);
-							holder.settingsView.setVisibility(item.getType() == MediaItem.TYPE_IMAGE ? View.VISIBLE: View.GONE);
 						}
 						return false;
 					}
@@ -175,15 +169,6 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 			rotateAndFlipImageView(holder.imageView, item);
 		}
 		return itemView;
-	}
-
-	public boolean holdsAdjustableImage() {
-		for (MediaItem item : items) {
-			if (item.getType() == MediaItem.TYPE_IMAGE) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void rotateAndFlipImageView(ImageView imageView, MediaItem item) {
@@ -211,6 +196,5 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 
 	public interface ClickListener {
 		void onDeleteKeyClicked(MediaItem item);
-		void onSettingsKeyClicked(View view, MediaItem item);
 	}
 }

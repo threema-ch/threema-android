@@ -37,17 +37,6 @@
 		app:srcCompat="@drawable/ic_close"
 		app:tint="@android:color/white" />
 
-	<ImageView
-		android:id="@+id/settings_view"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
-		android:layout_margin="@dimen/send_items_grid_action_icon_margin"
-		android:layout_gravity="left|top"
-		android:contentDescription="@string/menu_settings"
-		android:scaleType="centerInside"
-		app:srcCompat="@drawable/ic_settings_outline_24dp"
-		app:tint="@android:color/white" />
-
 	<LinearLayout
 		android:id="@+id/qualifier_view"
 		android:layout_width="wrap_content"

@@ -40,7 +40,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 @Database(
-	entities = {PersistentMediaItem.class, FailedMediaItemEntity.class},
+	entities = {LabeledMediaItemEntity.class, FailedMediaItemEntity.class},
 	version = 2,
 	exportSchema = false
 )
@@ -50,7 +50,7 @@ public abstract class MediaItemsRoomDatabase extends RoomDatabase {
 
 	public static final String DATABASE_NAME = "media_items.db";
 
-	public abstract PersistentMediaItemsDAO mediaItemsDAO();
+	public abstract LabeledMediaItemsDAO mediaItemsDAO();
 	public abstract FailedMediaItemsDAO failedMediaItemsDAO();
 
 	private static volatile MediaItemsRoomDatabase db;

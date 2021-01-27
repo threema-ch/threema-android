@@ -36,5 +36,7 @@ LOCAL_MODULE     := nacl-jni
 LOCAL_SRC_FILES  := $(LOCAL_PATH)/nacl/salsa20-jni.c
 LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/poly1305-jni.c
 LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/curve25519-jni.c
+LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/smult_donna.c
+LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/smult_donna-c64.c
 
 include $(BUILD_SHARED_LIBRARY)

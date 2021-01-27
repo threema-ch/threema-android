@@ -878,19 +878,29 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	}
 
 	/**
-	 * Get adapter position of next available (i.e. downloaded) message of specified message type and with same incoming/outgoing status
+	 * Get adapter position of next available (i.e. downloaded) voice message with same incoming/outgoing status
 	 * @param messageModel of original message
-	 * @param messageType to limit search to or null if any message type will do
 	 * @return AbstractMessageModel of next message in adapter that matches the specified criteria or AbsListView.INVALID_POSITION if none is found
 	 */
-	public int getNextItem(AbstractMessageModel messageModel, MessageType messageType) {
+	public int getNextVoiceMessage(AbstractMessageModel messageModel) {
 		int index = values.indexOf(messageModel);
 		if (index < values.size() - 1) {
 			AbstractMessageModel nextMessage = values.get(index + 1);
-			if (messageType == null || nextMessage.getType() == messageType) {
-				if (messageModel.isOutbox() == nextMessage.isOutbox()) {
-					if (messageModel.isAvailable()) {
-						return index + 1;
+			if (nextMessage != null) {
+				boolean isVoiceMessage = nextMessage.getType() == MessageType.VOICEMESSAGE;
+				if (!isVoiceMessage) {
+					// new school voice messages
+					isVoiceMessage = nextMessage.getType() == MessageType.FILE &&
+						MimeUtil.isAudioFile(nextMessage.getFileData().getMimeType()) &&
+						nextMessage.getFileData().getRenderingType() == FileData.RENDERING_MEDIA &&
+						nextMessage.getFileData().isDownloaded();
+				}
+
+				if (isVoiceMessage) {
+					if (messageModel.isOutbox() == nextMessage.isOutbox()) {
+						if (messageModel.isAvailable()) {
+							return index + 1;
+						}
 					}
 				}
 			}

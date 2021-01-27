@@ -45,6 +45,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
@@ -153,7 +154,7 @@ public class MyIDFragment extends MainFragment
 		}
 	};
 
-	private ProfileListener profileListener = new ProfileListener() {
+	private final ProfileListener profileListener = new ProfileListener() {
 		@Override
 		public void onAvatarChanged() {
 			// a profile picture has been set so it's safe to assume user wants others to see his pic
@@ -180,7 +181,7 @@ public class MyIDFragment extends MainFragment
 
 		@Override
 		public void onNicknameChanged(String newNickname) {
-			reloadNickname();
+			RuntimeUtil.runOnUiThread(() -> reloadNickname());
 		}
 	};
 
@@ -673,6 +674,7 @@ public class MyIDFragment extends MainFragment
 		}.execute();
 	}
 
+	@UiThread
 	private void reloadNickname() {
 		this.nicknameTextView.setText(!TestUtil.empty(userService.getPublicNickname()) ? userService.getPublicNickname() : userService.getIdentity());
 	}

@@ -26,12 +26,17 @@
     <string name="webclient_protocol_version_to_old">La tua app non supporta questa versione di Threema Web. Aggiorna Threema alla versione più recente.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">La tua app non supporta questa versione di Threema Web. Chiedi al tuo amministratore Threema Web di aggiornare all\'ultima versione.</string>
     <string name="webclient_protocol_version_too_new_threema">La tua app non supporta questa versione di Threema Web. Usa una versione più recente di Threema Web.</string>
+    <string name="webclient_session_already_exists">La sessione del codice QR da te scansionato esiste già. Carica ancora una volta Threema Web nel tuo browser e riprova.</string>
     <string name="webclient_really_start_webclient_by_payload_body">Vuoi iniziare questa sessione di Threema Web ora?</string>
     <string name="webclient_cannot_restore">Impossibile ripristinare la sessione Threema Web</string>
     <string name="webclient_disabled">Threema Web non è attivato</string>
+    <string name="webclient_cannot_start">Impossibile avviare sessione di Threema Web</string>
+    <string name="webclient_constrained_by_mdm">Il server non è stato approvato dall\'amministratore.</string>
     <string name="webclient_clear_all_sessions">Elimina tutte le sessioni</string>
     <string name="webclient_clear_all_sessions_confirm">Sei sicuro/a di volere interrompere ed eliminare tutte le sessioni Threema Web?</string>
+    <string name="webclient_prefs_debug_tool_summary">Avvia questo strumento per eseguire il debug dei problemi di  connessione a Threema Web</string>
     <string name="webclient_diagnostics">Diagnostica Threema Web</string>
     <string name="webclient_diagnostics_start">Avvia</string>
     <string name="webclient_diagnostics_intro">Premi il pulsante Avvia per iniziare il test.</string>
+    <string name="webclient_diagnostics_done">Fatto. Se riscontri problemi di connessione a Threema Web, invia questo log al servizio di assistenza di Threema.</string>
 </resources>

@@ -833,15 +833,13 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		if (TestUtil.empty(lookupKey)) {
 			return;
 		}
-		GenericProgressDialog.newInstance(R.string.please_wait, R.string.please_wait).show(getSupportFragmentManager(), "pleaseWait");
+		GenericProgressDialog.newInstance(-1, R.string.please_wait).show(getSupportFragmentManager(), "pleaseWait");
 
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-
 					contactService.link(contact, lookupKey);
-
 				} catch (final Exception e) {
 				 	RuntimeUtil.runOnUiThread(new Runnable() {
 						@Override
@@ -885,16 +883,25 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
 					}
 					if (contactUri != null) {
-						Cursor cursor = getContentResolver().query(contactUri, new String[]{ContactsContract.Contacts.LOOKUP_KEY}, null, null, null);
+						Cursor cursor = getContentResolver().query(contactUri, new String[]{
+							ContactsContract.Contacts._ID,
+							ContactsContract.Contacts.LOOKUP_KEY
+						}, null, null, null);
 
 						//get the lookup key
 						if (cursor != null) {
 							String lookupKey = null;
+							int contactId = 0;
 							if (cursor.moveToFirst()) {
 								lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+								contactId = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+
 							}
 							cursor.close();
 							if (!TestUtil.empty(lookupKey)) {
+								if (contactId != 0) {
+									lookupKey += "/" + contactId;
+								}
 								this.link(lookupKey);
 							}
 						}
