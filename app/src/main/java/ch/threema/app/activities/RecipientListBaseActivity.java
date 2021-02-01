@@ -769,14 +769,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		}
 	}
 
-	/**
-	 * Copy shared files to a private directory as permissions for content URIs may not persist across activities
-	 */
-	@WorkerThread
-	private void copySelectedFiles() {
-
-	}
-
 	private void sendSharedMedia(final MessageReceiver[] messageReceivers, final Intent intent) {
 		if (messageReceivers.length == 1 && mediaItems.size() == 1 && TYPE_TEXT == mediaItems.get(0).getType()) {
 			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getCaption());
@@ -789,85 +781,81 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		}
 	}
 
-	@UiThread
-	private void forwardMessages(final MessageReceiver[] messageReceivers, final Intent intent) {
-		final int[] errors = {0};
-		CancelableHorizontalProgressDialog.newInstance(R.string.sending_messages, 0, 0, originalMessageModels.size()).show(getSupportFragmentManager(), DIALOG_TAG_MULTISEND);
-		for (int i = 0; i < originalMessageModels.size(); i++) {
-			final AbstractMessageModel messageModel = originalMessageModels.get(i);
-			int progress = i;
-			fileService.loadDecryptedMessageFile(messageModel, new FileService.OnDecryptedFileComplete() {
-				@Override
-				public void complete(File decryptedFile) {
-					RuntimeUtil.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							DialogUtil.updateProgress(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, progress);
-						}
-					});
-					if (messageModel.isAvailable()) {
-						Uri uri = null;
-						if (decryptedFile != null) {
-							uri = Uri.fromFile(decryptedFile);
-						}
-						switch (messageModel.getType()) {
-							case IMAGE:
-								sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null);
-								break;
-							case VIDEO:
-								sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
-								break;
-							case VOICEMESSAGE:
-								// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
-								sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_DEFAULT, null);
-								break;
-							case FILE:
-								int mediaType = MediaItem.TYPE_FILE;
-								String mimeType = messageModel.getFileData().getMimeType();
-								int renderingType = messageModel.getFileData().getRenderingType();
+	void forwardSingleMessage(final MessageReceiver[] messageReceivers, final int i, final Intent intent) {
+		final AbstractMessageModel messageModel = originalMessageModels.get(i);
+		fileService.loadDecryptedMessageFile(messageModel, new FileService.OnDecryptedFileComplete() {
+			@Override
+			public void complete(File decryptedFile) {
+				RuntimeUtil.runOnUiThread(() -> DialogUtil.updateProgress(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, i));
 
-								if (messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
-									if (MimeUtil.isVideoFile(mimeType)) {
-										mediaType = MediaItem.TYPE_VIDEO;
-									} else if (MimeUtil.isImageFile(mimeType)) {
-										if (MimeUtil.isGifFile(mimeType)) {
-											mediaType = MediaItem.TYPE_GIF;
-										} else {
-											mediaType = MediaItem.TYPE_IMAGE;
-										}
+				if (messageModel.isAvailable()) {
+					Uri uri = null;
+					if (decryptedFile != null) {
+						uri = Uri.fromFile(decryptedFile);
+					}
+					switch (messageModel.getType()) {
+						case IMAGE:
+							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null);
+							break;
+						case VIDEO:
+							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
+							break;
+						case VOICEMESSAGE:
+							// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
+							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_DEFAULT, null);
+							break;
+						case FILE:
+							int mediaType = MediaItem.TYPE_FILE;
+							String mimeType = messageModel.getFileData().getMimeType();
+							int renderingType = messageModel.getFileData().getRenderingType();
+
+							if (messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
+								if (MimeUtil.isVideoFile(mimeType)) {
+									mediaType = MediaItem.TYPE_VIDEO;
+								} else if (MimeUtil.isImageFile(mimeType)) {
+									if (MimeUtil.isGifFile(mimeType)) {
+										mediaType = MediaItem.TYPE_GIF;
 									} else {
-										// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
-										renderingType = FileData.RENDERING_DEFAULT;
+										mediaType = MediaItem.TYPE_IMAGE;
 									}
+								} else {
+									// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
+									renderingType = FileData.RENDERING_DEFAULT;
 								}
-								sendForwardedMedia(messageReceivers, uri, captionText, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
-								break;
-							case LOCATION:
-								sendLocationMessage(messageReceivers, messageModel.getLocationData());
-								break;
-							case TEXT:
-								sendTextMessage(messageReceivers, messageModel.getBody());
-								break;
-							default:
-								// unsupported message type
-								break;
-						}
+							}
+							sendForwardedMedia(messageReceivers, uri, captionText, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
+							break;
+						case LOCATION:
+							sendLocationMessage(messageReceivers, messageModel.getLocationData());
+							break;
+						case TEXT:
+							sendTextMessage(messageReceivers, messageModel.getBody());
+							break;
+						default:
+							// unsupported message type
+							break;
 					}
 				}
-
-				@Override
-				public void error(String message) {
-					errors[0]++;
+				if (i < originalMessageModels.size() - 1) {
+					forwardSingleMessage(messageReceivers, i+1, intent);
+				} else {
+					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true);
+					startComposeActivity(intent);
 				}
-			});
-		}
+			}
 
-		DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true);
+			@Override
+			public void error(String message) {
+				RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(R.string.an_error_occurred_during_send)));
+			}
+		});
+	}
 
-		if (errors[0] > 0) {
-			SingleToast.getInstance().showLongText(getString(R.string.an_error_occurred_during_send));
-		}
-		startComposeActivity(intent);
+	@UiThread
+	private void forwardMessages(final MessageReceiver[] messageReceivers, final Intent intent) {
+		CancelableHorizontalProgressDialog.newInstance(R.string.sending_messages, 0, 0, originalMessageModels.size()).show(getSupportFragmentManager(), DIALOG_TAG_MULTISEND);
+
+		forwardSingleMessage(messageReceivers, 0, intent);
 	}
 
 	private void startComposeActivityAsync(final Intent intent) {

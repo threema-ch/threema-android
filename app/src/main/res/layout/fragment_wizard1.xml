@@ -24,7 +24,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/safe_enable_title"
 		android:layout_centerHorizontal="true"
-		android:layout_marginTop="32dp"
+		android:layout_marginTop="@dimen/wizard_paragraph_height"
 		android:gravity="center_horizontal"
 		android:text="@string/safe_configure_choose_password"/>
 
@@ -51,10 +51,7 @@
 			android:nextFocusForward="@+id/safe_password2"
 			android:singleLine="true"
 			android:textIsSelectable="false"
-			android:hint="@string/password_hint">
-
-			<requestFocus/>
-		</ch.threema.app.ui.ThreemaEditText>
+			android:hint="@string/password_hint"/>
 
 	</com.google.android.material.textfield.TextInputLayout>
 

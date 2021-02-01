@@ -467,14 +467,14 @@
 		<item name="android:textAlignment">center</item>
 		<item name="android:fontFamily">sans-serif-light</item>
 		<item name="android:textStyle">normal</item>
-		<item name="android:textSize">15sp</item>
+		<item name="android:textSize">@dimen/wizard_small_text_size</item>
 	</style>
 
 	<style name="WizardMediumText" parent="@android:style/TextAppearance">
 		<item name="android:textAlignment">center</item>
 		<item name="android:fontFamily">sans-serif-light</item>
 		<item name="android:textStyle">normal</item>
-		<item name="android:textSize">17sp</item>
+		<item name="android:textSize">@dimen/wizard_medium_text_size</item>
 	</style>
 
 	<style name="WizardSummaryTitleText" parent="@android:style/TextAppearance">
@@ -482,7 +482,7 @@
 		<item name="android:fontFamily">sans-serif-light</item>
 		<item name="android:textStyle">normal</item>
 		<item name="android:textColor">?android:attr/textColorSecondary</item>
-		<item name="android:textSize">14sp</item>
+		<item name="android:textSize">@dimen/wizard_summary_title_text_size</item>
 	</style>
 
 	<style name="WizardSummaryBodyText" parent="@android:style/TextAppearance">
@@ -490,7 +490,7 @@
 		<item name="android:fontFamily">sans-serif-light</item>
 		<item name="android:textStyle">normal</item>
 		<item name="android:textColor">?android:attr/textColorPrimary</item>
-		<item name="android:textSize">16sp</item>
+		<item name="android:textSize">@dimen/wizard_summary_body_text_size</item>
 	</style>
 
 	<style name="WizardEditTextIcon">
@@ -507,7 +507,7 @@
 		<item name="android:padding">@dimen/wizard_edittext_padding</item>
 		<item name="android:background">@drawable/wizard_edittext_shape_selector</item>
 		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">16sp</item>
+		<item name="android:textSize">@dimen/wizard_edittext_text_size</item>
 		<item name="android:textColor">@drawable/wizard_edittext_selector</item>
 	</style>
 
@@ -519,7 +519,7 @@
 		<item name="android:paddingBottom">@dimen/wizard_edittext_padding</item>
 		<item name="android:background">@drawable/wizard_hinted_edittext_layerlist</item>
 		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">16sp</item>
+		<item name="android:textSize">@dimen/wizard_edittext_text_size</item>
 		<item name="android:textColor">@drawable/wizard_edittext_selector</item>
 	</style>
 
@@ -529,7 +529,7 @@
 		<item name="android:paddingRight">16dp</item>
 		<item name="android:background">@drawable/shape_switch</item>
 		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">16sp</item>
+		<item name="android:textSize">@dimen/wizard_button_text_size</item>
 	</style>
 
 	<style name="WizardSwitchSmallText">
@@ -538,7 +538,7 @@
 		<item name="android:paddingRight">16dp</item>
 		<item name="android:background">@drawable/shape_switch</item>
 		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">15sp</item>
+		<item name="android:textSize">@dimen/wizard_small_text_size</item>
 	</style>
 
 	<style name="WizardSpinner" parent="Widget.AppCompat.Spinner">
@@ -710,11 +710,10 @@
 	</style>
 
 	<style name="Threema.PopupMenuStyle" parent="@style/Widget.AppCompat.PopupMenu">
-		<item name="dropdownListPreferredItemHeight">38dp</item>
+		<item name="dropdownListPreferredItemHeight">40dp</item>
 		<item name="android:paddingLeft">0dp</item>
-		<item name="android:paddingRight">-4dp</item>
+		<item name="android:paddingRight">0dp</item>
 		<item name="android:layout_marginRight">0dp</item>
-		<item name="android:textSize">14sp</item>
+		<item name="android:textSize">15sp</item>
 	</style>
-
 </resources>

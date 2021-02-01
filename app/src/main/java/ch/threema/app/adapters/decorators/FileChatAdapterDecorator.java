@@ -308,8 +308,8 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 			}
 
 			if (thumbnail != null) {
-				if (holder.controller.getStatus() == ControllerView.STATUS_NONE) {
-						holder.controller.setBackgroundImage(thumbnail);
+				if (holder.controller != null) {
+					holder.controller.setBackgroundImage(thumbnail);
 				}
 			}
 

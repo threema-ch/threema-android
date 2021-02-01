@@ -57,6 +57,7 @@ import java.util.Set;
 
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 
 /**
@@ -387,11 +388,22 @@ public class WizardFragment3 extends WizardFragment {
 	}
 
 	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-		if (isVisibleToUser) {
-			initValues();
+	public void onResume() {
+		super.onResume();
+		initValues();
+		if (this.phoneText != null) {
+			this.phoneText.requestFocus();
+			EditTextUtil.showSoftKeyboard(this.phoneText);
 		}
+	}
+
+	@Override
+	public void onPause() {
+		if (this.phoneText != null) {
+			this.phoneText.clearFocus();
+			EditTextUtil.hideSoftKeyboard(this.phoneText);
+		}
+		super.onPause();
 	}
 
 	void initValues() {

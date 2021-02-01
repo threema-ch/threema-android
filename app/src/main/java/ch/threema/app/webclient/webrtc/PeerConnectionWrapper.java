@@ -327,9 +327,15 @@ public class PeerConnectionWrapper {
 			// Ignore without m-line
 			if (candidate.getSdpMLineIndex() == null) {
 				logger.warn(
-					"Received candidate without SdpMLineIndex, ignoring: %s",
+					"Received candidate without SdpMLineIndex, ignoring: {}",
 					candidate.getSdp()
 				);
+				continue;
+			}
+
+			// Ignore candidates with empty SDP
+			if (candidate.getSdp() == null || candidate.getSdp().trim().equals("")) {
+				logger.warn("Received candidate with empty SDP, ignoring");
 				continue;
 			}
 

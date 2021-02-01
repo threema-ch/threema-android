@@ -60,6 +60,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.mapbox.mapboxsdk.style.layers.Property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -657,14 +658,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	@UiThread
 	public void maybeShowImageResolutionTooltip() {
 		editPanel.postDelayed(() -> {
-			if (settingsItem.getVisibility() == View.VISIBLE && !preferenceService.getIsImageResolutionTooltipShown()) {
+			if (editPanel.getVisibility() == View.VISIBLE && settingsItem.getVisibility() == View.VISIBLE && !preferenceService.getIsImageResolutionTooltipShown()) {
 				int[] location = new int[2];
 				settingsItem.getLocationOnScreen(location);
 				location[1] -= (settingsItem.getHeight() / 5);
 
-				final TooltipPopup resolutionTooltipPopup = new TooltipPopup(SendMediaActivity.this, R.string.preferences__image_resolution_tooltip_shown, R.layout.popup_tooltip_top_right, SendMediaActivity.this);
+				final TooltipPopup resolutionTooltipPopup = new TooltipPopup(SendMediaActivity.this, 0, R.layout.popup_tooltip_top_right, SendMediaActivity.this);
 				resolutionTooltipPopup.show(this, settingsItem, getString(R.string.tooltip_image_resolution_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 6000);
-
 				preferenceService.setIsImageResolutionTooltipShown(true);
 			}
 		}, 2000);

@@ -74,7 +74,8 @@
 			android:layout_alignParentTop="true"
 			android:layout_width="match_parent"
 			android:layout_height="48dp"
-			android:background="#77000000">
+			android:background="#77000000"
+			android:visibility="gone">
 
 			<ImageButton
 				android:id="@+id/flip"

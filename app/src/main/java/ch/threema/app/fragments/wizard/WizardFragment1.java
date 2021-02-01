@@ -38,6 +38,7 @@ import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MAX_PW_LENGTH;
@@ -172,12 +173,22 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 	}
 
 	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-
-		if (isVisibleToUser) {
-			initValues();
+	public void onResume() {
+		super.onResume();
+		initValues();
+		if (this.password1 != null) {
+			this.password1.requestFocus();
+			EditTextUtil.showSoftKeyboard(this.password1);
 		}
+	}
+
+	@Override
+	public void onPause() {
+		if (this.password1 != null) {
+			this.password1.clearFocus();
+			EditTextUtil.hideSoftKeyboard(this.password1);
+		}
+		super.onPause();
 	}
 
 	private void initValues() {

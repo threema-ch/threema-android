@@ -34,7 +34,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -75,6 +74,7 @@ import java.util.Locale;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import androidx.annotation.AnyRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -316,13 +316,10 @@ public class ConfigUtils {
 		return color;
 	}
 
-	public static ColorStateList getColorStateListFromAttribute(Context context, @AttrRes int attr) {
-		TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[] { attr });
-		ColorStateList color = typedArray.getColorStateList(0);
-
-		typedArray.recycle();
-
-		return color;
+	public static @AnyRes int getResourceFromAttribute(Context context, @AttrRes final int attr) {
+		final TypedValue typedValue = new TypedValue();
+		context.getTheme().resolveAttribute(attr, typedValue, true);
+		return typedValue.resourceId;
 	}
 
 	public static @ColorInt int getPrimaryColor() {

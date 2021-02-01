@@ -590,7 +590,7 @@
 			android:name=".activities.wizard.WizardBaseActivity"
 			android:screenOrientation="sensorPortrait"
 			android:theme="@style/Theme.Threema.Wizard"
-			android:windowSoftInputMode="adjustPan"/>
+			android:windowSoftInputMode="adjustResize"/>
 		<activity
 			android:name=".activities.wizard.WizardFingerPrintActivity"
 			android:screenOrientation="sensorPortrait"

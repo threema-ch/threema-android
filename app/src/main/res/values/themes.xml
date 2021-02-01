@@ -90,7 +90,7 @@
 		<item name="textColorSecondary">@color/settings_second_line_text_color</item>
 		<item name="toolbarStyle">@style/Threema.ToolbarStyle</item>
 		<item name="background_secondary">@color/activity_background_secondary</item>
-		<item name="settings_multipane_selection_bg">@color/text_color_second_line_dark</item>
+		<item name="settings_multipane_selection_bg">@color/settings_multipane_selection_bg_light</item>
 
 		<!-- Status bar and navigation bar color -->
 		<item name="android:windowLightStatusBar" tools:targetApi="23">true</item>

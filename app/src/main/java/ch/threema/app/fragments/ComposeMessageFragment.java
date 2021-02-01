@@ -2373,11 +2373,9 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	/**
-	 * Appending Records to the list
-	 * do not call the notfiy on change on adding to speed up list ctrl
-	 */
-	/**
 	 * Append records to the list, adding date separators if necessary
+	 * Locks list by calling setNotifyOnChange(false) on the adapter to speed up list ctrl
+	 * Don't forget to call notifyDataSetChanged() on the adapter in the UI thread after inserting
 	 * @param values MessageModels to insert
 	 * @param clear Whether previous list entries should be cleared before appending
 	 * @param markasread Whether chat should be marked as read
@@ -2828,6 +2826,10 @@ public class ComposeMessageFragment extends Fragment implements
 
 						@Override
 						protected void onPostExecute(Integer result) {
+							if (result != null) {
+								composeMessageAdapter.notifyDataSetChanged();
+							}
+
 							if (getContext() != null) {
 								if (result != null && result > 0) {
 									if (getFragmentManager() != null) {

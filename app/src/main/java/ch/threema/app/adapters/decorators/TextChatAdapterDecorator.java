@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import androidx.annotation.Nullable;
+import ch.threema.app.R;
 import ch.threema.app.activities.TextChatBubbleActivity;
 import ch.threema.app.emojis.EmojiConversationTextView;
 import ch.threema.app.fragments.ComposeMessageFragment;
@@ -78,6 +79,12 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 			if (holder.readOnContainer != null) {
 				if (messageText != null && messageText.length() > helper.getMaxBubbleTextLength()) {
 					holder.readOnContainer.setVisibility(View.VISIBLE);
+					if (quoteType != QuoteUtil.QUOTE_TYPE_NONE) {
+						holder.readOnContainer.setBackgroundResource(ConfigUtils.getResourceFromAttribute(getContext(),
+							this.getMessageModel().isOutbox() ?
+								R.attr.chat_bubble_fade_send :
+								R.attr.chat_bubble_fade_recv));
+					}
 					holder.readOnButton.setOnClickListener(view -> {
 						Intent intent = new Intent(helper.getFragment().getContext(), TextChatBubbleActivity.class);
 						IntentDataUtil.append(this.getMessageModel(), intent);

@@ -1724,7 +1724,7 @@ public class MessageServiceImpl implements MessageService {
 		if(newModel) {
 			this.fireOnCreatedMessage(messageModel);
 
-			if (canDownload(messageModel.getMessageContentsType())) {
+			if (canDownload(messageModel)) {
 				if (fileData.getFileSize() <= FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO) {
 					downloadMediaMessage(messageModel, null);
 				}
@@ -1787,13 +1787,16 @@ public class MessageServiceImpl implements MessageService {
 		return false;
 	}
 
-	private boolean canDownload(@MessageContentsType int messageContentsType) {
+	private boolean canDownload(@NonNull AbstractMessageModel messageModel) {
 		MessageType type = MessageType.FILE;
 
-		if (messageContentsType == MessageContentsType.IMAGE) {
-			type = MessageType.IMAGE;
-		} else if (messageContentsType == MessageContentsType.VIDEO) {
-			type = MessageType.VIDEO;
+		if (messageModel.getFileData() != null && messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
+			// treat media with default (file) rendering like a file for the sake of auto-download
+			if (messageModel.getMessageContentsType() == MessageContentsType.IMAGE) {
+				type = MessageType.IMAGE;
+			} else if (messageModel.getMessageContentsType() == MessageContentsType.VIDEO) {
+				type = MessageType.VIDEO;
+			}
 		}
 
 		if (preferenceService != null) {

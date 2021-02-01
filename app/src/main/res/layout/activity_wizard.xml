@@ -51,15 +51,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
-	<FrameLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom">
-		<!--
-			<include layout="@layout/new_wizard_info"/>
-		-->
-	</FrameLayout>
-
 	<View
 		android:id="@+id/divider"
 		android:layout_width="match_parent"
@@ -92,9 +83,8 @@
 				android:paddingTop="10dp"
 				android:scaleX="-1"
 				android:src="@drawable/ic_next_alpha"
-				android:tint="@color/new_wizard_color_accent"
 				android:visibility="visible"
-				/>
+				custom:tint="@color/new_wizard_color_accent" />
 
 			<Button
 				android:id="@+id/prev_text"
@@ -143,7 +133,7 @@
 				android:paddingBottom="10dp"
 				android:paddingTop="10dp"
 				android:src="@drawable/ic_next_alpha"
-				android:tint="@color/new_wizard_color_accent"/>
+				custom:tint="@color/new_wizard_color_accent" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/next_text"

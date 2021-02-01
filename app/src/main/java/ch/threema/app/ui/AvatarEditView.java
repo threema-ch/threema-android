@@ -528,6 +528,12 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		} else if (this.avatarData.getGroupModel() != null) {
 			return isEditable && groupService.isGroupOwner(this.avatarData.getGroupModel());
 		}
+
+		// we have neither a group model nor a contact model => user is creating a new group
+		if (this.avatarData.getContactModel() == null && this.avatarData.getGroupModel() == null) {
+			return isEditable;
+		}
+
 		return false;
 	}
 

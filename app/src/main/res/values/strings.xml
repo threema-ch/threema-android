@@ -258,7 +258,7 @@
 	<string name="emoji_nature">Animals &amp; Nature</string>
 	<string name="emoji_food">Food &amp; Drink</string>
 	<string name="emoji_recent">Recent</string>
-	<string name="emoji_emotions">Smilyes &amp; People</string>
+	<string name="emoji_emotions">Smilies &amp; People</string>
 	<string name="emoji_activities">Activities</string>
 	<string name="emoji_flags">Flags</string>
 	<string name="title_lock">Lock</string>
@@ -1220,7 +1220,7 @@
 	<string name="original_file_no_longer_avilable">The original file is no longer accessible. Please re-send the message.</string>
 	<string name="state_transcoding">transcoding</string>
 	<string name="importing_files">Importing files</string>
-	<string name="tooltip_image_resolution_hint">Adjust image resolutions.</string>
+	<string name="tooltip_image_resolution_hint">Tap here to adjust image resolution.</string>
 	<string name="image_labeling_stuck_error">The indexing process for image search got stuck and was cancelled. Please retry later.</string>
 	<string name="ballot_created_successfully">The poll was successfully created.</string>
 	<string name="file_size">File size</string>

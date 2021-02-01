@@ -154,21 +154,27 @@
 
 	<!-- wizard -->
 	<dimen name="wizard_contents_padding">16dp</dimen>
-	<dimen name="wizard_button_height">42dp</dimen>
-	<dimen name="wizard_default_view_height">42dp</dimen>
-	<dimen name="wizard_edittext_padding">10dp</dimen>
-	<dimen name="wizard_edittext_hint_padding">6dp</dimen>
+	<dimen name="wizard_button_height">32dp</dimen>
+	<dimen name="wizard_default_view_height">32dp</dimen>
+	<dimen name="wizard_edittext_text_size">14dp</dimen>
+	<dimen name="wizard_edittext_padding">8dp</dimen>
+	<dimen name="wizard_edittext_hint_padding">4dp</dimen>
 	<!-- wizard_default_view_height + wizard_edittext_hint_padding -->
-	<dimen name="wizard_hinted_edittext_height">48dp</dimen>
+	<dimen name="wizard_hinted_edittext_height">36dp</dimen>
 	<!-- wizard_edittext_padding + wizard_edittext_padding -->
-	<dimen name="wizard_hinted_edittext_padding_top">16dp</dimen>
+	<dimen name="wizard_hinted_edittext_padding_top">8dp</dimen>
 
-	<!-- reduced dimensions for screens with less than 533dp -->
+	<!-- reduced dimensions for screens with less than 640dp -->
 	<dimen name="wizard_paragraph_height">16dp</dimen>
 	<dimen name="wizard_small_paragraph_height">8dp</dimen>
-	<dimen name="wizard_title_text_size">24sp</dimen>
-	<dimen name="wizard_subtitle_text_size">16sp</dimen>
+	<dimen name="wizard_title_text_size">20dp</dimen>
+	<dimen name="wizard_subtitle_text_size">16dp</dimen>
+	<dimen name="wizard_medium_text_size">15dp</dimen>
+	<dimen name="wizard_small_text_size">14dp</dimen>
 	<dimen name="wizard_summary_spacing">12dp</dimen>
+	<dimen name="wizard_summary_title_text_size">13dp</dimen>
+	<dimen name="wizard_summary_body_text_size">15dp</dimen>
+
 	<!-- use dp for button fonts to prevent people from using large text destroying the layout -->
 	<dimen name="wizard_button_text_size">14dp</dimen>
 	<dimen name="wizard_backup_code_edittext_minheight">60dp</dimen>

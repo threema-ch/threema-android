@@ -313,64 +313,53 @@ public class SynchronizeContactsRoutine implements Runnable {
 	}
 
 	private Map<String, ContactMatchKeyPhone> readPhoneNumbers() {
-		Map<String, ContactMatchKeyPhone> phones = new HashMap<String, ContactMatchKeyPhone>();
-		String selection = null;
+		Map<String, ContactMatchKeyPhone> phoneNumbers = new HashMap<>();
+		String selection;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0 AND " + ContactsContract.CommonDataKinds.Email.IN_DEFAULT_DIRECTORY + " = 1";
+			selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0 AND " + ContactsContract.CommonDataKinds.Phone.IN_DEFAULT_DIRECTORY + " = 1";
 		} else {
 			selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0";
 		}
 
-		try (Cursor contactCursor = this.contentResolver.query(
-			ContactsContract.Contacts.CONTENT_URI,
-			null,
+		try (Cursor phonesCursor = this.contentResolver.query(
+			ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+			new String[]{
+				ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+				ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY,
+				ContactsContract.CommonDataKinds.Phone.NUMBER,
+			},
 			selection,
 			null,
 			null)) {
 
-			if (contactCursor != null && contactCursor.getCount() > 0) {
-				int idColumnIndex = contactCursor.getColumnIndex(ContactsContract.Contacts._ID);
-				int lookupKeyIndex = contactCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
-				int hasPhoneNumberColumnIndex = contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER);
+			if (phonesCursor != null && phonesCursor.getCount() > 0) {
+				int idColumnIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+				final int lookupKeyColumnIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY);
+				final int phoneNumberIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
 
-				while (contactCursor.moveToNext()) {
-					String id = contactCursor.getString(idColumnIndex);
-					if (Integer.parseInt(contactCursor.getString(hasPhoneNumberColumnIndex)) > 0) {
-						String lookupKey = contactCursor.getString(lookupKeyIndex);
-						int contactId = contactCursor.getInt(idColumnIndex);
+				while (phonesCursor.moveToNext()) {
+					int contactId = phonesCursor.getInt(idColumnIndex);
+					String lookupKey = phonesCursor.getString(lookupKeyColumnIndex);
+					String phoneNumber = phonesCursor.getString(phoneNumberIndex);
 
-						try (Cursor phoneCursor = this.contentResolver.query(
-							ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-							null,
-							ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-							new String[]{id},
-							null)) {
-
-							if (phoneCursor != null) {
-								int numberColumnIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-								while (phoneCursor.moveToNext()) {
-									String phoneNumber = phoneCursor.getString(numberColumnIndex);
-									if (!TestUtil.empty(phoneNumber)) {
-										ContactMatchKeyPhone matchKey = new ContactMatchKeyPhone();
-										matchKey.contactId = contactId;
-										matchKey.lookupKey = lookupKey;
-										matchKey.phoneNumber = phoneNumber;
-										phones.put(phoneNumber, matchKey);
-									}
-								}
-							}
-						}
+//					logger.debug("id: " + contactId + " phone: " + phoneNumber + " lookupKey: " + lookupKey);
+					if (lookupKey != null && !TestUtil.empty(phoneNumber)) {
+						ContactMatchKeyPhone matchKey = new ContactMatchKeyPhone();
+						matchKey.contactId = contactId;
+						matchKey.lookupKey = lookupKey;
+						matchKey.phoneNumber = phoneNumber;
+						phoneNumbers.put(phoneNumber, matchKey);
 					}
 				}
 			}
 		}
 
-		return phones;
+		return phoneNumbers;
 	}
 
 	private Map<String, ContactMatchKeyEmail> readEmails() {
-		Map<String, ContactMatchKeyEmail> emails = new HashMap<String, ContactMatchKeyEmail>();
+		Map<String, ContactMatchKeyEmail> emails = new HashMap<>();
 		String selection = null;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -380,7 +369,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		try (Cursor emailsCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Email.CONTENT_URI,
 			new String[]{
-				ContactsContract.CommonDataKinds.Email._ID,
+				ContactsContract.CommonDataKinds.Email.CONTACT_ID,
 				ContactsContract.CommonDataKinds.Email.LOOKUP_KEY,
 				ContactsContract.CommonDataKinds.Email.DATA
 			},
@@ -388,8 +377,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 			null,
 			null)) {
 
-			if (emailsCursor != null) {
-				int idColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email._ID);
+			if (emailsCursor != null && emailsCursor.getCount() > 0) {
+				int idColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.CONTACT_ID);
 				final int lookupKeyColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LOOKUP_KEY);
 				final int emailIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
 
@@ -398,7 +387,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					String lookupKey = emailsCursor.getString(lookupKeyColumnIndex);
 					String email = emailsCursor.getString(emailIndex);
 
-//				logger.debug("id: " + contactId + " email: " + email + " inDefaultDirectory: " + inDefaultDirectory);
+//					logger.debug("id: " + contactId + " email: " + email + " lookupKey: " + lookupKey);
 					if (lookupKey != null && !TestUtil.empty(email)) {
 						ContactMatchKeyEmail matchKey = new ContactMatchKeyEmail();
 						matchKey.contactId = contactId;

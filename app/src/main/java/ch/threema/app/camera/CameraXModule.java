@@ -91,9 +91,6 @@ import ch.threema.app.utils.ConfigUtils;
 
 import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
 
-/* Threema-specific imports */
-
-
 /** CameraX use case operation built on @{link androidx.camera.core}. */
 @SuppressLint("RestrictedApi")
 @TargetApi(21)

@@ -25,6 +25,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -38,6 +39,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.MimeUtil;
 
@@ -150,23 +152,30 @@ public class MediaRepository {
 					orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION));
 				}
 
-				// this flag appears to be set by default on some devices
-//				int isPrivate = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.IS_PRIVATE));
-//				if (isPrivate == 0) {
-					int type;
-					if (MimeUtil.isVideoFile(mimeType)) {
-						type = MediaItem.TYPE_VIDEO;
-					} else if (MimeUtil.isGifFile(mimeType)) {
-						type = MediaItem.TYPE_GIF;
-					} else {
-						type = MediaItem.TYPE_IMAGE;
+				int type;
+				if (MimeUtil.isVideoFile(mimeType)) {
+					type = MediaItem.TYPE_VIDEO;
+					if (duration == 0) {
+						// do not use automatic resource management on MediaMetadataRetriever
+						MediaMetadataRetriever metaDataRetriever = new MediaMetadataRetriever();
+						try {
+							metaDataRetriever.setDataSource(ThreemaApplication.getAppContext(), contentUri);
+							duration = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+						} catch (Exception ignored) {
+						} finally {
+							metaDataRetriever.release();
+						}
 					}
-					MediaAttachItem item = new MediaAttachItem(
-						id, dateAdded, dateTaken, dateModified, contentUri,
-						displayName, bucketName, orientation, duration, type
-					);
-					mediaList.add(item);
-//				}
+				} else if (MimeUtil.isGifFile(mimeType)) {
+					type = MediaItem.TYPE_GIF;
+				} else {
+					type = MediaItem.TYPE_IMAGE;
+				}
+				MediaAttachItem item = new MediaAttachItem(
+					id, dateAdded, dateTaken, dateModified, contentUri,
+					displayName, bucketName, orientation, duration, type
+				);
+				mediaList.add(item);
 			}
 		}
 	}

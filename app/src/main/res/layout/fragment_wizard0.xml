@@ -28,7 +28,6 @@
 			android:text="@string/new_wizard_this_is_your_id"
 			android:layout_marginTop="@dimen/wizard_paragraph_height"/>
 
-
 	<ch.threema.app.ui.TextViewRobotoMedium
 			style="@style/WizardTitleText"
 			android:id="@+id/wizard_id_title"

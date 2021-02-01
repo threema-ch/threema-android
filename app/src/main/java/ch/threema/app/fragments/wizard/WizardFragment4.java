@@ -82,11 +82,9 @@ public class WizardFragment4 extends WizardFragment {
 	}
 
 	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-		if (isVisibleToUser) {
-			initValues();
-		}
+	public void onResume() {
+		super.onResume();
+		initValues();
 	}
 
 	void initValues() {

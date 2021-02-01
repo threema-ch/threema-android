@@ -62,7 +62,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -361,18 +361,19 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 				// Extract buckets and media types
 				final HashSet<String> buckets = new HashSet<>();
-				final List<String> mediaTypes = new ArrayList<>();
+				final HashMap<Integer, String> mediaTypes = new HashMap<>();
 				for (MediaAttachItem mediaItem : mediaAttachItems) {
 					buckets.add(mediaItem.getBucketName());
-					String mediaTypeName = getMimeTypeTitle(mediaItem.getType());
-					if (!mediaTypes.contains(mediaTypeName)) {
-						mediaTypes.add(mediaTypeName);
+					int type = mediaItem.getType();
+					if (!mediaTypes.containsKey(type)) {
+						String mediaTypeName = getMimeTypeTitle(type);
+						mediaTypes.put(type, mediaTypeName);
 					}
 				}
 
 				// Fill menu
-				for (int i = 0; i < mediaTypes.size(); i++) {
-					String mediaTypeName = mediaTypes.get(i);
+				for (int mediaTypeKey : mediaTypes.keySet()) {
+					String mediaTypeName = mediaTypes.get(mediaTypeKey);
 					MenuItem item = menu.add(mediaTypeName).setOnMenuItemClickListener(menuItem -> {
 						filterMediaByMimeType(menuItem.toString());
 						menuTitle.setText(menuItem.toString());
@@ -380,14 +381,14 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 						return true;
 					});
 
-					switch(i) {
-						case 0:
+					switch(mediaTypeKey) {
+						case MediaItem.TYPE_IMAGE:
 							item.setIcon(R.drawable.ic_image_outline);
 							break;
-						case 1:
+						case MediaItem.TYPE_VIDEO:
 							item.setIcon(R.drawable.ic_movie_outline);
 							break;
-						case 2:
+						case MediaItem.TYPE_GIF:
 							item.setIcon(R.drawable.ic_gif_24dp);
 							break;
 					}

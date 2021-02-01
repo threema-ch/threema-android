@@ -128,19 +128,22 @@ public class VideoCapturerUtil {
 		}
 
 		final String[] deviceNames = enumerator.getDeviceNames();
+		logger.info("Found {} camera devices", deviceNames.length);
 		for (String deviceName : deviceNames) {
 			if (enumerator.isFrontFacing(deviceName)) {
 				if (frontCamera == null) {
+					logger.info("Using {} as front camera", deviceName);
 					frontCamera = deviceName;
+				} else {
+					logger.info("Not using {} as front camera", deviceName);
 				}
 			} else if (enumerator.isBackFacing(deviceName)) {
 				if (backCamera == null) {
+					logger.info("Using {} as back camera", deviceName);
 					backCamera = deviceName;
+				} else {
+					logger.info("Not using {} as back camera", deviceName);
 				}
-			}
-
-			if (frontCamera != null && backCamera != null) {
-				break;
 			}
 		}
 		return new Pair<>(frontCamera, backCamera);

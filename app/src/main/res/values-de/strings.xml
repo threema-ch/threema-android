@@ -1291,7 +1291,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="original_file_no_longer_avilable">Kein Zugriff mehr auf die Original-Datei. Bitte senden Sie diese Nachricht erneut.</string>
 	<string name="state_transcoding">wird transcodiert</string>
 	<string name="importing_files">Dateien werden importiert</string>
-	<string name="tooltip_image_resolution_hint">Bildauflösung individuell anpassen.</string>
+	<string name="tooltip_image_resolution_hint">Hier tippen, um die Bildauflösung individuell anzupassen.</string>
 	<string name="image_labeling_stuck_error">Der Indexierungsprozess für die Bildersuche ist stehen geblieben und wurde abgebrochen. Versuchen Sie es später nochmals.</string>
 	<string name="max_selectable_media_exceeded">Es können maximal %d Objekte aufs Mal versendet werden.</string>
 	<string name="ballot_created_successfully">Die Umfrage wurde erfolgreich erstellt.</string>

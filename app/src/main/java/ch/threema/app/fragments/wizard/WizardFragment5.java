@@ -104,14 +104,6 @@ public class WizardFragment5 extends WizardFragment implements View.OnClickListe
 		callback = (SettingsInterface) activity;
 	}
 
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-		if (isVisibleToUser) {
-			initValues();
-		}
-	}
-
 	void initValues() {
 		if (isResumed()) {
 			String email = callback.getEmail();

@@ -79,9 +79,7 @@
 						android:layout_marginLeft="1dp"
 						android:hint="@string/new_wizard_hint_mobile_number"
 						android:nextFocusForward="@+id/wizard_email"
-						android:inputType="phone">
-					<requestFocus/>
-				</ch.threema.app.emojis.EmojiEditText>
+						android:inputType="phone"/>
 
 			</LinearLayout>
 

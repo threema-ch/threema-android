@@ -625,7 +625,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 
 	private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 		public ScreenSlidePagerAdapter(FragmentManager fm) {
-			super(fm);
+			super(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 		}
 
 		@Override

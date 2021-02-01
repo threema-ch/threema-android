@@ -737,7 +737,11 @@ public class CallActivity extends ThreemaActivity implements
 
 		adjustPipLayout();
 
-		restoreState(getIntent(), savedInstanceState);
+		if (!restoreState(getIntent(), savedInstanceState)) {
+			logger.info("Unable to init state. Finishing");
+			finish();
+			return;
+		}
 
 		// Check for mandatory permissions
 		logger.debug("Checking for audio permission...");
@@ -812,7 +816,6 @@ public class CallActivity extends ThreemaActivity implements
 		// Activity mode sanity checks
 		if (this.activityMode == MODE_INCOMING_CALL && callState.isIdle()) {
 			logger.error("Started CallActivity (incoming call) when call state is IDLE");
-			finish();
 			return false;
 		}
 
@@ -822,6 +825,10 @@ public class CallActivity extends ThreemaActivity implements
 
 		// Fetch contact
 		this.contact = contactService.getByIdentity(contactIdentity);
+		if (this.contact == null) {
+			logger.info("Contact is null");
+			return false;
+		}
 
 		return true;
 	}
@@ -926,6 +933,9 @@ public class CallActivity extends ThreemaActivity implements
 				logger.error("Error in initializeActivity", e);
 				this.abortWithError();
 			}
+		} else {
+			logger.info("Unable to restore state");
+			this.abortWithError();
 		}
 	}
 
@@ -986,6 +996,7 @@ public class CallActivity extends ThreemaActivity implements
 			if (incomingVideo || outgoingVideo) {
 				// Make video views visible
 				this.videoViews.fullscreenVideoRenderer.setVisibility(View.VISIBLE);
+				this.commonViews.backgroundView.setVisibility(View.INVISIBLE);
 
 				this.videoViews.switchCamButton.setVisibility(outgoingVideo &&
 					(voipStateService.getVideoContext() != null && voipStateService.getVideoContext().hasMultipleCameras()) ?
@@ -1005,6 +1016,7 @@ public class CallActivity extends ThreemaActivity implements
 				this.videoViews.fullscreenVideoRenderer.setVisibility(View.GONE);
 				this.videoViews.switchCamButton.setVisibility(View.GONE);
 				this.videoViews.pipButton.setVisibility(View.GONE);
+				this.commonViews.backgroundView.setVisibility(View.VISIBLE);
 			}
 		}
 	}
@@ -1453,7 +1465,7 @@ public class CallActivity extends ThreemaActivity implements
 					videoContext.setFrameDimensions(x, y);
 				}
 			});
-			this.videoViews.fullscreenVideoRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+			this.videoViews.fullscreenVideoRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_BALANCED);
 			this.videoViews.fullscreenVideoRenderer.setMirror(false);
 			this.videoViews.fullscreenVideoRenderer.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -1465,7 +1477,7 @@ public class CallActivity extends ThreemaActivity implements
 			});
 
 			this.videoViews.pipVideoRenderer.init(videoContext.getEglBaseContext(), null);
-			this.videoViews.pipVideoRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+			this.videoViews.pipVideoRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_BALANCED);
 			this.videoViews.pipVideoRenderer.setMirror(true);
 			this.videoViews.pipVideoRenderer.setZOrderMediaOverlay(true);
 			this.videoViews.pipVideoRenderer.setOnClickListener(v -> this.setSwappedFeeds(!this.isSwappedFeeds));
@@ -1501,14 +1513,14 @@ public class CallActivity extends ThreemaActivity implements
 
 							if (newX < layoutMargin) {
 								newX = layoutMargin;
-							} else if (newX > videoViews.fullscreenVideoRenderer.getWidth() - videoViews.pipVideoRenderer.getWidth() - layoutMargin) {
-								newX = videoViews.fullscreenVideoRenderer.getWidth() - videoViews.pipVideoRenderer.getWidth() - layoutMargin;
+							} else if (newX > commonViews.backgroundView.getWidth() - videoViews.pipVideoRenderer.getWidth() - layoutMargin) {
+								newX = commonViews.backgroundView.getWidth() - videoViews.pipVideoRenderer.getWidth() - layoutMargin;
 							}
 
 							if (newY < layoutMargin) {
 								newY = layoutMargin;
-							} else if (newY > videoViews.fullscreenVideoRenderer.getHeight() - videoViews.pipVideoRenderer.getHeight() - layoutMargin) {
-								newY = videoViews.fullscreenVideoRenderer.getHeight() - videoViews.pipVideoRenderer.getHeight() - layoutMargin;
+							} else if (newY > commonViews.backgroundView.getHeight() - videoViews.pipVideoRenderer.getHeight() - layoutMargin) {
+								newY = commonViews.backgroundView.getHeight() - videoViews.pipVideoRenderer.getHeight() - layoutMargin;
 							}
 
 							v.animate()
@@ -1559,7 +1571,7 @@ public class CallActivity extends ThreemaActivity implements
 
 		int topSnap = callerContainer.getBottom() + layoutMargin;
 		int bottomSnap = commonViews.inCallButtonContainer.getTop() - videoViews.pipVideoRenderer.getHeight() - layoutMargin;
-		int rightSnap = videoViews.fullscreenVideoRenderer.getWidth() - videoViews.pipVideoRenderer.getWidth() - layoutMargin;
+		int rightSnap = commonViews.backgroundView.getWidth() - videoViews.pipVideoRenderer.getWidth() - layoutMargin;
 		int snappedX, snappedY;
 
 		pipPosition = 0;
@@ -1992,10 +2004,10 @@ public class CallActivity extends ThreemaActivity implements
 			aspectRatio = new Rational(videoContext.getFrameHeight(), videoContext.getFrameWidth());
 		}
 
-		launchBounds = new Rect(this.videoViews.fullscreenVideoRenderer.getLeft(),
-			this.videoViews.fullscreenVideoRenderer.getTop(),
-			this.videoViews.fullscreenVideoRenderer.getRight(),
-			this.videoViews.fullscreenVideoRenderer.getBottom());
+		launchBounds = new Rect(this.commonViews.backgroundView.getLeft(),
+			this.commonViews.backgroundView.getTop(),
+			this.commonViews.backgroundView.getRight(),
+			this.commonViews.backgroundView.getBottom());
 
 		PictureInPictureParams pipParams = new PictureInPictureParams.Builder()
 			.setAspectRatio(aspectRatio)

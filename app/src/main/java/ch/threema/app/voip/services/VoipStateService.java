@@ -1329,7 +1329,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					}
 				}
 			} catch (ExecutionException e) {
-				logger.info("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", e.getMessage());
+				final String message = e.getMessage();
+				if (message != null && message.contains("Wearable.API is not available on this device")) {
+					logger.debug("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
+				} else {
+					logger.info("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
+				}
 			} catch (InterruptedException e) {
 				logger.info("cancelOnWearable: Interrupted while waiting for wearable client");
 				// Restore interrupted state...

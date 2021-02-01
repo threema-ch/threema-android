@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import ch.threema.app.R;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 
@@ -90,12 +91,22 @@ public class WizardFragment2 extends WizardFragment {
     }
 
 	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-
-		if (isVisibleToUser) {
-			new Handler().postDelayed(() -> RuntimeUtil.runOnUiThread(this::initValues), 50);
+	public void onResume() {
+		super.onResume();
+		new Handler().postDelayed(() -> RuntimeUtil.runOnUiThread(this::initValues), 50);
+		if (this.nicknameText != null) {
+			this.nicknameText.requestFocus();
+			EditTextUtil.showSoftKeyboard(this.nicknameText);
 		}
+	}
+
+	@Override
+	public void onPause() {
+		if (this.nicknameText != null) {
+			this.nicknameText.clearFocus();
+			EditTextUtil.hideSoftKeyboard(this.nicknameText);
+		}
+		super.onPause();
 	}
 
 	private void initValues() {

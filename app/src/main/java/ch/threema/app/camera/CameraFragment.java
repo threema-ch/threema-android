@@ -167,7 +167,7 @@ public class CameraFragment extends Fragment {
 	/**
 	 * Define callback that will be triggered after a photo has been taken
 	 */
-	private ImageCapture.OnImageCapturedCallback imageCapturedCallback = new ImageCapture.OnImageCapturedCallback() {
+	private final ImageCapture.OnImageCapturedCallback imageCapturedCallback = new ImageCapture.OnImageCapturedCallback() {
 		@SuppressLint("StaticFieldLeak")
 		@Override
 		public void onCaptureSuccess(@NonNull ImageProxy image) {

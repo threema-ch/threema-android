@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<dimen name="wizard_paragraph_height">32dp</dimen>
+	<dimen name="wizard_small_paragraph_height">16dp</dimen>
+	<dimen name="wizard_title_text_size">28dp</dimen>
+	<dimen name="wizard_subtitle_text_size">20dp</dimen>
+	<dimen name="wizard_summary_spacing">16dp</dimen>
+	<dimen name="wizard_button_height">42dp</dimen>
+	<dimen name="wizard_button_text_size">16dp</dimen>
+	<dimen name="wizard_default_view_height">42dp</dimen>
+	<dimen name="wizard_backup_code_edittext_minheight">80dp</dimen>
+	<dimen name="wizard_contents_padding_horizontal">16dp</dimen>
+	<dimen name="wizard_small_text_size">15dp</dimen>
+	<dimen name="wizard_medium_text_size">17dp</dimen>
+	<dimen name="wizard_summary_title_text_size">14dp</dimen>
+	<dimen name="wizard_summary_body_text_size">16dp</dimen>
+	<dimen name="wizard_edittext_text_size">16dp</dimen>
+	<dimen name="wizard_edittext_padding">10dp</dimen>
+	<dimen name="wizard_edittext_hint_padding">6dp</dimen>
+	<!-- wizard_default_view_height + wizard_edittext_hint_padding -->
+	<dimen name="wizard_hinted_edittext_height">48dp</dimen>
+	<!-- wizard_edittext_padding + wizard_edittext_padding -->
+	<dimen name="wizard_hinted_edittext_padding_top">16dp</dimen>
+</resources>

@@ -34,17 +34,5 @@
 		<include layout="@layout/conversation_bubble_footer_recv"/>
 
 	</LinearLayout>
-<!--
-	<ImageView
-		android:id="@+id/quote_icon"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
-		android:layout_toRightOf="@id/message_block"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="12dp"
-		app:srcCompat="@drawable/ic_quote_outline"
-		android:tint="?attr/textColorTertiary"
-		android:visibility="gone"
-		/>
--->
+
 </RelativeLayout>
