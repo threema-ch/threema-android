@@ -931,10 +931,10 @@ public class ConfigUtils {
 		}
 	}
 
-	private static boolean checkIfNeedsPermissionRequest(@NonNull Activity activity, String[] permissions) {
+	private static boolean checkIfNeedsPermissionRequest(@NonNull Context context, String[] permissions) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			for (String permission : permissions) {
-				if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+				if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
 					return true;
 				}
 			}

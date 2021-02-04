@@ -217,12 +217,12 @@ public class CallActivity extends ThreemaActivity implements
 	 * This future resolves as soon as the microphone permission request has been answered.
 	 * It resolves to a boolean that indicates whether the permission was granted or not.
 	 */
-	private @Nullable CompletableFuture<Boolean> micPermissionResponse;
+	private @Nullable CompletableFuture<PermissionRequestResult> micPermissionResponse;
 	/**
 	 * This future resolves as soon as the camera permission request has been answered.
 	 * It resolves to a boolean that indicates whether the permission was granted or not.
 	 */
-	private @Nullable CompletableFuture<Boolean> camPermissionResponse;
+	private @Nullable CompletableFuture<PermissionRequestResult> camPermissionResponse;
 
 	private static final String DIALOG_TAG_SELECT_AUDIO_DEVICE = "saud";
 
@@ -276,6 +276,33 @@ public class CallActivity extends ThreemaActivity implements
 	private APIConnector apiConnector;
 
 	private ContactModel contact;
+
+	/**
+	 * The result of a permission request.
+	 */
+	private static class PermissionRequestResult {
+		private boolean _granted;
+		private boolean _wasAlreadyGranted;
+
+		public PermissionRequestResult(boolean granted, boolean wasAlreadyGranted) {
+			this._granted = granted;
+			this._wasAlreadyGranted = wasAlreadyGranted;
+		}
+
+		/**
+		 * True if the permission was granted.
+		 */
+		public boolean isGranted() {
+			return _granted;
+		}
+
+		/**
+		 * True if the permission was already granted before, and no permission request was shown.
+		 */
+		public boolean wasAlreadyGranted() {
+			return _wasAlreadyGranted;
+		}
+	}
 
 	/**
 	 * Helper: Find a view and ensure it's not null.
@@ -747,13 +774,13 @@ public class CallActivity extends ThreemaActivity implements
 		logger.debug("Checking for audio permission...");
 		this.micPermissionResponse = new CompletableFuture<>();
 		if (ConfigUtils.requestAudioPermissions(this, null, PERMISSION_REQUEST_RECORD_AUDIO)) {
-			this.micPermissionResponse.complete(true);
+			this.micPermissionResponse.complete(new PermissionRequestResult(true, true));
 		}
 
 		// Initialize activity once all permissions are granted
 		this.micPermissionResponse
-			.thenAccept((permissionGranted) -> {
-				if (permissionGranted) {
+			.thenAccept((result) -> {
+				if (result.isGranted()) {
 					initializeActivity(getIntent());
 				} else {
 					Toast.makeText(CallActivity.this, R.string.permission_record_audio_required, Toast.LENGTH_LONG).show();
@@ -1289,12 +1316,12 @@ public class CallActivity extends ThreemaActivity implements
 					this.camPermissionResponse = new CompletableFuture<>();
 					if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
 						// If permission was already granted, complete immediately
-						this.camPermissionResponse.complete(true);
+						this.camPermissionResponse.complete(new PermissionRequestResult(true, true));
 					}
 					this.camPermissionResponse
-						.thenAccept((permissionGranted) -> {
+						.thenAccept((result) -> {
 							synchronized (this.videoToggleLock) {
-								if (permissionGranted) {
+								if (result.isGranted()) {
 									// Permission was granted
 									logger.debug("Permission granted, set up video views");
 
@@ -1792,7 +1819,7 @@ public class CallActivity extends ThreemaActivity implements
 
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			// Permission was granted
-			final CompletableFuture<Boolean> future;
+			final CompletableFuture<PermissionRequestResult> future;
 			switch (requestCode) {
 				case PERMISSION_REQUEST_RECORD_AUDIO:
 					future = this.micPermissionResponse;
@@ -1804,11 +1831,11 @@ public class CallActivity extends ThreemaActivity implements
 					future = null;
 			}
 			if (future != null) {
-				future.complete(true);
+				future.complete(new PermissionRequestResult(true, false));
 			}
 		} else {
 			final String permission;
-			final CompletableFuture<Boolean> future;
+			final CompletableFuture<PermissionRequestResult> future;
 			switch (requestCode) {
 				case PERMISSION_REQUEST_RECORD_AUDIO:
 					permission = Manifest.permission.RECORD_AUDIO;
@@ -1825,12 +1852,12 @@ public class CallActivity extends ThreemaActivity implements
 			if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
 				logger.warn("Could not start call, permission {} manually rejected", permission);
 				if (future != null) {
-					future.complete(false);
+					future.complete(new PermissionRequestResult(false, false));
 				}
 			} else {
 				logger.warn("Could not get permission {}, rejected by user", permission);
 				if (future != null) {
-					future.complete(false);
+					future.complete(new PermissionRequestResult(false, false));
 				}
 			}
 		}

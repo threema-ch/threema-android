@@ -543,6 +543,12 @@
 
 	<style name="WizardSpinner" parent="Widget.AppCompat.Spinner">
 		<item name="android:background">@drawable/shape_spinner</item>
+		<item name="android:textSize">@dimen/wizard_small_text_size</item>
+	</style>
+
+	<style name="WizardSpinnerItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
+		<item name="dropdownListPreferredItemHeight">@dimen/wizard_button_height</item>
+		<item name="android:textSize">@dimen/wizard_small_text_size</item>
 	</style>
 
 	<style name="MyActivityTitleText" parent="@android:style/TextAppearance">

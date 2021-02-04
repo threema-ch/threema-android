@@ -77,7 +77,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.NamedFileProvider;
@@ -383,7 +382,7 @@ public class FileServiceImpl implements FileService {
 			return;
 		}
 
-		Date thresholdDate = new Date(System.currentTimeMillis() - (5 * DateUtils.MINUTE_IN_MILLIS));
+		Date thresholdDate = new Date(System.currentTimeMillis() - (15 * DateUtils.MINUTE_IN_MILLIS));
 
 		// this will crash if path is not a directory
 		try {

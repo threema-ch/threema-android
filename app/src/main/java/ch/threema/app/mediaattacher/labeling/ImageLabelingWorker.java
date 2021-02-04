@@ -396,10 +396,10 @@ public class ImageLabelingWorker extends Worker {
 
 	private void onFinish() {
 		// Shut down executor thread pool
-		if (!this.executor.isShutdown()) {
+		/*if (!this.executor.isShutdown()) { TODO Causes DuplicateTaskException on switch off image search settings
 			this.logger.info("Shut down thread pool");
 			this.executor.shutdown();
-		}
+		}*/
 
 		if (this.cancelled) {
 			logger.info("Cancelled after processing {}/{} media files", this.progress, this.mediaCount);

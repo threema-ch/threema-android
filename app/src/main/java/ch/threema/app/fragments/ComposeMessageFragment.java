@@ -365,8 +365,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private LayoutInflater layoutInflater;
 	private ListViewSwipeListener listViewSwipeListener;
 
-	private boolean hastNextRecords = true;
-	private List<AbstractMessageModel> values;
 	private GroupService groupService;
 	private boolean isGroupChat = false;
 	private GroupModel groupModel;
@@ -796,27 +794,32 @@ public class ComposeMessageFragment extends Fragment implements
 			return;
 		}
 
-		new AsyncTask<Void, Void, Integer>() {
+		new AsyncTask<Void, Void, Boolean>() {
+			private List<AbstractMessageModel> messageModels;
+
 			@Override
-			protected Integer doInBackground(Void... params) {
-				values = getNextRecords();
-				if (values != null) {
-					hastNextRecords = values.size() >= nextMessageFilter.getPageSize();
-					return insertToList(values, false, true);
+			protected Boolean doInBackground(Void... params) {
+				messageModels = getNextRecords();
+				if (messageModels != null) {
+					return messageModels.size() >= nextMessageFilter.getPageSize();
 				}
-				return null;
+				return false;
 			}
 
 			@Override
-			protected void onPostExecute(Integer numberOfInsertedRecords) {
-				composeMessageAdapter.notifyDataSetChanged();
-				if (numberOfInsertedRecords != null && numberOfInsertedRecords > 0) {
-					convListView.setSelection(convListView.getSelectedItemPosition() + numberOfInsertedRecords + 1);
+			protected void onPostExecute(Boolean hasMoreRecords) {
+				if (messageModels != null) {
+					int numberOfInsertedRecords = insertToList(messageModels, false, true, true);
+					if (numberOfInsertedRecords > 0) {
+						convListView.setSelection(convListView.getSelectedItemPosition() + numberOfInsertedRecords + 1);
+					}
+				} else {
+					composeMessageAdapter.notifyDataSetChanged();
 				}
 
 				// Notify PullToRefreshAttacher that the refresh has activity.finished
 				swipeRefreshLayout.setRefreshing(false);
-				swipeRefreshLayout.setEnabled(hastNextRecords);
+				swipeRefreshLayout.setEnabled(hasMoreRecords);
 			}
 		}.execute();
 	}
@@ -2381,10 +2384,11 @@ public class ComposeMessageFragment extends Fragment implements
 	 * @param markasread Whether chat should be marked as read
 	 * @return Number of items that have been added to the list INCLUDING date separators and other decoration
 	 */
-	private int insertToList(final List<AbstractMessageModel> values, boolean clear, boolean markasread) {
-		this.composeMessageAdapter.setNotifyOnChange(false);
-
+	@UiThread
+	private int insertToList(final List<AbstractMessageModel> values, boolean clear, boolean markasread, boolean notify) {
 		int insertedSize = 0;
+
+		this.composeMessageAdapter.setNotifyOnChange(false);
 		synchronized (this.messageValues) {
 			int initialSize = this.messageValues.size();
 
@@ -2435,11 +2439,15 @@ public class ComposeMessageFragment extends Fragment implements
 			insertedSize = this.messageValues.size() - initialSize;
 		}
 
-		this.composeMessageAdapter.setNotifyOnChange(true);
-
 		if (clear) {
-			//invalidate list to rebuild the views
-			this.composeMessageAdapter.notifyDataSetInvalidated();
+			composeMessageAdapter.setNotifyOnChange(true);
+			composeMessageAdapter.notifyDataSetInvalidated();
+		} else {
+			if (notify) {
+				composeMessageAdapter.notifyDataSetChanged();
+			} else {
+				composeMessageAdapter.setNotifyOnChange(true);
+			}
 		}
 
 		if (markasread && this.messageReceiver != null) {
@@ -2527,7 +2535,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.composeMessageAdapter.setThumbnailWidth(ConfigUtils.getPreferredThumbnailWidth(getContext(), false));
 			this.composeMessageAdapter.setGroupId(groupId);
 			this.composeMessageAdapter.setMessageReceiver(this.messageReceiver);
-			this.insertToList(values, true, true);
+			this.insertToList(values, true, true, true);
 			updateToolbarTitle();
 		} else {
 			this.thumbnailCache = new ThumbnailCache<Integer>(null);
@@ -2650,7 +2658,7 @@ public class ComposeMessageFragment extends Fragment implements
 					});
 				}
 			});
-			this.insertToList(values, false, true);
+			this.insertToList(values, false, true, false);
 			this.convListView.setAdapter(this.composeMessageAdapter);
 			this.convListView.setItemsCanFocus(false);
 			this.convListView.setVisibility(View.VISIBLE);
@@ -2804,34 +2812,30 @@ public class ComposeMessageFragment extends Fragment implements
 	 * @param filter Filter to use for this search
 	 */
 	@UiThread
-	private void searchV2Quote(final String apiMessageId, final ComposeMessageAdapter.ConversationListFilter filter) {
+	synchronized private void searchV2Quote(final String apiMessageId, final ComposeMessageAdapter.ConversationListFilter filter) {
 		filter.filter("#" + apiMessageId, new Filter.FilterListener() {
 			@SuppressLint("StaticFieldLeak")
 			@Override
 			public void onFilterComplete(int count) {
 				if (count == 0) {
 					new AsyncTask<Void, Void, Integer>() {
+						List<AbstractMessageModel> messageModels;
+
 						@Override
 						protected Integer doInBackground(Void... params) {
-
-							values = getNextRecords();
-							if (values != null) {
-								int numNewRecords = values.size();
-								hastNextRecords = numNewRecords >= nextMessageFilter.getPageSize();
-								insertToList(values, false, false);
-								return numNewRecords;
+							messageModels = getNextRecords();
+							if (messageModels != null) {
+								return messageModels.size();
 							}
 							return null;
 						}
 
 						@Override
 						protected void onPostExecute(Integer result) {
-							if (result != null) {
-								composeMessageAdapter.notifyDataSetChanged();
-							}
-
 							if (getContext() != null) {
 								if (result != null && result > 0) {
+									insertToList(messageModels, false, false, true);
+
 									if (getFragmentManager() != null) {
 										if (getFragmentManager().findFragmentByTag(DIALOG_TAG_SEARCHING) == null) {
 											GenericProgressDialog.newInstance(R.string.searching, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_SEARCHING);
@@ -4187,13 +4191,11 @@ public class ComposeMessageFragment extends Fragment implements
 				@Override
 				protected void onPostExecute(Void result) {
 					if (messageModels != null && isAdded()) {
-						hastNextRecords = false;
-
 						item.collapseActionView();
 						item.setActionView(actionView);
 						configureSearchWidget(menu.findItem(R.id.menu_action_search));
 
-						insertToList(messageModels, true, true);
+						insertToList(messageModels, true, true, true);
 						convListView.setSelection(Integer.MAX_VALUE);
 					}
 				}

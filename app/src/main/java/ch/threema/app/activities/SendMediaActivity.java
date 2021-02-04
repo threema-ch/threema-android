@@ -60,7 +60,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.mapbox.mapboxsdk.style.layers.Property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +95,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ComposeEditText;
@@ -1081,17 +1079,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return;
 		}
 
-		messageService.sendMediaAsync(mediaItems, messageReceivers, new MessageServiceImpl.SendResultListener() {
-			@Override
-			public void onError(String errorMessage) { }
-
-			@Override
-			public void onCompleted() {
-				new Thread(() -> {
-					fileService.cleanTempDirs();
-				}).start();
-			}
-		});
+		messageService.sendMediaAsync(mediaItems, messageReceivers, null);
 
 		setResult(RESULT_OK);
 		finish();
@@ -1346,7 +1334,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 	@Override
 	protected void onDestroy() {
-		VideoTimelineCache.getInstance().flush();
+		new Thread(() -> VideoTimelineCache.getInstance().flush()).start();
+
 		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
 			removeAllListeners();
 		}

@@ -529,6 +529,7 @@
 		<item name="android:textColorSecondary">@color/dark_text_color_secondary</item>
 		<item name="materialButtonStyle">@style/Threema.MaterialButton.Wizard</item>
 		<item name="android:navigationBarColor" tools:targetApi="21">@color/dark_material_secondary</item>
+		<item name="android:spinnerDropDownItemStyle">@style/WizardSpinnerItemStyle</item>
 	</style>
 
 	<style name="Theme.Threema.MediaViewer" parent="Theme.Threema.WithToolbar.Dark">

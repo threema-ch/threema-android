@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="title_section2">联络人</string>
+    <string name="title_section2">联系人</string>
     <string name="title_section1">聊天室</string>
     <string name="title_compose_message">开始聊天</string>
-    <string name="title_choose_recipient">选择收件人</string>
+    <string name="title_choose_recipient">选择接收者</string>
     <string name="title_keyfingerprint">关键指纹</string>
-    <string name="title_mythreemaid">我的Threema ID</string>
+    <string name="title_mythreemaid">我的 Threema ID</string>
     <string name="title_threemaid">Threema ID</string>
-    <string name="title_adduser">新增联络人</string>
+    <string name="title_adduser">新增联系人</string>
     <string name="title_enter_id">输入ID</string>
     <string name="title_invite_friend">邀请朋友</string>
     <string name="invite_via">通过…邀请朋友</string>
     <string name="invite_email_body">您好,\n\n我使用%1$s，它是保护用户隐私的安全即时通讯工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n让我们通过%1$s进行通信s！\n\n干杯\n</string>
     <string name="invite_sms_body">嗨！让我们使用%1$s以安全和符合隐私的方式进行交流！我的Threema ID：https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema，保护隐私的安全通讯工具。</string>
-    <string name="enter_id_hint">输入Threema ID</string>
+    <string name="enter_id_hint">输入 Threema ID</string>
     <string name="account_links">关联账户</string>
-    <string name="menu_settings">设定</string>
-    <string name="menu_about">关于Threema</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_about">关于 Threema</string>
     <string name="menu_add_contact">新建联系人</string>
     <string name="menu_done">完成</string>
-    <string name="menu_mobile_linking">链接号</string>
-    <string name="compose_message_and_enter">点按此处输入</string>
+    <string name="menu_mobile_linking">链接电话号码</string>
+    <string name="compose_message_and_enter">点击这里输入</string>
     <string name="send">发送</string>
     <string name="prefs_privacy">隐私</string>
     <string name="prefs_notifications">声音和通知</string>
@@ -30,56 +30,56 @@
     <string name="prefs_sum_privacy">与隐私相关的设置</string>
     <string name="prefs_sum_notifications">设置声音和振动</string>
     <string name="prefs_sum_chatdisplay">聊天设置</string>
-    <string name="prefs_masterkey">本地储存数据的加密</string>
-    <string name="prefs_header_contacts">联络人</string>
+    <string name="prefs_masterkey">对本地存储的数据进行加密</string>
+    <string name="prefs_header_contacts">联系人</string>
     <string name="prefs_header_chat">聊天室</string>
     <string name="prefs_header_reset">重启</string>
     <string name="prefs_header_keyboard">键盘</string>
     <string name="prefs_sum_sync_contacts_on">使Threema用户与设备的通讯录保持同步</string>
     <string name="prefs_sum_sync_contacts_off">不要将Threema用户与设备的通讯录同步</string>
     <string name="prefs_title_sync_contacts">通讯录同步</string>
-    <string name="prefs_sum_block_unknown_off">任何人都可以向您发送消息。
-当第一条消息到达时，新的联系人将被自动添加。</string>
-    <string name="prefs_sum_block_unknown_on">只有您的联系人列表中的人才能向您发送消息。</string>
+    <string name="prefs_sum_block_unknown_off">任何人都可以向您发送信息。
+当第一条信息到达时，新的联系人将被自动添加。</string>
+    <string name="prefs_sum_block_unknown_on">只有您的联系人列表中的人才能向您发送信息。</string>
     <string name="prefs_title_block_unknown">阻止未知联系人</string>
     <string name="prefs_title_read_receipts">发送已读回执</string>
-    <string name="prefs_title_typing_indicator">发送打字指示</string>
+    <string name="prefs_title_typing_indicator">发送打字状态</string>
     <string name="prefs_media_title">媒体与存储</string>
     <string name="prefs_sum_media_title">媒体和存储设置</string>
     <string name="prefs_image_size">图片尺寸</string>
     <string name="prefs_notification_sound">通知声音</string>
     <string name="prefs_sum_notification_sound">系统默认</string>
     <string name="prefs_vibrate">振动</string>
-    <string name="prefs_sum_vibrate">振动收到的消息</string>
+    <string name="prefs_sum_vibrate">收到信息时振动</string>
     <string name="prefs_light">通知灯</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">选择壁纸</string>
     <string name="prefs_sum_wallpaper">选择图像作为背景</string>
     <string name="prefs_title_wallpaper_switch">壁纸</string>
     <string name="prefs_title_enter">输入发送</string>
-    <string name="prefs_sum_enter_on">输入键立即发送消息</string>
-    <string name="prefs_sum_enter_off">Enter键添加新行</string>
+    <string name="prefs_sum_enter_on">按 “Enter” 键以立即发送信息</string>
+    <string name="prefs_sum_enter_off">按 “Enter” 键以添加新行</string>
     <string name="prefs_system_notifications">单次聊天</string>
     <string name="prefs_inapp">应用内</string>
     <string name="prefs_inapp_sounds">应用内声音</string>
     <string name="prefs_inapp_sounds_on">发送/接收消息时播放声音</string>
     <string name="prefs_inapp_sounds_off">不要播放任何应用内声音</string>
     <string name="prefs_inapp_vibrate">应用内振动</string>
-    <string name="prefs_inapp_vibrate_on">接收消息时振动</string>
-    <string name="prefs_inapp_vibrate_off">接收消息时不要振动</string>
+    <string name="prefs_inapp_vibrate_on">接收信息时振动</string>
+    <string name="prefs_inapp_vibrate_off">接收信息时不要振动</string>
     <string name="prefs_troubleshooting">故障排除</string>
     <string name="prefs_sum_troubleshooting">分析并修复问题</string>
     <string name="prefs_workarounds">解决方法</string>
     <string name="prefs_title_polling_switch">投票中</string>
-    <string name="prefs_sum_polling_on">定期检查是否有新消息（使用更多电量！）</string>
-    <string name="prefs_sum_polling_off">仅在推送时检查新消息</string>
+    <string name="prefs_sum_polling_on">定期检查是否有新信息（或使用更多电量）</string>
+    <string name="prefs_sum_polling_off">仅在推送时检查新信息</string>
     <string name="prefs_logging">记录中</string>
     <string name="prefs_title_message_log_switch">记录到文件</string>
     <string name="prefs_title_sum_message_log_on">事件和网络信息将记录到文件debug_log.txt中</string>
     <string name="prefs_title_sum_message_log_off">活动将不会被记录</string>
     <string name="prefs_reset_push">重置推送令牌</string>
     <string name="prefs_sum_reset_push">重新注册设备以通过FCM进行推送通知</string>
-    <string name="prefs_notification_preview">显示消息预览</string>
+    <string name="prefs_notification_preview">显示信息预览</string>
     <string name="prefs_sum_reset_ringtones">恢复系统默认值</string>
     <string name="prefs_title_reset_ringtones">重置通知声音设置</string>
     <string name="image_size_small">小（640x640）</string>
@@ -101,18 +101,18 @@
     <string name="please_wait">请等待...</string>
     <string name="wizard_first_create_id">创建您的Threema ID…</string>
     <string name="wizard1_sync_contacts">正在同步通讯录…</string>
-    <string name="wizard2_email_hint">输入你的电子邮箱地址</string>
+    <string name="wizard2_email_hint">输入您的电子邮箱地址</string>
     <string name="wizard2_email_linking">将电子邮件链接到您的ID</string>
     <string name="wizard2_phone_hint">输入您的手机号码</string>
-    <string name="wizard2_phone_number_confirm_title">确认号码</string>
+    <string name="wizard2_phone_number_confirm_title">确认电话号码</string>
     <string name="wizard2_phone_number_confirm">我们即将发送短信至:\n\n%1$s\n\n此号码正确吗？</string>
     <string name="wizard2_phone_linking">将电话号码链接到您的ID</string>
-    <string name="wizard3_nickname_hint">输入你的昵称</string>
+    <string name="wizard3_nickname_hint">输入您的昵称</string>
     <string name="set_nickname_title">设置昵称</string>
     <string name="ok">好</string>
     <string name="cancel">取消</string>
     <string name="copy_message_action">复制</string>
-    <string name="delete_contact_action">删除联络人</string>
+    <string name="delete_contact_action">删除联系人</string>
     <string name="scan_id">扫描ID</string>
     <string name="id_mismatch">您扫描的公钥与服务器为该ID存储的密钥不匹配。这意味着有人操纵了扫描后的代码，并且该密钥不应受到信任。</string>
     <string name="scan_successful">该ID已成功扫描，现在已验证联系人。</string>
@@ -123,22 +123,22 @@
     <string name="share_via">分享到...</string>
     <string name="share_subject">Threema对话</string>
     <string name="message_delete_undo">撤消</string>
-    <string name="message_deleted">讯息已删除</string>
-    <string name="mobile_already_linked">您的Threema ID已链接到该手机号码</string>
+    <string name="message_deleted">信息已删除</string>
+    <string name="mobile_already_linked">您的 Threema ID 已链接到此手机号码</string>
     <string name="email_already_linked">您的Threema ID已链接到该电子邮件地址</string>
     <string name="whoaaa">Threema 公告</string>
     <string name="really_delete_message_title">删除信息</string>
     <string name="really_delete_thread">删除聊天</string>
     <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">您是否确实要删除％d聊天？您将无法恢复
 消息。</string>
-    <string name="really_delete_contact">您真的要删除此联系人和所有关联的消息吗？</string>
+    <string name="really_delete_contact">您真的要删除此联系人和所有关联的信息吗？</string>
     <string name="image_placeholder">图片</string>
     <string name="invalid_threema_id">无效的Threema ID</string>
     <string name="contact_already_exists">联系人已存在</string>
     <string name="close">关</string>
-    <string name="creating_contact">新增联络人</string>
+    <string name="creating_contact">新增联系人</string>
     <string name="creating_contact_successful">已成功添加联系人</string>
-    <string name="invalid_threema_qr_code">无效的QR码</string>
+    <string name="invalid_threema_qr_code">无效的二维码</string>
     <string name="threema_contact">Threema联系</string>
     <string name="first_name">名字</string>
     <string name="last_name">姓</string>
@@ -159,14 +159,14 @@
 地址/电话号码，然后再将其删除。</string>
     <string name="delete_id_message2">最后警告：您真的要删除此设备上的ID吗？</string>
     <string name="delete_id_sum">永久删除您的ID和此设备上的所有数据</string>
-    <string name="backup_password_summary">您的ID导出将使用密码进行加密。使用字母，数字和符号的组合。不要忘记您在这里输入的内容！</string>
+    <string name="backup_password_summary">您的ID导出将使用密码进行加密。使用字母，数字和符号的组合。请牢牢记住这里输入的内容！</string>
     <string name="backup_password_again_summary">再次输入密码</string>
     <string name="password_hint">密码</string>
     <string name="generating_backup_data">生成备份数据</string>
     <string name="backup_id_title">您的ID导出</string>
-    <string name="backup_id_summary">上面显示的文本字符串或QR码以及您
+    <string name="backup_id_summary">上面显示的文本字符串或二维码以及您
 选择的密码可用于在另一台设备上还原您的ID。您应将其复制到合适的位置，通过
-电子邮件共享或使用其他设备扫描QR码。</string>
+电子邮件共享或使用其他设备扫描二维码。</string>
     <string name="support">帮助</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">以下文本字符串可以与所选密码一起使用，以
@@ -175,7 +175,7 @@
     <string name="add_attachment">新附件</string>
     <string name="invalid_passphrase">密码无效</string>
     <string name="master_key_locked">主密钥被锁定</string>
-    <string name="master_key_locked_notify_description">点按此处输入密码</string>
+    <string name="master_key_locked_notify_description">点击这里输入密码</string>
     <string name="prefs_masterkey_passphrase">未设置密码</string>
     <string name="prefs_title_masterkey_passphrase">密码口令</string>
     <string name="setting_masterkey_passphrase">设置主密钥密码</string>
@@ -185,7 +185,7 @@
     <string name="masterkey_passphrase_again_summary">再次输入密码</string>
     <string name="masterkey_passphrase_hint">密码短语</string>
     <string name="master_key_locked_want_exit">主密钥仍处于锁定状态。您想再试一次吗？</string>
-    <string name="click_here_to_change_passphrase">点按此处更改密码</string>
+    <string name="click_here_to_change_passphrase">点击这里更改密码</string>
     <string name="attach_camera">系统相机</string>
     <string name="menu_restore">从备份还原</string>
     <string name="restore_id_hint">输入或粘贴ID导出的文本字符串以还原</string>
@@ -193,7 +193,7 @@
     <string name="video_placeholder">视频</string>
     <string name="audio_placeholder">音讯</string>
     <string name="restoring_backup">恢复备份</string>
-    <string name="server_message_title">来自服务器的消息</string>
+    <string name="server_message_title">来自服务器的信息</string>
     <string name="error">错误</string>
     <string name="no_contacts"><![CDATA[您还没有任何联系人。打开同步（“设置”>“隐私”）或手动添加联系人]]></string>
     <string name="masterkey_title">输入密码</string>
@@ -209,7 +209,7 @@
     <string name="no_matching_contacts">找不到联系人。</string>
     <string name="code_invalid">您输入的代码无效。</string>
     <string name="try_again">再试一次</string>
-    <string name="decoding_message">解密消息</string>
+    <string name="decoding_message">解密信息</string>
     <string name="invalid_barcode">无效的条形码类型</string>
     <string name="expired_barcode">此代码已过期。请直接从其他用户的应用程序再次扫描。</string>
     <string name="pending">待定</string>
@@ -229,7 +229,7 @@
     <string name="really_forward">转发至«%1$s»?</string>
     <string name="really_send">要发送到«%1$s»?</string>
     <string name="ringtone_none">无声</string>
-    <string name="no_camera_installed">没有可用的相机</string>
+    <string name="no_camera_installed">没有可用的摄像头</string>
     <string name="save_message_action">保存</string>
     <string name="saving_media">保存媒体</string>
     <string name="file_is_not_a_video">所选文件不是视频</string>
@@ -245,7 +245,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no_update_available">无可用更新</string>
     <string name="download">下载</string>
     <string name="not_now">稍后提醒我</string>
-    <string name="preparing_messages">准备消息</string>
+    <string name="preparing_messages">准备信息</string>
     <string name="select_emoji">表情符号</string>
     <string name="search_contact">搜索联系人</string>
     <string name="push_reset_title">推送令牌重置</string>
@@ -260,36 +260,36 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="emoji_activities">活动项目</string>
     <string name="emoji_flags">标志</string>
     <string name="title_lock">锁</string>
-    <string name="new_messages_locked">有新讯息</string>
-    <string name="new_messages_locked_description">触摸以查看新讯息。</string>
-    <string name="new_unprocessed_messages">有新讯息</string>
-    <string name="new_unprocessed_messages_description">触摸以获取并查看新的传入讯息。</string>
-    <string name="prefs_title_masterkey_notification_newmsg">新讯息通知</string>
-    <string name="prefs_masterkey_notification_newmsg_off">主
-密钥锁定时，新消息不会触发通知</string>
-    <string name="prefs_masterkey_notification_newmsg_on">当主
-密钥锁定时，新消息会触发通用通知</string>
+    <string name="new_messages_locked">有新信息</string>
+    <string name="new_messages_locked_description">触摸以查看新信息。</string>
+    <string name="new_unprocessed_messages">有新信息</string>
+    <string name="new_unprocessed_messages_description">触摸以获取并查看新的传入信息。</string>
+    <string name="prefs_title_masterkey_notification_newmsg">新信息通知</string>
+    <string name="prefs_masterkey_notification_newmsg_off">主密钥锁定时，新信息不会
+触发通知</string>
+    <string name="prefs_masterkey_notification_newmsg_on">当主密钥锁定时，
+新信息会触发通用通知</string>
     <string name="chat_history_attached">会话日志已附加。</string>
-    <string name="new_message">1条新讯息</string>
-    <string name="new_messages">新讯息</string>
+    <string name="new_message">1条新信息</string>
+    <string name="new_messages">新信息</string>
     <string name="backup_data_title">数据备份</string>
     <string name="backup_data_password_msg">您的数据将保存在内部USB存储设备上的ZIP文件中，并且可以
 在任何Android设备上还原。请输入密码以保护您的数据备份。</string>
     <string name="restore_data_password_msg">输入用于创建此备份的密码。</string>
     <string name="backup_data_media">包括大型媒体文件（视频，文档，原始图片）</string>
     <string name="backup_data_new">创建数据备份</string>
-    <string name="pinentry_enter_pin">输入您的Threema PIN继续</string>
+    <string name="pinentry_enter_pin">输入您的 Threema PIN 以继续</string>
     <string name="pinentry_wrong_pin">PIN码错误</string>
     <string name="prefs_sum_security_pin">锁定对Threema用户界面的访问</string>
     <string name="prefs_title_pin_switch">应用锁定</string>
     <string name="prefs_title_pin_code">设置密码</string>
     <string name="prefs_pin_grace">锁定时间</string>
     <string name="prefs_sum_pin_grace">激活屏幕锁定之前的时间</string>
-    <string name="click_here_to_change_pin">密码设置。点按此处即可更改</string>
+    <string name="click_here_to_change_pin">这是PIN设置。点击这里即可更改。</string>
     <string name="set_pin_menu_title">设置新密码</string>
     <string name="set_pin_summary_intro">通过设置数字PIN（仅数字）来保护您的隐私。此PIN码可用于在宽限时间后锁定对Threema的用户界面的访问或保护私人聊天</string>
     <string name="set_pin_again_summary">再次输入PIN码</string>
-    <string name="set_pin_hint">销</string>
+    <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">新组</string>
     <string name="search_group">搜索群组</string>
     <string name="updating_system">更新系统</string>
@@ -302,7 +302,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="search">搜索</string>
     <string name="hint_search_keyword">搜索关键词</string>
     <string name="add_group_owner">群组创作者</string>
-    <string name="title_tab_users">联络人</string>
+    <string name="title_tab_users">联系人</string>
     <string name="title_tab_groups">群组</string>
     <string name="no_matching_groups">找不到群组</string>
     <string name="action_leave_group">离开群组</string>
@@ -313,7 +313,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="backup_share">共享备份</string>
     <string name="my_backups_title">备份</string>
     <string name="backup_delete_confirm">备份文件已删除</string>
-    <string name="message_log_title">讯息详情</string>
+    <string name="message_log_title">信息详情</string>
     <string name="state_read">已读</string>
     <string name="state_ack">同意</string>
     <string name="state_dec">不同意</string>
@@ -333,12 +333,12 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="creating_group">建立群组</string>
     <string name="updating_group">更新群组</string>
     <string name="status_create_group">群组已创建。</string>
-    <string name="status_rename_group">群组名称改为 \"%1$s\"</string>
+    <string name="status_rename_group">群组名称改为 “%1$s”</string>
     <string name="status_group_new_photo">群组已更新。</string>
     <string name="status_group_new_member">«%1$s» 已添加到群组。</string>
     <string name="status_group_member_left">«%1$s» 离开了群组</string>
     <string name="status_group_member_kicked">«%1$s» 已从群组中移除。</string>
-    <string name="can_not_send_no_group_members">您无法将消息发送到空群组</string>
+    <string name="can_not_send_no_group_members">您无法将信息发送到空群组</string>
     <string name="you_are_not_a_member_of_this_group">您不是该群组的成员</string>
     <string name="can_not_delete_not_valid">无法删除无效的对象</string>
     <string name="can_not_delete_contact_until_in_group">该联系人仍然是群组
@@ -352,13 +352,13 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="exclude_contact">排除自动同步</string>
     <string name="prefs_header_lists">清单</string>
     <string name="prefs_title_black_list">黑名单</string>
-    <string name="prefs_sum_black_list">来自此处列出的ID的消息将被忽略。</string>
+    <string name="prefs_sum_black_list">来自此处列出的ID的信息将被忽略。</string>
     <string name="verified">已验证</string>
     <string name="want_to_add_to_exclude_list">此联系人已链接到手机通讯录中的记录。如果您
 在Threema中将其删除，则联系人同步后它会重新出现。 n是否要从同步中排除它？</string>
     <string name="no">否</string>
     <string name="yes">是</string>
-    <string name="deleting_contact">删除联络人</string>
+    <string name="deleting_contact">删除联系人</string>
     <string name="prefs_contact_soring">排序</string>
     <string name="prefs_sum_contact_soring">设置联系人列表中条目的排序顺序</string>
     <string name="prefs_contact_format">查看联系人姓名</string>
@@ -377,7 +377,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="contact_format_last_name_first_name">姓氏名字</string>
     <string name="block_contact">屏蔽联系人</string>
     <string name="unblock_contact">取消阻止联系人</string>
-    <string name="unread_messages">未读讯息</string>
+    <string name="unread_messages">未读信息</string>
     <string name="really_unlink_contact_title">取消联系</string>
     <string name="really_unlink_contact">您是否真的要取消此联系人的链接？</string>
     <string name="do_unlink_contact">取消联系</string>
@@ -396,26 +396,26 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="file_saved">%d 个文件已成功保存。</string>
     <string name="gcm_register_failed">无法更新FCM推送令牌，请稍后重试。</string>
     <string name="internet_connection_required">没有网络连接。</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">无法发送%1$d 条消息</string>
-    <string name="prefs_sum_save_media">以未加密形式保存传入的图片和视频以及传出的相机图片</string>
+    <string name="sending_message_failed" tools:ignore="PluralsCandidate">无法发送%1$d 条信息</string>
+    <string name="prefs_sum_save_media">以未加密的形式保存传入的图片和视频，以及传出的相机图片。</string>
     <string name="prefs_save_media">自动保存到图库</string>
     <string name="title_add_distribution_list">新的通讯组列表</string>
     <string name="title_edit_distribution_list">编辑通讯组列表</string>
     <string name="really_delete_distribution_list">删除通讯组列表</string>
     <string name="really_delete_distribution_list_message">您是否真的要删除此列表并删除其
-消息？</string>
+信息？</string>
     <string name="enter_distribution_list_name">为该列表选择一个名称</string>
     <string name="distribution_list">通讯组</string>
     <string name="title_tab_distribution_list">通讯组列表</string>
     <string name="no_matching_distribution_lists">没有匹配的通讯组列表</string>
     <string name="is_typing">打字中…</string>
     <string name="push_not_available_title">找不到推送服务</string>
-    <string name="push_not_available_text">“我们未在您的设备上找到推送服务，因为Google Play服务尚未安装或过时。Threema将每15分钟检查一次新邮件。</string>
+    <string name="push_not_available_text">“我们无法在您的设备上找到推送服务，因为Google Play服务没有安装或过时。Threema 会每15分钟检查一次新信息。</string>
     <string name="backup_in_progress">正在进行备份</string>
     <string name="backup_or_restore_success_body">数据备份成功完成</string>
     <string name="backup_or_restore_error">Threema备份</string>
     <string name="backup_or_restore_error_body">备份未成功完成</string>
-    <string name="could_not_download_message">无法下载消息</string>
+    <string name="could_not_download_message">无法下载信息</string>
     <string name="info">资讯</string>
     <string name="resync_group">重新同步群组</string>
     <string name="edit_name">编辑名称和图片</string>
@@ -423,7 +423,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="group_was_synchronized">群组已同步。</string>
     <string name="verification_level2_work_explain">内部联系人，由您的组织预先填充。</string>
     <string name="verification_level3_work_explain">通过扫描QR码，您能亲自验证内部联系人的身份和公钥。</string>
-    <string name="verification_level3_explain">通过扫描QR码，您能亲自验证联系人的身份和公钥。</string>
+    <string name="verification_level3_explain">通过扫描二维码，您能亲自验证联系人的身份和公钥。</string>
     <string name="verification_level2_explain">联系人的电话号码和/或电子邮件地址包含在您的通讯录中。</string>
     <string name="verification_level1_explain">未知联系人；该联系人没有将电话号码或电子邮件地址链接到其ID，或者您的通讯录中没有这些联系人详细信息。</string>
     <string name="state_dialog_received">已收到</string>
@@ -438,24 +438,24 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="media_gallery_videos">影片</string>
     <string name="group_membership_title">这些群组的成员</string>
     <string name="num_items_sected">已选择 %s</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">您真的要删除%d条媒体消息吗？</string>
+    <string name="really_delete_media" tools:ignore="PluralsCandidate">您真的要删除%d条媒体信息吗？</string>
     <string name="check_updates">检查更新</string>
     <string name="masterkey_lock_explain">Threema将密码短语保留在内存中。如果您需要经常重新输入密码
 ，请确保已禁用可能会过早终止Threema的任务杀手和省电应用。</string>
     <string name="identity_already_exists">此ID已在您的联系人列表中</string>
-    <string name="share_contact">分享联络人</string>
+    <string name="share_contact">分享联系人</string>
     <string name="add_shortcut">添加快捷方式</string>
     <string name="group_not_found">找不到这样的群组。</string>
     <string name="contact_not_found">没有这样的联系人</string>
     <string name="contact_now_blocked">联系人已封锁</string>
     <string name="contact_now_unblocked">联络畅通</string>
     <string name="not_enough_disk_space_title">存储空间不足</string>
-    <string name="not_enough_disk_space_text">至少释放%1$s来接收消息</string>
+    <string name="not_enough_disk_space_text">至少释放%1$s来接收信息</string>
     <string name="sending_images">传送影像</string>
     <string name="share_conversation_body">需要具有AES支持的现代ZIP工具才能解压缩文件，例如
 http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">聊天将作为加密的zip文件发送。请选择一个密码：</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d 个聊天中有%1$d条新消息</string>
+    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d 个聊天中有%1$d条新信息</string>
     <string name="ballot_create">建立投票</string>
     <string name="ballot_choice_add">添加选项</string>
     <string name="ballot_state_closed">已关闭</string>
@@ -485,10 +485,10 @@ http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id42542435
     <string name="ballot_wizard0_explain">直接与Threema快速创建在线民意调查。安排活动，
 进行调查或向朋友询问任何您想要的东西。</string>
     <string name="ballot_add_choices">添加答案</string>
-    <string name="blocked_cannot_send">您无法将消息发送给被阻止的联系人</string>
-    <string name="really_block_contact">来自此联系人的未来消息将被丢弃。继续？</string>
+    <string name="blocked_cannot_send">您无法将信息发送给被阻止的联系人</string>
+    <string name="really_block_contact">来自此联系人今后的信息将被丢弃。是否继续？</string>
     <string name="ballot_result_final">最后结果</string>
-    <string name="invalid_cannot_send">您无法向无效的联系人发送消息</string>
+    <string name="invalid_cannot_send">您无法向无效的联系人发送信息</string>
     <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
     <string name="ballot_answer_count_error">请输入至少两个答案进行投票。</string>
     <string name="ballot_one_contact_not_supported">警告：%1$s将无法参与您的投票。</string>
@@ -500,7 +500,7 @@ http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id42542435
     <string name="wearable_reply">回复</string>
     <string name="wearable_reply_label">回覆 %s</string>
     <string name="message_acknowledged">«同意»发送</string>
-    <string name="push_disable_text">如果继续，推送消息将被禁用，Threema将
+    <string name="push_disable_text">如果继续，推送信息将被禁用，Threema 将
 每15分钟检查一次新消息。</string>
     <string name="ballot_intermediate_results_show">显示中间结果</string>
     <string name="converting_video">处理影片</string>
@@ -508,12 +508,12 @@ http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id42542435
     <string name="video_size_large">低（使用更多数据）</string>
     <string name="video_size_original">无（使用大量数据）</string>
     <string name="prefs_video_size">视频压缩</string>
-    <string name="show_contact">显示联络人</string>
+    <string name="show_contact">显示联系人</string>
     <string name="chat_with">与 %1$s 聊天</string>
     <string name="kick_user_from_group">从组中踢出%1$ s</string>
-    <string name="show_as_qrcode">显示为QR码</string>
-    <string name="qr_code">QR码</string>
-    <string name="really_leave_id_export">如果尚未这样做，请将ID导出文本字符串或相应的QR码保存到安全的地方或打印出来。没有备份，无法还原Threema ID。</string>
+    <string name="show_as_qrcode">显示为二维码</string>
+    <string name="qr_code">二维码</string>
+    <string name="really_leave_id_export">如果尚未这样做，请将ID导出文本字符串或相应的二维码保存到安全的地方或打印出来。没有备份，无法还原Threema ID。</string>
     <string name="revocation_key_title">ID吊销</string>
     <string name="revocation_key_not_set">未设置撤销密码</string>
     <string name="revocation_key_set_at">密码设置为%1$s</string>
@@ -524,7 +524,7 @@ http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id42542435
     <string name="invalid_backup">无效的备份数据。无法还原。</string>
     <string name="revocation_explain">您在此处输入的密码可让您通过
 https://myid.threema.ch/revoke撤消您的ID，以防丢失或被盗</string>
-    <string name="no_unread_messages">未激活未读消息或PIN锁</string>
+    <string name="no_unread_messages">没有未读信息或PIN锁已激活</string>
     <string name="send_media">发送媒体</string>
     <string name="rotate">旋转</string>
     <string name="remove">去掉</string>
@@ -536,7 +536,7 @@ https://myid.threema.ch/revoke撤消您的ID，以防丢失或被盗</string>
     <string name="file_placeholder">文件</string>
     <string name="internal_storage">内部存储器</string>
     <string name="no_activity_for_mime_type">找不到用于打开此文件的应用。</string>
-    <string name="message_copied">讯息已复制</string>
+    <string name="message_copied">信息已复制</string>
     <string name="open_from">从打开</string>
     <string name="file_one_contact_not_supported">%1$s无法接收文件。</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人无法收到您的文件。</string>
@@ -562,12 +562,12 @@ https://myid.threema.ch/revoke撤消您的ID，以防丢失或被盗</string>
 仅在WiFi网络中上传和下载文件。</string>
     <string name="prefs_theme">设计主题</string>
     <string name="list_theme_light">浅色（默认）</string>
-    <string name="list_theme_dark">黑暗</string>
+    <string name="list_theme_dark">深色</string>
     <string name="prefs_header_appearance">外观</string>
     <string name="prefs_sum_passphrase">需要密码才能解锁本地加密</string>
     <string name="prefs_title_masterkey_change_passphrase">更改密码</string>
     <string name="storage_total">内部存储空间</string>
-    <string name="storage_threema">Threema占用的空间</string>
+    <string name="storage_threema">Threema 占用的空间</string>
     <string name="storage_total_free">总可用空间</string>
     <string name="storage_total_in_use">正在使用</string>
     <string name="one_year">1年</string>
@@ -585,13 +585,13 @@ https://myid.threema.ch/revoke撤消您的ID，以防丢失或被盗</string>
     <string name="media_files_deleted" tools:ignore="PluralsCandidate">已删除%d个媒体文件</string>
     <string name="storage_management">存储管理</string>
     <string name="media">媒体</string>
-    <string name="prefs_storage_mgmt_title">清理媒体，文件和消息</string>
+    <string name="prefs_storage_mgmt_title">清理媒体，文件和信息</string>
     <string name="num_messages">信息数量</string>
-    <string name="delete_messages_explain">删除以下讯息：</string>
-    <string name="delete_message">立即删除讯息</string>
-    <string name="really_delete_messages">如果继续，这些讯息将被永久删除。您将无法
+    <string name="delete_messages_explain">删除以下信息：</string>
+    <string name="delete_message">立即删除信息</string>
+    <string name="really_delete_messages">如果继续，这些信息将被永久删除。您将无法
 恢复它们。</string>
-    <string name="messages_delete_explain">您也可以完全删除较旧的消息。</string>
+    <string name="messages_delete_explain">您也可以完全删除较旧的信息。</string>
     <string name="backup_started">数据备份开始</string>
     <string name="invalid_data">无效数据。无法发送。</string>
     <string name="prefs_emoji_style">表情符号样式</string>
@@ -636,25 +636,25 @@ Threema支持的所有表情符号。</string>
     <string name="no_lockscreen_set">未设置系统屏幕锁定。</string>
     <string name="on">开</string>
     <string name="off">关</string>
-    <string name="new_wizard_select_country">选择你的国家</string>
+    <string name="new_wizard_select_country">选择您的国家</string>
     <string name="new_wizard_lets_get_started">让我们开始吧！</string>
     <string name="new_wizard_setup_threema">设置Threema</string>
     <string name="new_wizard_restore_id_backup">还原导出的ID</string>
     <string name="new_wizard_welcome">欢迎来到Threema！</string>
     <string name="new_wizard_move_finger">在屏幕上移动手指</string>
     <string name="new_wizard_this_is_your_id">这是您的Threema ID：</string>
-    <string name="new_wizard_works_like_phone_number">您的Threema ID就像电话号码一样。\n您的朋友可以通过此ID与您联系。</string>
+    <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像电话号码一样。\n您的朋友可以通过此ID与您联系。</string>
     <string name="new_wizard_choose_nickname">选择一个昵称</string>
     <string name="new_wizard_nickname_explain">您的朋友会在通知中看到您的昵称</string>
     <string name="new_wizard_hint_enter_nickname">输入昵称</string>
     <string name="new_wizard_help_your_friends_find_you">帮助您的朋友找到您！</string>
     <string name="new_wizard_link_mobile">将您的手机号码和/或电子邮件链接到Threema ID。</string>
-    <string name="new_wizard_link_mobile_only">\u5c06\u60a8\u7684\u624b\u673a\u53f7\u7801\u94fe\u63a5\u5230Threema ID\u3002</string>
+    <string name="new_wizard_link_mobile_only">\u5c06\u60a8\u7684\u624b\u673a\u53f7\u7801\u94fe\u63a5\u5230 Threema ID\u3002</string>
     <string name="new_wizard_hint_mobile_number">手机号码（可选）</string>
     <string name="new_wizard_hint_email">电子邮件（可选）</string>
     <string name="new_wizard_find_friends">在Threema上找到您的朋友</string>
     <string name="new_wizard_sync_contacts_explain">打开查看哪些朋友正在使用Threema。</string>
-    <string name="new_wizard_done_title">你完成了！\n一切正确吗？</string>
+    <string name="new_wizard_done_title">大功告成！\n资料正确吗？</string>
     <string name="new_wizard_linked_to">链接到</string>
     <string name="new_wizard_need_internet">创建唯一的Threema ID需要稳定的Internet连接。请再试一次。</string>
     <string name="new_wizard_more_information">更多信息</string>
@@ -664,9 +664,9 @@ Threema支持的所有表情符号。</string>
     <string name="new_wizard_info_fingerprint">通过移动手指，您可以创建随机数据（称为熵），该数据用于生成
 与新的唯一Threema ID关联的密钥对。该密钥对包括一个的<b>公钥</b>是分配给
 您的朋友和<b>私钥</b>安全地存储在您的手机上。您的朋友将使用
-您的公共密钥加密发送给您的消息。只有私钥的所有者才能解密这些消息，其他人都不能解密。</string>
+您的公共密钥加密发送给您的信息。只有私钥的所有者才能解密这些消息，其他人都不能解密。</string>
     <string name="new_wizard_info_id">您还创建了一个密钥对。公钥已安全地传输到我们的
-服务器。私钥永远不会离开您的设备。这样可以确保没有其他人可以阅读您的消息。</string>
+服务器。私钥永远不会离开您的设备。这样可以确保没有其他人可以阅读您的信息。</string>
     <string name="new_wizard_info_sync_contacts">如果启用此选项，Threema会将电子邮件地址和电话号码单向加密（散列），然后
 再将其发送到服务器以查找匹配的联系人。我们不存储任何
 地址簿数据。</string>
@@ -698,7 +698,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="new_wizard_anonymous_confirm_phone_only">您没有输入手机号码链接到
 Threema ID。您不会出现在朋友的联系人列表中。您真的要
 匿名使用Threema吗？</string>
-    <string name="new_wizard_scan_id_backup">或扫描ID导出的QR码</string>
+    <string name="new_wizard_scan_id_backup">或扫描ID导出的二维码</string>
     <string name="error_saving_file">保存文件时出错。检查权限。</string>
     <string name="wait_one_minute">请求通话前，请至少等待10分钟，直至短信到达。</string>
     <string name="backup_id">导出的ID</string>
@@ -713,7 +713,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <!-- restrictions -->
     <string name="disabled_by_policy">某些设置已被设备策略禁用</string>
     <string name="select_all">全选</string>
-    <string name="deleting_messages">删除讯息</string>
+    <string name="deleting_messages">删除信息</string>
     <string name="media_gallery_files">档案</string>
     <string name="prefs_gif_autoplay">自动播放GIF动画</string>
     <string name="media_gallery_audio">语音留言</string>
@@ -725,22 +725,22 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="no_media_found_generic">在此聊天中找不到媒体</string>
     <string name="max_images_reached" tools:ignore="PluralsCandidate">最多 %d个项目可以一次发送</string>
     <string name="enter_description">请在此处描述错误/问题。</string>
-    <string name="add_caption_hint">添加可选字幕</string>
+    <string name="add_caption_hint">添加可选标题</string>
     <string name="disable">禁用</string>
     <string name="continue_anyway">仍然继续</string>
     <string name="invalid_input">输入无效</string>
     <string name="already_licensed">已获得许可</string>
     <string name="hide_chat">私人聊天</string>
-    <string name="really_hide_chat_message">您想将此聊天标记为私人吗？使用菜单切换消息列表中私人聊天的可见性。</string>
+    <string name="really_hide_chat_message">您想将此聊天标记为私人吗？使用菜单切换信息列表中私人聊天的可见性。</string>
     <string name="chat_hidden">聊天标记为私人</string>
     <string name="title_show_private_chats">显示私人聊天</string>
     <string name="title_hide_private_chats">隐藏私人聊天</string>
     <string name="chat_visible">聊天不再是私密的</string>
     <string name="prefs_title_locking_mechanism">锁定装置</string>
     <string name="lock_option_none">没有</string>
-    <string name="lock_option_pin">销</string>
+    <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">系统屏幕锁定</string>
-    <string name="hide_chat_message_explain">Threema允许您使用PIN保护某些聊天，并将其暂时隐藏在消息列表中。要启用私人聊天，请设置PIN或在设置中启用系统屏幕锁定（Android 6.0+）。</string>
+    <string name="hide_chat_message_explain">Threema允许您使用PIN保护某些聊天，并将其暂时隐藏在信息列表中。要启用私人聊天，请设置PIN或在设置中启用系统屏幕锁定（Android 6.0+）。</string>
     <string name="set_lock">现在设置</string>
     <string name="prefs_title_access_protection">访问保护</string>
     <string name="private_chat_subject">私人的</string>
@@ -822,23 +822,23 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="prefs_sum_receive_profilepics_off">隐藏联系人提供的个人头像</string>
     <string name="prefs_sum_receive_profilepics_on">隐藏联系人提供的个人头像</string>
     <string name="prefs_sum_receive_profilepics_recipients_list">当您向列表中选择的联系人发信息时，他们将看到您的个人头像。</string>
-    <string name="menu_send_profilpic">添加为个人资料照片收件人</string>
-    <string name="menu_send_profilpic_off">删除为个人资料照片收件人</string>
+    <string name="menu_send_profilpic">添加为个人资料照片接收者</string>
+    <string name="menu_send_profilpic_off">删除为个人资料照片接收者</string>
     <string name="menu_send_profilpic_now">立即发送头像</string>
     <string name="profile_picture_sent">个人头像已发送</string>
     <string name="sending_messages">正在发送…</string>
-    <string name="backup_data_media_confirm">将大型媒体文件保存到本地ZIP备份可能会超出设备的CPU和内存容量，并且可能需要很长时间。备份运行时，Threema将不会发送或接收消息。继续吗？</string>
+    <string name="backup_data_media_confirm">将大型媒体文件保存到本地ZIP备份可能会超出设备的CPU和内存容量，并且可能需要很长时间才能完成。备份进行期间，Threema 将不会发送或接收信息。是否继续？</string>
     <string name="backup_data_cancelled">备份已取消</string>
     <string name="service_manager_not_available">无法启动Threema。请关闭设备，然后再打开。</string>
-    <string name="message_sent">讯息已发送</string>
+    <string name="message_sent">信息已发送</string>
     <string name="threema_call">Threema通话</string>
-    <string name="threema_message_to">给%s的讯息</string>
+    <string name="threema_message_to">给%s的信息</string>
     <string name="threema_call_with">致电%s</string>
     <string name="prefs_title_voip">Threema通话</string>
     <string name="prefs_title_force_turn">一律中继电话</string>
     <string name="prefs_summary_force_turn_off">如果可能，建立直接连接，并且仅通过Threema服务器将呼叫中继到未经验证的联系人。可能会暴露您的IP地址。</string>
     <string name="prefs_summary_force_turn_on">通过Threema服务器强制中继所有呼叫，从而保护您的IP地址。可能会影响通话质量。</string>
-    <string name="permission_record_audio_required">要拨打加密电话并发送语音消息，请允许使用麦克风。</string>
+    <string name="permission_record_audio_required">要拨打加密电话并发送语音信息，请允许使用麦克风。</string>
     <string name="prefs_voice_call_notifications">语音通话</string>
     <string name="prefs_voice_call_sound">铃声</string>
     <string name="prefs_sum_voice_call_sound">选择Threema通话铃声</string>
@@ -853,25 +853,25 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="shortcut_choice_title">为…创建快捷方式</string>
     <string name="prefs_title_device_info">设备信息</string>
     <string name="notifications_disabled_title">通知已禁用</string>
-    <string name="notifications_disabled_text">在系统设置中已禁用Threema的通知。您将不会收到有关新消息的通知。</string>
+    <string name="notifications_disabled_text">在系统设置中已禁用 Threema 的通知。您将不会收到有关新信息的通知。</string>
     <string name="notifications_disabled_settings">编辑系统设置</string>
     <string name="error_attaching_files">添加附件时出错。</string>
     <string name="prefs_fix_powermanager_problems">禁用电源限制</string>
-    <string name="prefs_fix_powermanager_problems_desc">允许Threema在后台运行，以便即使不在活动状态也可以接收消息。</string>
-    <string name="disable_powermanager_explain">在接下来的屏幕中，确保对«%s» 进行保护或排除在手机的电源管理限制之外。完成操作后，请点按“返回”按钮。</string>
-    <string name="disable_autostart_explain">在下一个画面中，确保«%s»在自动启动的应用程序列表中 。完成后，点击“返回”按钮。</string>
+    <string name="prefs_fix_powermanager_problems_desc">允许 Threema 在后台运行，以便即使不在活动状态也可以接收信息。</string>
+    <string name="disable_powermanager_explain">在下一个画面中，确保对 «%s» 允许后台运行，及允许应用忽略电池优化。完成后，点击 “返回” 按钮。</string>
+    <string name="disable_autostart_explain">在下一个画面中，确保 «%s» 在自动启动的应用程序列表中 。完成后，点击 “返回” 按钮。</string>
     <string name="notification_priority_default">低</string>
     <string name="notification_priority_high">高</string>
     <string name="notification_priority_max">最高</string>
     <string name="prefs_title_notification_priority">优先</string>
-    <string name="pin">固定</string>
-    <string name="unpin">取消固定</string>
+    <string name="pin">置顶</string>
+    <string name="unpin">取消置顶</string>
     <string name="location_services_disabled">定位服务已禁用。您现在要启用吗？</string>
     <string name="send_location">发送位置</string>
     <string name="unknown_address">未知地址</string>
     <string name="your_location">您的位置</string>
     <string name="network_blocked_title">后台数据已禁用</string>
-    <string name="network_blocked_body">%s无法在后台接收消息。点按此处可启用设置中的背景数据。</string>
+    <string name="network_blocked_body">%s无法在后台接收信息。点击这里可启用设置中的背景数据。</string>
     <string name="reply_later">待会再聊</string>
     <string name="reply_on_my_way">我马上就到</string>
     <string name="reply_thank_you">谢谢</string>
@@ -915,41 +915,41 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="password_too_short_generic">密码太短</string>
     <string name="passwords_dont_match">密码不匹配</string>
     <string name="test_unsuccessful">测试失败</string>
-    <string name="preparing_threema_safe">准备Threema Safe</string>
+    <string name="preparing_threema_safe">正在准备 Threema Safe</string>
     <string name="disable_powermanager_title">电源限制</string>
     <string name="disable_autostart_title">自动开启</string>
     <string name="unchanged">不变的</string>
     <string name="safe_learn_more_button">了解更多</string>
-    <string name="safe_enable_explain">您需要聊天的所有内容仅存储在设备上。因为我们没有保存您的帐户，所以如果您丢失了手机或意外删除了数据，我们将无法为您提供帮助。\n\nThreema Safe在您选择的安全服务器上，以匿名方式创建所有重要数据的自动备份，包括您的密钥，联系人列表和群组成员身份。</string>
-    <string name="safe_disable_confirm">您真的要在不启用Threema Safe的情况下继续吗？</string>
-    <string name="safe_configure_choose_password">请选择一个强密码。您将需要此密码来还原Threema Safe备份。</string>
-    <string name="safe_configure_choose_server">选择Threema Safe服务器</string>
+    <string name="safe_enable_explain">您聊天所需的所有资料只存储在您的设备上。因为我们没有保存您的帐户，所以如果您丢失了手机或意外删除了数据，我们将无法为您提供帮助。\n\nThreema Safe 在您选择的安全服务器上，以匿名方式创建所有重要数据的自动备份，包括您的密钥，联系人列表和群组成员身份。</string>
+    <string name="safe_disable_confirm">您真的要在不启用 Threema Safe 的情况下继续吗？</string>
+    <string name="safe_configure_choose_password">请选择一个强密码。您将需要此密码来还原 Threema Safe备份。</string>
+    <string name="safe_configure_choose_server">选择 Threema Safe 服务器</string>
     <string name="safe_configure_server_explain">您可以使用Threema的服务器，也可以指定要使用的第三方备份服务器。</string>
     <string name="safe_use_default_server">使用默认服务器</string>
     <string name="safe_test_server">测试连通服务器</string>
     <string name="safe_advanced_options">专家设置</string>
-    <string name="safe_enter_password">请输入您的Threema Safe密码</string>
+    <string name="safe_enter_password">请输入您的 Threema Safe 密码</string>
     <string name="safe_threema_id">您的Threema ID</string>
     <string name="safe_restore_enter_id">请输入您要恢复的Threema ID</string>
-    <string name="safe_search_id_title">请输入链接到您的ID的手机号码或电子邮件地址</string>
+    <string name="safe_search_id_title">请输入与您的ID相关联的手机号码或电子邮件地址</string>
     <string name="safe_id_lookup">查找Threema ID</string>
-    <string name="safe_no_id_found">找不到Threema ID</string>
+    <string name="safe_no_id_found">找不到 Threema ID</string>
     <string name="safe_no_backup_found">在服务器上找不到备份。检查ID和密码。</string>
     <string name="safe_select_id">找到多个Threema ID。请选择要使用的ID：</string>
     <string name="safe_backup_now">立即备份</string>
-    <string name="safe_enable_explain_short">启用Threema Safe可以为所有重要数据创建自动安全和匿名备份。</string>
-    <string name="safe_deleting">删除Threema安全备份</string>
+    <string name="safe_enable_explain_short">启用 Threema Safe 可以为所有重要数据创建自动安全和匿名备份。</string>
+    <string name="safe_deleting">删除 Threema Safe 备份</string>
     <string name="safe_delete_error">删除备份时出错：%s</string>
     <string name="safe_delete_success">备份已在服务器上成功删除</string>
-    <string name="safe_error_preparing">准备Threema安全备份时出错</string>
-    <string name="safe_configure_choose_password_force">请设置一个强密码，以使用Threema Safe保护您的Threema ID。不要忘记您在这里输入的内容！</string>
-    <string name="safe_deactivate">关闭Threema Safe</string>
-    <string name="safe_deactivate_explain">如果禁用Threema Safe，则任何现有备份都将在服务器上删除。继续？</string>
+    <string name="safe_error_preparing">准备 Threema Safe 备份时出错</string>
+    <string name="safe_configure_choose_password_force">请设置一个强密码，以使用 Threema Safe 保护您的 Threema ID。不要忘记您在这里输入的内容！</string>
+    <string name="safe_deactivate">关闭 Threema Safe</string>
+    <string name="safe_deactivate_explain">如果您禁用 Threema Safe，任何现有的备份都将在服务器上被删除。是否继续？</string>
     <string name="add_group_members">添加新成员</string>
     <string name="contact_add_confirm">您想将新联系人«%1$s»添加到您的联系人列表中吗？</string>
     <string name="password_bad">密码强度低</string>
     <string name="prefs_fix_background_data">启用背景数据</string>
-    <string name="prefs_fix_background_data_desc">要在Threema处于后台时接收消息，请同时启用“后台数据”和“不受限制的数据使用”</string>
+    <string name="prefs_fix_background_data_desc">要在 Threema 处于后台时接收信息，请同时启用 “后台数据” 和 “不受限制的数据使用”</string>
     <string name="prefs_fix_device">解决设备配置问题</string>
     <string name="safe_successful">成功</string>
     <string name="safe_unsuccessful">失败</string>
@@ -963,39 +963,39 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="number_of_days">%d天</string>
     <string name="backup_other_restore_options">其他还原选项</string>
     <string name="safe_size">备份大小</string>
-    <string name="safe_version_mismatch">此备份的版本高于受支持的版本。请更新到该应用的最新版本。</string>
+    <string name="safe_version_mismatch">此备份的版本高于支持的版本。请更新到最新版本的应用。</string>
     <string name="safe_restore_failed">还原失败</string>
     <string name="safe_failed_notification">Threema Safe 备份连续%d天失败。点击此处进行检查。</string>
-    <string name="safe_restore">还原Threema Safe</string>
+    <string name="safe_restore">还原 Threema Safe</string>
     <string name="backup_restore_in_progress">正在进行备份或还原。检查通知以获取状态信息。</string>
     <string name="restore_error_body">还原还未完成</string>
-    <string name="forgot_your_id">忘记ID了吗？</string>
+    <string name="forgot_your_id">忘记您的ID了吗？</string>
     <string name="restore_success_body">恢复成功完成</string>
     <string name="work_data_sync">资料同步</string>
-    <string name="private_contact">私人联络人</string>
+    <string name="private_contact">私人联系人</string>
     <string name="ringtone_selection_default">默认值（%s）</string>
     <string name="work_data_sync_desc">Threema Work 同步</string>
     <string name="ballot_not_connected">在结束投票之前，请确保Threema在线。</string>
     <string name="empty_chat_title">清空聊天记录</string>
-    <string name="empty_chat_confirm">此聊天中的所有消息将被删除。继续？</string>
+    <string name="empty_chat_confirm">此聊天中的所有信息将被删除。是否继续？</string>
     <string name="emptying_chat">清空聊天室</string>
     <string name="set_private">标记为“私人聊天”</string>
     <string name="unset_private">停用“私人聊天”</string>
-    <string name="delete_group_message">您要离开此群组并完全删除吗？所有消息将被删除。</string>
-    <string name="delete_left_group_message">您要离开此群组并完全删除吗？所有消息将被删除。</string>
+    <string name="delete_group_message">您要离开此群组并完全删除吗？所有信息将被删除。</string>
+    <string name="delete_left_group_message">您真的想删除这个群组吗？所有信息都会被删除。</string>
     <string name="chats">聊天室</string>
     <string name="notification_setting_ignored">任何变化都将被忽略！</string>
     <string name="notification_channel_alerts">警告和错误</string>
     <string name="notification_channel_notices">告示</string>
     <string name="chat_updates">聊天室更新</string>
     <string name="backup_or_restore_progress">备份和还原进度</string>
-    <string name="tooltip_export_id">点击此处立即共享或打印您的加密Threema ID</string>
+    <string name="tooltip_export_id">点击这里立即共享或打印您的加密Threema ID</string>
     <string name="downloading">正在下载</string>
     <string name="today">今天</string>
     <string name="restore_data_cancelled">还原已取消</string>
     <string name="safe_change_password">更改密码</string>
     <string name="safe_configure_choose_password_title">选择一个密码</string>
-    <string name="password_bad_explain">Threema Safe所选的密码不安全，攻击者很容易猜到。请选择另一个。提示：使用由多个单词组成的密码。</string>
+    <string name="password_bad_explain">Threema Safe 所选的密码不安全，攻击者很容易猜到。请选择另一个。提示：使用由多个单词组成的密码。</string>
     <string name="safe_password_updated">Threema Safe 密码已更新。</string>
     <string name="safe_activated">Threema Safe 现在已激活。</string>
     <string name="restore_zip_invalid_file">备份文件无效。</string>
@@ -1010,30 +1010,30 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="miui_notification_body">MIUI 10默认禁用所有新创建的通知通道的声音和灯光（小米认为某些应用程序“重要”的应用程序除外）。您必须在手机的特定于应用程序的通知设置屏幕中为每个频道明确启用它们。请与手机的制造商联系以获取更多信息。</string>
     <string name="dont_show_again">不再显示</string>
     <string name="miui_notification_prefs">MIUI设置</string>
-    <string name="threema_safe_upload_successful">Threema安全备份成功上传</string>
+    <string name="threema_safe_upload_successful">Threema Safe 备份成功上传</string>
     <string name="time_remaining">还剩%s</string>
-    <string name="safe_configure_server_credentials_title">身份验证（可选）</string>
+    <string name="safe_configure_server_credentials_title">验证（可选）</string>
     <string name="username_hint">用户名</string>
     <string name="lock_option_biometric">生物识别</string>
     <string name="biometric_enter_authentication">请认证以解锁</string>
     <string name="biometric_authentication_failed">认证失败</string>
     <string name="biometric_authentication_successful">成功认证</string>
-    <string name="work_safe_forced_explain">您的管理员为您的设备启用了Threema Safe。</string>
+    <string name="work_safe_forced_explain">您的管理员为您的设备启用了 Threema Safe。</string>
     <string name="pin_locked_cannot_send">该应用程序已锁定。无法发送。</string>
-    <string name="prefs_summary_hide_screenshots_notice">出于隐私考虑，在安全设置中启用“应用锁定”后，始终会阻止缩略图和屏幕截图</string>
+    <string name="prefs_summary_hide_screenshots_notice">出于隐私考虑，在安全设置中启用 “应用锁定” 后，始终会阻止缩略图和屏幕截图</string>
     <string name="work_select_categories">选择类别</string>
     <string name="my_profile">我的个人资料</string>
-    <string name="message_too_long">讯息太长。无法发送。</string>
+    <string name="message_too_long">信息太长。无法发送。</string>
     <string name="database_migration_no_space">数据库迁移失败：设备上没有足够的空间。</string>
     <string name="advanced_options">高级选项</string>
-    <string name="url_warning_body">您将要打开的链接的主机名可疑：\n\n显示的主机名：<b>%s</b>\n实际的主机名：<b>%s</b>\n\n这可能是试图欺骗您打开网站的尝试假装是别的东西。\n\n您仍然要继续吗？</string>
+    <string name="url_warning_body">您要打开的链接的主机名有可疑。\n\n显示的主机名：<b>%s</b>\n真实主机名：<b>%s</b>\n\n这可能是试图欺骗您打开一个假装成其他网站的虛假网页。\n\n您仍然要继续吗？</string>
     <string name="url_warning_title">网络钓鱼警告</string>
-    <string name="permission_camera_qr_required">Threema需要访问相机以扫描QR码</string>
+    <string name="permission_camera_qr_required">Threema 需要访问相机以扫描二维码</string>
     <string name="voice_action_title">语音动作</string>
     <string name="voice_action_body">语音操作正在处理中</string>
     <string name="permission_camera_photo_required">请允许使用相机权限以拍照</string>
     <string name="global_search">搜索聊天</string>
-    <string name="global_search_empty_view_text">输入至少两个字符以搜索所有消息</string>
+    <string name="global_search_empty_view_text">输入至少两个字符以搜索所有信息</string>
     <string name="my_id">我的ID</string>
     <string name="profile_picture_and_nickname">个人头像和昵称</string>
     <string name="lp_select_this_place">选择这个地方</string>
@@ -1051,37 +1051,37 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="message_archived">已归档%d个聊天</string>
     <string name="archived_chats">存档的聊天</string>
     <string name="unarchive">取消存档</string>
-    <string name="no_archived_chats">没有存档的聊天。\n要归档聊天，请在消息列表中向左滑动</string>
+    <string name="no_archived_chats">没有已存档的聊天记录。\n要将聊天记录存档，请在信息列表中向左滑动。</string>
     <string name="add_contact_enter_id_hint">请输入您要添加的联系人的Threema ID</string>
-    <string name="notification_channel_new_contact">新联络人</string>
+    <string name="notification_channel_new_contact">新联系人</string>
     <string name="notification_channel_new_contact_desc">关于新联系人的通知</string>
-    <string name="notification_contact_has_joined">%s加入了%s。点击此处发送消息。</string>
-    <string name="notification_contact_has_joined_multiple">%d个联系人已加入%s: %s。点击此处向他们发送消息。</string>
+    <string name="notification_contact_has_joined">%1$s加入了%2$s。点击这里发送信息。</string>
+    <string name="notification_contact_has_joined_multiple">%1$d个联系人已加入%2$s: %3$s。点击这里向他们发送信息。</string>
     <string name="system_default">系统默认</string>
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
     <string name="num_archived_chats">%d个已存档的聊天</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">欢迎使用%s 4.5</string>
-    <string name="whatsnew_headline">现在，%1$s 更美观，更易于使用，同时通过消除对外部应用程序的依赖性进一步保护了您的隐私。\n\n现代的Material设计更加直观，只需更少的水龙头即可完成工作。\n\n点击“了解更多信息”，以了解有关 %1$s 4.0中一些令人兴奋的新功能的更多信息。</string>
+    <string name="whatsnew_headline">%1$s 4.5带来全新的媒体体验。\n\n媒体抽屉界面进行了大修，现在可以选择基于机器学习的图像搜索。\n\n此外，我们还增加了所有聊天的全局文本搜索，改进了信息引用等。</string>
     <string name="whatsnew2_title">有什么新消息？</string>
     <string name="whatsnew2_body"><![CDATA[<p><b>媒体抽屉</b>：点击回形针图标，在可滚动的抽屉中浏览您的媒体文件。如果您不想让抽屉自动打开最新的媒体，请在聊天设置中禁用图片快速选择选项，地址是<i>设置/聊天/媒体快速选择</i>.</p>。
-<p><b>图像搜索</b>：搜索您的图像中的常见对象、活动和地点。<br>图像识别基于本地机器学习模型，不向Threema的服务器或任何第三方发送数据。由于分析图像是一项相当昂贵的任务，可能需要很长时间，该选项默认为禁用。你可以在<i>设置/媒体和存储/图像搜索</i>中找到它。</p>
+<p><b>图像搜索</b>：搜索您的图像中的常见对象、活动和地点。<br>图像识别基于本地机器学习模型，不向 Threema 的服务器或任何第三方发送数据。由于分析图像是一项相当昂贵的任务，可能需要很长时间，该选项默认为禁用。您可以在<i>设置/媒体和存储/图像搜索</i>中找到它。</p>
 <p><b>发送媒体文件</b>：发送具有单独分辨率的图像，而无需更改全局设置。</p> <p><b>发送媒体文件：发送具有单独分辨率的图像，而无需更改全局设置。</p>
 <p><b>视频编辑器</b>：在发送前修剪视频。此外，视频转码过程已得到改进，现在可在后台工作。</p>
-<p><b>保存到图库</b>。在 Android 10 及以上版本中，由于谷歌提出了新的 \"范围存储 \"要求，媒体现在将存储在系统的<i>图片、视频、音乐</i>和<i>文件</i>文件夹中。</p>
+<p><b>保存到图库</b>。在 Android 10 及以上版本中，由于谷歌提出了新的 “范围存储” 要求，媒体现在将存储在系统的<i>图片、视频、音乐</i>和<i>文件</i>文件夹中。</p>
 <p><b>全局搜索</b>：在所有聊天记录中搜索文本。只需在%1$s的主屏幕上点击<i>菜单/搜索聊天记录</i>即可。</p>。
 <p><b>引用</b>：%1$s现在允许您引用任何类型的媒体，包括图像、视频和语音消息。</p>
 <p><b>100个新表情</b>。检查期待已久的火锅&#129749;</p>。
-<p><b>大文本</b>：为了保持聊天界面的精简性，有大量文本的消息会以截断的聊天气泡的方式显示，并可根据需要展开。</p>]]></string>
-    <string name="tooltip_identity_popup">点按此处可快速显示您的Threema ID或扫描其他人的ID</string>
-    <string name="tap_to_start">点击此处立即开始%s。</string>
+<p><b>大文本</b>：为了保持聊天界面的精简性，有大量文本的信息会以截断的聊天气泡的方式显示，并可根据需要展开。</p>]]></string>
+    <string name="tooltip_identity_popup">点击这里可快速显示您的Threema ID或扫描其他人的ID</string>
+    <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
     <string name="backup_data_no_permission">无法写入此目录。请选择另一个。</string>
-    <string name="prefs_sum_show_unread_badge">在消息图标旁边显示一个标志，指示未读消息的数量</string>
+    <string name="prefs_sum_show_unread_badge">在信息图标旁边显示徽章，表示未读信息的数量</string>
     <string name="prefs_title_show_unread_badge">未读邮件徽章</string>
-    <string name="pinning_not_trusted">证书固定失败。请检查是否在设备的凭据存储中安装并激活了“委托根证书颁发机构-G2”。</string>
+    <string name="pinning_not_trusted">证书固定失败。请检查是否在设备的凭据存储中安装并激活了 “委托根证书颁发机构-G2”。</string>
     <string name="pinning_failed">证书固定失败。可能发生中间人攻击。如果您安装了广告拦截器，内容过滤器或防火墙应用程序，例如《 AdGuard》，请禁用后重开Threema。</string>
     <string name="open_myid_popup">打开快速访问弹出窗口</string>
     <string name="logo">标志/滚动到顶部</string>
@@ -1091,9 +1091,10 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="seconds">秒</string>
     <string name="minutes">分钟</string>
     <string name="and">和</string>
-    <string name="edit_type_content_description">查看或编辑%s %s</string>
+    <string name="edit_type_content_description">查看或编辑 %1$s %2$s</string>
     <string name="group">群组</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>我们的隐私权政策已更新，以反映以下更改： </p> <p> %1$s不再依赖Google Play和Google Maps提供地图和POI数据。</p>请在<a href="%2$s">此处</a>查看完整的隐私政策。]]></string>
+    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>我们的隐私权政策已更新，以反映以下更改： </p>
+<p>%1$s不再依赖 Google Play 和 Google Maps 提供地图和POI数据。</p>请在<a href="%2$s">这里</a>查看完整的隐私政策。]]></string>
     <string name="play_services_not_installed_unable_to_use_push">未安装Google Play服务。无法切换到“推”。</string>
     <string name="unable_to_get_current_location">无法确定当前位置。</string>
     <string name="lp_search_place_min_chars">请输入至少三个字符以搜索地点。</string>
@@ -1102,29 +1103,29 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="wallpaper_gallery">从图库中选择</string>
     <string name="wallpaper_none">清空背景</string>
     <string name="wallpaper_threema">%s壁纸</string>
-    <string name="message_id">讯息编号</string>
+    <string name="message_id">信息编号</string>
     <string name="mime_type">MIME类型</string>
     <string name="password_does_not_comply">密码不符合管理员设置的准则。</string>
     <string name="audio_mute_due_to_focus_loss">由于其他应用正在播放音频，目前音频已暂时静音</string>
-    <string name="restore_data_backup_explain">要还原数据备份，请首先从“我的资料”屏幕中删除您的Threema ID。\n\n应用程序重新启动时，选择“从备份还原”，“其他还原选项”，“数据备份”，然后选择要还原的数据备份文件。</string>
+    <string name="restore_data_backup_explain">要还原数据备份，请首先从 “我的资料” 界面中删除您的Threema ID。\n\n应用程序重新启动时，选择 “从备份还原”，“其他还原选项”，“数据备份”，然后选择要还原的数据备份文件。</string>
     <string name="audio_focus_loss_complete">由于完全失去音频焦点，呼叫已断开。</string>
     <string name="tap_for_picture_hold_for_video">点按可观看图片，按住可观看视频</string>
     <string name="sending_media">发送媒体</string>
     <string name="permission_record_video_audio_required">要录制视频，请允许使用麦克风</string>
     <string name="media_files">档案</string>
     <string name="auto_download_limit_explain">大于%s的视频和文件将始终按需下载</string>
-    <string name="quoted_message_deleted">已引用的消息现时不再可用</string>
+    <string name="quoted_message_deleted">已引用的信息现时不再可用</string>
     <string name="searching">正在搜寻…</string>
     <string name="prefs_work_life_balance">请勿打扰</string>
     <string name="prefs_title_working_days">工作日</string>
     <string name="prefs_working_days_sum">选择工作日</string>
-    <string name="prefs_work_time_start">工作时间开始</string>
+    <string name="prefs_work_time_start">工作时间的开始</string>
     <string name="prefs_work_time_start_sum">设定开始时间</string>
-    <string name="prefs_work_time_end">工作时间结束</string>
+    <string name="prefs_work_time_end">工作时间的结束</string>
     <string name="prefs_work_time_end_sum">设定结束时间</string>
-    <string name="prefs_working_days_enable_title">下班时间政策</string>
+    <string name="prefs_working_days_enable_title">非工作时间政策</string>
     <string name="prefs_working_days_enable_sum">在工作时间以外禁用通知并拒绝呼叫</string>
-    <string name="work_life_dnd_active">下班时间活跃</string>
+    <string name="work_life_dnd_active">非工作时间在线</string>
     <string name="pencil">铅笔</string>
     <string name="warning">警告</string>
     <string name="password_remember_warning">记住您在这里输入的内容！由于%s不会在服务器上保存任何密码，因此，如果您忘记了PIN或密码，我们无法帮助您。</string>
@@ -1132,8 +1133,8 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="send_to_support">发送给Threema支持</string>
     <string name="menu_legal">法律</string>
     <string name="tooltip_work_hint">该联系人使用Threema Work。</string>
-    <string name="video_camera_on">启用摄像机</string>
-    <string name="video_camera_off">摄像机已禁用</string>
+    <string name="video_camera_on">启用摄像头</string>
+    <string name="video_camera_off">摄像头已禁用</string>
     <string name="enable_picture_in_picture">启动画中画模式</string>
     <string name="call_with">致电%s</string>
     <string name="picture_in_picture_disabled_in_setting">在%s中禁用了画中画模式。请在系统设置中启用它。</string>
@@ -1145,11 +1146,11 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="videocall_profile_low_bandwidth">数据消耗低</string>
     <string name="videocall_profile_max_quality">最高品质</string>
     <string name="unable_to_play_video">无法播放视频</string>
-    <string name="tooltip_voip_turn_on_camera">点按此处打开相机</string>
+    <string name="tooltip_voip_turn_on_camera">点击这里打开摄像头</string>
     <string name="prefs_videocall_profile_explain">实际的图像质量取决于网络以及与您交谈的人的设置</string>
-    <string name="permission_camera_videocall_required">进行视频通话时，请允许使用摄像头</string>
+    <string name="permission_camera_videocall_required">进行视频通话时，请允许使用摄像头。</string>
     <string name="feedback">反馈</string>
-    <string name="tooltip_voip_enable_speakerphone">按此处打开免提电话</string>
+    <string name="tooltip_voip_enable_speakerphone">点击这里打开免提电话</string>
     <string name="ballot_open">公开投票</string>
     <string name="translators">译者</string>
     <string name="credits">积分</string>
@@ -1157,25 +1158,25 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="ballot_window_hide">隐藏公开的投票</string>
     <string name="ballot_window_show">显示公开的投票</string>
     <string name="tooltip_video_call">除了语音通话，Threema现在还提供端到端的加密视频通话</string>
-    <string name="tooltip_voip_other_party_video_on">对方发起了视频通话。点此处也可以打开相机。</string>
+    <string name="tooltip_voip_other_party_video_on">对方已发起视频通话，点击这里打开摄像头。</string>
     <string name="tooltip_voip_other_party_video_disabled">对方使用的应用程序版本不支持或不允许进行视频通话</string>
     <string name="video_calls_new">新增：视频通话</string>
     <string name="biometrics_not_enrolled">系统未注册任何生物识别信息</string>
     <string name="biometrics_not_avilable">生物识别在此系统上不可用。</string>
     <string name="biometrics_no_permission">缺少访问生物识别数据或硬件的权限</string>
-    <string name="verification_settings_desc">点是联系人验证级别的指示器。</string>
+    <string name="verification_settings_desc">圆点是联系人的验证级别指标。</string>
     <string name="verification_levels_title">验证级别</string>
     <string name="work_verification_levels_title">组织中的联系人</string>
-    <string name="external_verification_levels_title">其他联络人</string>
+    <string name="external_verification_levels_title">其他联系人</string>
     <string name="switch_flash">切换闪光灯模式</string>
     <string name="message_not_found">未找到信息</string>
     <string name="insert_datetime">插入日期和时间</string>
     <string name="prefs_sum_disable_smart_replies">禁止Android通知中的智能回复</string>
     <string name="prefs_title_disable_smart_replies">禁用智能回复</string>
-    <string name="url_warning_body_alt">您即将打开的链接的主机名可疑。\n\n这可能是试图欺骗您打开一个假装成其他网站的虛假网页。\n\n您仍然要继续吗？</string>
+    <string name="url_warning_body_alt">您即将打开的链接的主机名有可疑。\n\n这可能是试图欺骗您打开一个假装成其他网站的虛假网页。\n\n您仍然要继续吗？</string>
     <string name="read_on">继续阅读…</string>
     <string name="forward_text">转发文字</string>
-    <string name="an_error_occurred_during_send">发送一个或多个消息时发生错误。</string>
+    <string name="an_error_occurred_during_send">发送一个或多个信息时发生错误。</string>
     <string name="state_processing">处理中</string>
     <string name="passphrase_locked">密码被锁定</string>
     <string name="image_labeling_new">新增：图像识别</string>

@@ -58,33 +58,30 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 					launchNextActivity(null);
 				}
 			});
-			imageView.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
-					frameAnimation.setOneShot(true);
-					frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
-						@Override
-						public void onAnimationAdvanced(int currentFrame, int totalFrames) {
-						}
+			imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+				AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
+				frameAnimation.setOneShot(true);
+				frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
+					@Override
+					public void onAnimationAdvanced(int currentFrame, int totalFrames) {
+					}
 
-						@Override
-						public void onAnimationCompleted() {
-							ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-									// the context of the activity
-									WizardStartActivity.this,
+					@Override
+					public void onAnimationCompleted() {
+						ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+							// the context of the activity
+							WizardStartActivity.this,
 
-									new Pair<View, String>(findViewById(R.id.wizard_animation),
-											getString(R.string.transition_name_dots)),
-									new Pair<View, String>(findViewById(R.id.wizard_footer),
-											getString(R.string.transition_name_logo))
-							);
-							launchNextActivity(options);
-						}
-					});
-					frameAnimation.start();
-				}
-			}, 1500); // one second delay to allow layout to settle (especially on Huawei devices)
+							new Pair<>(findViewById(R.id.wizard_animation),
+								getString(R.string.transition_name_dots)),
+							new Pair<>(findViewById(R.id.wizard_footer),
+								getString(R.string.transition_name_logo))
+						);
+						launchNextActivity(options);
+					}
+				});
+				frameAnimation.start();
+			});
 		} else {
 			launchNextActivity(null);
 		}

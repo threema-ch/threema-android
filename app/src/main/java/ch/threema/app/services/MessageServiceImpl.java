@@ -4098,7 +4098,7 @@ public class MessageServiceImpl implements MessageService {
 
 			File outputFile;
 			try {
-				outputFile = fileService.createTempFile(".video", ".mp4", !ConfigUtils.useContentUris());
+				outputFile = fileService.createTempFile(".trans", ".mp4", !ConfigUtils.useContentUris());
 			} catch (IOException e) {
 				logger.error("Unable to open temp file");
 				// skip this MediaItem
@@ -4176,17 +4176,14 @@ public class MessageServiceImpl implements MessageService {
 				}
 			});
 
-			// for camera files - remove original file
-			deleteTemporaryFile(mediaItem);
-
 			if (transcoderResult != VideoTranscoder.SUCCESS) {
 				// failure
 				logger.info("Transcoding failure");
 				return transcoderResult;
 			}
 
-			// mark transcoded file as expendable
-			mediaItem.setDeleteAfterUse(true);
+			// remove original file and set transcoded file as new source file
+			deleteTemporaryFile(mediaItem);
 			mediaItem.setUri(Uri.fromFile(outputFile));
 		} else {
 			logger.info("No transcoding necessary");
@@ -4205,19 +4202,14 @@ public class MessageServiceImpl implements MessageService {
 		return Utils.byteArrayToHexString(random);
 	}
 
-	@AnyThread
+	@WorkerThread
 	private void deleteTemporaryFile(MediaItem mediaItem) {
 		if (mediaItem.getDeleteAfterUse()) {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					if (mediaItem.getUri() != null && ContentResolver.SCHEME_FILE.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
-						if (mediaItem.getUri().getPath() != null) {
-							FileUtil.deleteFileOrWarn(mediaItem.getUri().getPath(), null, logger);
-						}
-					}
+			if (mediaItem.getUri() != null && ContentResolver.SCHEME_FILE.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
+				if (mediaItem.getUri().getPath() != null) {
+					FileUtil.deleteFileOrWarn(mediaItem.getUri().getPath(), null, logger);
 				}
-			}).start();
+			}
 		}
 	}
 

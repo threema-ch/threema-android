@@ -53,7 +53,6 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 
 		if(holder.bodyTextView != null) {
-
 			MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(this.getContext(), this.getMessageModel());
 
 			if (viewElement != null) {
@@ -62,12 +61,12 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 
 				VoipStatusDataModel status = this.getMessageModel().getVoipStatusData();
-				if (status != null) {
-					if (status.getStatus() == VoipStatusDataModel.FINISHED) {
-						// Show duration
+				if (status != null && status.getStatus() == VoipStatusDataModel.FINISHED) {
+					// Show duration
+					if (holder.dateView != null) {
 						this.setDatePrefix(StringConversionUtil.secondsToString(
-								status.getDuration(),
-								false
+							status.getDuration(),
+							false
 						), holder.dateView.getTextSize());
 					}
 				}
