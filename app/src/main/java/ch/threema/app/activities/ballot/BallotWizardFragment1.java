@@ -192,6 +192,7 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 				createChoice(text.trim(), BallotChoiceModel.Type.Text);
 				int insertPosition = this.ballotChoiceModelList.size() - 1;
 				listAdapter.notifyItemInserted(insertPosition);
+				choiceRecyclerView.smoothScrollToPosition(insertPosition);
 				createChoiceEditText.setText("");
 				createChoiceEditText.post(new Runnable() {
 					@Override

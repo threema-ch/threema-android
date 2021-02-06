@@ -75,7 +75,7 @@ public class BallotWizard1Adapter extends RecyclerView.Adapter<RecyclerView.View
 		}
 	}
 
-	private List<BallotChoiceModel> values;
+	private final List<BallotChoiceModel> values;
 	private OnChoiceListener onChoiceListener;
 
 	public BallotWizard1Adapter(List<BallotChoiceModel> values) {

@@ -29,7 +29,6 @@
 		android:layout_marginTop="14dp"
 		android:divider="@android:color/transparent"
 		android:dividerHeight="2dp"
-		android:transcriptMode="alwaysScroll"
 		/>
 
 	<RelativeLayout
