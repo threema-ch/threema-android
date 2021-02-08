@@ -2,12 +2,9 @@
 
 ## Submitting Patches
 
-At this point, we don’t accept pull requests for the Threema apps via GitHub.
-However, if you would like to provide a code contribution, you can send patches
-via e-mail.
-
-Please refer to <https://threema.ch/open-source/contributions> for more
-information on how to contribute.
+We accept GitHub pull requests. Please refer to
+<https://threema.ch/open-source/contributions>
+for more information on how to contribute.
 
 ## Bug Reports / Feature Requests
 
