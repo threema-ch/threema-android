@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # A build script for the release version of the Threema Android app.
 #  _____ _
