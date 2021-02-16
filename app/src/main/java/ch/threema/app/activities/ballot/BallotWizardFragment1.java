@@ -63,6 +63,8 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 	private ImageButton addDateButton, addDateTimeButton;
 	private EditText createChoiceEditText;
 	private Date originalDate = null;
+	private LinearLayoutManager choiceRecyclerViewLayoutManager;
+	private int lastVisibleBallotPosition;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,7 +74,30 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 				R.layout.fragment_ballot_wizard1, container, false);
 
 		this.choiceRecyclerView = rootView.findViewById(R.id.ballot_list);
-		this.choiceRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		this.choiceRecyclerViewLayoutManager = new LinearLayoutManager(getActivity());
+		this.choiceRecyclerView.setLayoutManager(choiceRecyclerViewLayoutManager);
+		this.choiceRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+			@Override
+			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+				if (bottom < oldBottom) {
+					choiceRecyclerView.post(new Runnable() {
+						@Override
+						public void run() {
+							choiceRecyclerView.smoothScrollToPosition(lastVisibleBallotPosition);
+						}
+					});
+				}
+			}
+		});
+		this.choiceRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				super.onScrollStateChanged(recyclerView, newState);
+				if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+					lastVisibleBallotPosition = choiceRecyclerViewLayoutManager.findLastVisibleItemPosition();
+				}
+			}
+		});
 		int moveUpDown = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
 		ItemTouchHelper.Callback swipeCallback = new ItemTouchHelper.SimpleCallback(moveUpDown, 0) {
 			@Override
