@@ -22,6 +22,8 @@
 package ch.threema.app.locationpicker;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -100,6 +102,10 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 		}
 		actionBar.setTitle(null);
 		actionBar.setDisplayHomeAsUpEnabled(true);
+
+		if (toolbar.getNavigationIcon() != null) {
+			toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+		}
 
 		Intent intent = getIntent();
 		currentLocation.setLatitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0));

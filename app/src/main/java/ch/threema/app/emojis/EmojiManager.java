@@ -47,8 +47,8 @@ public class EmojiManager {
 
 	public static final int EMOJI_HEIGHT = 64;
 	public static final int EMOJI_WIDTH = 64;
-	private int spritemapInSampleSize;
-	private Context appContext;
+	private final int spritemapInSampleSize;
+	private final Context appContext;
 	private static final EmojiGroup[] emojiGroups = {
 		new EmojiGroup(null, null, R.drawable.emoji_category_recent, R.string.emoji_recent),
 		new EmojiGroup("emojis/people-", ".png", R.drawable.emoji_category_people, R.string.emoji_emotions),

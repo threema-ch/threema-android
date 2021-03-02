@@ -1162,4 +1162,19 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="importing_files">Las datotecas vegnan importadas</string>
     <string name="tooltip_image_resolution_hint">Adattar individualmain la resoluziun</string>
     <string name="image_labeling_stuck_error">Il process d\'indexaziun per la tschertga da maletgs è stada airi e vegnida interrutta. P.pl. empruvar pli tard anc ina giada.</string>
+    <string name="ballot_created_successfully">La retschertga è vegnida creada cun success.</string>
+    <string name="file_size">Grondezza da la datoteca</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30 dis</string>
+    <string name="show_in_chat">Mussar en il chat</string>
+    <string name="group_create_no_members">Es ti segir che ti vuls crear ina gruppa vida senza ulteriurs commembers?</string>
+    <string name="notes">Notizias</string>
+    <string name="blur_faces">Disfar las fatschas</string>
+    <string name="brush">Penel</string>
+    <string name="error_detecting_faces">Igl ha dà in\'errur tar l\'identificaziun da fatschas</string>
+    <string name="no_faces_detected">Chattà naginas fatschas</string>
+    <string name="smiley">Smiley</string>
+    <string name="blur">Disfar</string>
+    <string name="face_blur_tooltip_title">Nov: identificaziun da fatschas</string>
+    <string name="face_blur_tooltip_text">Tschertga las fatschas sin la fotografia e disfa ellas u cuvra ellas cun in smiley.</string>
 </resources>

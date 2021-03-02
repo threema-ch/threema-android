@@ -27,6 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.base.ThreemaException;
@@ -43,9 +46,12 @@ public class IdentityStore implements IdentityStoreInterface {
 	private String publicNickname;
 	private final PreferenceStoreInterface preferenceStore;
 
+	private Map<KeyPair,NaCl> naClCache;
+
 	public IdentityStore(PreferenceStoreInterface preferenceStore) throws ThreemaException {
 
 		this.preferenceStore = preferenceStore;
+		this.naClCache = Collections.synchronizedMap(new HashMap<>());
 
 		this.identity = this.preferenceStore.getString(PreferenceStore.PREFS_IDENTITY);
 		if (this.identity == null) {
@@ -56,7 +62,7 @@ public class IdentityStore implements IdentityStoreInterface {
 
 		this.serverGroup = this.preferenceStore.getString(PreferenceStore.PREFS_SERVER_GROUP);
 		this.publicKey = this.preferenceStore.getBytes(PreferenceStore.PREFS_PUBLIC_KEY);
-		this.privateKey =this.preferenceStore.getBytes(PreferenceStore.PREFS_PRIVATE_KEY, true);
+		this.privateKey = this.preferenceStore.getBytes(PreferenceStore.PREFS_PRIVATE_KEY, true);
 		this.publicNickname = this.preferenceStore.getString(PreferenceStore.PREFS_PUBLIC_NICKNAME);
 
 		if (this.identity.length() == ProtocolDefines.IDENTITY_LEN &&
@@ -75,15 +81,18 @@ public class IdentityStore implements IdentityStoreInterface {
 
 	public byte[] encryptData(byte[] boxData, byte[] nonce, byte[] receiverPublicKey) {
 		if (privateKey != null) {
-			NaCl nacl = new NaCl(privateKey, receiverPublicKey);
+			NaCl nacl = getCachedNaCl(privateKey, receiverPublicKey);
 			return nacl.encrypt(boxData, nonce);
 		}
 		return null;
 	}
 
 	public byte[] decryptData(byte[] boxData, byte[] nonce, byte[] senderPublicKey) {
-		NaCl nacl = new NaCl(privateKey, senderPublicKey);
-		return nacl.decrypt(boxData, nonce);
+		if (privateKey != null) {
+			NaCl nacl = getCachedNaCl(privateKey, senderPublicKey);
+			return nacl.decrypt(boxData, nonce);
+		}
+		return null;
 	}
 
 	public String getIdentity() {
@@ -142,5 +151,42 @@ public class IdentityStore implements IdentityStoreInterface {
 				PreferenceStore.PREFS_SERVER_GROUP,
 				PreferenceStore.PREFS_PUBLIC_KEY,
 				PreferenceStore.PREFS_PRIVATE_KEY));
+	}
+
+	private NaCl getCachedNaCl(byte[] privateKey, byte[] publicKey) {
+		// Check for cached NaCl instance to save heavy Curve25519 computation
+		KeyPair hashKey = new KeyPair(privateKey, publicKey);
+		NaCl nacl = naClCache.get(hashKey);
+		if (nacl == null) {
+			nacl = new NaCl(privateKey, publicKey);
+			naClCache.put(hashKey, nacl);
+		}
+		return nacl;
+	}
+
+	private class KeyPair {
+		private final byte[] privateKey;
+		private final byte[] publicKey;
+
+		public KeyPair(byte[] privateKey, byte[] publicKey) {
+			this.privateKey = privateKey;
+			this.publicKey = publicKey;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			KeyPair keyPair = (KeyPair) o;
+			return Arrays.equals(privateKey, keyPair.privateKey) &&
+				Arrays.equals(publicKey, keyPair.publicKey);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = Arrays.hashCode(privateKey);
+			result = 31 * result + Arrays.hashCode(publicKey);
+			return result;
+		}
 	}
 }

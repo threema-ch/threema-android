@@ -24,6 +24,8 @@
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
 			android:layout_gravity="bottom"
+			android:singleLine="true"
+			android:ellipsize="none"
 			android:textSize="?attr/font_medium"
 			android:textColor="?attr/textColorSecondary"/>
 

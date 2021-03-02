@@ -198,7 +198,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private final ArrayList<AbstractMessageModel> unsentMessages = new ArrayList<>();
 
 	private BroadcastReceiver checkLicenseBroadcastReceiver = null;
-	private BroadcastReceiver currentCheckAppReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver currentCheckAppReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, final Intent intent) {
 			RuntimeUtil.runOnUiThread(new Runnable() {
@@ -334,7 +334,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
-	private SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
+	private final SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
 		@Override
 		public void onVerified() {
 		 	RuntimeUtil.runOnUiThread(new Runnable() {
@@ -372,7 +372,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		});
 	}
 
-	private ConversationListener conversationListener = new ConversationListener() {
+	private final ConversationListener conversationListener = new ConversationListener() {
 		@Override
 		public void onNew(ConversationModel conversationModel) {
 			updateBottomNavigation();
@@ -394,7 +394,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	};
 
-	private MessageListener messageListener = new MessageListener() {
+	private final MessageListener messageListener = new MessageListener() {
 		@Override
 		public void onNew(AbstractMessageModel newMessage) {
 			//do nothing
@@ -430,7 +430,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	};
 
-	private AppIconListener appIconListener = new AppIconListener() {
+	private final AppIconListener appIconListener = new AppIconListener() {
 		@Override
 		public void onChanged() {
 		 	RuntimeUtil.runOnUiThread(new Runnable() {
@@ -442,7 +442,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	};
 
-	private ProfileListener profileListener = new ProfileListener() {
+	private final ProfileListener profileListener = new ProfileListener() {
 		@Override
 		public void onAvatarChanged() {
 			RuntimeUtil.runOnUiThread(() -> updateDrawerImage());
@@ -457,7 +457,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		public void onNicknameChanged(String newNickname) { }
 	};
 
-	private VoipCallListener voipCallListener = new VoipCallListener() {
+	private final VoipCallListener voipCallListener = new VoipCallListener() {
 		@Override
 		public void onStart(String contact, long elpasedTimeMs) {
 			RuntimeUtil.runOnUiThread(() -> {
@@ -583,17 +583,16 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				if (!ConfigUtils.isWorkBuild() && !RuntimeUtil.isInTest() && !isFinishing()) {
 					isWhatsNewShown = true; // make sure this is set false if no whatsnew activity is shown - otherwise pin lock will be skipped once
 
-					// Do not show whatsnew for users of the previous 4.0x version
-/*					int previous = preferenceService.getLatestVersion() % 1000;
+					// Do not show whatsnew for users of the previous 4.5x version
+					int previous = preferenceService.getLatestVersion() % 1000;
 
-					if (previous < 494) {
-*/						Intent intent = new Intent(this, WhatsNewActivity.class);
+					if (previous < 663) {
+						Intent intent = new Intent(this, WhatsNewActivity.class);
 						startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 						overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-/*					} else {
+					} else {
 						isWhatsNewShown = false;
 					}
-*/
 					preferenceService.setLatestVersion(this);
 				}
 			}

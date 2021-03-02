@@ -653,7 +653,7 @@
 	</style>
 
 	<style name="Threema.SpinnerItemStyle" parent="Threema.TextAppearance.Body1">
-		<item name="android:paddingLeft">10dp</item>
+		<item name="android:paddingLeft">0dp</item>
 		<item name="android:paddingRight">10dp</item>
 	</style>
 
@@ -721,5 +721,10 @@
 		<item name="android:paddingRight">0dp</item>
 		<item name="android:layout_marginRight">0dp</item>
 		<item name="android:textSize">15sp</item>
+	</style>
+
+	<style name="Threema.ShapeAppearanceDirectoryOrganization" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">2dp</item>
 	</style>
 </resources>

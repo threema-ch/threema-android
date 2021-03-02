@@ -118,6 +118,9 @@ public interface GroupService extends AvatarService<GroupModel> {
 	Bitmap getNeutralAvatar(boolean highResolution);
 
 	boolean isGroupOwner(GroupModel groupModel);
+
+	int countMembers(@NonNull GroupModel groupModel);
+
 	boolean isGroupMember(GroupModel groupModel);
 
 	boolean removeMemberFromGroup(GroupLeaveMessage msg);

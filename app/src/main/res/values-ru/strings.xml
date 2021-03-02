@@ -244,7 +244,7 @@
     <string name="emoji_nature">Природа</string>
     <string name="emoji_food">Еда и напитки</string>
     <string name="emoji_recent">Последние</string>
-    <string name="emoji_emotions">Эмоции</string>
+    <string name="emoji_emotions">Эмоции и люди</string>
     <string name="emoji_activities">Действия</string>
     <string name="emoji_flags">Флажки</string>
     <string name="title_lock">Заблокировать</string>
@@ -1016,8 +1016,7 @@
     <string name="whatsnew_title">Добро пожаловать в %s 4.5</string>
     <string name="whatsnew_headline">Версия %1$s 4.5 кардинально расширяет возможности работы с мультимедиа.\n\nИнтерфейс панели мультимедиа был полностью переработан и теперь включает дополнительную функцию поиска по изображениям с алгоритмом машинного обучения.\n\nКроме того, мы добавили функцию глобального текстового поиска по всем чатам, улучшили цитирование сообщений и др.</string>
     <string name="whatsnew2_title">Что нового?</string>
-    <string name="whatsnew2_body">
-        <![CDATA[
+    <string name="whatsnew2_body"><![CDATA[
 		<p><b>Панель мультимедиа</b>: Коснитесь значка скрепки для просмотра своих мультимедийных файлов в панели с возможностью прокрутки. Если вы не хотите, чтобы панель раскрывалась автоматически, показывая последние просмотренные мультимедийные файлы, отключите параметр быстрого выбора изображений в настройках чата — меню <i>Настройки / Чат / Быстрый выбор изображения</i>.</p>
 		<p><b>Поиск изображений</b>: Выполняйте в своих изображениях поиск стандартных объектов, действий и мест.<br>Распознавание изображений основано на локальной модели машинного обучения и не передает данные на сервер Threema или третьим лицам. Поскольку анализ изображений — это довольно ресурсоемкая задача, выполнение которой может занять долгое время, по умолчанию этот параметр отключен. Для доступа к нему откройте меню <i>Настройки / Мультимедиа / Поиск изображений</i>.</p>
 		<p><b>Отправка мультимедийных файлов</b>: Отправляйте изображения с нужным разрешением без необходимости менять общие настройки.</p>
@@ -1027,8 +1026,7 @@
 		<p><b>Цитаты</b>: %1$s теперь позволяет цитировать любые мультимедийные сообщения, в том числе изображения, видео и голосовые сообщения.</p>
 		<p><b>100 новых эмодзи</b>: Ознакомьтесь с долгожданным набором &#129749;</p>
 		<p><b>Крупные тексты</b>: Чтобы не загромождать интерфейс чата, мы теперь показываем сообщения с большим количеством текста в усеченном пузырьке чата, который при необходимости можно развернуть.</p>
-		]]>
-    </string>
+		]]></string>
     <string name="tooltip_identity_popup">Коснитесь здесь, чтобы быстро показать свой Threema ID или сканировать ID других пользователей</string>
     <string name="tap_to_start">Коснитесь здесь, чтобы запустить %s.</string>
     <string name="two_years">2 года</string>
@@ -1169,6 +1167,21 @@
     <string name="original_file_no_longer_avilable">Исходный файл больше не доступен. Отправьте сообщение повторно.</string>
     <string name="state_transcoding">перекодируем</string>
     <string name="importing_files">импортируем файлы</string>
-    <string name="tooltip_image_resolution_hint">Коррекция разрешения изображений.</string>
+    <string name="tooltip_image_resolution_hint">Нажмите здесь для коррекции разрешения изображений.</string>
     <string name="image_labeling_stuck_error">Процесс индексирования для поиска по изображениям завис и был отменен. Повторите попытку позже.</string>
+    <string name="ballot_created_successfully">Опрос успешно создан.</string>
+    <string name="file_size">Размер файла</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30 дн.</string>
+    <string name="show_in_chat">Показать в чате</string>
+    <string name="group_create_no_members">Действительно создать пустую группу без других участников?</string>
+    <string name="notes">Примечания</string>
+    <string name="blur_faces">Размытие лиц</string>
+    <string name="brush">Кисть</string>
+    <string name="error_detecting_faces">Ошибка распознания лиц</string>
+    <string name="no_faces_detected">Лица не распознаны</string>
+    <string name="smiley">Смайл</string>
+    <string name="blur">Размыть</string>
+    <string name="face_blur_tooltip_title">Новинка: распознание лиц</string>
+    <string name="face_blur_tooltip_text">Обнаруживайте лица на изображении и размывайте их или закрывайте смайлами.</string>
 </resources>

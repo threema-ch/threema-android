@@ -41,12 +41,14 @@ public class AddContactAsyncTask extends AsyncTask<Void, Void, Boolean> {
 	private ContactService contactService;
 	private final Runnable runOnCompletion;
 	private final String firstName, lastName, threemaId;
+	private final boolean markAsWorkVerified;
 
-	public AddContactAsyncTask(String firstname, String lastname, String identity, Runnable runOnCompletion) {
+	public AddContactAsyncTask(String firstname, String lastname, String identity, boolean markAsWorkVerified, Runnable runOnCompletion) {
 		this.firstName = firstname;
 		this.lastName = lastname;
 		this.threemaId = identity.toUpperCase();
 		this.runOnCompletion = runOnCompletion;
+		this.markAsWorkVerified = markAsWorkVerified;
 
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		try {
@@ -74,7 +76,7 @@ public class AddContactAsyncTask extends AsyncTask<Void, Void, Boolean> {
 					contactService.save(contactModel);
 				}
 
-				if (contactModel.getType() == IdentityType.WORK) {
+				if (contactModel.getType() == IdentityType.WORK || markAsWorkVerified) {
 					contactModel.setIsWork(true);
 
 					if(contactModel.getVerificationLevel() != VerificationLevel.FULLY_VERIFIED) {

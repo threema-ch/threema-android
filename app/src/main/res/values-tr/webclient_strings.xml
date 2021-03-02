@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Geçersiz QR kodu verileri</string>
+    <string name="webclient_init_session">Yeni oturum başlat</string>
+    <string name="webclient_sessions_really_delete">Bu Threema Web oturumunu gerçekten silmek istiyor musunuz?</string>
+    <string name="webclient_last_usage">Son kullanım: %s</string>
+    <string name="webclient_created_at">Oluşturulduğu yer: %1$s ( %2$s )</string>
+    <string name="webclient_active_since">Etkin olduğu tarihten beri: %s</string>
+    <string name="webclient_enable">Threema Web\'i etkinleştir</string>
+    <string name="webclient_no_sessions_found">Bağlanmak için PC\'nizin tarayıcısında <b> https://web.threema.ch </b> adresini açın ve kodu taramak için aşağıdaki düğmeye dokunun.</string>
+    <string name="webclient_session_rename">Oturumu yeniden adlandır</string>
+    <string name="webclient_session_label">Yeni isim</string>
+    <string name="webclient_session_start">Oturumu başlat</string>
+    <string name="webclient_session_stop">Oturumu durdur</string>
+    <string name="webclient_persistent">Kalıcı</string>
+    <string name="webclient_disposable">Tek kullanımlık</string>
+    <string name="webclient_unnamed_session">Adsız Oturum</string>
+    <string name="webclient_session_remove">Oturumu kaldır</string>
+    <string name="webclient_welcome_title">PC\'nizden sohbet edin!</string>
+    <string name="webclient_welcome_explain">Threema Web, tüm kişilerinize, medyanıza ve sohbetlerinize, hatta geçmiş konuşmalarınıza tam erişim sağlarken bilgisayarınızdan veya dizüstü bilgisayarınızdan sohbet etmenizi sağlar.\n\n<b> Telefon ve PC arasındaki tüm iletişim tamamen uçtan uca şifrelenir </b> ve hem telefon hem de PC aynı ağdaysa doğrudan bağlantı kullanır.\n\nLütfen dikkat: Threema Web aktifken pilin bitmesine neden olabilir. İstediğiniz zaman etkinleştirebilir veya devre dışı bırakabilirsiniz.</string>
+    <string name="webclient_launch">Threema Web\'i şimdi başlat</string>
+    <string name="webclient_qr_scan_message">Lütfen bilgisayarda görüntülenen QR kodunu tarayın.</string>
+    <string name="webclient_invalid_qr_code">Geçersiz Threema Web QR kodu</string>
+    <string name="webclient_new_connection_toast">Threema Web oturumu başladı</string>
+    <string name="webclient_protocol_error">Protokol hatası</string>
+    <string name="webclient_protocol_version_to_old">Uygulamanız Threema Web\'in bu sürümünü desteklemiyor. Lütfen Threema\'yı en son sürüme güncelleyin.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Uygulamanız Threema Web\'in bu sürümünü desteklemiyor. Lütfen Threema Web örneğinizin yöneticisinden en son sürüme geçmesini isteyin.</string>
+    <string name="webclient_protocol_version_too_new_threema">desteklemiyor. Lütfen Threema Web\'in daha yeni bir sürümünü kullanın.</string>
+    <string name="webclient_session_already_exists">Taradığınız QR kodunun oturumu zaten var. Lütfen Threema Web\'i web tarayıcınıza yeniden yükleyin ve tekrar deneyin.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Bu Threema Web oturumunu şimdi başlatmak ister misiniz?</string>
+    <string name="webclient_cannot_restore">Threema Web oturumu geri yüklenemiyor</string>
+    <string name="webclient_disabled">Threema Web etkin değil</string>
+    <string name="webclient_cannot_start">Threema Web oturumu başlatılamıyor</string>
+    <string name="webclient_constrained_by_mdm">Sunucu yönetici tarafından onaylanmadı.</string>
+    <string name="webclient_clear_all_sessions">Tüm oturumları temizle</string>
+    <string name="webclient_clear_all_sessions_confirm">Tüm Threema Web oturumlarını durdurmak ve kaldırmak istediğinizden emin misiniz?</string>
+    <string name="webclient_prefs_debug_tool_summary">Bir Threema Web bağlantısı kurma ile ilgili sorunları gidermek için bu aracı başlatın</string>
+    <string name="webclient_diagnostics">Threema Web Tanılama</string>
+    <string name="webclient_diagnostics_start">Başlat</string>
+    <string name="webclient_diagnostics_intro">Testi başlatmak için «Başlat» üzerine dokunun.</string>
+    <string name="webclient_diagnostics_done">Bitti. Threema Web bağlantısı oluşturma ile ilgili sorunlar yaşıyorsanız, lütfen bu günlüğü Threema desteğine gönderin.</string>
+</resources>

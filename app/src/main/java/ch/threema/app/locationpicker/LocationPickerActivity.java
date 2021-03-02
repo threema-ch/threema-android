@@ -27,6 +27,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -188,13 +190,18 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		appBarLayout = findViewById(R.id.appbar_layout);
 		mapView = findViewById(R.id.map);
 
-		setSupportActionBar(findViewById(R.id.toolbar));
+		Toolbar toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar == null) {
 			finish();
 			return;
 		}
 		actionBar.setDisplayHomeAsUpEnabled(true);
+
+		if (toolbar.getNavigationIcon() != null) {
+			toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+		}
 
 		// Get Threema services
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();

@@ -243,7 +243,7 @@
     <string name="emoji_nature">Natureza</string>
     <string name="emoji_food">Comida e Bebida</string>
     <string name="emoji_recent">Recentes</string>
-    <string name="emoji_emotions">Emoções</string>
+    <string name="emoji_emotions">Smilies e pessoas</string>
     <string name="emoji_activities">Atividades</string>
     <string name="emoji_flags">Marcações</string>
     <string name="title_lock">Bloquear</string>
@@ -1022,8 +1022,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="whatsnew_title">Boas-vindas ao %s 4.5</string>
     <string name="whatsnew_headline">%1$s 4.5 traz uma experiência de mídia totalmente nova.\n\nA interface da gaveta de mídia foi redesenhada e agora traz uma pesquisa de imagem opcional com machine learning (aprendizagem de máquina).\n\nAlém disso, adicionamos a pesquisa de texto global em todas as conversas, citação de mensagens melhorada e mais.</string>
     <string name="whatsnew2_title">Quais novidades?</string>
-    <string name="whatsnew2_body">
-    <![CDATA[
+    <string name="whatsnew2_body"><![CDATA[
 <p><b>Gaveta de mídia</b>: Toque no ícone de clipe para navegar pelos seus arquivos de mídia em uma gaveta com barra de rolagem. Caso você não deseje que a gaveta abra automaticamente com os itens de mídia mais recentes, desative a opção de seleção rápida de imagens nas configurações de chat, em <i>Configurações / Chat / Seleção rápida de mídia </i>.</p>
 <p><b>Pesquisa de imagens</b>: Busque imagens de objetos comuns, atividades e lugares.<br>O reconhecimento de imagem é baseado em um modelo de machine learning local e não envia dados para o servidor do Threema ou de terceiros. Como a análise de imagens é uma tarefa pesada e pode levar muito tempo, a opção está desativada por padrão. Você a encontrará em <i>Configurações / Mídia e armazenamento / Pesquisa de imagens</i>.</p>
 <p><b>Envio de arquivos de mídia</b>: Envie imagens com resoluções individuais sem precisar alterar as configurações globais.</p>
@@ -1033,8 +1032,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
 <p><b>Citações</b>: Agora, o %1$s permite que você cite qualquer tipo de mídia, incluindo imagens, vídeos e mensagens de voz.</p>
 <p><b>100 novos emojis</b>: Confira o tão esperado fondue &#129749;</p>
 <p><b>Textos maiores</b>: Para manter a interface das conversas limpa, mensagens com muito texto serão exibidas em uma bolha de chat que pode ser expandida conforme a necessidade.</p>
-	]]>
-    </string>
+		]]></string>
     <string name="tooltip_identity_popup">Toque aqui para exibir a sua ID do Threema ou escanear IDs de outras pessoas</string>
     <string name="tap_to_start">Toque aqui para iniciar o %s agora.</string>
     <string name="two_years">2 anos</string>
@@ -1175,6 +1173,21 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="original_file_no_longer_avilable">O arquivo original não está mais acessível. Reenvie a mensagem.</string>
     <string name="state_transcoding">transcodificação</string>
     <string name="importing_files">Importando arquivos</string>
-    <string name="tooltip_image_resolution_hint">Ajuste a resolução das imagens.</string>
+    <string name="tooltip_image_resolution_hint">Toque aqui para ajustar a resolução da imagem.</string>
     <string name="image_labeling_stuck_error">O processo de indexação para a pesquisa de imagens travou e foi cancelado. Tente novamente mais tarde.</string>
+    <string name="ballot_created_successfully">A enquete foi criada com sucesso.</string>
+    <string name="file_size">Tamanho do arquivo</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30d</string>
+    <string name="show_in_chat">Mostrar na conversa</string>
+    <string name="group_create_no_members">Tem certeza de que deseja criar um grupo vazio sem outros membros?</string>
+    <string name="notes">Anotações</string>
+    <string name="blur_faces">Desfocar rostos</string>
+    <string name="brush">Pincel</string>
+    <string name="error_detecting_faces">Erro ao detectar rostos</string>
+    <string name="no_faces_detected">Nenhum rosto detectado</string>
+    <string name="smiley">Smiley</string>
+    <string name="blur">Desfoque</string>
+    <string name="face_blur_tooltip_title">Novo: reconhecimento de rostos</string>
+    <string name="face_blur_tooltip_text">Encontre rostos na imagem e desfoque-as ou cubra-as com um smiley.</string>
 </resources>

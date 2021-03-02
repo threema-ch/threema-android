@@ -53,11 +53,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.AbstractGroupMessage;
 import ch.threema.client.BlobUploader;
-import ch.threema.client.GroupAudioMessage;
-import ch.threema.client.GroupImageMessage;
 import ch.threema.client.GroupLocationMessage;
 import ch.threema.client.GroupTextMessage;
-import ch.threema.client.GroupVideoMessage;
 import ch.threema.client.MessageId;
 import ch.threema.client.ProtocolDefines;
 import ch.threema.client.ThreemaFeature;
@@ -215,11 +212,14 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 						.setThumbnailBlobId(thumbnailBlobId)
 						.setEncryptionKey(fileResult.getKey())
 						.setMimeType(modelFileData.getMimeType())
+						.setThumbnailMimeType(modelFileData.getThumbnailMimeType())
 						.setFileSize(modelFileData.getFileSize())
 						.setFileName(modelFileData.getFileName())
 						.setRenderingType(modelFileData.getRenderingType())
 						.setDescription(modelFileData.getCaption())
-						.setThumbnailMimeType(modelFileData.getThumbnailMimeType());
+						.setCorrelationId(messageModel.getCorrelationId())
+						.setMetaData(modelFileData.getMetaData());
+
 				fileMessage.setData(fileData);
 
 				if (messageId != null) {

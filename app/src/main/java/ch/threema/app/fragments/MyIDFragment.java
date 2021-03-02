@@ -132,7 +132,7 @@ public class MyIDFragment extends MainFragment
 	private static final String DIALOG_TAG_LINKED_MOBILE_CONFIRM = "cfm";
 	private static final String DIALOG_TAG_REVOKING = "revk";
 
-	private SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
+	private final SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
 		@Override
 		public void onVerified() {
 		 	RuntimeUtil.runOnUiThread(new Runnable() {
@@ -249,6 +249,7 @@ public class MyIDFragment extends MainFragment
 
 			this.avatarView = fragmentView.findViewById(R.id.avatar_edit_view);
 			this.avatarView.setFragment(this);
+			this.avatarView.setIsMyProfilePicture(true);
 			this.avatarView.setContactModel(contactService.getMe());
 
 			this.nicknameTextView = fragmentView.findViewById(R.id.nickname);
@@ -284,7 +285,8 @@ public class MyIDFragment extends MainFragment
 			});
 
 			if (isDisabledProfilePicReleaseSettings) {
-				fragmentView.findViewById(R.id.picrelease_spinner_container).setVisibility(View.GONE);
+				fragmentView.findViewById(R.id.picrelease_spinner).setVisibility(View.GONE);
+				fragmentView.findViewById(R.id.picrelease_config).setVisibility(View.GONE);
 				fragmentView.findViewById(R.id.picrelease_text).setVisibility(View.GONE);
 			}
 

@@ -22,24 +22,69 @@
 		android:id="@+id/group_tools">
 
 		<item
-			android:id="@+id/item_draw"
+			android:id="@+id/item_face"
 			android:enabled="true"
-			android:icon="@drawable/ic_brush"
+			android:icon="@drawable/ic_outline_face_retouching_off"
 			app:iconTint="@android:color/white"
-			android:orderInCategory="55"
-			android:title="@string/draw"
-			app:showAsAction="always"
-			/>
+			android:orderInCategory="52"
+			android:title="@string/blur_faces"
+			app:showAsAction="always">
+
+			<menu>
+				<item
+					android:id="@+id/item_face_blur"
+					android:enabled="true"
+					android:icon="@drawable/ic_outline_blur_on_24"
+					android:orderInCategory="40"
+					android:title="@string/blur"
+					app:iconTint="@android:color/white"
+					app:showAsAction="always" />
+
+				<item
+					android:id="@+id/item_face_emoji"
+					android:enabled="true"
+					android:icon="@drawable/ic_mood_outline"
+					android:orderInCategory="60"
+					android:title="@string/smiley"
+					app:iconTint="@android:color/white"
+					app:showAsAction="always" />
+
+			</menu>
+
+
+		</item>
 
 		<item
-			android:id="@+id/item_pencil"
+			android:id="@+id/item_draw_parent"
 			android:enabled="true"
-			android:icon="@drawable/ic_pencil_outline"
+			android:icon="@drawable/ic_brush"
+			android:orderInCategory="55"
+			android:title="@string/draw"
 			app:iconTint="@android:color/white"
-			android:orderInCategory="57"
-			android:title="@string/pencil"
-			app:showAsAction="always"
-			/>
+			app:showAsAction="always">
+
+			<menu>
+				<item
+					android:id="@+id/item_draw"
+					android:enabled="true"
+					android:icon="@drawable/ic_brush"
+					android:orderInCategory="40"
+					android:title="@string/brush"
+					app:iconTint="@android:color/white"
+					app:showAsAction="always" />
+
+				<item
+					android:id="@+id/item_pencil"
+					android:enabled="true"
+					android:icon="@drawable/ic_pencil_outline"
+					android:orderInCategory="60"
+					android:title="@string/pencil"
+					app:iconTint="@android:color/white"
+					app:showAsAction="always" />
+
+			</menu>
+
+		</item>
 
 		<item
 			android:id="@+id/item_stickers"

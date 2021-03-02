@@ -1,23 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2018 Threema GmbH
   ~ All rights reserved.
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 android:id="@+id/parent_layout"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/parent_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-	<include layout="@layout/toolbar_view"/>
+	<include layout="@layout/toolbar_view" />
 
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/directory_search_bar_height"
 		android:layout_gravity="top"
 		android:paddingTop="8dp"
-		android:paddingBottom="8dp"
+		android:paddingBottom="4dp"
 		android:paddingLeft="16dp"
 		android:paddingRight="8dp"
 		android:background="?compose_container"
@@ -32,7 +31,7 @@
 			android:background="?compose_edittext_bubble"
 			android:textColor="?android:textColorPrimary"
 			app:iconifiedByDefault="false"
-			app:defaultQueryHint="@string/directory_search"/>
+			app:defaultQueryHint="@string/directory_search" />
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			style="?android:attr/borderlessButtonStyle"
@@ -43,7 +42,7 @@
 			android:background="?android:selectableItemBackground"
 			android:tint="@color/text_color_secondary"
 			app:srcCompat="@drawable/ic_filter_list_black_24dp"
-			android:contentDescription="@string/work_select_categories"/>
+			android:contentDescription="@string/work_select_categories" />
 
 	</FrameLayout>
 
@@ -54,25 +53,29 @@
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		android:orientation="vertical">
 
-	<TextView
-		android:id="@+id/categories_header_textview"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="16dp"
-		android:layout_marginRight="16dp"
-		android:paddingBottom="8dp"
-		android:lineSpacingExtra="10dp"
-		android:textSize="16sp"
-		android:textColor="?attr/textColorPrimary"
-		android:visibility="gone"/>
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/chip_group"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp"
+			app:chipSpacingHorizontal="4dp"
+			app:chipSpacingVertical="0dp"
+			app:lineSpacing="-4dp"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:singleLine="false"
+			android:visibility="gone" />
 
-	<ch.threema.app.ui.EmptyRecyclerView
+		<ch.threema.app.ui.EmptyRecyclerView
 			android:id="@+id/recycler"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			android:layout_marginTop="4dp"
 			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
 			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+			app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 	</LinearLayout>
 

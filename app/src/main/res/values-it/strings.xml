@@ -1189,4 +1189,19 @@ messaggi ogni 15 minuti.</string>
     <string name="importing_files">Importazione dati</string>
     <string name="tooltip_image_resolution_hint">Adattare la risoluzione dell\'immagine.</string>
     <string name="image_labeling_stuck_error">"Il processo di indicizzazione per il riconoscimento delle immagini si è interrotto. Riprova più tardi. "</string>
+    <string name="ballot_created_successfully">Il sondaggio è stato creato.</string>
+    <string name="file_size">Dimensione file</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30 gg</string>
+    <string name="show_in_chat">Mostra nella chat</string>
+    <string name="group_create_no_members">Vuoi davvero creare un gruppo vuoto senza ulteriori membri?</string>
+    <string name="notes">Appunti</string>
+    <string name="blur_faces">Sfocare i visi</string>
+    <string name="brush">Pennello</string>
+    <string name="error_detecting_faces">Si è verificato un errore durante il riconoscimento facciale</string>
+    <string name="no_faces_detected">Nessun viso trovato</string>
+    <string name="smiley">Smiley</string>
+    <string name="blur">Sfocare</string>
+    <string name="face_blur_tooltip_title">Nuovo: riconoscimento facciale</string>
+    <string name="face_blur_tooltip_text">Cerca i visi nella foto e rendili sfocati o coprili con uno smiley.</string>
 </resources>

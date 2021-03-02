@@ -24,16 +24,15 @@ package ch.threema.app.motionviews.widget;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import ch.threema.app.motionviews.viewmodel.Layer;
 
 public class ImageEntity extends MotionEntity {
 
-    @NonNull
-    private final Bitmap bitmap;
+    @NonNull private final Bitmap bitmap;
 
     public ImageEntity(@NonNull Layer layer,
                        @NonNull Bitmap bitmap,
@@ -51,11 +50,16 @@ public class ImageEntity extends MotionEntity {
         holyScale = Math.min(widthAspect, heightAspect);
 
         // initial position of the entity
-        srcPoints[0] = 0; srcPoints[1] = 0;
-        srcPoints[2] = width; srcPoints[3] = 0;
-        srcPoints[4] = width; srcPoints[5] = height;
-        srcPoints[6] = 0; srcPoints[7] = height;
-        srcPoints[8] = 0; srcPoints[8] = 0;
+        srcPoints[0] = 0;
+        srcPoints[1] = 0;
+        srcPoints[2] = width;
+        srcPoints[3] = 0;
+        srcPoints[4] = width;
+        srcPoints[5] = height;
+        srcPoints[6] = 0;
+        srcPoints[7] = height;
+        srcPoints[8] = 0;
+        srcPoints[9] = 0;
     }
 
     @Override
@@ -63,7 +67,12 @@ public class ImageEntity extends MotionEntity {
         canvas.drawBitmap(bitmap, matrix, drawingPaint);
     }
 
-    @Override
+	@Override
+	public boolean hasFixedPositionAndSize() {
+		return false;
+	}
+
+	@Override
     public int getWidth() {
         return bitmap.getWidth();
     }

@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
+import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.services.WidgetService;
 
@@ -54,10 +55,14 @@ public class WidgetProvider extends AppWidgetProvider {
 			Intent intent = new Intent(context, RecipientListBaseActivity.class);
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
+			Intent titleIntent = new Intent(context, HomeActivity.class);
+			PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, 0);
+
 			// Get the layout for the App Widget and attach an on-click listener
 			// to the button
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_messages);
 			views.setOnClickPendingIntent(R.id.widget_edit, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget_title, titlePendingIntent);
 
 			// Set up the RemoteViews object to use a RemoteViews adapter.
 			// This adapter connects

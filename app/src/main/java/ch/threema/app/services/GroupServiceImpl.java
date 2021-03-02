@@ -54,6 +54,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -61,7 +62,6 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.APIConnector;
 import ch.threema.client.AbstractGroupMessage;
@@ -1213,6 +1213,17 @@ public class GroupServiceImpl implements GroupService {
 		}
 	}
 
+	@Override
+	public int countMembers(@NonNull GroupModel groupModel) {
+		synchronized (this.groupIdentityCache) {
+			String[] existingIdentities = this.groupIdentityCache.get(groupModel.getId());
+			if (existingIdentities != null) {
+				return existingIdentities.length;
+			}
+		}
+		return (int) this.databaseServiceNew.getGroupMemberModelFactory().countMembers(groupModel.getId());
+	}
+
 	private boolean isGroupMember(GroupModel groupModel, String identity) {
 		if (!TestUtil.empty(identity)) {
 			for (String existingIdentity : this.getGroupIdentities(groupModel)) {
@@ -1229,6 +1240,7 @@ public class GroupServiceImpl implements GroupService {
 		return isGroupMember(groupModel, userService.getIdentity());
 	}
 
+	@Override
 	public List<GroupMemberModel> getGroupMembers(GroupModel groupModel) {
 		return this.databaseServiceNew.getGroupMemberModelFactory().getByGroupId(
 				groupModel.getId()

@@ -342,7 +342,7 @@
 	<string name="status_group_member_kicked">«%1$s» has been removed from the group.</string>
 	<string name="can_not_send_no_group_members">You cannot send a message to an empty group</string>
 	<string name="you_are_not_a_member_of_this_group">You are not a member of this group</string>
-	<string name="can_not_delete_not_valid">Cannot remove a invalid object</string>
+	<string name="can_not_delete_not_valid">Cannot remove an invalid object</string>
 	<string name="can_not_delete_contact_until_in_group">The contact is still a member or creator of a group
 		conversation and therefore cannot be deleted. Leave or delete all groups that include this contact and try
 		again.</string>
@@ -1226,4 +1226,15 @@
 	<string name="file_size">File size</string>
 	<!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
 	<string name="thirty_days_abbrev">30d</string>
+	<string name="show_in_chat">Show in chat</string>
+	<string name="group_create_no_members">Are you sure you want to create an empty group with no other members?</string>
+	<string name="notes">Notes</string>
+	<string name="blur_faces">Blur faces</string>
+	<string name="brush">Brush</string>
+	<string name="error_detecting_faces">Error while detecting faces</string>
+	<string name="no_faces_detected">No faces detected</string>
+	<string name="smiley">Smiley</string>
+	<string name="blur">Blur</string>
+	<string name="face_blur_tooltip_title">New: Face recognition</string>
+	<string name="face_blur_tooltip_text">Find faces in the image and have them blurred or covered with a smiley.</string>
 </resources>

@@ -224,7 +224,7 @@
 	<dimen name="dialogutil_old_padding">4dp</dimen>
 	<dimen name="dialogutil_material_margin">14dp</dimen>
 	<dimen name="directory_header_height">24dp</dimen>
-	<dimen name="directory_search_bar_height">62dp</dimen>
+	<dimen name="directory_search_bar_height">58dp</dimen>
 	<dimen name="ballot_matrix_appbar_size">160dp</dimen>
 
 	<!-- work category span -->

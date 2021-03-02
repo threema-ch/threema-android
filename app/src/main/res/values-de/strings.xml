@@ -1148,7 +1148,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<p><b>Bildersuche</b>: Durchsuchen Sie Ihre Bilder nach gängigen Objekten, Aktivitäten und Orten. Die Bilderkennung basiert auf einem lokalen Machine-Learning-Modell und sendet keine Daten an uns oder andere Drittparteien. Da die Indexierung relativ viele Ressourcen benötigt und einige Zeit dauert, ist die Bildersuche standardmässig deaktiviert. Sie können sie unter <i>Threema-Einstellungen / Medien & Speicher / Bildersuche</i> einschalten.</p>
 		<p><b>Medien versenden</b>: Bilder können nun mit individuell unterschiedlichen Auflösungen gesendet werden, ohne die globalen Einstellungen zu ändern.</p>
 		<p><b>Video-Editor</b>: Schneiden Sie Videos vor dem Versand zu. Ausserdem wurde der Video-Konvertierungsprozess verbessert, so dass er im Hintergrund laufen kann.</p>
-		<p><b>In Galerie speichern</b>: Aufgrund neuer Anforderungen von Google, werden die Dateien ab Android 10 in den allgemeinen Medien-Ordnern des Systems abgelegt (<i>Pictures, Video, Music,</i> und <i>Documents</i>).</p>
+		<p><b>In Galerie speichern</b>: Aufgrund neuer Anforderungen von Google werden die explizit in der Galerie gespeicherten Medien ab Android 10 in den Ordnern des Systems abgelegt (<i>Pictures, Video, Music,</i> und <i>Documents</i>).</p>
 		<p><b>Globale Suche</b>: Suchen Sie in allen Chats nach Text. Sie können eine globale Suche vom %1$s-Heimbildschirm aus über <i>Menü / Chats durchsuchen</i> starten.</p>
 		<p><b>Zitate</b>: %1$s ermöglicht es jetzt, sämtliche Arten von Medien zu zitieren, einschliesslich Bildern, Videos oder Sprachnachrichten.</p>
 		<p><b>100 Neue Emojis</b>: Darunter das lange erwartete Fondue &#129749;</p>
@@ -1297,4 +1297,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="ballot_created_successfully">Die Umfrage wurde erfolgreich erstellt.</string>
 	<string name="file_size">Dateigrösse</string>
 	<string name="thirty_days_abbrev">30d</string>
+	<string name="show_in_chat">In Chat zeigen</string>
+	<string name="group_create_no_members">Sind Sie sicher, dass Sie eine leere Gruppe ohne weitere Mitglieder erstellen möchten?</string>
+	<string name="notes">Notizen</string>
+	<string name="blur_faces">Gesichter verwischen</string>
+	<string name="brush">Pinsel</string>
+	<string name="error_detecting_faces">Bei der Gesichtserkennung ist ein Fehler aufgetreten</string>
+	<string name="no_faces_detected">Keine Gesichter gefunden</string>
+	<string name="smiley">Smiley</string>
+	<string name="blur">Verwischen</string>
+	<string name="face_blur_tooltip_title">Neu: Gesichtserkennung</string>
+	<string name="face_blur_tooltip_text">Finden Sie Gesichter im Bild und lassen Sie sie verwischen oder mit einem Smiley überdecken.</string>
 </resources>

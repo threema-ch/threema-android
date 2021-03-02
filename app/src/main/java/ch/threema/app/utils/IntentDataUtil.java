@@ -38,6 +38,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
@@ -50,6 +51,8 @@ import ch.threema.app.services.MessageService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.DistributionListMessageModel;
+import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.WebClientSessionModel;
@@ -525,6 +528,23 @@ public class IntentDataUtil {
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_TIMESTAMP, SystemClock.elapsedRealtime());
+
+		return intent;
+	}
+
+	public static Intent getJumpToMessageIntent(Context context, AbstractMessageModel messageModel) {
+		Intent intent = new Intent(context, ComposeMessageActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+		if (messageModel instanceof GroupMessageModel) {
+			intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageModel) messageModel).getGroupId());
+		} else if (messageModel instanceof DistributionListMessageModel) {
+			intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageModel) messageModel).getDistributionListId());
+		} else {
+			intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
+		}
+		intent.putExtra(ComposeMessageFragment.EXTRA_API_MESSAGE_ID, messageModel.getApiMessageId());
+		intent.putExtra(ComposeMessageFragment.EXTRA_SEARCH_QUERY, " ");
 
 		return intent;
 	}

@@ -98,7 +98,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private PreferenceService preferenceService;
 	private ImageView avatarImage, avatarEditOverlay;
 	private WeakReference<AvatarEditListener> listenerRef = new WeakReference<>(null);
-	private boolean hires, isEditable;
+	private boolean hires, isEditable, isMyProfilePicture;
 
 	// the hosting fragment
 	private WeakReference<Fragment> fragmentRef = new WeakReference<>(null);
@@ -488,7 +488,11 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private void setAvatarBitmap(@Nullable Bitmap bitmap) {
 		if (bitmap != null) {
 			if (hires) {
-				this.avatarImage.setImageBitmap(bitmap);
+				if (isMyProfilePicture) {
+					this.avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getResources(), bitmap));
+				} else {
+					this.avatarImage.setImageBitmap(bitmap);
+				}
 			} else {
 				this.avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getResources(), bitmap));
 			}
@@ -604,6 +608,11 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		this.avatarEditOverlay.setClickable(true);
 		this.avatarEditOverlay.setFocusable(true);
 		this.avatarEditOverlay.setOnClickListener(this);
+	}
+
+	public void setIsMyProfilePicture(boolean isMyProfilePicture) {
+		this.isMyProfilePicture = isMyProfilePicture;
+		setHires(true);
 	}
 
 	public void setDefaultAvatar(ContactModel contactModel, GroupModel groupModel) {

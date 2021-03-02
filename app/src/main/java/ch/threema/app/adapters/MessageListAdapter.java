@@ -234,6 +234,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		if (viewType == TYPE_ITEM) {
 			View itemView = inflater.inflate(R.layout.item_message_list, viewGroup, false);
 			itemView.setClickable(true);
+			// TODO: MaterialCardView: Setting a custom background is not supported.
 			itemView.setBackgroundResource(R.drawable.listitem_background_selector);
 			return new MessageListViewHolder(itemView);
 		}
@@ -431,8 +432,13 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 						}
 
 						if (conversationModel.isGroupConversation()) {
-							holder.deliveryView.setImageResource(R.drawable.ic_group_filled);
-							holder.deliveryView.setContentDescription(context.getString(R.string.prefs_group_notifications));
+							if (groupService.isGroupOwner(conversationModel.getGroup()) && groupService.countMembers(conversationModel.getGroup()) == 1) {
+								holder.deliveryView.setImageResource(R.drawable.ic_spiral_bound_booklet_outline);
+								holder.deliveryView.setContentDescription(context.getString(R.string.notes));
+							} else {
+								holder.deliveryView.setImageResource(R.drawable.ic_group_filled);
+								holder.deliveryView.setContentDescription(context.getString(R.string.prefs_group_notifications));
+							}
 							holder.deliveryView.setVisibility(View.VISIBLE);
 						} else if (conversationModel.isDistributionListConversation()) {
 							holder.deliveryView.setImageResource(R.drawable.ic_distribution_list_filled);

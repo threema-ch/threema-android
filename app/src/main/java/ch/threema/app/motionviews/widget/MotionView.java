@@ -53,8 +53,6 @@ import ch.threema.app.motionviews.gestures.RotateGestureDetector;
  */
 
 public class MotionView extends FrameLayout {
-
-	private static final String TAG = MotionView.class.getSimpleName();
 	private TouchListener touchListener;
 
 	public interface Constants {
@@ -142,8 +140,11 @@ public class MotionView extends FrameLayout {
 
 	public void addEntity(@Nullable MotionEntity entity) {
 		if (entity != null) {
+			initEntityBorder(entity);
 			entities.add(entity);
 			selectEntity(entity, false);
+			touchListener.onAdded(entity);
+			unselectEntity();
 		}
 	}
 
@@ -224,7 +225,7 @@ public class MotionView extends FrameLayout {
 	}
 
 	private void handleTranslate(PointF delta) {
-		if (selectedEntity != null) {
+		if (selectedEntity != null && !selectedEntity.hasFixedPositionAndSize()) {
 			float newCenterX = selectedEntity.absoluteCenterX() + delta.x;
 			float newCenterY = selectedEntity.absoluteCenterY() + delta.y;
 			// limit entity center to screen bounds
@@ -293,7 +294,7 @@ public class MotionView extends FrameLayout {
 		if (selectedEntity != null) {
 			PointF p = new PointF(e.getX(), e.getY());
 			if (selectedEntity.pointInLayerRect(p)) {
-				touchListener.onLongClick((int) e.getX(), (int) e.getY());
+				touchListener.onLongClick(selectedEntity, (int) e.getX(), (int) e.getY());
 			}
 		}
 	}
@@ -415,7 +416,7 @@ public class MotionView extends FrameLayout {
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			if (selectedEntity != null) {
+			if (selectedEntity != null && !selectedEntity.hasFixedPositionAndSize()) {
 				float scaleFactorDiff = detector.getScaleFactor();
 				selectedEntity.getLayer().postScale(scaleFactorDiff - 1.0F);
 				updateUI();
@@ -427,7 +428,7 @@ public class MotionView extends FrameLayout {
 	private class RotateListener extends RotateGestureDetector.SimpleOnRotateGestureListener {
 		@Override
 		public boolean onRotate(RotateGestureDetector detector) {
-			if (selectedEntity != null) {
+			if (selectedEntity != null && !selectedEntity.hasFixedPositionAndSize()) {
 				selectedEntity.getLayer().postRotate(-detector.getRotationDegreesDelta());
 				updateUI();
 			}
@@ -450,13 +451,17 @@ public class MotionView extends FrameLayout {
 		draw(canvas);
 	}
 
+	public int getEntitiesCount() {
+		return entities.size();
+	}
+
 	public void setTouchListener(TouchListener touchListener) {
 		this.touchListener = touchListener;
 	}
 
 	public interface TouchListener {
 		void onSelected(boolean isSelected);
-		void onLongClick(int x, int y);
+		void onLongClick(MotionEntity entity, int x, int y);
 		void onAdded(MotionEntity entity);
 		void onDeleted(MotionEntity entity);
 		void onTouchUp();

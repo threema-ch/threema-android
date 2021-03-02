@@ -36,7 +36,6 @@ import ch.threema.app.utils.AnimationUtil;
 
 public class PaintSelectionPopup extends PopupWindow implements View.OnClickListener {
 
-	private static final String TAG = PaintSelectionPopup.class.toString();
 	public static final int TAG_REMOVE = 1;
 	public static final int TAG_FLIP = 2;
 	public static final int TAG_TO_FRONT = 3;
@@ -70,15 +69,22 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 		}
 	}
 
-	public void show(int x, int y) {
+	public void show(int x, int y, boolean allowReordering) {
 		this.removeView.setOnClickListener(this);
 		this.removeView.setTag(TAG_REMOVE);
 
-		this.flipView.setOnClickListener(this);
-		this.flipView.setTag(TAG_FLIP);
+		if (allowReordering) {
+			this.flipView.setVisibility(View.VISIBLE);
+			this.flipView.setOnClickListener(this);
+			this.flipView.setTag(TAG_FLIP);
 
-		this.tofrontView.setOnClickListener(this);
-		this.tofrontView.setTag(TAG_TO_FRONT);
+			this.tofrontView.setVisibility(View.VISIBLE);
+			this.tofrontView.setOnClickListener(this);
+			this.tofrontView.setTag(TAG_TO_FRONT);
+		} else {
+			this.flipView.setVisibility(View.GONE);
+			this.tofrontView.setVisibility(View.GONE);
+		}
 
 		if (this.paintSelectPopupListener != null) {
 			this.paintSelectPopupListener.onOpen();
@@ -89,7 +95,7 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 		getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
-				getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
 				AnimationUtil.popupAnimateIn(getContentView());
 			}

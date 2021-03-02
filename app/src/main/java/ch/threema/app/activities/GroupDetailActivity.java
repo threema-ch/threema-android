@@ -26,6 +26,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -405,6 +407,10 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 		setScrimColor();
 		updateFloatingActionButton();
+
+		if (toolbar.getNavigationIcon() != null) {
+			toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+		}
 
 		ListenerManager.contactSettingsListeners.add(this.contactSettingsListener);
 		ListenerManager.groupListeners.add(this.groupListener);

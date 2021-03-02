@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2020 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -65,8 +65,8 @@ public class SenderThreadTest {
 
 		// Interrupt thread
 		this.senderThread.shutdown();
-		Thread.sleep(100);
-		Assert.assertFalse("Thread was not shut down after 100ms", this.senderThread.isAlive());
+		this.senderThread.join(10000);
+		Assert.assertFalse("Thread was not shut down after 10s", this.senderThread.isAlive());
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class SenderThreadTest {
 
 		// Interrupt thread
 		this.senderThread.interrupt();
-		Thread.sleep(100);
-		Assert.assertFalse("Thread was not shut down after 100ms", this.senderThread.isAlive());
+		this.senderThread.join(10000);
+		Assert.assertFalse("Thread was not shut down after 10s", this.senderThread.isAlive());
 	}
 }

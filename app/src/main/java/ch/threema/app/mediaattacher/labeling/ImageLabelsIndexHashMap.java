@@ -28,14 +28,17 @@ import java.util.HashMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 
 /**
  * This data structure contains a mapping from image labels to translated textual labels.
  */
 public class ImageLabelsIndexHashMap {
-	private final HashMap<String, String> mapping;
 
-	public ImageLabelsIndexHashMap(Context context){
+	private HashMap<String, String> mapping;
+	private Context context = ThreemaApplication.getAppContext();
+
+	public ImageLabelsIndexHashMap(){
 		mapping =  new HashMap<String, String>() {{
 			put("0", context.getString(R.string.label_0));
 			put("1", context.getString(R.string.label_1));

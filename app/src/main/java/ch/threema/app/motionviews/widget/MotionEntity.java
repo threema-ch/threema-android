@@ -271,6 +271,8 @@ public abstract class MotionEntity {
 
 	protected abstract void drawContent(@NonNull Canvas canvas, @Nullable Paint drawingPaint);
 
+	public abstract boolean hasFixedPositionAndSize();
+
 	public abstract int getWidth();
 
 	public abstract int getHeight();

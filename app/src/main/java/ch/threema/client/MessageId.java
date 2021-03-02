@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -35,19 +35,29 @@ public class MessageId implements Serializable {
 
 	private final byte[] messageId;
 
+	/**
+	 * Create a new random MessageId.
+	 */
 	public MessageId() {
 		messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
 		SecureRandom rnd = new SecureRandom();
 		rnd.nextBytes(messageId);
 	}
 
+	/**
+	 * Create a MessageId from an 8-byte array.
+	 * @throws ThreemaException If the source array has the wrong length.
+	 */
 	public MessageId(byte[] messageId) throws ThreemaException {
-		if (messageId.length != ProtocolDefines.MESSAGE_ID_LEN)
-			throw new ThreemaException("TM014");    /* Invalid message ID length */
-
+		if (messageId.length != ProtocolDefines.MESSAGE_ID_LEN) {
+			throw new ThreemaException("Invalid message ID length");
+		}
 		this.messageId = messageId;
 	}
 
+	/**
+	 * Create a MessageId from an array, starting at the specified offset.
+	 */
 	public MessageId(byte[] data, int offset) {
 		messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
 		System.arraycopy(data, offset, messageId, 0, ProtocolDefines.MESSAGE_ID_LEN);

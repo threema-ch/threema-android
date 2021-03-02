@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1182,7 +1182,6 @@ public class APIConnector {
 		// Paging
 		request.put("page", filter.getPage());
 
-
 		String data = doPost(
 			workServerUrl + "directory",
 			request.toString());
@@ -1244,6 +1243,10 @@ public class APIConnector {
 						contact.has("last") ? contact.optString("last") : null,
 						contact.has("csi") ? contact.optString("csi") : null
 					);
+					JSONObject jsonResponseOrganization = contact.optJSONObject("org");
+					if (jsonResponseOrganization != null) {
+						directoryContact.organization.name = jsonResponseOrganization.optString("name");
+					}
 
 					JSONArray categoryArray = contact.optJSONArray("cat");
 					if (categoryArray != null) {

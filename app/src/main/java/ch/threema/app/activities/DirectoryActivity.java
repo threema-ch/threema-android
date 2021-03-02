@@ -23,23 +23,22 @@ package ch.threema.app.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.text.Layout;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
+import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +48,9 @@ import java.util.List;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
@@ -66,13 +65,10 @@ import ch.threema.app.ui.DirectoryDataSourceFactory;
 import ch.threema.app.ui.DirectoryHeaderItemDecoration;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
-import ch.threema.app.ui.MentionClickableSpan;
 import ch.threema.app.ui.ThreemaSearchView;
-import ch.threema.app.ui.WorkCategorySpan;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.client.work.WorkDirectoryCategory;
 import ch.threema.client.work.WorkDirectoryContact;
 import ch.threema.client.work.WorkOrganization;
@@ -91,6 +87,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	private DirectoryAdapter directoryAdapter;
 	private DirectoryDataSourceFactory directoryDataSourceFactory;
 	private EmptyRecyclerView recyclerView;
+	private ChipGroup chipGroup;
 
 	private List<WorkDirectoryCategory> categoryList = new ArrayList<>();
 	private List<WorkDirectoryCategory> checkedCategories = new ArrayList<>();
@@ -184,60 +181,8 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
 		sortByFirstName = preferenceService.isContactListSortingFirstName();
 
-		categoriesHeaderTextView = this.findViewById(R.id.categories_header_textview);
-		categoriesHeaderTextView.setMovementMethod(new LinkMovementMethod());
-		categoriesHeaderTextView.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				int action = event.getAction();
+		chipGroup = findViewById(R.id.chip_group);
 
-				if (action == MotionEvent.ACTION_UP) {
-					TextView widget = (TextView) v;
-					Object text = widget.getText();
-					if (text instanceof Spannable) {
-						int x = (int) event.getX();
-						int y = (int) event.getY();
-
-						x -= widget.getTotalPaddingLeft();
-						y -= widget.getTotalPaddingTop();
-
-						x += widget.getScrollX();
-						y += widget.getScrollY();
-
-						Layout layout = widget.getLayout();
-						if (layout != null) {
-							int line = layout.getLineForVertical(y);
-							int off = layout.getOffsetForHorizontal(line, x);
-							Spannable buffer = (Spannable) text;
-							ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
-
-							if (link.length != 0) {
-								if (link[0] instanceof MentionClickableSpan) {
-									MentionClickableSpan clickableSpan = (MentionClickableSpan) link[0];
-
-									try {
-										String categoryId = String.valueOf(clickableSpan.getText());
-										if (!TestUtil.empty(categoryId)) {
-											for(WorkDirectoryCategory checkedCategory: checkedCategories) {
-												if (categoryId.equals(checkedCategory.getId())) {
-													checkedCategories.remove(checkedCategory);
-												}
-											}
-											updateSelectedCategories();
-										}
-	//									Toast.makeText(DirectoryActivity.this, "Click on item " + clickableSpan.getText(), Toast.LENGTH_LONG).show();
-										return true;
-									} catch (Exception e) {
-										//
-									}
-								}
-							}
-						}
-					}
-				}
-				return false;
-			}
-		});
 		categorySpanColor = ConfigUtils.getColorFromAttribute(this, R.attr.mention_background);
 		categorySpanTextColor = ConfigUtils.getColorFromAttribute(this, R.attr.mention_text_color);
 
@@ -325,6 +270,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 			workDirectoryContact.firstName,
 			workDirectoryContact.lastName,
 			workDirectoryContact.threemaId,
+			true,
 			runAfter).execute();
 	}
 
@@ -372,27 +318,66 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		MultiChoiceSelectorDialog.newInstance(getString(R.string.work_select_categories), categoryNames, categoryChecked).show(getSupportFragmentManager(), DIALOG_TAG_CATEGORY_SELECTOR);
 	}
 
+	@UiThread
 	private void updateSelectedCategories() {
 		int activeCategories = 0;
-		ArrayList<Pair<Integer, Integer>> spans = new ArrayList<>();
 
-		SpannableStringBuilder headerText = new SpannableStringBuilder();
+		chipGroup.removeAllViews();
+
 		for (WorkDirectoryCategory checkedCategory: checkedCategories) {
+			if (!TextUtils.isEmpty(checkedCategory.name)) {
 				activeCategories++;
 
-				int start = headerText.length();
-				headerText.append(checkedCategory.name);
-				int end = headerText.length();
-				headerText.append(" ");
-				spans.add(new Pair<>(start, end));
+				Chip chip = new Chip(this);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					chip.setTextAppearance(R.style.TextAppearance_Chip_Ballot);
+				} else {
+					chip.setTextSize(14);
+				}
 
-				headerText.setSpan(new WorkCategorySpan(categorySpanColor, categorySpanTextColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-				headerText.setSpan(new MentionClickableSpan(checkedCategory.getId()), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ColorStateList foregroundColor, backgroundColor;
+				if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
+					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.textColorPrimary));
+					backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
+				} else {
+					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
+					backgroundColor = foregroundColor.withAlpha(0x1A);
+				}
+
+				chip.setTextColor(foregroundColor);
+				chip.setChipBackgroundColor(backgroundColor);
+				chip.setText(checkedCategory.name);
+				chip.setCloseIconVisible(true);
+				chip.setTag(checkedCategory.id);
+				chip.setCloseIconTint(foregroundColor);
+				chip.setOnCloseIconClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						String categoryId = (String) v.getTag();
+
+						if (!TextUtils.isEmpty(categoryId)) {
+							for (WorkDirectoryCategory checkedCategory : checkedCategories) {
+								if (categoryId.equals(checkedCategory.getId())) {
+									checkedCategories.remove(checkedCategory);
+									chipGroup.removeView(v);
+									updateDirectory();
+									break;
+								}
+							}
+						}
+					}
+				});
+
+				chipGroup.addView(chip);
+			}
 		}
 
-		categoriesHeaderTextView.setText(headerText);
-		categoriesHeaderTextView.setVisibility(activeCategories == 0 ? View.GONE : View.VISIBLE);
+		chipGroup.setVisibility(activeCategories == 0 ? View.GONE : View.VISIBLE);
 
+		updateDirectory();
+	}
+
+	private void updateDirectory() {
 		directoryDataSourceFactory.postLiveData.getValue().setQueryCategories(checkedCategories);
 		directoryDataSourceFactory.postLiveData.getValue().invalidate();
 	}

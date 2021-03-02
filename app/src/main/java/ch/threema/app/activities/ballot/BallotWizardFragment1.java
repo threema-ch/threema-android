@@ -32,15 +32,19 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
-import ch.threema.app.adapters.ballot.BallotWizard1ListAdapter;
+import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
 import ch.threema.app.dialogs.DateSelectorDialog;
 import ch.threema.app.dialogs.TimeSelectorDialog;
 import ch.threema.app.utils.EditTextUtil;
@@ -52,13 +56,15 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 	private static final String DIALOG_TAG_SELECT_TIME = "selectTime";
 	private static final String DIALOG_TAG_SELECT_DATETIME = "selectDateTime";
 
-	private ListView choiceListView;
+	private RecyclerView choiceRecyclerView;
 	private List<BallotChoiceModel> ballotChoiceModelList;
-	private BallotWizard1ListAdapter listAdapter = null;
+	private BallotWizard1Adapter listAdapter = null;
 	private ImageButton createChoiceButton;
 	private ImageButton addDateButton, addDateTimeButton;
 	private EditText createChoiceEditText;
 	private Date originalDate = null;
+	private LinearLayoutManager choiceRecyclerViewLayoutManager;
+	private int lastVisibleBallotPosition;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +73,61 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 		ViewGroup rootView = (ViewGroup) inflater.inflate(
 				R.layout.fragment_ballot_wizard1, container, false);
 
-		this.choiceListView = rootView.findViewById(R.id.ballot_list);
+		this.choiceRecyclerView = rootView.findViewById(R.id.ballot_list);
+		this.choiceRecyclerViewLayoutManager = new LinearLayoutManager(getActivity());
+		this.choiceRecyclerView.setLayoutManager(choiceRecyclerViewLayoutManager);
+		this.choiceRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+			@Override
+			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+				if (bottom < oldBottom) {
+					choiceRecyclerView.post(new Runnable() {
+						@Override
+						public void run() {
+							choiceRecyclerView.smoothScrollToPosition(lastVisibleBallotPosition);
+						}
+					});
+				}
+			}
+		});
+		this.choiceRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				super.onScrollStateChanged(recyclerView, newState);
+				if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+					lastVisibleBallotPosition = choiceRecyclerViewLayoutManager.findLastVisibleItemPosition();
+				}
+			}
+		});
+		int moveUpDown = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+		ItemTouchHelper.Callback swipeCallback = new ItemTouchHelper.SimpleCallback(moveUpDown, 0) {
+			@Override
+			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+				int fromPosition = viewHolder.getAdapterPosition();
+				int toPosition = target.getAdapterPosition();
+				if (fromPosition < toPosition) {
+					for (int i = fromPosition; i < toPosition; i++) {
+						Collections.swap(ballotChoiceModelList, i, i + 1);
+					}
+				} else {
+					for (int i = fromPosition; i > toPosition; i--) {
+						Collections.swap(ballotChoiceModelList, i, i - 1);
+					}
+				}
+				listAdapter.notifyItemMoved(fromPosition, toPosition);
+				return true;
+			}
+
+			@Override
+			public boolean isItemViewSwipeEnabled() {
+				return false;
+			}
+
+			@Override
+			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
+		};
+		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+		itemTouchHelper.attachToRecyclerView(choiceRecyclerView);
+
 		this.createChoiceEditText = rootView.findViewById(R.id.create_choice_name);
 		this.createChoiceEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
@@ -133,19 +193,16 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 	private void initAdapter() {
 		if(this.getBallotActivity() != null) {
 			this.ballotChoiceModelList = this.getBallotActivity().getBallotChoiceModelList();
-			this.listAdapter = new BallotWizard1ListAdapter(getActivity(), this.ballotChoiceModelList);
+			this.listAdapter = new BallotWizard1Adapter(this.ballotChoiceModelList);
+			this.listAdapter.setOnChoiceListener(this::removeChoice);
+			this.choiceRecyclerView.setAdapter(this.listAdapter);
+		}
+	}
 
-			this.listAdapter.setOnChoiceListener(new BallotWizard1ListAdapter.OnChoiceListener() {
-				@Override
-				public void onRemoveClicked(BallotChoiceModel choiceModel) {
-					synchronized (ballotChoiceModelList) {
-						ballotChoiceModelList.remove(choiceModel);
-						listAdapter.notifyDataSetChanged();
-					}
-				}
-			});
-
-			this.choiceListView.setAdapter(this.listAdapter);
+	private void removeChoice(int position) {
+		synchronized (ballotChoiceModelList) {
+			ballotChoiceModelList.remove(position);
+			listAdapter.notifyItemRemoved(position);
 		}
 	}
 
@@ -158,7 +215,9 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 			String text = createChoiceEditText.getText().toString();
 			if (!TestUtil.empty(text)) {
 				createChoice(text.trim(), BallotChoiceModel.Type.Text);
-				listAdapter.notifyDataSetChanged();
+				int insertPosition = this.ballotChoiceModelList.size() - 1;
+				listAdapter.notifyItemInserted(insertPosition);
+				choiceRecyclerView.smoothScrollToPosition(insertPosition);
 				createChoiceEditText.setText("");
 				createChoiceEditText.post(new Runnable() {
 					@Override

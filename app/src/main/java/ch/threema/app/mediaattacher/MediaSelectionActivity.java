@@ -23,6 +23,7 @@ package ch.threema.app.mediaattacher;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -46,7 +47,6 @@ import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
-import ch.threema.app.utils.MimeUtil;
 
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 
@@ -118,16 +118,20 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 			@Override
 			public void onDebouncedClick(View v) {
 				v.setAlpha(0.3f);
-				ArrayList<MediaItem> mediaItems = new ArrayList<>();
-				for (Uri uri : mediaAttachViewModel.getSelectedMediaUris()) {
-					MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(MediaSelectionActivity.this, uri), null);
-					mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
-					mediaItems.add(mediaItem);
-				}
-				setResult(ThreemaActivity.RESULT_OK, new Intent().putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems));
-				finish();
+				selectItemsAndClose(mediaAttachViewModel.getSelectedMediaUris());
 			}
 		});
+	}
+
+	private void selectItemsAndClose(ArrayList<Uri> uris) {
+		ArrayList<MediaItem> mediaItems = new ArrayList<>();
+		for (Uri uri : uris) {
+			MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(MediaSelectionActivity.this, uri), null);
+			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
+			mediaItems.add(mediaItem);
+		}
+		setResult(ThreemaActivity.RESULT_OK, new Intent().putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems));
+		finish();
 	}
 
 	/**
@@ -157,4 +161,20 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 			}
 		}
 	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+
+		if (resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+				case REQUEST_CODE_ATTACH_FROM_GALLERY:
+					selectItemsAndClose(FileUtil.getUrisFromResult(intent, getContentResolver()));
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
 }

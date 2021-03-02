@@ -378,7 +378,13 @@ public class PreferenceStore implements PreferenceStoreInterface {
 				return null;
 			}
 		} else {
-			return this.sharedPreferences.getString(key, null);
+			String value = null;
+			try {
+				value = this.sharedPreferences.getString(key, null);
+			} catch (ClassCastException e) {
+				logger.error("Class cast exception", e);
+			}
+			return value;
 		}
 	}
 

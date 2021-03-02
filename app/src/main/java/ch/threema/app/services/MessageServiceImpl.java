@@ -58,6 +58,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -1725,9 +1726,7 @@ public class MessageServiceImpl implements MessageService {
 			this.fireOnCreatedMessage(messageModel);
 
 			if (canDownload(messageModel)) {
-				if (fileData.getFileSize() <= FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO) {
-					downloadMediaMessage(messageModel, null);
-				}
+				downloadMediaMessage(messageModel, null);
 			}
 		}
 		else {
@@ -1787,15 +1786,28 @@ public class MessageServiceImpl implements MessageService {
 		return false;
 	}
 
+	/**
+	 * Check if the file in question should be auto-downloaded or not
+	 * This depends on file type, file size and user preference (settings)
+	 * @param messageModel AbstractMessageModel to check
+	 * @return true if file should be downloaded immediately, false otherwise
+	 */
 	private boolean canDownload(@NonNull AbstractMessageModel messageModel) {
 		MessageType type = MessageType.FILE;
+		FileDataModel fileDataModel = messageModel.getFileData();
 
-		if (messageModel.getFileData() != null && messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
+		if (fileDataModel == null) {
+			return false;
+		}
+
+		if (fileDataModel.getRenderingType() != FileData.RENDERING_DEFAULT) {
 			// treat media with default (file) rendering like a file for the sake of auto-download
 			if (messageModel.getMessageContentsType() == MessageContentsType.IMAGE) {
 				type = MessageType.IMAGE;
 			} else if (messageModel.getMessageContentsType() == MessageContentsType.VIDEO) {
 				type = MessageType.VIDEO;
+			} else if (messageModel.getMessageContentsType() == MessageContentsType.AUDIO) {
+				type = MessageType.VOICEMESSAGE;
 			}
 		}
 
@@ -1803,15 +1815,27 @@ public class MessageServiceImpl implements MessageService {
 			ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 			if (activeNetwork != null) {
+				boolean canDownload = false;
+
 				switch (activeNetwork.getType()) {
 					case ConnectivityManager.TYPE_ETHERNET:
 						// fallthrough
 					case ConnectivityManager.TYPE_WIFI:
-						return preferenceService.getWifiAutoDownload().contains(String.valueOf(type.ordinal()));
+						canDownload = preferenceService.getWifiAutoDownload().contains(String.valueOf(type.ordinal()));
+						break;
 					case ConnectivityManager.TYPE_MOBILE:
-						return preferenceService.getMobileAutoDownload().contains(String.valueOf(type.ordinal()));
+						canDownload = preferenceService.getMobileAutoDownload().contains(String.valueOf(type.ordinal()));
+						break;
 					default:
 						break;
+				}
+
+				if (canDownload) {
+					// images and voice messages are always auto-downloaded regardless of size
+					return
+						type == MessageType.IMAGE ||
+						type == MessageType.VOICEMESSAGE ||
+						fileDataModel.getFileSize() <= FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO;
 				}
 			}
 		}
@@ -2367,26 +2391,29 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public void saveMessageQueue() {
+	public void saveMessageQueueAsync() {
 		MasterKey masterKey = ThreemaApplication.getMasterKey();
 		if (masterKey == null || masterKey.isLocked()) {
 			return;
 		}
 
-		new Thread(() -> {
-			synchronized (messageQueue) {
-				try {
-					FileOutputStream fileOutputStream = new FileOutputStream(getMessageQueueFile());
-					CipherOutputStream cos = masterKey.getCipherOutputStream(fileOutputStream);
-					if (cos != null) {
-						messageQueue.serializeToStream(cos);
-						logger.info("Queue saved. Size = {}", messageQueue.getQueueSize());
-					}
-				} catch (Exception e) {
-					logger.error("Exception", e);
+		new Thread(() -> saveMessageQueue(masterKey)).start();
+	}
+
+	@Override
+	public void saveMessageQueue(@NonNull MasterKey masterKey) {
+		synchronized (messageQueue) {
+			try {
+				FileOutputStream fileOutputStream = new FileOutputStream(getMessageQueueFile());
+				CipherOutputStream cos = masterKey.getCipherOutputStream(fileOutputStream);
+				if (cos != null) {
+					messageQueue.serializeToStream(cos);
+					logger.info("Queue saved. Size = {}", messageQueue.getQueueSize());
 				}
+			} catch (Exception e) {
+				logger.error("Exception", e);
 			}
-		});
+		}
 	}
 
 	@Override
@@ -3305,8 +3332,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param createIfNotExists
 	 * @return
 	 */
-	public SendMachine getSendMachine(AbstractMessageModel abstractMessageModel, boolean createIfNotExists)
-	{
+	public SendMachine getSendMachine(AbstractMessageModel abstractMessageModel, boolean createIfNotExists) {
 		synchronized (this.sendMachineInstances) {
 			//be sure to "generate" a unique key
 			String key = abstractMessageModel.getClass() + "-" + abstractMessageModel.getUid();
@@ -4015,15 +4041,21 @@ public class MessageServiceImpl implements MessageService {
 				// "regular" file messages
 				renderingType = FileData.RENDERING_DEFAULT;
 				break;
+			case TYPE_VIDEO:
+				if (renderingType == FileData.RENDERING_MEDIA) {
+					// videos in formats other than MP4 are always transcoded and result in an MP4 file
+					mimeType = MimeUtil.MIME_TYPE_VIDEO_MP4;
+				}
+				// fallthrough
 			default:
 				if (mediaItem.getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE) {
 					// images with scale type "send as file" get the default rendering type and a file name
 					renderingType = FileData.RENDERING_DEFAULT;
 					mediaItem.setType(TYPE_FILE);
 				} else {
-					// unlike with "real" files we override the filename for regular images with a generic one to prevent privacy leaks
+					// unlike with "real" files we override the filename for regular (RENDERING_MEDIA) images and videos with a generic one to prevent privacy leaks
 					// this mimics the behavior of traditional image messages that did not have a filename at all
-					filename = FileUtil.getDefaultFilename(mimeType); // the internal temporary file name is of no use to the recipient
+					filename = FileUtil.getDefaultFilename(mimeType);
 				}
 				break;
 		}
@@ -4085,7 +4117,10 @@ public class MessageServiceImpl implements MessageService {
 
 		logger.info("Target bitrate = {}", targetBitrate);
 
-		if (needsTrimming || targetBitrate > 0) {
+		if (needsTrimming ||
+			targetBitrate > 0 ||
+			!MimeUtil.MIME_TYPE_VIDEO_MP4.equalsIgnoreCase(mediaItem.getMimeType())) {
+
 			logger.info("Video needs transcoding");
 
 			// set models to TRANSCODING state
@@ -4185,6 +4220,7 @@ public class MessageServiceImpl implements MessageService {
 			// remove original file and set transcoded file as new source file
 			deleteTemporaryFile(mediaItem);
 			mediaItem.setUri(Uri.fromFile(outputFile));
+			mediaItem.setMimeType(MimeUtil.MIME_TYPE_VIDEO_MP4);
 		} else {
 			logger.info("No transcoding necessary");
 		}
@@ -4246,20 +4282,41 @@ public class MessageServiceImpl implements MessageService {
 	@WorkerThread
 	private byte[] getContentData(MediaItem mediaItem) {
 		try (InputStream inputStream = StreamUtil.getFromUri(context, mediaItem.getUri())) {
-			if (inputStream != null && inputStream.available() > 0) {
-				final int fileLength;
-
-				fileLength = inputStream.available();
+			if (inputStream != null) {
+ 				int fileLength = inputStream.available();
 
 				if (fileLength > MAX_BLOB_SIZE) {
 					logger.info(context.getString(R.string.file_too_large));
+					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.file_too_large, Toast.LENGTH_LONG).show());
 					return null;
 				}
 
+				if (fileLength == 0) {
+					// InputStream may not provide size
+					fileLength = MAX_BLOB_SIZE + 1;
+				}
+
 				if (ConfigUtils.checkAvailableMemory(fileLength + NaCl.BOXOVERHEAD)) {
+					byte[] fileData = new byte[fileLength + NaCl.BOXOVERHEAD];
+
 					try {
-						byte[] fileData = new byte[fileLength + NaCl.BOXOVERHEAD];
-						IOUtils.readFully(inputStream, fileData, NaCl.BOXOVERHEAD, fileLength);
+						int readCount = 0;
+						try {
+							readCount = IOUtils.read(inputStream, fileData, NaCl.BOXOVERHEAD, fileLength);
+						} catch (Exception e) {
+							// it's OK to get an EOF
+						}
+
+						if (readCount > MAX_BLOB_SIZE) {
+							logger.info(context.getString(R.string.file_too_large));
+							RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.file_too_large, Toast.LENGTH_LONG).show());
+							return null;
+						}
+
+						if (readCount < fileLength) {
+							return Arrays.copyOf(fileData, readCount + NaCl.BOXOVERHEAD);
+						}
+
 						return fileData;
 					} catch (OutOfMemoryError e) {
 						logger.error("Unable to create byte array", e);

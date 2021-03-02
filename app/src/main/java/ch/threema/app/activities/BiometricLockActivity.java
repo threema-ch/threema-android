@@ -96,21 +96,6 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 		if (!lockAppService.isLocked() && !isCheckOnly) {
 			finish();
 		}
-	}
-
-	@Override
-	public void finish() {
-		logger.debug("finish");
-		try {
-			super.finish();
-			overridePendingTransition(0, 0);
-		} catch (Exception ignored) {}
-	}
-
-	@Override
-	protected void onResume() {
-		logger.debug("onResume");
-		super.onResume();
 
 		switch (authenticationType) {
 			case PreferenceService.LockingMech_SYSTEM:
@@ -127,6 +112,15 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 			default:
 				break;
 		}
+	}
+
+	@Override
+	public void finish() {
+		logger.debug("finish");
+		try {
+			super.finish();
+			overridePendingTransition(0, 0);
+		} catch (Exception ignored) {}
 	}
 
 	private void showBiometricPrompt() {
@@ -148,6 +142,7 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 		BiometricPrompt biometricPrompt = new BiometricPrompt(this, new RuntimeUtil.MainThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
 			@Override
 			public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+				super.onAuthenticationError(errorCode, errString);
 				if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
 					Toast.makeText(BiometricLockActivity.this, errString + " (" + errorCode + ")", Toast.LENGTH_LONG).show();
 				}

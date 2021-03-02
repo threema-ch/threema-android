@@ -63,6 +63,16 @@ public class GroupMemberModelFactory extends ModelFactory {
 				null));
 	}
 
+	public long countMembers(int groupId) {
+		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+			"SELECT COUNT(*) FROM " + this.getTableName()
+				+ " WHERE " + GroupMemberModel.COLUMN_GROUP_ID + "=?",
+			new String[]{
+				String.valueOf(groupId)
+			}
+		));
+	}
+
 	private GroupMemberModel convert(Cursor cursor) {
 		if(cursor != null && cursor.getPosition() >= 0) {
 			final GroupMemberModel groupMemberModel = new GroupMemberModel();

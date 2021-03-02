@@ -402,6 +402,9 @@ public interface PreferenceService {
 	boolean getIsWorkHintTooltipShown();
 	void setIsWorkHintTooltipShown(boolean shown);
 
+	boolean getIsFaceBlurTooltipShown();
+	void setFaceBlurTooltipShown(boolean shown);
+
 	void setThreemaSafeEnabled(boolean value);
 	boolean getThreemaSafeEnabled();
 

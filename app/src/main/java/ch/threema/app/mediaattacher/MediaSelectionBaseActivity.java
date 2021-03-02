@@ -36,9 +36,11 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +54,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
@@ -62,9 +65,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -86,7 +91,6 @@ import ch.threema.app.activities.EnterSerialActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.UnlockMasterKeyActivity;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.mediaattacher.labeling.ImageLabelsIndexHashMap;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.CheckableFrameLayout;
 import ch.threema.app.ui.GridRecyclerView;
@@ -97,9 +101,11 @@ import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.localcrypto.MasterKey;
 
 import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_BUCKET;
 import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_LABEL;
 import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_SELECTED;
@@ -119,7 +125,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected PreferenceService preferenceService;
 
 	public static final String KEY_BOTTOM_SHEET_STATE = "bottom_sheet_state";
+	protected static final int PERMISSION_REQUEST_ATTACH_FROM_GALLERY = 4;
 	protected static final int PERMISSION_REQUEST_ATTACH_FILE = 5;
+	protected static final int REQUEST_CODE_ATTACH_FROM_GALLERY = 2454;
 
 	protected CoordinatorLayout rootView;
 	protected AppBarLayout appBarLayout;
@@ -142,7 +150,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected CursorAdapter suggestionAdapter;
 	protected AutoCompleteTextView searchAutoComplete;
 	protected List<String> labelSuggestions;
-	protected ImageLabelsIndexHashMap labelsIndexHashMap;
 	protected int peekHeightNumElements = 1;
 
 	private boolean isDragging = false;
@@ -198,13 +205,20 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		// The view model handles data associated with this view
 		this.mediaAttachViewModel = new ViewModelProvider(MediaSelectionBaseActivity.this).get(MediaAttachViewModel.class);
 
-		// The ImageLabelsIndexHashMap maps label indexes to readable names (e.g. "Twig" or "Boat")
-		this.labelsIndexHashMap = new ImageLabelsIndexHashMap(this);
-
 		// Initialize UI
 		this.setLayout();
 		this.setDropdownMenu();
 		this.setListeners();
+
+		this.toolbar.setOnMenuItemClickListener(item -> {
+			if (item.getItemId() == R.id.menu_select_from_gallery) {
+				if (ConfigUtils.requestStoragePermissions(MediaSelectionBaseActivity.this, null, PERMISSION_REQUEST_ATTACH_FROM_GALLERY)) {
+					attachImageFromGallery();
+				}
+				return true;
+			}
+			return false;
+		});
 	}
 
 	protected void initServices() {
@@ -238,7 +252,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.dateTextView = findViewById(R.id.text_view);
 
 		this.searchView.setIconifiedByDefault(true);
-		this.selectFromGalleryItem.setVisible(this instanceof MediaAttachActivity);
 
 		// fill background with transparent black to see chat behind drawer
 		FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
@@ -360,28 +373,34 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 
 				// Extract buckets and media types
-				final HashSet<String> buckets = new HashSet<>();
-				final HashMap<Integer, String> mediaTypes = new HashMap<>();
+				final List<String> buckets = new ArrayList<>();
+				final TreeMap<String, Integer> mediaTypes = new TreeMap<>();
+
 				for (MediaAttachItem mediaItem : mediaAttachItems) {
-					buckets.add(mediaItem.getBucketName());
+					String bucket = mediaItem.getBucketName();
+					if (!TextUtils.isEmpty(bucket) && !buckets.contains(bucket)) {
+						buckets.add(mediaItem.getBucketName());
+					}
+
 					int type = mediaItem.getType();
-					if (!mediaTypes.containsKey(type)) {
+					if (!mediaTypes.containsValue(type)) {
 						String mediaTypeName = getMimeTypeTitle(type);
-						mediaTypes.put(type, mediaTypeName);
+						mediaTypes.put(mediaTypeName, type);
 					}
 				}
 
-				// Fill menu
-				for (int mediaTypeKey : mediaTypes.keySet()) {
-					String mediaTypeName = mediaTypes.get(mediaTypeKey);
-					MenuItem item = menu.add(mediaTypeName).setOnMenuItemClickListener(menuItem -> {
+				Collections.sort(buckets);
+
+				// Fill menu first media types sorted then folders/buckets sorted
+				for (Map.Entry<String, Integer> mediaType : mediaTypes.entrySet()) {
+					MenuItem item = menu.add(mediaType.getKey()).setOnMenuItemClickListener(menuItem -> {
 						filterMediaByMimeType(menuItem.toString());
 						menuTitle.setText(menuItem.toString());
 						mediaAttachViewModel.setToolBarTitle(menuItem.toString());
 						return true;
 					});
 
-					switch(mediaTypeKey) {
+					switch(mediaType.getValue()) {
 						case MediaItem.TYPE_IMAGE:
 							item.setIcon(R.drawable.ic_image_outline);
 							break;
@@ -396,14 +415,16 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 
 				for (String bucket : buckets) {
-					MenuItem item = menu.add(bucket).setOnMenuItemClickListener(menuItem -> {
-						filterMediaByBucket(menuItem.toString());
-						menuTitle.setText(menuItem.toString());
-						mediaAttachViewModel.setToolBarTitle(menuItem.toString());
-						return true;
-					});
-					item.setIcon(R.drawable.ic_outline_folder_24);
-					ConfigUtils.themeMenuItem(item, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
+					if (!TextUtils.isEmpty(bucket)) {
+						MenuItem item = menu.add(bucket).setOnMenuItemClickListener(menuItem -> {
+							filterMediaByBucket(menuItem.toString());
+							menuTitle.setText(menuItem.toString());
+							mediaAttachViewModel.setToolBarTitle(menuItem.toString());
+							return true;
+						});
+						item.setIcon(R.drawable.ic_outline_folder_24);
+						ConfigUtils.themeMenuItem(item, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
+					}
 				}
 
 				// Enable menu
@@ -538,6 +559,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	@Override
 	public void onItemLongClick(View view, int position, MediaAttachItem mediaAttachItem) {
+		view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+
 		Intent intent = new Intent(this, MediaPreviewActivity.class);
 		intent.putExtra(MediaPreviewActivity.EXTRA_PARCELABLE_MEDIA_ITEM, mediaAttachItem);
 		AnimationUtil.startActivity(this, view, intent);
@@ -593,22 +616,25 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		resetLabelSearch();
 	}
 
-	public void filterMediaByBucket(String mediaBucket) {
+	public void filterMediaByBucket(@NonNull String mediaBucket) {
 		mediaAttachViewModel.setMediaByBucket(mediaBucket);
 		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_BUCKET, mediaBucket);
 		resetLabelSearch();
 	}
 
-	public void filterMediaByMimeType(String mimeTypeTitle) {
+	public void filterMediaByMimeType(@NonNull String mimeTypeTitle) {
 		int mimeTypeIndex = 0;
+
 		if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_pictures))) {
 			mimeTypeIndex = MediaItem.TYPE_IMAGE;
 		}
 		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_videos))) {
 			mimeTypeIndex = MediaItem.TYPE_VIDEO;
-		} else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_gifs))) {
+		}
+		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_gifs))) {
 			mimeTypeIndex = MediaItem.TYPE_GIF;
 		}
+
 		if (mimeTypeIndex != 0) {
 			mediaAttachViewModel.setMediaByType(mimeTypeIndex);
 		}
@@ -953,6 +979,26 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			return isInMultiWindowMode();
 		} else {
 			return false;
+		}
+	}
+
+	protected void attachImageFromGallery() {
+		try {
+			Intent getContentIntent = new Intent();
+			getContentIntent.setType(MimeUtil.MIME_TYPE_VIDEO);
+			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
+			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
+			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
+			Intent pickIntent = new Intent(Intent.ACTION_PICK);
+			pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
+			Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.select_from_gallery));
+			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
+
+			startActivityForResult(chooserIntent, REQUEST_CODE_ATTACH_FROM_GALLERY);
+		} catch (Exception e) {
+			logger.debug("Exception", e);
+			Toast.makeText(this, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
 		}
 	}
 }

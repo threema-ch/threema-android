@@ -59,7 +59,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.AnyThread;
@@ -171,7 +170,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		public void run() {
 			for (int i = 0; i < mediaItems.size(); i++) {
 				MediaItem mediaItem = mediaItems.get(i);
-				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
+
+				if (TestUtil.empty(mediaItem.getFilename())) {
+					mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
+				}
 
 				if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
 					try {
@@ -444,10 +446,16 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						}
 						if (type.equals("text/plain")) {
 							String textIntent = getTextFromIntent(intent);
-
 							if (uri != null) {
-								// send text as file
-								addMediaItem("x-text/plain", uri, null);
+								// default to sending text as file
+								type = "x-text/plain";
+
+								String guessedType = getMimeTypeFromContentUri(uri);
+								if (guessedType != null) {
+									type = guessedType;
+								}
+
+								addMediaItem(type, uri, textIntent);
 								if (textIntent != null) {
 									captionText = textIntent;
 								}
@@ -456,28 +464,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							}
 						} else {
 							if (uri != null) {
-								if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
-									// query database for correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*"
-									String[] proj = {
-										DocumentsContract.Document.COLUMN_MIME_TYPE
-									};
-
-									try (Cursor cursor = getContentResolver().query(uri, proj, null, null, null)) {
-										if (cursor != null && cursor.moveToFirst()) {
-											String mimeType = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE));
-											if (!TestUtil.empty(mimeType)) {
-												type = mimeType;
-											}
-										}
-									} catch (Exception e) {
-										String filemame = FileUtil.getFilenameFromUri(getContentResolver(), uri);
-										if (!TestUtil.empty(filemame)) {
-											String mimeType = FileUtil.getMimeTypeFromPath(filemame);
-											if (!TestUtil.empty(mimeType)) {
-												type = mimeType;
-											}
-										}
-									}
+								String guessedType = getMimeTypeFromContentUri(uri);
+								if (guessedType != null) {
+									type = guessedType;
 								}
 
 								// if text was shared along with the media item, add that too
@@ -633,6 +622,33 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		setupUI();
 	}
 
+	private @Nullable String getMimeTypeFromContentUri(@NonNull Uri uri) {
+		if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+			// query database for correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*"
+			String[] proj = {
+				DocumentsContract.Document.COLUMN_MIME_TYPE
+			};
+
+			try (Cursor cursor = getContentResolver().query(uri, proj, null, null, null)) {
+				if (cursor != null && cursor.moveToFirst()) {
+					String mimeType = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE));
+					if (!TestUtil.empty(mimeType)) {
+						return mimeType;
+					}
+				}
+			} catch (Exception e) {
+				String filemame = FileUtil.getFilenameFromUri(getContentResolver(), uri);
+				if (!TestUtil.empty(filemame)) {
+					String mimeType = FileUtil.getMimeTypeFromPath(filemame);
+					if (!TestUtil.empty(mimeType)) {
+						return mimeType;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	private String getTextFromIntent(Intent intent) {
 		String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
 		String text = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -666,6 +682,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 					return;
 				}
+			}
+		} else if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+			try {
+				getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			} catch (Exception e) {
+				logger.error("Exception", e);
 			}
 		}
 		mediaItems.add(new MediaItem(uri, mimeType, caption));

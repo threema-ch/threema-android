@@ -84,7 +84,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 		if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData != null){
 			final String threemaId = appLinkData.getLastPathSegment();
 			if (threemaId != null && threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
-				new AddContactAsyncTask(null, null, threemaId, () -> {
+				new AddContactAsyncTask(null, null, threemaId, false, () -> {
 					String text = appLinkData.getQueryParameter("text");
 
 					Intent intent = new Intent(AppLinksActivity.this, text != null ?

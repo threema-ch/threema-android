@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.chip.Chip;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,12 +46,14 @@ import ch.threema.app.ui.InitialAvatarView;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.client.work.WorkDirectoryCategory;
 import ch.threema.client.work.WorkDirectoryContact;
+import ch.threema.client.work.WorkOrganization;
 
 public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, RecyclerView.ViewHolder> {
 	private final Context context;
 	private final LayoutInflater inflater;
 	private final PreferenceService preferenceService;
 	private final ContactService contactService;
+	private final WorkOrganization workOrganization;
 	private final HashMap<String, String> categoryMap = new HashMap<>();
 	private DirectoryAdapter.OnClickItemListener onClickItemListener;
 	@DrawableRes private int backgroundRes;
@@ -60,6 +64,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 		private final AppCompatImageView statusImageView;
 		private final InitialAvatarView avatarView;
 		private final TextView categoriesView;
+		private final Chip organizationView;
 		protected WorkDirectoryContact contact;
 
 		private DirectoryHolder(final View itemView) {
@@ -70,6 +75,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 			this.statusImageView = itemView.findViewById(R.id.status);
 			this.avatarView = itemView.findViewById(R.id.avatar_view);
 			this.categoriesView = itemView.findViewById(R.id.categories);
+			this.organizationView = itemView.findViewById(R.id.organization);
 		}
 
 		public View getItem() {
@@ -84,6 +90,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 		this.inflater = LayoutInflater.from(context);
 		this.preferenceService = preferenceService;
 		this.contactService = contactService;
+		this.workOrganization = preferenceService.getWorkOrganization();
 
 		for(WorkDirectoryCategory category: categoryList) {
 			this.categoryMap.put(category.id, category.name);
@@ -164,6 +171,15 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 		holder.categoriesView.setText(categoriesBuilder.toString());
 		holder.avatarView.setInitials(workDirectoryContact.firstName, workDirectoryContact.lastName);
 		holder.identityView.setText(workDirectoryContact.threemaId);
+
+		if (workDirectoryContact.organization != null &&
+			workDirectoryContact.organization.getName() != null &&
+			!workDirectoryContact.organization.getName().equals(workOrganization.getName())) {
+			holder.organizationView.setText(workDirectoryContact.organization.getName());
+			holder.organizationView.setVisibility(View.VISIBLE);
+		} else {
+			holder.organizationView.setVisibility(View.GONE);
+		}
 
 		boolean isAddedContact = contactService.getByIdentity(workDirectoryContact.threemaId) != null;
 

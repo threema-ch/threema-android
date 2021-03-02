@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,7 @@
 
 package ch.threema.client;
 
+import androidx.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,21 +136,22 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 		return false;
 	}
 
-	public synchronized void processAck(MessageId messageId) {
-		if (messageId == null) return;
+	public synchronized void processAck(@NonNull MessageAck messageAck) {
+		logger.debug("Processing server ack for message ID {} from {}", messageAck.getMessageId(), messageAck.getRecipientId());
 
-		logger.debug("Processing ACK for message ID {}", messageId);
-
-		/* find this message in the queue and remove it */
-		Iterator<BoxedMessage> it = queue.iterator();
+		// Find this message in the queue and remove it
+		final Iterator<BoxedMessage> it = queue.iterator();
 		while (it.hasNext()) {
-			if (it.next().getMessageId().equals(messageId)) {
+			final BoxedMessage next = it.next();
+			// Compare both message ID and recipient ID
+			if (next.getMessageId().equals(messageAck.getMessageId())
+					&& next.getToIdentity().equals(messageAck.getRecipientId())) {
 				it.remove();
 				return;
 			}
 		}
 
-		logger.warn("Message ID {} not found in queue", messageId);
+		logger.warn("Message ID {} from {} not found in queue", messageAck.getMessageId(), messageAck.getRecipientId());
 	}
 
 	public synchronized int getQueueSize() {

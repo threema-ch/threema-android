@@ -48,11 +48,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.AbstractMessage;
 import ch.threema.client.BlobUploader;
-import ch.threema.client.BoxAudioMessage;
-import ch.threema.client.BoxImageMessage;
 import ch.threema.client.BoxLocationMessage;
 import ch.threema.client.BoxTextMessage;
-import ch.threema.client.BoxVideoMessage;
 import ch.threema.client.BoxedMessage;
 import ch.threema.client.MessageId;
 import ch.threema.client.MessageQueue;
@@ -233,7 +230,6 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				.setDescription(modelFileData.getCaption())
 				.setCorrelationId(messageModel.getCorrelationId())
 				.setMetaData(modelFileData.getMetaData());
-
 
 		fileMessage.setData(fileData);
 		fileMessage.setToIdentity(this.contactModel.getIdentity());

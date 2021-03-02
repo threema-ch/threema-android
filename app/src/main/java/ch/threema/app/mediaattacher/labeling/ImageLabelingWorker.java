@@ -240,9 +240,16 @@ public class ImageLabelingWorker extends Worker {
 			// Label images without labels
 			int imageCounter = 0;
 			int unlabeledCounter = 0;
+			int timeoutCounter = 0;
 			int skippedCounter = 0;
 
 			for (MediaAttachItem mediaItem : allMediaCache) {
+
+				// abort work to avoid battery drain if too many timeouts were triggered, something else must be wrong atm.
+				if (timeoutCounter > 20) {
+					logger.info("stopping labeling work due to too many timeouts");
+					this.onStopped();
+				}
 				// Check whether we were stopped
 				if (this.isStopped()) {
 					logger.info("Work was cancelled");
@@ -280,16 +287,16 @@ public class ImageLabelingWorker extends Worker {
 						imageFuture = executor.submit(() -> InputImage.fromFilePath(appContext, uri));
 
 						try {
-							image = imageFuture.get(30, TimeUnit.SECONDS);    // give it a timeout of 30s, otherwise skip and remember bad item
+							image = imageFuture.get(20, TimeUnit.SECONDS);    // give it a timeout of 20s, otherwise skip bad item
 						} catch (TimeoutException e) {
 							imageFuture.cancel(true);
 							logger.info("Item {} in set label queue cannot be loaded from filepath in reasonable time, timeout triggered", progress);
-							failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
+							timeoutCounter++;
 							skippedCounter++;
 							continue;
 						}
 
-						if (image.getHeight() < 32 || image.getWidth() < 32 ) {
+						if (image != null && (image.getHeight() < 32 || image.getWidth() < 32)) {
 							logger.info("Item {} in set label queue loaded as InputImage due to tiny size. width or height < 32", progress);
 							failedMediaDAO.insert(new FailedMediaItemEntity(mediaItem.getId(), System.currentTimeMillis()));
 							skippedCounter++;
@@ -340,8 +347,8 @@ public class ImageLabelingWorker extends Worker {
 				}
 			}
 
-			// Update notification
-			notificationService.updateImageLabelingProgressNotification(this.progress, this.mediaCount);
+			// make sure to finish progress notification
+			notificationService.updateImageLabelingProgressNotification(mediaCount, mediaCount);
 
 			final long secondsElapsedLabeling = (SystemClock.elapsedRealtime() - startTime) / 1000;
 			if (this.isStopped()) {
@@ -349,7 +356,7 @@ public class ImageLabelingWorker extends Worker {
 				notificationService.cancelImageLabelingProgressNotification();
 				return Result.failure();
 			} else {
-				logger.info("Processed {} unlabeled images among {} total and {} skipped images", unlabeledCounter, imageCounter, skippedCounter);
+				logger.info("Processed {} unlabeled images among {} total and {} skipped images of which {} timed out", unlabeledCounter, imageCounter, skippedCounter, timeoutCounter);
 				logger.info("Labeling work done after {}s, starting cleanup", secondsElapsedLabeling);
 			}
 

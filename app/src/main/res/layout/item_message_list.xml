@@ -118,12 +118,12 @@ There's an alternative XML file in layout-v21!
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
 					android:visibility="visible"
-					app:srcCompat="@drawable/ic_attachment"
-					android:tint="?attr/textColorSecondary"
+					app:srcCompat="@drawable/ic_group_filled"
 					android:layout_alignParentRight="true"
 					android:layout_alignBottom="@+id/date"
-					android:layout_marginRight="-3dp"
-					android:layout_marginBottom="-1dp"/>
+					android:layout_marginRight="-2dp"
+					android:layout_marginBottom="-1dp"
+					app:tint="?attr/textColorSecondary" />
 
 				<TextView
 						android:id="@+id/date"
@@ -158,8 +158,8 @@ There's an alternative XML file in layout-v21!
 					android:layout_toRightOf="@id/group_member_name"
 					android:layout_alignBottom="@id/date"
 					android:layout_alignWithParentIfMissing="true"
-					android:tint="?attr/textColorSecondary"
-					app:srcCompat="@drawable/ic_attachment"/>
+					app:srcCompat="@drawable/ic_attachment"
+					app:tint="?attr/textColorSecondary" />
 
 				<ch.threema.app.emojis.EmojiTextView
 						android:id="@+id/subject"

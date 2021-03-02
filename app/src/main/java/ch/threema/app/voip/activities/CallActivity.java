@@ -27,8 +27,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -1023,7 +1021,9 @@ public class CallActivity extends ThreemaActivity implements
 			if (incomingVideo || outgoingVideo) {
 				// Make video views visible
 				this.videoViews.fullscreenVideoRenderer.setVisibility(View.VISIBLE);
-				this.commonViews.backgroundView.setVisibility(View.INVISIBLE);
+				if (this.commonViews.backgroundView != null) {
+					this.commonViews.backgroundView.setVisibility(View.INVISIBLE);
+				}
 
 				this.videoViews.switchCamButton.setVisibility(outgoingVideo &&
 					(voipStateService.getVideoContext() != null && voipStateService.getVideoContext().hasMultipleCameras()) ?
@@ -1043,7 +1043,9 @@ public class CallActivity extends ThreemaActivity implements
 				this.videoViews.fullscreenVideoRenderer.setVisibility(View.GONE);
 				this.videoViews.switchCamButton.setVisibility(View.GONE);
 				this.videoViews.pipButton.setVisibility(View.GONE);
-				this.commonViews.backgroundView.setVisibility(View.VISIBLE);
+				if (this.commonViews.backgroundView != null) {
+					this.commonViews.backgroundView.setVisibility(View.VISIBLE);
+				}
 			}
 		}
 	}
@@ -1877,7 +1879,7 @@ public class CallActivity extends ThreemaActivity implements
 		}
 	}
 
-	public void selectAudioDevice(VoipAudioManager.AudioDevice device) {
+	public void selectAudioDevice(@NonNull VoipAudioManager.AudioDevice device) {
 		final Intent intent = new Intent();
 		intent.setAction(VoipCallService.ACTION_SET_AUDIO_DEVICE);
 		intent.putExtra(VoipCallService.EXTRA_AUDIO_DEVICE, device);
@@ -1885,16 +1887,21 @@ public class CallActivity extends ThreemaActivity implements
 	}
 
 	/**
-	 * Override audio device selection but only if no headphone is connected
-	 * @param device
+	 * Override audio device selection, but only if no headphone (wired or bluetooth) is connected.
 	 */
-	public void setPreferredAudioDevice(VoipAudioManager.AudioDevice device) {
-		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	public void setPreferredAudioDevice(@NonNull VoipAudioManager.AudioDevice device) {
+		logger.info("setPreferredAudioDevice {}", device);
 
-		if (audioManager.isWiredHeadsetOn() || mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()
-			&& mBluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED) {
+		if (audioManager.isWiredHeadsetOn()) {
+			logger.info("Wired headset is connected, not overriding audio device selection");
 			return;
 		}
+
+		if (this.audioManager.isBluetoothScoOn()) {
+			logger.info("Bluetooth headset is connected, not overriding audio device selection");
+			return;
+		}
+
 		selectAudioDevice(device);
 	}
 

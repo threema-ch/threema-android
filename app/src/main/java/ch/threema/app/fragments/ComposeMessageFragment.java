@@ -54,6 +54,7 @@ import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -235,6 +236,7 @@ import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DateSeparatorMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
+import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
@@ -1109,6 +1111,10 @@ public class ComposeMessageFragment extends Fragment implements
 		 */
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+		if (preferenceService == null) {
+			return;
+		}
+
 		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 				activity.findViewById(R.id.compose_activity_parent).getRootView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -1130,7 +1136,19 @@ public class ComposeMessageFragment extends Fragment implements
 				});
 			} else {
 				try {
-					ViewCompat.setOnApplyWindowInsetsListener(activity.getWindow().getDecorView().getRootView(), new OnApplyWindowInsetsListener() {
+					View rootView = activity.getWindow().getDecorView().getRootView();
+					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+						try {
+							ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+							if (decorView.getChildCount() == 1 && decorView.getChildAt(0) instanceof LinearLayout) {
+								rootView = decorView.getChildAt(0);
+							}
+						} catch (Exception e) {
+							logger.error("Exception", e);
+						}
+					}
+
+					ViewCompat.setOnApplyWindowInsetsListener(rootView, new OnApplyWindowInsetsListener() {
 						@Override
 						public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
 
@@ -1167,7 +1185,7 @@ public class ComposeMessageFragment extends Fragment implements
 	public void onWindowFocusChanged(boolean hasFocus) {
 		logger.debug("onWindowFocusChanged " + hasFocus);
 
-		// workaround for proximity wake lock causing calls to onPause/onResume on Samsuck devices:
+		// workaround for proximity wake lock causing calls to onPause/onResume on Samsung devices:
 		// see: http://stackoverflow.com/questions/35318649/android-proximity-sensor-issue-only-in-samsung-devices
 		if (hasFocus) {
 			if (!this.hasFocus) {
@@ -1202,8 +1220,8 @@ public class ComposeMessageFragment extends Fragment implements
 			// mark all unread messages
 			if (this.unreadMessages.size() > 0) {
 				ReadMessagesRoutine r = new ReadMessagesRoutine(this.unreadMessages,
-						this.messageService,
-						this.notificationService);
+					this.messageService,
+					this.notificationService);
 
 				r.addOnFinished(new ReadMessagesRoutine.OnFinished() {
 					@Override
@@ -1224,31 +1242,27 @@ public class ComposeMessageFragment extends Fragment implements
 			this.messagePlayerService.resumeAll(getActivity(), this.messageReceiver, SOURCE_LIFECYCLE);
 
 			// restore scroll position after orientation change
-			convListView.post(new Runnable() {
-				@Override
-				public void run() {
-					if (listInstancePosition != AbsListView.INVALID_POSITION &&
-							messageReceiver != null &&
-							messageReceiver.getUniqueIdString().equals(listInstanceReceiverId)) {
-						logger.debug("restoring position " + listInstancePosition);
-						convListView.setSelectionFromTop(listInstancePosition, listInstanceTop);
-					} else {
-						if (unreadCount > 0) {
-							// jump to first unread message
-							int position = convListView.getCount() - unreadCount - 1;
-							logger.debug("jump to initial position " + position);
-							convListView.setSelection(Math.max(position, 0));
-							unreadCount = 0;
-						} else {
-							logger.debug("reset position");
-							convListView.setSelection(Integer.MAX_VALUE);
+			if (getActivity() != null) {
+				Intent intent = getActivity().getIntent();
+				if (intent != null && !intent.hasExtra(EXTRA_API_MESSAGE_ID) && !intent.hasExtra(EXTRA_SEARCH_QUERY)) {
+					convListView.post(new Runnable() {
+						@Override
+						public void run() {
+							if (listInstancePosition != AbsListView.INVALID_POSITION &&
+								messageReceiver != null &&
+								messageReceiver.getUniqueIdString().equals(listInstanceReceiverId)) {
+								logger.debug("restoring position " + listInstancePosition);
+								convListView.setSelectionFromTop(listInstancePosition, listInstanceTop);
+							} else {
+								jumpToFirstUnreadMessage();
+							}
+							// make sure it's not restored twice
+							listInstancePosition = AbsListView.INVALID_POSITION;
+							listInstanceReceiverId = null;
 						}
-					}
-					// make sure it's not restored twice
-					listInstancePosition = AbsListView.INVALID_POSITION;
-					listInstanceReceiverId = null;
+					});
 				}
-			});
+			}
 		}
 	}
 
@@ -1358,7 +1372,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 
 			if (this.messageService != null) {
-				this.messageService.saveMessageQueue();
+				this.messageService.saveMessageQueueAsync();
 			}
 
 			if (this.thumbnailCache != null) {
@@ -2100,6 +2114,8 @@ public class ComposeMessageFragment extends Fragment implements
 
 				ComposeMessageAdapter.ConversationListFilter filter = (ComposeMessageAdapter.ConversationListFilter) composeMessageAdapter.getQuoteFilter(quoteContent);
 				searchV2Quote(apiMessageId, filter);
+
+				intent.removeExtra(EXTRA_API_MESSAGE_ID);
 			} else {
 				Toast.makeText(getContext().getApplicationContext(), R.string.message_not_found, Toast.LENGTH_SHORT).show();
 			}
@@ -2119,7 +2135,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private void deleteSelectedMessages() {
 		int deleteableMessagesCount = 0;
 
-		if (selectedMessages != null) {
+		if (selectedMessages != null && selectedMessages.size() > 0) {
 			// sort highest first for removal
 			Collections.sort(selectedMessages, new Comparator<AbstractMessageModel>() {
 				@Override
@@ -2484,7 +2500,7 @@ public class ComposeMessageFragment extends Fragment implements
 			values = this.messageService.getMessagesForReceiver(this.messageReceiver, new MessageService.MessageFilter() {
 				@Override
 				public long getPageSize() {
-					return unreadCount;
+					return -1;
 				}
 
 				@Override
@@ -2672,6 +2688,40 @@ public class ComposeMessageFragment extends Fragment implements
 		return unreadCount;
 	}
 
+	/**
+	 * Jump to first unread message keeping in account shift caused by date separators and other decorations
+	 * Currently depends on various globals...
+	 */
+	@UiThread
+	private void jumpToFirstUnreadMessage() {
+		if (unreadCount > 0) {
+			synchronized (this.messageValues) {
+				int position = Math.min(convListView.getCount() - unreadCount, this.messageValues.size() - 1);
+				while (position >= 0) {
+					if (this.messageValues.get(position) instanceof FirstUnreadMessageModel) {
+						break;
+					}
+					position--;
+
+				}
+				unreadCount = 0;
+
+				if (position > 0) {
+					final int finalPosition = position;
+					logger.debug("jump to initial position " + finalPosition);
+
+					convListView.setSelection(finalPosition);
+					convListView.postDelayed(() -> {
+						convListView.setSelection(finalPosition);
+					}, 750);
+
+					return;
+				}
+			}
+			convListView.setSelection(Integer.MAX_VALUE);
+		}
+	}
+
 	private void setIdentityColors() {
 		logger.debug("setIdentityColors");
 
@@ -2696,7 +2746,7 @@ public class ComposeMessageFragment extends Fragment implements
 								hsl[2] = 0.7f; // pull up luminance
 							}
 							if (hsl[1] > 0.6f) {
-								hsl[1] = 0.6f; // tome down saturation
+								hsl[1] = 0.6f; // tone down saturation
 							}
 							newColor = ColorUtils.HSLToColor(hsl);
 						}
@@ -2856,10 +2906,11 @@ public class ComposeMessageFragment extends Fragment implements
 		});
 	}
 
-	private boolean onListItemLongClick(View view, final int position) {
+	@UiThread
+	private void onListItemLongClick(@NonNull View view, final int position) {
 		int viewType = composeMessageAdapter.getItemViewType(position);
 		if (viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD  || viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
-			return false;
+			return;
 		}
 
 		selectedMessages.clear();
@@ -2876,11 +2927,12 @@ public class ComposeMessageFragment extends Fragment implements
 			actionMode = activity.startSupportActionMode(new ComposeMessageAction(position));
 		}
 
+		view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+
 		// fix linkify on longclick problem
 		// see: http://stackoverflow.com/questions/16047215/android-how-to-stop-linkify-on-long-press
 		longClickItem = position;
 
-		return true;
 	}
 
 	private boolean isMuted() {

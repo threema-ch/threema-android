@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2017-2020 Threema GmbH
+ * Copyright (c) 2017-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,6 +23,9 @@ package ch.threema.client;
 
 import androidx.annotation.NonNull;
 import ch.threema.client.work.WorkData;
+import ch.threema.client.work.WorkDirectory;
+import ch.threema.client.work.WorkDirectoryCategory;
+import ch.threema.client.work.WorkDirectoryFilter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -296,5 +299,174 @@ public class APIConnectorTest {
 
 		Date expectedExpirationDate = new Date(new Date().getTime() + 86400*1000);
 		Assert.assertTrue(Math.abs(expectedExpirationDate.getTime() - result.expirationDate.getTime()) < 10000);
+	}
+
+	@Test
+	public void testFetchWorkData_Organization() throws Exception  {
+		APIConnector connector = getApiConnectorMock();
+		JSONObject requiredObject = new JSONObject();
+		requiredObject.put("username", "u").put("password", "eric")
+			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
+
+		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
+		when(connector.doPost(ArgumentMatchers.eq("https://api-work.threema.ch/fetch2"),
+			eq(requiredObject.toString()))).thenReturn("{\"org\":{" +
+			"\"name\": \"monkeybusiness\"" +
+			"}}");
+		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
+			"identity1",
+			"identity2"
+		});
+		Assert.assertNotNull(result);
+		Assert.assertNotNull(result.organization);
+		Assert.assertEquals("monkeybusiness", result.organization.name);
+
+	}
+
+	@Test
+	public void testFetchWorkData_NoOrganization() throws Exception  {
+		APIConnector connector = getApiConnectorMock();
+		JSONObject requiredObject = new JSONObject();
+		requiredObject.put("username", "u").put("password", "eric")
+			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
+
+		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
+		when(connector.doPost(ArgumentMatchers.eq("https://api-work.threema.ch/fetch2"),
+			eq(requiredObject.toString()))).thenReturn("{}");
+		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
+			"identity1",
+			"identity2"
+		});
+		Assert.assertNotNull(result);
+		Assert.assertNotNull(result.organization);
+		Assert.assertNull(result.organization.name);
+
+	}
+
+	@Test
+	public void testFetchWorkData_Directory() throws Exception  {
+		APIConnector connector = getApiConnectorMock();
+		JSONObject requiredObject = new JSONObject();
+		requiredObject.put("username", "u").put("password", "eric")
+			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
+
+		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
+		when(connector.doPost(ArgumentMatchers.eq("https://api-work.threema.ch/fetch2"),
+			eq(requiredObject.toString()))).thenReturn("{" +
+			"directory:{" +
+			"enabled: true," +
+			"cat: {" +
+			"\"c1\": \"Category 1\"," +
+			"\"c2\": \"Category 2\"," +
+			"\"c3\": \"Category 3\"" +
+			"}}}");
+		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
+			"identity1",
+			"identity2"
+		});
+		Assert.assertNotNull(result);
+		Assert.assertNotNull(result.organization);
+		Assert.assertNull(result.organization.name);
+		Assert.assertTrue(result.directory.enabled);
+		Assert.assertNotNull(result.directory.categories);
+		Assert.assertEquals(3, result.directory.categories.size());
+
+		boolean c1 = false;
+		boolean c2 = false;
+		boolean c3 = false;
+
+		for(WorkDirectoryCategory c: result.directory.categories) {
+			switch (c.id) {
+				case "c1":
+					Assert.assertFalse("c1 already found", c1);
+					c1 = true;
+					Assert.assertEquals("Category 1", c.name);
+					break;
+				case "c2":
+					Assert.assertFalse("c1 already found", c2);
+					c2 = true;
+					Assert.assertEquals("Category 2", c.name);
+					break;
+				case "c3":
+					Assert.assertFalse("c1 already found", c3);
+					c3 = true;
+					Assert.assertEquals("Category 3", c.name);
+					break;
+				default:
+					Assert.fail("Invalid category " + c.id);
+			}
+		}
+	}
+
+	@Test
+	public void testFetchWorkData_Directory2() throws Exception  {
+		APIConnector connector = getApiConnectorMock();
+		final IdentityStoreInterface identityStore = getIdentityStoreInterfaceMock();
+		when(identityStore.getIdentity()).thenReturn("IDENTITY");
+		JSONObject requiredObject = new JSONObject();
+		requiredObject
+			.put("username", "u")
+			.put("password", "eric")
+			.put("identity", "IDENTITY")
+			.put("query", "Query String")
+			.put("categories", (new JSONArray()).put("c100"))
+			.put("sort",  (new JSONObject())
+				.put("asc", true)
+				.put("by", "firstName"))
+			.put("page", 1)
+		;
+
+		when(connector.fetchWorkDirectory(any(), any(), any(), any())).thenCallRealMethod();
+		when(connector.doPost(ArgumentMatchers.eq("https://api-work.threema.ch/directory"),
+			eq(requiredObject.toString()))).thenReturn(
+				"{\n" +
+					"   \"contacts\": [\n" +
+					"      {\n" +
+					"         \"id\": \"ECHOECHO\",\n" +
+					"         \"pk\": \"base64\",\n" +
+					"         \"first\": \"Hans\",\n" +
+					"         \"last\": \"Nötig\",\n" +
+					"         \"csi\": \"CSI_NR\",\n" +
+					"         \"org\": { \"name\": \"Name der Firma/Organisation\" },\n" +
+					"         \"cat\": [\n" +
+					"            \"catId1\",\n" +
+					"            \"catId2\"\n" +
+					"         ]\n" +
+					"      }\n" +
+					"   ],\n" +
+					"   \"paging\": {\n" +
+					"      \"size\": 10,\n" +
+					"      \"total\": 8923,\n" +
+					"      \"next\": 2,\n" +
+					"      \"prev\": 0\n" +
+					"   }\n" +
+					"}"
+		);
+
+		WorkDirectoryFilter filter = new WorkDirectoryFilter();
+		filter.addCategory(new WorkDirectoryCategory("c100", "Category 100"));
+		filter.query("Query String");
+		filter.page(1);
+		WorkDirectory result = connector.fetchWorkDirectory("u", "eric", identityStore, filter);
+
+		Assert.assertNotNull(result);
+		Assert.assertEquals(1, result.workContacts.size());
+		Assert.assertEquals("ECHOECHO", result.workContacts.get(0).threemaId);
+		Assert.assertEquals("Hans", result.workContacts.get(0).firstName);
+		Assert.assertEquals("Nötig", result.workContacts.get(0).lastName);
+		Assert.assertEquals("CSI_NR", result.workContacts.get(0).csi);
+		Assert.assertEquals("Name der Firma/Organisation", result.workContacts.get(0).organization.name);
+		Assert.assertEquals(2, result.workContacts.get(0).categoryIds.size());
+		Assert.assertEquals("catId1", result.workContacts.get(0).categoryIds.get(0));
+		Assert.assertEquals("catId2", result.workContacts.get(0).categoryIds.get(1));
+		Assert.assertEquals(10, result.pageSize);
+		Assert.assertEquals(8923, result.totalRecord);
+		Assert.assertEquals(2, result.nextFilter.getPage());
+		Assert.assertEquals(filter.getQuery(), result.nextFilter.getQuery());
+		Assert.assertEquals(filter.getCategories(), result.nextFilter.getCategories());
+		Assert.assertEquals(0, result.previousFilter.getPage());
+		Assert.assertEquals(filter.getQuery(), result.previousFilter.getQuery());
+		Assert.assertEquals(filter.getCategories(), result.previousFilter.getCategories());
+
 	}
 }

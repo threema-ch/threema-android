@@ -177,6 +177,11 @@ public class TextEntity extends MotionEntity {
 	}
 
 	@Override
+	public boolean hasFixedPositionAndSize() {
+		return false;
+	}
+
+	@Override
 	public int getWidth() {
 		return bitmap != null ? bitmap.getWidth() : 0;
 	}

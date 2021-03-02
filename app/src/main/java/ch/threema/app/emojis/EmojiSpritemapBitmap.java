@@ -60,7 +60,6 @@ public class EmojiSpritemapBitmap {
 		return isSpritemapLoaded() ? bitmapReference.get() : null;
 	}
 
-	@Nullable
 	@AnyThread
 	public boolean isSpritemapLoaded() {
 		return bitmapReference != null && bitmapReference.get() != null;

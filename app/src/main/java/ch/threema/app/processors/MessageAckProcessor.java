@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
+import ch.threema.client.MessageAck;
 import ch.threema.client.MessageAckListener;
 import ch.threema.client.MessageId;
 import ch.threema.storage.models.MessageState;
@@ -40,18 +42,18 @@ public class MessageAckProcessor implements MessageAckListener {
 	private static final int ACK_LIST_MAX_ENTRIES = 20;
 
 	@Override
-	public void processAck(MessageId messageId) {
-		logger.info("Processing ACK for message {}", messageId);
+	public void processAck(@NonNull MessageAck ack) {
+		logger.info("Processing server ack for message ID {} from {}", ack.getMessageId(), ack.getRecipientId());
 
 		synchronized (ackedMessageIds) {
 			while (ackedMessageIds.size() >= ACK_LIST_MAX_ENTRIES) {
 				ackedMessageIds.remove(0);
 			}
-			ackedMessageIds.add(messageId);
+			ackedMessageIds.add(ack.getMessageId());
 		}
 
 		if (this.messageService != null) {
-			this.messageService.updateMessageStateAtOutboxed(messageId, MessageState.SENT, null);
+			this.messageService.updateMessageStateAtOutboxed(ack.getMessageId(), MessageState.SENT, null);
 		}
 	}
 

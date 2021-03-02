@@ -124,11 +124,11 @@ There's an alternative XML file in layout!
 					android:layout_height="wrap_content"
 					android:layout_alignBottom="@+id/date"
 					android:layout_alignParentRight="true"
-					android:layout_marginRight="-3dp"
+					android:layout_marginRight="-2dp"
 					android:layout_marginBottom="-1dp"
-					android:tint="?attr/textColorSecondary"
 					android:visibility="visible"
-					app:srcCompat="@drawable/ic_attachment"/>
+					app:srcCompat="@drawable/ic_attachment"
+					app:tint="?attr/textColorSecondary" />
 
 				<TextView
 					android:id="@+id/date"

@@ -219,14 +219,12 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 
 		chatsViewModel = new ViewModelProvider(this).get(GlobalSearchChatsViewModel.class);
 		chatsViewModel.getMessageModels().observe(this, messageModels -> {
-			if (preferenceService.isPrivateChatsHidden()) {
-				messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
-					if (messageModel.getIdentity() != null) {
-						return !hiddenChatsListService.has(contactService.getUniqueIdString(messageModel.getIdentity()));
-					}
-					return true;
-				});
-			}
+			messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
+				if (messageModel.getIdentity() != null) {
+					return !hiddenChatsListService.has(contactService.getUniqueIdString(messageModel.getIdentity()));
+				}
+				return true;
+			});
 			chatsAdapter.setMessageModels(messageModels);
 		});
 
@@ -240,14 +238,12 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 
 		groupChatsViewModel = new ViewModelProvider(this).get(GlobalSearchGroupChatsViewModel.class);
 		groupChatsViewModel.getMessageModels().observe(this, messageModels -> {
-			if (preferenceService.isPrivateChatsHidden()) {
-				messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
-					if (((GroupMessageModel) messageModel).getGroupId() > 0) {
-						return !hiddenChatsListService.has(groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId()));
-					}
-					return true;
-				});
-			}
+			messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
+				if (((GroupMessageModel) messageModel).getGroupId() > 0) {
+					return !hiddenChatsListService.has(groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId()));
+				}
+				return true;
+			});
 			groupChatsAdapter.setMessageModels(messageModels);
 		});
 

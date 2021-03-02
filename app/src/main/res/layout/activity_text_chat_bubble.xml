@@ -28,6 +28,10 @@
 		android:layout_height="match_parent"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
 		<com.google.android.material.card.MaterialCardView
 			android:id="@+id/card_view"
 			android:layout_width="match_parent"
@@ -36,7 +40,10 @@
 			app:cardBackgroundColor="@color/light_bubble_send"
 			app:cardCornerRadius="16dp"
 			app:cardElevation="0dp"
-			app:contentPadding="4dp">
+			app:contentPadding="4dp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent">
 
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:layout_width="match_parent"
@@ -73,6 +80,21 @@
 			</androidx.constraintlayout.widget.ConstraintLayout>
 
 		</com.google.android.material.card.MaterialCardView>
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/back_button"
+			style="@style/Threema.Chip.VideoTranscoder"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="16dp"
+			android:layout_marginBottom="8dp"
+			android:layout_marginTop="8dp"
+			android:text="@string/back"
+			app:layout_constraintTop_toBottomOf="@+id/card_view"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"/>
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
 
 	</androidx.core.widget.NestedScrollView>
 

@@ -245,7 +245,7 @@
     <string name="emoji_nature">Naturaleza</string>
     <string name="emoji_food">Comida y bebida</string>
     <string name="emoji_recent">Por último</string>
-    <string name="emoji_emotions">Emociones</string>
+    <string name="emoji_emotions">Caras sonrientes y personas</string>
     <string name="emoji_activities">Actividades</string>
     <string name="emoji_flags">Banderas</string>
     <string name="title_lock">Bloquear</string>
@@ -1027,8 +1027,7 @@ almacenado.</string>
     <string name="whatsnew_title">Esto es %s 4.5</string>
     <string name="whatsnew_headline">%1$s 4.5 ofrece una nueva experiencia multimedia.\n\nLa interfaz de cajón de medios recibió una sobrecarga importante y ahora incluye un aprendizaje automático opcional basado en la búsqueda de imágenes.\n\nAdemás, añadimos la búsqueda de texto global en todos los chats, hemos mejorado la cita de mensajes, etc.</string>
     <string name="whatsnew2_title">Novedades</string>
-    <string name="whatsnew2_body">
-        <![CDATA[
+    <string name="whatsnew2_body"><![CDATA[
 		<p><b>Cajón de medios</b>: Toque el icono de clip para examinar tus archivos multimedia en un cajón desplazable. Si no quiere que el cajón se abra automáticamente con los archivos multimedia más recientes, deshabilite la opción de selección rápida de imagen en los ajustes del chat, en <i>Ajustes / Chat / Selección rápida de medios</i>.</p>
 		<p><b>Búsqueda de imágenes</b>: Busca objetos comunes, actividades y lugares en las imágenes.<br>El reconocimiento de imágenes se basa en un modelo de aprendizaje automático y no envía datos al servidor de Threema ni a un tercero. Puesto que analizar imágenes es una tarea bastante costosa y puede tardar bastante tiempo, la opción está deshabilitada de forma predeterminada. La encontrarás en <i>Ajustes / Medios y almacenamiento / Búsqueda de imágenes</i>.</p>
 		<p><b>Enviar archivos de medios</b>: Envía imágenes con resoluciones independientes sin tener que cambiar los ajustes globales.</p>
@@ -1038,8 +1037,7 @@ almacenado.</string>
 		<p><b>Citas</b>: %1$s ahora permite citar cualquier tipo de medio, incluidas imágenes, vídeos y mensajes de voz.</p>
 		<p><b>100 nuevos emojis</b>: Echa un vistazo a la esperada \"fondue\" &#129749;</p>
 		<p><b>Textos grandes</b>: Para mantener ordenada la interfaz del chat, los mensajes con mucho texto se muestran en una burbuja de chat truncada y se puede ampliar a voluntad.</p>
-		]]>
-    </string>
+		]]></string>
     <string name="tooltip_identity_popup">Toque aquí para visualizar rápidamente su ID de Threema o para escanear el ID de otras personas.</string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
@@ -1180,6 +1178,21 @@ almacenado.</string>
     <string name="original_file_no_longer_avilable">Ya no se puede acceder al archivo original. Vuelva a enviar el mensaje.</string>
     <string name="state_transcoding">transcodificación</string>
     <string name="importing_files">Importando archivos</string>
-    <string name="tooltip_image_resolution_hint">Ajusta la resolución de imágenes.</string>
+    <string name="tooltip_image_resolution_hint">Toca aquí para ajustar la resolución de imagen</string>
     <string name="image_labeling_stuck_error">El proceso de indexación de la búsqueda de imágenes se atascó y se canceló. Inténtelo más tarde.</string>
+    <string name="ballot_created_successfully">La encuesta se creó correctamente.</string>
+    <string name="file_size">Tamaño archivo</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30 d</string>
+    <string name="show_in_chat">Mostrar en chat</string>
+    <string name="group_create_no_members">¿Seguro que quieres crear un grupo vacío sin más miembros?</string>
+    <string name="notes">Notas</string>
+    <string name="blur_faces">Cara difuminada</string>
+    <string name="brush">Pincel</string>
+    <string name="error_detecting_faces">Error al detectar caras</string>
+    <string name="no_faces_detected">No se detectan caras</string>
+    <string name="smiley">Sonrisa</string>
+    <string name="blur">Difuminar</string>
+    <string name="face_blur_tooltip_title">Nuevo: reconocimiento de caras</string>
+    <string name="face_blur_tooltip_text">Encuentra caras en la imagen y difumínalas o tápalas con una cara sonriente.</string>
 </resources>

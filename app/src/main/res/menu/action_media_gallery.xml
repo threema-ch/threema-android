@@ -2,13 +2,15 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 	  xmlns:app="http://schemas.android.com/apk/res-auto">
+
 	<item
-			android:id="@+id/menu_message_select_all"
-			app:showAsAction="always"
-			android:icon="@drawable/ic_select_all_outline"
-			app:iconTint="@android:color/white"
-			android:title="@string/select_all"
-			android:orderInCategory="50"/>
+		android:id="@+id/menu_message_discard"
+		app:showAsAction="always"
+		android:icon="@drawable/ic_delete_outline"
+		app:iconTint="@android:color/white"
+		android:title="@string/really_delete_message_title"
+		android:orderInCategory="15"/>
+
 	<item
 			android:id="@+id/menu_message_save"
 			app:showAsAction="always"
@@ -16,11 +18,13 @@
 			app:iconTint="@android:color/white"
 			android:title="@string/save_message_action"
 			android:orderInCategory="30"/>
+
 	<item
-			android:id="@+id/menu_message_discard"
-			app:showAsAction="always"
-			android:icon="@drawable/ic_delete_outline"
-			app:iconTint="@android:color/white"
-			android:title="@string/really_delete_message_title"
-			android:orderInCategory="15"/>
+		android:id="@+id/menu_show_in_chat"
+		android:icon="@drawable/ic_outline_chat_bubble_outline"
+		android:orderInCategory="70"
+		android:title="@string/show_in_chat"
+		app:iconTint="@android:color/white"
+		app:showAsAction="ifRoom" />
+
 </menu>

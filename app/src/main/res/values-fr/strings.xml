@@ -243,7 +243,7 @@
     <string name="emoji_nature">Nature</string>
     <string name="emoji_food">Nourriture et boisson</string>
     <string name="emoji_recent">Récent</string>
-    <string name="emoji_emotions">Émotions</string>
+    <string name="emoji_emotions">Émoticônes et personnes</string>
     <string name="emoji_activities">Activités</string>
     <string name="emoji_flags">Drapeaux</string>
     <string name="title_lock">Verrouiller</string>
@@ -298,7 +298,7 @@
     <string name="my_backups_title">Mes sauvegardes</string>
     <string name="backup_delete_confirm">Fichier de sauvegarde supprimé</string>
     <string name="message_log_title">Journal des messages</string>
-    <string name="state_read">lire</string>
+    <string name="state_read">lu</string>
     <string name="state_ack">réception confirmée</string>
     <string name="state_dec">désapprouvé</string>
     <string name="state_delivered">remis</string>
@@ -1017,8 +1017,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="whatsnew_title">Bienvenue dans %s 4.5</string>
     <string name="whatsnew_headline">%1$s 4.5 apporte une expérience multimédia flambante neuve.\n\nL\'interface de tiroir de média a bénéficié d\'une refonte majeure et propose désormais une recherche d\'images optionnelle basée sur l\'apprentissage automatique.\n\nDe plus, nous avons ajouté une recherche de texte globale à travers tous les chats, une citation améliorée des messages et bien plus.</string>
     <string name="whatsnew2_title">Quoi de neuf ?</string>
-    <string name="whatsnew2_body">
-    <![CDATA[
+    <string name="whatsnew2_body"><![CDATA[
 		<p><b>Tiroir de média</b> : Touchez l\'icône de trombone pour parcourir vos fichiers média dans un tiroir défilant. Au cas où vous ne voulez pas que le tiroir s\'ouvre automatiquement avec les médias les plus récents, désactivez l\'option Sélection rapide de l\'image depuis les paramètres de chat, dans <i>Paramètres/Chat/Sélection rapide de l\'image</i>.</p>
 		<p><b>Recherche d\'image</b> : Recherchez des objets, des activités et des lieux communs dans vos images.<br>La reconnaissance des images est basée sur un modèle d\'apprentissage automatique local et n\'envoie pas de données aux serveurs de Threema ou à tout autre tiers. Puisque l\'analyse des images est une tâche plutôt coûteuse et qui peut prendre beaucoup de temps, l\'option est désactivée par défaut. Vous pouvez y accéder depuis <i>Paramètres/Médias et stockage/Recherche d’image</i>.</p>
 		<p><b>Envoi de fichiers média</b> : Envoyez des images avec des définitions individuelles sans devoir changer les paramètres globaux.</p>
@@ -1027,9 +1026,7 @@ Veuillez saisir une question pour votre enquête.</string>
 		<p><b>Recherche globale</b> : Recherchez du texte à travers tous les chats. Touchez simplement <i>Menu/Rechercher dans les discussions</i> lorsque vous êtes sur l\'écran d\'accueil de %1$s.</p>
 		<p><b>Citations</b> : %1$s vous permet maintenant de citer n\'importe quel type de média, y compris les images, les vidéos et les messages vocaux.</p>
 		<p><b>100 nouvelles émoticônes</b> : Découvrez la tant attendue fondue &#129749;</p>
-		<p><b>Textes longs</b> : Pour conserver une interface de chat allégée, les messages contenant beaucoup de texte s\'affichent dans une bulle de chat tronquée qui peut être développée à volonté.</p>
-    ]]>
-    </string>
+		<p><b>Textes longs</b> : Pour conserver une interface de chat allégée, les messages contenant beaucoup de texte s\'affichent dans une bulle de chat tronquée qui peut être développée à volonté.</p> ]]></string>
     <string name="tooltip_identity_popup">Touchez ici pour afficher rapidement votre ID Threema ou scanner les ID d\'autres personnes</string>
     <string name="tap_to_start">Touchez ici pour lancer %s maintenant.</string>
     <string name="two_years">2 ans</string>
@@ -1170,6 +1167,21 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="original_file_no_longer_avilable">Le fichier original n’est plus accessible. Veuillez renvoyer le message.</string>
     <string name="state_transcoding">transcodage</string>
     <string name="importing_files">Importation des fichiers</string>
-    <string name="tooltip_image_resolution_hint">Ajuster les définitions des images.</string>
+    <string name="tooltip_image_resolution_hint">Touchez ici pour ajuster la résolution d\'image.</string>
     <string name="image_labeling_stuck_error">Le processus d\'indexation de la recherche d\'images s\'est bloqué et a été annulé. Veuillez réessayer plus tard.</string>
+    <string name="ballot_created_successfully">Le sondage a bien été créé.</string>
+    <string name="file_size">Taille de fichier</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30 j</string>
+    <string name="show_in_chat">Afficher dans le chat</string>
+    <string name="group_create_no_members">Souhaitez-vous vraiment créer un groupe vide sans aucun autre membre ?</string>
+    <string name="notes">Notes</string>
+    <string name="blur_faces">Brouiller les visages</string>
+    <string name="brush">Pinceau</string>
+    <string name="error_detecting_faces">Erreur de détection des visages</string>
+    <string name="no_faces_detected">Aucun visage détecté</string>
+    <string name="smiley">Émoticône</string>
+    <string name="blur">Brouiller</string>
+    <string name="face_blur_tooltip_title">Nouveau : reconnaissance faciale</string>
+    <string name="face_blur_tooltip_text">Trouvez les visages dans l\'image et brouillez-les ou couvrez-les d\'une émoticône.</string>
 </resources>

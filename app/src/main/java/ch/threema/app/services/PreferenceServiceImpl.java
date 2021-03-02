@@ -1161,6 +1161,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public boolean getIsFaceBlurTooltipShown() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__tooltip_face_blur_shown));
+	}
+
+	@Override
+	public void setFaceBlurTooltipShown(boolean shown) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_face_blur_shown), shown);
+	}
+
+	@Override
 	public void setThreemaSafeEnabled(boolean value) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_enabled), value);
 	}

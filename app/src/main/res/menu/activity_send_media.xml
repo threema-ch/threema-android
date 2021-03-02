@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<group
+		android:id="@+id/group_tools">
+
+	<item
+		android:id="@+id/edit"
+		android:enabled="true"
+		android:icon="@drawable/ic_magic_wand_white_24dp"
+		android:orderInCategory="10"
+		android:title="@string/edit"
+		app:iconTint="@android:color/white"
+		app:showAsAction="always" />
+
+	<item
+		android:id="@+id/flip"
+		android:enabled="true"
+		android:icon="@drawable/ic_flip_outline"
+		android:orderInCategory="30"
+		android:title="@string/flip"
+		app:iconTint="@android:color/white"
+		app:showAsAction="always" />
+
+	<item
+		android:id="@+id/rotate"
+		android:enabled="true"
+		android:icon="@drawable/ic_rotate_right_outline"
+		android:orderInCategory="50"
+		android:title="@string/rotate"
+		app:iconTint="@android:color/white"
+		app:showAsAction="always" />
+
+	<item
+		android:id="@+id/crop"
+		android:enabled="true"
+		android:icon="@drawable/ic_crop_outline"
+		android:orderInCategory="65"
+		android:title="@string/crop"
+		app:iconTint="@android:color/white"
+		app:showAsAction="always" />
+
+	<item
+		android:id="@+id/settings"
+		android:enabled="true"
+		android:icon="@drawable/ic_settings_outline_24dp"
+		android:orderInCategory="80"
+		android:title="@string/prefs_image_size"
+		app:iconTint="@android:color/white"
+		app:showAsAction="always" />
+
+	</group>
+
+</menu>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="about_copyright" translatable="false">Copyright © 2013–2020 Threema GmbH</string>
+	<string name="about_copyright" translatable="false">Copyright © 2013–2021 Threema GmbH</string>
 	<string name="enter_serial_hint" translatable="false">XXXXX-XXXXX</string>
 	<string name="threema_channel" translatable="false">Threema Channel</string>
 	<string name="default_notification_sound" translatable="false">content://settings/system/notification_sound</string>

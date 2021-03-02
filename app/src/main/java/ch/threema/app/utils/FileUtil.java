@@ -685,4 +685,18 @@ public class FileUtil {
 		}
 		return filename;
 	}
+
+	/**
+	 * Try to get a file uri from a content uri to maintain access to a file across two activities.
+	 * NOTE: This hack will probably stop working in API 30
+	 * @param uri content uri to resolve
+	 * @return file uri, if a file path could be resolved
+	 */
+	public static Uri getFileUri(Uri uri) {
+		File file = new File(FileUtil.getRealPathFromURI(ThreemaApplication.getAppContext(), uri));
+		if (file.canRead()) {
+			return Uri.fromFile(file);
+		}
+		return uri;
+	}
 }

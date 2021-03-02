@@ -363,7 +363,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	public void setVideo(MediaItem mediaItem) {
 		final int numColumns = calculateNumColumns();
 
-		if (numColumns == 0) {
+		if (numColumns <= 0 || numColumns > 64) {
 			return;
 		}
 

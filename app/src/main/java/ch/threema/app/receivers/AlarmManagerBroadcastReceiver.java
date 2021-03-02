@@ -81,7 +81,7 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 					if (wakeLock != null && wakeLock.isHeld()) {
 						wakeLock.release();
 					}
-				}).start();
+				}, "AlarmOnReceive").start();
 			} catch (Exception e) {
 				logger.error("Exception", e);
 			}

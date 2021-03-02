@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     android:id="@+id/main_content"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/main_content"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
 	<androidx.core.widget.NestedScrollView
 		android:id="@+id/fragment_id_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:background="?android:windowBackground"
+		android:scrollbars="vertical"
+		android:scrollbarSize="@dimen/scrollbar_size"
 		android:isScrollContainer="true">
 
 		<LinearLayout
@@ -22,12 +25,12 @@
 				android:id="@+id/policy_explain"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:layout_marginBottom="2dp"
 				android:layout_marginLeft="21dp"
 				android:layout_marginRight="21dp"
 				android:layout_marginTop="8dp"
-				android:layout_marginBottom="2dp"
-				android:orientation="horizontal"
 				android:gravity="center_vertical"
+				android:orientation="horizontal"
 				android:visibility="gone">
 
 				<ImageView
@@ -37,607 +40,530 @@
 					app:srcCompat="@drawable/ic_info_outline"
 					app:tint="?attr/textColorSecondary" />
 
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:ellipsize="end"
-				android:maxLines="2"
-				android:text="@string/disabled_by_policy"
-				android:textColor="@null"
-				android:textAppearance="?android:attr/textAppearanceSmall"
-				/>
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="end"
+					android:maxLines="2"
+					android:text="@string/disabled_by_policy"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:textColor="@null" />
 
 			</LinearLayout>
 
-			<com.google.android.material.card.MaterialCardView
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:id="@+id/constraintLayout_id_profile"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="6dp"
-				android:layout_marginLeft="8dp"
-				android:layout_marginRight="8dp"
-				android:layout_marginTop="8dp"
-				android:clickable="false"
-				android:focusable="false"
-				app:cardBackgroundColor="?attr/cardview_background"
-				app:cardCornerRadius="@dimen/cardview_border_radius"
-				app:cardElevation="5dp"
-				app:cardMaxElevation="5dp"
-				app:contentPaddingBottom="12dp"
-				app:contentPaddingLeft="15dp"
-				app:contentPaddingRight="11dp"
-				app:contentPaddingTop="12dp">
+				android:orientation="vertical">
 
-				<androidx.constraintlayout.widget.ConstraintLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
-
-				<TextView
-					android:id="@+id/my_id_title"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/title_mythreemaid"
-					android:textColor="@null"
-					android:textAppearance="@style/Threema.Text.Overline"
-					android:singleLine="true"
-					android:ellipsize="end"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toLeftOf="@+id/my_id_qr"
-					app:layout_constraintHorizontal_bias="0"
-					app:layout_constrainedWidth="true"
-					/>
-
-				<ch.threema.app.emojis.EmojiTextView
-					android:id="@+id/my_id"
+				<ImageView
+					android:id="@+id/profile_edit"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="6dp"
-					android:text="ABCDEFGH"
-					android:textSize="18sp"
-					android:singleLine="true"
-					android:ellipsize="end"
-					app:layout_constraintTop_toBottomOf="@id/my_id_title"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toLeftOf="@+id/my_id_qr"
-					app:layout_constraintHorizontal_bias="0"
-					app:layout_constrainedWidth="true" />
+					android:layout_marginEnd="16dp"
+					android:background="@drawable/circle_transparent"
+					android:contentDescription="@string/edit"
+					android:padding="8dp"
+					android:scaleType="fitCenter"
+					app:layout_constraintBottom_toBottomOf="@+id/nickname"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintTop_toTopOf="@+id/nickname"
+					app:srcCompat="@drawable/ic_pencil_outline"
+					app:tint="?attr/colorAccent"
+					tools:layout_conversion_absoluteHeight="40dp"
+					tools:layout_conversion_absoluteWidth="40dp" />
+
+				<ImageView
+					android:id="@+id/picrelease_config"
+					android:layout_width="40dp"
+					android:layout_height="40dp"
+					android:layout_marginEnd="16dp"
+					android:background="@drawable/circle_transparent"
+					android:contentDescription="@string/configure"
+					android:rotation="180"
+					android:scaleType="center"
+					app:layout_constraintBottom_toBottomOf="@+id/picrelease_spinner"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintTop_toTopOf="@+id/picrelease_spinner"
+					app:srcCompat="@drawable/ic_settings_outline_24dp"
+					app:tint="?attr/colorAccent"
+					tools:layout_conversion_absoluteHeight="40dp"
+					tools:layout_conversion_absoluteWidth="40dp" />
+
 
 				<ImageView
 					android:id="@+id/my_id_qr"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:padding="12dp"
-					android:clickable="true"
-					android:focusable="true"
 					android:background="@drawable/selector_compose_button"
+					android:clickable="true"
 					android:contentDescription="@string/show_as_qrcode"
+					android:focusable="true"
+					android:padding="12dp"
+					app:layout_constraintEnd_toStartOf="@+id/my_id_share"
+					app:layout_constraintTop_toBottomOf="@+id/my_id_title"
 					app:srcCompat="@drawable/ic_qr_code"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintRight_toLeftOf="@+id/my_id_share"
-					app:tint="?attr/textColorSecondary" />
+					app:tint="?attr/textColorSecondary"
+					tools:layout_conversion_absoluteHeight="48dp"
+					tools:layout_conversion_absoluteWidth="48dp" />
 
 				<ImageView
 					android:id="@+id/my_id_share"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:padding="12dp"
-					android:clickable="true"
-					android:focusable="true"
+					android:layout_marginEnd="8dp"
 					android:background="@drawable/selector_compose_button"
+					android:clickable="true"
 					android:contentDescription="@string/share_via"
+					android:focusable="true"
+					android:padding="12dp"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintTop_toTopOf="@+id/my_id_qr"
 					app:srcCompat="@drawable/ic_share_outline"
+					app:tint="?attr/textColorSecondary"
+					tools:layout_conversion_absoluteHeight="48dp"
+					tools:layout_conversion_absoluteWidth="48dp" />
+
+				<TextView
+					android:id="@+id/profilepictitle"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="16dp"
+					android:text="@string/profile_picture_and_nickname"
+					android:textAppearance="@style/Threema.Text.Overline"
+					android:textColor="@null"
+					app:layout_constraintStart_toStartOf="@+id/my_id"
+					app:layout_constraintTop_toBottomOf="@id/my_id"
+					tools:layout_conversion_absoluteHeight="16dp"
+					tools:layout_conversion_absoluteWidth="366dp" />
+
+
+				<TextView
+					android:id="@+id/picrelease_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:text="@string/profile_picture_release"
+					android:textAppearance="@style/Threema.Text.Overline"
+					android:textColor="@null"
+					app:layout_constraintStart_toStartOf="@+id/nickname"
+					app:layout_constraintTop_toBottomOf="@+id/profile_edit"
+					tools:layout_conversion_absoluteHeight="16dp"
+					tools:layout_conversion_absoluteWidth="366dp" />
+
+				<TextView
+					android:id="@+id/my_id_title"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="16dp"
+					android:layout_marginTop="16dp"
+					android:ellipsize="end"
+					android:singleLine="true"
+					android:text="@string/title_mythreemaid"
+					android:textAppearance="@style/Threema.Text.Overline"
+					android:textColor="@null"
+					app:layout_constrainedWidth="true"
+					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:tint="?attr/textColorSecondary" />
+					tools:layout_conversion_absoluteHeight="16dp"
+					tools:layout_conversion_absoluteWidth="269dp"
+					tools:layout_editor_absoluteX="16dp"
+					tools:layout_editor_absoluteY="16dp" />
+
+				<androidx.appcompat.widget.AppCompatSpinner
+					android:id="@+id/picrelease_spinner"
+					style="@style/Base.Widget.AppCompat.Spinner"
+					android:layout_width="wrap_content"
+					android:layout_height="40dp"
+					app:layout_constraintStart_toStartOf="@+id/picrelease_text"
+					app:layout_constraintTop_toBottomOf="@+id/picrelease_text"
+					tools:layout_conversion_absoluteHeight="48dp"
+					tools:layout_conversion_absoluteWidth="48dp" />
+
+				<androidx.constraintlayout.widget.ConstraintLayout
+					android:id="@+id/constraintLayout2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="16dp"
+					android:layout_marginTop="16dp"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toTopOf="parent"
+					tools:layout_conversion_absoluteHeight="48dp"
+					tools:layout_conversion_absoluteWidth="366dp">
 
 				</androidx.constraintlayout.widget.ConstraintLayout>
 
-			</com.google.android.material.card.MaterialCardView>
+				<ch.threema.app.emojis.EmojiTextView
+					android:id="@+id/my_id"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:ellipsize="end"
+					android:singleLine="true"
+					android:text="ABCDEFGH"
+					android:textSize="18sp"
+					app:layout_constrainedWidth="true"
+					app:layout_constraintBottom_toBottomOf="@+id/my_id_qr"
+					app:layout_constraintStart_toStartOf="@+id/my_id_title"
+					app:layout_constraintTop_toTopOf="@+id/my_id_qr"
+					tools:layout_conversion_absoluteHeight="24dp"
+					tools:layout_conversion_absoluteWidth="92dp" />
 
-			<com.google.android.material.card.MaterialCardView
-				android:id="@+id/avatar_container"
+				<ch.threema.app.emojis.EmojiTextView
+					android:id="@+id/nickname"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="8dp"
+					android:layout_marginTop="16dp"
+					android:gravity="center|start"
+					android:textSize="18sp"
+					app:layout_constraintEnd_toStartOf="@id/profile_edit"
+					app:layout_constraintStart_toStartOf="@+id/profilepictitle"
+					app:layout_constraintTop_toBottomOf="@+id/avatar_edit_view"
+					tools:layout_conversion_absoluteHeight="40dp"
+					tools:layout_conversion_absoluteWidth="326dp"
+					tools:text="Nick Name" />
+
+				<ch.threema.app.ui.AvatarEditView
+					android:id="@+id/avatar_edit_view"
+					android:layout_width="200dp"
+					android:layout_height="200dp"
+					android:layout_marginTop="16dp"
+					android:contentDescription="@string/profile_picture"
+					android:visibility="visible"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintHorizontal_bias="0.5"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@+id/profilepictitle" />
+
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+			<LinearLayout
+				android:id="@+id/linearLayout_linked_accounts"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="6dp"
-				android:layout_marginLeft="8dp"
-				android:layout_marginRight="8dp"
-				android:layout_marginTop="6dp"
-				android:clickable="false"
-				android:focusable="false"
-				app:cardBackgroundColor="?attr/cardview_background"
-				app:cardCornerRadius="@dimen/cardview_border_radius"
-				app:cardElevation="4dp"
-				app:contentPaddingBottom="12dp"
-				app:contentPaddingLeft="15dp"
-				app:contentPaddingRight="15dp"
-				app:contentPaddingTop="12dp">
+				android:orientation="vertical"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
+				android:paddingTop="16dp">
 
-				<LinearLayout
+				<TextView
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:orientation="vertical">
+					android:text="@string/account_links"
+					android:textAppearance="@style/Threema.Text.Overline"
+					android:textColor="@null" />
 
-					<TextView
-						android:id="@+id/profilepictitle"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:text="@string/profile_picture_and_nickname"
-						android:textColor="@null"
-						android:textAppearance="@style/Threema.Text.Overline"/>
+				<RelativeLayout
+					android:id="@+id/linked_mobile_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:minHeight="?android:attr/listPreferredItemHeight">
 
-					<RelativeLayout
-						android:id="@+id/avatar_frame"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginTop="16dp"
-						android:clickable="false"
-						android:contentDescription="@string/edit_name"
-						android:focusable="false">
+					<ImageView
+						android:id="@+id/phone"
+						android:layout_width="24dp"
+						android:layout_height="24dp"
+						android:layout_centerVertical="true"
+						android:layout_marginRight="24dp"
+						android:contentDescription="@string/linked_mobile"
+						app:srcCompat="@drawable/ic_call_outline"
+						app:tint="?attr/textColorSecondary" />
 
-						<ch.threema.app.ui.AvatarEditView
-							android:id="@+id/avatar_edit_view"
-							android:layout_width="@dimen/myid_qrcode_size"
-							android:layout_height="@dimen/myid_qrcode_size"
-							android:layout_alignParentLeft="true"
-							android:layout_centerVertical="true"
-							android:contentDescription="@string/profile_picture"
-							android:visibility="visible"/>
-
-						<ch.threema.app.emojis.EmojiTextView
-							android:id="@+id/nickname"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_centerVertical="true"
-							android:layout_marginLeft="16dp"
-							android:layout_toLeftOf="@+id/profile_edit"
-							android:layout_toRightOf="@id/avatar_edit_view"
-							android:textSize="18sp"/>
-
-						<ImageView
-							android:id="@+id/profile_edit"
-							android:layout_width="40dp"
-							android:layout_height="40dp"
-							android:padding="8dp"
-							android:layout_alignParentRight="true"
-							android:layout_centerVertical="true"
-							android:background="@drawable/circle_transparent"
-							android:contentDescription="@string/edit"
-							android:scaleType="fitCenter"
-							app:srcCompat="@drawable/ic_pencil_outline"
-							app:tint="?attr/colorAccent" />
-
-					</RelativeLayout>
+					<ImageView
+						android:id="@+id/change_mobile"
+						android:layout_width="40dp"
+						android:layout_height="40dp"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						android:background="@drawable/circle_transparent"
+						android:contentDescription="@string/change"
+						android:padding="8dp"
+						android:scaleType="fitCenter"
+						app:srcCompat="@drawable/ic_pencil_outline"
+						app:tint="?attr/colorAccent" />
 
 					<LinearLayout
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_centerVertical="true"
+						android:layout_marginRight="8dp"
+						android:layout_toLeftOf="@+id/change_mobile"
+						android:layout_toRightOf="@+id/phone"
 						android:orientation="vertical">
 
 						<TextView
-							android:id="@+id/picrelease_text"
+							android:id="@+id/linked_mobile_title"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
-							android:layout_marginTop="16dp"
-							android:text="@string/profile_picture_release"
-							android:textColor="@null"
-							android:textAppearance="@style/Threema.Text.Overline"/>
+							android:text="@string/linked_mobile"
+							android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+							android:textColor="@null" />
 
-						<RelativeLayout
-							android:id="@+id/picrelease_spinner_container"
+						<TextView
+							android:id="@+id/linked_mobile"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
-							android:layout_gravity="center_vertical"
-							android:layout_marginLeft="-8dp"
-							android:layout_marginTop="10dp"
-							android:orientation="horizontal">
-
-							<androidx.appcompat.widget.AppCompatSpinner
-								android:id="@+id/picrelease_spinner"
-								style="@style/Base.Widget.AppCompat.Spinner"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_alignParentLeft="true"/>
-
-							<ImageView
-								android:id="@+id/picrelease_config"
-								android:layout_width="40dp"
-								android:layout_height="40dp"
-								android:layout_alignParentRight="true"
-								android:background="@drawable/circle_transparent"
-								android:contentDescription="@string/configure"
-								android:rotation="180"
-								android:scaleType="center"
-								app:srcCompat="@drawable/ic_settings_outline_24dp"
-								app:tint="?attr/colorAccent" />
-
-						</RelativeLayout>
+							android:text=""
+							android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+							android:textColor="@null" />
 
 					</LinearLayout>
 
-				</LinearLayout>
+				</RelativeLayout>
 
-			</com.google.android.material.card.MaterialCardView>
-
-			<com.google.android.material.card.MaterialCardView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="6dp"
-				android:layout_marginLeft="8dp"
-				android:layout_marginRight="8dp"
-				android:layout_marginTop="6dp"
-				android:clickable="false"
-				android:focusable="false"
-				app:cardBackgroundColor="?attr/cardview_background"
-				app:cardCornerRadius="@dimen/cardview_border_radius"
-				app:cardElevation="3dp"
-				app:cardMaxElevation="4dp"
-				app:contentPaddingBottom="2dp"
-				app:contentPaddingLeft="15dp"
-				app:contentPaddingRight="15dp"
-				app:contentPaddingTop="12dp">
-
-				<LinearLayout
+				<RelativeLayout
+					android:id="@+id/linked_email_layout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:orientation="vertical">
+					android:minHeight="?android:attr/listPreferredItemHeight">
 
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:text="@string/account_links"
-						android:textColor="@null"
-						android:textAppearance="@style/Threema.Text.Overline"/>
+					<ImageView
+						android:id="@+id/email"
+						android:layout_width="24dp"
+						android:layout_height="24dp"
+						android:layout_centerVertical="true"
+						android:layout_marginRight="24dp"
+						android:contentDescription="@string/linked_email"
+						app:srcCompat="@drawable/ic_email_outline"
+						app:tint="?attr/textColorSecondary" />
 
+					<ImageView
+						android:id="@+id/change_email"
+						android:layout_width="40dp"
+						android:layout_height="40dp"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						android:background="@drawable/circle_transparent"
+						android:contentDescription="@string/change"
+						android:padding="8dp"
+						android:scaleType="fitCenter"
+						app:srcCompat="@drawable/ic_pencil_outline"
+						app:tint="?attr/colorAccent" />
 
-					<RelativeLayout
-						android:id="@+id/linked_mobile_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:minHeight="?android:attr/listPreferredItemHeight">
-
-						<ImageView
-							android:id="@+id/phone"
-							android:layout_width="24dp"
-							android:layout_height="24dp"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="24dp"
-							android:contentDescription="@string/linked_mobile"
-							app:srcCompat="@drawable/ic_call_outline"
-							app:tint="?attr/textColorSecondary" />
-
-						<LinearLayout
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="8dp"
-							android:layout_toLeftOf="@+id/change_mobile"
-							android:layout_toRightOf="@+id/phone"
-							android:orientation="vertical">
-
-							<TextView
-								android:id="@+id/linked_mobile_title"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/linked_mobile"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-								/>
-
-							<TextView
-								android:id="@+id/linked_mobile"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text=""
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-								/>
-
-						</LinearLayout>
-
-						<ImageView
-							android:id="@+id/change_mobile"
-							android:layout_width="40dp"
-							android:layout_height="40dp"
-							android:layout_alignParentRight="true"
-							android:layout_centerVertical="true"
-							android:background="@drawable/circle_transparent"
-							android:contentDescription="@string/change"
-							android:padding="8dp"
-							android:scaleType="fitCenter"
-							app:srcCompat="@drawable/ic_pencil_outline"
-							app:tint="?attr/colorAccent" />
-
-					</RelativeLayout>
-
-					<RelativeLayout
-						android:id="@+id/linked_email_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:minHeight="?android:attr/listPreferredItemHeight">
-
-						<ImageView
-							android:id="@+id/email"
-							android:layout_width="24dp"
-							android:layout_height="24dp"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="24dp"
-							android:contentDescription="@string/linked_email"
-							app:srcCompat="@drawable/ic_email_outline"
-							app:tint="?attr/textColorSecondary" />
-
-						<LinearLayout
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="8dp"
-							android:layout_toLeftOf="@+id/change_email"
-							android:layout_toRightOf="@+id/email"
-							android:orientation="vertical">
-
-							<TextView
-								android:id="@+id/linked_email_title"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/linked_email"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-								/>
-							<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
-
-
-							<TextView
-								android:id="@+id/linked_email"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text=""
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-								/>
-							<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
-
-
-						</LinearLayout>
-
-						<ImageView
-							android:id="@+id/change_email"
-							android:layout_width="40dp"
-							android:layout_height="40dp"
-							android:layout_alignParentRight="true"
-							android:layout_centerVertical="true"
-							android:background="@drawable/circle_transparent"
-							android:contentDescription="@string/change"
-							android:padding="8dp"
-							android:scaleType="fitCenter"
-							app:srcCompat="@drawable/ic_pencil_outline"
-							app:tint="?attr/colorAccent" />
-
-					</RelativeLayout>
-
-				</LinearLayout>
-
-			</com.google.android.material.card.MaterialCardView>
-
-			<com.google.android.material.card.MaterialCardView
-				android:id="@+id/advanced_options_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="8dp"
-				android:layout_marginLeft="8dp"
-				android:layout_marginRight="8dp"
-				android:layout_marginTop="6dp"
-				android:clickable="false"
-				android:focusable="false"
-				app:cardBackgroundColor="?attr/cardview_background"
-				app:cardCornerRadius="@dimen/cardview_border_radius"
-				app:cardElevation="3dp"
-				app:cardMaxElevation="4dp"
-				app:contentPaddingBottom="12dp"
-				app:contentPaddingLeft="7dp"
-				app:contentPaddingRight="7dp"
-				app:contentPaddingTop="12dp">
-
-				<LinearLayout
-					android:id="@+id/advanced_options_inner_layout"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:orientation="vertical">
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginLeft="8dp"
-						android:layout_marginRight="8dp"
-						android:text="@string/backup_and_delete"
-						android:textColor="@null"
-						android:textAppearance="@style/Threema.Text.Overline"/>
-
-					<RelativeLayout
-						android:id="@+id/revocation_key_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:minHeight="?android:attr/listPreferredItemHeight"
-						android:paddingLeft="8dp"
-						android:paddingRight="8dp">
-
-						<LinearLayout
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_alignParentLeft="true"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="8dp"
-							android:layout_toLeftOf="@+id/revocation_key"
-							android:orientation="vertical">
-
-							<TextView
-								android:id="@+id/revocation_key_title"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/revocation_key_title"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-								/>
-
-							<TextView
-								android:id="@+id/revocation_key_sum"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/revocation_key_not_set"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-								/>
-
-						</LinearLayout>
-
-						<ImageView
-							android:id="@+id/revocation_key"
-							android:layout_width="40dp"
-							android:layout_height="40dp"
-							android:layout_alignParentRight="true"
-							android:layout_centerVertical="true"
-							android:background="@drawable/circle_transparent"
-							android:contentDescription="@string/change"
-							android:rotation="180"
-							android:scaleType="center"
-							app:srcCompat="@drawable/ic_arrow_left"
-							app:tint="?attr/colorAccent" />
-
-					</RelativeLayout>
-					<!--
-								<include layout="@layout/list_divider"/>
-					-->
-					<RelativeLayout
-						android:id="@+id/export_id_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:minHeight="?android:attr/listPreferredItemHeight"
-						android:paddingLeft="8dp"
-						android:paddingRight="8dp">
-
-						<LinearLayout
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_alignParentLeft="true"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="8dp"
-							android:layout_toLeftOf="@+id/export_id"
-							android:orientation="vertical">
-
-							<TextView
-								android:id="@+id/export_id_title"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/backup_title"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-								/>
-
-							<TextView
-								android:id="@+id/export_id_subtitle"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/backup_sum"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-								/>
-
-						</LinearLayout>
-
-						<ImageView
-							android:id="@+id/export_id"
-							android:layout_width="40dp"
-							android:layout_height="40dp"
-							android:layout_alignParentRight="true"
-							android:layout_centerVertical="true"
-							android:background="@drawable/circle_transparent"
-							android:contentDescription="@string/change"
-							android:rotation="180"
-							android:scaleType="center"
-							app:srcCompat="@drawable/ic_arrow_left"
-							app:tint="?attr/colorAccent" />
-
-					</RelativeLayout>
-
-					<RelativeLayout
-						android:id="@+id/delete_id_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:minHeight="?android:attr/listPreferredItemHeight"
-						android:paddingLeft="8dp"
-						android:paddingRight="8dp">
-
-						<LinearLayout
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_alignParentLeft="true"
-							android:layout_centerVertical="true"
-							android:layout_marginRight="8dp"
-							android:layout_toLeftOf="@+id/delete_id"
-							android:orientation="vertical">
-
-							<TextView
-								android:id="@+id/delete_id_title"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/delete_id_title"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-								/>
-
-							<TextView
-								android:id="@+id/delete_id_text"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:ellipsize="end"
-								android:text="@string/delete_id_sum"
-								android:textColor="@null"
-								android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-								/>
-
-						</LinearLayout>
-
-						<ImageView
-							android:id="@+id/delete_id"
-							android:layout_width="40dp"
-							android:layout_height="40dp"
-							android:layout_alignParentRight="true"
-							android:layout_centerVertical="true"
-							android:background="@drawable/circle_transparent"
-							android:contentDescription="@string/change"
-							android:rotation="180"
-							android:scaleType="center"
-							app:srcCompat="@drawable/ic_arrow_left"
-							app:tint="?attr/colorAccent" />
-
-					</RelativeLayout>
-
-					<TextView
-						android:id="@+id/keyfingerprinttitle"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginLeft="8dp"
-						android:layout_marginRight="8dp"
-						android:paddingTop="20dp"
-						android:text="@string/title_keyfingerprint"
-						android:textColor="@null"
-						android:textAppearance="@style/Threema.Text.Overline"/>
-
-					<TextView
-						android:id="@+id/keyfingerprint"
+					<LinearLayout
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_gravity="left"
-						android:layout_marginLeft="8dp"
+						android:layout_centerVertical="true"
 						android:layout_marginRight="8dp"
-						android:paddingTop="10dp"
-						android:singleLine="true"
-						android:textColor="@null"
-						android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+						android:layout_toLeftOf="@+id/change_email"
+						android:layout_toRightOf="@+id/email"
+						android:orientation="vertical">
 
-				</LinearLayout>
+						<TextView
+							android:id="@+id/linked_email_title"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/linked_email"
+							android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+							android:textColor="@null" />
+						<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
-			</com.google.android.material.card.MaterialCardView>
+
+						<TextView
+							android:id="@+id/linked_email"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text=""
+							android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+							android:textColor="@null" />
+						<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
+
+					</LinearLayout>
+
+				</RelativeLayout>
+
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/advanced_options_inner_layout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:paddingBottom="16dp"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
+				android:paddingTop="16dp">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/backup_and_delete"
+					android:textAppearance="@style/Threema.Text.Overline"
+					android:textColor="@null" />
+
+				<RelativeLayout
+					android:id="@+id/revocation_key_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:minHeight="?android:attr/listPreferredItemHeight">
+
+					<ImageView
+						android:id="@+id/revocation_key"
+						android:layout_width="40dp"
+						android:layout_height="40dp"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						android:background="@drawable/circle_transparent"
+						android:contentDescription="@string/change"
+						android:rotation="180"
+						android:scaleType="center"
+						app:srcCompat="@drawable/ic_arrow_left"
+						app:tint="?attr/colorAccent" />
+
+					<LinearLayout
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_alignParentLeft="true"
+						android:layout_centerVertical="true"
+						android:layout_marginRight="8dp"
+						android:layout_toLeftOf="@+id/revocation_key"
+						android:orientation="vertical">
+
+						<TextView
+							android:id="@+id/revocation_key_title"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/revocation_key_title"
+							android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+							android:textColor="@null" />
+
+						<TextView
+							android:id="@+id/revocation_key_sum"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/revocation_key_not_set"
+							android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+							android:textColor="@null" />
+
+					</LinearLayout>
+
+				</RelativeLayout>
+
+				<RelativeLayout
+					android:id="@+id/export_id_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:minHeight="?android:attr/listPreferredItemHeight">
+
+					<ImageView
+						android:id="@+id/export_id"
+						android:layout_width="40dp"
+						android:layout_height="40dp"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						android:background="@drawable/circle_transparent"
+						android:contentDescription="@string/change"
+						android:rotation="180"
+						android:scaleType="center"
+						app:srcCompat="@drawable/ic_arrow_left"
+						app:tint="?attr/colorAccent" />
+
+					<LinearLayout
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_alignParentLeft="true"
+						android:layout_centerVertical="true"
+						android:layout_marginRight="8dp"
+						android:layout_toLeftOf="@+id/export_id"
+						android:orientation="vertical">
+
+						<TextView
+							android:id="@+id/export_id_title"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/backup_title"
+							android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+							android:textColor="@null" />
+
+						<TextView
+							android:id="@+id/export_id_subtitle"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/backup_sum"
+							android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+							android:textColor="@null" />
+
+					</LinearLayout>
+
+				</RelativeLayout>
+
+				<RelativeLayout
+					android:id="@+id/delete_id_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:minHeight="?android:attr/listPreferredItemHeight">
+
+					<ImageView
+						android:id="@+id/delete_id"
+						android:layout_width="40dp"
+						android:layout_height="40dp"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						android:background="@drawable/circle_transparent"
+						android:contentDescription="@string/change"
+						android:rotation="180"
+						android:scaleType="center"
+						app:srcCompat="@drawable/ic_arrow_left"
+						app:tint="?attr/colorAccent" />
+
+					<LinearLayout
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_alignParentLeft="true"
+						android:layout_centerVertical="true"
+						android:layout_marginRight="8dp"
+						android:layout_toLeftOf="@+id/delete_id"
+						android:orientation="vertical">
+
+						<TextView
+							android:id="@+id/delete_id_title"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/delete_id_title"
+							android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+							android:textColor="@null" />
+
+						<TextView
+							android:id="@+id/delete_id_text"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:ellipsize="end"
+							android:text="@string/delete_id_sum"
+							android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+							android:textColor="@null" />
+
+					</LinearLayout>
+
+				</RelativeLayout>
+
+				<!--
+								<include layout="@layout/list_divider"/>
+					-->
+
+				<TextView
+					android:id="@+id/keyfingerprinttitle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:paddingTop="16dp"
+					android:text="@string/title_keyfingerprint"
+					android:textAppearance="@style/Threema.Text.Overline"
+					android:textColor="@null" />
+
+				<TextView
+					android:id="@+id/keyfingerprint"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="left"
+					android:paddingTop="10dp"
+					android:singleLine="false"
+					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+					android:textColor="@null" />
+
+			</LinearLayout>
 
 		</LinearLayout>
 

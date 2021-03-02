@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -38,8 +40,9 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
-public class GroupAddActivity extends MemberChooseActivity {
+public class GroupAddActivity extends MemberChooseActivity implements GenericAlertDialog.DialogClickListener {
 	private static final String BUNDLE_EXISTING_MEMBERS = "ExMem";
+	private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
 
 	private GroupService groupService;
 	private GroupModel groupModel;
@@ -114,22 +117,26 @@ public class GroupAddActivity extends MemberChooseActivity {
 			if ((previousContacts + selectedContacts.size()) > getResources().getInteger(R.integer.max_group_size)) {
 				Toast.makeText(this, String.format(getString(R.string.group_select_max), getResources().getInteger(R.integer.max_group_size) - previousContacts), Toast.LENGTH_LONG).show();
 			} else {
-				//ok!
-				if(this.groupModel != null) {
-					// edit group mode
-					Intent intent = new Intent();
-					IntentDataUtil.append(selectedContacts, intent);
-					setResult(RESULT_OK, intent);
-					finish();
-				} else {
-					// new group mode
-					Intent nextIntent =  new Intent(this, GroupAdd2Activity.class);
-					IntentDataUtil.append(selectedContacts, nextIntent);
-					startActivityForResult(nextIntent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
-				}
+				createOrUpdateGroup(selectedContacts);
 			}
 		} else {
-			Toast.makeText(this, getString(R.string.group_select_at_least_two), Toast.LENGTH_LONG).show();
+			GenericAlertDialog.newInstance(R.string.title_addgroup, R.string.group_create_no_members, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_NO_MEMBERS);
+		}
+	}
+
+	private void createOrUpdateGroup(@NonNull final List<ContactModel> selectedContacts) {
+		//ok!
+		if(this.groupModel != null) {
+			// edit group mode
+			Intent intent = new Intent();
+			IntentDataUtil.append(selectedContacts, intent);
+			setResult(RESULT_OK, intent);
+			finish();
+		} else {
+			// new group mode
+			Intent nextIntent =  new Intent(this, GroupAdd2Activity.class);
+			IntentDataUtil.append(selectedContacts, nextIntent);
+			startActivityForResult(nextIntent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
 		}
 	}
 
@@ -152,4 +159,12 @@ public class GroupAddActivity extends MemberChooseActivity {
 		super.onSaveInstanceState(outState);
 		outState.putStringArrayList(BUNDLE_EXISTING_MEMBERS, this.excludedIdentities);
 	}
+
+	@Override
+	public void onYes(String tag, Object data) {
+		createOrUpdateGroup(new ArrayList<>());
+	}
+
+	@Override
+	public void onNo(String tag, Object data) { }
 }

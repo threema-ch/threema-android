@@ -117,7 +117,7 @@ public class CameraFragment extends Fragment {
 	private ExecutorService cameraExecutor;
 
 	// Volume down button receiver
-	private BroadcastReceiver volumeDownReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver volumeDownReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			int keyCode = intent.getIntExtra(KEY_EVENT_EXTRA, KeyEvent.KEYCODE_UNKNOWN);
@@ -135,7 +135,7 @@ public class CameraFragment extends Fragment {
 	 * change, for example if we choose to override config change in manifest or for 180-degree
 	 * orientation changes.
 	 */
-	private DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
+	private final DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
 		@Override
 		public void onDisplayAdded(int displayId) {
 		}
@@ -152,7 +152,7 @@ public class CameraFragment extends Fragment {
 			}
 
 			if (displayId == CameraFragment.this.displayId) {
-				if (getView() != null) {
+				if (getView() != null && getView().getDisplay() != null) {
 					int rotation = getView().getDisplay().getRotation();
 					logger.debug("Rotation changed from {} to {}", displayRotation, rotation);
 					if (displayRotation != rotation) {

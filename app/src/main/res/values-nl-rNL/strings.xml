@@ -244,7 +244,7 @@
     <string name="emoji_nature">Natuur</string>
     <string name="emoji_food">Eten &amp; Drinken</string>
     <string name="emoji_recent">Recent</string>
-    <string name="emoji_emotions">Emoties</string>
+    <string name="emoji_emotions">Smileys &amp; Mensen</string>
     <string name="emoji_activities">Activiteiten</string>
     <string name="emoji_flags">Vlaggen</string>
     <string name="title_lock">Vergrendelen</string>
@@ -960,7 +960,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="hide_chat_enter_message_explain">Deze chat is aangemerkt als privéchat. Voer de toegangsbescherming in om de chat te openen.</string>
     <string name="unknown">Onbekend</string>
     <string name="miui_notification_title">Belangrijk bericht over berichten op MIUI 10</string>
-    <string name="miui_notification_body">MIUI 10 schakelt standaard de geluids- en de lichtsignalen uit voor alle nieuwe berichtenkanalen (behalve voor sommige apps die door Xiaomi zijn aangewezen als \"belangrijk\"). U moet ze via uw app-specifieke instellingsschermen voor elk kanaal handmatig weer inschakelen. Neem contact op met de fabrikant van uw telefoon voor meer informatie.</string>
+    <string name="miui_notification_body">MIUI 10 schakelt standaard de geluids- en de lichtsignalen uit voor alle nieuwe berichtenkanalen (behalve voor sommige apps die door Xiaomi zijn aangewezen als «belangrijk»). U moet ze via uw app-specifieke instellingsschermen voor elk kanaal handmatig weer inschakelen. Neem contact op met de fabrikant van uw telefoon voor meer informatie.</string>
     <string name="dont_show_again">Niet meer weergeven</string>
     <string name="miui_notification_prefs">Instellingen MIUI</string>
     <string name="threema_safe_upload_successful">Threema Safe back-upbestand geüpload</string>
@@ -1018,10 +1018,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="whatsnew_title">Welkom bij %s 4.5</string>
     <string name="whatsnew_headline">%1$s 4.5 geeft je een heel nieuwe media-ervaring.\n\nDe mediafunctie is helemaal opnieuw ontworpen en heeft nu een optionele machineleerfunctie op basis van het zoeken van afbeeldingen.\n\nDaarnaast hebben we algemene zoekfuncties naar tekst voor alle chats ingevoeerd, het citeren van berichten verbeterd en nog veel meer.</string>
     <string name="whatsnew2_title">Wat is er nieuw?</string>
-    <string name="whatsnew2_body">
-        <![CDATA[
+    <string name="whatsnew2_body"><![CDATA[
 		<p><b>Mediascherm</b>: Tik op het paperclippictogram om je mediabestanden in een scrollbaar zijscherm te bekijken. Als je niet wilt dat het zijscherm automatisch wordt geopend met de meest recente media, kun je de optie Snelle selectie uitschakelen in de chatinstellingen via <i>Instellingen / Chat / Snelle selectie media</i>.</p>
-		<p><b>Afbeeldingen zoeken</b>: Zoek in je afbeeldingen naar voorwerpen, activiteiten en locaties.<br>De afbeeldingsherkenning is gebaseerd op een lokaal machineleermodel en verzendt geen gegevens naar externe servers. Aangezien het analyseren van afbeeldingen een nogal intensieve taak kan zijn en lang kan duren, is deze optie standaard uitgeschakeld. Je kunt haar inschakelen via <i>Instellingen / Media &amp; Opslag / Afbeeldingen zoeken</i>.</p>
+		<p><b>Afbeeldingen zoeken</b>: Zoek in je afbeeldingen naar voorwerpen, activiteiten en locaties.<br>De afbeeldingsherkenning is gebaseerd op een lokaal machineleermodel en verzendt geen gegevens naar externe servers. Aangezien het analyseren van afbeeldingen een nogal intensieve taak kan zijn en lang kan duren, is deze optie standaard uitgeschakeld. Je kunt haar inschakelen via <i>Instellingen / Media & Opslag / Afbeeldingen zoeken</i>.</p>
 		<p><b>Mediabestanden verzenden</b>: Afbeeldingen verzenden met individuele resoluties zonder de algemene instellingen te hoeven aanpassen.</p>
 		<p><b>Video bewerken</b>: Snijd video\'s bij voordat je ze verzendt. Daarnaast is het transcoderingsproces verbeterd en werkt dat nu in de achtergrond.</p>
 		<p><b>Opslaan in galerij</b>: Op Android 10 en hoger worden mediabestanden nu opgeslagen in de systeemmappen <i>Pictures, Video, Music,</i> en <i>Documents</i> vanwege de nieuwe «Scoped Storage»-vereisten van Google.</p>
@@ -1029,8 +1028,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
 		<p><b>Citaten</b>: Met %1$s kun je nu alle mediabestanden citeren, inclusief afbeeldingen, video\'s en gesproken berichten.</p>
 		<p><b>100 nieuwe emoji\'s</b>: Bekijk de langverwachte fondu &#129749;</p>
 		<p><b>Grotere tekstberichten</b>: Om het chatscherm overzichtelijk te houden, worden berichten met veel tekst ingekort in een spraakbubbel die je zelf kunt uitklappen.</p>
-		]]>
-    </string>
+		]]></string>
     <string name="tooltip_identity_popup">Tik hier om uw Threema-ID snel weer te geven of om de ID\'s van anderen te scannen</string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
@@ -1051,7 +1049,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_type_content_description">%1$s %2$s bekijken of bewerken</string>
     <string name="group">Groep</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Onze Privacybeleid is bijgewerkt om de volgende verandering weer te geven:</p><p>%1$s is niet langer afhankelijk van Google Play en Google Maps om kaart- en POI-gegevens te verstrekken.</p>Kijk het volledige Privacybeleid <a href="%2$s">hier</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Play Services niet geinstalleer. Kan niet overschakelen naar \"push\".</string>
+    <string name="play_services_not_installed_unable_to_use_push">Play Services niet geinstalleer. Kan niet overschakelen naar «push».</string>
     <string name="unable_to_get_current_location">Kan huidige locatie niet bepalen.</string>
     <string name="lp_search_place_min_chars">Voer ten minste drie tekens in om een plaats te zoeken.</string>
     <string name="lp_search_place_no_matches">Geen overeenkomende plaatsen gevonden. Pas uw zoekopdracht aan.</string>
@@ -1171,6 +1169,21 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="original_file_no_longer_avilable">Het oorspronkelijke bestand is niet langer beschikbaar. Verzend het bericht opnieuw.</string>
     <string name="state_transcoding">transcoderen…</string>
     <string name="importing_files">Bestanden importeren…</string>
-    <string name="tooltip_image_resolution_hint">Afbeeldingsresoluties aanpassen.</string>
+    <string name="tooltip_image_resolution_hint">Tik hier om de afbeeldingsresoluties aan te passen.</string>
     <string name="image_labeling_stuck_error">Het indexeringsproces voor het zoekproces is vastgelopen en geannuleerd. Probeer het later opnieuw.</string>
+    <string name="ballot_created_successfully">De poll is aangemaakt.</string>
+    <string name="file_size">Grootte</string>
+    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
+    <string name="thirty_days_abbrev">30d</string>
+    <string name="show_in_chat">Weergeven in chat</string>
+    <string name="group_create_no_members">Weet u zeker dat u een lege groep wilt aanmaken?</string>
+    <string name="notes">Notities</string>
+    <string name="blur_faces">Gezichten vervagen</string>
+    <string name="brush">Penseel</string>
+    <string name="error_detecting_faces">Fout tijdens detecteren van gezichten</string>
+    <string name="no_faces_detected">Geen gezichten gedetecteerd</string>
+    <string name="smiley">Smiley</string>
+    <string name="blur">Vervagen</string>
+    <string name="face_blur_tooltip_title">Nieuw: gezichtsherkenning</string>
+    <string name="face_blur_tooltip_text">Vind gezichten in de foto en vervaag ze of dek ze af met een smiley.</string>
 </resources>

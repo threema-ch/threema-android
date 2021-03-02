@@ -439,15 +439,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						}
 					} else {
 						logger.info("OK, masterKeyFile exists");
-
-/*						// we create a copy of the database for easy restore when database gets corrupted
-						String databasePath = getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME).getAbsolutePath();
-						File databaseFile = new File(databasePath);
-						File backupDatabaseFile = new File(databasePath + ".backup");
-						if (databaseFile.exists()) {
-							FileUtil.copyFile(databaseFile, backupDatabaseFile);
-						}
-*/					}
+					}
 
 					masterKey = new MasterKey(masterKeyFile, null, true);
 
@@ -560,7 +552,16 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 	@Override
 	public void onStop(@NonNull LifecycleOwner owner) {
-		logger.info("*** Lifecycle: App now hidden");
+		logger.info("*** Lifecycle: App now stopped");
+		if (masterKey == null || masterKey.isLocked() || serviceManager == null) {
+			return;
+		}
+
+		try {
+			serviceManager.getMessageService().saveMessageQueue(masterKey);
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
 	}
 
 	@Override
@@ -634,7 +635,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				/* take the opportunity to save the message queue */
 				try {
 					if (serviceManager != null)
-						serviceManager.getMessageService().saveMessageQueue();
+						serviceManager.getMessageService().saveMessageQueueAsync();
 				} catch (Exception e) {
 					logger.error("Exception", e);
 				}

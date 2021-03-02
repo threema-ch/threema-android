@@ -28,6 +28,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -75,6 +77,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.LockableViewPager;
+import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
@@ -388,6 +391,10 @@ public class MediaViewerActivity extends ThreemaToolbarActivity {
 			menu.findItem(R.id.menu_view).setVisible(false);
 		}
 
+		if (getToolbar().getNavigationIcon() != null) {
+			getToolbar().getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+		}
+
 		return true;
 	}
 
@@ -410,6 +417,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity {
 			return true;
 		} else if (itemId == R.id.menu_gallery) {
 			showGallery();
+			return true;
+		} else if (itemId == R.id.menu_show_in_chat) {
+			showInChat(this.currentMessageModel);
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -460,6 +470,14 @@ public class MediaViewerActivity extends ThreemaToolbarActivity {
 			startActivity(mediaGalleryIntent);
 			finish();
 		}
+	}
+
+	private void showInChat(AbstractMessageModel messageModel) {
+		if (messageModel == null) {
+			return;
+		}
+		AnimationUtil.startActivityForResult(this, null, IntentDataUtil.getJumpToMessageIntent(this, messageModel), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		finish();
 	}
 
 	private void hideSystemUi() {

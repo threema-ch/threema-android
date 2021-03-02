@@ -306,7 +306,7 @@ public class ServiceManager {
 
 		// Write message queue to file at this opportunity (we can never know when we'll get killed)
 		try {
-			this.getMessageService().saveMessageQueue();
+			this.getMessageService().saveMessageQueueAsync();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}

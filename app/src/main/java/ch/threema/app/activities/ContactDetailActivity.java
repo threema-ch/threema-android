@@ -28,6 +28,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -63,7 +65,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.ContactDetailAdapter;
@@ -94,6 +95,7 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
@@ -166,7 +168,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 	};
 
-	private ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
+	private final ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
 		@Override
 		public void onSortingChanged() { }
 
@@ -185,7 +187,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		public void onNotificationSettingChanged(String uid) { }
 	};
 
-	private ContactListener contactListener = new ContactListener() {
+	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(ContactModel modifiedContactModel) {
 		 	RuntimeUtil.runOnUiThread(() -> {
@@ -212,7 +214,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 	};
 
-	private GroupListener groupListener = new GroupListener() {
+	private final GroupListener groupListener = new GroupListener() {
 		@Override
 		public void onCreate(GroupModel newGroupModel) {
 			resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
@@ -387,6 +389,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 				openContactEditor();
 			}
 		});
+
+		if (getToolbar().getNavigationIcon() != null) {
+			getToolbar().getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+		}
 	}
 
 	private void showWorkTooltip() {
@@ -591,6 +597,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			protected void onPreExecute() {
 				GenericProgressDialog.newInstance(R.string.deleting_contact, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DELETING_CONTACT);
 			}
+
 
 			@Override
 			protected Boolean doInBackground(Void... params) {
@@ -804,9 +811,11 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 					if (ContactUtil.canReceiveProfilePics(contact)) {
 						if (profilePicRecipientsService != null && profilePicRecipientsService.has(contact.getIdentity())) {
 							profilePicItem.setTitle(R.string.menu_send_profilpic_off);
+							profilePicItem.setIcon(R.drawable.ic_person_remove_outline);
 							profilePicSendItem.setVisible(true);
 						} else {
 							profilePicItem.setTitle(R.string.menu_send_profilpic);
+							profilePicItem.setIcon(R.drawable.ic_person_add_outline);
 							profilePicSendItem.setVisible(false);
 						}
 						this.profilePicItem.setVisible(true);

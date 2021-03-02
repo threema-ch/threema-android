@@ -111,7 +111,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 	}
 
 	private void creatingGroupDone(GroupModel newModel) {
-		Toast.makeText(this, getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
+		Toast.makeText(ThreemaApplication.getAppContext(), getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
 
 		Intent intent = new Intent(this, ComposeMessageActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());

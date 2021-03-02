@@ -21,7 +21,7 @@
 		android:textSize="24sp"
 		/>
 
-	<ListView
+	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/ballot_list"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
@@ -29,7 +29,6 @@
 		android:layout_marginTop="14dp"
 		android:divider="@android:color/transparent"
 		android:dividerHeight="2dp"
-		android:transcriptMode="alwaysScroll"
 		/>
 
 	<RelativeLayout

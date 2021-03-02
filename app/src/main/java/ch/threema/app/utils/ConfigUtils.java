@@ -709,6 +709,19 @@ public class ConfigUtils {
 	}
 
 	/*
+	 * Update the app locale to avoid having to restart if relying on the app context to get resources
+	 */
+	public static void updateAppContextLocale(Context context, String lang) {
+		Configuration config = new Configuration();
+		if (!TextUtils.isEmpty(lang)) {
+			config.locale = new Locale(lang);
+		} else {
+			config.locale = Locale.getDefault();
+		}
+		context.getResources().updateConfiguration(config, null);
+	}
+
+	/*
 	 * Returns the height of the status bar (showing battery or network status) on top of the screen
 	 * DEPRECATED: use ViewCompat.setOnApplyWindowInsetsListener() on Lollipop+
 	 */

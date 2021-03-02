@@ -282,7 +282,6 @@ public class VideoTranscoder {
 		boolean audioEncoderDone = false;
 
 		boolean videoDecoderDone = false;
-		boolean audioDecoderDone = false;
 
 		boolean videoExtractorDone = false;
 		boolean audioExtractorDone = false;
@@ -348,8 +347,7 @@ public class VideoTranscoder {
 			}
 
 			// Poll output frames from the audio decoder.
-			if (shouldIncludeAudio() && !audioDecoderDone && mPendingAudioDecoderOutputBufferIndex == -1
-				&& (mEncoderOutputAudioFormat == null || muxing)) {
+			if (shouldIncludeAudio() && mPendingAudioDecoderOutputBufferIndex == -1 && (mEncoderOutputAudioFormat == null || muxing)) {
 				pollAudioFromDecoder(audioDecoderOutputBufferInfo);
 			}
 
@@ -387,7 +385,8 @@ public class VideoTranscoder {
 	 */
 	private void sanityChecks() {
 		if (mStats.videoDecodedFrameCount != mStats.videoEncodedFrameCount) {
-			throw new IllegalStateException("encoded and decoded video frame counts should match");
+			logger.info("Frame count mismatch videoDecodedFrameCount: {} videoEncodedFrameCount: {}", mStats.videoDecodedFrameCount, mStats.videoEncodedFrameCount);
+//			throw new IllegalStateException("encoded and decoded video frame counts should match");
 		}
 
 		if (mStats.videoDecodedFrameCount > mStats.videoExtractedFrameCount) {
@@ -594,9 +593,11 @@ public class VideoTranscoder {
 					0,
 					MediaCodec.BUFFER_FLAG_END_OF_STREAM);
 			} catch (Exception e) {
+				// On some Android versions, queueInputBuffers' native code throws an exception if
+				// BUFFER_FLAG_END_OF_STREAM is set on non-empty buffers.
 				mRetryCount++;
 				if (mRetryCount < 5) {
-					this.extractAndFeedDecoder(decoder, buffers, component);
+					return this.extractAndFeedDecoder(decoder, buffers, component);
 				} else {
 					mRetryCount = 0;
 					throw e;
@@ -833,12 +834,12 @@ public class VideoTranscoder {
 
 		mVideoEncoder.releaseOutputBuffer(encoderOutputBufferIndex, false);
 
+		mStats.videoEncodedFrameCount++;
+
 		if ((videoEncoderOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
 			logger.debug("video encoder: EOS");
 			return true;
 		}
-
-		mStats.videoEncodedFrameCount++;
 
 		return false;
 	}
@@ -893,7 +894,7 @@ public class VideoTranscoder {
 				mPreviousPresentationTime = audioEncoderOutputBufferInfo.presentationTimeUs;
 				mMuxer.writeSampleData(mOutputAudioTrack, encoderOutputBuffer, audioEncoderOutputBufferInfo);
 			} else {
-				logger.debug("presentationTimeUs {} < previousPresentationTime {}",
+				logger.debug("audio encoder: presentationTimeUs {} < previousPresentationTime {}",
 					audioEncoderOutputBufferInfo.presentationTimeUs, mPreviousPresentationTime);
 			}
 		}

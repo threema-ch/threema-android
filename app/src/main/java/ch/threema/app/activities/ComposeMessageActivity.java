@@ -61,12 +61,11 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	private MessageSectionFragment messageSectionFragment;
 
 	private Intent currentIntent;
-	private Bundle bundle;
 
 	private final String COMPOSE_FRAGMENT_TAG = "compose_message_fragment";
 	private final String MESSAGES_FRAGMENT_TAG = "message_section_fragment";
 
-	private MessagePlayerListener messagePlayerListener = new MessagePlayerListener() {
+	private final MessagePlayerListener messagePlayerListener = new MessagePlayerListener() {
 		@Override
 		public void onAudioStreamChanged(int newStreamType) {
 			setVolumeControlStream(newStreamType == AudioManager.STREAM_VOICE_CALL ? AudioManager.STREAM_VOICE_CALL : AudioManager.USE_DEFAULT_STREAM_TYPE);
@@ -83,7 +82,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		super.onCreate(savedInstanceState);
 
 		this.currentIntent = getIntent();
-		this.bundle = savedInstanceState;
 
 		ListenerManager.messagePlayerListener.add(this.messagePlayerListener);
 
@@ -91,7 +89,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		MasterKey masterKey = ThreemaApplication.getMasterKey();
 
 		if (!(masterKey != null && masterKey.isLocked())) {
-			this.initActivity(this.bundle);
+			this.initActivity(savedInstanceState);
 		}
 	}
 

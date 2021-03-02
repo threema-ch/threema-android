@@ -27,6 +27,11 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.graphics.Typeface;
+import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -42,25 +47,35 @@ import android.widget.Toast;
 
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.motionviews.FaceItem;
 import ch.threema.app.motionviews.viewmodel.Font;
 import ch.threema.app.motionviews.viewmodel.Layer;
 import ch.threema.app.motionviews.viewmodel.TextLayer;
+import ch.threema.app.motionviews.widget.FaceBlurEntity;
+import ch.threema.app.motionviews.widget.FaceEmojiEntity;
+import ch.threema.app.motionviews.widget.FaceEntity;
 import ch.threema.app.motionviews.widget.ImageEntity;
 import ch.threema.app.motionviews.widget.MotionEntity;
 import ch.threema.app.motionviews.widget.MotionView;
@@ -78,7 +93,6 @@ import ch.threema.app.utils.TestUtil;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(ImagePaintActivity.class);
-	private static final String TAG = "ImagePaintActivity";
 
 	private static final String DIALOG_TAG_COLOR_PICKER = "colp";
 	private static final String KEY_PEN_COLOR = "pc";
@@ -86,9 +100,13 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	private static final int REQUEST_CODE_ENTER_TEXT = 45;
 	private static final String DIALOG_TAG_QUIT_CONFIRM = "qq";
 	private static final String DIALOG_TAG_SAVING_IMAGE = "se";
+	private static final String DIALOG_TAG_BLUR_FACES = "bf";
+
+	private static final String SMILEY_PATH = "emojione/3_Emoji_classic/1f600.png";
 
 	private static final int STROKE_MODE_BRUSH = 0;
 	private static final int STROKE_MODE_PENCIL = 1;
+	private static final int MAX_FACES = 16;
 
 	private ImageView imageView;
 	private PaintView paintView;
@@ -98,7 +116,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	private Uri imageUri, outputUri;
 	private ProgressBar progressBar;
 	@ColorInt private int penColor;
-	private MenuItem undoItem, paletteItem, paintItem, pencilItem;
+	private MenuItem undoItem, paletteItem, paintItem, pencilItem, blurFacesItem;
 	private PaintSelectionPopup paintSelectionPopup;
 	private ArrayList<MotionEntity> undoHistory = new ArrayList<>();
 	private boolean saveSemaphore = false;
@@ -276,8 +294,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			}
 
 			@Override
-			public void onLongClick(int x, int y) {
-				paintSelectionPopup.show((int) motionView.getX() + x, (int) motionView.getY() + y);
+			public void onLongClick(MotionEntity entity, int x, int y) {
+				paintSelectionPopup.show((int) motionView.getX() + x, (int) motionView.getY() + y, !entity.hasFixedPositionAndSize());
 			}
 
 			@Override
@@ -336,12 +354,9 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		});
 
 		this.imageFrame = findViewById(R.id.content_frame);
-		this.imageFrame.post(new Runnable() {
-			@Override
-			public void run() {
-				loadImage();
-			}
-		});
+		this.imageFrame.post(() -> loadImage());
+
+		showTooltip();
 	}
 
 	private void loadImage() {
@@ -409,13 +424,151 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
 
+	@SuppressLint("StaticFieldLeak")
+	private void blurFaces(final boolean useEmoji) {
+		this.paintView.setActive(false);
+
+		new AsyncTask<Void, Void, List<FaceItem>>() {
+			int numFaces = -1;
+			int originalImageWidth, originalImageHeight;
+
+			@Override
+			protected void onPreExecute() {
+				GenericProgressDialog.newInstance(-1, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_BLUR_FACES);
+			}
+
+			@Override
+			protected List<FaceItem> doInBackground(Void... voids) {
+				BitmapFactory.Options options;
+				Bitmap bitmap, orgBitmap;
+				List<FaceItem> faceItemList = new ArrayList<>();
+
+				try (InputStream measure = getContentResolver().openInputStream(imageUri)) {
+					options = BitmapUtil.getImageDimensions(measure);
+				} catch (IOException | SecurityException | IllegalStateException | OutOfMemoryError e) {
+					logger.error("Exception", e);
+					return null;
+				}
+
+				if (options.outWidth < 16 || options.outHeight < 16) {
+					return null;
+				}
+
+				originalImageWidth = options.outWidth;
+				originalImageHeight = options.outHeight;
+
+				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+				options.inJustDecodeBounds = false;
+
+				try (InputStream data = getContentResolver().openInputStream(imageUri)) {
+					if (data != null) {
+						orgBitmap = BitmapFactory.decodeStream(new BufferedInputStream(data), null, options);
+						if (orgBitmap != null) {
+							bitmap = Bitmap.createBitmap(orgBitmap.getWidth() & ~0x1, orgBitmap.getHeight(), Bitmap.Config.RGB_565);
+							new Canvas(bitmap).drawBitmap(orgBitmap, 0, 0, null);
+						} else {
+							logger.info("could not open image");
+							return null;
+						}
+					} else {
+						logger.info("could not open input stream");
+						return null;
+					}
+				} catch (Exception e) {
+					logger.error("Exception", e);
+					return null;
+				}
+
+				try {
+					FaceDetector faceDetector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(), MAX_FACES);
+					FaceDetector.Face[] faces = new FaceDetector.Face[MAX_FACES];
+
+					numFaces = faceDetector.findFaces(bitmap, faces);
+					if (numFaces < 1) {
+						return null;
+					}
+
+					logger.debug("{} faces found.", numFaces);
+
+					Bitmap emoji = null;
+					if (useEmoji) {
+						emoji = BitmapFactory.decodeStream(getAssets().open(SMILEY_PATH));
+					}
+
+					for (FaceDetector.Face face: faces) {
+						if (face != null) {
+							if (useEmoji) {
+								faceItemList.add(new FaceItem(face, emoji, 1));
+							} else {
+								float offsetY = face.eyesDistance() * FaceEntity.BLUR_RADIUS;
+								PointF midPoint = new PointF();
+								face.getMidPoint(midPoint);
+
+								int croppedBitmapSize = (int) (offsetY * 2);
+								float scale = 1f;
+								// pixelize large bitmaps
+								if (croppedBitmapSize > 64) {
+									scale = (float) croppedBitmapSize / 64f;
+								}
+
+								float scaleFactor = 1f / scale;
+								Matrix matrix = new Matrix();
+								matrix.setScale(scaleFactor, scaleFactor);
+
+								Bitmap croppedBitmap = Bitmap.createBitmap(
+									orgBitmap,
+									offsetY > midPoint.x ? 0 : (int) (midPoint.x - offsetY),
+									offsetY > midPoint.y ? 0 : (int) (midPoint.y - offsetY),
+									croppedBitmapSize,
+									croppedBitmapSize,
+									matrix,
+									false);
+
+								faceItemList.add(new FaceItem(face, croppedBitmap, scale));
+							}
+						}
+					}
+
+					return faceItemList;
+				} catch (Exception e) {
+					logger.error("Face detection failed", e);
+					return null;
+				} finally {
+					bitmap.recycle();
+				}
+			}
+
+			@Override
+			protected void onPostExecute(List<FaceItem> faceItemList) {
+				if (faceItemList != null && faceItemList.size() > 0) {
+					motionView.post(() -> {
+						for (FaceItem faceItem : faceItemList) {
+							Layer layer = new Layer();
+							if (useEmoji) {
+								FaceEmojiEntity entity = new FaceEmojiEntity(layer, faceItem, originalImageWidth, originalImageHeight, motionView.getWidth(), motionView.getHeight());
+								motionView.addEntity(entity);
+							} else {
+								FaceBlurEntity entity = new FaceBlurEntity(layer, faceItem, originalImageWidth, originalImageHeight, motionView.getWidth(), motionView.getHeight());
+								motionView.addEntity(entity);
+							}
+						}
+					});
+				} else {
+					Toast.makeText(ImagePaintActivity.this, R.string.no_faces_detected, Toast.LENGTH_LONG).show();
+				}
+
+				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_BLUR_FACES, true);
+			}
+		}.execute();
+	}
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
-		ConfigUtils.themeMenuItem(paletteItem, getResources().getColor(android.R.color.white));
-		ConfigUtils.themeMenuItem(paintItem, getResources().getColor(android.R.color.white));
-		ConfigUtils.themeMenuItem(pencilItem, getResources().getColor(android.R.color.white));
+		ConfigUtils.themeMenuItem(paletteItem, Color.WHITE);
+		ConfigUtils.themeMenuItem(paintItem, Color.WHITE);
+		ConfigUtils.themeMenuItem(pencilItem, Color.WHITE);
 
 		if (motionView.getSelectedEntity() == null) {
 			// no selected entities => draw mode or neutral mode
@@ -428,6 +581,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			}
 		}
 		undoItem.setVisible(undoHistory.size() > 0);
+		blurFacesItem.setVisible(motionView.getEntitiesCount() == 0);
 		return true;
 	}
 
@@ -441,6 +595,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		paletteItem = menu.findItem(R.id.item_palette);
 		paintItem = menu.findItem(R.id.item_draw);
 		pencilItem = menu.findItem(R.id.item_pencil);
+		blurFacesItem = menu.findItem(R.id.item_face);
 
 		return true;
 	}
@@ -488,10 +643,50 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 					setDrawMode(true);
 				}
 				break;
+			case R.id.item_face_blur:
+				blurFaces(false);
+				break;
+			case R.id.item_face_emoji:
+				blurFaces(true);
+				break;
 			default:
 				break;
 		}
 		return false;
+	}
+
+	@UiThread
+	public void showTooltip() {
+		if (!preferenceService.getIsFaceBlurTooltipShown()) {
+			if (getToolbar() != null) {
+				getToolbar().postDelayed(() -> {
+					final View v = findViewById(R.id.item_face);
+					try {
+						TapTargetView.showFor(this,
+							TapTarget.forView(v, getString(R.string.face_blur_tooltip_title), getString(R.string.face_blur_tooltip_text))
+								.outerCircleColor(R.color.accent_dark)      // Specify a color for the outer circle
+								.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+								.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
+								.titleTextSize(24)                  // Specify the size (in sp) of the title text
+								.titleTextColor(android.R.color.white)      // Specify the color of the title text
+								.descriptionTextSize(18)            // Specify the size (in sp) of the description text
+								.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
+								.textColor(android.R.color.white)            // Specify a color for both the title and description text
+								.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+								.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+								.drawShadow(true)                   // Whether to draw a drop shadow or not
+								.cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
+								.tintTarget(true)                   // Whether to tint the target view's color
+								.transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
+								.targetRadius(50)                  // Specify the target radius (in dp)
+						);
+						preferenceService.setFaceBlurTooltipShown(true);
+					} catch (Exception ignore) {
+						// catch null typeface exception on CROSSCALL Action-X3
+					}
+				}, 2000);
+			}
+		}
 	}
 
 	private void setStrokeMode(int strokeMode) {
@@ -579,8 +774,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 				getResources().getColor(R.color.material_grey_600),
 				getResources().getColor(R.color.material_grey_500),
 				getResources().getColor(R.color.material_grey_300),
-				getResources().getColor(android.R.color.white),
-				getResources().getColor(android.R.color.black),
+				Color.WHITE,
+				Color.BLACK,
 		};
 
 		ColorPickerDialog colorPickerDialog = new ColorPickerDialog();

@@ -22,10 +22,10 @@
 package ch.threema.app.ui;
 
 import android.content.Context;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import ch.threema.app.R;
 
 public class LockingSwipeRefreshLayout extends SwipeRefreshLayout {
@@ -53,16 +53,10 @@ public class LockingSwipeRefreshLayout extends SwipeRefreshLayout {
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent event) {
-
-		switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				if (MotionEvent.obtain(event).getX() > this.getWidth() - tolerancePx) {
-					return false;
-				}
-				break;
-
-			default:
-				break;
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			if (event.getX() > this.getWidth() - tolerancePx) {
+				return false;
+			}
 		}
 		return super.onInterceptTouchEvent(event);
 	}

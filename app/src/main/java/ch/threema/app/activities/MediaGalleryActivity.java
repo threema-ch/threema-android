@@ -216,6 +216,9 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 				if (count > 0) {
 					mode.setTitle(Integer.toString(count));
 				}
+				if (actionMode != null) {
+					actionMode.getMenu().findItem(R.id.menu_show_in_chat).setVisible(count == 1);
+				}
 			}
 
 			@Override
@@ -247,8 +250,8 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 					case R.id.menu_message_save:
 						saveMessages();
 						return true;
-					case R.id.menu_message_select_all:
-						selectAllMessages();
+					case R.id.menu_show_in_chat:
+						showInChat();
 						return true;
 					default:
 						return false;
@@ -302,6 +305,14 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		}
 
 		return true;
+	}
+
+	private void showInChat() {
+		if (getSelectedMessages().size() != 1) {
+			return;
+		}
+		AnimationUtil.startActivityForResult(this, null, IntentDataUtil.getJumpToMessageIntent(this, getSelectedMessages().get(0)), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		finish();
 	}
 
 	@Override

@@ -226,6 +226,13 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 			// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
 			textView.setCustomSelectionActionModeCallback(textSelectionCallback);
 		}
+
+		findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	}
 
 	private void setText(AbstractMessageModel messageModel) {

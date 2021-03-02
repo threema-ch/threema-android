@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -413,7 +413,7 @@ public class ThreemaConnection implements Runnable {
 					kclientTempServerPerm = new NaCl(clientTempKeySec, serverPubKeyCur);
 					serverHello = kclientTempServerPerm.decrypt(serverHelloBox, nonce);
 					if (serverHello == null) {
-						throw new ThreemaException("TC001");    /* Decryption of server hello box failed */
+						throw new ThreemaException("Decryption of server hello box failed");
 					}
 				}
 
@@ -424,8 +424,9 @@ public class ThreemaConnection implements Runnable {
 				System.arraycopy(serverHello, NaCl.PUBLICKEYBYTES, clientCookieFromServer, 0, COOKIE_LEN);
 
 				/* verify client copy */
-				if (!Arrays.equals(clientCookie, clientCookieFromServer))
-					throw new ThreemaException("TC002");    /* Client cookie mismatch */
+				if (!Arrays.equals(clientCookie, clientCookieFromServer)) {
+					throw new ThreemaException("Client cookie mismatch");
+				}
 
 				logger.info("Server hello successful");
 
@@ -433,9 +434,8 @@ public class ThreemaConnection implements Runnable {
 				byte[] vouchNonce = new byte[NaCl.NONCEBYTES];
 				random.nextBytes(vouchNonce);
 				byte[] vouchBox = identityStore.encryptData(clientTempKeyPub, vouchNonce, serverPubKeyCur);
-
 				if (vouchBox == null) {
-					throw new ThreemaException("TM047"); /* encryption failed */
+					throw new ThreemaException("Vouch box encryption failed");
 				}
 
 				/* now prepare login packet */
@@ -467,8 +467,9 @@ public class ThreemaConnection implements Runnable {
 
 				/* decrypt login ack */
 				byte[] loginack = kclientTempServerTemp.decrypt(loginackBox, serverNonce.nextNonce());
-				if (loginack == null)
-					throw new ThreemaException("TC003");    /* Decryption of server hello box failed */
+				if (loginack == null) {
+					throw new ThreemaException("Decryption of login ack box failed");
+				}
 
 				logger.info("Login ack received");
 
@@ -501,14 +502,14 @@ public class ThreemaConnection implements Runnable {
 					logger.debug("Received payload ({} bytes)", length);
 
 					if (length < 4) {
-						logger.error("TC004");  /* Short payload received */
+						logger.error("Short payload received (" + length + " bytes)");
 						break;
 					}
 
 					/* decrypt payload */
 					byte[] decrypted = kclientTempServerTemp.decrypt(data, serverNonce.nextNonce());
 					if (decrypted == null) {
-						logger.error("TC005");   /* Payload decryption failed */
+						logger.error("Payload decryption failed");
 						break;
 					}
 
@@ -585,10 +586,13 @@ public class ThreemaConnection implements Runnable {
 		ackListeners.remove(listener);
 	}
 
-	private void notifyMessageAckListeners(MessageId messageId) {
+	/**
+	 * Notify active listeners that a new message ack was received from the server.
+	 */
+	private void notifyMessageAckListeners(@NonNull MessageAck messageAck) {
 		for (MessageAckListener listener : ackListeners) {
 			try {
-				listener.processAck(messageId);
+				listener.processAck(messageAck);
 			} catch (Exception e) {
 				logger.warn("Exception while invoking message ACK listener", e);
 			}
@@ -648,41 +652,44 @@ public class ThreemaConnection implements Runnable {
 
 		switch (payload.getType()) {
 			case ProtocolDefines.PLTYPE_ECHO_REPLY:
-				if (data.length == 4)
+				if (data.length == 4) {
 					lastRcvdEchoSeq = Utils.byteArrayToInt(data);
-				else
-					throw new PayloadProcessingException("TP001 (" + data.length + ")");  /* Bad echo reply datalen */
+				} else {
+					throw new PayloadProcessingException("Bad length (" + data.length + ") for echo reply payload");
+				}
 
 				logger.info("Received echo reply (seq {})", lastRcvdEchoSeq);
 				break;
 
 			case ProtocolDefines.PLTYPE_ERROR:
-				if (data.length < 1)
-					throw new PayloadProcessingException("TP002");  /* Bad error packet length */
+				if (data.length < 1) {
+					throw new PayloadProcessingException("Bad length (" + data.length + ") for error payload");
+				}
 
 				int reconnectAllowed = data[0] & 0xFF;
 				String errorMessage = new String(data, 1, data.length - 1, StandardCharsets.UTF_8);
 
-				logger.error("TC006: {}", errorMessage);    /* Received error message from server: */
+				logger.error("Received error message from server: {}", errorMessage);
 
-			/* workaround for stray "Another connection" messages due to weird timing
-			   when switching between networks: ignore first few occurrences */
+				/* workaround for stray "Another connection" messages due to weird timing
+				   when switching between networks: ignore first few occurrences */
 				if (errorMessage.contains("Another connection") && anotherConnectionCount < 5) {
 					anotherConnectionCount++;
 					break;
 				}
 
-				if (messageProcessor != null)
+				if (messageProcessor != null) {
 					messageProcessor.processServerError(errorMessage, reconnectAllowed != 0);
+				}
 
-				if (reconnectAllowed == 0)
+				if (reconnectAllowed == 0) {
 					running = false;
+				}
 
 				break;
 
 			case ProtocolDefines.PLTYPE_ALERT:
-				String alertMessage = new String(data, StandardCharsets.UTF_8);
-
+				final String alertMessage = new String(data, StandardCharsets.UTF_8);
 				logger.info("Received alert message from server: {}", alertMessage);
 
 				if (!lastAlertMessages.contains(alertMessage)) {
@@ -694,20 +701,7 @@ public class ThreemaConnection implements Runnable {
 				break;
 
 			case ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK:
-				if (data.length != (ProtocolDefines.IDENTITY_LEN + ProtocolDefines.MESSAGE_ID_LEN))
-					throw new PayloadProcessingException("TP003 (" + data.length + ")");       /* Bad ACK payload data length */
-
-			/* ignore from identity, as it must be ours */
-				byte[] messageIdB = new byte[ProtocolDefines.MESSAGE_ID_LEN];
-				System.arraycopy(data, 8, messageIdB, 0, ProtocolDefines.MESSAGE_ID_LEN);
-				MessageId messageId;
-				try {
-					messageId = new MessageId(messageIdB);
-					notifyMessageAckListeners(messageId);
-				} catch (ThreemaException e) {
-					logger.error("TC007", e);   /* Invalid message ID */
-				}
-
+				processOutgoingMessageAckPayload(payload);
 				break;
 
 			case ProtocolDefines.PLTYPE_INCOMING_MESSAGE:
@@ -720,11 +714,38 @@ public class ThreemaConnection implements Runnable {
 		}
 	}
 
+	/**
+	 * Process a message ack payload received from the server.
+	 */
+	private void processOutgoingMessageAckPayload(@NonNull Payload payload) throws PayloadProcessingException {
+		final byte[] data = payload.getData();
+
+		// Validate message length
+		if (data.length != ProtocolDefines.IDENTITY_LEN + ProtocolDefines.MESSAGE_ID_LEN) {
+			throw new PayloadProcessingException("Bad length (" + data.length + ") for message ack payload");
+		}
+
+		// Recipient identity
+		byte[] recipientId = new byte[ProtocolDefines.IDENTITY_LEN];
+		System.arraycopy(data, 0, recipientId, 0, ProtocolDefines.IDENTITY_LEN);
+
+		// Message ID
+		final MessageId messageId = new MessageId(data, ProtocolDefines.IDENTITY_LEN /* offset */);
+
+		// Create MessageAck instance
+		final MessageAck ack = new MessageAck(recipientId, messageId);
+		logger.debug("Received message ack for message {} to {}", ack.getMessageId(), ack.getRecipientId());
+
+		// Notify listeners
+		notifyMessageAckListeners(ack);
+	}
+
 	private void processIncomingMessagePayload(Payload payload) throws PayloadProcessingException {
 		byte[] data = payload.getData();
 
-		if (data.length < ProtocolDefines.OVERHEAD_MSG_HDR)
-			throw new PayloadProcessingException("TP004 (" + data.length + ")"); /* Bad message payload data length */
+		if (data.length < ProtocolDefines.OVERHEAD_MSG_HDR) {
+			throw new PayloadProcessingException("Bad length (" + data.length + ") for message payload");
+		}
 
 		try {
 			BoxedMessage boxmsg = BoxedMessage.parsePayload(payload);
@@ -794,10 +815,10 @@ public class ThreemaConnection implements Runnable {
 
 					try {
 						Socket s = socket;  /* avoid race condition */
-						if (s != null)
+						if (s != null) {
 							s.close();
-					} catch (Exception ignored) {
-					}
+						}
+					} catch (Exception ignored) { }
 				}
 			}
 		}, ProtocolDefines.READ_TIMEOUT * 1000);

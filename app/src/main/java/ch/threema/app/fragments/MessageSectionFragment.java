@@ -144,6 +144,8 @@ import ch.threema.storage.models.TagModel;
 import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
 import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
 import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
+import static ch.threema.app.ThreemaApplication.MAX_PW_LENGTH_BACKUP;
+import static ch.threema.app.ThreemaApplication.MIN_PW_LENGTH_BACKUP;
 import static ch.threema.app.managers.ListenerManager.conversationListeners;
 
 public class MessageSectionFragment extends MainFragment
@@ -779,8 +781,8 @@ public class MessageSectionFragment extends MainFragment
 				R.string.password_hint,
 				R.string.ok,
 				R.string.cancel,
-				8,
-				16,
+				MIN_PW_LENGTH_BACKUP,
+				MAX_PW_LENGTH_BACKUP,
 				R.string.backup_password_again_summary,
 				0,
 				R.string.backup_data_media);

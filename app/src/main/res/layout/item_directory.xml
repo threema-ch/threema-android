@@ -55,12 +55,34 @@
 			android:fontFamily="sans-serif-light"
 			android:textAppearance="?android:attr/textAppearanceSmall"/>
 
+		<com.google.android.material.chip.Chip
+			android:id="@+id/organization"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignBaseline="@+id/categories"
+			android:layout_marginRight="4dp"
+			android:maxWidth="128dp"
+			app:chipBackgroundColor="?attr/colorAccent"
+			app:chipMinHeight="0dp"
+			app:chipStartPadding="0dp"
+			app:chipEndPadding="0dp"
+			app:textStartPadding="6dp"
+			app:textEndPadding="4dp"
+			app:chipMinTouchTargetSize="0dp"
+			app:ensureMinTouchTargetSize="false"
+			app:shapeAppearance="@style/Threema.ShapeAppearanceDirectoryOrganization"
+			android:checkable="false"
+			android:clickable="false"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:singleLine="true"
+			android:ellipsize="end" />
+
 		<TextView
 			android:id="@+id/categories"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignLeft="@id/name"
-			android:layout_alignParentLeft="true"
+			android:layout_toRightOf="@+id/organization"
 			android:layout_below="@id/name"
 			android:ellipsize="end"
 			android:singleLine="true"
@@ -79,9 +101,9 @@
 		android:layout_alignParentRight="true"
 		android:padding="16dp"
 		app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
-		android:tint="?attr/textColorSecondary"
 		android:layout_centerVertical="true"
 		android:visibility="visible"
-		android:focusable="true"/>
+		android:focusable="true"
+		app:tint="?attr/textColorSecondary" />
 
 </RelativeLayout>

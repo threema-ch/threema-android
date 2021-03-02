@@ -169,7 +169,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 				allMedia.setValue(mediaAttachItems);
 				initialLoadDone.complete(null);
 			});
-		}).start();
+		}, "fetchAllMediaFromRepository").start();
 	}
 
 	/**
@@ -201,18 +201,18 @@ public class MediaAttachViewModel extends AndroidViewModel {
 
 			// Get the media count (by this time, it should be ready because
 			// this method is called after `initialLoadDone` fires)
-			final List<MediaAttachItem> allMediaValue = Objects.requireNonNull(this.allMedia.getValue());
+			final List<MediaAttachItem> allMediaValue = Objects.requireNonNull(MediaAttachViewModel.this.allMedia.getValue());
 			final int totalMediaSize = Functional.filter(allMediaValue, (IPredicateNonNull<MediaAttachItem>) ImageLabelingWorker::mediaCanBeLabeled).size() - failedMediaCount;
 
 			final float labeledRatio = (float) labeledMediaCount / (float) totalMediaSize;
 			if (labeledRatio > 0.8) {
 				// More than 80% labeled. Good enough, but kick off the labeller anyways if we're not at 100%.
 				if (labeledMediaCount < totalMediaSize) {
-					this.startImageLabeler();
+					MediaAttachViewModel.this.startImageLabeler();
 				}
 
 				// Get hashmap for label mapping
-				final ImageLabelsIndexHashMap labelsIndexHashMap = new ImageLabelsIndexHashMap(this.application);
+				ImageLabelsIndexHashMap labelsIndexHashMap = new ImageLabelsIndexHashMap();
 
 				// Iterate over all media items, translate and set labels
 				final Set<String> translatedLabels = new HashSet<>();
@@ -235,10 +235,10 @@ public class MediaAttachViewModel extends AndroidViewModel {
 				suggestionLabels.postValue(sortedLabels);
 			} else {
 				logger.info("Less than 80% labeled, considering labels incomplete");
-				this.startImageLabeler();
+				MediaAttachViewModel.this.startImageLabeler();
 				suggestionLabels.postValue(Collections.emptyList());
 			}
-		}).start();
+		}, "checkLabelingComplete").start();
 	}
 
 	/**
@@ -266,7 +266,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 		ArrayList<MediaAttachItem> filteredMedia = new ArrayList<>();
 		final List<MediaAttachItem> items = Objects.requireNonNull(this.allMedia.getValue());
 		for (MediaAttachItem mediaItem : items) {
-			if (mediaItem.getBucketName().equals(bucket)) {
+			if (bucket.equals(mediaItem.getBucketName())) {
 				filteredMedia.add(mediaItem);
 			}
 		}

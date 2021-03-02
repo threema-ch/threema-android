@@ -196,6 +196,7 @@ public class SettingsAppearanceFragment extends ThreemaPreferenceFragment implem
 				String newLocale = newValue.toString();
 				if (newLocale != null && !newLocale.equals(oldLocale)) {
 					ConfigUtils.updateLocaleOverride(newValue);
+					ConfigUtils.updateAppContextLocale(ThreemaApplication.getAppContext(), newLocale);
 					ConfigUtils.recreateActivity(getActivity());
 				}
 				return true;

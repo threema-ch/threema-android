@@ -36,7 +36,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -104,10 +103,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	private static final int PERMISSION_REQUEST_LOCATION = 1;
 	private static final int PERMISSION_REQUEST_ATTACH_CONTACT = 2;
 	private static final int PERMISSION_REQUEST_QR_READER = 3;
-	private static final int PERMISSION_REQUEST_ATTACH_FROM_GALLERY = 4;
 	private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
 
-	protected static final int REQUEST_CODE_ATTACH_FROM_GALLERY = 2454;
 
 	public static final String CONFIRM_TAG_REALLY_SEND_FILE = "reallySendFile";
 	public static final String DIALOG_TAG_PREPARE_SEND_FILE = "prepSF";
@@ -134,16 +131,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		this.setInitialMediaGrid();
 
 		this.handleSavedInstanceState(savedInstanceState);
-
-		this.toolbar.setOnMenuItemClickListener(item -> {
-			if (item.getItemId() == R.id.menu_select_from_gallery) {
-				if (ConfigUtils.requestStoragePermissions(MediaAttachActivity.this, null, PERMISSION_REQUEST_ATTACH_FROM_GALLERY)) {
-					attachImageFromGallery();
-				}
-				return true;
-			}
-			return false;
-		});
 
 		this.scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
@@ -557,6 +544,13 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		for (Uri uri: uriList) {
 			String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
 			if (MimeUtil.isVideoFile(mimeType) || MimeUtil.isImageFile(mimeType)) {
+				try {
+					getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+				} catch (Exception e) {
+					logger.info("Unable to take persistable uri permission");
+					uri = FileUtil.getFileUri(uri);
+				}
+
 				MediaItem mediaItem = new MediaItem(uri, mimeType, null);
 				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 				mediaItems.add(mediaItem);
@@ -580,6 +574,13 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 
 		for (Uri uri : list) {
+			try {
+				getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			} catch (Exception e) {
+				logger.info("Unable to take persistable uri permission");
+				uri = FileUtil.getFileUri(uri);
+			}
+
 			MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(this, uri), null);
 			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 			mediaItems.add(mediaItem);
@@ -603,24 +604,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 	}
 
-	private void attachImageFromGallery() {
-		try {
-			Intent getContentIntent = new Intent();
-			getContentIntent.setType(MimeUtil.MIME_TYPE_VIDEO);
-			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
-			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
-			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
-			Intent pickIntent = new Intent(Intent.ACTION_PICK);
-			pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
-			Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.select_from_gallery));
-			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
-
-			startActivityForResult(chooserIntent, REQUEST_CODE_ATTACH_FROM_GALLERY);
-		} catch (Exception e) {
-			logger.debug("Exception", e);
-			Toast.makeText(this, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
-		}
-	}
 
 	private void attachFromExternalCamera() {
 		Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});

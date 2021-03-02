@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -312,7 +313,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 		}
 	}
 
-	private Uri getUriFromPosition(int index, boolean showSilent, boolean showDefault) {
+	private @Nullable Uri getUriFromPosition(int index, boolean showSilent, boolean showDefault) {
 		int positionFix = 0;
 
 		if (showSilent) {
@@ -332,7 +333,13 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 			positionFix += 1;
 		}
 
-		return ringtoneManager.getRingtoneUri(index - positionFix);
+		Uri uri = null;
+		try {
+			uri = ringtoneManager.getRingtoneUri(index - positionFix);
+		} catch (Exception e) {
+			logger.error("Buggy Ringtone Manager", e);
+		}
+		return uri;
 	}
 
 	@Override

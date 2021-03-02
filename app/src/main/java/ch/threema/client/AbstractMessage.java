@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema Java Client
- * Copyright (c) 2013-2020 Threema GmbH
+ * Copyright (c) 2013-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -87,28 +87,33 @@ public abstract class AbstractMessage {
 												IdentityStoreInterface identityStore,
 												boolean fetch) throws BadMessageException, MissingPublicKeyException {
 
-		if (!boxmsg.getToIdentity().equals(identityStore.getIdentity()))
-			throw new BadMessageException("TM001");     /* Message is not for my identity - cannot decode */
+		if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
+			throw new BadMessageException("Message is not for own identity, cannot decode");
+		}
 
 		/* obtain public key of sender */
 		byte[] senderPublicKey = contactStore.getPublicKeyForIdentity(boxmsg.getFromIdentity(), fetch);
 
-		if (senderPublicKey == null)
-			throw new MissingPublicKeyException("TM002 (" + boxmsg.getFromIdentity() + ")");    /* Cannot obtain public key for x */
+		if (senderPublicKey == null) {
+			throw new MissingPublicKeyException("Missing public key for ID " + boxmsg.getFromIdentity());
+		}
 
 		/* decrypt with our secret key */
 		byte[] data = identityStore.decryptData(boxmsg.getBox(), boxmsg.getNonce(), senderPublicKey);
-		if (data == null)
-			throw new BadMessageException("TM003 (" + boxmsg.getFromIdentity() + ")");  /* Decryption of message from x failed */
+		if (data == null) {
+			throw new BadMessageException("Decryption of message from " + boxmsg.getFromIdentity() + " failed");
+		}
 
-		if (data.length == 1)
-			throw new BadMessageException("TM004");     /* Empty message received */
+		if (data.length == 1) {
+			throw new BadMessageException("Empty message received");
+		}
 
 		/* remove padding */
 		int padbytes = data[data.length - 1] & 0xFF;
 		int realDataLength = data.length - padbytes;
-		if (realDataLength < 1)
-			throw new BadMessageException("TM005");     /* Bad message padding */
+		if (realDataLength < 1) {
+			throw new BadMessageException("Bad message padding");
+		}
 
 		// Check
 
@@ -120,8 +125,9 @@ public abstract class AbstractMessage {
 
 		switch (type) {
 			case ProtocolDefines.MSGTYPE_TEXT: {
-				if (realDataLength < 2)
-					throw new BadMessageException("TM006 (" + realDataLength + ")");    /* Wrong length x for text message */
+				if (realDataLength < 2) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for text message");
+				}
 
 				BoxTextMessage textmsg = new BoxTextMessage();
 				textmsg.setText(new String(data, 1, realDataLength - 1, UTF_8));
@@ -130,8 +136,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_IMAGE: {
-				if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + NaCl.NONCEBYTES))
-					throw new BadMessageException("TM007 (" + realDataLength + ")");    /* Wrong length x for image message */
+				if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + NaCl.NONCEBYTES)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for image message");
+				}
 
 				BoxImageMessage imagemsg = new BoxImageMessage();
 
@@ -152,8 +159,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_VIDEO: {
-				if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM008 (" + realDataLength + ")");    /* Wrong length x for video message */
+				if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for video message");
+				}
 
 				BoxVideoMessage videomsg = new BoxVideoMessage();
 
@@ -187,8 +195,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_LOCATION: {
-				if (realDataLength < 4)
-					throw new BadMessageException("TM009 (" + realDataLength + ")");    /* Wrong length x for location message */
+				if (realDataLength < 4) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for location message");
+				}
 
 				String locStr = new String(data, 1, realDataLength - 1, UTF_8);
 				String[] lines = locStr.split("\n");
@@ -196,25 +205,29 @@ public abstract class AbstractMessage {
 
 				logger.info("Raw location message: {}", locStr);
 
-				if (locArr.length < 2 || locArr.length > 3)
-					throw new BadMessageException("TM010");     /* Bad coordinate format in location message */
+				if (locArr.length < 2 || locArr.length > 3) {
+					throw new BadMessageException("Bad coordinate format in location message");
+				}
 
 				BoxLocationMessage locationmsg = new BoxLocationMessage();
 				locationmsg.setLatitude(Double.parseDouble(locArr[0]));
 				locationmsg.setLongitude(Double.parseDouble(locArr[1]));
 
-				if (locArr.length == 3)
+				if (locArr.length == 3) {
 					locationmsg.setAccuracy(Double.parseDouble(locArr[2]));
+				}
 
 				if (lines.length >= 2) {
 					locationmsg.setPoiName(lines[1]);
-					if (lines.length >= 3)
+					if (lines.length >= 3) {
 						locationmsg.setPoiAddress(lines[2].replace("\\n", "\n"));
+					}
 				}
 
 				if (locationmsg.getLatitude() < -90.0 || locationmsg.getLatitude() > 90.0 ||
-					locationmsg.getLongitude() < -180.0 || locationmsg.getLongitude() > 180.0)
-					throw new BadMessageException("TM011");     /* Invalid coordinate values in location message */
+					locationmsg.getLongitude() < -180.0 || locationmsg.getLongitude() > 180.0) {
+					throw new BadMessageException("Invalid coordinate values in location message");
+				}
 
 				msg = locationmsg;
 
@@ -222,8 +235,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_AUDIO: {
-				if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM026 (" + realDataLength + ")");    /* Wrong length x for audio message */
+				if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for audio message");
+				}
 
 				BoxAudioMessage audiomsg = new BoxAudioMessage();
 
@@ -251,8 +265,10 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_CREATE: {
-				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.IDENTITY_LEN) || ((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0)
-					throw new BadMessageException("TM018 (" + realDataLength + ")");    /* Wrong length x for group create message */
+				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.IDENTITY_LEN) ||
+						((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group create message");
+				}
 
 				GroupCreateMessage groupcreatemsg = new GroupCreateMessage();
 				groupcreatemsg.setGroupCreator(boxmsg.getFromIdentity());
@@ -268,9 +284,8 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_REQUEST_SYNC: {
-
 				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN)) {
-					throw new BadMessageException("TM025 (" + realDataLength + ")");    /* Wrong length x for group request sync message*/
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group request sync message");
 				}
 
 				GroupRequestSyncMessage groupRequestSyncMessage = new GroupRequestSyncMessage();
@@ -283,8 +298,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_RENAME: {
-				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN))
-					throw new BadMessageException("TM019 (" + realDataLength + ")");    /* Wrong length x for group rename message */
+				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group rename message");
+				}
 
 				GroupRenameMessage grouprenamemsg = new GroupRenameMessage();
 				grouprenamemsg.setGroupCreator(boxmsg.getFromIdentity());
@@ -296,8 +312,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_LEAVE: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN))
-					throw new BadMessageException("TM020 (" + realDataLength + ")");    /* Wrong length x for group leave message */
+				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group leave message");
+				}
 
 				GroupLeaveMessage groupleavemsg = new GroupLeaveMessage();
 				groupleavemsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
@@ -308,8 +325,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_TEXT: {
-				if (realDataLength < (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN))
-					throw new BadMessageException("TM017 (" + realDataLength + ")");    /* Wrong length x for group text message */
+				if (realDataLength < (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group text message");
+				}
 
 				GroupTextMessage grouptextmsg = new GroupTextMessage();
 				grouptextmsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
@@ -320,8 +338,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_SET_PHOTO: {
-				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM021 (" + realDataLength + ")");    /* Wrong length x for group set photo message */
+				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group set photo message");
+				}
 
 				GroupSetPhotoMessage groupsetphotomsg = new GroupSetPhotoMessage();
 				groupsetphotomsg.setGroupCreator(boxmsg.getFromIdentity());
@@ -345,7 +364,7 @@ public abstract class AbstractMessage {
 
 			case ProtocolDefines.MSGTYPE_GROUP_DELETE_PHOTO: {
 				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN)) {
-					throw new BadMessageException("TM046 (" + realDataLength + ")");    /* Wrong length x for group delete message*/
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group delete photo message");
 				}
 
 				GroupDeletePhotoMessage groupDeletePhotoMessage = new GroupDeletePhotoMessage();
@@ -358,8 +377,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_IMAGE: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM022 (" + realDataLength + ")");    /* Wrong length x for group image message */
+				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group image message");
+				}
 
 				int i = 1;
 
@@ -383,8 +403,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_VIDEO: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + 2 * ProtocolDefines.BLOB_ID_LEN + 2 * 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM023 (" + realDataLength + ")");    /* Wrong length x for group video message */
+				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + 2 * ProtocolDefines.BLOB_ID_LEN + 2 * 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group video message");
+				}
 
 				int i = 1;
 
@@ -416,8 +437,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_LOCATION: {
-				if (realDataLength < (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 3))
-					throw new BadMessageException("TM024 (" + realDataLength + ")");    /* Wrong length x for group location message */
+				if (realDataLength < (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 3)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group location message");
+				}
 
 				String locStr = new String(data, 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN,
 					realDataLength - ProtocolDefines.IDENTITY_LEN - ProtocolDefines.GROUP_ID_LEN - 1, UTF_8);
@@ -426,8 +448,9 @@ public abstract class AbstractMessage {
 
 				logger.info("Raw location message: {}", locStr);
 
-				if (locArr.length < 2 || locArr.length > 3)
-					throw new BadMessageException("TM010");     /* Bad coordinate format in location message */
+				if (locArr.length < 2 || locArr.length > 3) {
+					throw new BadMessageException("Bad coordinate format in group location message");
+				}
 
 				GroupLocationMessage grouplocationmsg = new GroupLocationMessage();
 				grouplocationmsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
@@ -445,8 +468,9 @@ public abstract class AbstractMessage {
 				}
 
 				if (grouplocationmsg.getLatitude() < -90.0 || grouplocationmsg.getLatitude() > 90.0 ||
-					grouplocationmsg.getLongitude() < -180.0 || grouplocationmsg.getLongitude() > 180.0)
-					throw new BadMessageException("TM011");     /* Invalid coordinate values in location message */
+					grouplocationmsg.getLongitude() < -180.0 || grouplocationmsg.getLongitude() > 180.0) {
+					throw new BadMessageException("Invalid coordinate values in group location message");
+				}
 
 				msg = grouplocationmsg;
 
@@ -454,8 +478,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_AUDIO: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM027 (" + realDataLength + ")");    /* Wrong length x for group audio message */
+				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group audio message");
+				}
 
 				int i = 1;
 
@@ -569,8 +594,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT: {
-				if (realDataLength < ProtocolDefines.MESSAGE_ID_LEN + 2 || ((realDataLength - 2) % ProtocolDefines.MESSAGE_ID_LEN) != 0)
-					throw new BadMessageException("TM012 (" + realDataLength + ")");    /* Wrong length x for delivery receipt */
+				if (realDataLength < ProtocolDefines.MESSAGE_ID_LEN + 2 || ((realDataLength - 2) % ProtocolDefines.MESSAGE_ID_LEN) != 0) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for delivery receipt");
+				}
 
 				DeliveryReceiptMessage receiptmsg = new DeliveryReceiptMessage();
 				receiptmsg.setReceiptType(data[1] & 0xFF);
@@ -588,8 +614,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_TYPING_INDICATOR: {
-				if (realDataLength != 2)
-					throw new BadMessageException("TM013 (" + realDataLength + ")");    /* Wrong length x for typing indicator */
+				if (realDataLength != 2) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for typing indicator");
+				}
 
 				TypingIndicatorMessage typingmsg = new TypingIndicatorMessage();
 				typingmsg.setTyping((data[1] & 0xFF) > 0);
@@ -598,8 +625,9 @@ public abstract class AbstractMessage {
 			}
 
 			case ProtocolDefines.MSGTYPE_CONTACT_SET_PHOTO: {
-				if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN))
-					throw new BadMessageException("TM044 (" + realDataLength + ")");    /* Wrong length x for contact set photo message */
+				if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for contact set photo message");
+				}
 
 				ContactSetPhotoMessage contactSetPhotoMessage = new ContactSetPhotoMessage();
 				contactSetPhotoMessage.setFromIdentity(boxmsg.getFromIdentity());
@@ -621,7 +649,7 @@ public abstract class AbstractMessage {
 
 			case ProtocolDefines.MSGTYPE_CONTACT_DELETE_PHOTO: {
 				if (realDataLength != 1) {
-					throw new BadMessageException("TM045 (" + realDataLength + ")");    /* Wrong length x for contact delete photo */
+					throw new BadMessageException("Bad length (" + realDataLength + ") for contact delete photo message");
 				}
 				msg = new ContactDeletePhotoMessage();
 
@@ -630,7 +658,7 @@ public abstract class AbstractMessage {
 
 			case ProtocolDefines.MSGTYPE_CONTACT_REQUEST_PHOTO: {
 				if (realDataLength != 1) {
-					throw new BadMessageException("TM048 (" + realDataLength + ")");    /* Wrong length x for contact request photo */
+					throw new BadMessageException("Bad length (" + realDataLength + ") for contact request photo message");
 				}
 				msg = new ContactRequestPhotoMessage();
 
@@ -715,8 +743,9 @@ public abstract class AbstractMessage {
 			/* PKCS7 padding */
 			SecureRandom rnd = new SecureRandom();
 			int padbytes = rnd.nextInt(254) + 1;
-			if ((bos.size() + padbytes) < ProtocolDefines.MIN_MESSAGE_PADDED_LEN)
+			if ((bos.size() + padbytes) < ProtocolDefines.MIN_MESSAGE_PADDED_LEN) {
 				padbytes = ProtocolDefines.MIN_MESSAGE_PADDED_LEN - bos.size();
+			}
 			logger.debug("Adding {} padding bytes", padbytes);
 
 			byte[] paddata = new byte[padbytes];
@@ -729,8 +758,9 @@ public abstract class AbstractMessage {
 			/* obtain receiver's public key */
 			byte[] receiverPublicKey = contactStore.getPublicKeyForIdentity(toIdentity, false);
 
-			if (receiverPublicKey == null)
-				throw new ThreemaException("TM002 (" + toIdentity + ")");   /* Cannot obtain public key for x */
+			if (receiverPublicKey == null) {
+				throw new ThreemaException("Missing public key for ID " + toIdentity);
+			}
 
 			/* make random nonce */
 			// only save if the message is not a immediate message
@@ -738,9 +768,8 @@ public abstract class AbstractMessage {
 
 			/* sign/encrypt with our private key */
 			byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
-
 			if (boxedData == null) {
-				throw new ThreemaException("TM047"); /* encryption failed */
+				throw new ThreemaException("Data encryption failed");
 			}
 
 			/* make BoxedMessage */

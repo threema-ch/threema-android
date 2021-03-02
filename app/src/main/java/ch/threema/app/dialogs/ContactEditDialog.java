@@ -254,7 +254,6 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 			avatarEditView.setListener(this);
 		}
 
-
 		if (!TestUtil.empty(identity)) {
 			avatarEditView.setVisibility(View.GONE);
 			if (contactService != null) {
@@ -293,6 +292,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 
 		if (inputType != 0) {
 			editText1.setInputType(inputType);
+			editText2.setInputType(inputType);
 		}
 
 		if (maxLength > 0) {

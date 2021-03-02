@@ -52,7 +52,7 @@
 	<string name="label_53">Stierkampf</string>
 	<string name="label_54">Himmel</string>
 	<string name="label_55">Wüstenrennmaus</string>
-	<string name="label_56">Rock</string>
+	<string name="label_56">Felsen</string>
 	<string name="label_57">Interaktion</string>
 	<string name="label_58">Kleid</string>
 	<string name="label_59">Zehe</string>
@@ -256,7 +256,7 @@
 	<string name="label_262">Nachrichten</string>
 	<string name="label_263">Zeitung</string>
 	<string name="label_265">Klavier</string>
-	<string name="label_266">Werk</string>
+	<string name="label_266">Pflanze</string>
 	<string name="label_267">Reisepass</string>
 	<string name="label_268">Pinguin</string>
 	<string name="label_269">Shikoku</string>
@@ -365,7 +365,7 @@
 	<string name="label_375">Nadelarbeit</string>
 	<string name="label_376">Küche</string>
 	<string name="label_377">Schloss</string>
-	<string name="label_378">Aurora</string>
+	<string name="label_378">Polarlicht</string>
 	<string name="label_379">Larve</string>
 	<string name="label_380">Rennsport</string>
 	<string name="label_382">Verkehrsflugzeug</string>
@@ -387,7 +387,7 @@
 	<string name="label_399">Bauernhof</string>
 	<string name="label_400">Siegel</string>
 	<string name="label_401">Regal</string>
-	<string name="label_402">knallt</string>
+	<string name="label_402">Fransen</string>
 	<string name="label_403">Blitz</string>
 	<string name="label_404">Lieferwagen</string>
 	<string name="label_405">Sphynx</string>

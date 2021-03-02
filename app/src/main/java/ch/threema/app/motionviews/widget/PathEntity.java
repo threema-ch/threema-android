@@ -37,6 +37,11 @@ public class PathEntity extends MotionEntity {
 	protected void drawContent(@NonNull Canvas canvas, @Nullable Paint drawingPaint) {}
 
 	@Override
+	public boolean hasFixedPositionAndSize() {
+		return false;
+	}
+
+	@Override
 	public int getWidth() {
 		return 0;
 	}

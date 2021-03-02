@@ -44,6 +44,7 @@ import ch.threema.client.AbstractMessage;
 import ch.threema.client.MessageId;
 import ch.threema.client.MessageTooLongException;
 import ch.threema.client.ProgressListener;
+import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -172,7 +173,8 @@ public interface MessageService {
 	boolean cancelMessageDownload(AbstractMessageModel messageModel);
 	void cancelMessageUpload(AbstractMessageModel messageModel);
 
-	void saveMessageQueue();
+	void saveMessageQueueAsync();
+	void saveMessageQueue(@NonNull MasterKey masterKey);
 
 	void removeAll() throws SQLException, IOException, ThreemaException;
 	void save(AbstractMessageModel messageModel);

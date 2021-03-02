@@ -33,11 +33,14 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -89,20 +92,17 @@ import ch.threema.app.camera.VideoEditView;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiPicker;
-import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.mediaattacher.MediaSelectionActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.DebouncedOnClickListener;
+import ch.threema.app.ui.DebouncedOnMenuItemClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SendButton;
-import ch.threema.app.ui.TooltipPopup;
-import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.draggablegrid.DynamicGridView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -165,13 +165,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private ImageButton cameraButton;
 	private String cameraFilePath, videoFilePath;
 	private boolean pickFromCamera, hasChanges = false;
-	private View editPanel;
 	private View backgroundLayout;
 	private int parentWidth = 0, parentHeight = 0;
 	private int bigImagePos = 0;
 	private boolean useExternalCamera;
 	private VideoEditView videoEditView;
-	private ImageButton settingsItem;
+	private MenuItem settingsItem;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -231,6 +230,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return false;
 		}
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setTitle("");
 
 		DeadlineListService hiddenChatsListService;
 		try {
@@ -482,114 +482,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		});
 		sendButton.setEnabled(true);
 
-		findViewById(R.id.rotate).setOnClickListener(new DebouncedOnClickListener(IMAGE_ANIMATION_DURATION_MS * 2) {
-			@Override
-			public void onDebouncedClick(View v) {
-				if (bigImagePos >= SendMediaActivity.this.mediaItems.size()) {
-					return;
-				}
-
-				int oldRotation = SendMediaActivity.this.mediaItems.get(bigImagePos).getRotation();
-				int newRotation = (oldRotation + 90) % 360;
-
-				int height = bigImageView.getDrawable().getBounds().width();
-				int width = bigImageView.getDrawable().getBounds().height();
-
-				float screenAspectRatio = (float) parentWidth / (float) parentHeight;
-				float imageAspectRatio = (float) width / (float) height;
-
-				float scalingFactor;
-				if (screenAspectRatio > imageAspectRatio) {
-					scalingFactor = (float) parentHeight / (float) height;
-				} else {
-					scalingFactor = (float) parentWidth / (float) width;
-				}
-
-				bigImageView.animate().rotationBy(90f)
-						.scaleX(scalingFactor)
-						.scaleY(scalingFactor)
-						.setDuration(IMAGE_ANIMATION_DURATION_MS)
-						.setInterpolator(new FastOutSlowInInterpolator())
-						.setListener(new Animator.AnimatorListener() {
-							@Override
-							public void onAnimationStart(Animator animation) {}
-
-							@Override
-							public void onAnimationEnd(Animator animation) {
-								SendMediaActivity.this.mediaItems.get(bigImagePos).setRotation(newRotation);
-								showBigImage(bigImagePos, false);
-								sendMediaGridAdapter.notifyDataSetChanged();
-								hasChanges = true;
-							}
-
-							@Override
-							public void onAnimationCancel(Animator animation) {}
-
-							@Override
-							public void onAnimationRepeat(Animator animation) {}
-						});
-			}
-		});
-		findViewById(R.id.crop).setOnClickListener(new DebouncedOnClickListener(IMAGE_ANIMATION_DURATION_MS * 2) {
-			@Override
-			public void onDebouncedClick(View v) {
-				if (bigImagePos >= SendMediaActivity.this.mediaItems.size()) {
-					return;
-				}
-
-				cropImage();
-			}
-		});
-		findViewById(R.id.flip).setOnClickListener(new DebouncedOnClickListener(IMAGE_ANIMATION_DURATION_MS * 2) {
-			@Override
-			public void onDebouncedClick(View v) {
-				if (bigImagePos >= SendMediaActivity.this.mediaItems.size()) {
-					return;
-				}
-
-				bigImageView.animate().rotationY(180f)
-						.setDuration(IMAGE_ANIMATION_DURATION_MS)
-						.setInterpolator(new FastOutSlowInInterpolator())
-						.setListener(new Animator.AnimatorListener() {
-							@Override
-							public void onAnimationStart(Animator animation) {}
-
-							@Override
-							public void onAnimationEnd(Animator animation) {
-								flip(SendMediaActivity.this.mediaItems.get(bigImagePos));
-								showBigImage(bigImagePos, false);
-								sendMediaGridAdapter.notifyDataSetChanged();
-								hasChanges = true;
-							}
-
-							@Override
-							public void onAnimationCancel(Animator animation) {}
-
-							@Override
-							public void onAnimationRepeat(Animator animation) {}
-						});
-			}
-		});
-		findViewById(R.id.edit).setOnClickListener(new DebouncedOnClickListener(IMAGE_ANIMATION_DURATION_MS * 2) {
-			@Override
-			public void onDebouncedClick(View v) {
-				if (bigImagePos >= SendMediaActivity.this.mediaItems.size()) {
-					return;
-				}
-
-				editImage();
-			}
-		});
-		settingsItem = findViewById(R.id.settings);
-		findViewById(R.id.settings).setOnClickListener(new DebouncedOnClickListener(IMAGE_ANIMATION_DURATION_MS) {
-			@Override
-			public void onDebouncedClick(View v) {
-				showSettingsDropDown(v, SendMediaActivity.this.mediaItems.get(bigImagePos));
-			}
-		});
-
-		this.editPanel = findViewById(R.id.edit_panel);
-
 		this.backgroundLayout = findViewById(R.id.background_layout);
 
 		final ViewTreeObserver observer = backgroundLayout.getViewTreeObserver();
@@ -607,8 +499,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private void initUi(View backgroundLayout, List<Uri> urilist, List<MediaItem> mediaItems) {
 		parentWidth = backgroundLayout.getWidth();
 		parentHeight = backgroundLayout.getHeight();
-
-		logger.debug("*** initUI width = " + parentWidth + " height = " + parentHeight);
 
 		int itemWidth = (parentWidth -
 			getResources().getDimensionPixelSize(R.dimen.preview_gridview_padding_right) -
@@ -650,22 +540,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		} else {
 			this.backgroundLayout.setVisibility(View.VISIBLE);
 		}
-		maybeShowImageResolutionTooltip();
-	}
-
-	@UiThread
-	public void maybeShowImageResolutionTooltip() {
-		editPanel.postDelayed(() -> {
-			if (editPanel.getVisibility() == View.VISIBLE && settingsItem.getVisibility() == View.VISIBLE && !preferenceService.getIsImageResolutionTooltipShown()) {
-				int[] location = new int[2];
-				settingsItem.getLocationOnScreen(location);
-				location[1] -= (settingsItem.getHeight() / 5);
-
-				final TooltipPopup resolutionTooltipPopup = new TooltipPopup(SendMediaActivity.this, 0, R.layout.popup_tooltip_top_right, SendMediaActivity.this);
-				resolutionTooltipPopup.show(this, settingsItem, getString(R.string.tooltip_image_resolution_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 6000);
-				preferenceService.setIsImageResolutionTooltipShown(true);
-			}
-		}, 2000);
 	}
 
 	private void showSettingsDropDown(final View view, final MediaItem mediaItem) {
@@ -770,49 +644,136 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		this.setupToolbar();
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		updateMenu();
 
-		return true;
+		return super.onPrepareOptionsMenu(menu);
 	}
 
-	private void setupToolbar() {
-		View actionBarTitleView = getLayoutInflater().inflate(R.layout.actionbar_compose_title, null);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_send_media, menu);
 
-		if (actionBarTitleView != null) {
-			EmojiTextView actionBarTitleTextView = actionBarTitleView.findViewById(R.id.title);
-			VerificationLevelImageView actionBarSubtitleImageView = actionBarTitleView.findViewById(R.id.subtitle_image);
-			TextView actionBarSubtitleTextView = actionBarTitleView.findViewById(R.id.subtitle_text);
-			AvatarView actionBarAvatarView = actionBarTitleView.findViewById(R.id.avatar_view);
-
-			ActionBar actionBar = getSupportActionBar();
-			if (actionBar != null) {
-				actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
-				actionBar.setCustomView(actionBarTitleView);
-			}
-
-			actionBarTitleTextView.setText(getString(R.string.send_media));
-			actionBarSubtitleImageView.setVisibility(View.GONE);
-			actionBarSubtitleTextView.setVisibility(View.GONE);
-
-			if (getIntent() != null) {
-				String subtitle = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
-				if (!TestUtil.empty(subtitle)) {
-					actionBarSubtitleTextView.setText(subtitle);
-					actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-
-					actionBarAvatarView.setVisibility(View.GONE);
-					if (messageReceivers != null && messageReceivers.size() == 1) {
-						Bitmap avatar = messageReceivers.get(0).getNotificationAvatar();
-						if (avatar != null) {
-							getToolbar().setContentInsetStartWithNavigation(0);
-							actionBarAvatarView.setImageBitmap(avatar);
-							actionBarAvatarView.setVisibility(View.VISIBLE);
-						}
-					}
+		settingsItem = menu.findItem(R.id.settings);
+		settingsItem.setOnMenuItemClickListener(item -> {
+			new Handler().post(() -> {
+				final View v = findViewById(R.id.settings);
+				if (v != null) {
+					showSettingsDropDown(v, SendMediaActivity.this.mediaItems.get(bigImagePos));
 				}
+			});
+			return true;
+		});
+
+		menu.findItem(R.id.flip).setOnMenuItemClickListener(new DebouncedOnMenuItemClickListener(IMAGE_ANIMATION_DURATION_MS * 2) {
+			@Override
+			public boolean onDebouncedMenuItemClick(MenuItem item) {
+				if (bigImagePos < SendMediaActivity.this.mediaItems.size()) {
+					prepareFlip();
+					return true;
+				}
+				return false;
 			}
+		});
+
+		menu.findItem(R.id.rotate).setOnMenuItemClickListener(new DebouncedOnMenuItemClickListener(IMAGE_ANIMATION_DURATION_MS * 2) {
+			@Override
+			public boolean onDebouncedMenuItemClick(MenuItem item) {
+				if (bigImagePos < SendMediaActivity.this.mediaItems.size()) {
+					prepareRotate();
+					return true;
+				}
+				return false;
+			}
+		});
+
+		menu.findItem(R.id.crop).setOnMenuItemClickListener(item -> {
+			if (bigImagePos < SendMediaActivity.this.mediaItems.size()) {
+				cropImage();
+				return true;
+			}
+			return false;
+		});
+
+		menu.findItem(R.id.edit).setOnMenuItemClickListener(item -> {
+			if (bigImagePos < SendMediaActivity.this.mediaItems.size()) {
+				editImage();
+				return true;
+			}
+			return false;
+		});
+
+		if (getToolbar().getNavigationIcon() != null) {
+			getToolbar().getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 		}
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	private void prepareRotate() {
+		int oldRotation = SendMediaActivity.this.mediaItems.get(bigImagePos).getRotation();
+		int newRotation = (oldRotation + 90) % 360;
+
+		int height = bigImageView.getDrawable().getBounds().width();
+		int width = bigImageView.getDrawable().getBounds().height();
+
+		float screenAspectRatio = (float) parentWidth / (float) parentHeight;
+		float imageAspectRatio = (float) width / (float) height;
+
+		float scalingFactor;
+		if (screenAspectRatio > imageAspectRatio) {
+			scalingFactor = (float) parentHeight / (float) height;
+		} else {
+			scalingFactor = (float) parentWidth / (float) width;
+		}
+
+		bigImageView.animate().rotationBy(90f)
+			.scaleX(scalingFactor)
+			.scaleY(scalingFactor)
+			.setDuration(IMAGE_ANIMATION_DURATION_MS)
+			.setInterpolator(new FastOutSlowInInterpolator())
+			.setListener(new Animator.AnimatorListener() {
+				@Override
+				public void onAnimationStart(Animator animation) {}
+
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					SendMediaActivity.this.mediaItems.get(bigImagePos).setRotation(newRotation);
+					showBigImage(bigImagePos, false);
+					sendMediaGridAdapter.notifyDataSetChanged();
+					hasChanges = true;
+				}
+
+				@Override
+				public void onAnimationCancel(Animator animation) {}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {}
+			});
+	}
+
+	private void prepareFlip() {
+		bigImageView.animate().rotationY(180f)
+			.setDuration(IMAGE_ANIMATION_DURATION_MS)
+			.setInterpolator(new FastOutSlowInInterpolator())
+			.setListener(new Animator.AnimatorListener() {
+				@Override
+				public void onAnimationStart(Animator animation) {}
+
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					flip(SendMediaActivity.this.mediaItems.get(bigImagePos));
+					showBigImage(bigImagePos, false);
+					sendMediaGridAdapter.notifyDataSetChanged();
+					hasChanges = true;
+				}
+
+				@Override
+				public void onAnimationCancel(Animator animation) {}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {}
+			});
 	}
 
 	@Override
@@ -844,13 +805,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			}
 		}
 		mediaItems.get(bigImagePos).setFlip(currentFlip);
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		updateMenu();
-
-		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
@@ -1059,7 +1013,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					ArrayList<MediaItem> mediaItemsList = intent.getParcelableArrayListExtra(EXTRA_MEDIA_ITEMS);
 					if (mediaItemsList != null){
 						addItemsByMediaItem(mediaItemsList);
-						maybeShowImageResolutionTooltip();
 					}
 				default:
 					break;
@@ -1166,7 +1119,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			intent.putExtra(ThreemaApplication.EXTRA_EXIF_FLIP, mediaItems.get(bigImagePos).getExifFlip());
 
 			startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_PAINT);
-			overridePendingTransition(0, 0);
+			overridePendingTransition(0, R.anim.slow_fade_out);
 		} catch (IOException e) {
 			logger.debug("Unable to create temp file for crop");
 		}
@@ -1191,7 +1144,19 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		if (this.cameraButton != null) {
 			this.cameraButton.setVisibility(this.mediaItems.size() < MAX_SELECTABLE_IMAGES ? View.VISIBLE : View.GONE);
 		}
-		updateEditMenus(bigImagePos);
+
+		if (mediaItems.size() > 0) {
+			boolean canEdit = mediaItems.get(bigImagePos).getType() == TYPE_IMAGE || mediaItems.get(bigImagePos).getType() == TYPE_IMAGE_CAM;
+			boolean canSettings = mediaItems.get(bigImagePos).getType() == TYPE_IMAGE;
+
+			getToolbar().getMenu().setGroupVisible(R.id.group_tools, canEdit);
+
+			if (settingsItem != null) {
+				settingsItem.setVisible(canSettings);
+			}
+		} else {
+			getToolbar().getMenu().setGroupVisible(R.id.group_tools, false);
+		}
 	}
 
 	private void showBigVideo(MediaItem item) {
@@ -1271,27 +1236,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		selectImage(bigImagePos);
-		updateEditMenus(bigImagePos);
+		updateMenu();
 
 		String caption = item.getCaption();
 		captionEditText.setText(caption);
 
 		if (!TestUtil.empty(caption)) {
 			captionEditText.setSelection(caption.length());
-		}
-	}
-
-	private void updateEditMenus(int position) {
-		if (editPanel != null) {
-			if (mediaItems.size() > 0) {
-				boolean canEdit = mediaItems.get(position).getType() == TYPE_IMAGE || mediaItems.get(position).getType() == TYPE_IMAGE_CAM;
-				boolean canSettings = mediaItems.get(position).getType() == TYPE_IMAGE;
-
-				settingsItem.setVisibility(canSettings ? View.VISIBLE : View.GONE);
-				editPanel.setVisibility(canEdit ? View.VISIBLE : View.GONE);
-			} else {
-				editPanel.setVisibility(View.GONE);
-			}
 		}
 	}
 

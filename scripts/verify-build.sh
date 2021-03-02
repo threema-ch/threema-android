@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # A script to verify that a locally compiled APK matches the released APK.
 #  _____ _

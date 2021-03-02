@@ -256,7 +256,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="emoji_nature">Hayvanlar ve Doğa</string>
     <string name="emoji_food">Yiyecek içecek</string>
     <string name="emoji_recent">Son</string>
-    <string name="emoji_emotions">Gülümsemeler ve İnsanlar</string>
+    <string name="emoji_emotions">ifadeler &amp; İnsanlar</string>
     <string name="emoji_activities">Faaliyetler</string>
     <string name="emoji_flags">Bayraklar</string>
     <string name="title_lock">Kilit</string>
@@ -339,7 +339,7 @@ Kilitlendiğinde yeni mesajlar genel bir bildirimi tetikler</string>
     <string name="status_group_member_kicked">« %1$s » gruptan çıkarıldı.</string>
     <string name="can_not_send_no_group_members">Boş bir gruba mesaj gönderemezsiniz</string>
     <string name="you_are_not_a_member_of_this_group">Bu grubun üyesi değilsiniz</string>
-    <string name="can_not_delete_not_valid">Geçersiz bir nesne kaldırılamıyor</string>
+    <string name="can_not_delete_not_valid">Geçersiz bir nesne. Kaldırılamaz</string>
     <string name="can_not_delete_contact_until_in_group">Kişi, hala bir grup görüşmesinin üyesi veya yaratıcısıdır ve bu nedenle silinemez. Bu kişiyi içeren tüm grupları bırakın veya silin ve tekrar deneyin .</string>
     <string name="can_not_delete_contact">Kişi kaldırılamıyor</string>
     <string name="title_public_nickname">Takma ad</string>
@@ -1185,6 +1185,6 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="original_file_no_longer_avilable">Orijinal dosyaya artık erişilemez. Lütfen mesajı tekrar gönderin.</string>
     <string name="state_transcoding">Kod dönüştürme</string>
     <string name="importing_files">Dosyaları içe aktarma</string>
-    <string name="tooltip_image_resolution_hint">Görüntü çözünürlüklerini ayarlayın.</string>
+    <string name="tooltip_image_resolution_hint">Görüntü çözünürlüğünü ayarlamak için buraya dokunun.</string>
     <string name="image_labeling_stuck_error">Görsel arama için indeksleme işlemi takıldı ve iptal edildi. Lütfen daha sonra tekrar deneyin.</string>
 </resources>

@@ -76,13 +76,6 @@ public class RuntimeUtil {
 	}
 
 	/**
-	 * Run the specified runnable on the UI thread after a certain delay.
-	 */
-	public static void runOnUiThreadDelayed(final @NonNull Runnable runnable, long delayMillis) {
-		handler.postDelayed(runnable, delayMillis);
-	}
-
-	/**
 	 * Run the specified runnable in an async task.
 	 */
 	@UiThread
