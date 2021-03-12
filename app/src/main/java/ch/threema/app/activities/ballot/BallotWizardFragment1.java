@@ -46,12 +46,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
 import ch.threema.app.dialogs.DateSelectorDialog;
+import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.TimeSelectorDialog;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
-public class BallotWizardFragment1 extends BallotWizardFragment implements DateSelectorDialog.DateSelectorDialogListener, TimeSelectorDialog.TimeSelectorDialogListener, BallotWizardActivity.BallotWizardCallback {
+public class BallotWizardFragment1 extends BallotWizardFragment implements DateSelectorDialog.DateSelectorDialogListener, TimeSelectorDialog.TimeSelectorDialogListener, BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener, ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 	private static final String DIALOG_TAG_SELECT_DATE = "selectDate";
 	private static final String DIALOG_TAG_SELECT_TIME = "selectTime";
 	private static final String DIALOG_TAG_SELECT_DATETIME = "selectDateTime";
@@ -196,18 +197,45 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 		if(this.getBallotActivity() != null) {
 			this.ballotChoiceModelList = this.getBallotActivity().getBallotChoiceModelList();
 			this.listAdapter = new BallotWizard1Adapter(this.ballotChoiceModelList);
-			this.listAdapter.setOnChoiceListener(this::removeChoice);
+			this.listAdapter.setOnChoiceListener(this);
 			this.choiceRecyclerView.setAdapter(this.listAdapter);
 		}
 	}
 
-	private void removeChoice(int position) {
+	@Override
+	public void onEditClicked(int position) {
+		ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
+			null, R.string.edit, ballotChoiceModelList.get(position).getName(),
+			R.string.ok, R.string.cancel, true);
+		alertDialog.setData(position);
+		alertDialog.setCallback(this);
+		alertDialog.show(getParentFragmentManager(), null);
+	}
+
+	@Override
+	public void onYes(String tag, Object data, String text) {
+		if (!TestUtil.empty(text)) {
+			synchronized (ballotChoiceModelList) {
+				int position = (int) data;
+				ballotChoiceModelList.get(position).setName(text);
+				listAdapter.notifyItemChanged(position);
+			}
+		}
+		createChoiceEditText.requestFocus();
+	}
+
+	@Override
+	public void onNo(String tag) {
+		createChoiceEditText.requestFocus();
+	}
+
+	@Override
+	public void onRemoveClicked(int position) {
 		synchronized (ballotChoiceModelList) {
 			ballotChoiceModelList.remove(position);
 			listAdapter.notifyItemRemoved(position);
 		}
 	}
-
 
 	/**
 	 * Create a new Choice with a Input Alert.
