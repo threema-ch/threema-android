@@ -1318,7 +1318,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			if (ConfigUtils.isWorkBuild()) {
 				MenuItem menuItem = menu.findItem(R.id.directory);
 				if (menuItem != null) {
-					menuItem.setVisible(preferenceService.getWorkDirectoryEnabled());
+					menuItem.setVisible(ConfigUtils.isWorkDirectoryEnabled());
 				}
 				menuItem = menu.findItem(R.id.threema_channel);
 				if (menuItem != null) {

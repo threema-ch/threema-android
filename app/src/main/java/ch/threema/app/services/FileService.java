@@ -296,7 +296,7 @@ public interface FileService {
 	/**
 	 * return the decrypted thumbnail as bitmap
 	 */
-	Bitmap getMessageThumbnailBitmap(AbstractMessageModel messageModel, @Nullable ThumbnailCache thumbnailCache) throws Exception;
+	@Nullable Bitmap getMessageThumbnailBitmap(AbstractMessageModel messageModel, @Nullable ThumbnailCache thumbnailCache) throws Exception;
 
 	/**
 	 * return the "default" thumbnail

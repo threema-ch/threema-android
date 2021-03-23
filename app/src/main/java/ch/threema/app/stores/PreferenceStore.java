@@ -716,23 +716,21 @@ public class PreferenceStore implements PreferenceStoreInterface {
 
 	@AnyThread
 	private void saveDataToCryptedFile(byte[] data, String filename) {
-		new Thread(() -> {
-			File f = new File(context.getFilesDir(), CRYPTED_FILE_PREFIX + filename);
-			if (!f.exists()) {
-				try {
-					FileUtil.createNewFileOrLog(f, logger);
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
+		File f = new File(context.getFilesDir(), CRYPTED_FILE_PREFIX + filename);
+		if (!f.exists()) {
+			try {
+				FileUtil.createNewFileOrLog(f, logger);
+			} catch (Exception e) {
+				logger.error("Exception", e);
 			}
+		}
 
-			try (FileOutputStream fileOutputStream = new FileOutputStream(f);
-			     CipherOutputStream cipherOutputStream = masterKey.getCipherOutputStream(fileOutputStream)) {
-				cipherOutputStream.write(data);
-			} catch (IOException | MasterKeyLockedException e) {
-				logger.error("Unable to store prefs", e);
-			}
-		}).start();
+		try (FileOutputStream fileOutputStream = new FileOutputStream(f);
+		    CipherOutputStream cipherOutputStream = masterKey.getCipherOutputStream(fileOutputStream)) {
+			cipherOutputStream.write(data);
+		} catch (IOException | MasterKeyLockedException e) {
+			logger.error("Unable to store prefs", e);
+		}
 	}
 
 	@WorkerThread

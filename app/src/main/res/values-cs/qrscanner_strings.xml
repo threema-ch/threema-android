@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="msg_default_status">Pro naskenování QR kódu jej umístěte do obdélníku v hledáčku.</string>
-    <string name="msg_camera_framework_bug">Nelze komunikovat s fotoaparátem. Ujistěte se, že bylo uděleno oprávnění k přístupu ke kameře nebo restartujte zařízení.</string>
+    <string name="msg_default_status">QR kód naskenujete jeho umístěním do čtvercového rámečku.</string>
+    <string name="msg_camera_framework_bug">Nelze získat přístup k fotoaparátu. Ujistěte se, že bylo uděleno oprávnění pro přístup k fotoaparátu nebo zkuste zařízení restartovat.</string>
 </resources>

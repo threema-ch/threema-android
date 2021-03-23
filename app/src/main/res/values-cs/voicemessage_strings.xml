@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recording">Nahrávám zprávu</string>
-    <string name="recording_stopped_title">Záznam byl zastaven</string>
-    <string name="recording_stopped_message">Chcete nyní poslat nahranou hlasovou zprávu?</string>
+    <string name="recording">Zpráva se nahrává</string>
+    <string name="recording_stopped_title">Nahrávání bylo zastaveno</string>
+    <string name="recording_stopped_message">Přejete si nyní odeslat nahranou hlasovou zprávu?</string>
     <string name="recording_canceled">Nahrávání bylo zrušeno kvůli neznámé chybě.</string>
     <string name="cancel_recording">Zrušit nahrávání</string>
-    <string name="cancel_recording_message">Opravdu chcete zrušit nahrávání?</string>
-    <string name="stop">Stop</string>
+    <string name="cancel_recording_message">Opravdu chcete nahrávání zrušit?</string>
+    <string name="stop">Zastavit</string>
 </resources>

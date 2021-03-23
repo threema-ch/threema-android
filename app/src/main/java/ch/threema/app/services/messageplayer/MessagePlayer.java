@@ -49,6 +49,8 @@ import ch.threema.client.ProgressListener;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
+import static ch.threema.client.file.FileData.RENDERING_MEDIA;
+
 public abstract class MessagePlayer {
 	private static final Logger logger = LoggerFactory.getLogger(MessagePlayer.class);
 	public static final int SOURCE_UNDEFINED = 0;
@@ -98,7 +100,7 @@ public abstract class MessagePlayer {
 		@AnyThread void onError(String humanReadableMessage);
 	}
 
-	private interface InternalListener {
+	protected interface InternalListener {
 		@AnyThread void onComplete(boolean ok);
 	}
 
@@ -344,14 +346,18 @@ public abstract class MessagePlayer {
 				this.play(autoPlay);
 			}
 			else {
-				//download file
 				this.download(new InternalListener() {
 					@Override
 					public void onComplete(boolean ok) {
 						if(ok) {
 							data.isDownloaded(true);
 							messageService.save(setData(data));
-							open(autoPlay);
+
+							if (autoPlay ||
+								getMessageModel().getFileData().getRenderingType() != RENDERING_MEDIA ||
+								FileUtil.isAudioFile(getMessageModel().getFileData())) {
+								open(autoPlay);
+							}
 						}
 					}
 				}, autoPlay);
@@ -359,9 +365,9 @@ public abstract class MessagePlayer {
 			}
 			return true;
 		}
-
 		return false;
 	}
+
 	public MessagePlayer addListener(String key, PlayerListener listener) {
 		synchronized (this.playerListeners) {
 			this.playerListeners.put(key, listener);
@@ -525,7 +531,7 @@ public abstract class MessagePlayer {
 		});
 	}
 
-	private void download(final InternalListener internalListener, final boolean autoplay) {
+	protected void download(final InternalListener internalListener, final boolean autoplay) {
 		//download media first
 		if(this.state == State_DOWNLOADING) {
 			//do nothing, downloading in progress

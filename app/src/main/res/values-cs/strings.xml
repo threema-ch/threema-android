@@ -35,17 +35,17 @@
     <string name="prefs_header_chat">Konverzace</string>
     <string name="prefs_header_reset">Obnovení</string>
     <string name="prefs_header_keyboard">Klávesnice</string>
-    <string name="prefs_sum_sync_contacts_on">Udržovat uživatele Threemy synchronizované s adresářem kontaktů ve Vašem zařízení</string>
-    <string name="prefs_sum_sync_contacts_off">Nesynchronizovat uživatele Threemy s adresářem kontaktů ve Vašem zařízení</string>
+    <string name="prefs_sum_sync_contacts_on">Udržovat uživatele Threemy synchronizované s adresářem kontaktů ve vašem zařízení</string>
+    <string name="prefs_sum_sync_contacts_off">Nesynchronizovat uživatele Threemy s adresářem kontaktů ve vašem zařízení</string>
     <string name="prefs_title_sync_contacts">Synchronizace kontaktů</string>
     <string name="prefs_sum_block_unknown_off">Kdokoliv Vám může poslat zprávu. Nové kontakty budou přidány automaticky poté, co od nich obdržíte první zprávu.</string>
-    <string name="prefs_sum_block_unknown_on">Pouze lidé z Vašeho adresáře kontaktů Vám mohou poslat zprávu.</string>
+    <string name="prefs_sum_block_unknown_on">Pouze lidé z vašeho adresáře kontaktů vám mohou poslat zprávu.</string>
     <string name="prefs_title_block_unknown">Blokovat neznámá ID</string>
     <string name="prefs_title_read_receipts">Odesílat potvrzení o přečtení</string>
     <string name="prefs_title_typing_indicator">Odesílat indikaci psaní</string>
     <string name="prefs_media_title">Média a úložiště</string>
     <string name="prefs_sum_media_title">Nastavení médií a úložiště</string>
-    <string name="prefs_image_size">Velikost obrázků</string>
+    <string name="prefs_image_size">Rozměr obrázků</string>
     <string name="prefs_notification_sound">Zvuk oznámení</string>
     <string name="prefs_sum_notification_sound">Výchozí systémový</string>
     <string name="prefs_vibrate">Vibrace</string>
@@ -81,10 +81,10 @@
     <string name="prefs_notification_preview">Zobrazovat náhledy zpráv</string>
     <string name="prefs_sum_reset_ringtones">Obnoví výchozí nastavení</string>
     <string name="prefs_title_reset_ringtones">Obnovit nastavení zvuků oznámení</string>
-    <string name="image_size_small">Malá (640 × 640 px)</string>
+    <string name="image_size_small">Malý (640 × 640 px)</string>
     <string name="image_size_medium">Střední (1024 × 1024 px)</string>
-    <string name="image_size_large">Velká (1600 × 1600 px)</string>
-    <string name="image_size_xlarge">Extra velká (2592 × 2591 px)</string>
+    <string name="image_size_large">Velký (1600 × 1600 px)</string>
+    <string name="image_size_xlarge">Extra velký (2592 × 2592 px)</string>
     <string name="image_size_original">Původní</string>
     <string name="color_none">Žádná</string>
     <string name="color_orange">Oranžová</string>
@@ -98,15 +98,15 @@
     <string name="next">Další</string>
     <string name="finish">Konec</string>
     <string name="please_wait">Čekejte prosím…</string>
-    <string name="wizard_first_create_id">Vytváří se Vaše Threema ID…</string>
+    <string name="wizard_first_create_id">Vytváří se vaše Threema ID…</string>
     <string name="wizard1_sync_contacts">Synchronizují se kontakty…</string>
-    <string name="wizard2_email_hint">Zadejte Vaši emailovou adresu</string>
-    <string name="wizard2_email_linking">Propojení e‑mailu s Vaším ID</string>
-    <string name="wizard2_phone_hint">Zadejte telefonní číslo</string>
+    <string name="wizard2_email_hint">Zadejte svoji e‑mailovou adresu</string>
+    <string name="wizard2_email_linking">Propojení e‑mailu s vaším ID</string>
+    <string name="wizard2_phone_hint">Zadejte svoje telefonní číslo</string>
     <string name="wizard2_phone_number_confirm_title">Potvrďte zadané číslo</string>
     <string name="wizard2_phone_number_confirm">Chystáme se odeslat SMS na číslo:\n\n%1$s\n\nJe to takto v pořádku?</string>
-    <string name="wizard2_phone_linking">Propojení telefonního čísla s Vaším ID</string>
-    <string name="wizard3_nickname_hint">Zadejte Vaši přezdívku</string>
+    <string name="wizard2_phone_linking">Propojení telefonního čísla s vaším ID</string>
+    <string name="wizard3_nickname_hint">Zadejte svoji přezdívku</string>
     <string name="set_nickname_title">Zvolte přezdívku</string>
     <string name="ok">OK</string>
     <string name="cancel">Zrušit</string>
@@ -144,28 +144,26 @@
     <string name="verify_title">Ověřuje se číslo mobilního telefonu</string>
     <string name="verify_success_text">Vaše číslo mobilního telefonu bylo úspěšně ověřeno.</string>
     <string name="verify_failed">Ověření selhalo</string>
-    <string name="verify_failed_summary">Ověření Vašeho čísla mobilního telefonu selhalo. Předtím, než to zkusíte znovu, se prosím ujistěte, že je číslo zadané správně, a že je Vaše zařízení připojeno k mobilní síti.</string>
-    <string name="verify_failed_not_linked">Ověření Vašeho čísla mobilního telefonu selhalo. Proces ověření byl přerušen.</string>
+    <string name="verify_failed_summary">Ověření vašeho čísla mobilního telefonu selhalo. Předtím, než to zkusíte znovu, se prosím ujistěte, že je číslo zadané správně, a že je vaše zařízení připojeno k mobilní síti.</string>
+    <string name="verify_failed_not_linked">Ověření vašeho čísla mobilního telefonu selhalo. Proces ověření byl přerušen.</string>
     <string name="check_incoming_sms">Čeká se na přijetí SMS zprávy</string>
     <string name="backup_title">Vytvoření zálohy ID</string>
-    <string name="backup_sum">Záloha Vašeho Threema ID</string>
+    <string name="backup_sum">Záloha vašeho Threema ID</string>
     <string name="backup_and_delete">Záloha a smazání</string>
     <string name="delete_id_title">Smazat ID</string>
     <string name="delete_id_message">Pokud jste nevytvořili zálohu tohoto ID, nebo jste ho neexportovali a neuložili, nebudete moci již nikdy v budoucnu odesílat ani přijímat zprávy s touto identitou.\n\nJestliže nehodláte toto ID nadále používat, měli byste u něj nejprve zrušit propojení e‑mailové adresy či telefonního čísla dříve, než ho smažete.</string>
-    <string name="delete_id_message2">Poslední varování: Skutečně si z tohoto zařízení přejete odstranit Vaše ID?</string>
-    <string name="delete_id_sum">Trvale z tohoto zařízení odstranit Vaše ID a všechna data aplikace Threema</string>
+    <string name="delete_id_message2">Poslední varování: Skutečně si z tohoto zařízení přejete odstranit svoje ID?</string>
+    <string name="delete_id_sum">Trvale z tohoto zařízení odstraní vaše ID a všechna data aplikace Threema</string>
     <string name="backup_password_summary">Záloha vašeho ID bude zašifrována a chráněna heslem. Použijte kombinaci písmen, čísel a symbolů. Toto heslo nesmíte zapomenout!</string>
     <string name="backup_password_again_summary">Zadejte heslo znovu</string>
     <string name="password_hint">Heslo</string>
     <string name="generating_backup_data">Generují se data zálohy</string>
     <string name="backup_id_title">Záloha vašeho ID</string>
-    <string name="backup_id_summary">Textový řetězec zobrazený výše nebo QR kód, spolu s heslem, které jste zvolili, lze použít k obnovení Vašeho ID na jiném zařízení. Můžete jej zkopírovat na vhodné místo, sdílet jej
-e-mailem nebo skenovat QR kód pomocí jiného zařízení.</string>
+    <string name="backup_id_summary">Textový řetězec zobrazený výše nebo QR kód, společně s heslem, které jste zvolili, lze použít k obnovení vašeho ID na jiném zařízení. Můžete jej zkopírovat na vhodné místo, sdílet jej e‑mailem nebo skenovat QR kód pomocí jiného zařízení.</string>
     <string name="support">Nápověda</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Následující zálohovaná data lze použít společně s heslem k
-obnově Vašeho Threema ID.</string>
-    <string name="backup_share_subject">Záloha Threema ID pro</string>
+    <string name="backup_share_content">Následující textový řetězec lze použít společně se zvoleným heslem k obnově vašeho Threema ID.</string>
+    <string name="backup_share_subject">Záloha Threema ID pro</string>
     <string name="add_attachment">Nová příloha</string>
     <string name="invalid_passphrase">Neplatné heslo</string>
     <string name="master_key_locked">Hlavní klíč je uzamčen</string>
@@ -173,29 +171,29 @@ obnově Vašeho Threema ID.</string>
     <string name="prefs_masterkey_passphrase">Není nastaveno žádné heslo</string>
     <string name="prefs_title_masterkey_passphrase">Heslo</string>
     <string name="setting_masterkey_passphrase">Zadání hesla hlavního klíče</string>
-    <string name="masterkey_passphrase_title">Heslo k hlavnímu klíči</string>
+    <string name="masterkey_passphrase_title">Heslo k hlavnímu klíči</string>
     <string name="masterkey_passphrase_summary">Zadejte heslo pro ochranu hlavního klíče. Heslo bude nutné zadat při každém restartu aplikace Threema.</string>
     <string name="masterkey_passphrase_again_summary">Zadejte heslo znovu</string>
     <string name="masterkey_passphrase_hint">Heslo</string>
-    <string name="master_key_locked_want_exit">Hlavní klíč je stále uzamčen. Přejete si další pokus?</string>
-    <string name="click_here_to_change_passphrase">Klepnutím sem změňte heslo</string>
+    <string name="master_key_locked_want_exit">Hlavní klíč je stále uzamčen. Přejete si zkusit to znovu?</string>
+    <string name="click_here_to_change_passphrase">Klepnutím sem změníte heslo</string>
     <string name="attach_camera">Fotoaparát</string>
     <string name="menu_restore">Obnovit ze zálohy</string>
-    <string name="restore_id_hint">Zadejte nebo zkopírujte Váš textový řetězec k ID</string>
+    <string name="restore_id_hint">Obnovení provedete zadáním nebo vložením textového řetězce zálohy ID</string>
     <string name="location_placeholder">Poloha</string>
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Audio soubory</string>
-    <string name="restoring_backup">Obnovení ze zálohy</string>
+    <string name="restoring_backup">Obnovuje se záloha</string>
     <string name="server_message_title">Zpráva od Serveru</string>
     <string name="error">Chyba</string>
     <string name="no_contacts"><![CDATA[Nemáte dosud žádné kontakty. Zapněte synchronizaci (Nastavení> Soukromí) nebo raději přidávájte kontakty ručně.]]></string>
     <string name="masterkey_title">Zadejte heslo</string>
     <string name="masterkey_body">Váš hlavní Threema klíč je chráněn heslem. Zadejte heslo pro jeho odemknutí.</string>
     <string name="masterkey_unlocking">Odemknutí hlavního klíče</string>
-    <string name="verify_phonecall_text">Požádejte o hovor</string>
+    <string name="verify_phonecall_text">Požádat o hovor</string>
     <string name="prepare_call_message">Budete-li pokračovat, pokusíme se Vám okamžitě zavolat. Váš ověřovací kód vám bude nadiktován dvakrát. Budete mít pouze jeden pokus, proto prosím, ujistěte se, že jste připraveni (máte tužku a papír.)</string>
     <string name="enter_code_hint">Napište kód</string>
-    <string name="enter_code_sum">Zadejte prosím kód z ověřovací SMS nebo telefonního hovoru.</string>
+    <string name="enter_code_sum">Zadejte prosím kód z ověřovací SMS nebo z telefonního hovoru.</string>
     <string name="no_matching_contacts">Kontakt nenalezen</string>
     <string name="code_invalid">Ověřovací kód není správný.</string>
     <string name="try_again">Další pokus</string>
@@ -338,7 +336,7 @@ klíč uzamčen</string>
     <string name="synchronize_contact">Svázáno s Android kontaktem</string>
     <string name="exclude_contact">Vyloučené z autom. synchronizace</string>
     <string name="prefs_header_lists">Seznamy</string>
-    <string name="prefs_title_black_list">Ignorovaná</string>
+    <string name="prefs_title_black_list">Ignorovaná ID</string>
     <string name="prefs_sum_black_list">Zprávy od zde uvedených ID budou ignorovány.</string>
     <string name="verified">Ověřený</string>
     <string name="want_to_add_to_exclude_list">Tento kontakt je propojen s adresářem telefonu. Jestli ho smažete, v Threema se objeví znovu po synchronizaci kontaktů.\nChcete ho vyloučit ze synchronizace?</string>
@@ -404,7 +402,7 @@ klíč uzamčen</string>
     <string name="info">Informace</string>
     <string name="resync_group">Resync skupiny</string>
     <string name="edit_name">Uprav jméno a obrázek</string>
-    <string name="edit_name_only">Uprav jméno</string>
+    <string name="edit_name_only">Úprava jména</string>
     <string name="group_was_synchronized">Synchronizováno</string>
     <string name="verification_level2_work_explain">"Interní kontakt, předem obsazený vaší organizací.
 "</string>
@@ -416,7 +414,7 @@ klíč uzamčen</string>
     <string name="prefs_title_hide_screenshots">Zakázat snímky obrazovky a náhledy</string>
     <string name="prefs_summary_hide_screenshots">"Nezobrazuj náhledy ve správci běžících aplikací a zakaž ukládání obrazovek s texty. "</string>
     <string name="media_gallery">Galerie médií</string>
-    <string name="media_file_not_found">Nelze otevřít médiální soubor. Byl odstraněn nebo nebyl stažen ze serveru.</string>
+    <string name="media_file_not_found">Mediální soubor nelze otevřít. Buď byl odstraněn nebo nebyl stažen ze serveru.</string>
     <string name="no_media_found">V této konverzaci nebyly nalezeny %s.</string>
     <string name="media_gallery_all">Vše</string>
     <string name="media_gallery_pictures">Obrázky</string>
@@ -560,10 +558,10 @@ Např. v případě ztráty mobilu, odcizení ID.</string>
     <string name="storage_explain">Pokud máte nedostatek volného místa, můžete odstranit starší šifrované soubory. Jejich náhledy zůstanou zachovány.</string>
     <string name="delete_data">Smazat data</string>
     <string name="delete_date_confirm_message">Pokud budete pokračovat, soubory budou smazány a zůstanou pouze jejich miniaturní náhledy.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d médiální soubory smazány.</string>
+    <string name="media_files_deleted" tools:ignore="PluralsCandidate">Mediálních souborů smazáno: %d</string>
     <string name="storage_management">Správa úložiště</string>
     <string name="media">Média</string>
-    <string name="prefs_storage_mgmt_title">Promazání zpráv a médiálních souborů</string>
+    <string name="prefs_storage_mgmt_title">Promazání zpráv a mediálních souborů</string>
     <string name="num_messages">Počet zpráv</string>
     <string name="delete_messages_explain">Smazat zprávy starší než:</string>
     <string name="delete_message">Smazat zprávy</string>
@@ -603,7 +601,7 @@ možné je obnovit.</string>
     <string name="message_declined">Nesouhlas odeslán</string>
     <string name="notifications_settings">Nastavení upozornění</string>
     <string name="notifications_default">Systémové nastavení</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Na %d hodin(u)</string>
+    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Po dobu %d h</string>
     <string name="notifications_until">Do %s</string>
     <string name="notifications_mute">Žádný</string>
     <string name="notifications_choose_sound">Změna tónu</string>
@@ -651,7 +649,7 @@ můžete tento krok přeskočit.</string>
 zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou přezdívku, použijeme ve výchozím nastavení vaše Threema ID. Toto lze kdykoliv změnit.</string>
     <string name="not_linked">nepropojené</string>
     <string name="linked">propojené</string>
-    <string name="pending_sms_verification_notice">Vaše číslo mobilního telefonu není zatím ověřeno.</string>
+    <string name="pending_sms_verification_notice">Vaše číslo mobilního telefonu zatím nebylo ověřeno.</string>
     <string name="no_sms_received">Neobdrželi jste SMS?</string>
     <string name="really_cancel_verify">Skutečně si přejete přerušit proces ověření mobilního čísla?</string>
     <string name="verification_of">Ověření z %s</string>
@@ -753,8 +751,8 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="battery_optimizations_disable_confirm">Skutečně si přejete pro aplikaci %1$s ponechat optimalizaci baterie zapnutou? %2$s nebude pracovat správně.</string>
     <string name="enter_text_hint">Vložte text</string>
     <string name="backup_explain_text">Pokud se mobil rozbije nebo ho ztratíte, nikdo již nedokáže obnovit Vaše Threema ID ani vlastní konverzace bez záložních dat. Pravidelně zálohujte a ukládejte zálohovaná data na bezpečné místo.</string>
-    <string name="data_backup_explain">Zálohovaná data obsahují \n\n&#9679; Vaše ID a šifrovací klíče \n&#9679; Kontakty a jejich úrovně ověření \n&#9679; Členství ve skupinách \n&#9679; Chaty \n&#9679; Obrázky a jiné soubory (volitelně)\n\nData budou uložena do šifrovaného souboru ZIP. Po dokončení zálohy, je nutné, překopírovat soubor mimo zařízení.</string>
-    <string name="draw">Kreslit</string>
+    <string name="data_backup_explain">Zálohovaná data obsahují: \n\n&#9679; Vaše ID a šifrovací klíče \n&#9679; Kontakty a jejich úrovně ověření \n&#9679; Členství ve skupinách \n&#9679; Konverzace \n&#9679; Obrázky a jiné soubory (volitelné)\n\nData budou uložena do šifrovaného souboru ZIP. Po úspěšném vytvoření zálohy doporučujeme tento soubor překopírovat do jiného zařízení.</string>
+    <string name="draw">Editace</string>
     <string name="edit">Upravit</string>
     <string name="discard_changes">Chcete vše odstranit?</string>
     <string name="prefs_title_network">Síť</string>
@@ -787,7 +785,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="prefs_sum_receive_profilepics_recipients_list">Kontakty vybrané v tomto seznamu obdrží Váš profilový obrázek společně s první zprávou, kterou jim odešlete.</string>
     <string name="menu_send_profilpic">Přidat mezi příjemce profilového obrázku</string>
     <string name="menu_send_profilpic_off">Odebrat z příjemců profilového obrázku</string>
-    <string name="menu_send_profilpic_now">Odeslat profilový obrázek nyní</string>
+    <string name="menu_send_profilpic_now">Odeslat profilový obrázek</string>
     <string name="profile_picture_sent">Profilový obrázek byl odeslán</string>
     <string name="sending_messages">Odesílám…</string>
     <string name="backup_data_media_confirm">Uložení velkých mediálních souborů do lokální zálohy ZIP může překročit kapacitu úložiště vašeho zařízení. Také počítejte, že záloha poběží i desítky minut. Threema během zálohování nebude odesílat ani přijímat zprávy. Přesto pokračovat?</string>
@@ -828,8 +826,8 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="notification_priority_high">Střední</string>
     <string name="notification_priority_max">Maximální</string>
     <string name="prefs_title_notification_priority">Priorita</string>
-    <string name="pin">Označit</string>
-    <string name="unpin">Odznačeno</string>
+    <string name="pin">Připnout</string>
+    <string name="unpin">Odepnout</string>
     <string name="location_services_disabled">Služba určování polohy je zakázána. Chcete ji povolit?</string>
     <string name="send_location">Odeslání polohy</string>
     <string name="unknown_address">Neznámá adresa</string>
@@ -868,7 +866,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="prefs_title_accept_privacy_policy">Přijmout zásady ochrany osobních dat</string>
     <string name="privacy_policy_explain">%1$s chrání vaše soukromí přísněji než kterýkoli jiný komunikátor. Zjistěte více v našem %2$s.</string>
     <string name="privacy_policy_check_confirm">Před použitím %s prosím odsouhlaste Zásady ochrany osobních údajů.\n\n(Vyžadováno směrnicí EU 2016/679.)</string>
-    <string name="prefs_title_incognito_keyboard">Požádejte o inkognito klávesnici</string>
+    <string name="prefs_title_incognito_keyboard">Požádat o inkognito klávesnici</string>
     <string name="prefs_sum_incognito_keyboard">Zakázat sběr dat pro personalizované návrhy (pokud je funkce podporována klávesnicí)</string>
     <string name="tooltip_mentions">Zadejte na klávesnici znak @, pro výběr člena skupiny jako adresáta nebo pro jeho zmínění v textu.</string>
     <string name="tooltip_imagepaint">Buďte kreativní! Klepnutím na tlačítko kouzelné hůlky můžete před odesláním přidat samolepku i text do obrázku.</string>
@@ -1010,12 +1008,12 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="data_backup_save_path">Úložiště zálohy</string>
     <string name="change">Změnit</string>
     <string name="data_backup_last_date">Poslední úspěšná záloha</string>
-    <string name="archived">Archivováno</string>
+    <string name="archived">Archivované</string>
     <string name="to_archive">Archivovat</string>
     <string name="message_archived">Archivováno konverzací: %d</string>
-    <string name="archived_chats">Archiv konverzací</string>
-    <string name="unarchive">Odarchivování</string>
-    <string name="no_archived_chats">Nemáte žádné archivované chaty.\n\nArchivaci provedete posunem prstu vlevo na seznamu zpráv</string>
+    <string name="archived_chats">Archivované konverzace</string>
+    <string name="unarchive">Zrušit archivování</string>
+    <string name="no_archived_chats">Nemáte žádné archivované konverzace.\n\nArchivaci konverzace provedete na seznamu konverzací jejím odsunutím doleva</string>
     <string name="add_contact_enter_id_hint">Zadejte Threema ID kontaktu, který chcete přidat</string>
     <string name="notification_channel_new_contact">Nové kontakty</string>
     <string name="notification_channel_new_contact_desc">Oznámení o nových kontaktech</string>

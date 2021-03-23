@@ -702,34 +702,27 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static void resetPreferences() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getAppContext());
 
-		/* fix master key preference state if necessary (could be wrong if user kills app
-		   while disabling master key passphrase
-		 */
+		// Fix master key preference state if necessary (could be wrong if user kills app
+		// while disabling master key passphrase).
 		if (masterKey.isProtected() && prefs != null && !prefs.getBoolean(getAppContext().getString(R.string.preferences__masterkey_switch), false)) {
 			logger.debug("Master key is protected, but switch preference is disabled - fixing");
 			prefs.edit().putBoolean(getAppContext().getString(R.string.preferences__masterkey_switch), true).commit();
 		}
 
-		// If device is in AEC blacklist and the user did not choose a preference yet,
+		// If device is in AEC exclusion list and the user did not choose a preference yet,
 		// update the shared preference.
 		if (prefs != null && prefs.getString(getAppContext().getString(R.string.preferences__voip_echocancel), "none").equals("none")) {
-
-			// Determine whether device is blacklisted from hardware AEC
+			// Determine whether device is excluded from hardware AEC
 			final String modelInfo = Build.MANUFACTURER + ";" + Build.MODEL;
-			boolean blacklisted = false;
-			for (String entry : Config.HW_AEC_BLACKLIST) {
-				if (modelInfo.equals(entry)) {
-					blacklisted = true;
-				}
-			}
+			boolean exclude = !Config.allowHardwareAec();
 
 			// Set default preference
 			final SharedPreferences.Editor editor = prefs.edit();
-			if (blacklisted) {
-				logger.debug("Device {} is on AEC blacklist, switching to software echo cancellation", modelInfo);
+			if (exclude) {
+				logger.debug("Device {} is on AEC exclusion list, switching to software echo cancellation", modelInfo);
 				editor.putString(getAppContext().getString(R.string.preferences__voip_echocancel), "sw");
 			} else {
-				logger.debug("Device {} is not on AEC blacklist", modelInfo);
+				logger.debug("Device {} is not on AEC exclusion list", modelInfo);
 				editor.putString(getAppContext().getString(R.string.preferences__voip_echocancel), "hw");
 			}
 			editor.commit();
@@ -825,10 +818,10 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			}
 
 			logger.info(
-				"*** App launched. Device: {} Version: {} Build: {}",
+				"*** App launched. Device/Android Version/Flavor: {} Version: {} Build: {}",
 				ConfigUtils.getDeviceInfo(getAppContext(), false),
 				BuildConfig.VERSION_NAME,
-				BuildConfig.VERSION_CODE
+				ConfigUtils.getBuildNumber(getAppContext())
 			);
 
 			// Set up logging

@@ -278,4 +278,11 @@
 		android:restrictionType="bool"
 		android:title="@string/restriction_disable_video_calls"/>
 
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_work_directory_desc"
+		android:key="th_disable_work_directory"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_work_directory"/>
+
 </restrictions>

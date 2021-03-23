@@ -95,6 +95,10 @@ public class AppRestrictionUtil {
 		return getBoolRestriction(ThreemaApplication.getAppContext(), R.string.restriction__disable_video_calls);
 	}
 
+	public static boolean isWorkDirectoryDisabled() {
+		return getBoolRestriction(ThreemaApplication.getAppContext(), R.string.restriction__disable_work_directory);
+	}
+
 	/**
 	 * Check if a valid Threema Safe password pattern has been set by means of app restrictions
 	 * @param context Context

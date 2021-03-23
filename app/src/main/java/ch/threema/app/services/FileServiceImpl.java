@@ -1106,8 +1106,10 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Bitmap getMessageThumbnailBitmap(AbstractMessageModel messageModel,
-	                                        @Nullable ThumbnailCache thumbnailCache) throws Exception {
+	public @Nullable Bitmap getMessageThumbnailBitmap(
+		AbstractMessageModel messageModel,
+		@Nullable ThumbnailCache thumbnailCache
+	) throws Exception {
 		if (thumbnailCache != null) {
 			Bitmap cached = thumbnailCache.get(messageModel.getId());
 			if (cached != null && !cached.isRecycled()) {

@@ -472,6 +472,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			new DeleteIdentityAsyncTask(getSupportFragmentManager(), new Runnable() {
 				@Override
 				public void run() {
+					finishAffinity();
 					System.exit(0);
 				}
 			}).execute();

@@ -194,7 +194,34 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 	}
 
 	public @Nullable Byte getRejectReason() {
-		return rejectReason;
+		return this.rejectReason;
+	}
+
+	/**
+	 * Return a string representation of the reject reason.
+	 *
+	 * This should only be used for debugging, do not match on this value!
+	 */
+	public @NonNull String getRejectReasonName() {
+		if (this.rejectReason == null) {
+			return "null";
+		}
+		switch (this.rejectReason) {
+			case RejectReason.UNKNOWN:
+				return "unknown";
+			case RejectReason.BUSY:
+				return "busy";
+			case RejectReason.TIMEOUT:
+				return "timeout";
+			case RejectReason.REJECTED:
+				return "rejected";
+			case RejectReason.DISABLED:
+				return "disabled";
+			case RejectReason.OFF_HOURS:
+				return "off_hours";
+			default:
+				return this.rejectReason.toString();
+		}
 	}
 
 	public @NonNull VoipCallAnswerData setRejectReason(byte rejectReason) {

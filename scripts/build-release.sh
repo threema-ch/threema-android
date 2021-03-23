@@ -173,7 +173,10 @@ for variant in "${variant_array[@]}"; do
     log_major "Building gradle target $target"
     run_command="docker run --rm -ti"
     run_command+=" -u \"$(id -u):$(id -g)\""
-    run_command+=" -v \"$DIR/..:/code\""
+    run_command+=" -v \"$DIR/..\":/code"
+    run_command+=" -v /dev/null:/code/local.properties"  # Mask local.properties file
+    run_command+=" -v /code/build/"  # Mask root build directory
+    run_command+=" -v /code/app/.cxx/"  # Mask ndk build directory
     if [ "$keystore" != "" ]; then
         log_minor "Using keystore at $keystore"
         keystore_realpath=$(realpath "$keystore")

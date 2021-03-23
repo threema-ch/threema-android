@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 #
 # A script to verify that a locally compiled APK matches the released APK.
+#
+# Steps taken to achieve this:
+#
+#   1. Unpack both APK files
+#   2. Remove meta information (containing things like the signature)
+#   3. Recursively diff the two directories to ensure they match
 #  _____ _
 # |_   _| |_  _ _ ___ ___ _ __  __ _
 #   | | | ' \| '_/ -_) -_) '  \/ _` |_
@@ -155,7 +161,7 @@ log_major "Unpacking local APK"
 unzip -q -d "$targetdir/local/" "$local_apk"
 
 # Remove meta information (containing things like the signature)
-log_major "Removing variable files:"
+log_major "Removing meta information, containing things like the app signature:"
 for path in META-INF/ resources.arsc; do
     for target in local published; do
         log_minor "rm -r $target/$path"

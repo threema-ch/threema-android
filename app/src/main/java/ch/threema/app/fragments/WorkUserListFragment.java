@@ -81,7 +81,7 @@ public class WorkUserListFragment extends RecipientListFragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 
-		if (ConfigUtils.isWorkRestricted() && !multiSelect && view != null && preferenceService.getWorkDirectoryEnabled()) {
+		if (ConfigUtils.isWorkRestricted() && !multiSelect && view != null && ConfigUtils.isWorkDirectoryEnabled()) {
 			ListView listView = view.findViewById(android.R.id.list);
 
 			RelativeLayout header = (RelativeLayout) getLayoutInflater().inflate(R.layout.item_user_list_directory_header, listView, false);

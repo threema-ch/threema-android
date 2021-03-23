@@ -52,6 +52,7 @@ import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.ThreemaFeature;
+import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 
@@ -230,5 +231,20 @@ public class VoipUtil {
 	public static boolean isPSTNCallOngoing(Context context) {
 		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 		return (telephonyManager != null && telephonyManager.getCallState() != TelephonyManager.CALL_STATE_IDLE);
+	}
+
+	/**
+	 * If the logger is a {@link ch.threema.logging.ThreemaLogger}, set the appropriate
+	 * call ID logging prefix.
+	 *
+	 * If the logger is null, or if it's not a {@link ch.threema.logging.ThreemaLogger}, do nothing.
+	 */
+	public static void setLoggerPrefix(@Nullable Logger logger, long callId) {
+		if (logger == null) {
+			return;
+		}
+		if (logger instanceof ThreemaLogger) {
+			((ThreemaLogger) logger).setPrefix("[cid=" + callId + "]");
+		}
 	}
 }

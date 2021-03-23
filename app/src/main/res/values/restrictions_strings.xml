@@ -41,6 +41,7 @@
 	<string name="restriction__safe_password_pattern">th_safe_password_pattern</string>
 	<string name="restriction__safe_password_message">th_safe_password_message</string>
 	<string name="restriction__disable_video_calls">th_disable_video_calls</string>
+	<string name="restriction__disable_work_directory">th_disable_work_directory</string>
 
 	<!-- strings for policy controller -->
 	<string name="restriction_license_username">Corporate License Username</string>
@@ -123,4 +124,6 @@
 	<string name="restriction_safe_password_message_desc">Error message that is shown if the password that the user has chosen for Threema Safe does not match the pattern in th_safe_password_pattern</string>
 	<string name="restriction_disable_video_calls">Disable video calls</string>
 	<string name="restriction_disable_video_calls_desc">Disable both incoming and outgoing Threema video calls</string>
+	<string name="restriction_disable_work_directory">Disable Work directory</string>
+	<string name="restriction_disable_work_directory_desc">Hide option for Work directory</string>
 </resources>

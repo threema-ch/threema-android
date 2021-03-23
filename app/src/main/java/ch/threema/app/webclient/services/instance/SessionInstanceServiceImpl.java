@@ -766,7 +766,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 		} catch (NullPointerException e) {
 			// TODO: If you don't want this, recursively follow this code and all handlers and fix
 			//       the potential NPEs. There are dozens...
-			logger.error("Protocol error due to invalid message", e);
+			logger.error("Protocol error due to NPE", e);
 			this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
 		} catch (DispatchException e) {
 			logger.warn("Could not dispatch message", e);

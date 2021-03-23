@@ -155,7 +155,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 			return false;
 		}
 
-		if (!preferenceService.getWorkDirectoryEnabled()) {
+		if (!ConfigUtils.isWorkDirectoryEnabled()) {
 			Toast.makeText(this, getString(R.string.disabled_by_policy_short), Toast.LENGTH_LONG).show();
 			return false;
 		}

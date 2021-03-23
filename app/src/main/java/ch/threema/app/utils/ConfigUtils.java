@@ -237,6 +237,16 @@ public class ConfigUtils {
 		return BuildConfig.VIDEO_CALLS_ENABLED;
 	}
 
+	public static boolean isWorkDirectoryEnabled() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+
+		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
+			return (serviceManager.getPreferenceService().getWorkDirectoryEnabled() &&
+				!AppRestrictionUtil.isWorkDirectoryDisabled());
+		}
+		return false;
+	}
+
 	/**
 	 * Get a Socket Factory for certificate pinning and forced TLS version upgrade.
 	 * @param host
@@ -480,7 +490,8 @@ public class ConfigUtils {
 		}
 		info.append(Build.MANUFACTURER).append(";")
 			.append(Build.MODEL).append("/")
-			.append(Build.VERSION.RELEASE);
+			.append(Build.VERSION.RELEASE).append("/")
+			.append(BuildFlavor.getName());
 		return info.toString();
 	}
 

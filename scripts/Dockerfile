@@ -46,3 +46,7 @@ ENV PATH="$ANDROID_SDK_ROOT/cmdline-tools/tools/bin:$ANDROID_SDK_ROOT/platform-t
 
 # Create users with typical UIDs to avoid problems with Docker when remapping the UID
 RUN chmod a+w /home && for newuid in $(seq 1000 1010); do useradd -M -d /home  -u $newuid -s /bin/bash "user$newuid"; done
+
+# Create cache directories in order to be able to control the permissions of mounted volumes
+RUN mkdir -p /code/build /code/app/.cxx \
+ && chmod 777 /code/build /code/app/.cxx

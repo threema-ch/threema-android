@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
@@ -110,15 +111,16 @@ public class ThumbnailRequestHandler extends MessageReceiver {
 			}
 
 			// Make sure that the thumbnail is not larger than a certain size
-			thumbnail = this.resizeThumbnail(thumbnail);
+			if (thumbnail != null) {
+				thumbnail = this.resizeThumbnail(thumbnail);
+			}
 
-			//return null if no avatar is available
+			// Return null if no avatar is available
 			byte[] data = null;
 			if (thumbnail != null) {
 				data = BitmapUtil.bitmapToByteArray(thumbnail, Protocol.FORMAT_THUMBNAIL, Protocol.QUALITY_THUMBNAIL);
 			}
 			this.send(this.dispatcher, data, args);
-
 		} catch (MessagePackException e) {
 			logger.error("Exception", e);
 		}
@@ -128,7 +130,7 @@ public class ThumbnailRequestHandler extends MessageReceiver {
 	 * Make sure that the thumbnail is not larger than a certain size,
 	 * resizing if necessary.
 	 */
-	private Bitmap resizeThumbnail(final Bitmap thumbnail) {
+	private Bitmap resizeThumbnail(final @NonNull Bitmap thumbnail) {
 		return ThumbnailUtils.resize(thumbnail, Protocol.SIZE_THUMBNAIL_MAX_PX);
 	}
 

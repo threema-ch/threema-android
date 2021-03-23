@@ -64,8 +64,7 @@ public class ThumbnailUtils {
 	 * Make sure that no side is larger than maxSize,
 	 * resizing if necessary.
 	 */
-	public static Bitmap resize(@NonNull final Bitmap thumbnail,
-	                            int maxSidePx) {
+	public static Bitmap resize(@NonNull final Bitmap thumbnail, int maxSidePx) {
 		int w = thumbnail.getWidth();
 		int h = thumbnail.getHeight();
 

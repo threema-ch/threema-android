@@ -32,9 +32,9 @@ import androidx.core.app.FixedJobIntentService;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.voip.VoipCallAnswerData;
-import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -59,15 +59,15 @@ public class CallRejectService extends FixedJobIntentService {
 
 	@Override
 	protected void onHandleWork(@NonNull Intent intent) {
+		logger.debug("CallRejectService onHandle work");
+
 		// Intent parameters
 		final String contactIdentity = intent.getStringExtra(EXTRA_CONTACT_IDENTITY);
 		final long callId = intent.getLongExtra(EXTRA_CALL_ID, 0L);
 		final byte rejectReason = intent.getByteExtra(EXTRA_REJECT_REASON, VoipCallAnswerData.RejectReason.UNKNOWN);
 
-		logger.debug("CallRejectService onHandle work");
-		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(String.valueOf(callId));
-		}
+		// Set logging prefix
+		VoipUtil.setLoggerPrefix(logger, callId);
 
 		// Services
 		try {

@@ -48,11 +48,17 @@ public class AppVersion extends Version {
 		this.appSystemVersion = appSystemVersion;
 	}
 
+	/**
+	 * Return the short version: Version;PlatformCode
+	 */
 	@Override
 	public String getVersion() {
 		return appVersionNumber + appPlatformCode;
 	}
 
+	/**
+	 * Return the full version: Version;PlatformCode;Language/Country;SystemModel;SystemVersion
+	 */
 	@Override
 	public String getFullVersion() {
 		return appVersionNumber.replace(";", "_") + ";" + appPlatformCode.replace(";", "_") + ";" +

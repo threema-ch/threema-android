@@ -2,14 +2,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="hamlet">Osada</string>
     <string name="village">Vesnice</string>
-    <string name="town">Město</string>
+    <string name="town">Městečko</string>
     <string name="isolated_dwelling">Samota</string>
     <string name="island">Ostrov</string>
     <string name="islet">Ostrůvek</string>
     <string name="suburb">Předměstí</string>
     <string name="city">Město</string>
     <string name="city_block">Městská čtvrť</string>
-    <string name="neighbourhood">Blízké okolí</string>
+    <string name="neighbourhood">Sousedství</string>
     <string name="locality">Lokalita</string>
     <string name="state">Stát</string>
     <string name="farm">Statek</string>

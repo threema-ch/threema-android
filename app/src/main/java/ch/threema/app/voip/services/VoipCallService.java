@@ -492,7 +492,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			}
 
 			final long totalFramesReceived = getTotalFramesReceived(report);
-			logger.trace("FrameDetectorCallback: Total frames received = " + totalFramesReceived);
+			logger.trace("FrameDetectorCallback: Total frames received = {}", totalFramesReceived);
 
 			if (totalFramesReceived > this.lastFrameCount) {
 				// Frame count increased
@@ -772,7 +772,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	public void onCallHangUp() {
 		final CallStateSnapshot callState = this.voipStateService.getCallState();
 
-		logger.info("{}: Hanging up call", callState.getCallId());
+		logCallInfo(callState.getCallId(), "Hanging up call");
 
 		if (callState.isInitializing() || callState.isCalling()) {
 			new AsyncTask<Pair<ContactModel, Long>, Void, Void>() {
@@ -811,9 +811,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		// Do not initiate a new call if one is still running
 		final CallStateSnapshot callState = this.voipStateService.getCallState();
 		if (callState.isCalling()) {
-			logger.info(
-				"{}: Call is currently ongoing. Ignoring request to initiate new call ({}).",
-				callState.getCallId(), callId
+			logCallInfo(
+				callId,
+				"Call with ID {} is currently ongoing. Ignoring request to initiate new call.",
+				callState.getCallId()
 			);
 			return;
 		}
@@ -822,9 +823,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		final boolean isInitiator = intent.getBooleanExtra(EXTRA_IS_INITIATOR, false);
 		this.voipStateService.setInitiator(isInitiator);
 
-		logger.info(
-			"{}: Handle new call with {}, we are the {}",
+		logCallInfo(
 			callId,
+			"Handle new call with {}, we are the {}",
 			contactIdentity,
 			isInitiator ? "caller" : "callee"
 		);
@@ -839,7 +840,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		try {
 			newContact = getServiceManager().getContactService().getByIdentity(contactIdentity);
 		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-			logger.error(callId + ": Could not get contact model", e);
+			logCallError(callId, "Could not get contact model", e);
 		}
 		if (newContact == null) {
 			// We cannot initialize a new call if the contact cannot be looked up.
@@ -856,11 +857,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		// Can we use videocalls?
 		if (this.videoEnabled && !ConfigUtils.isVideoCallsEnabled()) {
-			logger.info("{}: videoEnabled=false, diabled via user config", callId);
+			logCallInfo(callId, "videoEnabled=false, diabled via user config");
 			this.videoEnabled = false;
 		}
 		if (this.videoEnabled && !ThreemaFeature.canVideocall(contact.getFeatureMask())) {
-			logger.info("{}: videoEnabled=false, remote feature mask does not support video calls", callId);
+			logCallInfo(callId, "videoEnabled=false, remote feature mask does not support video calls");
 			this.videoEnabled = false;
 		}
 
@@ -889,7 +890,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			// If the offerer does not signal video support, disable it
 			final FeatureList offerCallFeatures = callOfferData.getFeatures();
 			if (!offerCallFeatures.hasFeature(VideoFeature.NAME)) {
-				logger.info("{}: videoEnabled=false, remote does not signal support for video calls", callId);
+				logCallInfo(callId, "videoEnabled=false, remote does not signal support for video calls");
 				this.videoEnabled = false;
 			}
 		}
@@ -915,14 +916,14 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		if (contact.getVerificationLevel() == VerificationLevel.UNVERIFIED) {
 			// Force TURN if the contact is unverified, to hide the local IP address.
 			// This makes sure that a stranger cannot find out your IP simply by calling you.
-			logger.info("{}: Force TURN since contact is unverified", callId);
+			logCallInfo(callId, "Force TURN since contact is unverified");
 			forceTurn = true;
 		} else {
 			// Don't force turn for verified contacts unless the user explicitly enabled
 			// the setting.
 			forceTurn = this.preferenceService.getForceTURN();
 			if (forceTurn) {
-				logger.info("{}: Force TURN as requested by user", callId);
+				logCallInfo(callId, "Force TURN as requested by user");
 			}
 		}
 
@@ -987,7 +988,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		micEnabled = !micEnabled;
 
 		final long callId = this.voipStateService.getCallState().getCallId();
-		logger.debug("{}, onToggleMic enabled = {}", callId, micEnabled);
+		logCallDebug(callId, "onToggleMic enabled = {}", micEnabled);
 
 		if (peerConnectionClient != null) {
 			peerConnectionClient.setLocalAudioTrackEnabled(micEnabled);
@@ -1005,11 +1006,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				this.audioManager.selectAudioDevice(audioDevice);
 			} else {
 				this.showSingleToast("Cannot switch to " + audioDevice, Toast.LENGTH_LONG);
-				logger.error("{}: Cannot switch to {}: Device not available", callId, audioDevice);
+				logCallError(callId, "Cannot switch to {}: Device not available", audioDevice);
 			}
 		} else {
 			this.showSingleToast("Cannot change audio device", Toast.LENGTH_LONG);
-			logger.error("{}: Cannot change audio device: Audio manager is null", callId);
+			logCallError(callId, "Cannot change audio device: Audio manager is null");
 		}
 	}
 
@@ -1035,7 +1036,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@UiThread
 	private synchronized void startCall(boolean startActivity, boolean launchVideo) {
 		final long callId = this.voipStateService.getCallState().getCallId();
-		logger.trace("{}: startCall", callId);
+		logCallTrace(callId, "startCall");
 
 		this.callStartedTimeMs = System.currentTimeMillis();
 		callStartedRealtimeMs = SystemClock.elapsedRealtime();
@@ -1043,7 +1044,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		// Show notification
 		this.showInCallNotification(this.callStartedTimeMs, callStartedRealtimeMs);
 
-		logger.info("{}: Video calls are {}", callId, this.videoEnabled ? "enabled" : "disabled");
+		logCallInfo(callId, "Video calls are {}", this.videoEnabled ? "enabled" : "disabled");
 
 		// Make sure that the peerConnectionClient is initialized
 		final @StringRes int initError = R.string.voip_error_init_call;
@@ -1057,7 +1058,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			this.abortCall(initError, "Cannot start call: video context is not initialized", false);
 			return;
 		}
-		logger.info("{}: Setting up call with {}", callId, contact.getIdentity());
+		logCallInfo(callId, "Setting up call with {}", contact.getIdentity());
 
 		// Start activity if desired
 		if (startActivity) {
@@ -1072,11 +1073,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		// audio modes, audio device enumeration etc.
 		this.audioManager = VoipAudioManager.create(getApplicationContext(), voipStateService.getRingtoneAudioFocusAbandoned());
 		VoipListenerManager.audioManagerListener.add(this.audioManagerListener);
-		logger.info("{}: Starting the audio manager...", callId);
+		logCallInfo(callId, "Starting the audio manager...");
 		this.audioManager.start();
 
 		// Create peer connection
-		logger.info("{}: Creating peer connection, delay={}ms", callId, System.currentTimeMillis() - this.callStartedTimeMs);
+		logCallInfo(callId, "Creating peer connection, delay={}ms", System.currentTimeMillis() - this.callStartedTimeMs);
 		final VideoSink localVideoSink = this.voipStateService.getVideoContext().getLocalVideoSinkProxy();
 		final VideoSink remoteVideoSink = this.voipStateService.getVideoContext().getRemoteVideoSinkProxy();
 		peerConnectionClient.createPeerConnection(localVideoSink, remoteVideoSink);
@@ -1097,7 +1098,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	@UiThread
 	private void initAsInitiator(long callId, final boolean launchVideo) {
-		logger.info("{}: Init call as initiator", callId);
+		logCallInfo(callId, "Init call as initiator");
 
 		// Make sure that the peerConnectionClient is initialized
 		if (this.peerConnectionClient == null) {
@@ -1109,39 +1110,39 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		this.voipMessageListener = new VoipMessageListener() {
 			@Override
 			public synchronized void onOffer(final String identity, final VoipCallOfferData data) {
-				logger.error("{}: Received offer as initiator", data.getCallIdOrDefault(0L));
+				logCallError(data.getCallIdOrDefault(0L), "Received offer as initiator");
 			}
 
 			@Override
 			public synchronized void onAnswer(final String identity, final VoipCallAnswerData data) {
 				final long callId = data.getCallIdOrDefault(0L);
-				logger.info("{}: Received answer: {}", callId, data.getAction());
+				logCallInfo(callId, "Received answer: {}", data.getAction());
 
 				// Make sure that the peerConnectionClient is initialized
 				if (peerConnectionClient == null) {
-					logger.error("{}: Ignoring answer: peerConnectionClient is not initialized", callId);
+					logCallError(callId, "Ignoring answer: peerConnectionClient is not initialized");
 					return;
 				}
 
 				// Check state
 				final CallStateSnapshot callState = voipStateService.getCallState();
 				if (!callState.isInitializing()) {
-					logger.error("{}: Ignoring answer: callState is {}", callId, callState);
+					logCallError(callId, "Ignoring answer: callState is {}", callState);
 					return;
 				}
 
 				// Check contact in answer
 				if (contact == null) {
-					logger.error("{}: Ignoring answer: contact is not initialized", callId);
+					logCallError(callId, "Ignoring answer: contact is not initialized");
 					return;
 				} else if (!TestUtil.compare(contact.getIdentity(), identity)) {
-					logger.error("{}: Ignoring answer: Does not match current contact", callId);
+					logCallError(callId, "Ignoring answer: Does not match current contact");
 					return;
 				}
 
 				// Parse action
 				if (data.getAction() == null) {
-					logger.error("{}: Ignoring answer: Action is null", callId);
+					logCallError(callId, "Ignoring answer: Action is null");
 					return;
 				}
 				switch (data.getAction()) {
@@ -1149,8 +1150,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 						break;
 					case VoipCallAnswerData.Action.REJECT:
 						// Log event
-						logger.info("{}: Call to {} was rejected (reason code: {})",
-							callId, contact.getIdentity(), data.getRejectReason());
+						logCallInfo(callId, "Call to {} was rejected (reason code: {})",
+							contact.getIdentity(), data.getRejectReason());
 
 						// Stop ringing tone
 						stopLoopingSound(callId);
@@ -1165,7 +1166,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 						);
 
 						// Play busy sound
-						final boolean played = playSound(R.raw.busy_tone, "busy");
+						final boolean played = playSound(callId, R.raw.busy_tone, "busy");
 						if (!played) {
 							logger.error("Could not play busy tone!");
 						}
@@ -1183,7 +1184,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				// Parse session description
 				final VoipCallAnswerData.AnswerData answerData = data.getAnswerData();
 				if (answerData == null) {
-					logger.error("{}: Ignoring answer: Answer data is null", callId);
+					logCallError(callId, "Ignoring answer: Answer data is null");
 					return;
 				}
 				final SessionDescription sd = SdpUtil.getAnswerSessionDescription(answerData);
@@ -1198,7 +1199,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 				// Detect video support in answer
 				if (!data.getFeatures().hasFeature(VideoFeature.NAME)) {
-					logger.info("{}: videoEnabled=false, remote does not signal support for video calls", callId);
+					logCallInfo(callId, "videoEnabled=false, remote does not signal support for video calls");
 					videoEnabled = false;
 					VoipUtil.sendVoipBroadcast(getApplicationContext(), CallActivity.ACTION_DISABLE_VIDEO);
 				}
@@ -1213,7 +1214,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			@Override
 			public void onRinging(String identity, final VoipCallRingingData data) {
 				long callId = data.getCallIdOrDefault(0L);
-				logger.info("{}: Peer device is ringing", callId);
+				logCallInfo(callId, "Peer device is ringing");
 				startLoopingSound(callId, R.raw.ringing_tone, "ringing");
 				VoipUtil.sendVoipBroadcast(getAppContext(), CallActivity.ACTION_PEER_RINGING);
 
@@ -1224,7 +1225,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 			@Override
 			public void onHangup(String identity, final VoipCallHangupData data) {
-				logger.info("{}: Received hangup from peer", data.getCallIdOrDefault(0L));
+				logCallInfo(data.getCallIdOrDefault(0L), "Received hangup from peer");
 			}
 
 			@Override
@@ -1234,13 +1235,13 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		};
 		VoipListenerManager.messageListener.add(this.voipMessageListener);
 
-		logger.info("{}: Creating offer...", callId);
+		logCallInfo(callId, "Creating offer...");
 		this.peerConnectionClient.createOffer();
 	}
 
 	@UiThread
 	private void initAsResponder(long callId) {
-		logger.info("{}: Init call as responder", callId);
+		logCallInfo(callId, "Init call as responder");
 
 		// Make sure that the peerConnectionClient is initialized
 		if (this.peerConnectionClient == null) {
@@ -1255,7 +1256,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		// Set remote description
-		logger.info("{}: Setting remote description", callId);
+		logCallInfo(callId, "Setting remote description");
 		this.peerConnectionClient.setRemoteDescription(this.offerSessionDescription);
 	}
 
@@ -1271,17 +1272,21 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		// Sanity checks
 		if (contact == null) {
-			logger.info("{}: Ignore candidates from broadcast, contact hasn't been initialized yet", currentCallId);
+			logCallInfo(currentCallId, "Ignore candidates from broadcast, contact hasn't been initialized yet");
 			return;
 		}
 		if (!TestUtil.compare(contactIdentity, contact.getIdentity())) {
-			logger.info("{}: Ignore candidates from broadcast targeted at another identity (current {}, target {})",
-				currentCallId, contact.getIdentity(), contactIdentity);
+			logCallInfo(
+				currentCallId,
+				"Ignore candidates from broadcast targeted at another identity (current {}, target {})",
+				contact.getIdentity(),
+				contactIdentity
+			);
 			return;
 		}
 
-		logger.info("{}: Process candidates from broadcast", currentCallId);
-		this.processCandidates(candidatesData);
+		logCallInfo(currentCallId, "Process candidates from broadcast");
+		this.processCandidates(currentCallId, candidatesData);
 	}
 
 	/**
@@ -1305,9 +1310,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		this.stopLoopingSound(callId);
 
 		// Play pickup sound
-		final boolean played = this.playSound(R.raw.threema_pickup, "pickup");
+		final boolean played = this.playSound(callId, R.raw.threema_pickup, "pickup");
 		if (!played) {
-			logger.error("{}: Could not play pickup sound!", callId);
+			logCallError(callId, "Could not play pickup sound!");
 		}
 
 		// Start call duration counter
@@ -1322,13 +1327,13 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		// Notify listeners
 		if (contact == null) {
-			logger.error("{}: contact is null in callConnected()", callId);
+			logCallError(callId, "contact is null in callConnected()");
 		} else {
 			final String contactIdentity = contact.getIdentity();
 			final Boolean isInitiator = this.voipStateService.isInitiator();
 			VoipListenerManager.callEventListener.handle(listener -> {
 				if (isInitiator == null) {
-					logger.error("{}: voipStateService.isInitiator() is null in callConnected()", callId);
+					logCallError(callId, "voipStateService.isInitiator() is null in callConnected()");
 				} else {
 					listener.onStarted(contactIdentity, isInitiator);
 				}
@@ -1438,11 +1443,13 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 */
 	@UiThread
 	private synchronized void disconnect(@Nullable String message) {
+		// Get call ID (note: May already be reset to 0)
 		final CallStateSnapshot callState = this.voipStateService.getCallState();
 		final long callId = callState.getCallId();
+
 		logger.info(
-			"{}: disconnect (isConnected? {} | isError? {} | message: {})",
-			callId, this.iceConnected, this.isError, message
+			"disconnect (isConnected? {} | isError? {} | message: {})",
+			this.iceConnected, this.isError, message
 		);
 
 		// If the call is still connected, notify listeners about the finishing
@@ -1498,10 +1505,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	/**
 	 * Add or remove ICE candidates.
 	 */
-	private void processCandidates(@NonNull VoipICECandidatesData data) {
+	private void processCandidates(long callId, @NonNull VoipICECandidatesData data) {
 		// Null check
 		if (this.peerConnectionClient == null) {
-			logger.warn("Ignored ICE candidate message, peerConnectionClient is null");
+			logCallWarning(callId, "Ignored ICE candidate message, peerConnectionClient is null");
 			return;
 		}
 
@@ -1511,7 +1518,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			data.filter(candidate -> !SdpUtil.isIpv6Candidate(candidate.getCandidate()));
 			final int newSize = data.getCandidates().length;
 			if (newSize < prevSize) {
-				logger.info("Ignored {} remote IPv6 candidate (disabled via preferences)", prevSize - newSize);
+				logCallInfo(callId, "Ignored {} remote IPv6 candidate (disabled via preferences)", prevSize - newSize);
 			}
 		}
 
@@ -1522,9 +1529,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		// Log candidates
-		logger.info("Added {} VoIP ICE candidate(s):", candidates.length);
+		logCallInfo(callId, "Added {} VoIP ICE candidate(s):", candidates.length);
 		for (IceCandidate candidate : candidates) {
-			logger.info("  Incoming candidate: {}", candidate.sdp);
+			logCallInfo(callId, "  Incoming candidate: {}", candidate.sdp);
 		}
 	}
 
@@ -1651,6 +1658,58 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	//endregion
 
+	//region Logging
+
+	// Note: Because the VoipCallService is not tied to a single call ID, we need to specify
+	//       the call ID for every logging call. These helper methods provide some boilerplate
+	//       code to make this easier.
+
+	private static void logCallTrace(long callId, String message) {
+		logger.trace("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallTrace(long callId, @NonNull String message, Object... arguments) {
+		logger.trace("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallDebug(long callId, String message) {
+		logger.debug("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallDebug(long callId, @NonNull String message, Object... arguments) {
+		logger.debug("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallInfo(long callId, String message) {
+		logger.info("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallInfo(long callId, @NonNull String message, Object... arguments) {
+		logger.info("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallWarning(long callId, String message) {
+		logger.warn("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallWarning(long callId, @NonNull String message, Object... arguments) {
+		logger.warn("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallError(long callId, String message) {
+		logger.error("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallError(long callId, String message, Throwable t) {
+		logger.error("[cid=" + callId + "]: " + message, t);
+	}
+
+	private static void logCallError(long callId, @NonNull String message, Object... arguments) {
+		logger.error("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	//endregion
+
 	//region Peer connection events
 
 	// -----Implementation of PeerConnectionClient.PeerConnectionEvents.---------
@@ -1660,11 +1719,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@Override
 	@AnyThread
 	public void onLocalDescription(long callId, final SessionDescription sdp) {
-		logger.info("{}: onLocalDescription", callId);
+		logCallInfo(callId, "onLocalDescription");
 		RuntimeUtil.runInAsyncTask(() -> {
 			synchronized (VoipCallService.this) {
 				final CallStateSnapshot callState = voipStateService.getCallState();
-				logger.info("{}: Sending {} in call state {}", callId, sdp.type, callState.getName());
+				logCallInfo(callId, "Sending {} in call state {}", sdp.type, callState.getName());
 				if (callState.isInitializing() || callState.isRinging()) {
 					try {
 						if (this.voipStateService.isInitiator() == Boolean.TRUE) {
@@ -1676,7 +1735,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 						this.abortCall(R.string.voip_error_init_call, "Could not send offer or answer message", e, false);
 					}
 				} else {
-					logger.info("{}: Discarding local description (wrong state)", callId);
+					logCallInfo(callId, "Discarding local description (wrong state)");
 				}
 			}
 		});
@@ -1685,15 +1744,15 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@Override
 	@AnyThread
 	public void onRemoteDescriptionSet(long callId) {
-		logger.info("{}: onRemoteDescriptionSet", callId);
+		logCallInfo(callId, "onRemoteDescriptionSet");
 
 		if (this.peerConnectionClient == null) {
-			logger.error("{}: Cannot create answer: peerConnectionClient is not initialized", callId);
+			logCallError(callId, "Cannot create answer: peerConnectionClient is not initialized");
 			return;
 		}
 
 		if (this.voipStateService.isInitiator() == Boolean.FALSE) {
-			logger.info("{}: Creating answer...", callId);
+			logCallInfo(callId, "Creating answer...");
 			peerConnectionClient.createAnswer();
 		}
 	}
@@ -1710,34 +1769,34 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			// to prevent a "candidate leak" otherwise.
 			final CallStateSnapshot callState = this.voipStateService.getCallState();
 			if (!(callState.isRinging() || callState.isInitializing() || callState.isCalling())) {
-				logger.info("Disposing ICE candidate, callState is {}", callState.getName());
+				logCallInfo(callId, "Disposing ICE candidate, callState is {}", callState.getName());
 				return;
 			}
 
 			// Log candidate
-			logger.info("Sending VoIP ICE candidate: {}", candidate.sdp);
+			logCallInfo(callId, "Sending VoIP ICE candidate: {}", candidate.sdp);
 
 			// Send
 			this.voipStateService.sendICECandidatesMessage(contact, callId, new IceCandidate[]{ candidate });
 		} catch (ThreemaException | IllegalArgumentException e) {
-			logger.error("Could not send ICE candidate", e);
+			logCallError(callId, "Could not send ICE candidate", e);
 		}
 	}
 
 	@Override
 	@AnyThread
 	public void onIceCandidate(long callId, final IceCandidate candidate) {
-		logger.trace("{}: onIceCandidate", callId);
+		logCallTrace(callId, "onIceCandidate");
 
 		// Send candidate
-		logger.trace("{}: onIceCandidate: {}", callId, candidate.sdp);
+		logCallTrace(callId, "onIceCandidate: {}", candidate.sdp);
 		VoipCallService.this.sendIceCandidate(callId, candidate);
 	}
 
 	@Override
 	@AnyThread
 	public void onIceChecking(long callId) {
-		logger.info("{}: ICE checking", callId);
+		logCallInfo(callId, "ICE checking");
 		synchronized (this) {
 			if (this.peerConnectionClient != null) {
 				// Register debug stats collector (fast interval until connected)
@@ -1762,7 +1821,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@Override
 	@AnyThread
 	public void onIceConnected(long callId) {
-		logger.info("{}: ICE connected", callId);
+		logCallInfo(callId, "ICE connected");
 		this.iceConnected = true;
 		if (this.iceWasConnected) {
 			// If we were previously connected, then the connection problem sound
@@ -1781,9 +1840,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 			// Play pickup sound
 			if (wasPlaying) {
-				final boolean played = this.playSound(R.raw.threema_pickup, "pickup");
+				final boolean played = this.playSound(callId, R.raw.threema_pickup, "pickup");
 				if (!played) {
-					logger.error("{}: Could not play pickup sound!", callId);
+					logCallError(callId, "Could not play pickup sound!");
 				}
 			}
 		} else {
@@ -1821,7 +1880,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	public void onIceDisconnected(final long callId) {
 		// ICE was disconnected. This can be a real closing of the connection,
 		// or just a temporary connectivity issue that can be recovered.
-		logger.info("{}: ICE disconnected", callId);
+		logCallInfo(callId, "ICE disconnected");
 		this.iceConnected = false;
 
 		// Notify activity about connectivity problems
@@ -1842,7 +1901,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	@Override
 	public void onIceFailed(long callId) {
-		logger.warn("{}: ICE failed", callId);
+		logCallWarning(callId, "ICE failed");
 		this.iceConnected = false;
 
 		if (this.iceWasConnected) {
@@ -1863,6 +1922,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 			// Play problem sound and disconnect
 			final boolean played = playSound(
+				callId,
 				R.raw.threema_problem,
 				"problem",
 				() -> RuntimeUtil.runOnUiThread(
@@ -1870,26 +1930,26 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				)
 			);
 			if (!played) {
-				logger.error("{}: Could not play problem sound!", callId);
+				logCallError(callId, "Could not play problem sound!");
 			}
 		}
 	}
 
 	@Override
 	public void onIceGatheringStateChange(long callId, PeerConnection.IceGatheringState newState) {
-		logger.trace("{}: onIceGatheringStateChange", callId);
+		logCallTrace(callId, "onIceGatheringStateChange");
 	}
 
 	@Override
 	@AnyThread
 	public void onPeerConnectionClosed(long callId) {
-		logger.trace("{}: onPeerConnectionClosed", callId);
-		logger.info("{}: Peer connection closed", callId);
+		logCallTrace(callId, "onPeerConnectionClosed");
+		logCallInfo(callId, "Peer connection closed");
 
 		// Play disconnect sound
-		final boolean played = this.playSound(R.raw.threema_hangup, "disconnect");
+		final boolean played = this.playSound(callId, R.raw.threema_hangup, "disconnect");
 		if (!played) {
-			logger.error("{}: Could not play disconnect sound!", callId);
+			logCallError(callId, "Could not play disconnect sound!");
 		}
 
 		// Call disconnect method
@@ -1914,11 +1974,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@WorkerThread
 	public void onSignalingMessage(long callId, @NonNull CallSignaling.Envelope envelope) {
 		if (envelope.hasCaptureStateChange()) {
-			this.handleCaptureStateChange(envelope.getCaptureStateChange());
+			this.handleCaptureStateChange(callId, envelope.getCaptureStateChange());
 		} else if (envelope.hasVideoQualityProfile()) {
-			this.handleVideoQualityProfileChange(envelope.getVideoQualityProfile());
+			this.handleVideoQualityProfileChange(callId, envelope.getVideoQualityProfile());
 		} else {
-			logger.warn("{}: onSignalingMessage: Unknown envelope variant", callId);
+			logCallWarning(callId, "onSignalingMessage: Unknown envelope variant");
 		}
 	}
 
@@ -1959,10 +2019,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	                                            int rawResource,
 	                                            final String soundName) {
 		if (this.mediaPlayer != null) {
-			logger.error("{}: Not playing {} sound, mediaPlayer is not null!", callId, soundName);
+			logCallError(callId, "Not playing {} sound, mediaPlayer is not null!", soundName);
 			return;
 		}
-		logger.info("{}: Playing {} sound...", callId, soundName);
+		logCallInfo(callId, "Playing {} sound...", soundName);
 
 		// Initialize media player
 		this.mediaPlayer = new MediaPlayerStateWrapper();
@@ -1999,7 +2059,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@AnyThread
 	private synchronized void stopLoopingSound(long callId) {
 		if (this.mediaPlayer != null) {
-			logger.info("{}: Stopping ringing tone...", callId);
+			logCallInfo(callId, "Stopping ringing tone...");
 			this.mediaPlayer.stop();
 			this.mediaPlayer.release();
 		}
@@ -2010,10 +2070,13 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * Play a one-time sound.
 	 */
 	@AnyThread
-	private synchronized boolean playSound(int rawResource,
-	                                       final String soundName,
-	                                       @Nullable final OnSoundComplete onComplete) {
-		logger.info("Playing {} sound...", soundName);
+	private synchronized boolean playSound(
+		long callId,
+	    int rawResource,
+	    final String soundName,
+	    @Nullable final OnSoundComplete onComplete
+	) {
+		logCallInfo(callId, "Playing {} sound...", soundName);
 
 		// Initialize media player
 		final MediaPlayerStateWrapper soundPlayer = new MediaPlayerStateWrapper();
@@ -2027,7 +2090,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			soundPlayer.setDataSource(afd);
 			soundPlayer.prepare();
 		} catch (IOException e) {
-			logger.error("Could not play " + soundName + " sound", e);
+			logCallError(callId, "Could not play " + soundName + " sound", e);
 			soundPlayer.release();
 			return false;
 		} finally {
@@ -2059,8 +2122,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	}
 
 	@AnyThread
-	private synchronized boolean playSound(final int rawResource, final String soundName) {
-		return this.playSound(rawResource, soundName, null);
+	private synchronized boolean playSound(long callId, final int rawResource, final String soundName) {
+		return this.playSound(callId, rawResource, soundName, null);
 	}
 
 	//endregion
@@ -2396,7 +2459,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		/**
-		 * Called by {@link #handleCaptureStateChange(CallSignaling.CaptureState)}.
+		 * Called by {@link #handleCaptureStateChange(long, CallSignaling.CaptureState)}.
 		 * Remote has signaled that video capturing has started.
 		 */
 		synchronized void onRemoteVideoCapturingEnabled() {
@@ -2413,7 +2476,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		/**
-		 * Called by {@link #handleCaptureStateChange(CallSignaling.CaptureState)}.
+		 * Called by {@link #handleCaptureStateChange(long, CallSignaling.CaptureState)}.
 		 * Remote has signaled that video capturing has stopped.
 		 */
 		synchronized void onRemoteVideoCapturingDisabled() {
@@ -2495,8 +2558,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * @param captureStateChange The received signaling message.
 	 */
 	@AnyThread
-	private void handleCaptureStateChange(@NonNull CallSignaling.CaptureState captureStateChange) {
-		logger.info(
+	private void handleCaptureStateChange(long callId, @NonNull CallSignaling.CaptureState captureStateChange) {
+		logCallInfo(
+			callId,
 			"Signaling: Call partner changed {} capturing state to {}",
 			captureStateChange.getDevice(),
 			captureStateChange.getState()
@@ -2512,7 +2576,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 					this.remoteVideoStateDetector.onRemoteVideoCapturingDisabled();
 					break;
 				default:
-					logger.warn("Unknown capture state received");
+					logCallWarning(callId, "Unknown capture state received");
 			}
 		}
 	}
@@ -2523,8 +2587,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * @param videoQualityProfile The received signaling message.
 	 */
 	@AnyThread
-	private void handleVideoQualityProfileChange(@NonNull CallSignaling.VideoQualityProfile videoQualityProfile) {
-		logger.info("Signaling: Call partner changed video profile to {}", videoQualityProfile.getProfile());
+	private void handleVideoQualityProfileChange(long callId, @NonNull CallSignaling.VideoQualityProfile videoQualityProfile) {
+		logCallInfo(callId, "Signaling: Call partner changed video profile to {}", videoQualityProfile.getProfile());
 
 		final VoipVideoParams profile = VoipVideoParams.fromSignalingMessage(videoQualityProfile);
 		if (profile != null) {

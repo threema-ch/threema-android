@@ -65,6 +65,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.AnyThread;
@@ -257,6 +258,58 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
 	}
 
+	//region Logging
+
+	// Note: Because the VoipStateService is not tied to a single call ID, we need to specify
+	//       the call ID for every logging call. These helper methods provide some boilerplate
+	//       code to make this easier.
+
+	private static void logCallTrace(long callId, String message) {
+		logger.trace("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallTrace(long callId, @NonNull String message, Object... arguments) {
+		logger.trace("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallDebug(long callId, String message) {
+		logger.debug("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallDebug(long callId, @NonNull String message, Object... arguments) {
+		logger.debug("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallInfo(long callId, String message) {
+		logger.info("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallInfo(long callId, @NonNull String message, Object... arguments) {
+		logger.info("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallWarning(long callId, String message) {
+		logger.warn("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallWarning(long callId, @NonNull String message, Object... arguments) {
+		logger.warn("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	private static void logCallError(long callId, String message) {
+		logger.error("[cid={}]: {}", callId, message);
+	}
+
+	private static void logCallError(long callId, String message, Throwable t) {
+		logger.error("[cid=" + callId + "]: " + message, t);
+	}
+
+	private static void logCallError(long callId, @NonNull String message, Object... arguments) {
+		logger.error("[cid=" + callId + "]: " + message, arguments);
+	}
+
+	//endregion
+
 	//region State transitions
 
 	/**
@@ -282,8 +335,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		@NonNull CallStateSnapshot oldState,
 		@NonNull CallStateSnapshot newState
 	) {
-		logger.info(
-			"Call state change from {}({}/{}) to {}({}/{})",
+		logger.info("Call state change from {} to {}", oldState.getName(), newState.getName());
+		logger.debug(
+			"  State{{},id={},counter={}} → State{{},id={},counter={}}",
 			oldState.getName(), oldState.getCallId(), oldState.getIncomingCallCounter(),
 			newState.getName(), newState.getCallId(), newState.getIncomingCallCounter()
 		);
@@ -342,13 +396,16 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Send cached candidates and clear cache
 		synchronized (this.candidatesCache) {
-			logger.info("{}: Processing cached candidates for {} ID(s)", callId, this.candidatesCache.size());
+			logCallInfo(callId, "Processing cached candidates for {} ID(s)", this.candidatesCache.size());
 
 			// Note: We're sending all cached candidates. The broadcast receiver
 			// is responsible for dropping the ones that aren't of interest.
 			for (Map.Entry<String, List<VoipICECandidatesData>> entry : this.candidatesCache.entrySet()) {
-				logger.info("{}: Broadcasting {} candidates data messages from {}",
-					callId, entry.getValue().size(), entry.getKey());
+				logCallInfo(
+					callId,
+					"Broadcasting {} candidates data messages from {}",
+					entry.getValue().size(), entry.getKey()
+				);
 				for (VoipICECandidatesData data : entry.getValue()) {
 					// Broadcast candidates
 					Intent intent = new Intent();
@@ -515,20 +572,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Unwrap data
 		final VoipCallOfferData callOfferData = msg.getData();
 		if (callOfferData == null) {
-			logger.warn("VoipCallOfferMessage received. Data is null, ignoring.");
+			logger.warn("Call offer received from {}. Data is null, ignoring.", msg.getFromIdentity());
 			return true;
 		}
 		final long callId = callOfferData.getCallIdOrDefault(0L);
-		logger.info(
-			"{}: VoipCallOfferMessage received from {} (Features: {})",
-			callId, msg.getFromIdentity(), callOfferData.getFeatures()
+		logCallInfo(
+			callId,
+			"Call offer received from {} (Features: {})",
+			msg.getFromIdentity(), callOfferData.getFeatures()
 		);
-		logger.info("{}: {}", callId, callOfferData.getOfferData());
+		logCallInfo(callId, "{}", callOfferData.getOfferData());
 
 		// Get contact and receiver
 		final ContactModel contact = this.contactService.getByIdentity(msg.getFromIdentity());
 		if (contact == null) {
-			logger.error("{}: Could not fetch contact for identity {}", callId, msg.getFromIdentity());
+			logCallError(callId, "Could not fetch contact for identity {}", msg.getFromIdentity());
 			return true;
 		}
 
@@ -537,25 +595,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		boolean silentReject = false; // Set to true if you don't want a "missed call" chat message
 		if (!this.preferenceService.isVoipEnabled()) {
 			// Calls disabled
-			logger.info("{}: Rejecting call from {} (disabled)", callId, contact.getIdentity());
+			logCallInfo(callId, "Rejecting call from {} (disabled)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.DISABLED;
 			silentReject = true;
 		} else if (!this.validateOfferData(callOfferData.getOfferData())) {
 			// Offer invalid
-			logger.warn("{}: Rejecting call from {} (invalid offer)", callId, contact.getIdentity());
+			logCallWarning(callId, "Rejecting call from {} (invalid offer)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.UNKNOWN;
 			silentReject = true;
 		} else if (!this.callState.isIdle()) {
 			// Another call is already active
-			logger.info("{}: Rejecting call from {} (busy)", callId, contact.getIdentity());
+			logCallInfo(callId, "Rejecting call from {} (busy)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.BUSY;
 		} else if (VoipUtil.isPSTNCallOngoing(this.appContext)) {
 			// A PSTN call is ongoing
-			logger.info("{}: Rejecting call from {} (PSTN call ongoing)", callId, contact.getIdentity());
+			logCallInfo(callId, "Rejecting call from {} (PSTN call ongoing)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.BUSY;
 		} else if (DNDUtil.getInstance().isMutedWork()) {
 			// Called outside working hours
-			logger.info("{}: Rejecting call from {} (called outside of working hours)", callId, contact.getIdentity());
+			logCallInfo(callId, "Rejecting call from {} (called outside of working hours)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.OFF_HOURS;
 		}
 		if (rejectReason != null) {
@@ -698,7 +756,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			final long callId = callAnswerData.getCallIdOrDefault(0L);
 			if (!this.isCallIdValid(callId)) {
 				logger.info(
-					"Received answer for an invalid call ID ({}, local={}), ignoring",
+					"Call answer received for an invalid call ID ({}, local={}), ignoring",
 					callId, this.callState.getCallId()
 				);
 				return true;
@@ -706,18 +764,16 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 			// Ensure that action was set
 			if (callAnswerData.getAction() == null) {
-			    logger.error("Received answer without action, ignoring");
+			    logger.error("Call answer received without action, ignoring");
 			    return true;
 			}
 
 			switch (callAnswerData.getAction()) {
 				// Call was accepted
 				case VoipCallAnswerData.Action.ACCEPT:
-					logger.info(
-						"{}: VoipCallAnswerMessage received: Accept => (Features: {})",
-						callId, callAnswerData.getFeatures()
-					);
-					logger.info("{}: {}", callId, callAnswerData.getAnswerData());
+					logCallInfo(callId, "Call answer received from {}: accept", msg.getFromIdentity());
+					logCallInfo(callId, "Answer features: {}", callAnswerData.getFeatures());
+					logCallInfo(callId, "Answer data: {}", callAnswerData.getAnswerData());
 					VoipUtil.sendVoipBroadcast(this.appContext, CallActivity.ACTION_CALL_ACCEPTED);
 					break;
 
@@ -727,11 +783,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					VoipListenerManager.callEventListener.handle(listener -> {
 						listener.onRejected(msg.getFromIdentity(), false, callAnswerData.getRejectReason());
 					});
-					logger.info("{}: VoipCallAnswerMessage received: Reject (reason code: {})", callId, callAnswerData.getRejectReason());
+					logCallInfo(callId, "Call answer received from {}: reject/{}",
+						msg.getFromIdentity(), callAnswerData.getRejectReasonName());
 					break;
 
 				default:
-					logger.info("{}: VoipCallAnswer message received: Unknown action: {}", callId, callAnswerData.getAction());
+					logCallInfo(callId, "Call answer received from {}: Unknown action: {}", callAnswerData.getAction());
 					break;
 			}
 		}
@@ -756,11 +813,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Unwrap data
 		final VoipICECandidatesData candidatesData = msg.getData();
 		if (candidatesData == null) {
-			logger.warn("VoipICECandidatesMessage received. Data is null, ignoring.");
+			logger.warn("Call ICE candidate message received from {}. Data is null, ignoring", msg.getFromIdentity());
 			return true;
 		}
 		if (candidatesData.getCandidates() == null) {
-			logger.warn("VoipICECandidatesMessage received. Candidates are null, ignoring.");
+			logger.warn("Call ICE candidate message received from {}. Candidates are null, ignoring", msg.getFromIdentity());
 			return true;
 		}
 
@@ -768,22 +825,26 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		final long callId = candidatesData.getCallIdOrDefault(0L);
 		if (!this.isCallIdValid(callId)) {
 			logger.info(
-				"Received candidates for an invalid Call ID ({}, local={}), ignoring",
-				callId, this.callState.getCallId()
+				"Call ICE candidate message received from {} for an invalid Call ID ({}, local={}), ignoring",
+				msg.getFromIdentity(), callId, this.callState.getCallId()
 			);
 			return true;
 		}
 
 		// The "removed" flag is deprecated, see ANDR-1145 / SE-66
 		if (candidatesData.isRemoved()) {
-			logger.info("{}: Ignoring VoipICECandidatesMessage with removed=true", callId);
+			logCallInfo(callId, "Call ICE candidate message received from {} with removed=true, ignoring");
 			return true;
 		}
 
-		logger.info(
-			"{}: VoipICECandidatesMessage with {} candidates received",
-			callId, candidatesData.getCandidates().length
+		logCallInfo(
+			callId,
+			"Call ICE candidate message received from {} ({} candidates)",
+			msg.getFromIdentity(), candidatesData.getCandidates().length
 		);
+		for (VoipICECandidatesData.Candidate candidate : candidatesData.getCandidates()) {
+			logCallInfo(callId, "  Incoming ICE candidate: {}", candidate.getCandidate());
+		}
 
 		// Handle candidates depending on state
 		if (this.callState.isIdle() || this.callState.isRinging()) {
@@ -798,7 +859,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			intent.putExtra(EXTRA_CANDIDATES, candidatesData);
 			LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
 		} else {
-			logger.warn("Received ICE candidates in invalid call state ({})", this.callState);
+			logCallWarning(callId, "Received ICE candidates in invalid call state ({})", this.callState);
 		}
 
 		// Otherwise, ignore message.
@@ -822,17 +883,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			: msg.getData().getCallIdOrDefault(0L);
 		if (!this.isCallIdValid(callId)) {
 			logger.info(
-				"Received ringing for an invalid Call ID ({}, local={}), ignoring",
-				callId, state.getCallId()
+				"Call ringing message received from {} for an invalid Call ID ({}, local={}), ignoring",
+				msg.getFromIdentity(), callId, state.getCallId()
 			);
 			return true;
 		}
 
-		logger.info("VoipCallRingingMessage received.");
+		logCallInfo(callId, "Call ringing message received from {}", msg.getFromIdentity());
 
 		// Check whether we're in the correct state for a ringing message
 		if (!state.isInitializing()) {
-			logger.warn("Ignoring VoipCallRingingMessage, call state is {}", state.getName());
+			logCallWarning(
+				callId,
+				"Call ringing message from {} ignored, call state is {}",
+				msg.getFromIdentity(), state.getName()
+			);
 			return true;
 		}
 
@@ -862,13 +927,13 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			: msg.getData().getCallIdOrDefault(0L);
 		if (!this.isCallIdValid(callId)) {
 			logger.info(
-				"Received hangup for an invalid Call ID ({}, local={}), ignoring",
-				callId, this.callState.getCallId()
+				"Call hangup message received from {} for an invalid Call ID ({}, local={}), ignoring",
+				msg.getFromIdentity(), callId, this.callState.getCallId()
 			);
 			return true;
 		}
 
-		logger.info("VoipCallHangupMessage received.");
+		logger.info("Call hangup message received from {}", msg.getFromIdentity());
 
 		final String identity = msg.getFromIdentity();
 
@@ -981,14 +1046,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		voipCallOfferMessage.setData(callOfferData);
 		voipCallOfferMessage.setToIdentity(receiver.getIdentity());
 
-		logger.info("{}: Enqueue VoipCallOfferMessage ID {} to {}: {} (features: {})",
-			callId,
-			voipCallOfferMessage.getMessageId(),
-			voipCallOfferMessage.getToIdentity(),
-			callOfferData.getOfferData(),
-			callOfferData.getFeatures()
-		);
 		this.messageQueue.enqueue(voipCallOfferMessage);
+		logCallInfo(callId, "Call offer enqueued to {}", voipCallOfferMessage.getToIdentity());
+		logCallInfo(callId, "  Offer features: {}", callOfferData.getFeatures());
+		logCallInfo(callId, "  Offer data: {}", callOfferData.getOfferData());
 		this.messageService.sendProfilePicture(new MessageReceiver[] {contactService.createReceiver(receiver)});
 	}
 
@@ -1110,16 +1171,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		voipCallAnswerMessage.setData(callAnswerData);
 		voipCallAnswerMessage.setToIdentity(receiver.getIdentity());
 
-		logger.info("{}: Enqueue VoipCallAnswerMessage ID {} to {}: action={} (features: {})",
-			callId,
-			voipCallAnswerMessage.getMessageId(),
-			voipCallAnswerMessage.getToIdentity(),
-			callAnswerData.getAction(),
-			callAnswerData.getFeatures()
-		);
+		logCallInfo(callId, "Call answer enqueued to {}: {}", voipCallAnswerMessage.getToIdentity(), callAnswerData.getAction());
+		logCallInfo(callId, "  Answer features: {}", callAnswerData.getFeatures());
 		messageQueue.enqueue(voipCallAnswerMessage);
 		this.messageService.sendProfilePicture(new MessageReceiver[] {contactService.createReceiver(receiver)});
-
 	}
 
 	/**
@@ -1137,26 +1192,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			return;
 		}
 
+		// Build message
 		final List<VoipICECandidatesData.Candidate> candidates = new LinkedList<>();
 		for (IceCandidate c : iceCandidates) {
 			if (c != null) {
 				candidates.add(new VoipICECandidatesData.Candidate(c.sdp, c.sdpMid, c.sdpMLineIndex, null));
 			}
 		}
-
 		final VoipICECandidatesData voipICECandidatesData = new VoipICECandidatesData()
 			.setCallId(callId)
 			.setCandidates(candidates.toArray(new VoipICECandidatesData.Candidate[candidates.size()]));
-
 		final VoipICECandidatesMessage voipICECandidatesMessage = new VoipICECandidatesMessage();
 		voipICECandidatesMessage.setData(voipICECandidatesData);
 		voipICECandidatesMessage.setToIdentity(receiver.getIdentity());
 
-		logger.info(
-			"{}: Enqueue VoipICECandidatesMessage ID {} to {}",
-			callId, voipICECandidatesMessage.getMessageId(), voipICECandidatesMessage.getToIdentity()
-		);
+		// Enqueue
 		messageQueue.enqueue(voipICECandidatesMessage);
+
+		// Log
+		logCallInfo(callId, "Call ICE candidate message enqueued to {}", voipICECandidatesMessage.getToIdentity());
+		for (VoipICECandidatesData.Candidate candidate : Objects.requireNonNull(voipICECandidatesData.getCandidates())) {
+			logCallInfo(callId, "  Outgoing ICE candidate: {}", candidate.getCandidate());
+		}
+
 	}
 
 	/**
@@ -1178,8 +1236,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		msg.setToIdentity(contactModel.getIdentity());
 		msg.setData(callRingingData);
 
-		logger.info("{}: Enqueue VoipCallRinging message ID {} to {}", callId, msg.getMessageId(), msg.getToIdentity());
 		messageQueue.enqueue(msg);
+		logCallInfo(callId, "Call ringing message enqueued to {}", msg.getToIdentity());
 	}
 
 	/**
@@ -1202,9 +1260,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		final Integer duration = getCallDuration();
 		final boolean outgoing = this.isInitiator() == Boolean.TRUE;
 
-		logger.info("{}: Enqueue VoipCallHangup message ID {} to {} (prevState={}, duration={})",
-			callId, msg.getMessageId(), msg.getToIdentity(), state, duration);
 		messageQueue.enqueue(msg);
+		logCallInfo(
+			callId,
+			"Call hangup message enqueued to {} (prevState={}, duration={})",
+			msg.getToIdentity(), state, duration
+		);
 
 		// Notify the VoIP call event listener
 		if (duration == null && (state.isInitializing() || state.isCalling() || state.isDisconnecting())) {
@@ -1589,7 +1650,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 * Add a new ICE candidate to the cache.
 	 */
 	private void cacheCandidate(String identity, VoipICECandidatesData data) {
-		logger.debug("{}: Caching candidate from {}", data.getCallIdOrDefault(0L), identity);
+		logCallDebug(data.getCallIdOrDefault(0L), "Caching candidate from {}", identity);
 		synchronized (this.candidatesCache) {
 			if (this.candidatesCache.containsKey(identity)) {
 				List<VoipICECandidatesData> candidates = this.candidatesCache.get(identity);

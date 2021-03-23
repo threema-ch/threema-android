@@ -32,6 +32,7 @@
 package ch.threema.app.voip;
 
 import android.content.Context;
+import android.os.Build;
 import android.widget.Toast;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -47,7 +48,6 @@ import org.webrtc.DefaultVideoDecoderFactory;
 import org.webrtc.DefaultVideoEncoderFactory;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
-import org.webrtc.Logging;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.MediaStreamTrack;
@@ -110,11 +110,11 @@ import ch.threema.app.voip.signaling.ToSignalingMessage;
 import ch.threema.app.voip.util.SdpPatcher;
 import ch.threema.app.voip.util.SdpUtil;
 import ch.threema.app.voip.util.VideoCapturerUtil;
+import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
 import ch.threema.client.APIConnector;
-import ch.threema.logging.ThreemaLogger;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.stream.StreamSupport;
@@ -400,16 +400,12 @@ public class PeerConnectionClient {
 		final @Nullable EglBase.Context eglBaseContext,
 		final long callId
 	) {
-		// Set logger prefix
-		if (this.logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(String.valueOf(callId));
-		}
+		// Set logging prefix
+		VoipUtil.setLoggerPrefix(logger, callId);
 
 		// Create logger for SdpPatcher
 		final Logger sdpPatcherLogger = LoggerFactory.getLogger(PeerConnectionClient.class + ":" + "SdpPatcher");
-		if (sdpPatcherLogger instanceof ThreemaLogger) {
-			((ThreemaLogger) sdpPatcherLogger).setPrefix(String.valueOf(callId));
-		}
+		VoipUtil.setLoggerPrefix(sdpPatcherLogger, callId);
 
 		// Initialize instance variables
 		this.appContext = appContext;
@@ -570,7 +566,12 @@ public class PeerConnectionClient {
 		// Determine video encoder/decoder factory
 		final VideoEncoderFactory encoderFactory;
 		final VideoDecoderFactory decoderFactory;
-		if (peerConnectionParameters.videoCodecHwAcceleration && this.eglBaseContext != null) {
+		boolean useHardwareVideoCodec = peerConnectionParameters.videoCodecHwAcceleration;
+		if (!Config.allowHardwareVideoCodec()) {
+			this.logger.info("Video codec: Device {} is on hardware codec exclusion list", Build.MODEL);
+			useHardwareVideoCodec = false;
+		}
+		if (useHardwareVideoCodec && this.eglBaseContext != null) {
 			logger.info("Video codec: HW acceleration (VP8={}, H264HiP={})",
 				peerConnectionParameters.videoCodecEnableVP8,
 				peerConnectionParameters.videoCodecEnableH264HiP);
@@ -1400,15 +1401,17 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onIceCandidate(final IceCandidate candidate) {
+			logger.info("New local ICE candidate: {}", candidate.sdp);
+
 			// Discard loopback candidates
 			if (SdpUtil.isLoopbackCandidate(candidate.sdp)) {
-				logger.info("Discarding local loopback candidate: {}", candidate.sdp);
+				logger.info("Ignoring local ICE candidate (loopback): {}", candidate.sdp);
 				return;
 			}
 
 			// Discard IPv6 candidates if disabled
 			if (!PeerConnectionClient.this.peerConnectionParameters.allowIpv6 && SdpUtil.isIpv6Candidate(candidate.sdp)) {
-				logger.info("Discarding local IPv6 candidate (disabled via preferences): {}", candidate.sdp);
+				logger.info("Ignoring local ICE candidate (ipv6_disabled): {}", candidate.sdp);
 				return;
 			}
 
@@ -1419,7 +1422,7 @@ public class PeerConnectionClient {
 			final String relatedAddress = SdpUtil.getRelatedAddress(candidate.sdp);
 			if (relatedAddress != null && !relatedAddress.equals("0.0.0.0")) {
 				if (this.relatedAddresses.contains(relatedAddress)) {
-					logger.info("Discarding local relay candidate (duplicate related address {}): {}", relatedAddress, candidate.sdp);
+					logger.info("Ignoring local ICE candidate (duplicate_related_addr {}): {}", relatedAddress, candidate.sdp);
 					return;
 				} else {
 					this.relatedAddresses.add(relatedAddress);
@@ -1439,13 +1442,13 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onSignalingChange(PeerConnection.SignalingState newState) {
-			logger.info("SignalingState: {}", newState);
+			logger.info("Signaling state change to {}", newState);
 		}
 
 		@Override
 		public void onIceConnectionChange(final PeerConnection.IceConnectionState newState) {
 			executor.execute(() -> {
-				logger.info("IceConnectionState: {}", newState);
+				logger.info("ICE connection state change to {}", newState);
 				if (newState == IceConnectionState.CHECKING) {
 					events.onIceChecking(callId);
 				} else if (newState == IceConnectionState.CONNECTED) {
@@ -1506,13 +1509,13 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onIceGatheringChange(PeerConnection.IceGatheringState newState) {
-			logger.info("IceGatheringState: {}", newState);
+			logger.info("ICE gathering state change to {}", newState);
 			events.onIceGatheringStateChange(callId, newState);
 		}
 
 		@Override
 		public void onIceConnectionReceivingChange(boolean receiving) {
-			logger.info("IceConnectionReceiving changed to " + receiving);
+			logger.info("ICe connection receiving state change to {}", receiving);
 		}
 
 		@Override
@@ -1527,12 +1530,10 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onDataChannel(final DataChannel dc) {
-			if (logger.isInfoEnabled()) {
-				try {
-					logger.info("New data channel: {} (id={})", dc.label(), dc.id());
-				} catch (IllegalStateException e) {
-					logger.error("Could not fetch data channel information", e);
-				}
+			try {
+				logger.warn("New unexpected data channel: {} (id={})", dc.label(), dc.id());
+			} catch (IllegalStateException e) {
+				logger.error("New unexpected data channel (could not fetch information)", e);
 			}
 		}
 
