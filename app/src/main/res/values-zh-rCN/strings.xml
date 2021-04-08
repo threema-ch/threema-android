@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">联系人</string>
-    <string name="title_section1">聊天室</string>
-    <string name="title_compose_message">开始聊天</string>
+    <string name="title_section1">会话</string>
+    <string name="title_compose_message">发起新的会话</string>
     <string name="title_choose_recipient">选择接收者</string>
     <string name="title_keyfingerprint">密钥指纹</string>
     <string name="title_mythreemaid">我的 Threema ID</string>
@@ -25,14 +25,14 @@
     <string name="send">发送</string>
     <string name="prefs_privacy">隐私</string>
     <string name="prefs_notifications">声音和通知</string>
-    <string name="prefs_chatdisplay">聊天</string>
+    <string name="prefs_chatdisplay">会话</string>
     <string name="prefs_security">安全</string>
     <string name="prefs_sum_privacy">隐私设置</string>
     <string name="prefs_sum_notifications">设置声音和振动</string>
-    <string name="prefs_sum_chatdisplay">聊天设置</string>
+    <string name="prefs_sum_chatdisplay">会话设置</string>
     <string name="prefs_masterkey">对本地存储的数据进行加密</string>
     <string name="prefs_header_contacts">联系人</string>
-    <string name="prefs_header_chat">聊天</string>
+    <string name="prefs_header_chat">会话</string>
     <string name="prefs_header_reset">重置</string>
     <string name="prefs_header_keyboard">键盘</string>
     <string name="prefs_sum_sync_contacts_on">使用设备通讯录同步Threema用户</string>
@@ -59,7 +59,7 @@
     <string name="prefs_title_enter">按 “Enter” 键发送</string>
     <string name="prefs_sum_enter_on">按 “Enter” 键以立即发送信息</string>
     <string name="prefs_sum_enter_off">按 “Enter” 键以添加新行</string>
-    <string name="prefs_system_notifications">单次聊天</string>
+    <string name="prefs_system_notifications">单次会话</string>
     <string name="prefs_inapp">应用内</string>
     <string name="prefs_inapp_sounds">应用内声音</string>
     <string name="prefs_inapp_sounds_on">发送/接收消息时播放声音</string>
@@ -128,8 +128,8 @@
     <string name="email_already_linked">您的 Threema ID 已链接到此电子邮件地址</string>
     <string name="whoaaa">Threema 公告</string>
     <string name="really_delete_message_title">删除信息</string>
-    <string name="really_delete_thread">删除聊天</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">您是否确实要删除％d聊天？您将无法恢复
+    <string name="really_delete_thread">删除会话</string>
+    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">您是否确实要删除％d会话？您将无法恢复
 消息。</string>
     <string name="really_delete_contact">您真的要删除此联系人和所有关联的信息吗？</string>
     <string name="image_placeholder">图片</string>
@@ -235,7 +235,7 @@
     <string name="file_is_not_a_video">所选文件不是视频</string>
     <string name="masterkey_is_unlocked">主钥匙已解锁</string>
     <string name="file_too_large">文件大于最大50 MB</string>
-    <string name="deleting_thread">删除聊天</string>
+    <string name="deleting_thread">删除会话</string>
     <string name="enter_serial_body">请输入您的商店许可证密钥，或点击这里取回您的密钥：
 https://shop.threema.ch/retrieve_keys</string>
     <string name="enter_serial_title">解锁Threema</string>
@@ -287,7 +287,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="prefs_sum_pin_grace">激活屏幕锁定之前的时间</string>
     <string name="click_here_to_change_pin">这是 PIN 设置。点击这里即可更改。</string>
     <string name="set_pin_menu_title">设置新密码</string>
-    <string name="set_pin_summary_intro">通过设置 PIN 码（仅数字）来保护您的隐私。此 PIN 码可用于在限制时间后锁定 Threema，或保护私人聊天</string>
+    <string name="set_pin_summary_intro">通过设置 PIN 码（仅数字）来保护您的隐私。此 PIN 码可用于在限制时间后锁定 Threema，或保护私人会话</string>
     <string name="set_pin_again_summary">再次输入 PIN 码</string>
     <string name="set_pin_hint">PIN 码</string>
     <string name="title_addgroup">新群组</string>
@@ -295,7 +295,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="updating_system">正在更新系统</string>
     <string name="title_select_contacts">选择成员</string>
     <string name="pin_invalid_not_set">PIN 码无效。没有设置。</string>
-    <string name="prefs_group_notifications">群组聊天</string>
+    <string name="prefs_group_notifications">群组会话</string>
     <string name="add_group_members_list">群组成员</string>
     <string name="group_select_at_least_two">需要选择至少一名成员才能继续</string>
     <string name="group_select_max" tools:ignore="PluralsCandidate">您选择的成员不得超过 %1$d 个群组成员</string>
@@ -327,7 +327,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="state_dialog_modified">已更新</string>
     <string name="state_dialog_status">状态</string>
     <string name="title_tab_recent">最近</string>
-    <string name="no_recent_conversations">找不到聊天记录</string>
+    <string name="no_recent_conversations">找不到会话记录</string>
     <string name="save_changes">保存</string>
     <string name="group_created_confirm">群组创建成功</string>
     <string name="creating_group">建立群组</string>
@@ -388,7 +388,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="prefs_sum_validate_contacts">使用 Android 地址目录验证所有 Threema 联系人链接</string>
     <string name="prefs_title_fullscreen_ime">全屏键盘</string>
     <string name="prefs_sum_fullscreen_ime_on">如果您的设备处于横向模式，键盘将覆盖应用程序</string>
-    <string name="prefs_sum_fullscreen_ime_off">如果有空间，则在键盘上方显示聊天的预览</string>
+    <string name="prefs_sum_fullscreen_ime_off">如果有空间，则在键盘上方显示会话的预览</string>
     <string name="add_acount_from_within_threema">从 Threema 内部管理 Threema ID。</string>
     <string name="save_image">保存图片</string>
     <string name="share_image">分享图像</string>
@@ -432,7 +432,7 @@ https://shop.threema.ch/retrieve_keys</string>
 某些屏幕的屏幕截图</string>
     <string name="media_gallery">媒体库</string>
     <string name="media_file_not_found">无法打开媒体文件。它已被删除或未从服务器下载。</string>
-    <string name="no_media_found">在此聊天中找不到%s。</string>
+    <string name="no_media_found">在此会话中找不到%s。</string>
     <string name="media_gallery_all">一切</string>
     <string name="media_gallery_pictures">图片</string>
     <string name="media_gallery_videos">影片</string>
@@ -454,8 +454,8 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="sending_images">传送影像</string>
     <string name="share_conversation_body">需要具有 AES 支持的现代 ZIP 工具才能解压缩文件，例如
 http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
-    <string name="enter_zip_password_body">聊天将作为加密的zip文件发送。请选择一个密码：</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d 个聊天中有%1$d条新信息</string>
+    <string name="enter_zip_password_body">会话将作为加密的zip文件发送。请选择一个密码：</string>
+    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d 个会话中有%1$d条新信息</string>
     <string name="ballot_create">建立投票</string>
     <string name="ballot_choice_add">添加选项</string>
     <string name="ballot_state_closed">已关闭</string>
@@ -515,8 +515,8 @@ http://www.7-zip.org或https://itunes.apple.com/us/app/the-unarchiver/id42542435
     <string name="qr_code">二维码</string>
     <string name="really_leave_id_export">如果尚未这样做，请将ID导出文本字符串或相应的二维码保存到安全的地方或打印出来。没有备份，无法还原Threema ID。</string>
     <string name="revocation_key_title">ID吊销</string>
-    <string name="revocation_key_not_set">未设置撤销密码</string>
-    <string name="revocation_key_set_at">密码设置为%1$s</string>
+    <string name="revocation_key_not_set">未设置吊销密码</string>
+    <string name="revocation_key_set_at">吊销密码已于%1$s设置</string>
     <string name="prefs_sum_remove_wallpapers">删除所有个人壁纸</string>
     <string name="prefs_title_remove_wallpapers">删除所有壁纸</string>
     <string name="really_remove_wallpapers">您真的要删除所有壁纸吗？</string>
@@ -617,7 +617,7 @@ Threema 支持的所有表情符号。</string>
     <string name="polling_interval_15">15分钟（默认）</string>
     <string name="polling_interval_30">30分钟</string>
     <string name="prefs_polling_interval">投票间隔</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">已删除 %d 个聊天</string>
+    <string name="chat_deleted" tools:ignore="PluralsCandidate">已删除 %d 个会话</string>
     <string name="prefs_sendlog">发送日志</string>
     <string name="prefs_sendlog_summary">将日志文件发送给 Threema，以便在出现问题时进行进一步分析</string>
     <string name="permission_storage_required">若要保存或发送媒体，请允许 Threema 权限访问存储。</string>
@@ -722,7 +722,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="prefs_proximity_sensor">使用近距离传感器</string>
     <string name="prefs_proximity_sensor_explain">如果覆盖了近距离传感器，请使用听筒播放语音消息</string>
     <string name="error_creating_group">建立/更新群组时发生错误</string>
-    <string name="no_media_found_generic">在此聊天中找不到媒体</string>
+    <string name="no_media_found_generic">在此会话中找不到媒体</string>
     <string name="max_images_reached" tools:ignore="PluralsCandidate">最多 %d个项目可以一次发送</string>
     <string name="enter_description">请在此处描述错误/问题。</string>
     <string name="add_caption_hint">添加可选标题</string>
@@ -730,17 +730,17 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="continue_anyway">仍然继续</string>
     <string name="invalid_input">输入无效</string>
     <string name="already_licensed">已获得许可</string>
-    <string name="hide_chat">私人聊天</string>
-    <string name="really_hide_chat_message">您想将此聊天标记为私人吗？使用菜单切换信息列表中私人聊天的可见性。</string>
-    <string name="chat_hidden">聊天标记为私人</string>
-    <string name="title_show_private_chats">显示私人聊天</string>
-    <string name="title_hide_private_chats">隐藏私人聊天</string>
-    <string name="chat_visible">聊天不再是私密的</string>
+    <string name="hide_chat">私人会话</string>
+    <string name="really_hide_chat_message">您想将此会话标记为私人吗？使用菜单切换信息列表中私人会话的可见性。</string>
+    <string name="chat_hidden">会话标记为私人</string>
+    <string name="title_show_private_chats">显示私人会话</string>
+    <string name="title_hide_private_chats">隐藏私人会话</string>
+    <string name="chat_visible">会话不再是私密的</string>
     <string name="prefs_title_locking_mechanism">锁定装置</string>
     <string name="lock_option_none">没有</string>
     <string name="lock_option_pin">PIN 码</string>
     <string name="lock_option_screenlock">系统屏幕锁定</string>
-    <string name="hide_chat_message_explain">Threema 允许您使用 PIN 码保护某些聊天，并将其暂时隐藏在信息列表中。要启用私人聊天，请设置 PIN 码或在设置中启用系统屏幕锁定（Android 6.0+）。</string>
+    <string name="hide_chat_message_explain">Threema 允许您使用 PIN 码保护某些会话，并将其暂时隐藏在信息列表中。要启用私人会话，请设置 PIN 码或在设置中启用系统屏幕锁定（Android 6.0+）。</string>
     <string name="set_lock">现在设置</string>
     <string name="prefs_title_access_protection">访问保护</string>
     <string name="private_chat_subject">私人</string>
@@ -752,7 +752,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="grace_thirty_minutes">30分钟</string>
     <string name="grace_never">从不（手动）</string>
     <string name="never">从不</string>
-    <string name="unhide_chats_confirm">如果立即删除访问保护，您的私人聊天将再次可见。</string>
+    <string name="unhide_chats_confirm">如果立即删除访问保护，您的私人会话将再次可见。</string>
     <string name="selection_counter_label" tools:ignore="PluralsCandidate">已选择%d张图片</string>
     <string name="verification_started">验证开始</string>
     <string name="cannot_open_file">无法打开文件</string>
@@ -789,8 +789,8 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="battery_optimizations_disable_guide_ctd">在列表中搜索%s并停用优化</string>
     <string name="battery_optimizations_disable_confirm">您是否真的要在%1$s保持打开电池优化功能？%2$s无法正常工作。</string>
     <string name="enter_text_hint">输入文字</string>
-    <string name="backup_explain_text">如果您切换或丢失设备，如果没有备份，没有人可以恢复Threema ID或聊天。请使用适当的备份选项保存您的数据。</string>
-    <string name="data_backup_explain">数据备份包含：\n\n&#9679; 您的ID和密钥对\n&#9679; 联系人和信任级别\n&#9679; 群组成员资格\n&#9679; 聊天\n&#9679; 媒体和文件（可选）\n\n数据将保存到加密的ZIP文件中。建议备份成功完成后，将文件从设备移开。&#9679;</string>
+    <string name="backup_explain_text">如果您切换或丢失设备，如果没有备份，没有人可以恢复Threema ID或会话。请使用适当的备份选项保存您的数据。</string>
+    <string name="data_backup_explain">数据备份包含：\n\n&#9679; 您的ID和密钥对\n&#9679; 联系人和信任级别\n&#9679; 群组成员资格\n&#9679; 会话\n&#9679; 媒体和文件（可选）\n\n数据将保存到加密的ZIP文件中。建议备份成功完成后，将文件从设备移开。&#9679;</string>
     <string name="draw">画</string>
     <string name="edit">编辑</string>
     <string name="discard_changes">您要放弃更改吗？</string>
@@ -805,7 +805,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="ipv6_restart_now">现在重启</string>
     <string name="on_cap">开启</string>
     <string name="off_cap">关闭</string>
-    <string name="share_chat">分享聊天</string>
+    <string name="share_chat">分享会话</string>
     <string name="flip">翻转</string>
     <string name="to_front">移到最前</string>
     <string name="play">播放</string>
@@ -817,7 +817,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="profile_picture_release">谁可以看到您的个人头像？</string>
     <string name="picrelease_nobody">没有人</string>
     <string name="picrelease_selected">选定的联系人</string>
-    <string name="picrelease_everyone">选定的联系人</string>
+    <string name="picrelease_everyone">任何人</string>
     <string name="prefs_title_receive_profilepics">显示个人头像</string>
     <string name="prefs_sum_receive_profilepics_off">隐藏联系人提供的个人头像</string>
     <string name="prefs_sum_receive_profilepics_on">显示联系人提供的个人头像</string>
@@ -977,17 +977,17 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="work_data_sync_desc">Threema Work 同步</string>
     <string name="ballot_not_connected">在结束投票之前，请确保 Threema 在线。</string>
     <string name="empty_chat_title">清空聊天记录</string>
-    <string name="empty_chat_confirm">此聊天中的所有信息将被删除。是否继续？</string>
-    <string name="emptying_chat">清空聊天室</string>
-    <string name="set_private">标记为“私人聊天”</string>
-    <string name="unset_private">停用“私人聊天”</string>
+    <string name="empty_chat_confirm">此会话中的所有信息将被删除。是否继续？</string>
+    <string name="emptying_chat">清空会话</string>
+    <string name="set_private">标记为“私人会话”</string>
+    <string name="unset_private">停用“私人会话”</string>
     <string name="delete_group_message">您要离开此群组并完全删除吗？所有信息将被删除。</string>
     <string name="delete_left_group_message">您真的想删除这个群组吗？所有信息都会被删除。</string>
-    <string name="chats">聊天室</string>
+    <string name="chats">会话</string>
     <string name="notification_setting_ignored">任何变化都将被忽略！</string>
     <string name="notification_channel_alerts">警告和错误</string>
     <string name="notification_channel_notices">告示</string>
-    <string name="chat_updates">聊天室更新</string>
+    <string name="chat_updates">会话更新</string>
     <string name="backup_or_restore_progress">备份和还原进度</string>
     <string name="tooltip_export_id">点击这里立即共享或打印您的加密 Threema ID</string>
     <string name="downloading">正在下载</string>
@@ -1004,7 +1004,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="add_answer">添加答案</string>
     <string name="title_cannot_be_empty">投票标题不能为空</string>
     <string name="voip_disabled">Threema 通话被禁用</string>
-    <string name="hide_chat_enter_message_explain">此聊天标记为私人聊天。要输入该密码，请先设置访问保护。</string>
+    <string name="hide_chat_enter_message_explain">此会话被标记为私人会话。若要进入，请先设置访问保护密码。</string>
     <string name="unknown">未知</string>
     <string name="miui_notification_title">有关 MIUI 10 通知的重要通知</string>
     <string name="miui_notification_body">MIUI 10 默认禁用所有新创建的通知通道的声音和灯光（小米认为某些应用程序“重要”的应用程序除外）。您必须在手机的特定于应用程序的通知设置屏幕中为每个频道明确启用它们。请与手机的制造商联系以获取更多信息。</string>
@@ -1032,7 +1032,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="voice_action_title">语音动作</string>
     <string name="voice_action_body">语音操作正在处理中</string>
     <string name="permission_camera_photo_required">请允许使用相机权限以拍照</string>
-    <string name="global_search">搜索聊天</string>
+    <string name="global_search">搜索会话</string>
     <string name="global_search_empty_view_text">输入至少两个字符以搜索所有信息</string>
     <string name="my_id">我的ID</string>
     <string name="profile_picture_and_nickname">个人头像和昵称</string>
@@ -1042,14 +1042,14 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="lp_search_place">输入城市</string>
     <string name="lp_no_nearby_places_found">找不到附近的地方</string>
     <string name="select_directory_for_backup">保存在这里</string>
-    <string name="data_backup_headline">创建数据备份以保存您的所有数据，包括聊天和媒体。</string>
+    <string name="data_backup_headline">创建数据备份以保存您的所有数据，包括会话和媒体。</string>
     <string name="data_backup_save_path">备份路径</string>
     <string name="change">更改</string>
     <string name="data_backup_last_date">上次成功的数据备份</string>
     <string name="archived">已封存</string>
     <string name="to_archive">封存</string>
-    <string name="message_archived">已封存%d个聊天</string>
-    <string name="archived_chats">已封存的聊天</string>
+    <string name="message_archived">已封存%d个会话</string>
+    <string name="archived_chats">已封存的会话</string>
     <string name="unarchive">取消封存</string>
     <string name="no_archived_chats">没有已封存的聊天记录。\n要将聊天记录封存，请在信息列表中向左滑动。</string>
     <string name="add_contact_enter_id_hint">请输入您要添加的联系人的Threema ID</string>
@@ -1060,12 +1060,12 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="system_default">系统默认</string>
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
-    <string name="num_archived_chats">%d个已存档的聊天</string>
+    <string name="num_archived_chats">%d个已封存的会话</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">欢迎使用%s 4.5</string>
-    <string name="whatsnew_headline">%1$s 4.5带来全新的媒体体验。\n\n媒体抽屉界面进行了大修，现在可以选择基于机器学习的图像搜索。\n\n此外，我们还增加了所有聊天的全局文本搜索，改进了信息引用等。</string>
+    <string name="whatsnew_headline">%1$s 4.5带来全新的媒体体验。\n\n媒体抽屉界面进行了大修，现在可以选择基于机器学习的图像搜索。\n\n此外，我们还增加了所有会话的全局文本搜索，改进了信息引用等。</string>
     <string name="whatsnew2_title">有什么新消息？</string>
-    <string name="whatsnew2_body"><![CDATA[<p><b>媒体抽屉</b>：点击回形针图标，在可滚动的抽屉中浏览您的媒体文件。如果您不想让抽屉自动打开最新的媒体，请在聊天设置中禁用图片快速选择选项，地址是<i>设置/聊天/媒体快速选择</i>.</p>。
+    <string name="whatsnew2_body"><![CDATA[<p><b>媒体抽屉</b>：点击回形针图标，在可滚动的抽屉中浏览您的媒体文件。如果您不想让抽屉自动打开最新的媒体，请在会话设置中禁用图片快速选择选项，地址是<i>设置/会话/媒体快速选择</i>.</p>。
 <p><b>图像搜索</b>：搜索您的图像中的常见对象、活动和地点。<br>图像识别基于本地机器学习模型，不向 Threema 的服务器或任何第三方发送数据。由于分析图像是一项相当昂贵的任务，可能需要很长时间，该选项默认为禁用。您可以在<i>设置/媒体和存储/图像搜索</i>中找到它。</p>
 <p><b>发送媒体文件</b>：发送具有单独分辨率的图像，而无需更改全局设置。</p> <p><b>发送媒体文件：发送具有单独分辨率的图像，而无需更改全局设置。</p>
 <p><b>视频编辑器</b>：在发送前修剪视频。此外，视频转码过程已得到改进，现在可在后台工作。</p>
@@ -1073,7 +1073,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
 <p><b>全局搜索</b>：在所有聊天记录中搜索文本。只需在%1$s的主屏幕上点击<i>菜单/搜索聊天记录</i>即可。</p>。
 <p><b>引用</b>：%1$s现在允许您引用任何类型的媒体，包括图像、视频和语音消息。</p>
 <p><b>100个新表情</b>。检查期待已久的火锅&#129749;</p>。
-<p><b>大文本</b>：为了保持聊天界面的精简性，有大量文本的信息会以截断的聊天气泡的方式显示，并可根据需要展开。</p>]]></string>
+<p><b>大文本</b>：为了保持会话界面的精简性，有大量文本的信息会以截断的会话气泡的方式显示，并可根据需要展开。</p>]]></string>
     <string name="tooltip_identity_popup">点击这里可快速显示您的 Threema ID 或扫描其他人的 ID</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
@@ -1221,7 +1221,7 @@ Threema ID。您不会出现在朋友的联系人列表中。您真的要
     <string name="file_size">文件大小</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30天</string>
-    <string name="show_in_chat">在聊天中显示</string>
+    <string name="show_in_chat">在会话中显示</string>
     <string name="group_create_no_members">您确定要创建一个没有其他成员的空群组吗？</string>
     <string name="notes">注意</string>
     <string name="blur_faces">脸部模糊</string>
