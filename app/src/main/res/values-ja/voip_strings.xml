@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema 通話</string>
+    <string name="voip_hangup">電話を切る</string>
+    <string name="voip_toggle_mic">トグルマイク</string>
+    <string name="voip_toggle_speaker">トグルスピーカー</string>
+    <string name="voip_switch_cam">カメラの切り替え</string>
+    <string name="voip_switch_cam_front">フロントカメラに切り替え</string>
+    <string name="voip_switch_cam_rear">背面カメラに切り替え</string>
+    <string name="voip_toggle_video">ビデオモードの切り替え</string>
+    <string name="voip_call_confirm">%1$sに電話を掛けますか？</string>
+    <string name="voip_error_call">Threema通話のエラー</string>
+    <string name="voip_error_init_call">通話の初期化中にエラーが発生しました</string>
+    <string name="voip_notification_title">Threema通話の着信</string>
+    <string name="voip_notification_text">%1$s が呼び出されています</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">初期化中</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">接続中</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">切断中</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">呼び出し中</string>
+    <string name="voip_mic_enable">マイクを有効にする</string>
+    <string name="voip_mic_disable">マイクをミュート</string>
+    <string name="voip_checking_compatibility">この連絡先がThreema通話を受信できるかどうかの確認</string>
+    <string name="voip_incompatible">このコンタクトは、まだThreema通話を受信することができません。</string>
+    <string name="voip_call_status_unavailable">通話相手が見あたりません</string>
+    <string name="voip_call_status_rejected">通話は拒否されました</string>
+    <string name="voip_call_status_busy">相手が通話中です</string>
+    <string name="voip_call_status_busy_short">通話中</string>
+    <string name="voip_call_status_disabled">受信者によって無効化されたThreema通話</string>
+    <string name="voip_call_status_missed">不在着信</string>
+    <string name="voip_call_finished_outbox">発信</string>
+    <string name="voip_call_finished_inbox">着信</string>
+    <string name="voip_call_status_aborted">呼出中止</string>
+    <string name="voip_return_call">折り返し通話</string>
+    <string name="voip_accept">応答</string>
+    <string name="voip_reject">拒否</string>
+    <string name="voip_speakerphone">スピーカー</string>
+    <string name="voip_wired_headset">ヘッドセット</string>
+    <string name="voip_earpiece">電話</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">使用不可</string>
+    <string name="voip_call_finished">Threema通話は終了しました</string>
+    <string name="voip_another_call">接続できません。別のThreema通話が使用中です。</string>
+    <string name="voip_prefs_title_aec">エコー除去</string>
+    <string name="voip_prefs_aec_sw">ソフトのエコー除去</string>
+    <string name="voip_prefs_aec_hw">ハードウェアのエコー除去</string>
+    <string name="voip_prefs_title_video_codec">ビデオコーデック</string>
+    <string name="voip_prefs_video_aec_hw">ハードウェアの高速化</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8の無効化</string>
+    <string name="voip_prefs_video_codec_no_h264hip">VP8の無効化</string>
+    <string name="voip_prefs_video_codec_sw">ソフトウェアコーデック</string>
+    <string name="voip_connection_failed">接続を確立できませんでした</string>
+    <string name="voip_connection_lost">接続切れ</string>
+    <string name="prefs_voip_reject_incoming_calls_title">モバイル通話を拒否</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Threema 通話を使用中の間はモバイル通話を拒否します。</string>
+    <string name="voip_contact_not_found">番号のThreemaの連絡先は見つかりませんでした。</string>
+    <string name="voip_another_pstn_call">通話を開始することができません。通常の電話はまだ有効です。</string>
+    <string name="voip_call_status_off_hours">営業時間外の電話</string>
+    <string name="voip_peer_video_disabled">ビデオ通話が相手側で無効になっています。</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC診断</string>
+    <string name="voip_prefs_webrtc_debug_summary">音声通話接続の設定に関する問題をデバッグするために、このツールを起動する</string>
+    <string name="voip_webrtc_debug">WebRTC診断</string>
+    <string name="voip_webrtc_debug_intro">「開始」ボタンを押して、テストを開始します。</string>
+    <string name="voip_webrtc_debug_start">開始</string>
+    <string name="voip_webrtc_debug_done">完了しました。通話接続の構築に問題がある場合は、この出力をThreemaのサポートに送ってください。</string>
+    <string name="voip_webrtc_debug_copied">クリップボードにコピーしました。</string>
+    <string name="voip_webrtc_debug_copy_clipboard">クリップボードにコピー</string>
+</resources>

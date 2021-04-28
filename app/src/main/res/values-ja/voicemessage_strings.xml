@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">メッセージの録音</string>
+    <string name="recording_stopped_title">録音をストップ</string>
+    <string name="recording_stopped_message">録音された音声メッセージを今すぐ送信しますか？</string>
+    <string name="recording_canceled">不明なエラーにより録音がキャンセルされました。</string>
+    <string name="cancel_recording">録音を中止</string>
+    <string name="cancel_recording_message">本当に録音を中止しますか？</string>
+    <string name="stop">ストップ</string>
+</resources>

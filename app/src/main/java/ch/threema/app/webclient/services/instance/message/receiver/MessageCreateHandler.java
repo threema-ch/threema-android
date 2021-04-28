@@ -22,6 +22,7 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
@@ -100,13 +101,17 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 		}
 	}
 
-	private void handle(Utils.ModelWrapper model, Map<String, Value> message, String temporaryId) {
+	private void handle(
+		@NonNull Utils.ModelWrapper receiverModel,
+		@NonNull Map<String, Value> message,
+		@NonNull String temporaryId
+	) {
 		logger.debug("Dispatching message create");
 		try {
 			this.lifetimeService.acquireConnection(CONNECTION_SOURCE_TAG);
 
 			// Check if the contact is blocked
-			ch.threema.app.messagereceiver.MessageReceiver receiver = model.getReceiver();
+			ch.threema.app.messagereceiver.MessageReceiver receiver = receiverModel.getReceiver();
 			if (receiver.getType() == receiver.Type_CONTACT) {
 				ContactModel receiverContact = ((ContactMessageReceiver) receiver).getContact();
 				if (receiverContact != null && this.blacklistService.has(receiverContact.getIdentity())) {
@@ -115,8 +120,8 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 			}
 
 			// Send message
-			AbstractMessageModel m = this.handle(
-				MessageUtil.getAllReceivers(model.getReceiver()),
+			final AbstractMessageModel m = this.handle(
+				MessageUtil.getAllReceivers(receiverModel.getReceiver()),
 				message
 			);
 			if (m == null) {
@@ -126,13 +131,12 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 			}
 
 			// Send response
-			Map<String, Value> args = this.getArguments(message, false);
+			final Map<String, Value> args = this.getArguments(message, false);
 			this.send(this.dispatcher,
-					//append new created message id
+					// Data, including newly created message id
 					new MsgpackObjectBuilder()
 						.put(Protocol.ARGUMENT_MESSAGE_ID, String.valueOf(m.getId())),
-
-					//return all the evil stuff
+					// Args
 					new MsgpackObjectBuilder()
 						.put(Protocol.ARGUMENT_SUCCESS, true)
 						.put(Protocol.ARGUMENT_RECEIVER_TYPE, args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().toString())

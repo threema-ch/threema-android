@@ -185,7 +185,9 @@
 		<item>Rumantsch</item>
 		<item>Čeština</item>
 		<item>Türkçe</item>
-		<item>简</item> <!-- Chinese simplified -->
+		<item>简体中文</item> <!-- Chinese simplified -->
+		<item>繁體中文</item> <!-- Chinese traditional -->
+		<item>日本語</item> <!-- Japanese -->
 	</string-array>
 	<!--suppress CheckTagEmptyBody -->
 	<string-array name="list_language_override_values">
@@ -202,7 +204,9 @@
 		<item>rm</item>
 		<item>cs</item>
 		<item>tr</item>
-		<item>zh</item> <!-- Chinese simplified -->
+		<item>zh-rCN</item> <!-- Chinese simplified -->
+		<item>zh-rTW</item> <!-- Chinese traditional -->
+		<item>ja</item> <!-- Japanese -->
 	</string-array>
 	<string-array name="picrelease_choices">
 		<item>@string/picrelease_nobody</item>
@@ -324,15 +328,5 @@
 		<item>0</item>
 		<item>1</item>
 		<item>2</item>
-	</string-array>
-
-	<string-array name="label_suggestions">
-		<item>Sport</item>
-		<item>Fun</item>
-		<item>Forest</item>
-		<item>Lake</item>
-		<item>Music</item>
-		<item>Surfing</item>
-		<item>Skiing</item>
 	</string-array>
 </resources>

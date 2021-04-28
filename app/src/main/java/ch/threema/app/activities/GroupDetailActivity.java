@@ -236,12 +236,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity) {
+		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
 			resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String identity) {
+		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
 			if (identity.equals(myIdentity)) {
 				finishUp();
 			} else {
@@ -250,7 +250,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String identity) {
+		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
 			if (identity.equals(myIdentity)) {
 				finishUp();
 			} else {
@@ -695,8 +695,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 					model = groupService.createGroup(
 							newGroupName,
 							groupService.getGroupIdentities(groupModel),
-							avatar
-					);
+							avatar);
 				} catch (Exception e) {
 					logger.error("Exception", e);
 					return null;

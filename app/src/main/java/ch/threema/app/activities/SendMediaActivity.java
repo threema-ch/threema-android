@@ -92,6 +92,7 @@ import ch.threema.app.camera.VideoEditView;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiPicker;
+import ch.threema.app.mediaattacher.MediaFilterQuery;
 import ch.threema.app.mediaattacher.MediaSelectionActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.DeadlineListService;
@@ -171,6 +172,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private boolean useExternalCamera;
 	private VideoEditView videoEditView;
 	private MenuItem settingsItem;
+	private MediaFilterQuery lastMediaFilter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -255,6 +257,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		this.pickFromCamera = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, false);
 		this.useExternalCamera = intent.getBooleanExtra(EXTRA_USE_EXTERNAL_CAMERA, false);
 		this.messageReceivers = IntentDataUtil.getMessageReceiversFromIntent(intent);
+		// check if we previously filtered media in MediaAttachActivity to reuse the filter when adding additional media items
+		this.lastMediaFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
 
 		if (this.pickFromCamera && savedInstanceState == null) {
 			launchCamera();
@@ -619,6 +623,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private void addImage() {
 		//FileUtil.selectFile(SendMediaActivity.this, null, "image/*", ThreemaActivity.ACTIVITY_ID_PICK_IMAGE, true, 0, null);
 		Intent intent = new Intent(getApplicationContext(), MediaSelectionActivity.class);
+		// pass last media filter to open the chooser with the same selection.
+		if (lastMediaFilter != null) {
+			intent = IntentDataUtil.addLastMediaFilterToIntent(intent, this.lastMediaFilter);
+		}
 		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_PICK_MEDIA);
 	}
 
@@ -711,6 +719,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void prepareRotate() {
+		if (bigImageView.getDrawable() == null) {
+			return;
+		}
+
 		int oldRotation = SendMediaActivity.this.mediaItems.get(bigImagePos).getRotation();
 		int newRotation = (oldRotation + 90) % 360;
 
@@ -753,6 +765,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void prepareFlip() {
+		if (bigImageView.getDrawable() == null) {
+			return;
+		}
+
 		bigImageView.animate().rotationY(180f)
 			.setDuration(IMAGE_ANIMATION_DURATION_MS)
 			.setInterpolator(new FastOutSlowInInterpolator())
@@ -1014,6 +1030,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					if (mediaItemsList != null){
 						addItemsByMediaItem(mediaItemsList);
 					}
+					// update last media filter used to add media items.
+					this.lastMediaFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
 				default:
 					break;
 			}
@@ -1034,7 +1052,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		messageService.sendMediaAsync(mediaItems, messageReceivers, null);
 
-		setResult(RESULT_OK);
+		// return last media filter to chat via intermediate hop through MediaAttachActivity
+		if (lastMediaFilter != null) {
+			Intent lastMediaSelectionResult = IntentDataUtil.addLastMediaFilterToIntent(new Intent(), this.lastMediaFilter);
+			setResult(RESULT_OK, lastMediaSelectionResult);
+		} else {
+			setResult(RESULT_OK);
+		}
 		finish();
 	}
 
@@ -1239,10 +1263,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		updateMenu();
 
 		String caption = item.getCaption();
-		captionEditText.setText(caption);
+		captionEditText.setText(null);
 
 		if (!TestUtil.empty(caption)) {
-			captionEditText.setSelection(caption.length());
+			captionEditText.append(caption);
 		}
 	}
 

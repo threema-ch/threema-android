@@ -406,7 +406,8 @@ public class ServiceManager {
 					this.getApiService(),
 					this.getDownloadService(),
 					this.getHiddenChatsListService(),
-					this.getProfilePicRecipientsService()
+					this.getProfilePicRecipientsService(),
+					this.getBlackListService()
 			);
 		}
 
@@ -605,7 +606,8 @@ public class ServiceManager {
 					this.getWallpaperService(),
 					this.getMutedChatsListService(),
 					this.getHiddenChatsListService(),
-					this.getRingtoneService()
+					this.getRingtoneService(),
+					this.getBlackListService()
 			);
 		}
 		return this.groupService;
@@ -643,6 +645,7 @@ public class ServiceManager {
 	public ConversationTagService getConversationTagService() {
 		if(null == this.conversationService) {
 			this.conversationTagService = new ConversationTagServiceImpl(
+				this.getContext(),
 				this.databaseServiceNew
 			);
 		}

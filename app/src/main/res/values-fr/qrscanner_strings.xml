@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="msg_default_status">Placez un code QR dans le viseur rectangulaire pour le scanner.</string>
+    <string name="msg_default_status">Placez un code QR dans le viseur rectangulaire pour le scanner.</string>
     <string name="msg_camera_framework_bug">Impossible d\'accéder à l\'appareil photo Android. Assurez-vous que l\'autorisation d\'accéder à l\'appareil photo a été accordée ou redémarrez votre appareil.</string>
 </resources>

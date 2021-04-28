@@ -223,13 +223,14 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__inapp_sounds));
 	}
 
-    @Override
-    public boolean isInAppVibrate() {
-        return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__inapp_vibrate));
-    }
+	@Override
+	public boolean isInAppVibrate() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__inapp_vibrate));
+	}
 
 	@Override
-	@ImageScale public int getImageScale() {
+	@ImageScale
+	public int getImageScale() {
 		String imageScale = this.preferenceStore.getString(this.getKeyName(R.string.preferences__image_size));
 		if (imageScale == null || imageScale.length() == 0) {
 			return ImageScale_MEDIUM;
@@ -354,12 +355,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public boolean isMasterKeyNewMessageNotifications() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__masterkey_notification_newmsg));
 	}
-/*
-	@Override
-	public boolean isPinLockEnabled() {
-		return isPinSet() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__pin_lock_enabled));
-	}
-*/
+
+	/*
+	    @Override
+	    public boolean isPinLockEnabled() {
+		    return isPinSet() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__pin_lock_enabled));
+	    }
+    */
 	@Override
 	public boolean isPinSet() {
 		return isPinCodeValid(this.preferenceStore.getString(this.getKeyName(R.string.preferences__pin_lock_code), true));
@@ -383,16 +385,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 		// use MessageDigest for a timing-safe comparison
 		return
 			code != null &&
-			storedCode != null &&
-			MessageDigest.isEqual(storedCode.getBytes(), code.getBytes());
+				storedCode != null &&
+				MessageDigest.isEqual(storedCode.getBytes(), code.getBytes());
 	}
 
 	private boolean isPinCodeValid(String code) {
 		if (TestUtil.empty(code))
 			return false;
 		else
-			return (code.length()>= ThreemaApplication.MIN_PIN_LENGTH &&
-				code.length()<=ThreemaApplication.MAX_PIN_LENGTH &&
+			return (code.length() >= ThreemaApplication.MIN_PIN_LENGTH &&
+				code.length() <= ThreemaApplication.MAX_PIN_LENGTH &&
 				TextUtils.isDigitsOnly(code));
 	}
 
@@ -400,12 +402,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public int getPinLockGraceTime() {
 		String pos = this.preferenceStore.getString(this.getKeyName(R.string.preferences__pin_lock_grace_time));
 		try {
-			int time =  Integer.parseInt(pos);
+			int time = Integer.parseInt(pos);
 			if (time >= 30 || time < 0) {
 				return time;
 			}
-		}
-		catch (NumberFormatException x) {
+		} catch (NumberFormatException x) {
 
 		}
 		return -1;
@@ -419,22 +420,22 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void incrementIDBackupCount() {
 		this.preferenceStore.save(
-				this.getKeyName(R.string.preferences__id_backup_count),
-				this.getIDBackupCount()+1);
+			this.getKeyName(R.string.preferences__id_backup_count),
+			this.getIDBackupCount() + 1);
 	}
 
 	@Override
 	public void resetIDBackupCount() {
 		this.preferenceStore.save(
-				this.getKeyName(R.string.preferences__id_backup_count),
-				0);
+			this.getKeyName(R.string.preferences__id_backup_count),
+			0);
 	}
 
 	@Override
 	public void setLastIDBackupReminderDate(Date lastIDBackupReminderDate) {
 		this.preferenceStore.save(
-				this.getKeyName(R.string.preferences__last_id_backup_date),
-				lastIDBackupReminderDate
+			this.getKeyName(R.string.preferences__last_id_backup_date),
+			lastIDBackupReminderDate
 		);
 	}
 
@@ -442,9 +443,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public String getContactListSorting() {
 		String sorting = this.preferenceStore.getString(this.getKeyName(R.string.preferences__contact_sorting));
 
-		if(sorting == null || sorting.length() == 0) {
+		if (sorting == null || sorting.length() == 0) {
 			//set last_name - first_name as default
-			sorting =  this.context.getString(R.string.contact_sorting__last_name);
+			sorting = this.context.getString(R.string.contact_sorting__last_name);
 			this.preferenceStore.save(this.getKeyName(R.string.preferences__contact_sorting), sorting);
 		}
 
@@ -460,9 +461,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public String getContactFormat() {
 		String format = this.preferenceStore.getString(this.getKeyName(R.string.preferences__contact_format));
 
-		if(format == null || format.length() == 0) {
+		if (format == null || format.length() == 0) {
 			//set firstname lastname as default
-			format =  this.context.getString(R.string.contact_format__first_name_last_name);
+			format = this.context.getString(R.string.contact_format__first_name_last_name);
 			this.preferenceStore.save(this.getKeyName(R.string.preferences__contact_format), format);
 		}
 
@@ -520,7 +521,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public String[] getList(String listName) {
 		String[] res = this.preferenceStore.getStringArray(listName);
-		if(res == null) {
+		if (res == null) {
 			return new String[0];
 		}
 
@@ -530,8 +531,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setList(String listName, String[] identities) {
 		this.preferenceStore.save(
-				listName,
-				identities
+			listName,
+			identities
 		);
 	}
 
@@ -543,8 +544,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setHashMap(String listName, HashMap<Integer, String> hashMap) {
 		this.preferenceStore.save(
-				listName,
-				hashMap
+			listName,
+			hashMap
 		);
 	}
 
@@ -556,9 +557,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setStringHashMap(String listName, HashMap<String, String> hashMap) {
 		this.preferenceStore.saveStringHashMap(
-				listName,
-				hashMap,
-				false
+			listName,
+			hashMap,
+			false
 		);
 	}
 
@@ -571,30 +572,26 @@ public class PreferenceServiceImpl implements PreferenceService {
 		List<String[]> res = new ArrayList<String[]>();
 		Map<String, ?> values = this.preferenceStore.getAllNonCrypted();
 		Iterator<String> i = values.keySet().iterator();
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			String key = i.next();
 			Object v = values.get(key);
 
 			String value = null;
 			if (v instanceof Boolean) {
 				value = String.valueOf(v);
-			}
-			else if (v instanceof Float) {
+			} else if (v instanceof Float) {
 				value = String.valueOf(v);
-			}
-			else if (v instanceof Integer) {
+			} else if (v instanceof Integer) {
 				value = String.valueOf(v);
-			}
-			else if (v instanceof Long) {
+			} else if (v instanceof Long) {
 				value = String.valueOf(v);
-			}
-			else if (v instanceof String) {
+			} else if (v instanceof String) {
 				value = ((String) v);
 			}
 			res.add(new String[]{
-					key,
-					value,
-					v.getClass().toString()
+				key,
+				value,
+				v.getClass().toString()
 			});
 		}
 		return res;
@@ -603,8 +600,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean read(List<String[]> values) {
 
-		for(String[] v: values) {
-			if(v.length != 3) {
+		for (String[] v : values) {
+			if (v.length != 3) {
 				//invalid row
 				return false;
 			}
@@ -615,17 +612,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 			if (valueClass.equals(Boolean.class.toString())) {
 				this.preferenceStore.save(key, Boolean.valueOf(value));
-			}
-			else if (valueClass.equals(Float.class.toString())) {
+			} else if (valueClass.equals(Float.class.toString())) {
 //					this.preferenceStore.save(key, ((Float) v).floatValue());
-			}
-			else if (valueClass.equals(Integer.class.toString())) {
+			} else if (valueClass.equals(Integer.class.toString())) {
 				this.preferenceStore.save(key, Integer.valueOf(value));
-			}
-			else if (valueClass.equals(Long.class.toString())) {
+			} else if (valueClass.equals(Long.class.toString())) {
 				this.preferenceStore.save(key, Long.valueOf(value));
-			}
-			else if (valueClass.equals(String.class.toString())) {
+			} else if (valueClass.equals(String.class.toString())) {
 				this.preferenceStore.save(key, value);
 			}
 		}
@@ -791,17 +784,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setAppLogoExpiresAt(Date expiresAt, int theme) {
 		this.preferenceStore.save(this.getKeyName(
-				theme == ConfigUtils.THEME_DARK ?
-						R.string.preferences__app_logo_dark_expires_at :
-						R.string.preferences__app_logo_light_expires_at ), expiresAt);
+			theme == ConfigUtils.THEME_DARK ?
+				R.string.preferences__app_logo_dark_expires_at :
+				R.string.preferences__app_logo_light_expires_at), expiresAt);
 	}
 
 	@Override
 	public Date getAppLogoExpiresAt(int theme) {
 		return this.preferenceStore.getDate(this.getKeyName(
-				theme == ConfigUtils.THEME_DARK ?
-					R.string.preferences__app_logo_dark_expires_at :
-					R.string.preferences__app_logo_light_expires_at));
+			theme == ConfigUtils.THEME_DARK ?
+				R.string.preferences__app_logo_dark_expires_at :
+				R.string.preferences__app_logo_light_expires_at));
 	}
 
 	@Override
@@ -870,7 +863,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__message_drafts), true);
 	}
 
-	private @NonNull String getAppLogoKey(@AppTheme int theme) {
+	private @NonNull
+	String getAppLogoKey(@AppTheme int theme) {
 		if (theme == ConfigUtils.THEME_DARK) {
 			return this.getKeyName(R.string.preferences__app_logo_dark_url);
 		}
@@ -936,16 +930,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setPushToken(String gcmToken) {
 		this.preferenceStore.save(
-				this.getKeyName(R.string.preferences__gcm_token),
-				gcmToken,
-				true);
+			this.getKeyName(R.string.preferences__gcm_token),
+			gcmToken,
+			true);
 	}
 
 	@Override
 	public String getPushToken() {
 		return this.preferenceStore.getString(
-				this.getKeyName(R.string.preferences__gcm_token),
-				true
+			this.getKeyName(R.string.preferences__gcm_token),
+			true
 		);
 	}
 
@@ -1016,7 +1010,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__receive_profilepics));
 	}
 
-	public @NonNull String getAECMode() {
+	public @NonNull
+	String getAECMode() {
 		String mode = this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_echocancel));
 		if ("sw".equals(mode)) {
 			return mode;
@@ -1025,7 +1020,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public @NonNull String getVideoCodec() {
+	public @NonNull
+	String getVideoCodec() {
 		String mode = this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_video_codec));
 		if (mode != null) {
 			return mode;
@@ -1201,9 +1197,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public ThreemaSafeServerInfo getThreemaSafeServerInfo() {
 		return new ThreemaSafeServerInfo(
-				this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_name), true),
-				this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_username), true),
-				this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_password), true)
+			this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_name), true),
+			this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_username), true),
+			this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_password), true)
 		);
 	}
 
@@ -1329,7 +1325,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setWorkDirectoryCategories(List<WorkDirectoryCategory> categories) {
 		JSONArray array = new JSONArray();
-		for(WorkDirectoryCategory category : categories) {
+		for (WorkDirectoryCategory category : categories) {
 			String categoryObjectString = category.toJSON();
 			if (!TestUtil.empty(categoryObjectString)) {
 				try {
@@ -1412,8 +1408,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setDataBackupUri(Uri newUri) {
 		this.preferenceStore.save(
-				this.getKeyName(R.string.preferences__data_backup_uri),
-				newUri != null ? newUri.toString() : null
+			this.getKeyName(R.string.preferences__data_backup_uri),
+			newUri != null ? newUri.toString() : null
 		);
 	}
 
@@ -1524,7 +1520,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public @Nullable String getPoiServerHostOverride() {
+	public @Nullable
+	String getPoiServerHostOverride() {
 		// Defined in the developers settings menu
 		final String override = this.preferenceStore.getString(this.getKeyName(R.string.preferences__poi_host));
 		if ("".equals(override)) {
@@ -1545,22 +1542,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public boolean getIsImageLabelingTooltipShown() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__image_labeling_tooltip_shown));
+	public void setVoiceRecorderBluetoothDisabled(boolean disabled) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__voicerecorder_bluetooth_disabled), disabled);
+
 	}
 
 	@Override
-	public void setIsImageLabelingTooltipShown(boolean shown) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__image_labeling_tooltip_shown), shown);
-	}
-
-	@Override
-	public boolean getIsImageResolutionTooltipShown() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__image_resolution_tooltip_shown));
-	}
-
-	@Override
-	public void setIsImageResolutionTooltipShown(boolean shown) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__image_resolution_tooltip_shown), shown);
+	public boolean getVoiceRecorderBluetoothDisabled() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voicerecorder_bluetooth_disabled));
 	}
 }

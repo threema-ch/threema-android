@@ -33,6 +33,7 @@ import java.util.List;
 
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ConversationTagModel;
 
 public class ConversationTagFactory extends ModelFactory {
@@ -88,6 +89,16 @@ public class ConversationTagFactory extends ModelFactory {
 					conversationUid,
 					tag
 				});
+	}
+
+	public long countByTag(String tag) {
+		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+			"SELECT COUNT(*) FROM " + this.getTableName()
+				+ " WHERE " + ConversationTagModel.COLUMN_TAG + "=?",
+			new String[]{
+				tag
+			}
+		));
 	}
 
 	private List<ConversationTagModel> convertList(Cursor cursor) {

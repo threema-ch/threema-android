@@ -33,14 +33,14 @@
 
 	<ImageView
 		android:id="@+id/status"
-		android:layout_width="24dp"
-		android:layout_height="16dp"
+		android:layout_width="18dp"
+		android:layout_height="18dp"
 		android:layout_centerVertical="true"
 		android:layout_alignParentRight="true"
 		android:layout_alignWithParentIfMissing="true"
 		android:layout_marginBottom="1dp"
 		android:layout_marginLeft="10dip"
 		app:tint="?attr/textColorSecondary"
-		android:src="@drawable/ic_label_group_neutral"/>
+		app:srcCompat="@drawable/ic_group_filled"/>
 
 </RelativeLayout>

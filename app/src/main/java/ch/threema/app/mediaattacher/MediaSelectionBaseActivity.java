@@ -25,39 +25,30 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.BaseColumns;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -69,18 +60,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.PopupMenuWrapper;
-import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -90,26 +82,26 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.UnlockMasterKeyActivity;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.CheckableFrameLayout;
-import ch.threema.app.ui.GridRecyclerView;
+import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.MediaGridItemDecoration;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.ui.OnKeyboardBackRespondingSearchView;
-import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
-import ch.threema.app.utils.MimeUtil;
 import ch.threema.localcrypto.MasterKey;
+import me.zhanghai.android.fastscroll.FastScroller;
+import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
-import static android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI;
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_BUCKET;
-import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_LABEL;
-import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_SELECTED;
-import static ch.threema.app.mediaattacher.MediaAttachViewModel.FILTER_MEDIA_TYPE;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -123,6 +115,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	// Threema services
 	protected ServiceManager serviceManager;
 	protected PreferenceService preferenceService;
+	protected GroupService groupService;
 
 	public static final String KEY_BOTTOM_SHEET_STATE = "bottom_sheet_state";
 	protected static final int PERMISSION_REQUEST_ATTACH_FROM_GALLERY = 4;
@@ -132,7 +125,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected CoordinatorLayout rootView;
 	protected AppBarLayout appBarLayout;
 	protected MaterialToolbar toolbar;
-	protected GridRecyclerView mediaAttachRecyclerView;
+	protected EmptyRecyclerView mediaAttachRecyclerView;
+	protected FastScroller fastScroller;
 	protected GridLayoutManager gridLayoutManager;
 	protected ConstraintLayout bottomSheetLayout;
 	protected ImageView dragHandle;
@@ -140,23 +134,19 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected LinearLayout menuTitleFrame;
 	protected TextView dateTextView, menuTitle;
 	protected DisplayMetrics displayMetrics;
-	protected SearchView searchView;
-	protected MenuItem searchItem, selectFromGalleryItem;
+	protected MenuItem selectFromGalleryItem;
 	protected PopupMenu bucketFilterMenu;
 
 	protected MediaAttachViewModel mediaAttachViewModel;
 
 	protected MediaAttachAdapter mediaAttachAdapter;
-	protected CursorAdapter suggestionAdapter;
-	protected AutoCompleteTextView searchAutoComplete;
-	protected List<String> labelSuggestions;
 	protected int peekHeightNumElements = 1;
 
 	private boolean isDragging = false;
+	private boolean bottomSheetScroll = false;
 
 	// Locks
 	private final Object filterMenuLock = new Object();
-	private final Object firstTimeTooltipLock = new Object();
 
 	/* start lifecycle methods */
 	@Override
@@ -168,11 +158,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		// set font size according to user preferences
 		getTheme().applyStyle(preferenceService.getFontStyle(), true);
 		initActivity(savedInstanceState);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
 	}
 
 	@UiThread
@@ -226,6 +211,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		if (serviceManager != null) {
 			try {
 				this.preferenceService = serviceManager.getPreferenceService();
+				this.groupService = serviceManager.getGroupService();
 			} catch (Exception e) {
 				logger.error("Exception", e);
 				finish();
@@ -238,10 +224,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.rootView = findViewById(R.id.coordinator);
 		this.appBarLayout = findViewById(R.id.appbar_layout);
 		this.toolbar = findViewById(R.id.toolbar);
-		this.searchItem = this.toolbar.getMenu().findItem(R.id.menu_search);
 		this.selectFromGalleryItem = this.toolbar.getMenu().findItem(R.id.menu_select_from_gallery);
-		this.searchView = (SearchView) searchItem.getActionView();
-		this.searchAutoComplete = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
 		this.menuTitleFrame = findViewById(R.id.toolbar_title);
 		this.menuTitle = findViewById(R.id.toolbar_title_textview);
 		this.bottomSheetLayout = findViewById(R.id.bottom_sheet);
@@ -250,8 +233,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.controlPanel = findViewById(R.id.control_panel);
 		this.dateView = findViewById(R.id.date_separator_container);
 		this.dateTextView = findViewById(R.id.text_view);
-
-		this.searchView.setIconifiedByDefault(true);
 
 		// fill background with transparent black to see chat behind drawer
 		FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
@@ -280,14 +261,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			contentFrameLayout.setOnClickListener(v -> finish());
 
 			this.gridLayoutManager = new GridLayoutManager(this, 4);
-			mediaAttachRecyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing), 4));
-			mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
+			this.mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
 
 			this.peekHeightNumElements = 1;
 		} else {
 			this.gridLayoutManager = new GridLayoutManager(this, 3);
-			mediaAttachRecyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing), 3));
-			mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
+			this.mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
 
 			this.peekHeightNumElements = isInSplitScreenMode() ? 1 : 2;
 		}
@@ -297,25 +276,21 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 		// Listen for layout changes
 		this.mediaAttachAdapter = new MediaAttachAdapter(this, this);
+		this.mediaAttachRecyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 		this.mediaAttachRecyclerView.setAdapter(mediaAttachAdapter);
+		ProgressBar progressBar = (ProgressBar) getLayoutInflater().inflate(R.layout.item_progress, null);
 
-		// Wait for search labels to be ready
-		if (ConfigUtils.isPlayServicesInstalled(this)) {
-			this.mediaAttachViewModel.getSuggestionLabels().observe(this, labels -> {
-				if (labels != null && !labels.isEmpty()) {
-					this.labelSuggestions = labels;
-					this.onLabelingComplete();
-
-					// reset last recent label filter if activity was destroyed by the system due to memory pressure etc.
-					String savedQuery = mediaAttachViewModel.getLastQuery();
-					Integer savedQueryType = mediaAttachViewModel.getLastQueryType();
-					if (savedQueryType != null && savedQueryType == FILTER_MEDIA_LABEL) {
-						mediaAttachViewModel.setMediaByLabel(savedQuery);
-						searchView.clearFocus();
-					}
-				}
-			});
-		}
+		ConstraintSet set = new ConstraintSet();
+		// set view id, else getId() returns -1
+		progressBar.setId(View.generateViewId());
+		bottomSheetLayout.addView(progressBar, 0);
+		set.clone(bottomSheetLayout);
+		set.connect(progressBar.getId(), ConstraintSet.TOP, bottomSheetLayout.getId(), ConstraintSet.TOP, 60);
+		set.connect(progressBar.getId(), ConstraintSet.BOTTOM, bottomSheetLayout.getId(), ConstraintSet.BOTTOM, 60);
+		set.connect(progressBar.getId(), ConstraintSet.LEFT, bottomSheetLayout.getId(), ConstraintSet.LEFT, 60);
+		set.connect(progressBar.getId(), ConstraintSet.RIGHT, bottomSheetLayout.getId(), ConstraintSet.RIGHT, 60);
+		set.applyTo(bottomSheetLayout);
+		this.mediaAttachRecyclerView.setEmptyView(progressBar);
 
 		ConfigUtils.addIconsToOverflowMenu(this, this.toolbar.getMenu());
 
@@ -339,16 +314,14 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected void setDropdownMenu() {
 		this.bucketFilterMenu = new PopupMenuWrapper(this, menuTitle);
 
-		if (mediaAttachViewModel.getToolBarTitle() == null) {
+		if (mediaAttachViewModel.getLastQuery() == null) {
 			menuTitle.setText(R.string.attach_gallery);
 		} else {
-			menuTitle.setText(mediaAttachViewModel.getToolBarTitle());
+			menuTitle.setText(mediaAttachViewModel.getLastQuery());
 		}
 
 		MenuItem topMenuItem = bucketFilterMenu.getMenu().add(Menu.NONE, 0, 0, R.string.attach_gallery).setOnMenuItemClickListener(menuItem -> {
 			setAllResultsGrid();
-			menuTitle.setText(menuItem.toString());
-			mediaAttachViewModel.setToolBarTitle(menuItem.toString());
 			return true;
 		});
 		topMenuItem.setIcon(R.drawable.ic_collections);
@@ -395,8 +368,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				for (Map.Entry<String, Integer> mediaType : mediaTypes.entrySet()) {
 					MenuItem item = menu.add(mediaType.getKey()).setOnMenuItemClickListener(menuItem -> {
 						filterMediaByMimeType(menuItem.toString());
-						menuTitle.setText(menuItem.toString());
-						mediaAttachViewModel.setToolBarTitle(menuItem.toString());
 						return true;
 					});
 
@@ -418,8 +389,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 					if (!TextUtils.isEmpty(bucket)) {
 						MenuItem item = menu.add(bucket).setOnMenuItemClickListener(menuItem -> {
 							filterMediaByBucket(menuItem.toString());
-							menuTitle.setText(menuItem.toString());
-							mediaAttachViewModel.setToolBarTitle(menuItem.toString());
 							return true;
 						});
 						item.setIcon(R.drawable.ic_outline_folder_24);
@@ -431,7 +400,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				menuTitleFrame.setOnClickListener(view -> bucketFilterMenu.show());
 			}
 
-			// reset last recent filter if activity was destroyed by the system due to memory pressure etc and we do not have to wait for suggestion labels.
+			// reset last recent filter if activity was destroyed by the system due to memory pressure etc.
 			String savedQuery = mediaAttachViewModel.getLastQuery();
 			Integer savedQueryType = mediaAttachViewModel.getLastQueryType();
 			if (savedQueryType != null) {
@@ -460,11 +429,44 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	@UiThread
 	protected void setInitialMediaGrid() {
 		if (shouldShowMediaGrid()) {
-			// Observe the LiveData, passing in this activity as the LifecycleOwner and Observer.
-			mediaAttachViewModel.getCurrentMedia().observe(this, newMediaItems -> {
-				mediaAttachAdapter.setMediaItems(newMediaItems);
+			// check for previous filter selection to be reset
+			Intent intent = getIntent();
+			int queryType = 0;
+			String query = null;
+			if (intent.hasExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY)) {
+				MediaFilterQuery lastFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
+				queryType = lastFilter.getType();
+				query = lastFilter.getQuery();
+			}
+			// Observe the LiveData for initial loading of all media, passing in this activity as the LifecycleOwner and Observer.
+			// if we previously searched media in a chat we reset the filter, otherwise we post all media to grid view
+			int finalPreviousQueryType = queryType;
+			String finalPreviousQuery = query;
+			mediaAttachViewModel.getAllMedia().observe(this, allItems -> {
+				if (!allItems.isEmpty()) {
+					if (finalPreviousQuery != null) {
+						switch (finalPreviousQueryType) {
+							case FILTER_MEDIA_TYPE:
+								filterMediaByMimeType(finalPreviousQuery);
+								break;
+							case FILTER_MEDIA_BUCKET:
+								filterMediaByBucket(finalPreviousQuery);
+								break;
+						}
+					}
+					// finally set all media unless we remember a query in the viewmodel over orientation change
+					else if (mediaAttachViewModel.getLastQueryType() == null) {
+						setAllResultsGrid();
+					}
+					// remove after receiving full list as we listen to current selected media afterwards to update the grid view
+					mediaAttachViewModel.getAllMedia().removeObservers(this);
+				}
+			});
 
-				// Data loaded, we can now properly calculate the peek height
+			// Observe the LiveData for current selection, passing in this activity as the LifecycleOwner and Observer.
+			mediaAttachViewModel.getCurrentMedia().observe(this, currentlyShowingItems -> {
+				mediaAttachAdapter.setMediaItems(currentlyShowingItems);
+				// Data loaded, we can now properly calculate the peek height and set/reset UI to expanded state
 				updatePeekHeight();
 			});
 		}
@@ -481,52 +483,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	protected void setListeners() {
 		this.appBarLayout.setOnClickListener(this);
-
-		this.searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-			@Override
-			public boolean onMenuItemActionExpand(MenuItem item) {
-				menuTitleFrame.setVisibility(View.GONE);
-				return true;
-			}
-
-			@Override
-			public boolean onMenuItemActionCollapse(MenuItem item) {
-				menuTitleFrame.setVisibility(View.VISIBLE);
-				if (item.isEnabled()) {
-					menuTitle.setText(R.string.attach_gallery);
-					mediaAttachViewModel.setAllMedia();
-				} else {
-					item.setEnabled(true);
-				}
-				return true;
-			}
-		});
-
-		this.searchView.setOnQueryTextListener(new OnKeyboardBackRespondingSearchView.OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextSubmit(String query) {
-				mediaAttachViewModel.setMediaByLabel(query);
-				searchView.clearFocus();
-				return false;
-			}
-
-			@Override
-			public boolean onQueryTextChange(String newText) {
-				if (labelSuggestions != null && !TextUtils.isEmpty(newText)){
-					populateAdapter(newText);
-				}
-				return false;
-			}
-		});
-
-		View searchViewCloseButton = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-		if (searchViewCloseButton != null) {
-			searchViewCloseButton.setOnClickListener(v -> {
-				mediaAttachViewModel.setAllMedia();
-				searchView.setQuery("", false);
-				searchView.requestFocus();
-			});
-		}
 
 		BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
 		bottomSheetBehavior.setExpandedOffset(50);
@@ -552,6 +508,16 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				if (controlPanel.getTranslationY() == 0 && mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty() && bottomSheetBehavior.getState() == STATE_EXPANDED) {
 					controlPanel.animate().translationY(controlPanel.getHeight());
 				}
+
+				// make sure only bottom sheet or recylcerview is scrolling at a same time
+				if (bottomSheetScroll && bottomSheetBehavior.getState() == STATE_EXPANDED) {
+					bottomSheetScroll = false;
+					bottomSheetBehavior.setDraggable(false);
+				}
+				else if (!bottomSheetScroll && !recyclerView.canScrollVertically(-1)) {
+					bottomSheetScroll = true;
+					bottomSheetBehavior.setDraggable(true);
+				}
 			}
 		});
 	}
@@ -566,60 +532,16 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		AnimationUtil.startActivity(this, view, intent);
 	}
 
-	@UiThread
-	public void onLabelingComplete() {
-		logger.debug("Labeling is complete, show search view");
-
-		if (searchView != null) {
-			// Show search icon
-			searchItem.setVisible(true);
-			searchView.setQueryHint(getString(R.string.image_label_query_hint));
-
-			// Don't expand the search text field
-			final EditText editText = searchView.findViewById(R.id.search_src_text);
-			editText.setImeOptions(IME_FLAG_NO_EXTRACT_UI);
-
-			// Create and set a CursorAdapter for the recommendation dropdown list
-			MediaSelectionBaseActivity.this.suggestionAdapter = new CursorAdapter(
-				MediaSelectionBaseActivity.this,
-				new MatrixCursor(new String[]{ BaseColumns._ID, "labelName" }), false
-			) {
-				@Override
-				public View newView(Context context, Cursor cursor, ViewGroup parent) {
-					return LayoutInflater.from(MediaSelectionBaseActivity.this).inflate(android.R.layout.simple_list_item_1, parent, false);
-				}
-
-				@Override
-				public void bindView(View view, Context context, Cursor cursor) {
-					String label = cursor.getString(cursor.getColumnIndexOrThrow("labelName"));
-					TextView textView = view.findViewById(android.R.id.text1);
-					textView.setText(label);
-					view.setOnClickListener(view1 -> {
-						searchView.setQuery(label, true);
-						mediaAttachViewModel.setlastQuery(FILTER_MEDIA_LABEL, label);
-					});
-				}
-			};
-			searchView.setSuggestionsAdapter(suggestionAdapter);
-			MediaSelectionBaseActivity.this.searchAutoComplete.setThreshold(1);
-		}
-	}
-
-	protected void resetLabelSearch() {
-		searchView.setQuery("", false);
-		searchView.setIconified(true);
-	}
-
 	public void setAllResultsGrid() {
 		mediaAttachViewModel.setAllMedia();
+		menuTitle.setText(getResources().getString(R.string.attach_gallery));
 		mediaAttachViewModel.clearLastQuery();
-		resetLabelSearch();
 	}
 
 	public void filterMediaByBucket(@NonNull String mediaBucket) {
 		mediaAttachViewModel.setMediaByBucket(mediaBucket);
+		menuTitle.setText(mediaBucket);
 		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_BUCKET, mediaBucket);
-		resetLabelSearch();
 	}
 
 	public void filterMediaByMimeType(@NonNull String mimeTypeTitle) {
@@ -638,16 +560,14 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		if (mimeTypeIndex != 0) {
 			mediaAttachViewModel.setMediaByType(mimeTypeIndex);
 		}
+		menuTitle.setText(mimeTypeTitle);
 		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_TYPE, mimeTypeTitle);
-		resetLabelSearch();
 	}
 
 	public void filterMediaBySelectedItems() {
 		mediaAttachViewModel.setSelectedMedia();
-		searchItem.setEnabled(false);
-		searchItem.collapseActionView();
+		menuTitle.setText(R.string.selected_media);
 		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_SELECTED, null);
-		resetLabelSearch();
 	}
 
 	public String getMimeTypeTitle(int mimeType) {
@@ -660,33 +580,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				return getResources().getString(R.string.media_gallery_gifs);
 			default:
 				return null;
-		}
-	}
-
-	private void populateAdapter(@NonNull String query) {
-		final MatrixCursor c = new MatrixCursor(new String[]{ BaseColumns._ID, "labelName" });
-		int index = 0;
-		if (!labelSuggestions.isEmpty()){
-			for (String label : labelSuggestions) {
-				if (label != null && label.toLowerCase().startsWith(query.toLowerCase())){
-					c.addRow(new Object[] {index, label});
-				}
-				index++;
-			}
-
-			if (c.getCount() == 0){
-				SingleToast.getInstance().showShortText(getString(R.string.no_labels_info));
-			}
-
-			suggestionAdapter.changeCursor(c);
-			// avoid too long drop down suggestion list that might disappear behind keyboard
-			if (c.getCount() > 6){
-				searchAutoComplete.setDropDownHeight(displayMetrics.heightPixels/3);
-			} else {
-				searchAutoComplete.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-			}
-		} else {
-			SingleToast.getInstance().showShortText(getString(R.string.no_labels_info));
 		}
 	}
 
@@ -703,7 +596,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 				bucketFilterMenu.getMenu().setGroupVisible(Menu.NONE, true);
 				menuTitleFrame.setClickable(true);
-				searchView.findViewById(R.id.search_button).setClickable(true);
 
 				animation = toolbar.getAnimation();
 				if (animation != null) {
@@ -727,15 +619,23 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 						50
 					);
 				}
-
-				if (mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty()) {
+				// hide
+				if (mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty() && controlPanel.getTranslationY() == 0) {
 					controlPanel.animate().translationY(controlPanel.getHeight());
-				} else {
+				} else { // show
 					controlPanel.animate().translationY(0);
 				}
 
-				// Maybe show "new feature" tooltip
-				toolbar.postDelayed(() -> maybeShowFirstTimeToolTip(), 1500);
+				if (Build.VERSION.SDK_INT >= 21 && fastScroller == null) {
+					TypedValue value = new TypedValue();
+					this.getTheme().resolveAttribute(R.attr.attach_media_thumb_drawable, value, true);
+					Drawable thumbDrawable = AppCompatResources.getDrawable(this, value.resourceId);
+					fastScroller = new FastScrollerBuilder(MediaSelectionBaseActivity.this.mediaAttachRecyclerView)
+						.setThumbDrawable(Objects.requireNonNull(thumbDrawable))
+						.setTrackDrawable(Objects.requireNonNull(AppCompatResources.getDrawable(this, R.drawable.fastscroll_track_media)))
+						.setPadding(0,0,0,0)
+						.build();
+				}
 
 				isDragging = false;
 
@@ -772,7 +672,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				dateView.setVisibility(View.GONE);
 				bucketFilterMenu.getMenu().setGroupVisible(Menu.NONE, false);
 				menuTitleFrame.setClickable(false);
-				searchView.findViewById(R.id.search_button).setClickable(false);
 				controlPanel.animate().translationY(0);
 				isDragging = false;
 			default:
@@ -883,10 +782,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			case R.id.select_counter_button:
 				if (mediaAttachAdapter != null) {
 					filterMediaBySelectedItems();
-					searchView.onActionViewCollapsed();
-					searchView.clearFocus();
-					menuTitle.setText(R.string.selected_media);
-					mediaAttachViewModel.setToolBarTitle(getResources().getString(R.string.selected_media));
 				}
 				break;
 		}
@@ -896,67 +791,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	protected void showPermissionRationale(int stringResource) {
 		ConfigUtils.showPermissionRationale(this, rootView, stringResource);
-	}
-
-	/**
-	 * Show the "first time" tool tip (but only if it hasn't been shown before
-	 * and if the bottom sheet is fully expanded).
-	 */
-	@UiThread
-	protected void maybeShowFirstTimeToolTip() {
-		// This code is synchronized so that we don't show the tooltip multiple times
-		synchronized (this.firstTimeTooltipLock) {
-			// Check preconditions
-			if (preferenceService.getIsImageLabelingTooltipShown()) {
-				// Only shown if it hasn't already been shown
-				return;
-			}
-			if (this.searchView == null || !this.searchItem.isVisible()) {
-				// Only show if the search icon is visible
-				return;
-			}
-			final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
-			if (bottomSheetBehavior.getState() != STATE_EXPANDED) {
-				// Only show if the bottom sheet is fully expanded
-				return;
-			}
-
-			// Show tooltip
-			try {
-				final String title = getString(R.string.image_labeling_new);
-				final String description = getString(R.string.tooltip_image_labeling);
-				final int accentColor = ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK ? R.color.accent_dark : R.color.accent_light;
-
-				TapTargetView.showFor(this,
-					TapTarget.forToolbarMenuItem(this.toolbar, R.id.menu_search, title, description)
-						.outerCircleColor(accentColor)      // Specify a color for the outer circle
-						.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-						.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
-						.titleTextSize(24)                  // Specify the size (in sp) of the title text
-						.titleTextColor(android.R.color.white)      // Specify the color of the title text
-						.descriptionTextSize(18)            // Specify the size (in sp) of the description text
-						.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
-						.textColor(android.R.color.white)            // Specify a color for both the title and description text
-						.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-						.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-						.drawShadow(true)                   // Whether to draw a drop shadow or not
-						.cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
-						.tintTarget(true)                   // Whether to tint the target view's color
-						.transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
-						.targetRadius(50),                  // Specify the target radius (in dp)
-					new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
-						@Override
-						public void onTargetClick(TapTargetView view) {
-							super.onTargetClick(view);
-
-						}
-					});
-				logger.info("First time tool tip shown");
-				preferenceService.setIsImageLabelingTooltipShown(true);
-			} catch (Exception e) {
-				logger.warn("Could not show first time labeling tooltip", e);
-			}
-		}
 	}
 
 	public void checkMasterKey() {
@@ -983,22 +817,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	protected void attachImageFromGallery() {
-		try {
-			Intent getContentIntent = new Intent();
-			getContentIntent.setType(MimeUtil.MIME_TYPE_VIDEO);
-			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
-			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
-			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
-			Intent pickIntent = new Intent(Intent.ACTION_PICK);
-			pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
-			Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.select_from_gallery));
-			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
+		FileUtil.selectFromGallery(this, null, REQUEST_CODE_ATTACH_FROM_GALLERY, true);
+	}
 
-			startActivityForResult(chooserIntent, REQUEST_CODE_ATTACH_FROM_GALLERY);
-		} catch (Exception e) {
-			logger.debug("Exception", e);
-			Toast.makeText(this, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
-		}
+	protected void expandBottomSheet() {
+		BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		updateUI(BottomSheetBehavior.STATE_EXPANDED);
 	}
 }

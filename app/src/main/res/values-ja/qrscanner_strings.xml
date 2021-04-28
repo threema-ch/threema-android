@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">QRコードを四角い枠の中に入れてスキャンしてください</string>
+    <string name="msg_camera_framework_bug">Androidのカメラにアクセスできません。カメラへのアクセスが許可されていることを確認するか、端末を再起動してください。</string>
+</resources>

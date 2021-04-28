@@ -4,7 +4,7 @@
     <string name="recording_stopped_title">A gravação parou</string>
     <string name="recording_stopped_message">Gostaria de enviar a mensagem gravada agora?</string>
     <string name="recording_canceled">A gravação foi cancelada devido a um erro desconhecido.</string>
-    <string name="cancel_recording">Cancelar gravação</string>
-    <string name="cancel_recording_message">Deseja realmente cancelar a gravação?</string>
+    <string name="cancel_recording">Descartar gravação</string>
+    <string name="cancel_recording_message">Deseja mesmo cancelar e descartar a gravação?</string>
     <string name="stop">Parar</string>
 </resources>

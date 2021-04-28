@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="msg_default_status">Coloque o código QR no interior do retângulo do visor eletrônico para leitura.</string>
+    <string name="msg_default_status">Coloque o código QR no interior do retângulo do visor eletrônico para leitura.</string>
     <string name="msg_camera_framework_bug">Não foi possível acessar a câmera do Android. Certifique-se de que a permissão de acesso à câmera foi concedida ou reinicie o seu dispositivo.</string>
 </resources>

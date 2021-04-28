@@ -75,6 +75,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
@@ -92,7 +93,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
 import ch.threema.client.APIConnector;
@@ -339,6 +339,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			throw new ThreemaException("IO Exception: " + e.getMessage());
 		} catch (JSONException e) {
 			throw new ThreemaException("Malformed server response");
+		} catch (IllegalArgumentException e) {
+			throw new ThreemaException(e.getMessage());
 		} finally {
 			urlConnection.disconnect();
 		}
@@ -576,6 +578,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			}
 		} catch (IOException e) {
 			throw new ThreemaException("IO Exception");
+		} catch (IllegalArgumentException e) {
+			throw new ThreemaException(e.getMessage());
 		} finally {
 			urlConnection.disconnect();
 		}
@@ -630,6 +634,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 					throw new ThreemaException("Server error: " + responseCode);
 				}
 			}
+		} catch (IllegalArgumentException e) {
+			throw new ThreemaException(e.getMessage());
 		} finally {
 			urlConnection.disconnect();
 		}
@@ -1149,6 +1155,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			}
 		} catch (IOException e) {
 			throw new ThreemaException("HTTPS IO Exception: " + e.getMessage());
+		} catch (IllegalArgumentException e) {
+			throw new ThreemaException(e.getMessage());
 		} finally {
 			urlConnection.disconnect();
 		}

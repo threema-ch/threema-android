@@ -48,6 +48,11 @@
     <string name="voip_prefs_title_aec">Eliminacja echa</string>
     <string name="voip_prefs_aec_sw">Programowa eliminacja echa</string>
     <string name="voip_prefs_aec_hw">Sprzętowa eliminacja echa</string>
+    <string name="voip_prefs_title_video_codec">Kodeki wideo</string>
+    <string name="voip_prefs_video_aec_hw">Przyspieszenie sprzętowe</string>
+    <string name="voip_prefs_video_codec_no_vp8">Wyłącz VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Wyłącz H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Kodeki programowe</string>
     <string name="voip_connection_failed">Nie udało się ustanowić połączenia.</string>
     <string name="voip_connection_lost">Utracono połączenie</string>
     <string name="prefs_voip_reject_incoming_calls_title">Odrzucaj połączenia komórkowe</string>

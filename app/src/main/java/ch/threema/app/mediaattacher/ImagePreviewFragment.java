@@ -54,7 +54,7 @@ public class ImagePreviewFragment extends PreviewFragment {
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		this.rootView = inflater.inflate(R.layout.popup_image, container, false);
+		this.rootView = inflater.inflate(R.layout.fragment_image_preview, container, false);
 
 		return rootView;
 	}

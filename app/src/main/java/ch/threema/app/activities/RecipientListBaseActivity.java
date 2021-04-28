@@ -464,14 +464,20 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							}
 						} else {
 							if (uri != null) {
+								// guess the correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*" which should be overridden
 								String guessedType = getMimeTypeFromContentUri(uri);
 								if (guessedType != null) {
 									type = guessedType;
 								}
 
-								// if text was shared along with the media item, add that too
 								String textIntent = getTextFromIntent(intent);
-								addMediaItem(type, uri, textIntent);
+								// don't add fixed caption to media item because we want it to be editable when sending a zip file (share chat)
+								if (type.equals("application/zip") && textIntent != null) {
+									captionText = textIntent;
+									mediaItems.add(new MediaItem(uri, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_ZIP, textIntent));
+								} else { // if text was shared along with the media item, add that too
+									addMediaItem(type, uri, textIntent);
+								}
 							}
 						}
 					} else {
@@ -636,13 +642,13 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						return mimeType;
 					}
 				}
-			} catch (Exception e) {
-				String filemame = FileUtil.getFilenameFromUri(getContentResolver(), uri);
-				if (!TestUtil.empty(filemame)) {
-					String mimeType = FileUtil.getMimeTypeFromPath(filemame);
-					if (!TestUtil.empty(mimeType)) {
-						return mimeType;
-					}
+			} catch (Exception ignored) { }
+
+			String filemame = FileUtil.getFilenameFromUri(getContentResolver(), uri);
+			if (!TestUtil.empty(filemame)) {
+				String mimeType = FileUtil.getMimeTypeFromPath(filemame);
+				if (!TestUtil.empty(mimeType)) {
+					return mimeType;
 				}
 			}
 		}
@@ -687,7 +693,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			try {
 				getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			} catch (Exception e) {
-				logger.error("Exception", e);
+				logger.info("Unable to take persistable uri permission");
+				uri = FileUtil.getFileUri(uri);
 			}
 		}
 		mediaItems.add(new MediaItem(uri, mimeType, caption));
@@ -823,8 +830,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
 							break;
 						case VOICEMESSAGE:
-							// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
-							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_DEFAULT, null);
+							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VOICEMESSAGE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_MEDIA, null);
 							break;
 						case FILE:
 							int mediaType = MediaItem.TYPE_FILE;
@@ -840,9 +846,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									} else {
 										mediaType = MediaItem.TYPE_IMAGE;
 									}
-								} else {
-									// voice messages should always be forwarded as files in order not to appear to be recorded by the forwarder
-									renderingType = FileData.RENDERING_DEFAULT;
+								} else if (MimeUtil.isAudioFile(mimeType)) {
+									mediaType = MediaItem.TYPE_VOICEMESSAGE;
 								}
 							}
 							sendForwardedMedia(messageReceivers, uri, captionText, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
@@ -943,7 +948,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					alertDialog.setData(models);
 					alertDialog.show(getSupportFragmentManager(), null);
 				} else {
-					// content shared by external apps may be referred to by content URIs. we have to copy these files first in order to be able to access it in another activity
+					// content shared by external apps may be referred to by content URIs which will not survive this activity. so in order to be able to use them later we have to copy these files to a local directory first
 					String finalRecipientName = recipientName;
 					GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_FILECOPY);
 					try {
@@ -978,7 +983,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									}
 								} else {
 									// mixed media
-									ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, null, R.string.send, R.string.cancel, false);
+									ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
 									alertDialog.setData(models);
 									alertDialog.show(getSupportFragmentManager(), null);
 								}
@@ -1235,9 +1240,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		this.captionText = text;
 
 		if (data instanceof ArrayList) {
-			prepareComposeIntent((ArrayList<Object>)data);
-		} else {
-			prepareComposeIntent(new ArrayList<>(Arrays.asList(data)));
+			if (!TestUtil.empty(text)) {
+				for (MediaItem mediaItem : mediaItems) {
+					mediaItem.setCaption(text);
+				}
+			}
+			prepareComposeIntent((ArrayList<Object>) data);
 		}
 	}
 

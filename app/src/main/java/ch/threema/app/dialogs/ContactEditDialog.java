@@ -45,7 +45,9 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
@@ -151,7 +153,9 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 	/**
 	 * Create a ContactEditDialog for a group
 	 */
-	public static ContactEditDialog newInstance(@StringRes int title, @StringRes int hint1, int groupId, int inputType, File avatarPreset, boolean useDefaultAvatar, int maxLength) {
+	public static ContactEditDialog newInstance(@StringRes int title, @StringRes int hint1,
+	                                            int groupId, int inputType, File avatarPreset,
+	                                            boolean useDefaultAvatar, int maxLength) {
 		final Bundle args = new Bundle();
 		args.putInt(ARG_TITLE, title);
 		args.putInt(ARG_HINT1, hint1);
@@ -231,9 +235,11 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		croppedAvatarFile = (File) getArguments().getSerializable("avatarPreset");
 
 		ContactService contactService = null;
+		GroupService groupService = null;
 		try {
 			contactService = ThreemaApplication.getServiceManager().getContactService();
-		} catch (MasterKeyLockedException|FileSystemNotPresentException e) {
+			groupService = ThreemaApplication.getServiceManager().getGroupService();
+		} catch (MasterKeyLockedException | FileSystemNotPresentException | NoIdentityException e) {
 			logger.error("Exception", e);
 		}
 

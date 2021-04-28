@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2018 Threema GmbH
-  ~ All rights reserved.
-  -->
-
 <resources>
     <string name="about_title">Threema Work для Android</string>
-	<string name="enter_serial_body">Введите учетные данные, предоставленные вашей компанией или организацией</string>
+    <string name="enter_serial_body">Введите учетные данные, предоставленные вашей компанией или организацией</string>
     <string name="serial_required_want_exit">Лицензия недействительна. Повторить попытку или выйти из Threema?</string>
     <string name="checking_serial">Проверка учетных данных</string>
     <string name="username_hint">Имя пользователя</string>
@@ -26,4 +21,7 @@
     <string name="list_theme_light">Светлая</string>
     <string name="list_theme_dark">Темная (по умолчанию)</string>
     <string name="private_threema_download"><![CDATA[Если вы частный пользователь, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">нажмите здесь</a> для скачивания приложения Threema.]]></string>
+    <string name="directory_search">Поиск в каталоге</string>
+    <string name="directory_title">Каталог компании</string>
+    <string name="directory_empty_view_text">Записи не найдены\n\nЧтобы начать поиск в каталоге пользователей Threema в вашей компании, введите по меньшей мере 3 символа имени</string>
 </resources>

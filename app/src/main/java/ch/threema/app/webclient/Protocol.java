@@ -67,6 +67,7 @@ public class Protocol {
 	public final static String SUB_TYPE_PROFILE = "profile";
 	public final static String SUB_TYPE_CONNECTION_INFO = "connectionInfo";
 	public final static String SUB_TYPE_CONNECTION_DISCONNECT = "connectionDisconnect";
+	public final static String SUB_TYPE_ACTIVE_CONVERSATION = "activeConversation";
 	public final static String ARGUMENT_MODE = "mode";
 	public final static String ARGUMENT_MODE_NEW = "new";
 	public final static String ARGUMENT_MODE_MODIFIED = "modified";

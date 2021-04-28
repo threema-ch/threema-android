@@ -21,6 +21,7 @@ This repository contains the complete source code of
 - [Reproducible Builds](#reproducible-builds)
 - [Code Organization / Architecture](#architecture)
 - [Contributions](#contributions)
+- [Translating](#translating)
 - [License](#license)
 
 
@@ -188,6 +189,16 @@ The code of the actual Android app is mainly located in the
 We accept GitHub pull requests. Please refer to
 <https://threema.ch/open-source/contributions>
 for more information on how to contribute.
+
+Note that translation fixes should not be contributed through GitHub but
+through OneSky, see next section.
+
+
+## <a name="translating"></a>Translating
+
+We manage our app translations through OneSky. If you're interested in
+improving translations, or if you would like to translate Threema to a new
+language, please sign up at <https://threema.oneskyapp.com/collaboration/>.
 
 
 ## <a name="license"></a>License

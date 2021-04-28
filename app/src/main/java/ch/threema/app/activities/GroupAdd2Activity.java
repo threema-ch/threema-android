@@ -47,6 +47,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 
 	private static final String DIALOG_TAG_CREATING_GROUP = "groupCreate";
 	private static final String BUNDLE_GROUP_IDENTITIES = "grId";
+
 	private String[] groupIdentities;
 
 	@Override
@@ -64,7 +65,9 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 			actionBar.setTitle("");
 		}
 
-		this.groupIdentities = IntentDataUtil.getContactIdentities(getIntent());
+		if (getIntent() != null) {
+			this.groupIdentities = IntentDataUtil.getContactIdentities(getIntent());
+		}
 
 		if (savedInstanceState == null) {
 			launchGroupSetNameAndAvatarDialog();
@@ -111,7 +114,8 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 	}
 
 	private void creatingGroupDone(GroupModel newModel) {
-		Toast.makeText(ThreemaApplication.getAppContext(), getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
+		Toast.makeText(ThreemaApplication.getAppContext(),
+			getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
 
 		Intent intent = new Intent(this, ComposeMessageActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());

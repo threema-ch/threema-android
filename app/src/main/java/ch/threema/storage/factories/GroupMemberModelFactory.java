@@ -94,7 +94,7 @@ public class GroupMemberModelFactory extends ModelFactory {
 		return null;
 	}
 
-	private List<GroupMemberModel> convertList(Cursor c) {
+	public List<GroupMemberModel> convertList(Cursor c) {
 		List<GroupMemberModel> result = new ArrayList<>();
 		if(c != null) {
 			try {

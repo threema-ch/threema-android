@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
 import androidx.annotation.AnyThread;
@@ -104,6 +105,7 @@ import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
+import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.LifetimeService;
@@ -141,6 +143,7 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
+import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
 import static ch.threema.app.voip.services.VoipCallService.ACTION_HANGUP;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
@@ -234,10 +237,16 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private String currentFragmentTag;
 
 	private static class UpdateBottomNavigationBadgeTask extends AsyncTask<Void, Void, Integer> {
-		WeakReference<Activity> activityWeakReference;
+		private ConversationTagService conversationTagService = null;
+		private final WeakReference<Activity> activityWeakReference;
 
 		UpdateBottomNavigationBadgeTask(Activity activity) {
 			activityWeakReference = new WeakReference<>(activity);
+			try {
+				conversationTagService = Objects.requireNonNull(ThreemaApplication.getServiceManager()).getConversationTagService();
+			} catch (Exception e) {
+				logger.error("UpdateBottomNav", e);
+			}
 		}
 
 		@Override
@@ -279,6 +288,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			for(ConversationModel conversationModel : conversationModels) {
 				unread += conversationModel.getUnreadCount();
+			}
+
+			if (conversationTagService != null) {
+				unread += conversationTagService.getCount(conversationTagService.getTagModel(FIXED_TAG_UNREAD));
 			}
 
 			return unread;
@@ -581,7 +594,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				}
 
 				if (!ConfigUtils.isWorkBuild() && !RuntimeUtil.isInTest() && !isFinishing()) {
-					isWhatsNewShown = true; // make sure this is set false if no whatsnew activity is shown - otherwise pin lock will be skipped once
+/*
+					isWhatsNewShown = true; // make sure this is set to false if no whatsnew activity is shown - otherwise pin lock will be skipped once
 
 					// Do not show whatsnew for users of the previous 4.5x version
 					int previous = preferenceService.getLatestVersion() % 1000;
@@ -591,8 +605,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 						overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 					} else {
-						isWhatsNewShown = false;
-					}
+*/						isWhatsNewShown = false;
+//					}
 					preferenceService.setLatestVersion(this);
 				}
 			}

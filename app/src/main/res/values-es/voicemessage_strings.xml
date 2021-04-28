@@ -4,7 +4,7 @@
     <string name="recording_stopped_title">Grabación detenida</string>
     <string name="recording_stopped_message">¿Quiere enviar ahora el mensaje de voz?</string>
     <string name="recording_canceled">Grabación cancelada debido a un error desconocido.</string>
-    <string name="cancel_recording">Cancelar grabación</string>
-    <string name="cancel_recording_message">¿Seguro que quiere cancelar la grabación?</string>
+    <string name="cancel_recording">Descartar grabación</string>
+    <string name="cancel_recording_message">¿Seguro que quieres cancelar y descartar la grabación?</string>
     <string name="stop">Detener</string>
 </resources>

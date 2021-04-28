@@ -154,7 +154,6 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		linearLayoutManager.setStackFromEnd(true);
 
 		this.recyclerView.setLayoutManager(linearLayoutManager);
-		this.recyclerView.setHasFixedSize(true);
 		this.recyclerView.setItemAnimator(null);
 
 		this.filterText = "";

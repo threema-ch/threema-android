@@ -31,7 +31,7 @@
 			android:layout_gravity="center"
 			android:autoLink="none"
 			android:gravity="center_horizontal"
-			android:maxLines="3"
+			android:maxLines="6"
 			android:ellipsize="end"
 			android:text="Text"
 			android:textColor="@color/text_color_secondary"

@@ -77,4 +77,13 @@ public class ThreemaEditText extends TextInputEditText {
 		// disable Autofill in EditText due to privacy and TransactionTooLargeException as well as bug https://issuetracker.google.com/issues/67675432
 		return AUTOFILL_TYPE_NONE;
 	}
+
+	@Override
+	public void dispatchWindowFocusChanged(boolean hasFocus) {
+		try {
+			super.dispatchWindowFocusChanged(hasFocus);
+		} catch (Exception ignore) {
+			// catch Security Exception in com.samsung.android.content.clipboard.SemClipboardManager.getLatestClip() on Samsung devices
+		}
+	}
 }

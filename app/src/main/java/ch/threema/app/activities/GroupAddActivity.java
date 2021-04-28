@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
+import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -43,6 +44,7 @@ import ch.threema.storage.models.GroupModel;
 public class GroupAddActivity extends MemberChooseActivity implements GenericAlertDialog.DialogClickListener {
 	private static final String BUNDLE_EXISTING_MEMBERS = "ExMem";
 	private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
+	private static final String DIALOG_TAG_NOTE_GROUP_HOWTO = "note_group_hint";
 
 	private GroupService groupService;
 	private GroupModel groupModel;
@@ -107,6 +109,10 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 		}
 
 		initList();
+
+		if (!appendMembers) {
+			ShowOnceDialog.newInstance(R.string.title_select_contacts, R.string.note_group_howto ).show(getSupportFragmentManager(), DIALOG_TAG_NOTE_GROUP_HOWTO);
+		}
 	}
 
 	@Override

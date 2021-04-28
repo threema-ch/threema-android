@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema 通話</string>
+    <string name="voip_hangup">掛斷</string>
+    <string name="voip_toggle_mic">切換麥克風</string>
+    <string name="voip_toggle_speaker">切換揚聲器</string>
+    <string name="voip_switch_cam">切換攝影機</string>
+    <string name="voip_switch_cam_front">切換至前置鏡頭</string>
+    <string name="voip_switch_cam_rear">切換至後置鏡頭</string>
+    <string name="voip_toggle_video">切換影片模式</string>
+    <string name="voip_call_confirm">您要致電至%1$s嗎？</string>
+    <string name="voip_error_call">在 Threema 通話中出錯</string>
+    <string name="voip_error_init_call">初始化通話時出錯</string>
+    <string name="voip_notification_title">Threema 通話來電</string>
+    <string name="voip_notification_text">%1$s正在通話</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">正在初始化</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">連線中</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">正在中斷連線</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">響鈴中</string>
+    <string name="voip_mic_enable">開啟麥克風</string>
+    <string name="voip_mic_disable">停用麥克風</string>
+    <string name="voip_checking_compatibility">檢查此聯絡人是否可以接聽 Threema 通話</string>
+    <string name="voip_incompatible">此聯絡人現時無法接聽 Threema 通話。</string>
+    <string name="voip_call_status_unavailable">通話收件者無法接通</string>
+    <string name="voip_call_status_rejected">通話被拒絕</string>
+    <string name="voip_call_status_busy">通話收件者忙碌中</string>
+    <string name="voip_call_status_busy_short">忙碌中</string>
+    <string name="voip_call_status_disabled">Threema 通話被收件者停用</string>
+    <string name="voip_call_status_missed">未接來電</string>
+    <string name="voip_call_finished_outbox">撥出通話</string>
+    <string name="voip_call_finished_inbox">來電</string>
+    <string name="voip_call_status_aborted">通話中止</string>
+    <string name="voip_return_call">回電</string>
+    <string name="voip_accept">接受</string>
+    <string name="voip_reject">拒絕</string>
+    <string name="voip_speakerphone">電話揚聲器</string>
+    <string name="voip_wired_headset">耳機</string>
+    <string name="voip_earpiece">電話</string>
+    <string name="voip_bluetooth">藍牙</string>
+    <string name="voip_none">無法使用</string>
+    <string name="voip_call_finished">Threema 通話已結束</string>
+    <string name="voip_another_call">無法連線。另一個 Threema 通話當前處於活動狀態。</string>
+    <string name="voip_prefs_title_aec">回音消除</string>
+    <string name="voip_prefs_aec_sw">軟體回音消除</string>
+    <string name="voip_prefs_aec_hw">硬體回音消除</string>
+    <string name="voip_prefs_title_video_codec">影片編解碼器</string>
+    <string name="voip_prefs_video_aec_hw">硬體加速已開啟</string>
+    <string name="voip_prefs_video_codec_no_vp8">停用 VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">停用 H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">軟體編解碼器</string>
+    <string name="voip_connection_failed">無法建立連線</string>
+    <string name="voip_connection_lost">連線中斷</string>
+    <string name="prefs_voip_reject_incoming_calls_title">拒絕電話通話</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">在 Threema 通話時拒絕來電。</string>
+    <string name="voip_contact_not_found">找不到此號碼與 Threema 連結的聯絡人。</string>
+    <string name="voip_another_pstn_call">無法發起通話，常規電話仍處於活動狀態。</string>
+    <string name="voip_call_status_off_hours">非工作時間通話</string>
+    <string name="voip_peer_video_disabled">對方已禁用視訊通話。</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC 診斷</string>
+    <string name="voip_prefs_webrtc_debug_summary">啟動此工具以調試與設定語音通話連接有關的問題</string>
+    <string name="voip_webrtc_debug">WebRTC 診斷</string>
+    <string name="voip_webrtc_debug_intro">按「開始」按鈕開始測試。</string>
+    <string name="voip_webrtc_debug_start">開始</string>
+    <string name="voip_webrtc_debug_done">大功告成。如果您在建立通話連線時遇到問題，請將錯誤日誌傳送至 Threema 支援。</string>
+    <string name="voip_webrtc_debug_copied">已複製至剪貼簿。</string>
+    <string name="voip_webrtc_debug_copy_clipboard">複製至剪貼簿</string>
+</resources>

@@ -31,16 +31,16 @@
 
 	<ImageView
 		android:id="@+id/group"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
+		android:layout_width="20dp"
+		android:layout_height="20dp"
 		android:layout_marginLeft="5dp"
 		android:baselineAlignBottom="true"
-		android:src="@drawable/ic_label_group_admin"
-		android:tint="?attr/textColorSecondary"
+		app:srcCompat="@drawable/ic_group_outline"
 		android:visibility="visible"
 		app:layout_constraintBottom_toBottomOf="@id/name"
 		app:layout_constraintLeft_toRightOf="@id/name"
-		app:layout_constraintRight_toRightOf="parent" />
+		app:layout_constraintRight_toRightOf="parent"
+		app:tint="?attr/textColorSecondary" />
 
 	<!-- second line -->
 

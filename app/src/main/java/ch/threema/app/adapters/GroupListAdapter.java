@@ -52,7 +52,7 @@ public class GroupListAdapter extends FilterableListAdapter {
 	private List<GroupModel> values;
 	private List<GroupModel> ovalues;
 	private GroupListFilter groupListFilter;
-	private final Bitmap defaultGroupImage, groupOwnerIcon, groupMemberIcon;
+	private final Bitmap defaultGroupImage;
 	private final GroupService groupService;
 
 	public GroupListAdapter(Context context, List<GroupModel> values, List<Integer> checkedItems, GroupService groupService) {
@@ -63,8 +63,6 @@ public class GroupListAdapter extends FilterableListAdapter {
 		this.ovalues = values;
 		this.groupService = groupService;
 		this.defaultGroupImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_group);
-		this.groupOwnerIcon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_label_group_admin);
-		this.groupMemberIcon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_label_group_neutral);
 
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
@@ -120,7 +118,9 @@ public class GroupListAdapter extends FilterableListAdapter {
 		AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
 
 		holder.subjectView.setText(this.groupService.getMembersString(groupModel));
- 		holder.roleView.setImageBitmap(groupService.isGroupOwner(groupModel)?groupOwnerIcon:groupMemberIcon);
+ 		holder.roleView.setImageResource(groupService.isGroupOwner(groupModel)
+		    ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline)
+		    : R.drawable.ic_group_filled);
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(

@@ -21,7 +21,6 @@
 
 package ch.threema.app.ui;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -50,12 +49,10 @@ import ch.threema.app.utils.AnimationUtil;
 public class ImagePopup extends DimmingPopupWindow {
 	private static final Logger logger = LoggerFactory.getLogger(ImagePopup.class);
 
-	private Context context;
 	private ImageView imageView;
 	private TextView filenameTextView, dateTextView;
 	private View topLayout;
 	private View parentView;
-	private ContentResolver contentResolver;
 
 	final int[] location = new int[2];
 
@@ -76,9 +73,7 @@ public class ImagePopup extends DimmingPopupWindow {
 	}
 
 	private void init(Context context, View parentView, int screenWidth, int screenHeight, int innerBorder, @LayoutRes int layout) {
-		this.context = context;
 		this.parentView = parentView;
-		this.contentResolver = context.getContentResolver();
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		if (layout == 0) {

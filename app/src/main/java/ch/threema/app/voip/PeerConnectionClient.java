@@ -805,6 +805,11 @@ public class PeerConnectionClient {
 		@Nullable Integer maxBitrate,
 		int maxFps
 	) {
+		if (!this.isVideoCallEnabled()) {
+			// Video calls not enabled, ignoring
+			return;
+		}
+
 		logger.info("setOutgoingVideoBandwidthLimit: " + maxBitrate);
 		final RtpSender sender = this.localVideoSender;
 		if (sender == null) {

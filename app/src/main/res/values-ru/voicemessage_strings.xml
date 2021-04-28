@@ -5,6 +5,6 @@
     <string name="recording_stopped_message">Хотите отправить записанное голосовое сообщение?</string>
     <string name="recording_canceled">Запись отменена из-за неизвестной ошибки.</string>
     <string name="cancel_recording">Отменить запись</string>
-    <string name="cancel_recording_message">Действительно отменить запись?</string>
+    <string name="cancel_recording_message">Действительно отменить и удалить запись?</string>
     <string name="stop">Стоп</string>
 </resources>

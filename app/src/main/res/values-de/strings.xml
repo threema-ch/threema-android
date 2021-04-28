@@ -7,7 +7,7 @@
 	<string name="title_keyfingerprint">Schlüssel-Fingerabdruck</string>
 	<string name="title_mythreemaid">Meine Threema-ID</string>
 	<string name="title_threemaid">Threema-ID</string>
-	<string name="title_adduser">Kontakt manuell hinzufügen</string>
+	<string name="title_adduser">Kontakt hinzufügen</string>
 	<string name="title_enter_id">ID eingeben</string>
 	<string name="title_invite_friend">Freunde einladen</string>
 	<string name="invite_via">Einladen mittels…</string>
@@ -20,7 +20,6 @@
 	<string name="menu_about">Über Threema</string>
 	<string name="menu_add_contact">Neuer Kontakt</string>
 	<string name="menu_done">Fertig</string>
-	<string name="menu_mobile_linking">Verknüpfte Nummer</string>
 	<string name="compose_message_and_enter">Nachricht eingeben</string>
 	<string name="send">Absenden</string>
 	<string name="prefs_privacy">Privatsphäre</string>
@@ -48,7 +47,7 @@
 	<string name="prefs_title_typing_indicator">Melden wenn ich tippe</string>
 	<string name="prefs_media_title">Medien &amp; Speicher</string>
 	<string name="prefs_sum_media_title">Einstellungen zu Medien, Dateien und Speicherplatz</string>
-	<string name="prefs_image_size">Bildgrösse</string>
+	<string name="prefs_image_size">Bild-Abmessungen</string>
 	<string name="prefs_notification_sound">Benachrichtigungston</string>
 	<string name="prefs_sum_notification_sound">System-Standard</string>
 	<string name="prefs_vibrate">Vibrieren</string>
@@ -127,7 +126,7 @@
 	<string name="linked_mobile">Handynummer</string>
 	<string name="public_nickname">Nickname</string>
 	<string name="share_via">Teilen mittels…</string>
-	<string name="share_subject">Threema-Chat mit</string>
+	<string name="share_subject">Threema-Chat</string>
 	<string name="message_delete_undo">Rückgängig</string>
 	<string name="message_deleted">Nachricht(en) gelöscht</string>
 	<string name="mobile_already_linked">Ihre Threema-ID ist bereits mit dieser Handynummer verknüpft</string>
@@ -418,7 +417,8 @@
 	<string name="contact_format_last_name_first_name">Nachname Vorname</string>
 	<string name="block_contact">Kontakt blockieren</string>
 	<string name="unblock_contact">Kontakt deblockieren</string>
-	<string name="unread_messages">Ungelesene Nachrichten</string>
+	<string name="unread_messages">%d ungelesene Nachrichten</string>
+	<string name="one_unread_message">1 ungelesene Nachricht</string>
 	<string name="really_unlink_contact_title">Verknüpfung aufheben</string>
 	<string name="really_unlink_contact">Möchten Sie die Verknüpfung zum Adressbuch-Kontakt wirklich aufheben?</string>
 	<string name="do_unlink_contact">Verknüpfung aufheben</string>
@@ -592,7 +592,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="image_already_added">Dieses Bild ist bereits ausgewählt.</string>
 	<string name="password_too_short">Mindestens %d Zeichen</string>
 	<string name="mark_read">Als gelesen markieren</string>
-	<string name="emoji_flags">Flags</string>
+	<string name="emoji_flags">Flaggen</string>
 	<string name="attach_document">Datei</string>
 	<string name="parent_directory">Übergeordnetes Verzeichnis</string>
 	<string name="file_placeholder">Datei</string>
@@ -641,7 +641,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="everything">alles</string>
 	<string name="delete_media_files_time">Medien und Dateien löschen die älter sind als:</string>
 	<string name="storage_explain">Falls der Speicherplatz knapp wird, können Sie alte, verschlüsselt gespeicherte
-		Medien-Dateien löschen, um Platz zu schaffen. Die Vorschaubilder bleiben dabei erhalten.
+		Medien-Dateien löschen, um Platz zu schaffen. Die Vorschaubilder bleiben dabei erhalten. Beachten Sie, dass dies kein automatischer Prozess ist. Gelöscht wird nur, wenn Sie einen der untenstehenden Buttons antippen.
 	</string>
 	<string name="delete_data">Daten jetzt löschen</string>
 	<string name="delete_date_confirm_message">Die Dateien werden endgültig gelöscht und nur noch Vorschaubilder
@@ -797,7 +797,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_proximity_sensor_explain">Ton der Sprachnachrichten über Hörmuschel ausgeben, wenn Näherungssensor abgedeckt</string>
 	<string name="error_creating_group">Fehler beim Erstellen/Aktualisieren der Gruppe</string>
 	<string name="no_media_found_generic">Keine Medien gefunden</string>
-	<string name="max_images_reached">Es können nicht mehr als %d Bilder aufs Mal versendet werden</string>
+	<string name="max_images_reached">Es können nicht mehr als %d Bilder aufs Mal bearbeitet werden</string>
 	<string name="enter_description">Bitte beschreiben Sie das Problem oder den Fehler hier.</string>
 	<string name="add_caption_hint">Beschriftung hinzufügen</string>
 	<string name="disable">Deaktivieren</string>
@@ -996,7 +996,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="unchanged">unverändert</string>
 	<string name="preparing_threema_safe">Threema Safe wird vorbereitet</string>
 	<string name="safe_learn_more_button">Mehr erfahren</string>
-	<string name="safe_enable_explain">Bei Threema haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\nThreema Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
+	<string name="safe_enable_explain">Bei Threema haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\nThreema Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
 	<string name="safe_disable_confirm">Möchten Sie wirklich fortfahren, ohne Threema Safe zu aktivieren?</string>
 	<string name="safe_configure_choose_password">Wählen Sie ein sicheres Passwort. Sie benötigen dieses Passwort, um Ihr Threema Safe-Backup wiederherzustellen.</string>
 	<string name="safe_configure_choose_server">Server auswählen</string>
@@ -1256,9 +1256,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="attach_gallery">Galerie</string>
 	<string name="selected_media">Ihre Auswahl</string>
 	<string name="attach_gif">Gif</string>
-	<string name="image_labeling_toolbar_title">Filtern nach</string>
-	<string name="no_labels_info">Keine Treffer gefunden</string>
-	<string name="image_label_query_hint">Objekt, Ort, Aktivität?</string>
 	<string name="filter_by_album">Filtern nach Medienordner</string>
 	<string name="media_date_taken">Aufnahmedatum: %s</string>
 	<string name="media_date_added">Datum hinzugefügt: %s</string>
@@ -1270,8 +1267,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="an_error_occurred_during_send">Beim Versand einer oder mehrerer Nachrichten ist ein Fehler aufgetreten.</string>
 	<string name="state_processing">wird verarbeitet</string>
 	<string name="passphrase_locked">Die Passphrase ist gesperrt</string>
-	<string name="image_labeling_new">Neu: Bildersuche</string>
-	<string name="tooltip_image_labeling">Um ein bestimmtes visuelles Medium in Ihrer Galerie zu finden, geben Sie einfach einen Begriff ein, der den Inhalt beschreibt oder wählen Sie ihn aus der Liste der gefundenen Beschreibungen aus.</string>
 	<string name="error_unable_loading_media_thumb">Vorschau kann nicht geladen werden</string>
 	<string name="select">Auswählen</string>
 	<string name="filter_list">Liste filtern</string>
@@ -1281,24 +1276,18 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="show_text">Text anzeigen</string>
 	<string name="only_images_or_videos">Nur Bilder und Videos können ausgewählt werden</string>
 	<string name="media_gallery_gifs">GIFs</string>
-	<string name="notification_channel_image_labeling">Fortschritt der Bilder-Indexierung</string>
-	<string name="notification_channel_image_labeling_desc">Bilder in der Galerie werden im Hintergrund indexiert</string>
-	<string name="notification_image_labeling_desc">Bilder-Indexierung</string>
 	<string name="no_media_found_global">Auf diesem Gerät wurden keine Medien gefunden</string>
-	<string name="prefs_sum_image_labeling">Stichwort-Suche für die öffentlichen Bilder in Ihrer Galerie ermöglichen</string>
-	<string name="prefs_image_labeling">Bildersuche</string>
 	<string name="enable_formatting">Formatierung aktivieren</string>
 	<string name="original_file_no_longer_avilable">Kein Zugriff mehr auf die Original-Datei. Bitte senden Sie diese Nachricht erneut.</string>
 	<string name="state_transcoding">wird transcodiert</string>
 	<string name="importing_files">Dateien werden importiert</string>
 	<string name="tooltip_image_resolution_hint">Hier tippen, um die Bildauflösung individuell anzupassen.</string>
-	<string name="image_labeling_stuck_error">Der Indexierungsprozess für die Bildersuche ist stehen geblieben und wurde abgebrochen. Versuchen Sie es später nochmals.</string>
 	<string name="max_selectable_media_exceeded">Es können maximal %d Objekte aufs Mal versendet werden.</string>
 	<string name="ballot_created_successfully">Die Umfrage wurde erfolgreich erstellt.</string>
 	<string name="file_size">Dateigrösse</string>
 	<string name="thirty_days_abbrev">30d</string>
 	<string name="show_in_chat">In Chat zeigen</string>
-	<string name="group_create_no_members">Sind Sie sicher, dass Sie eine leere Gruppe ohne weitere Mitglieder erstellen möchten?</string>
+	<string name="group_create_no_members">Sind Sie sicher, dass Sie eine leere Gruppe erstellen möchten?</string>
 	<string name="notes">Notizen</string>
 	<string name="blur_faces">Gesichter verwischen</string>
 	<string name="brush">Pinsel</string>
@@ -1308,4 +1297,12 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="blur">Verwischen</string>
 	<string name="face_blur_tooltip_title">Neu: Gesichtserkennung</string>
 	<string name="face_blur_tooltip_text">Finden Sie Gesichter im Bild und lassen Sie sie verwischen oder mit einem Smiley überdecken.</string>
+	<string name="transcoder_unsupported_audio_format">Audio-Formatkonvertierung aufgrund fehlender Systemunterstützung fehlgeschlagen.</string>
+	<string name="transcoder_unknown_audio_error">Audio-Formatkonvertierung mit unbekantem Fehler fehlgeschlagen.</string>
+	<string name="video_size_explain">Sehr grosse Videos werden unabhängig von dieser Einstellung komprimiert, damit sie versendet werden können.</string>
+	<string name="status_create_notes">*Sie sind alleine hier*\nVerwenden Sie diesen Chat als sicheres Notizbuch für Texte, Medien oder Dokumente.</string>
+	<string name="status_create_notes_off">*Sie sind nicht mehr alleine in diesem Chat*\nNeue Nachrichten werden an alle Gruppenmitglieder gesendet.</string>
+	<string name="note_group_howto">Tipp: Wenn Sie keine Mitglieder hinzufügen, bleiben Nachrichten an diese Gruppe lokal. Das ist ideal, um Notizen, Medien oder Dokumente sicher zu speichern oder auf den Desktop zu übertragen.</string>
+	<string name="mark_unread">Als ungelesen markieren</string>
+	<string name="mark_read_short">Gelesen</string>
 </resources>

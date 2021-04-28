@@ -236,21 +236,21 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity) {
+		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
 			if (newIdentity.equals(identity)) {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
 			}
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String leftIdentity) {
+		public void onMemberLeave(GroupModel group, String leftIdentity, int previousMemberCount) {
 			if (leftIdentity.equals(identity)) {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate); ;
 			}
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String kickedIdentity) {
+		public void onMemberKicked(GroupModel group, String kickedIdentity, int previousMemberCount) {
 			if (kickedIdentity.equals(identity)) {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate); ;
 			}

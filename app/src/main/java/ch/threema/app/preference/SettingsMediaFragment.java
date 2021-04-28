@@ -22,46 +22,33 @@
 package ch.threema.app.preference;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.View;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
-import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.StorageManagementActivity;
-import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
-import ch.threema.app.mediaattacher.labeling.ImageLabelingWorker;
 import ch.threema.app.services.MessageServiceImpl;
-import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
-
-import static ch.threema.app.ThreemaApplication.WORKER_IMAGE_LABELS_PERIODIC;
-import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.ThreemaApplication.getServiceManager;
 
 public class SettingsMediaFragment extends ThreemaPreferenceFragment {
 	private static final Logger logger = LoggerFactory.getLogger(SettingsMediaFragment.class);
@@ -140,22 +127,10 @@ public class SettingsMediaFragment extends ThreemaPreferenceFragment {
 			}
 		});
 		mobileDownloadPreference.setSummary(getAutoDownloadSummary(preferenceService.getMobileAutoDownload()));
-
-		CheckBoxPreference labelingPreference = (CheckBoxPreference) findPreference(getString(R.string.preferences__image_labeling));
-		labelingPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				Boolean value = (Boolean) newValue;
-				if (value != null && !value) {
-					return deleteMediaLabelsDatabase();
-				}
-				return true;
-			}
-		});
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		this.fragmentView = view;
 		preferenceFragmentCallbackInterface.setToolbarTitle(R.string.prefs_media_title);
 		super.onViewCreated(view, savedInstanceState);
@@ -184,50 +159,5 @@ public class SettingsMediaFragment extends ThreemaPreferenceFragment {
 		}
 
 		return result.isEmpty() ? getResources().getString(R.string.never) : TextUtils.join(", ", result);
-	}
-
-	@UiThread
-	@SuppressLint("StaticFieldLeak")
-	private boolean deleteMediaLabelsDatabase() {
-		logger.debug("deleteMediaLabelsDatabase");
-		WorkManager.getInstance(ThreemaApplication.getAppContext()).cancelAllWorkByTag(WORKER_IMAGE_LABELS_PERIODIC);
-		WorkManager.getInstance(ThreemaApplication.getAppContext()).cancelAllWorkByTag(ImageLabelingWorker.UNIQUE_WORK_NAME);
-
-		new AsyncTask<Void, Void, Exception>() {
-			@Override
-			protected Exception doInBackground(Void... voids) {
-				try {
-					final String[] files = new String[] {
-						MediaItemsRoomDatabase.DATABASE_NAME,
-						MediaItemsRoomDatabase.DATABASE_NAME + "-shm",
-						MediaItemsRoomDatabase.DATABASE_NAME + "-wal",
-					};
-					for (String filename : files) {
-						final File databasePath = getAppContext().getDatabasePath(filename);
-						if (databasePath.exists() && databasePath.isFile()) {
-							logger.info("Removing file {}", filename);
-							if (!databasePath.delete()) {
-								logger.warn("Could not remove file {}", filename);
-							}
-						} else {
-							logger.debug("File {} not found", filename);
-						}
-					}
-				} catch (Exception e) {
-					logger.error("Exception while deleting media labels database");
-					return e;
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Exception e) {
-				if (e != null) {
-					Toast.makeText(getContext(), getString(R.string.an_error_occurred_more, e.getMessage()), Toast.LENGTH_LONG).show();
-				}
-			}
-		}.execute();
-
-		return true;
 	}
 }

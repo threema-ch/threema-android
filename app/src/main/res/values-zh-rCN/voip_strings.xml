@@ -1,37 +1,37 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="voip_title">Threema通话</string>
+    <string name="voip_title">Threema 通话</string>
     <string name="voip_hangup">挂断</string>
-    <string name="voip_toggle_mic">拨动麦克风</string>
-    <string name="voip_toggle_speaker">拨动扬声器</string>
+    <string name="voip_toggle_mic">切换麦克风</string>
+    <string name="voip_toggle_speaker">切换扬声器</string>
     <string name="voip_switch_cam">切换摄像头</string>
-    <string name="voip_switch_cam_front">切换到前置摄像头</string>
+    <string name="voip_switch_cam_front">切换到前置镜头</string>
     <string name="voip_switch_cam_rear">切换到后置摄像头</string>
     <string name="voip_toggle_video">切换视频模式</string>
     <string name="voip_call_confirm">您要致电%1$s吗？</string>
-    <string name="voip_error_call">在Threema通话中出错</string>
+    <string name="voip_error_call">在 Threema 通话中出错</string>
     <string name="voip_error_init_call">初始化通话时出错</string>
     <string name="voip_notification_title">Threema 通话来电</string>
     <string name="voip_notification_text">%1$s正在通话</string>
     <!-- Shown when starting a call, before the peer device is ringing -->
-    <string name="voip_status_initializing">初始化中</string>
+    <string name="voip_status_initializing">正在初始化</string>
     <!-- Shown when the callee has accepted the call and the connection is being established -->
     <string name="voip_status_connecting">连接中</string>
     <!-- Shown when a call is being disconnected -->
-    <string name="voip_status_disconnecting">断开连接</string>
+    <string name="voip_status_disconnecting">正在断开连接</string>
     <!-- Shown when the device of the callee is ringing -->
-    <string name="voip_status_ringing">响铃</string>
+    <string name="voip_status_ringing">响铃中</string>
     <string name="voip_mic_enable">启用麦克风</string>
     <string name="voip_mic_disable">禁用麦克风</string>
-    <string name="voip_checking_compatibility">检查此联系人是否可以接收Threema电话</string>
-    <string name="voip_incompatible">此联系人尚无法接收Threema通话。</string>
-    <string name="voip_call_status_unavailable">通话接收者不可用</string>
+    <string name="voip_checking_compatibility">检查此联系人是否可以接收 Threema 通话</string>
+    <string name="voip_incompatible">此联系人尚无法接收 Threema 通话。</string>
+    <string name="voip_call_status_unavailable">通话接收者无法接通</string>
     <string name="voip_call_status_rejected">通话被拒</string>
     <string name="voip_call_status_busy">通话接收者忙碌中</string>
     <string name="voip_call_status_busy_short">忙碌中</string>
     <string name="voip_call_status_disabled">Threema 通话被接收者禁用</string>
     <string name="voip_call_status_missed">未接来电</string>
-    <string name="voip_call_finished_outbox">拨出电话</string>
+    <string name="voip_call_finished_outbox">拨出通话</string>
     <string name="voip_call_finished_inbox">来电</string>
     <string name="voip_call_status_aborted">通话中止</string>
     <string name="voip_return_call">回电</string>
@@ -42,26 +42,31 @@
     <string name="voip_earpiece">电话</string>
     <string name="voip_bluetooth">蓝牙</string>
     <string name="voip_none">无法使用</string>
-    <string name="voip_call_finished">Threema通话已结束</string>
-    <string name="voip_another_call">无法连接。另一个Threema通话当前处于活动状态。</string>
+    <string name="voip_call_finished">Threema 通话已结束</string>
+    <string name="voip_another_call">无法连接。另一个 Threema 通话当前处于活动状态。</string>
     <string name="voip_prefs_title_aec">回声消除</string>
     <string name="voip_prefs_aec_sw">软件回声消除</string>
     <string name="voip_prefs_aec_hw">硬件回音消除</string>
+    <string name="voip_prefs_title_video_codec">视频编解码器</string>
+    <string name="voip_prefs_video_aec_hw">硬件加速已启用</string>
+    <string name="voip_prefs_video_codec_no_vp8">禁用 VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">禁用 H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">软件编解码器</string>
     <string name="voip_connection_failed">无法建立连接</string>
     <string name="voip_connection_lost">连接丢失</string>
     <string name="prefs_voip_reject_incoming_calls_title">拒绝手机通话</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">在Threema通话时拒绝来电。</string>
-    <string name="voip_contact_not_found">找不到该号码的 Threema 联系人。</string>
-    <string name="voip_another_pstn_call">无法发起呼叫。常规电话仍处于活动状态。</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">在 Threema 通话时拒绝来电。</string>
+    <string name="voip_contact_not_found">找不到此号码与 Threema 关联的联系人。</string>
+    <string name="voip_another_pstn_call">无法发起通话，常规电话仍处于活动状态。</string>
     <string name="voip_call_status_off_hours">非工作时间通话</string>
     <string name="voip_peer_video_disabled">对方已禁止视频通话。</string>
     <!-- WebRTC debugger -->
-    <string name="voip_prefs_webrtc_debug">WebRTC诊断</string>
-    <string name="voip_prefs_webrtc_debug_summary">启动此工具以调试与设置语音呼叫连接有关的问题</string>
-    <string name="voip_webrtc_debug">WebRTC诊断</string>
-    <string name="voip_webrtc_debug_intro">按下 “开始” 按钮开始测试。</string>
+    <string name="voip_prefs_webrtc_debug">WebRTC 诊断</string>
+    <string name="voip_prefs_webrtc_debug_summary">启动此工具以调试与设置语音通话连接有关的问题</string>
+    <string name="voip_webrtc_debug">WebRTC 诊断</string>
+    <string name="voip_webrtc_debug_intro">按 “开始” 按钮开始测试。</string>
     <string name="voip_webrtc_debug_start">开始</string>
-    <string name="voip_webrtc_debug_done">大功告成。 如果您在建立呼叫连接时遇到问题，请将此输出发送给Threema支持。</string>
+    <string name="voip_webrtc_debug_done">大功告成。如果您在建立通话连接时遇到问题，请将错误日志发送给 Threema 支持。</string>
     <string name="voip_webrtc_debug_copied">已复制到剪贴板。</string>
     <string name="voip_webrtc_debug_copy_clipboard">复制到剪贴板</string>
 </resources>

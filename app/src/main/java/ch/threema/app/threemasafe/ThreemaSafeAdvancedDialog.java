@@ -243,7 +243,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 				DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_PROGRESS, true);
 
 				if (failureMessage != null) {
-					Toast.makeText(getActivity(), getString(R.string.test_unsuccessful) + ": " + failureMessage, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), getString(R.string.test_unsuccessful) + ": " + failureMessage, Toast.LENGTH_LONG).show();
 				} else {
 					onYes();
 				}

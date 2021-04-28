@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -178,13 +179,12 @@ public class BackupChatServiceImpl implements BackupChatService {
 	}
 
 	@Override
-	public boolean backupChatToZip(final ConversationModel conversationModel, final File outputFile, final String password, boolean includeMedia, String displayName) {
+	public boolean backupChatToZip(final ConversationModel conversationModel, final File outputFile, final String password, boolean includeMedia) {
 		StringBuilder messageBody = new StringBuilder();
 
 		try(final ZipOutputStream zipOutputStream = ZipUtil.initializeZipOutputStream(outputFile, password)) {
 			if (buildThread(conversationModel, zipOutputStream, messageBody, password, includeMedia)) {
-				String filename = FilenameUtils.normalizeNoEndSeparator("messages-" + displayName);
-				ZipUtil.addZipStream(zipOutputStream, IOUtils.toInputStream(messageBody, "UTF-8"), filename + ".txt");
+				ZipUtil.addZipStream(zipOutputStream, IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt");
 			}
 			return true;
 

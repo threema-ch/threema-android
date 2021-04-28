@@ -40,6 +40,7 @@ import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.mediaattacher.MediaFilterQuery;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -548,4 +549,26 @@ public class IntentDataUtil {
 
 		return intent;
 	}
+
+	public static MediaFilterQuery getLastMediaFilterFromIntent(Intent intent) {
+		if (intent.getStringExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY) != null) {
+			return new MediaFilterQuery(intent.getStringExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY),
+				intent.getIntExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_TYPE_QUERY, -1));
+		}
+		return null;
+	}
+
+	public static Intent addLastMediaFilterToIntent(Intent intent, MediaFilterQuery mediaFilterQuery) {
+		intent.putExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY, mediaFilterQuery.getQuery());
+		intent.putExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_TYPE_QUERY, mediaFilterQuery.getType());
+		return intent;
+	}
+
+	public static Intent addLastMediaFilterToIntent(Intent intent, String query, int type) {
+		intent.putExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY, query);
+		intent.putExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_TYPE_QUERY, type);
+		return intent;
+	}
+
 }
+

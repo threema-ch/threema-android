@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">將QR碼放在矩形掃描框內進行掃描。</string>
+    <string name="msg_camera_framework_bug">無法取用 Android 相機。請確定已授予取用相機的權限或重新啟動裝置。</string>
+</resources>

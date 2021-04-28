@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Cancelación del eco</string>
     <string name="voip_prefs_aec_sw">Cancelación del eco por software</string>
     <string name="voip_prefs_aec_hw">Cancelación del eco por hardware</string>
+    <string name="voip_prefs_title_video_codec">Códecs de vídeo</string>
+    <string name="voip_prefs_video_aec_hw">Hardware acelerado</string>
+    <string name="voip_prefs_video_codec_no_vp8">Deshabilitar VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Deshabilitar H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Códecs de software</string>
     <string name="voip_connection_failed">No se ha podido establecer la conexión.</string>
     <string name="voip_connection_lost">Conexión perdida</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rechazar llamadas del móvil</string>

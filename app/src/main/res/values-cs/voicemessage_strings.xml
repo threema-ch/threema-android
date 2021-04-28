@@ -4,7 +4,7 @@
     <string name="recording_stopped_title">Nahrávání bylo zastaveno</string>
     <string name="recording_stopped_message">Přejete si nyní odeslat nahranou hlasovou zprávu?</string>
     <string name="recording_canceled">Nahrávání bylo zrušeno kvůli neznámé chybě.</string>
-    <string name="cancel_recording">Zrušit nahrávání</string>
-    <string name="cancel_recording_message">Opravdu chcete nahrávání zrušit?</string>
+    <string name="cancel_recording">Zahodit nahrávání</string>
+    <string name="cancel_recording_message">Opravdu chcete nahrávání zrušit a zahodit?</string>
     <string name="stop">Zastavit</string>
 </resources>

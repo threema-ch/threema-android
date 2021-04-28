@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Android向けThreema Work</string>
+    <string name="enter_serial_body">あなたの会社や組織が提供する認証情報を入力してください。</string>
+    <string name="serial_required_want_exit">ライセンスが無効です。もう一度試すかThreemaを閉じますか？</string>
+    <string name="checking_serial">認証情報をチェック中</string>
+    <string name="username_hint">ユーザー名</string>
+    <string name="new_wizard_works_like_phone_number">Threema IDは、電話番号のようなものです。\nこのIDを使ってあなたに連絡を取ることができます。</string>
+    <string name="new_wizard_nickname_explain">あなたのユーザー名は連絡先の人たちへの通知で表示されます。</string>
+    <string name="new_wizard_help_your_friends_find_you">連絡先の人にあなたを見つけてもらおう！</string>
+    <string name="new_wizard_find_friends">連絡先のThreema Workユーザーを探す</string>
+    <string name="new_wizard_sync_contacts_explain">有効にすると、あなたの連絡先でThreemaやThreema Workをすでに利用している人がわかります。</string>
+    <string name="new_wizard_anonymous_confirm">Threema IDに紐付けする携帯電話番号やメールアドレスを入力していません。連絡先リストには表示されません。本当に匿名でThreema Workを利用したいのですか？</string>
+    <string name="new_wizard_setup_threema">Threema Workを設定</string>
+    <string name="new_wizard_welcome">Threema Workへようこそ！</string>
+    <string name="new_wizard_info_fingerprint">指を動かすことで、ランダムなデータ（エントロピーと呼ばれます）が生成され、それをもとに、あなたの新しいユニークなThreema IDに関連付けられた鍵ペアが生成されます。
+鍵ペアは、友達に配布される<b>公開鍵</b>と、あなたの携帯電話に安全に保存される<b>秘密鍵</b>で構成されています。
+友達は、あなたへのメッセージを公開鍵で暗号化します。
+これらのメッセージを解読できるのは、秘密鍵の所有者だけです。</string>
+    <string name="new_wizard_info_link">Threema Workは、あなたの電話番号とメールアドレスを提供することで、
+あなたの友達が携帯電話のアドレス帳にあなたを登録している場合、自動的にあなたを見つけることができます。
+これらのデータは、暗号化（ハッシュ化）された状態で、私たちのサーバーに保存されます。
+完全に匿名で利用したい場合には、このステップを省略することができます。</string>
+    <string name="threema_contact">Threema Workの連絡先</string>
+    <string name="menu_about">Threema Workについて</string>
+    <string name="list_theme_light">ライト</string>
+    <string name="list_theme_dark">ダーク (デフォルト)</string>
+    <string name="private_threema_download"><![CDATA[個人ユーザーの方は、 <a href="https://play.google.com/store/apps/details?id=ch.threema.app">こちらをタップ</a>してThreemaをダウンロードしてください。]]></string>
+    <string name="directory_search">ディレクトリ内検索</string>
+    <string name="directory_title">会社のディレクトリ</string>
+    <string name="directory_empty_view_text">エントリーが見つかりません\n\nあなたの会社のThreemaユーザーのディレクトリで検索を開始するには、少なくとも3文字を入力してください。</string>
+</resources>

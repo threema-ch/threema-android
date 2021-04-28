@@ -27,12 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.GridLayoutAnimationController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.mediaattacher.MediaAttachActivity;
 
 public class GridRecyclerView extends RecyclerView {
 

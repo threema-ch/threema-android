@@ -177,9 +177,9 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			itemHolder.nameView.setText(groupModel.getName());
 			itemHolder.avatarView.setImageBitmap(avatar);
 			if (groupService.isGroupOwner(groupModel)) {
-				itemHolder.statusView.setImageResource(R.drawable.ic_label_group_admin);
+				itemHolder.statusView.setImageResource(R.drawable.ic_group_outline);
 			} else {
-				itemHolder.statusView.setImageResource(R.drawable.ic_label_group_neutral);
+				itemHolder.statusView.setImageResource(R.drawable.ic_group_filled);
 			}
 			itemHolder.view.setOnClickListener(new View.OnClickListener() {
 				@Override

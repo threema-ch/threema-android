@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="msg_default_status">Coloque un código QR ​​en el interior del rectángulo del visor para escanearlo.</string>
+    <string name="msg_default_status">Coloque un código QR​en el interior del rectángulo del visor para escanearlo.</string>
     <string name="msg_camera_framework_bug">No se puede acceder a la cámara de Android. Asegúrese de haber concedido el permiso de acceso o reinicie el dispositivo.</string>
 </resources>

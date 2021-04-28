@@ -91,21 +91,21 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 
 	private final List<AbstractMessageModel> values;
 	private final ChatAdapterDecorator.Helper decoratorHelper;
-	private MessageService messageService;
-	private UserService userService;
-	private FileService fileService;
+	private final MessageService messageService;
+	private final UserService userService;
+	private final FileService fileService;
 	private final SparseIntArray resultMap = new SparseIntArray();
 	private int resultMapIndex;
 	private ConversationListFilter convListFilter = new ConversationListFilter();
 	public ListView listView;
 	private int groupId;
-	private EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
+	private final EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
 	private CharSequence currentConstraint = "";
 
-	private int firstUnreadPos = -1;
+	private int firstUnreadPos = -1, unreadMessagesCount;
 	private final Context context;
 
-	private LayoutInflater layoutInflater;
+	private final LayoutInflater layoutInflater;
 
 	public static final int TYPE_SEND = 0;
 	public static final int TYPE_RECV = 1;
@@ -165,7 +165,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			ListView listView,
 			ThumbnailCache<?> thumbnailCache,
 			int thumbnailWidth,
-			Fragment fragment) {
+			Fragment fragment,
+			int unreadMessagesCount) {
 		super(context, R.layout.conversation_list_item_send, values);
 
 		this.context = context;
@@ -182,6 +183,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		int maxBubbleTextLength = context.getResources().getInteger(R.integer.max_bubble_text_length);
 		int maxQuoteTextLength = context.getResources().getInteger(R.integer.max_quote_text_length);
 		this.resultMapIndex = 0;
+		this.unreadMessagesCount = unreadMessagesCount;
 		this.messageService = messageService;
 		this.userService = userService;
 		this.fileService = fileService;
@@ -434,7 +436,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 
 		if (itemType == TYPE_FIRST_UNREAD) {
 			// add number of unread messages
-			decorator = new FirstUnreadChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+			decorator = new FirstUnreadChatAdapterDecorator(this.context, messageModel, this.decoratorHelper, unreadMessagesCount);
 		}
 		else {
 			switch (messageType) {

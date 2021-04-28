@@ -4,7 +4,7 @@
     <string name="recording_stopped_title">Kayıt durduruldu</string>
     <string name="recording_stopped_message">Kaydedilen sesli mesajı şimdi göndermek ister misiniz?</string>
     <string name="recording_canceled">Bilinmeyen bir hata nedeniyle kayıt iptal edildi.</string>
-    <string name="cancel_recording">Kaydı iptal et</string>
-    <string name="cancel_recording_message">Kaydı gerçekten iptal etmek istiyor musunuz?</string>
+    <string name="cancel_recording">Sil</string>
+    <string name="cancel_recording_message">Kaydı gerçekten iptal edip atmak istiyor musunuz?</string>
     <string name="stop">Dur</string>
 </resources>

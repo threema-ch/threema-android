@@ -209,7 +209,7 @@ public class ConfigUtils {
 	}
 
 	public static boolean supportsVideoCapture() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isInternalCameraSupported();
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isInternalCameraSupported();
 	}
 
 	public static boolean supportsPictureInPicture(Context context) {
@@ -693,14 +693,19 @@ public class ConfigUtils {
 
 			DisplayMetrics dm = res.getDisplayMetrics();
 			android.content.res.Configuration conf = res.getConfiguration();
-			if ("pt".equals(confLanguage)) {
-				conf.locale = new Locale(confLanguage, "BR");
-			}
-			else if ("zh".equals(confLanguage)) {
-				conf.locale = new Locale(confLanguage, "CN");
-			}
-			else {
-				conf.locale = new Locale(confLanguage);
+			switch (confLanguage) {
+				case "pt":
+					conf.locale = new Locale(confLanguage, "BR");
+					break;
+				case "zh-rCN":
+					conf.locale = new Locale("zh", "CN");
+					break;
+				case "zh-rTW":
+					conf.locale = new Locale("zh", "TW");
+					break;
+				default:
+					conf.locale = new Locale(confLanguage);
+					break;
 			}
 			res.updateConfiguration(conf, dm);
 		} catch (Exception e) {

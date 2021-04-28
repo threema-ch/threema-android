@@ -21,8 +21,7 @@ https://threema.ch/download</string>
     <string name="menu_about">Tge è Threema?</string>
     <string name="menu_add_contact">Agiuntar in contact</string>
     <string name="menu_done">Finì</string>
-    <string name="menu_mobile_linking">Numer collià</string>
-    <string name="compose_message_and_enter">Scriver in messadi</string>
+	<string name="compose_message_and_enter">Scriver in messadi</string>
     <string name="send">Trametter</string>
     <string name="prefs_privacy">Sfera privata</string>
     <string name="prefs_notifications">Avis</string>
@@ -121,7 +120,7 @@ https://threema.ch/download</string>
     <string name="linked_mobile">Numer da telefonin</string>
     <string name="public_nickname">Surnum</string>
     <string name="share_via">Parter via ...</string>
-    <string name="share_subject">Chat da Threema cun</string>
+    <string name="share_subject">Chat da Threema</string>
     <string name="message_delete_undo">Enavos</string>
     <string name="message_deleted">Stizzà il(s) messadi(s)</string>
     <string name="mobile_already_linked">Tia ID da Threema è gia colliada cun quest numer da telefonin</string>
@@ -359,7 +358,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="contact_format_last_name_first_name">Num prenum</string>
     <string name="block_contact">Bloccar il contact</string>
     <string name="unblock_contact">Debloccar il contact</string>
-    <string name="unread_messages">Messadis betg legids</string>
+    <string name="unread_messages">%d messadis betg legids</string>
     <string name="really_unlink_contact_title">Allontanar la colliaziun</string>
     <string name="really_unlink_contact">Vuls ti propi allontanar la colliaziun cun il contact dal cudesch d\'adressas?</string>
     <string name="do_unlink_contact">Allontanar la colliaziun</string>
@@ -1124,17 +1123,12 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="an_error_occurred_during_send">Igl ha dà in errur cun trametter in u plirs messadis.</string>
     <string name="state_processing">vegn elavurà</string>
     <string name="passphrase_locked">Die Passphrase ist gesperrt</string>
-    <string name="image_labeling_new">Nov: tschertga da maletgs</string>
-    <string name="tooltip_image_labeling">Endatescha ina noziun che descriva il cuntegn u al selecziunescha da la glista da las descripziuns chattadas per tschertgar in tschert medium visual en tia gallaria.</string>
     <string name="selected_media">Tia selecziun</string>
     <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Gallaria</string>
     <string name="attach_picture">Maletg</string>
     <string name="attach_video">Video</string>
     <string name="attach_location">Lieu</string>
-    <string name="image_labeling_toolbar_title">Filtrar tenor</string>
-    <string name="no_labels_info">Chattà nagins resultats</string>
-    <string name="image_label_query_hint">Object, lieu, activitad?</string>
     <string name="filter_by_album">Filtrar tenor ordinatur</string>
     <string name="media_date_taken">Data: %s</string>
     <string name="media_date_added">Agiuntà la data: %s</string>
@@ -1150,18 +1144,12 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="show_text">Mussar il text</string>
     <string name="only_images_or_videos">Ti pos selecziunar mo maletgs e videos</string>
     <string name="media_gallery_gifs">GIFs</string>
-    <string name="notification_channel_image_labeling">Progress da l\'indexaziun dals maletgs</string>
-    <string name="notification_channel_image_labeling_desc">Ils maletgs en la gallaria vegnan indexads davosvart</string>
-    <string name="notification_image_labeling_desc">Indexaziun dals maletgs</string>
     <string name="no_media_found_global">Chattà naginas medias sin quest apparat</string>
-    <string name="prefs_sum_image_labeling">Pussibilitar la tschertga da chavazzins per ils maletgs publics en tia gallaria</string>
-    <string name="prefs_image_labeling">Tschertga da maletgs</string>
     <string name="enable_formatting">Activar la formataziun</string>
     <string name="original_file_no_longer_avilable">Nagin access pli a la datoteca originala. P.pl. trametter anc ina giada quest messadi.</string>
     <string name="state_transcoding">vegn transcodà</string>
     <string name="importing_files">Las datotecas vegnan importadas</string>
     <string name="tooltip_image_resolution_hint">Adattar individualmain la resoluziun</string>
-    <string name="image_labeling_stuck_error">Il process d\'indexaziun per la tschertga da maletgs è stada airi e vegnida interrutta. P.pl. empruvar pli tard anc ina giada.</string>
     <string name="ballot_created_successfully">La retschertga è vegnida creada cun success.</string>
     <string name="file_size">Grondezza da la datoteca</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->

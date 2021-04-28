@@ -30,7 +30,7 @@
     <string name="voip_call_status_busy">Адресат звонка занят</string>
     <string name="voip_call_status_busy_short">Занято</string>
     <string name="voip_call_status_disabled">Звонки Threema отключены адресатом</string>
-    <string name="voip_call_status_missed">Пропущенный звонок</string>
+    <string name="voip_call_status_missed">Пропущ. звонок</string>
     <string name="voip_call_finished_outbox">Исходящий звонок</string>
     <string name="voip_call_finished_inbox">Входящий звонок</string>
     <string name="voip_call_status_aborted">Звонок прерван</string>
@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Эхокомпенсация</string>
     <string name="voip_prefs_aec_sw">Программная эхокомпенсация</string>
     <string name="voip_prefs_aec_hw">Аппаратная эхокомпенсация</string>
+    <string name="voip_prefs_title_video_codec">Видеокодеки</string>
+    <string name="voip_prefs_video_aec_hw">Оборудование ускорено</string>
+    <string name="voip_prefs_video_codec_no_vp8">Отключить VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Отключить H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Программные кодеки</string>
     <string name="voip_connection_failed">Не удалось установить соединение.</string>
     <string name="voip_connection_lost">Соединение утеряно</string>
     <string name="prefs_voip_reject_incoming_calls_title">Отклонять звонки с мобильных</string>

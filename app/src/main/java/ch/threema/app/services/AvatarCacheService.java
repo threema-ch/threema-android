@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 
 import java.util.Collection;
 
+import androidx.annotation.NonNull;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -40,8 +41,8 @@ public interface AvatarCacheService {
 	Bitmap getContactAvatarLowFromCache(ContactModel contactModel);
 	void reset(ContactModel contactModel);
 
-	Bitmap getGroupAvatarHigh(GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly);
-	Bitmap getGroupAvatarLow(GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly);
+	Bitmap getGroupAvatarHigh(@NonNull GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly);
+	Bitmap getGroupAvatarLow(@NonNull GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly);
 	Bitmap getGroupAvatarLowFromCache(GroupModel groupModel);
 	Bitmap getGroupAvatarNeutral(boolean highResolution);
 

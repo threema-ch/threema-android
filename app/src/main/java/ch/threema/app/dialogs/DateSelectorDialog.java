@@ -80,7 +80,7 @@ public class DateSelectorDialog extends ThreemaDialogFragment implements DatePic
 
 		if (callback == null) {
 			try {
-				callback = (DateSelectorDialog.DateSelectorDialogListener) getTargetFragment();
+				callback = (DateSelectorDialogListener) getTargetFragment();
 			} catch (ClassCastException e) {
 				//
 			}
@@ -90,7 +90,7 @@ public class DateSelectorDialog extends ThreemaDialogFragment implements DatePic
 				if (!(activity instanceof SelectorDialog.SelectorDialogClickListener)) {
 					throw new ClassCastException("Calling fragment must implement DateSelectorDialogClickListener interface");
 				}
-				callback = (DateSelectorDialog.DateSelectorDialogListener) activity;
+				callback = (DateSelectorDialogListener) activity;
 			}
 		}
 	}

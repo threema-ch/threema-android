@@ -22,6 +22,7 @@
 			android:dependency="@string/preferences__sync_contacts"
 			android:key="@string/preferences__validate_contacts"
 			android:summary="@string/prefs_sum_validate_contacts"
+			android:icon="@drawable/ic_outline_sync_alt_24"
 			android:title="@string/prefs_validate_contacts"/>
 
 		<CheckBoxPreference
@@ -106,6 +107,7 @@
 		<CheckBoxPreference
 			android:defaultValue="false"
 			android:key="@string/preferences__disable_smart_replies"
+			android:icon="@drawable/ic_outline_quickreply_24"
 			android:summary="@string/prefs_sum_disable_smart_replies"
 			android:title="@string/prefs_title_disable_smart_replies"/>
 

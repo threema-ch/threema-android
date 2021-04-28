@@ -21,4 +21,7 @@ La paire de clés comprend une <b>clé publie</b> distribuée à vos contacts et
     <string name="list_theme_light">Clair</string>
     <string name="list_theme_dark">Foncé (par défaut)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Pour les utilisateurs privés</a>]]></string>
+    <string name="directory_search">Rechercher dans le répertoire</string>
+    <string name="directory_title">Répertoire de l\'entreprise</string>
+    <string name="directory_empty_view_text">Aucune entrée trouvée\n\nVeuillez saisir au moins 3 caractères d\'un nom pour lancer une recherche dans le répertoire d\'utilisateurs Threema de votre entreprise</string>
 </resources>

@@ -21,6 +21,8 @@
 
 package ch.threema.app.services;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 
 import java.sql.SQLException;
@@ -76,7 +78,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 
 	boolean sendLeave(AbstractGroupMessage msg);
 
-	GroupCreateMessageResult processGroupCreateMessage(GroupCreateMessage groupCreateMessage) throws ThreemaException, InvalidEntryException;
+	GroupCreateMessageResult processGroupCreateMessage(GroupCreateMessage groupCreateMessage);
 
 	GroupModel createGroup(String name, String[] groupMemberIdentities, Bitmap picture) throws Exception;
 	GroupModel updateGroup(GroupModel groupModel, String name, String[] groupMemberIdentities, Bitmap photo, boolean removePhoto) throws Exception;
@@ -118,13 +120,13 @@ public interface GroupService extends AvatarService<GroupModel> {
 	Bitmap getNeutralAvatar(boolean highResolution);
 
 	boolean isGroupOwner(GroupModel groupModel);
-
-	int countMembers(@NonNull GroupModel groupModel);
-
 	boolean isGroupMember(GroupModel groupModel);
 
 	boolean removeMemberFromGroup(GroupLeaveMessage msg);
 	boolean removeMemberFromGroup(GroupModel group, String identity);
+
+	int countMembers(@NonNull GroupModel groupModel);
+	boolean isNotesGroup(@NonNull GroupModel groupModel);
 
 	int getOtherMemberCount(GroupModel model);
 
@@ -148,4 +150,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	String getUniqueIdString(int groupId);
 
 	void setIsArchived(GroupModel groupModel, boolean archived);
+
+	Intent getGroupEditIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
+	void save(GroupModel model);
 }

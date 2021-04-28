@@ -13,6 +13,7 @@
 				android:summaryOff="@string/prefs_sum_enter_off"
 				android:summaryOn="@string/prefs_sum_enter_on"
 				android:title="@string/prefs_title_enter"
+				android:icon="@drawable/ic_send_circle_outline"
 				android:defaultValue="false"/>
 		<CheckBoxPreference
 				android:key="@string/preferences__fullscreen_ime"
@@ -28,6 +29,7 @@
 		<CheckBoxPreference
 				android:key="@string/preferences__gif_autoplay"
 				android:title="@string/prefs_gif_autoplay"
+				android:icon="@drawable/ic_outline_play_circle_24"
 				android:defaultValue="true"/>
 
 		<CheckBoxPreference
@@ -40,6 +42,7 @@
 				android:key="@string/preferences__image_attach_previews"
 				android:summary="@string/prefs_sum_image_attach_previews"
 				android:title="@string/prefs_title_image_attach_previews"
+			android:icon="@drawable/ic_outline_library_add_24"
 				android:defaultValue="true"/>
 	</PreferenceCategory>
 

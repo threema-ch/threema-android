@@ -361,10 +361,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@UiThread
 	public void setVideo(MediaItem mediaItem) {
-		final int numColumns = calculateNumColumns();
+		int numColumns = calculateNumColumns();
 
 		if (numColumns <= 0 || numColumns > 64) {
-			return;
+			numColumns = GridLayout.UNDEFINED;
 		}
 
 		this.videoItem = mediaItem;
@@ -373,12 +373,11 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			thumbnailThread.interrupt();
 		}
 
-		this.timelineGridLayout.setColumnCount(numColumns);
 		this.timelineGridLayout.setUseDefaultMargins(false);
 		this.timelineGridLayout.removeAllViewsInLayout();
 
+		GridLayout.Spec rowSpec = GridLayout.spec(0, 1, 1);
 		for (int i = 0; i < numColumns; i++) {
-			GridLayout.Spec rowSpec = GridLayout.spec(0, 1, 1);
 			GridLayout.Spec colSpec = GridLayout.spec(i, 1, 1);
 
 			FrameLayout frameLayout = new FrameLayout(context);
@@ -392,10 +391,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
 			layoutParams.rowSpec = rowSpec;
 			layoutParams.columnSpec = colSpec;
-			layoutParams.width = 0;
-			layoutParams.height = 0;
+			layoutParams.width = calculatedWidth;
+			layoutParams.height = targetHeight;
 
 			this.timelineGridLayout.addView(frameLayout, layoutParams);
+		}
+
+		try {
+			this.timelineGridLayout.setColumnCount(numColumns);
+		} catch (IllegalArgumentException e) {
+			logger.debug("Invalid column count. Num columns {}", numColumns);
 		}
 
 		thumbnailThread = new Thread(new Runnable() {
@@ -451,45 +456,49 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 						}
 					});
 
-					int step = (int) ((float) duration * 1000 / numColumns);
+					int numColumns = timelineGridLayout.getColumnCount();
 
-					for (int i = 0; i < numColumns; i++) {
-						int position = i * step;
+					if (numColumns != GridLayout.UNDEFINED) {
+						int step = (int) ((float) duration * 1000 / numColumns);
 
-						logger.debug("*** frame at position: " + position);
+						for (int i = 0; i < numColumns; i++) {
+							int position = i * step;
 
-						Bitmap bitmap = VideoTimelineCache.getInstance().get(mediaItem.getUri(), i);
-						if (bitmap == null) {
-							if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
-								bitmap = metaDataRetriever.getFrameAtTime(position, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-								if (bitmap.getWidth() > calculatedWidth || bitmap.getHeight() > targetHeight) {
-									bitmap = BitmapUtil.resizeBitmap(bitmap, calculatedWidth, targetHeight);
+							logger.debug("*** frame at position: " + position);
+
+							Bitmap bitmap = VideoTimelineCache.getInstance().get(mediaItem.getUri(), i);
+							if (bitmap == null) {
+								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+									bitmap = metaDataRetriever.getFrameAtTime(position, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+									if (bitmap.getWidth() > calculatedWidth || bitmap.getHeight() > targetHeight) {
+										bitmap = BitmapUtil.resizeBitmap(bitmap, calculatedWidth, targetHeight);
+									}
+								} else {
+									bitmap = metaDataRetriever.getScaledFrameAtTime(position, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, calculatedWidth, targetHeight);
 								}
-							} else {
-								bitmap = metaDataRetriever.getScaledFrameAtTime(position, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, calculatedWidth, targetHeight);
+
+								VideoTimelineCache.getInstance().set(mediaItem.getUri(), i, bitmap);
+
+								logger.debug("*** bitmap width: " + bitmap.getWidth() + " height: " + bitmap.getHeight());
 							}
+							final int column = i;
+							Bitmap finalBitmap = bitmap;
 
-							VideoTimelineCache.getInstance().set(mediaItem.getUri(), i, bitmap);
-
-							logger.debug("*** bitmap width: " + bitmap.getWidth() + " height: " + bitmap.getHeight());
-						}
-						final int column = i;
-						Bitmap finalBitmap = bitmap;
-
-						if (Thread.interrupted()) {
-							throw new InterruptedException();
-						} else {
-							RuntimeUtil.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									if (isAttachedToWindow()) {
-										ImageView imageView = findViewWithTag(column);
-										if (imageView != null) {
-											imageView.setImageBitmap(finalBitmap);
+							if (Thread.interrupted()) {
+								throw new InterruptedException();
+							} else {
+								RuntimeUtil.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										if (isAttachedToWindow()) {
+											ImageView imageView = findViewWithTag(column);
+											if (imageView != null) {
+												imageView.setImageBitmap(finalBitmap);
+											}
 										}
 									}
-								}
-							});
+								});
+							}
 						}
 					}
 				} catch (Exception e) {

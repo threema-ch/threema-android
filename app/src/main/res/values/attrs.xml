@@ -110,6 +110,7 @@
 	<attr name="attach_status_bar_color_expanded" format="color" />
 	<attr name="attach_status_bar_color_collapsed" format="color" />
 	<attr name="attach_button_background" format="color"/>
+	<attr name="attach_media_thumb_drawable" format="reference"/>
 
 	<!-- Confirm device credentials screen -->
 	<attr name="confirmDeviceCredentialsSideMargin" format="dimension"/>

@@ -23,6 +23,7 @@ package ch.threema.app.services;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
 import ch.threema.storage.models.TagModel;
@@ -77,5 +78,12 @@ public interface ConversationTagService {
 	 * Get all tags regardless of type
 	 */
 	List<ConversationTagModel> getAll();
+
+	/**
+	 * Return the number of conversations with the provided tag
+	 * @param tagModel tag
+	 * @return number of conversations or 0 if there is none
+	 */
+	long getCount(@NonNull TagModel tagModel);
 }
 

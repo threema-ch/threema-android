@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Threema Work Android版</string>
+    <string name="enter_serial_body">請輸入貴公司或機構提供的憑證</string>
+    <string name="serial_required_want_exit">授權無效。您想再試一次還是退出 Threema？</string>
+    <string name="checking_serial">正在檢查憑證</string>
+    <string name="username_hint">用戶名稱</string>
+    <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像電話號碼一樣。\n您的聯絡人可以透過此 ID 與您聯絡。</string>
+    <string name="new_wizard_nickname_explain">您的聯絡人會在通知中看到您的暱稱</string>
+    <string name="new_wizard_help_your_friends_find_you">協助您的聯絡人找到您！</string>
+    <string name="new_wizard_find_friends">在 Threema Work 上尋找您的聯絡人</string>
+    <string name="new_wizard_sync_contacts_explain">開啟查看哪些聯絡人正在使用 Threema 或 Threema Work。</string>
+    <string name="new_wizard_anonymous_confirm">您沒有輸入電話號碼或電子郵件地址連結至 Threema ID。您將不會出現在聯絡人名單中。您真的要匿名使用 Threema Work 嗎？</string>
+    <string name="new_wizard_setup_threema">設定 Threema Work</string>
+    <string name="new_wizard_welcome">歡迎使用 Threema Work！</string>
+    <string name="new_wizard_info_fingerprint">透過移動手指，您可以建立隨機資料（稱為熵），該資料用於生成與全新而唯一的 Threema ID 相關的金鑰對。
+該金鑰對包括一個<b>公鑰</b>，分配給您的聯絡人，而<b>私鑰</b>安全地儲存在您的電話上。
+您的聯絡人將使用您的公鑰加密傳送給您的訊息。只有私鑰的擁有者才能解密這些訊息，其他人都不能解密。</string>
+    <string name="new_wizard_info_link">如果您的聯絡人儲存了您的電話號碼，透過提供您的電話號碼和電子郵件地址，Threema Work 可以協助您的聯絡人自動在您的電話通訊錄中找到您。
+資料將以單向加密（雜湊）形式儲存在我們的伺服器上。 如果您想完全匿名使用 Threema Work，則可以跳過此步驟。</string>
+    <string name="threema_contact">Threema Work 聯絡人</string>
+    <string name="menu_about">關於 Threema Work</string>
+    <string name="list_theme_light">淺色</string>
+    <string name="list_theme_dark">深色（預設）</string>
+    <string name="private_threema_download"><![CDATA[如果您是私人使用者，請<a href="https://play.google.com/store/apps/details?id=ch.threema.app">點擊這裡</a>下載 Threema。]]></string>
+    <string name="directory_search">在目錄中搜尋</string>
+    <string name="directory_title">公司目錄</string>
+    <string name="directory_empty_view_text">找不到結果\n\n請輸入至少3個字元，以開始在貴公司的 Threema 使用者目錄中進行搜尋</string>
+</resources>

@@ -41,6 +41,7 @@
 			android:key="@string/preferences__receive_profilepics"
 			android:summaryOff="@string/prefs_sum_receive_profilepics_off"
 			android:summaryOn="@string/prefs_sum_receive_profilepics_on"
+			android:icon="@drawable/ic_outline_account_circle_24"
 			android:title="@string/prefs_title_receive_profilepics"/>
 
 	<DropDownPreference

@@ -54,6 +54,7 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 	final static public int ACTIVITY_ID_ENTER_SERIAL = 20017;
 	final static public int ACTIVITY_ID_SHARE_CHAT = 20018;
 	final static public int ACTIVITY_ID_SEND_MEDIA = 20019;
+	final static public int ACTIVITY_ID_ATTACH_MEDIA = 20020;
 	public static final int ACTIVITY_ID_CONFIRM_DEVICE_CREDENTIALS = 20021;
 	final static public int ACTIVITY_ID_GROUP_ADD = 20028;
 	final static public int ACTIVITY_ID_GROUP_DETAIL = 20029;

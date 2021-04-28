@@ -53,6 +53,7 @@ import ch.threema.app.webclient.listeners.WebClientServiceListener;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.app.webclient.services.instance.message.receiver.AcknowledgeRequestHandler;
+import ch.threema.app.webclient.services.instance.message.receiver.ActiveConversationHandler;
 import ch.threema.app.webclient.services.instance.message.receiver.AvatarRequestHandler;
 import ch.threema.app.webclient.services.instance.message.receiver.BlobRequestHandler;
 import ch.threema.app.webclient.services.instance.message.receiver.CleanReceiverConversationRequestHandler;
@@ -475,6 +476,12 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 			services.user
 		));
 		updateDispatcher.addReceiver(new ConnectionInfoUpdateHandler());
+		updateDispatcher.addReceiver(new ActiveConversationHandler(
+			services.contact,
+			services.group,
+			services.conversation,
+			services.conversationTag
+		));
 
 		deleteDispatcher.addReceiver(new DeleteMessageHandler(
 			responseDispatcher,

@@ -206,13 +206,11 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		});
 
 		chatsRecyclerView = this.findViewById(R.id.recycler_chats);
-		chatsRecyclerView.setHasFixedSize(true);
 		chatsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		chatsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 		chatsRecyclerView.setAdapter(chatsAdapter);
 
 		groupChatsRecyclerView = this.findViewById(R.id.recycler_groups);
-		groupChatsRecyclerView.setHasFixedSize(true);
 		groupChatsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		groupChatsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 		groupChatsRecyclerView.setAdapter(groupChatsAdapter);

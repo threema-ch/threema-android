@@ -21,11 +21,6 @@
 
 package ch.threema.app.webclient.services.instance.message.updater;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringDef;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +28,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.executor.HandlerExecutor;
@@ -228,19 +227,19 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity) {
+		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
 			logger.debug("Group Listener: onNewMember");
 			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String identity) {
+		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
 			logger.debug("Group Listener: onMemberLeave");
 			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String identity) {
+		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
 			logger.debug("Group Listener: onMemberKicked");
 			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
 		}

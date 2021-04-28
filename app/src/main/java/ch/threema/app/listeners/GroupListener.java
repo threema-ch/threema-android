@@ -30,9 +30,9 @@ public interface GroupListener {
 	@AnyThread default void onUpdatePhoto(GroupModel groupModel) { }
 	@AnyThread default void onRemove(GroupModel groupModel) { }
 
-	@AnyThread default void onNewMember(GroupModel group, String newIdentity) { }
-	@AnyThread default void onMemberLeave(GroupModel group, String identity) { }
-	@AnyThread default void onMemberKicked(GroupModel group, String identity) { }
+	@AnyThread default void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) { }
+	@AnyThread default void onMemberLeave(GroupModel group, String identity, int previousMemberCount) { }
+	@AnyThread default void onMemberKicked(GroupModel group, String identity, int previousMemberCount) { }
 
 	/**
 	 * Group was updated.

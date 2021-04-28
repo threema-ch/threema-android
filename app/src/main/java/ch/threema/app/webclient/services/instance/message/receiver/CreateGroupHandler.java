@@ -24,10 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.StringDef;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -39,7 +35,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.StringDef;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.dialogs.ContactEditDialog;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.webclient.Protocol;
@@ -48,7 +48,6 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.storage.models.GroupModel;
 
 @WorkerThread

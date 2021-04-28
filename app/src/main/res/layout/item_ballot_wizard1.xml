@@ -12,15 +12,26 @@
 				android:descendantFocusability="blocksDescendants"
 				android:background="?attr/background_secondary">
 
+	<ImageView
+		android:id="@+id/reorder_button"
+		android:layout_marginRight="18dp"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:clickable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:importantForAccessibility="no"
+		app:srcCompat="@drawable/ic_outline_reorder_24"
+		app:tint="?attr/textColorSecondary" />
+
 	<ch.threema.app.emojis.EmojiConversationTextView
 			android:id="@+id/choice_name_readonly"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:textSize="16sp"
-			android:layout_marginLeft="0dp"
 			android:layout_marginRight="4dp"
+			android:layout_toRightOf="@+id/reorder_button"
 			android:layout_toLeftOf="@+id/remove_button"
-			android:layout_alignParentLeft="true"
 			android:layout_centerVertical="true"
 			android:text="X"
 			android:singleLine="true"/>
@@ -30,10 +41,12 @@
 		android:layout_marginRight="0dp"
 		android:layout_alignParentRight="true"
 		android:layout_centerVertical="true"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:tint="?attr/textColorSecondary"
+		android:layout_width="@dimen/ballotchoice_list_item_height"
+		android:layout_height="@dimen/ballotchoice_list_item_height"
 		android:contentDescription="@string/remove"
-		app:srcCompat="@drawable/ic_delete_outline"/>
+		android:scaleType="center"
+		android:background="@drawable/selector_compose_button"
+		app:srcCompat="@drawable/ic_delete_outline"
+		app:tint="?attr/textColorSecondary" />
 
 </RelativeLayout>

@@ -56,8 +56,7 @@ public class RecentListAdapter extends FilterableListAdapter {
 	private List<ConversationModel> values;
 	private List<ConversationModel> ovalues;
 	private RecentListFilter recentListFilter;
-	private final Bitmap defaultContactImage, defaultGroupImage, defaultContactImageSmall, defaultGroupImageSmall;
-	private final Bitmap defaultDistributionListImageSmall;
+	private final Bitmap defaultContactImage, defaultGroupImage;
 	private final Bitmap defaultDistributionListImage;
 	private final ContactService contactService;
 	private final GroupService groupService;
@@ -80,9 +79,6 @@ public class RecentListAdapter extends FilterableListAdapter {
 		this.defaultContactImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_contact);
 		this.defaultGroupImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_group);
 		this.defaultDistributionListImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_distribution_list);
-		this.defaultGroupImageSmall = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_label_group_neutral);
-		this.defaultContactImageSmall = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_label_person);
-		this.defaultDistributionListImageSmall = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_label_distribution_list);
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
 			this.checkedItems.addAll(checkedItems);
@@ -137,18 +133,17 @@ public class RecentListAdapter extends FilterableListAdapter {
 		if(conversationModel.isGroupConversation()) {
 			fromtext = NameUtil.getDisplayName(groupModel, this.groupService);
 			subjecttext = groupService.getMembersString(groupModel);
-			holder.groupView.setImageBitmap(this.defaultGroupImageSmall);
+			holder.groupView.setImageResource(groupService.isGroupOwner(groupModel) ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline) : R.drawable.ic_group_filled);
 		}
 		else if(conversationModel.isDistributionListConversation()) {
 			fromtext = NameUtil.getDisplayName(distributionListModel, this.distributionListService);
 			subjecttext = context.getString(R.string.distribution_list);
-			//TODO
-			holder.groupView.setImageBitmap(this.defaultDistributionListImageSmall);
+			holder.groupView.setImageResource(R.drawable.ic_bullhorn_outline);
 		}
 		else {
 			fromtext = NameUtil.getDisplayNameOrNickname(contactModel, true);
 			subjecttext = contactModel.getIdentity();
-			holder.groupView.setImageBitmap(this.defaultContactImageSmall);
+			holder.groupView.setImageResource(R.drawable.ic_person_outline);
 		}
 
 		String filterString = null;

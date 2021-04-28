@@ -20,7 +20,6 @@
     <string name="menu_about">О Threema</string>
     <string name="menu_add_contact">Добавить контакт</string>
     <string name="menu_done">Готово</string>
-    <string name="menu_mobile_linking">Привязать номер</string>
     <string name="compose_message_and_enter">Введите текст</string>
     <string name="send">Отправить</string>
     <string name="prefs_privacy">Приватность</string>
@@ -121,7 +120,7 @@
     <string name="linked_mobile">Номер мобильного телефона</string>
     <string name="public_nickname">Ник</string>
     <string name="share_via">Отправить через…</string>
-    <string name="share_subject">Беседа в Threema с</string>
+    <string name="share_subject">Беседа в Threema</string>
     <string name="message_delete_undo">Отмена</string>
     <string name="message_deleted">Сообщение удалено</string>
     <string name="mobile_already_linked">Ваш Threema ID уже привязан к этому номеру мобильного телефона</string>
@@ -358,7 +357,8 @@
     <string name="contact_format_last_name_first_name">Фамилия Имя</string>
     <string name="block_contact">Заблокировать контакт</string>
     <string name="unblock_contact">Разблокировать контакт</string>
-    <string name="unread_messages">Непрочитанные сообщения</string>
+    <string name="unread_messages">Непрочитанных сообщений: %d</string>
+    <string name="one_unread_message">Непрочитанных сообщений: 1</string>
     <string name="really_unlink_contact_title">Отвязать контакт</string>
     <string name="really_unlink_contact">Вы действительно хотите отменить связь этого контакта?</string>
     <string name="do_unlink_contact">Удалить связь контакта</string>
@@ -674,7 +674,7 @@
     <string name="prefs_proximity_sensor_explain">Использовать разговорный динамик для воспроизведения голосовых сообщений, если датчик приближения закрыт</string>
     <string name="error_creating_group">Ошибка создания группы</string>
     <string name="no_media_found_generic">Медиафайлов в этом чате не найдено</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Максимум %d картинок могут быть отправлены за раз</string>
+    <string name="max_images_reached" tools:ignore="PluralsCandidate">За раз можно отредактировать не более %d картинок</string>
     <string name="enter_description">Пожалуйста, опишите ошибку/проблему здесь.</string>
     <string name="add_caption_hint">Добавить подпись</string>
     <string name="disable">Отключить</string>
@@ -871,7 +871,7 @@
     <string name="disable_autostart_title">Автозапуск</string>
     <string name="unchanged">без изменений</string>
     <string name="safe_learn_more_button">Узнайте больше</string>
-    <string name="safe_enable_explain">Все, что вам нужно для чата, хранится на вашем устройстве. У вас нет нашей учетной записи, и мы не сможем помочь вам, если вы потеряете телефон или случайно удалите данные.\n\nThreema Safe создает автоматические резервные копии всех важных данных, в том числе ваших ключей, вашего списка контактов и групп. Данные в анонимном виде хранятся на выбранном вами защищенном сервере.</string>
+    <string name="safe_enable_explain">Все, что вам нужно для чата, хранится на вашем устройстве. У вас нет нашей учетной записи, и мы не сможем помочь вам, если вы потеряете телефон или случайно удалите данные.\n\nThreema Safe создает автоматические резервные копии всех важных данных, в том числе ваших ключей, вашего списка контактов и групп (но не контента сообщений). Данные в анонимном виде хранятся на выбранном вами защищенном сервере.</string>
     <string name="safe_disable_confirm">Действительно продолжить без включения Threema Safe?</string>
     <string name="safe_configure_choose_password">Выберите пароль. Этот пароль понадобится вам для восстановления данных из резервной копии Threema Safe.</string>
     <string name="safe_configure_choose_server">Выберите сервер Threema Safe</string>
@@ -1131,17 +1131,12 @@
     <string name="an_error_occurred_during_send">При отправке одного или нескольких сообщений произошла ошибка.</string>
     <string name="state_processing">идет обработка</string>
     <string name="passphrase_locked">Кодовая фраза заблокирована</string>
-    <string name="image_labeling_new">Новинка: поиск изображений</string>
-    <string name="tooltip_image_labeling">Чтобы найти в галерее нужное визуальное мультимедиа, введите слово, описывающее его содержимое, и выберите его из списка идентифицированных меток.</string>
     <string name="selected_media">Ваш выбор</string>
     <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Галерея</string>
     <string name="attach_picture">Изображение</string>
     <string name="attach_video">Видео</string>
     <string name="attach_location">Местоположение</string>
-    <string name="image_labeling_toolbar_title">Фильтр по</string>
-    <string name="no_labels_info">Совпадения не найдены</string>
-    <string name="image_label_query_hint">Объект, место, действие?</string>
     <string name="filter_by_album">Фильтр по альбомам</string>
     <string name="media_date_taken">Дата съемки: %s</string>
     <string name="media_date_added">Дата добавления: %s</string>
@@ -1157,24 +1152,18 @@
     <string name="show_text">Показать текст</string>
     <string name="only_images_or_videos">Можно выбирать только изображения или видео</string>
     <string name="media_gallery_gifs">GIF-файлы</string>
-    <string name="notification_channel_image_labeling">Ход индексирования изображений</string>
-    <string name="notification_channel_image_labeling_desc">В фоновом режиме выполняется индексирование изображений в общедоступной галерее</string>
-    <string name="notification_image_labeling_desc">Индексируем галерею мультимедиа</string>
     <string name="no_media_found_global">На устройстве не найдены файлы мультимедиа</string>
-    <string name="prefs_sum_image_labeling">Включите поиск общедоступных изображений в вашей галерее по ключевым словам</string>
-    <string name="prefs_image_labeling">Поиск изображений</string>
     <string name="enable_formatting">Включить форматирование</string>
     <string name="original_file_no_longer_avilable">Исходный файл больше не доступен. Отправьте сообщение повторно.</string>
     <string name="state_transcoding">перекодируем</string>
     <string name="importing_files">импортируем файлы</string>
     <string name="tooltip_image_resolution_hint">Нажмите здесь для коррекции разрешения изображений.</string>
-    <string name="image_labeling_stuck_error">Процесс индексирования для поиска по изображениям завис и был отменен. Повторите попытку позже.</string>
     <string name="ballot_created_successfully">Опрос успешно создан.</string>
     <string name="file_size">Размер файла</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 дн.</string>
     <string name="show_in_chat">Показать в чате</string>
-    <string name="group_create_no_members">Действительно создать пустую группу без других участников?</string>
+    <string name="group_create_no_members">Действительно создать пустую группу?</string>
     <string name="notes">Примечания</string>
     <string name="blur_faces">Размытие лиц</string>
     <string name="brush">Кисть</string>
@@ -1184,4 +1173,12 @@
     <string name="blur">Размыть</string>
     <string name="face_blur_tooltip_title">Новинка: распознание лиц</string>
     <string name="face_blur_tooltip_text">Обнаруживайте лица на изображении и размывайте их или закрывайте смайлами.</string>
+    <string name="transcoder_unsupported_audio_format">Не удалось перекодировать аудио, причина — отсутствие поддержки системы.</string>
+    <string name="transcoder_unknown_audio_error">Произошла неизвестная ошибка перекодирования аудио.</string>
+    <string name="video_size_explain">Видео очень большого размера могут сжиматься независимо от этого параметра.</string>
+    <string name="status_create_notes">*Вы здесь в одиночестве*\nИспользуйте этот чат как защищенный блокнот для заметок, мультимедийных файлов и документов.</string>
+    <string name="status_create_notes_off">*Вы уже не одиноки в этом чате*\nНовые сообщения будут отправляться всем участникам группы.</string>
+    <string name="note_group_howto">Совет: Если не добавлять участников в группу, сообщения этой группе останутся локальными. Это отличный вариант для безопасного хранения заметок, мультимедийных файлов и документов или для передачи данных на ПК.</string>
+    <string name="mark_unread">В непрочитанные</string>
+    <string name="mark_read_short">Прочитано</string>
 </resources>

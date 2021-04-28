@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
@@ -195,16 +196,12 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 	}
 
 	@Override
-	public Bitmap getGroupAvatarHigh(GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly) {
-		if(groupModel == null) {
-			return null;
-		}
-
+	public Bitmap getGroupAvatarHigh(@NonNull GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly) {
 		return this.getAvatar(groupModel, contactColors, true, defaultOnly);
 	}
 
 	@Override
-	public Bitmap getGroupAvatarLow(final GroupModel groupModel, final Collection<Integer> contactColors, boolean defaultOnly) {
+	public Bitmap getGroupAvatarLow(@NonNull final GroupModel groupModel, final Collection<Integer> contactColors, boolean defaultOnly) {
 		if (defaultOnly) {
 			return getAvatar(groupModel, contactColors, false, true);
 		} else {
@@ -387,32 +384,29 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 				groupImage = this.fileService.getGroupAvatar(groupModel);
 			}
 
-			int color = ColorUtil.getInstance().getCurrentThemeGray(this.context);
-			if (this.getDefaultAvatarColored()
+			if (groupImage == null) {
+				int color = ColorUtil.getInstance().getCurrentThemeGray(this.context);
+				if (this.getDefaultAvatarColored()
 					&& contactColors != null
 					&& contactColors.size() > 0) {
-				//default color
-				color =  contactColors.iterator().next();
-			}
-
-			if (highResolution) {
-				if (groupImage == null) {
-					groupImage = buildHiresDefaultAvatar(color, AVATAR_GROUP);
+					//default color
+					color = contactColors.iterator().next();
 				}
-			} else {
-				if (groupImage == null) {
+
+				if (highResolution) {
+					groupImage = buildHiresDefaultAvatar(color, AVATAR_GROUP);
+				} else {
 					synchronized (this.groupDefaultAvatar) {
 						groupImage = AvatarConverterUtil.getAvatarBitmap(groupDefaultAvatar, color, this.avatarSizeSmall);
 					}
 				}
-				else {
-					//resize image!
-					Bitmap converted = AvatarConverterUtil.convert(this.context.getResources(), groupImage);
-					if (groupImage != converted) {
-						BitmapUtil.recycle(groupImage);
-					}
-					return converted;
+			} else {
+				//resize image!
+				Bitmap converted = AvatarConverterUtil.convert(this.context.getResources(), groupImage);
+				if (groupImage != converted) {
+					BitmapUtil.recycle(groupImage);
 				}
+				return converted;
 			}
 
 			return groupImage;

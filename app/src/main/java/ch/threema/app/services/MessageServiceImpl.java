@@ -115,8 +115,8 @@ import ch.threema.app.utils.StreamUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.VideoUtil;
-import ch.threema.app.video.VideoConfig;
-import ch.threema.app.video.VideoTranscoder;
+import ch.threema.app.video.transcoder.VideoConfig;
+import ch.threema.app.video.transcoder.VideoTranscoder;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.AbstractGroupMessage;
 import ch.threema.client.AbstractMessage;
@@ -223,7 +223,7 @@ public class MessageServiceImpl implements MessageService {
 	private final ApiService apiService;
 	private final DownloadService downloadService;
 	private final DeadlineListService hiddenChatsListService;
-	private final IdListService profilePicRecipientsService;
+	private final IdListService profilePicRecipientsService, blackListService;
 
 	public MessageServiceImpl(Context context,
 	                          CacheService cacheService,
@@ -240,7 +240,8 @@ public class MessageServiceImpl implements MessageService {
 	                          ApiService apiService,
 	                          DownloadService downloadService,
 	                          DeadlineListService hiddenChatsListService,
-	                          IdListService profilePicRecipientsService) {
+	                          IdListService profilePicRecipientsService,
+	                          IdListService blackListService) {
 		this.context = context;
 		this.messageQueue = messageQueue;
 		this.databaseServiceNew = databaseServiceNew;
@@ -256,6 +257,7 @@ public class MessageServiceImpl implements MessageService {
 		this.downloadService = downloadService;
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.profilePicRecipientsService = profilePicRecipientsService;
+		this.blackListService = blackListService;
 
 		this.contactMessageCache = cacheService.getMessageModelCache();
 		this.groupMessageCache = cacheService.getGroupMessageModelCache();
@@ -1304,6 +1306,13 @@ public class MessageServiceImpl implements MessageService {
 			//not allowed to receive a message, ignore message but
 			//set success to true (remove from server)
 			logger.error("GroupMessage {}: error: not allowed", message.getMessageId());
+			return true;
+		}
+
+		// is the user blocked?
+		if (this.blackListService != null && this.blackListService.has(message.getFromIdentity())) {
+			//set success to true (remove from server)
+			logger.info("GroupMessage {}: Sender is blocked, ignoring", message.getMessageId());
 			return true;
 		}
 
@@ -3449,7 +3458,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@WorkerThread
 	@Override
-	public AbstractMessageModel sendMedia(
+	public @Nullable AbstractMessageModel sendMedia(
 		@NonNull final List<MediaItem> mediaItems,
 		@NonNull final List<MessageReceiver> messageReceivers,
 		@Nullable final SendResultListener sendResultListener
@@ -3460,10 +3469,10 @@ public class MessageServiceImpl implements MessageService {
 		// resolve receivers to account for distribution lists
 		final MessageReceiver[] resolvedReceivers = MessageUtil.addDistributionListReceivers(messageReceivers.toArray(new MessageReceiver[0]));
 
-		logger.info("sendMedia: Sending " + mediaItems.size() + " items to " + resolvedReceivers.length + " receivers");
+		logger.info("sendMedia: Sending {} items to {} receivers", mediaItems.size(), resolvedReceivers.length);
 
 		for (MediaItem mediaItem : mediaItems) {
-			logger.info("sendMedia: Now sending item of type " + mediaItem.getType());
+			logger.info("sendMedia: Now sending item of type {}", mediaItem.getType());
 			if (TYPE_TEXT == mediaItem.getType()) {
 				String text = mediaItem.getCaption();
 				if (!TestUtil.empty(text)) {
@@ -3529,12 +3538,12 @@ public class MessageServiceImpl implements MessageService {
 					markAsTerminallyFailed(resolvedReceivers, messageModels);
 				}
 			} catch (ThreemaException e) {
-				if (!(e instanceof TranscodeCanceledException)) {
-					logger.error("Exception", e);
-					failedCounter++;
-				} else {
+				if (e instanceof TranscodeCanceledException) {
 					logger.info("Video transcoding canceled");
 					// canceling is not really a failure
+				} else {
+					logger.error("Exception", e);
+					failedCounter++;
 				}
 				markAsTerminallyFailed(resolvedReceivers, messageModels);
 			}
@@ -3547,6 +3556,7 @@ public class MessageServiceImpl implements MessageService {
 				sendResultListener.onCompleted();
 			}
 		} else {
+			logger.warn("sendMedia: Did not complete successfully, failedCounter={}", failedCounter);
 			final String errorString = context.getString(R.string.an_error_occurred_during_send);
 			logger.info(errorString);
 			RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, errorString, Toast.LENGTH_LONG).show());
@@ -3617,9 +3627,20 @@ public class MessageServiceImpl implements MessageService {
 							imageByteArray = BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip());
 						} else {
 							imageByteArray = BitmapUtil.getPngByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip());
+
+							if (!MimeUtil.MIME_TYPE_IMAGE_PNG.equals(mediaItem.getMimeType())) {
+								fileDataModel.setMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
+
+								if (fileDataModel.getFileName() != null) {
+									int dot = fileDataModel.getFileName().lastIndexOf(".");
+									if (dot > 1) {
+										String filenamePart = fileDataModel.getFileName().substring(0, dot);
+										fileDataModel.setFileName(filenamePart + ".png");
+									}
+								}
+							}
 						}
 						if (imageByteArray != null) {
-							fileDataModel.setFileSize(imageByteArray.length);
 							return ArrayUtils.concatByteArrays(new byte[NaCl.BOXOVERHEAD], imageByteArray);
 						}
 					}
@@ -3841,7 +3862,7 @@ public class MessageServiceImpl implements MessageService {
 					sendMachine.reset()
 						.next(() -> {
 							if (getReceiver().sendMediaData()) {
-								// note that encryptFileData will overwrite contents of provided content data!
+								// note that encryptFileData() will overwrite contents of provided content data!
 								if (contentEncryptResult[0] == null) {
 									contentEncryptResult[0] = getReceiver().encryptFileData(contentData);
 									if (contentEncryptResult[0].getData() == null || contentEncryptResult[0].getSize() == 0) {
@@ -3849,7 +3870,7 @@ public class MessageServiceImpl implements MessageService {
 									}
 								}
 							}
-							fileDataModel.setFileSize(contentData.length);
+							fileDataModel.setFileSize(contentData.length - NaCl.BOXOVERHEAD);
 							messageModel.setFileData(fileDataModel);
 							fireOnModifiedMessage(messageModel);
 						})
@@ -4215,6 +4236,21 @@ public class MessageServiceImpl implements MessageService {
 				// failure
 				logger.info("Transcoding failure");
 				return transcoderResult;
+			}
+
+			if (videoTranscoder.hasAudioTranscodingError()) {
+				final int errorMessageResource;
+				if(videoTranscoder.audioFormatUnsupported()) {
+					errorMessageResource = R.string.transcoder_unsupported_audio_format;
+				} else {
+					errorMessageResource = R.string.transcoder_unknown_audio_error;
+				}
+
+				RuntimeUtil.runOnUiThread(() -> Toast.makeText(
+					ThreemaApplication.getAppContext(),
+					this.context.getString(errorMessageResource),
+					Toast.LENGTH_LONG
+				).show());
 			}
 
 			// remove original file and set transcoded file as new source file

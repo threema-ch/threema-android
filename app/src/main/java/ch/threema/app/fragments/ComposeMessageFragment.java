@@ -132,7 +132,6 @@ import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.ContactDetailActivity;
 import ch.threema.app.activities.ContactNotificationsActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
-import ch.threema.app.activities.GroupDetailActivity;
 import ch.threema.app.activities.GroupNotificationsActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.MediaGalleryActivity;
@@ -166,6 +165,7 @@ import ch.threema.app.listeners.QRCodeScanListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.mediaattacher.MediaAttachActivity;
+import ch.threema.app.mediaattacher.MediaFilterQuery;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.ReadMessagesRoutine;
@@ -273,6 +273,8 @@ public class ComposeMessageFragment extends Fragment implements
 
 	public static final String EXTRA_API_MESSAGE_ID = "apimsgid";
 	public static final String EXTRA_SEARCH_QUERY = "searchQuery";
+	public static final String EXTRA_LAST_MEDIA_SEARCH_QUERY = "searchMediaQuery";
+	public static final String EXTRA_LAST_MEDIA_TYPE_QUERY = "searchMediaType";
 
 	private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 2;
 	private static final int PERMISSION_REQUEST_ATTACH_VOICE_MESSAGE = 7;
@@ -322,6 +324,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private Snackbar deleteSnackbar;
 	private TypingIndicatorTextWatcher typingIndicatorTextWatcher;
 	private Map<String, Integer> identityColors;
+	private MediaFilterQuery lastMediaFilter;
 
 	private PreferenceService preferenceService;
 	private ContactService contactService;
@@ -507,7 +510,7 @@ public class ComposeMessageFragment extends Fragment implements
 							}
 						}
 					} else {
-						if (addMessageToList(newMessage, false) && !isPaused) {
+						if (addMessageToList(newMessage, true) && !isPaused) {
 							if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
 								playReceivedSound();
 							}
@@ -596,17 +599,17 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity) {
+		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
 			updateToolBarTitleInUIThread();
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String identity) {
+		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
 			updateToolBarTitleInUIThread();
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String identity) {
+		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
 			updateToolBarTitleInUIThread();
 		}
 
@@ -1592,7 +1595,10 @@ public class ComposeMessageFragment extends Fragment implements
 
 						Intent intent = new Intent(activity, MediaAttachActivity.class);
 						IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
-						activity.startActivity(intent);
+						if (ComposeMessageFragment.this.lastMediaFilter != null) {
+							intent = IntentDataUtil.addLastMediaFilterToIntent(intent, ComposeMessageFragment.this.lastMediaFilter);
+						}
+						activity.startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_ATTACH_MEDIA);
 						activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 					}
 				}
@@ -1810,7 +1816,7 @@ public class ComposeMessageFragment extends Fragment implements
 					Intent intent = null;
 					if (isGroupChat) {
 						if (groupService.isGroupMember(groupModel)) {
-							intent = new Intent(activity, GroupDetailActivity.class);
+							intent = groupService.getGroupEditIntent(groupModel, activity);
 						}
 					} else if (isDistributionListChat) {
 						intent = new Intent(activity, DistributionListAddActivity.class);
@@ -2466,15 +2472,8 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 		}
 
-		if (markasread && this.messageReceiver != null) {
-			try {
-				List<AbstractMessageModel> unreadMessages = this.messageReceiver.getUnreadMessages();
-				if (unreadMessages != null && unreadMessages.size() > 0) {
-					new Thread(new ReadMessagesRoutine(unreadMessages, this.messageService, this.notificationService)).start();
-				}
-			} catch (SQLException e) {
-				logger.error("Exception", e);
-			}
+		if (markasread) {
+			markAsRead();
 		}
 		return insertedSize;
 	}
@@ -2572,7 +2571,8 @@ public class ComposeMessageFragment extends Fragment implements
 					this.convListView,
 					this.thumbnailCache,
 					ConfigUtils.getPreferredThumbnailWidth(getContext(), false),
-					this
+					this,
+					unreadCount
 			);
 
 			//adding footer before setting the list adapter (android < 4.4)
@@ -2674,7 +2674,8 @@ public class ComposeMessageFragment extends Fragment implements
 					});
 				}
 			});
-			this.insertToList(values, false, true, false);
+
+			this.insertToList(values, false, !hiddenChatsListService.has(this.messageReceiver.getUniqueIdString()), false);
 			this.convListView.setAdapter(this.composeMessageAdapter);
 			this.convListView.setItemsCanFocus(false);
 			this.convListView.setVisibility(View.VISIBLE);
@@ -3426,7 +3427,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		this.deleteDistributionListItem.setVisible(this.isDistributionListChat);
 		this.shortCutItem.setVisible(ShortcutManagerCompat.isRequestPinShortcutSupported(getAppContext()));
-		this.mutedMenuItem.setVisible(!this.isDistributionListChat);
+		this.mutedMenuItem.setVisible(!this.isDistributionListChat && !(isGroupChat && groupService.isNotesGroup(groupModel)));
 		updateMuteMenu();
 
 		if (contactModel != null) {
@@ -3739,7 +3740,6 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode,
 									final Intent intent) {
-
 		if (wallpaperService != null && wallpaperService.handleActivityResult(this, requestCode, resultCode, intent, this.messageReceiver)) {
 			setBackgroundWallpaper();
 			return;
@@ -3749,6 +3749,9 @@ public class ComposeMessageFragment extends Fragment implements
 			if (this.messagePlayerService != null) {
 				this.messagePlayerService.resumeAll(getActivity(), messageReceiver, SOURCE_AUDIORECORDER);
 			}
+		}
+		if (requestCode == ThreemaActivity.ACTIVITY_ID_ATTACH_MEDIA && resultCode == Activity.RESULT_OK) {
+			this.lastMediaFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
 		}
 	}
 
@@ -4476,6 +4479,19 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 		} catch (final IllegalArgumentException e) {
 			// whatever
+		}
+	}
+
+	public void markAsRead() {
+		if (messageReceiver != null) {
+			try {
+				List<AbstractMessageModel> unreadMessages = messageReceiver.getUnreadMessages();
+				if (unreadMessages != null && unreadMessages.size() > 0) {
+					new Thread(new ReadMessagesRoutine(unreadMessages, this.messageService, this.notificationService)).start();
+				}
+			} catch (SQLException e) {
+				logger.error("Exception", e);
+			}
 		}
 	}
 

@@ -22,7 +22,6 @@
 package ch.threema.app.services;
 
 import android.annotation.TargetApi;
-import android.app.Notification;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -35,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.Person;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -62,7 +59,6 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS =  "bk";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE =  "cu";
 	String NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS = "nc";
-	String NOTIFICATION_CHANNEL_IMAGE_LABELING =  "il";
 
 	String NOTIFICATION_CHANNELGROUP_CHAT = "group";
 	String NOTIFICATION_CHANNELGROUP_VOIP = "vgroup";
@@ -348,26 +344,4 @@ public interface NotificationService {
 	void showWebclientResumeFailed(String msg);
 	void cancelRestartNotification();
 	void resetConversationNotifications();
-
-	/**
-	 * Create and return an image labeling progress notification builder.
-	 * The progress bar will be set to indeterminate until it's updated with
-	 * {@link #updateImageLabelingProgressNotification(int, int)}.
-	 */
-	@Nullable NotificationCompat.Builder createImageLabelingProgressNotification();
-
-	/**
-	 * Update and show image labeling progress notification.
-	 */
-	void updateImageLabelingProgressNotification(int currentProgress, int maxProgress);
-
-	/**
-	 * Remove existing image labelling progress notification
-	 */
-	void cancelImageLabelingProgressNotification();
-
-	/**
-	 * Show image labeling worker got stuck and is canceled
-	 */
-	void showImageLabelingWorkerStuckNotification();
 }

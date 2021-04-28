@@ -78,7 +78,6 @@ import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.MimeUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -109,10 +108,11 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	// the type of avatar
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({AVATAR_TYPE_CONTACT, AVATAR_TYPE_GROUP})
+	@IntDef({AVATAR_TYPE_CONTACT, AVATAR_TYPE_GROUP, AVATAR_TYPE_NOTES})
 	public @interface AvatarTypeDef {}
 	public static final int AVATAR_TYPE_CONTACT = 0;
 	public static final int AVATAR_TYPE_GROUP = 1;
+	public static final int AVATAR_TYPE_NOTES = 2;
 
 	public AvatarEditView(@NonNull Context context) {
 		super(context);
@@ -251,7 +251,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 						}
 						break;
 					case R.id.menu_select_from_gallery:
-						FileUtil.selectFile(getActivity(), getFragment(), new String[]{MimeUtil.MIME_TYPE_IMAGE}, REQUEST_CODE_FILE_SELECTOR_ID, false, 0, null);
+						FileUtil.selectFromGallery(getActivity(), getFragment(), REQUEST_CODE_FILE_SELECTOR_ID, false);
 						break;
 					case R.id.menu_remove_picture:
 						removeAvatar();

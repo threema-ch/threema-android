@@ -505,9 +505,6 @@ public interface PreferenceService {
 	void setLastSyncadapterRun(long timestampOfLastSync);
 	long getLastSyncAdapterRun();
 
-	boolean getIsImageLabelingTooltipShown();
-	void setIsImageLabelingTooltipShown(boolean shown);
-
-	boolean getIsImageResolutionTooltipShown();
-	void setIsImageResolutionTooltipShown(boolean shown);
+	void setVoiceRecorderBluetoothDisabled(boolean isEnabled);
+	boolean getVoiceRecorderBluetoothDisabled();
 }

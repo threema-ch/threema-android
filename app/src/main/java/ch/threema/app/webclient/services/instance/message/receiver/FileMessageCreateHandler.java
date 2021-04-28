@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
@@ -89,8 +90,8 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 
 	@Override
 	protected AbstractMessageModel handle(
-		List<MessageReceiver> receivers,
-		Map<String, Value> message
+		@NonNull List<MessageReceiver> receivers,
+		@NonNull Map<String, Value> message
 	) throws Exception {
 		logger.debug("Dispatching file message create");
 
@@ -148,7 +149,7 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 		mediaItem.setMimeType(mimeType);
 		mediaItem.setRenderingType(renderingType);
 
-		// Send media
+		// Send media, get message model
 		final AbstractMessageModel model = messageService.sendMedia(Collections.singletonList(mediaItem), receivers, null);
 
 		// Remove temporary file

@@ -56,7 +56,6 @@
 			android:textSize="16sp"
 			android:minHeight="@dimen/input_text_height"
 			android:maxLength="1000"
-			android:maxLines="2"
 			android:scrollHorizontally="false"/>
 
 	</com.google.android.material.textfield.TextInputLayout>

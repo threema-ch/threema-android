@@ -69,6 +69,7 @@ import ch.threema.app.ui.MediaItem;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_PATH;
 
 public class FileUtil {
@@ -346,6 +347,7 @@ public class FileUtil {
 		return inUri;
 	}
 
+	@Nullable
 	public static String getRealPathFromURI(final Context context, final Uri uri) {
 		// DocumentProvider
 		if (DocumentsContract.isDocumentUri(context, uri)) {
@@ -404,9 +406,9 @@ public class FileUtil {
 			// MediaStore (and general)
 		} else if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 			// Return the remote address
-			if (isGooglePhotosUri(uri))
+			if (isGooglePhotosUri(uri)) {
 				return uri.getLastPathSegment();
-
+			}
 			return getDataColumn(context, uri, null, null);
 		}
 		// File
@@ -432,6 +434,7 @@ public class FileUtil {
 		return "com.google.android.apps.photos.content".equals(uri.getAuthority());
 	}
 
+	@Nullable
 	private static String getDataColumn(Context context, Uri uri, String selection,
 								 String[] selectionArgs) {
 
@@ -679,7 +682,7 @@ public class FileUtil {
 				if (cursor != null && cursor.moveToNext()) {
 					filename = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
 				}
-			} catch (IllegalStateException | SecurityException e) {
+			} catch (Exception e) {
 				logger.error("Unable to query Content Resolver", e);
 			}
 		}
@@ -693,10 +696,50 @@ public class FileUtil {
 	 * @return file uri, if a file path could be resolved
 	 */
 	public static Uri getFileUri(Uri uri) {
-		File file = new File(FileUtil.getRealPathFromURI(ThreemaApplication.getAppContext(), uri));
-		if (file.canRead()) {
-			return Uri.fromFile(file);
+		String path = FileUtil.getRealPathFromURI(ThreemaApplication.getAppContext(), uri);
+
+		if (path != null) {
+			File file = new File(path);
+			if (file.canRead()) {
+				return Uri.fromFile(file);
+			}
 		}
 		return uri;
+	}
+
+	/**
+	 * Select a file from a gallery app. Shows a selector first to allow for choosing the desired gallery app or SystemUIs file picker.
+	 * Does not necessarily need file permissions as a modern gallery app will return a content Uri with a temporary permission to access the file
+ 	 * @param activity Activity where the result of the selection should end up
+	 * @param fragment Fragment where the result of the selection should end up
+	 * @param requestCode Request code to use for result
+	 * @param includeVideo Whether to include the possibility to select video files (if supported by app)
+	 */
+	public static void selectFromGallery(@Nullable Activity activity, @Nullable Fragment fragment, int requestCode, boolean includeVideo) {
+		if (activity == null) {
+			activity = fragment.getActivity();
+		}
+
+		try {
+			Intent getContentIntent = new Intent();
+			getContentIntent.setType(includeVideo ? MimeUtil.MIME_TYPE_VIDEO: MimeUtil.MIME_TYPE_IMAGE);
+			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
+			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
+			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
+			Intent pickIntent = new Intent(Intent.ACTION_PICK);
+			pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
+			Intent chooserIntent = Intent.createChooser(pickIntent, activity.getString(R.string.select_from_gallery));
+			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
+
+			if (fragment != null) {
+				fragment.startActivityForResult(chooserIntent, requestCode);
+			} else {
+				activity.startActivityForResult(chooserIntent, requestCode);
+			}
+		} catch (Exception e) {
+			logger.debug("Exception", e);
+			Toast.makeText(activity, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
+		}
 	}
 }

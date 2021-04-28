@@ -5,7 +5,7 @@
     <string name="webclient_sessions_really_delete">您真的要删除 Threema 网页版会话吗？</string>
     <string name="webclient_last_usage">上次使用：%s</string>
     <string name="webclient_created_at">创建于： %1$s (%2$s)</string>
-    <string name="webclient_active_since">活动日期：%s</string>
+    <string name="webclient_active_since">活动时间：%s</string>
     <string name="webclient_enable">启动 Threema 网页版</string>
     <string name="webclient_no_sessions_found">要进行连接，请在 PC 浏览器中打开<b> https://web.threema.ch </b>，然后点击下面的按钮以扫描代码</string>
     <string name="webclient_session_rename">重命名会话</string>
@@ -16,8 +16,8 @@
     <string name="webclient_disposable">一次性</string>
     <string name="webclient_unnamed_session">未命名的会话</string>
     <string name="webclient_session_remove">删除会话</string>
-    <string name="webclient_welcome_title">从您的PC聊天！</string>
-    <string name="webclient_welcome_explain">Threema 网页版允许您从 PC 或笔记本电脑聊天，同时拥有对所有联系人，媒体和聊天甚至过去对话的完全访问权限。\n\n<b>手机和 PC 之间的所有通信都是完全端到端加密的</b>，如果手机和 PC 都在同一网络上，则使用直接连接。\n\n请注意：Threema 网页版处于活动状态时，可能会导致电池消耗更多。您可以随时启用或禁用它。</string>
+    <string name="webclient_welcome_title">在您的电脑上聊天！</string>
+    <string name="webclient_welcome_explain">Threema 网页版允许您在台式机或笔记本电脑上聊天，同时拥有对所有联系人，媒体和聊天甚至过去对话的完全访问权限。\n\n<b>手机和电脑之间的所有通信都是完全端到端加密的</b>，如果手机和电脑都在同一网络上，则使用直接连接。\n\n请注意：Threema 网页版处于活动状态时，可能会消耗更多电量。您可以随时启用或禁用。</string>
     <string name="webclient_launch">立即启动 Threema 网页版</string>
     <string name="webclient_qr_scan_message">请扫描屏幕上显示的二维码。</string>
     <string name="webclient_invalid_qr_code">Threema 网页版上的二维码无效</string>

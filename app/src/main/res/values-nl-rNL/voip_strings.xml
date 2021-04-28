@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Echo-onderdrukking</string>
     <string name="voip_prefs_aec_sw">Software echo-onderdrukking</string>
     <string name="voip_prefs_aec_hw">Hardware echo-onderdrukking</string>
+    <string name="voip_prefs_title_video_codec">Video-codecs</string>
+    <string name="voip_prefs_video_aec_hw">Hardwareversnelling</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8 uitschakelen</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-HiP uitschakelen</string>
+    <string name="voip_prefs_video_codec_sw">Software-codecs</string>
     <string name="voip_connection_failed">Er kon geen verbinding worden gemaakt.</string>
     <string name="voip_connection_lost">Verbinding verbroken</string>
     <string name="prefs_voip_reject_incoming_calls_title">Mobiele oproepen afwijzen</string>

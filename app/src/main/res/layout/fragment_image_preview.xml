@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			 android:layout_width="match_parent"
+			 android:layout_height="match_parent"
+			 android:background="?shape_rounded_corner_popup_bg">
+
+	<pl.droidsonroids.gif.GifImageView
+			android:id="@+id/gif_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginTop="@dimen/image_popup_topbottom_margin"
+			android:layout_marginBottom="@dimen/image_popup_topbottom_margin"
+			android:layout_marginLeft="@dimen/image_popup_leftright_margin"
+			android:layout_marginRight="@dimen/image_popup_leftright_margin"
+			android:adjustViewBounds="true"
+			android:scaleType="fitCenter"/>
+
+	<com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+		android:id="@+id/image_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginBottom="@dimen/image_popup_topbottom_margin"
+		android:layout_marginLeft="@dimen/image_popup_leftright_margin"
+		android:layout_marginRight="@dimen/image_popup_leftright_margin"
+		android:layout_marginTop="@dimen/image_popup_topbottom_margin"
+		android:adjustViewBounds="true"
+		android:scaleType="fitCenter" />
+
+	<TextView
+			android:id="@+id/filename_view"
+			android:text="Filename"
+			android:ellipsize="middle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp"
+			android:textSize="@dimen/image_popup_text_size"
+			android:textColor="?attr/textColorSecondary"
+			android:singleLine="true"
+			android:layout_gravity="top"/>
+
+	<TextView
+			android:id="@+id/date_view"
+			android:text="Date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp"
+			android:ellipsize="start"
+			android:textSize="@dimen/image_popup_text_size"
+			android:textColor="?attr/textColorSecondary"
+			android:singleLine="true"
+			android:layout_gravity="bottom|right"/>
+
+</FrameLayout>

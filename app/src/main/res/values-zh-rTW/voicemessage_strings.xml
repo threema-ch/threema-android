@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">錄音訊息</string>
+    <string name="recording_stopped_title">錄音停止</string>
+    <string name="recording_stopped_message">您現在要傳送錄製好的語音訊息嗎？</string>
+    <string name="recording_canceled">由於未知錯誤，錄製被取消。</string>
+    <string name="cancel_recording">捨棄錄音</string>
+    <string name="cancel_recording_message">您真的要取消並捨棄錄音嗎？</string>
+    <string name="stop">停止</string>
+</resources>

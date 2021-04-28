@@ -46,6 +46,7 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
 	}
 
 	public MediaRecorder prepare(Uri uri, int maxDuration, int samplingRate) {
+		logger.info("Preparing MediaRecorder with sampling rate {}", samplingRate);
 		mediaRecorder = new MediaRecorder();
 
 		mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -55,9 +56,7 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
 		mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 		mediaRecorder.setAudioEncodingBitRate(32000);
 		mediaRecorder.setAudioSamplingRate(samplingRate != 0 ? samplingRate : DEFAULT_SAMPLING_RATE_HZ);
-		mediaRecorder.setMaxFileSize(20*1024*1024);
-		//trial to mitigate instant onInfo -> maxDurationReached triggers on some devices
-//		mediaRecorder.setMaxDuration(maxDuration);
+		mediaRecorder.setMaxFileSize(20L*1024*1024);
 
 		mediaRecorder.setOnErrorListener(this);
 		mediaRecorder.setOnInfoListener(this);
@@ -65,10 +64,10 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
 		try {
 			mediaRecorder.prepare();
 		} catch (IllegalStateException e) {
-			logger.info("IllegalStateException preparing MediaRecorder: " + e.getMessage());
+			logger.info("IllegalStateException preparing MediaRecorder: {}", e.getMessage());
 			return null;
 		} catch (IOException e) {
-			logger.info("IOException preparing MediaRecorder: " + e.getMessage());
+			logger.info("IOException preparing MediaRecorder: {}", e.getMessage());
 			return null;
 		}
 		return mediaRecorder;
@@ -78,27 +77,30 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
 	public void onInfo(MediaRecorder mr, int what, int extra) {
 		switch (what) {
 			case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
-				logger.info("Max recording duration reached.");
+				logger.info("Max recording duration reached. ({})", extra);
 				onStopListener.onRecordingStop();
 				break;
 			case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
-				logger.info("Max recording filesize reached.");
+				logger.info("Max recording filesize reached. ({})", extra);
 				onStopListener.onRecordingStop();
 				break;
 			case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
-				logger.info("Unknown media recorder info");
+				logger.info("Unknown media recorder info (What: {} / Extra: {})", what, extra);
 				onStopListener.onRecordingCancel();
+				break;
+			default:
+				logger.info("Undefined media recorder info type (What: {} / Extra: {})", what, extra);
 				break;
 		}
 	}
 
 	@Override
 	public void onError(MediaRecorder mr, int what, int extra) {
-		switch (what) {
-			case MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN:
-				logger.info("Unkown media recorder error");
-				onStopListener.onRecordingCancel();
-				break;
+		if (what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
+			logger.info("Unknown media recorder error (What: {}, Extra: {})", what, extra);
+			onStopListener.onRecordingCancel();
+		} else {
+			logger.info("Undefined media recorder error type (What: {}, Extra: {})", what, extra);
 		}
 	}
 

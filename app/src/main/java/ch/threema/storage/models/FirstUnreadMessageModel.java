@@ -62,7 +62,6 @@ public class FirstUnreadMessageModel extends AbstractMessageModel {
 		return null;
 	}
 
-
 	@Override
 	public boolean isRead() {
 		return false;

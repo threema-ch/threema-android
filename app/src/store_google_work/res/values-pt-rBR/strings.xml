@@ -23,4 +23,7 @@
     <string name="list_theme_light">Claro</string>
     <string name="list_theme_dark">Escuro (padrão)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Para usuários privados</a>]]></string>
+    <string name="directory_search">Pesquisar no diretório</string>
+    <string name="directory_title">Diretório da empresa</string>
+    <string name="directory_empty_view_text">Nenhum resultado encontrado\n\nInsira pelo menos 3 caracteres de um nome para começar a pesquisar no diretório de usuários do Threema da sua empresa</string>
 </resources>

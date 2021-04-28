@@ -20,7 +20,6 @@
     <string name="menu_about">À propos de Threema</string>
     <string name="menu_add_contact">Ajouter le contact</string>
     <string name="menu_done">Terminé</string>
-    <string name="menu_mobile_linking">Lier le numéro</string>
     <string name="compose_message_and_enter">Appuyez ici pour saisir</string>
     <string name="send">Envoyer</string>
     <string name="prefs_privacy">Confidentialité</string>
@@ -120,7 +119,7 @@
     <string name="linked_mobile">Numéro de téléphone mobile</string>
     <string name="public_nickname">Surnom</string>
     <string name="share_via">Partager via…</string>
-    <string name="share_subject">Conversation Threema avec</string>
+    <string name="share_subject">Conversation Threema</string>
     <string name="message_delete_undo">Annuler</string>
     <string name="message_deleted">Message supprimé</string>
     <string name="mobile_already_linked">Votre ID Threema est déjà lié à ce numéro de mobile</string>
@@ -357,7 +356,8 @@
     <string name="contact_format_last_name_first_name">Nom Prénom</string>
     <string name="block_contact">Bloquer le contact</string>
     <string name="unblock_contact">Débloquer le contact</string>
-    <string name="unread_messages">Messages non lus</string>
+    <string name="unread_messages">%d messages non lus</string>
+    <string name="one_unread_message">1 message non lu</string>
     <string name="really_unlink_contact_title">Retirer le lien du contact</string>
     <string name="really_unlink_contact">Souhaitez-vous vraiment retirer le lien de ce contact ?</string>
     <string name="do_unlink_contact">Retirer le lien du contact</string>
@@ -675,7 +675,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_proximity_sensor_explain">Utiliser l\'oreillette pour lire les messages vocaux si le détecteur de présence est couvert</string>
     <string name="error_creating_group">Erreur lors de la création/mise à jour du groupe</string>
     <string name="no_media_found_generic">Aucun fichier multimédia trouvé dans cette conversation</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Au maximum, %d images peuvent être envoyées simultanément</string>
+    <string name="max_images_reached" tools:ignore="PluralsCandidate">Au maximum, %d éléments peuvent être modifiés à la fois</string>
     <string name="enter_description">Veuillez décrire le bug/problème ici.</string>
     <string name="add_caption_hint">Ajouter une légende optionnelle</string>
     <string name="disable">Désactiver</string>
@@ -872,7 +872,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="disable_autostart_title">Lancement auto</string>
     <string name="unchanged">non modifié(e)</string>
     <string name="safe_learn_more_button">En savoir plus</string>
-    <string name="safe_enable_explain">Tout ce qu\'il vous faut pour discuter n\'est stocké que sur votre appareil. Vous n\'avez pas de compte enregistré chez nous et nous ne pouvons pas vous aider si vous perdez votre téléphone ou si vous supprimez vos données par mégarde.\n\nThreema Safe crée des sauvegardes automatiques de toutes les données importantes, y compris vos clés, votre liste de contacts et vos abonnements de groupes, et ce de manière anonyme sur un serveur sécurisé de votre choix.</string>
+    <string name="safe_enable_explain">Tout ce qu\'il vous faut pour discuter n\'est stocké que sur votre appareil. Vous n\'avez pas de compte enregistré chez nous et nous ne pouvons pas vous aider si vous perdez votre téléphone ou si vous supprimez vos données par mégarde.\n\nThreema Safe crée des sauvegardes automatiques de toutes les données importantes, y compris vos clés, votre liste de contacts et vos abonnements de groupes (mais aucun contenu de messages), et ce de manière anonyme sur un serveur sécurisé de votre choix.</string>
     <string name="safe_disable_confirm">Voulez-vous vraiment continuer sans activer Threema Safe ?</string>
     <string name="safe_configure_choose_password">Veuillez choisir un mot de passe. Celui-ci sera nécessaire pour restaurer votre sauvegarde Threema Safe.</string>
     <string name="safe_configure_choose_server">Choisir un serveur Threema Safe</string>
@@ -1131,17 +1131,12 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="an_error_occurred_during_send">Une erreur s’est produite lors de l’envoi d’un ou plusieurs messages.</string>
     <string name="state_processing">traitement</string>
     <string name="passphrase_locked">La phrase secrète est verrouillée</string>
-    <string name="image_labeling_new">Nouveau : Recherche d’image</string>
-    <string name="tooltip_image_labeling">Pour vous aider à trouver certains médias visuels, Threema offre désormais la possibilité de rechercher et de filtrer votre galerie de médias en fonction d’un modèle local de reconnaissance d’images. Partez à la recherche !</string>
     <string name="selected_media">Votre sélection</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Gallerie</string>
     <string name="attach_picture">Photo</string>
     <string name="attach_video">Vidéo</string>
     <string name="attach_location">Emplacement</string>
-    <string name="image_labeling_toolbar_title">Filtrer par</string>
-    <string name="no_labels_info">Aucun résultat trouvé</string>
-    <string name="image_label_query_hint">Objet, Lieu, Activité ?</string>
     <string name="filter_by_album">Filtrer par album</string>
     <string name="media_date_taken">Date de prise de vue : %s</string>
     <string name="media_date_added">Date d’ajout : %s</string>
@@ -1157,24 +1152,18 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="show_text">Afficher texte</string>
     <string name="only_images_or_videos">Seuls des images et des vidéos peuvent être sélectionnés</string>
     <string name="media_gallery_gifs">GIF</string>
-    <string name="notification_channel_image_labeling">Indexation des images en cours</string>
-    <string name="notification_channel_image_labeling_desc">Indexation des images publiques de la galerie en arrière-plan</string>
-    <string name="notification_image_labeling_desc">Indexation de la galerie des médias</string>
     <string name="no_media_found_global">Aucun média trouvé sur cet appareil</string>
-    <string name="prefs_sum_image_labeling">Activer la recherche par mots clés d’images publiques de votre galerie</string>
-    <string name="prefs_image_labeling">Recherche d’image</string>
     <string name="enable_formatting">Activer le formattage</string>
     <string name="original_file_no_longer_avilable">Le fichier original n’est plus accessible. Veuillez renvoyer le message.</string>
     <string name="state_transcoding">transcodage</string>
     <string name="importing_files">Importation des fichiers</string>
     <string name="tooltip_image_resolution_hint">Touchez ici pour ajuster la résolution d\'image.</string>
-    <string name="image_labeling_stuck_error">Le processus d\'indexation de la recherche d\'images s\'est bloqué et a été annulé. Veuillez réessayer plus tard.</string>
     <string name="ballot_created_successfully">Le sondage a bien été créé.</string>
     <string name="file_size">Taille de fichier</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 j</string>
     <string name="show_in_chat">Afficher dans le chat</string>
-    <string name="group_create_no_members">Souhaitez-vous vraiment créer un groupe vide sans aucun autre membre ?</string>
+    <string name="group_create_no_members">Souhaitez-vous vraiment créer un groupe vide ?</string>
     <string name="notes">Notes</string>
     <string name="blur_faces">Brouiller les visages</string>
     <string name="brush">Pinceau</string>
@@ -1184,4 +1173,12 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="blur">Brouiller</string>
     <string name="face_blur_tooltip_title">Nouveau : reconnaissance faciale</string>
     <string name="face_blur_tooltip_text">Trouvez les visages dans l\'image et brouillez-les ou couvrez-les d\'une émoticône.</string>
+    <string name="transcoder_unsupported_audio_format">Impossible de transcoder l\'audio à cause de l\'absence de prise en charge par le système.</string>
+    <string name="transcoder_unknown_audio_error">Erreur inconnue lors du transcodage de l\'audio.</string>
+    <string name="video_size_explain">Les vidéos de très grande taille pourraient être compressées indépendamment du paramètre.</string>
+    <string name="status_create_notes">*Vous êtes seul ici* \nUtilisez ce chat comme un carnet de notes sécurisé pour textes, médias ou documents.</string>
+    <string name="status_create_notes_off">*Vous n’êtes plus seul dans ce chat* \nLes nouveaux messages seront envoyés à tous les membres du groupe.</string>
+    <string name="note_group_howto">Astuce : si vous n’ajoutez aucun membre à ce groupe, les messages envoyés à ce groupe resteront locaux. C’est idéal pour enregistrer des notes, médias et documents ou pour les transférer vers un ordinateur.</string>
+    <string name="mark_unread">Marque comme non lu</string>
+    <string name="mark_read_short">Lu</string>
 </resources>

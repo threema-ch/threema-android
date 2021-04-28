@@ -116,7 +116,8 @@
 		android:name="android.hardware.camera.any"
 		android:required="false"/>
 
-	<uses-sdk tools:overrideLibrary="androidx.camera.core,androidx.camera.camera2, androidx.camera.lifecycle, androidx.camera.view" />
+	<uses-sdk tools:overrideLibrary="androidx.camera.core, androidx.camera.camera2,
+		androidx.camera.lifecycle, androidx.camera.view, me.zhanghai.android.fastscroll" />
 
 	<application
 		android:name=".ThreemaApplication"
@@ -412,6 +413,11 @@
 			android:configChanges="uiMode" />
 		<activity
 			android:name=".activities.GroupAdd2Activity"
+			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+			android:theme="@style/Theme.Threema.Translucent">
+		</activity>
+		<activity
+			android:name=".activities.NotesEditActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:theme="@style/Theme.Threema.Translucent">
 		</activity>

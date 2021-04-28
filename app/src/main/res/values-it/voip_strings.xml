@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Eliminazione eco</string>
     <string name="voip_prefs_aec_sw">Eliminazione eco software</string>
     <string name="voip_prefs_aec_hw">Eliminazione eco hardware</string>
+    <string name="voip_prefs_title_video_codec">Codec video</string>
+    <string name="voip_prefs_video_aec_hw">Hardware accelerato</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8 disattivato</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-HiP disattivato</string>
+    <string name="voip_prefs_video_codec_sw">Codec software</string>
     <string name="voip_connection_failed">Impossibile stabilire la connessione.</string>
     <string name="voip_connection_lost">Connessione persa</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rifiuta chiamate mobili</string>

@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2018 Threema GmbH
-  ~ All rights reserved.
-  -->
-
 <resources>
     <string name="about_title">Threema Work pro Android</string>
-	<string name="enter_serial_body">Zadejte pověření poskytnutá vaší společností nebo organizací</string>
-	<string name="serial_required_want_exit">Licence je neplatná. Chcete to zkusit znovu nebo aplikaci Threema ukončit?</string>
+    <string name="enter_serial_body">Zadejte pověření poskytnutá vaší společností nebo organizací</string>
+    <string name="serial_required_want_exit">Licence je neplatná. Chcete to zkusit znovu nebo aplikaci Threema ukončit?</string>
     <string name="checking_serial">Kontrola pověření</string>
     <string name="username_hint">Uživatelské jméno</string>
     <string name="new_wizard_works_like_phone_number">Threema ID lze připodobnit k telefonnímu číslu.\nVaše kontakty vám mohou prostřednictvím tohoto ID kontaktovat.</string>
@@ -25,4 +20,7 @@
     <string name="list_theme_light">Světlý</string>
     <string name="list_theme_dark">Tmavý (výchozí)</string>
     <string name="private_threema_download"><![CDATA[Pro osobní používání <a href="https://play.google.com/store/apps/details?id=ch.threema.app">klepněte sem</a> a stáhněte si aplikaci Threema.]]></string>
+    <string name="directory_search">Hledat v adresáři</string>
+    <string name="directory_title">Adresář společnosti</string>
+    <string name="directory_empty_view_text">Nebyly nalezeny žádné záznamy\n\n\n\nChcete-li zahájit vyhledávání v adresáři uživatelů Threema ve vaší společnosti, zadejte alespoň 3 znaky</string>
 </resources>

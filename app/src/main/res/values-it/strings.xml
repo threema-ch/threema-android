@@ -20,7 +20,6 @@
     <string name="menu_about">Su Threema</string>
     <string name="menu_add_contact">Aggiungi contatto</string>
     <string name="menu_done">Finito</string>
-    <string name="menu_mobile_linking">Numero collegato</string>
     <string name="compose_message_and_enter">Inserisci messaggio</string>
     <string name="send">Invia</string>
     <string name="prefs_privacy">Sfera privata</string>
@@ -124,7 +123,7 @@
     <string name="linked_mobile">Numero di cellulare</string>
     <string name="public_nickname">Nickname</string>
     <string name="share_via">Condividi mediante…</string>
-    <string name="share_subject">Threema chat con</string>
+    <string name="share_subject">Threema chat</string>
     <string name="message_delete_undo">Annulla</string>
     <string name="message_deleted">Messaggio cancellato</string>
     <string name="mobile_already_linked">Il tuo Threema ID è già collegato con questo numero di cellulare</string>
@@ -378,6 +377,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="block_contact">Blocca contatto</string>
     <string name="unblock_contact">Sblocca contatto</string>
     <string name="unread_messages">Messaggi non letti</string>
+    <string name="one_unread_message">1 messaggio non letto</string>
     <string name="really_unlink_contact_title">Rimuovi collegamento</string>
     <string name="really_unlink_contact">Vuoi davvero rimuovere il collegamento al contatto della rubrica?</string>
     <string name="do_unlink_contact">Rimuovi collegamento</string>
@@ -1151,17 +1151,12 @@ messaggi ogni 15 minuti.</string>
     <string name="an_error_occurred_during_send">Si è verificato un errore durante l\'invio di uno o più messaggi.</string>
     <string name="state_processing">elaborazione</string>
     <string name="passphrase_locked">La passphrase è bloccata</string>
-    <string name="image_labeling_new">Novità: riconoscimento delle immagini</string>
-    <string name="tooltip_image_labeling">Per trovare un particolare contenuto visivo nella tua galleria, inserisci semplicemente un termine che ne descrive il contenuto e selezionalo dall\'elenco delle etichette identificate.</string>
     <string name="selected_media">La tua selezione</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Galleria</string>
     <string name="attach_picture">Immagine</string>
     <string name="attach_video">Video</string>
     <string name="attach_location">Luogo</string>
-    <string name="image_labeling_toolbar_title">Filtra per</string>
-    <string name="no_labels_info">Nessun risultato trovato</string>
-    <string name="image_label_query_hint">Oggetto, luogo, attività?</string>
     <string name="filter_by_album">Filtra per album</string>
     <string name="media_date_taken">Data di svolgimento: %s</string>
     <string name="media_date_added">Data di aggiunta: %s</string>
@@ -1177,18 +1172,12 @@ messaggi ogni 15 minuti.</string>
     <string name="show_text">Mostra testo</string>
     <string name="only_images_or_videos">È possibile selezionare solo immagini o video</string>
     <string name="media_gallery_gifs">GIF</string>
-    <string name="notification_channel_image_labeling">Indicizzazione delle immagini in corso</string>
-    <string name="notification_channel_image_labeling_desc">Le immagini della galleria vengono indicizzate in background</string>
-    <string name="notification_image_labeling_desc">Indicizzazione delle immagini</string>
     <string name="no_media_found_global">Nessun file media trovato su questo dispositivo</string>
-    <string name="prefs_sum_image_labeling">Abilita ricerca parola chiave per le immagini pubbliche nella galleria</string>
-    <string name="prefs_image_labeling">Riconoscimento immagine</string>
     <string name="enable_formatting">Attiva formattazione</string>
     <string name="original_file_no_longer_avilable">L\'accesso al file originale è scaduto. Invia nuovamente questo messaggio.</string>
     <string name="state_transcoding">transcodifica</string>
     <string name="importing_files">Importazione dati</string>
     <string name="tooltip_image_resolution_hint">Adattare la risoluzione dell\'immagine.</string>
-    <string name="image_labeling_stuck_error">"Il processo di indicizzazione per il riconoscimento delle immagini si è interrotto. Riprova più tardi. "</string>
     <string name="ballot_created_successfully">Il sondaggio è stato creato.</string>
     <string name="file_size">Dimensione file</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
@@ -1204,4 +1193,11 @@ messaggi ogni 15 minuti.</string>
     <string name="blur">Sfocare</string>
     <string name="face_blur_tooltip_title">Nuovo: riconoscimento facciale</string>
     <string name="face_blur_tooltip_text">Cerca i visi nella foto e rendili sfocati o coprili con uno smiley.</string>
+    <string name="transcoder_unsupported_audio_format">Impossibile convertire il formato audio poiché il sistema non è supportato.</string>
+    <string name="transcoder_unknown_audio_error">Impossibile convertire il formato audio a causa di un errore sconosciuto.</string>
+    <string name="video_size_explain">Per inviare video molto grandi questi vengono compressi indipendentemente da questa impostazione.</string>
+    <string name="status_create_notes">*Non sono presenti altre persone*\nUsa questa chat come taccuino sicuro per testi, media o file.</string>
+    <string name="status_create_notes_off">*Sono presenti altre persone in questa chat*\nI nuovi messaggi vengono inviati a tutti i membri del gruppo.</string>
+    <string name="note_group_howto">Consiglio: Se non aggiungi dei membri i messaggi di questo gruppo rimangono locali. Questo è ideale per salvare o trasferire sul desktop in modo sicuro appunti, media o file.</string>
+    <string name="mark_read_short">Letto</string>
 </resources>

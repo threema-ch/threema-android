@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Potlačení ozvěny</string>
     <string name="voip_prefs_aec_sw">Softwarové potlačení ozvěny</string>
     <string name="voip_prefs_aec_hw">Hardwarové potlačení ozvěny</string>
+    <string name="voip_prefs_title_video_codec">Video kodeky</string>
+    <string name="voip_prefs_video_aec_hw">Hardwarově akcelerováno</string>
+    <string name="voip_prefs_video_codec_no_vp8">Zakázat VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Zakázat H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Softwarové kodeky</string>
     <string name="voip_connection_failed">Nepodařilo se navázat spojení</string>
     <string name="voip_connection_lost">Ztráta spojení</string>
     <string name="prefs_voip_reject_incoming_calls_title">Odmítat mobilní hovory</string>

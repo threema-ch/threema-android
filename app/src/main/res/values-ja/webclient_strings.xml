@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">無効なQRコードデータです</string>
+    <string name="webclient_init_session">新しいセッションを開始する</string>
+    <string name="webclient_sessions_really_delete">このThreema Webのセッションを本当に削除してもいいですか？</string>
+    <string name="webclient_last_usage">最終接続: %s</string>
+    <string name="webclient_created_at">作成: %1$s (%2$s)</string>
+    <string name="webclient_active_since">%sから有効</string>
+    <string name="webclient_enable">Threema Webを有効化</string>
+    <string name="webclient_no_sessions_found">接続するために
+<b>https://web.threema.ch</b>
+をあなたのパソコンのブラウザで開き、下のボタンをタップして、コードをスキャンしてください。</string>
+    <string name="webclient_session_rename">セッション名を編集</string>
+    <string name="webclient_session_label">新しい名前</string>
+    <string name="webclient_session_start">セッション開始</string>
+    <string name="webclient_session_stop">セッションを停止</string>
+    <string name="webclient_persistent">永続的</string>
+    <string name="webclient_disposable">使い捨て</string>
+    <string name="webclient_unnamed_session">無名のセッション</string>
+    <string name="webclient_session_remove">セッションを削除</string>
+    <string name="webclient_welcome_title">あなたのパソコンからのトーク</string>
+    <string name="webclient_welcome_explain">Threema Webでは、パソコンやノートブックからトークを行うことができ、また、すべての連絡先、メディア、トーク、過去の会話にも完全にアクセスすることができます。\n\n<b>電話機とPCの間のすべての通信は、エンド・ツー・エンドで完全に暗号化</b>されており、電話機とPCが同じネットワーク上にある場合は、直接接続を使用します。\n\n注意: Threema Webがアクティブになっている間、バッテリーの消耗が激しくなることがあります。この機能は、いつでも有効または無効にすることができます。</string>
+    <string name="webclient_launch">Threema Webを開始する</string>
+    <string name="webclient_qr_scan_message">PCに表示されたQRコードを読み取ってください。</string>
+    <string name="webclient_invalid_qr_code">無効なThreema WebのQRコード</string>
+    <string name="webclient_new_connection_toast">Threema Webのセッションが開始されました</string>
+    <string name="webclient_protocol_error">プロトコルエラー</string>
+    <string name="webclient_protocol_version_to_old">お使いのアプリは、このバージョンのThreema Webに対応していません。Threemaを最新版にアップデートしてください。</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">お使いのアプリは、このバージョンのThreema Webをサポートしていません。あなたのThreema Webインスタンスの管理者に、最新バージョンへのアップグレードを依頼してください。</string>
+    <string name="webclient_protocol_version_too_new_threema">お使いのアプリは、このバージョンのThreema Webに対応していません。より新しいバージョンのThreema Webをご利用ください。</string>
+    <string name="webclient_session_already_exists">読み取ったQRコードのセッションはすでに存在しています。ウェブブラウザでThreema Webを再読み込みして、再度お試しください。</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Threema Webのセッションを開始しますか？</string>
+    <string name="webclient_cannot_restore">Threema Webのセッション復元ができませんでした</string>
+    <string name="webclient_disabled">Threema Webは有効ではありません</string>
+    <string name="webclient_cannot_start">Threema Webのセッションが開始できませんでした</string>
+    <string name="webclient_constrained_by_mdm">サーバーが管理者によって承認されていません。</string>
+    <string name="webclient_clear_all_sessions">すべてのセッションの削除</string>
+    <string name="webclient_clear_all_sessions_confirm">Threema Webのセッションをすべて停止して削除しますか？</string>
+    <string name="webclient_prefs_debug_tool_summary">Threema Web接続の設定に関する問題をデバッグするために、このツールを起動します。</string>
+    <string name="webclient_diagnostics">Threema Web診断</string>
+    <string name="webclient_diagnostics_start">開始</string>
+    <string name="webclient_diagnostics_intro">テストを開始するために«開始»をタップしてください</string>
+    <string name="webclient_diagnostics_done">完了しました。Threema Webの接続構築に問題が発生した場合は、このログをThreemaサポートに送ってください。</string>
+</resources>

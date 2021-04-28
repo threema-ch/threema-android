@@ -20,4 +20,7 @@
     <string name="list_theme_light">Licht</string>
     <string name="list_theme_dark">Donker (standaard)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Voor privégebruikers</a>]]></string>
+    <string name="directory_search">Zoeken in de directory</string>
+    <string name="directory_title">Bedrijfsdirectory</string>
+    <string name="directory_empty_view_text">Geen resultaten\n\nVoer ten minste 3 tekens van een naam in om in de bedrijfsdirectory naar Threema-gebruikers te zoeken</string>
 </resources>

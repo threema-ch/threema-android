@@ -22,7 +22,6 @@
 package ch.threema.app.ui;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -52,6 +51,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.PlaybackPreparer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DiscontinuityReason;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.flac.PictureFrame;
 import com.google.android.exoplayer2.metadata.id3.ApicFrame;
@@ -59,13 +59,11 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.ads.AdsLoader;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.ResizeMode;
 import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.ui.spherical.SingleTapListener;
 import com.google.android.exoplayer2.ui.spherical.SphericalGLSurfaceView;
@@ -75,6 +73,7 @@ import com.google.android.exoplayer2.util.RepeatModeUtil;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoDecoderGLSurfaceView;
 import com.google.android.exoplayer2.video.VideoListener;
+import com.google.common.collect.ImmutableList;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -84,6 +83,7 @@ import java.util.List;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 
@@ -94,7 +94,8 @@ import ch.threema.app.R;
  * during playback, and displays playback controls using a {@link PlayerControlView}.
  *
  * <p>A PlayerView can be customized by setting attributes (or calling corresponding methods),
- * overriding the view's layout file or by specifying a custom view layout file, as outlined below.
+ * overriding drawables, overriding the view's layout file, or by specifying a custom view layout
+ * file.
  *
  * <h3>Attributes</h3>
  *
@@ -142,7 +143,8 @@ import ch.threema.app.R;
  *         <li>Default: {@code never}
  *       </ul>
  *   <li><b>{@code resize_mode}</b> - Controls how video and album art is resized within the view.
- *       Valid values are {@code fit}, {@code fixed_width}, {@code fixed_height} and {@code fill}.
+ *       Valid values are {@code fit}, {@code fixed_width}, {@code fixed_height}, {@code fill} and
+ *       {@code zoom}.
  *       <ul>
  *         <li>Corresponding method: {@link #setResizeMode(int)}
  *         <li>Default: {@code fit}
@@ -156,6 +158,12 @@ import ch.threema.app.R;
  *       <ul>
  *         <li>Corresponding method: None
  *         <li>Default: {@code surface_view}
+ *       </ul>
+ *   <li><b>{@code use_sensor_rotation}</b> - Whether to use the orientation sensor for rotation
+ *       during spherical playbacks (if available).
+ *       <ul>
+ *         <li>Corresponding method: {@link #setUseSensorRotation(boolean)}
+ *         <li>Default: {@code true}
  *       </ul>
  *   <li><b>{@code shutter_background_color}</b> - The background color of the {@code exo_shutter}
  *       view.
@@ -187,6 +195,12 @@ import ch.threema.app.R;
  *       exo_controller} (see below).
  * </ul>
  *
+ * <h3>Overriding drawables</h3>
+ *
+ * The drawables used by {@link PlayerControlView} (with its default layout file) can be overridden
+ * by drawables with the same names defined in your application. See the {@link PlayerControlView}
+ * documentation for a list of drawables that can be overridden.
+ *
  * <h3>Overriding the layout file</h3>
  *
  * To customize the layout of PlayerView throughout your app, or just for certain configurations,
@@ -194,8 +208,6 @@ import ch.threema.app.R;
  * directories. These layouts will override the one provided by the ExoPlayer library, and will be
  * inflated for use by PlayerView. The view identifies and binds its children by looking for the
  * following ids:
- *
- * <p>
  *
  * <ul>
  *   <li><b>{@code exo_content_frame}</b> - A frame whose aspect ratio is resized based on the video
@@ -314,9 +326,10 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	@Nullable private PlayerControlView.VisibilityListener controllerVisibilityListener;
 	private boolean useArtwork;
 	@Nullable private Drawable defaultArtwork;
-	private @com.google.android.exoplayer2.ui.PlayerView.ShowBuffering
+	private @ShowBuffering
 	int showBuffering;
 	private boolean keepContentOnPlayerReset;
+	private boolean useSensorRotation;
 	@Nullable private ErrorMessageProvider<? super ExoPlaybackException> errorMessageProvider;
 	@Nullable private CharSequence customErrorMessage;
 	private int controllerShowTimeoutMs;
@@ -376,6 +389,7 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 		boolean controllerAutoShow = true;
 		boolean controllerHideDuringAds = true;
 		int showBuffering = SHOW_BUFFERING_NEVER;
+		useSensorRotation = true;
 		if (attrs != null) {
 			TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PlayerView, 0, 0);
 			try {
@@ -399,6 +413,8 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 						R.styleable.PlayerView_keep_content_on_player_reset, keepContentOnPlayerReset);
 				controllerHideDuringAds =
 					a.getBoolean(R.styleable.PlayerView_hide_during_ads, controllerHideDuringAds);
+				useSensorRotation =
+					a.getBoolean(R.styleable.PlayerView_use_sensor_rotation, useSensorRotation);
 			} finally {
 				a.recycle();
 			}
@@ -433,6 +449,7 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 				case SURFACE_TYPE_SPHERICAL_GL_SURFACE_VIEW:
 					SphericalGLSurfaceView sphericalGLSurfaceView = new SphericalGLSurfaceView(context);
 					sphericalGLSurfaceView.setSingleTapListener(componentListener);
+					sphericalGLSurfaceView.setUseSensorRotation(useSensorRotation);
 					surfaceView = sphericalGLSurfaceView;
 					break;
 				case SURFACE_TYPE_VIDEO_DECODER_GL_SURFACE_VIEW:
@@ -571,8 +588,6 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 					oldVideoComponent.clearVideoTextureView((TextureView) surfaceView);
 				} else if (surfaceView instanceof SphericalGLSurfaceView) {
 					((SphericalGLSurfaceView) surfaceView).setVideoComponent(null);
-				} else if (surfaceView instanceof VideoDecoderGLSurfaceView) {
-					oldVideoComponent.setVideoDecoderOutputBufferRenderer(null);
 				} else if (surfaceView instanceof SurfaceView) {
 					oldVideoComponent.clearVideoSurfaceView((SurfaceView) surfaceView);
 				}
@@ -582,12 +597,12 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 				oldTextComponent.removeTextOutput(componentListener);
 			}
 		}
+		if (subtitleView != null) {
+			subtitleView.setCues(null);
+		}
 		this.player = player;
 		if (useController()) {
 			controller.setPlayer(player);
-		}
-		if (subtitleView != null) {
-			subtitleView.setCues(null);
 		}
 		updateBuffering();
 		updateErrorMessage();
@@ -599,9 +614,6 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 					newVideoComponent.setVideoTextureView((TextureView) surfaceView);
 				} else if (surfaceView instanceof SphericalGLSurfaceView) {
 					((SphericalGLSurfaceView) surfaceView).setVideoComponent(newVideoComponent);
-				} else if (surfaceView instanceof VideoDecoderGLSurfaceView) {
-					newVideoComponent.setVideoDecoderOutputBufferRenderer(
-						((VideoDecoderGLSurfaceView) surfaceView).getVideoDecoderOutputBufferRenderer());
 				} else if (surfaceView instanceof SurfaceView) {
 					newVideoComponent.setVideoSurfaceView((SurfaceView) surfaceView);
 				}
@@ -610,6 +622,9 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 			@Nullable Player.TextComponent newTextComponent = player.getTextComponent();
 			if (newTextComponent != null) {
 				newTextComponent.addTextOutput(componentListener);
+				if (subtitleView != null) {
+					subtitleView.setCues(newTextComponent.getCurrentCues());
+				}
 			}
 			player.addListener(componentListener);
 			maybeShowController(false);
@@ -671,19 +686,6 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	 * Sets the default artwork to display if {@code useArtwork} is {@code true} and no artwork is
 	 * present in the media.
 	 *
-	 * @param defaultArtwork the default artwork to display.
-	 * @deprecated use (@link {@link #setDefaultArtwork(Drawable)} instead.
-	 */
-	@Deprecated
-	public void setDefaultArtwork(@Nullable Bitmap defaultArtwork) {
-		setDefaultArtwork(
-			defaultArtwork == null ? null : new BitmapDrawable(getResources(), defaultArtwork));
-	}
-
-	/**
-	 * Sets the default artwork to display if {@code useArtwork} is {@code true} and no artwork is
-	 * present in the media.
-	 *
 	 * @param defaultArtwork the default artwork to display
 	 */
 	public void setDefaultArtwork(@Nullable Drawable defaultArtwork) {
@@ -733,9 +735,8 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	/**
 	 * Sets whether the currently displayed video frame or media artwork is kept visible when the
 	 * player is reset. A player reset is defined to mean the player being re-prepared with different
-	 * media, the player transitioning to unprepared media, {@link Player#stop(boolean)} being called
-	 * with {@code reset=true}, or the player being replaced or cleared by calling {@link
-	 * #setPlayer(Player)}.
+	 * media, the player transitioning to unprepared media or an empty list of media items, or the
+	 * player being replaced or cleared by calling {@link #setPlayer(Player)}.
 	 *
 	 * <p>If enabled, the currently displayed video frame or media artwork will be kept visible until
 	 * the player set on the view has been successfully prepared with new media and loaded enough of
@@ -758,15 +759,19 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	}
 
 	/**
-	 * Sets whether a buffering spinner is displayed when the player is in the buffering state. The
-	 * buffering spinner is not displayed by default.
+	 * Sets whether to use the orientation sensor for rotation during spherical playbacks (if
+	 * available)
 	 *
-	 * @deprecated Use {@link #setShowBuffering(int)}
-	 * @param showBuffering Whether the buffering icon is displayed
+	 * @param useSensorRotation Whether to use the orientation sensor for rotation during spherical
+	 *     playbacks.
 	 */
-	@Deprecated
-	public void setShowBuffering(boolean showBuffering) {
-		setShowBuffering(showBuffering ? PlayerView.SHOW_BUFFERING_WHEN_PLAYING : SHOW_BUFFERING_NEVER);
+	public void setUseSensorRotation(boolean useSensorRotation) {
+		if (this.useSensorRotation != useSensorRotation) {
+			this.useSensorRotation = useSensorRotation;
+			if (surfaceView instanceof SphericalGLSurfaceView) {
+				((SphericalGLSurfaceView) surfaceView).setUseSensorRotation(useSensorRotation);
+			}
+		}
 	}
 
 	/**
@@ -777,7 +782,7 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	 *     {@link #SHOW_BUFFERING_NEVER}, {@link #SHOW_BUFFERING_WHEN_PLAYING} and {@link
 	 *     #SHOW_BUFFERING_ALWAYS}.
 	 */
-	public void setShowBuffering(@com.google.android.exoplayer2.ui.PlayerView.ShowBuffering int showBuffering) {
+	public void setShowBuffering(@ShowBuffering int showBuffering) {
 		if (this.showBuffering != showBuffering) {
 			this.showBuffering = showBuffering;
 			updateBuffering();
@@ -963,11 +968,15 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	}
 
 	/**
-	 * Sets the {@link PlaybackPreparer}.
-	 *
-	 * @param playbackPreparer The {@link PlaybackPreparer}, or null to remove the current playback
-	 *     preparer.
+	 * @deprecated Use {@link #setControlDispatcher(ControlDispatcher)} instead. The view calls {@link
+	 *     ControlDispatcher#dispatchPrepare(Player)} instead of {@link
+	 *     PlaybackPreparer#preparePlayback()}. The {@link DefaultControlDispatcher} that the view
+	 *     uses by default, calls {@link Player#prepare()}. If you wish to customize this behaviour,
+	 *     you can provide a custom implementation of {@link
+	 *     ControlDispatcher#dispatchPrepare(Player)}.
 	 */
+	@SuppressWarnings("deprecation")
+	@Deprecated
 	public void setPlaybackPreparer(@Nullable PlaybackPreparer playbackPreparer) {
 		Assertions.checkStateNotNull(controller);
 		controller.setPlaybackPreparer(playbackPreparer);
@@ -976,31 +985,70 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	/**
 	 * Sets the {@link ControlDispatcher}.
 	 *
-	 * @param controlDispatcher The {@link ControlDispatcher}, or null to use {@link
-	 *     DefaultControlDispatcher}.
+	 * @param controlDispatcher The {@link ControlDispatcher}.
 	 */
-	public void setControlDispatcher(@Nullable ControlDispatcher controlDispatcher) {
+	public void setControlDispatcher(ControlDispatcher controlDispatcher) {
 		Assertions.checkStateNotNull(controller);
 		controller.setControlDispatcher(controlDispatcher);
 	}
 
 	/**
-	 * Sets the rewind increment in milliseconds.
+	 * Sets whether the rewind button is shown.
 	 *
-	 * @param rewindMs The rewind increment in milliseconds. A non-positive value will cause the
-	 *     rewind button to be disabled.
+	 * @param showRewindButton Whether the rewind button is shown.
 	 */
+	public void setShowRewindButton(boolean showRewindButton) {
+		Assertions.checkStateNotNull(controller);
+		controller.setShowRewindButton(showRewindButton);
+	}
+
+	/**
+	 * Sets whether the fast forward button is shown.
+	 *
+	 * @param showFastForwardButton Whether the fast forward button is shown.
+	 */
+	public void setShowFastForwardButton(boolean showFastForwardButton) {
+		Assertions.checkStateNotNull(controller);
+		controller.setShowFastForwardButton(showFastForwardButton);
+	}
+
+	/**
+	 * Sets whether the previous button is shown.
+	 *
+	 * @param showPreviousButton Whether the previous button is shown.
+	 */
+	public void setShowPreviousButton(boolean showPreviousButton) {
+		Assertions.checkStateNotNull(controller);
+		controller.setShowPreviousButton(showPreviousButton);
+	}
+
+	/**
+	 * Sets whether the next button is shown.
+	 *
+	 * @param showNextButton Whether the next button is shown.
+	 */
+	public void setShowNextButton(boolean showNextButton) {
+		Assertions.checkStateNotNull(controller);
+		controller.setShowNextButton(showNextButton);
+	}
+
+	/**
+	 * @deprecated Use {@link #setControlDispatcher(ControlDispatcher)} with {@link
+	 *     DefaultControlDispatcher#DefaultControlDispatcher(long, long)}.
+	 */
+	@SuppressWarnings("deprecation")
+	@Deprecated
 	public void setRewindIncrementMs(int rewindMs) {
 		Assertions.checkStateNotNull(controller);
 		controller.setRewindIncrementMs(rewindMs);
 	}
 
 	/**
-	 * Sets the fast forward increment in milliseconds.
-	 *
-	 * @param fastForwardMs The fast forward increment in milliseconds. A non-positive value will
-	 *     cause the fast forward button to be disabled.
+	 * @deprecated Use {@link #setControlDispatcher(ControlDispatcher)} with {@link
+	 *     DefaultControlDispatcher#DefaultControlDispatcher(long, long)}.
 	 */
+	@SuppressWarnings("deprecation")
+	@Deprecated
 	public void setFastForwardIncrementMs(int fastForwardMs) {
 		Assertions.checkStateNotNull(controller);
 		controller.setFastForwardIncrementMs(fastForwardMs);
@@ -1200,15 +1248,20 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 	}
 
 	@Override
-	public View[] getAdOverlayViews() {
-		ArrayList<View> overlayViews = new ArrayList<>();
+	public List<AdsLoader.OverlayInfo> getAdOverlayInfos() {
+		List<AdsLoader.OverlayInfo> overlayViews = new ArrayList<>();
 		if (overlayFrameLayout != null) {
-			overlayViews.add(overlayFrameLayout);
+			overlayViews.add(
+				new AdsLoader.OverlayInfo(
+					overlayFrameLayout,
+					AdsLoader.OverlayInfo.PURPOSE_NOT_VISIBLE,
+					/* detailedReason= */ "Transparent overlay does not impact viewability"));
 		}
 		if (controller != null) {
-			overlayViews.add(controller);
+			overlayViews.add(
+				new AdsLoader.OverlayInfo(controller, AdsLoader.OverlayInfo.PURPOSE_CONTROLS));
 		}
-		return overlayViews.toArray(new View[0]);
+		return ImmutableList.copyOf(overlayViews);
 	}
 
 	// Internal methods.
@@ -1307,15 +1360,9 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 		closeShutter();
 		// Display artwork if enabled and available, else hide it.
 		if (useArtwork()) {
-			for (int i = 0; i < selections.length; i++) {
-				@Nullable TrackSelection selection = selections.get(i);
-				if (selection != null) {
-					for (int j = 0; j < selection.length(); j++) {
-						@Nullable Metadata metadata = selection.getFormat(j).metadata;
-						if (metadata != null && setArtworkFromMetadata(metadata)) {
-							return;
-						}
-					}
+			for (Metadata metadata : player.getCurrentStaticMetadata()) {
+				if (setArtworkFromMetadata(metadata)) {
+					return;
 				}
 			}
 			if (setDrawableArtwork(defaultArtwork)) {
@@ -1401,7 +1448,7 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 				errorMessageView.setVisibility(View.VISIBLE);
 				return;
 			}
-			@Nullable ExoPlaybackException error = player != null ? player.getPlaybackError() : null;
+			@Nullable ExoPlaybackException error = player != null ? player.getPlayerError() : null;
 			if (error != null && errorMessageProvider != null) {
 				CharSequence errorMessage = errorMessageProvider.getErrorMessage(error).second;
 				errorMessageView.setText(errorMessage);
@@ -1426,7 +1473,15 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 		}
 	}
 
-	@TargetApi(23)
+	private void updateControllerVisibility() {
+		if (isPlayingAd() && controllerHideDuringAds) {
+			hideController();
+		} else {
+			maybeShowController(false);
+		}
+	}
+
+	@RequiresApi(23)
 	private static void configureEditModeLogoV23(Resources resources, ImageView logo) {
 		logo.setImageDrawable(resources.getDrawable(R.drawable.exo_edit_mode_logo, null));
 		logo.setBackgroundColor(resources.getColor(R.color.exo_edit_mode_background_color, null));
@@ -1486,6 +1541,13 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 		SingleTapListener,
 		PlayerControlView.VisibilityListener {
 
+		private final Timeline.Period period;
+		private @Nullable Object lastPeriodUidWithTracks;
+
+		public ComponentListener() {
+			period = new Timeline.Period();
+		}
+
 		// TextOutput implementation
 
 		@Override
@@ -1534,20 +1596,46 @@ public class ZoomableExoPlayerView extends FrameLayout implements AdsLoader.AdVi
 
 		@Override
 		public void onTracksChanged(TrackGroupArray tracks, TrackSelectionArray selections) {
+			// Suppress the update if transitioning to an unprepared period within the same window. This
+			// is necessary to avoid closing the shutter when such a transition occurs. See:
+			// https://github.com/google/ExoPlayer/issues/5507.
+			Player player = Assertions.checkNotNull(ZoomableExoPlayerView.this.player);
+			Timeline timeline = player.getCurrentTimeline();
+			if (timeline.isEmpty()) {
+				lastPeriodUidWithTracks = null;
+			} else if (!player.getCurrentTrackGroups().isEmpty()) {
+				lastPeriodUidWithTracks =
+					timeline.getPeriod(player.getCurrentPeriodIndex(), period, /* setIds= */ true).uid;
+			} else if (lastPeriodUidWithTracks != null) {
+				int lastPeriodIndexWithTracks = timeline.getIndexOfPeriod(lastPeriodUidWithTracks);
+				if (lastPeriodIndexWithTracks != C.INDEX_UNSET) {
+					int lastWindowIndexWithTracks =
+						timeline.getPeriod(lastPeriodIndexWithTracks, period).windowIndex;
+					if (player.getCurrentWindowIndex() == lastWindowIndexWithTracks) {
+						// We're in the same window. Suppress the update.
+						return;
+					}
+				}
+				lastPeriodUidWithTracks = null;
+			}
+
 			updateForCurrentTrackSelections(/* isNewPlayer= */ false);
 		}
 
 		// Player.EventListener implementation
 
 		@Override
-		public void onPlayerStateChanged(boolean playWhenReady, @Player.State int playbackState) {
+		public void onPlaybackStateChanged(@Player.State int playbackState) {
 			updateBuffering();
 			updateErrorMessage();
-			if (isPlayingAd() && controllerHideDuringAds) {
-				hideController();
-			} else {
-				maybeShowController(false);
-			}
+			updateControllerVisibility();
+		}
+
+		@Override
+		public void onPlayWhenReadyChanged(
+			boolean playWhenReady, @Player.PlayWhenReadyChangeReason int reason) {
+			updateBuffering();
+			updateControllerVisibility();
 		}
 
 		@Override

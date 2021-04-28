@@ -21,38 +21,25 @@
 
 package ch.threema.app.ui;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.mediaattacher.MediaAttachActivity;
 
 public class MediaGridItemDecoration extends RecyclerView.ItemDecoration {
 	private int space;
-	private int columns;
 
-	public MediaGridItemDecoration(int space, int columns) {
+	public MediaGridItemDecoration(int space) {
 		this.space = space;
-		this.columns = columns;
 	}
 
 	@Override
 	public void getItemOffsets(Rect outRect, View view,
 	                           RecyclerView parent, RecyclerView.State state) {
+
 		outRect.left = space/2;
 		outRect.right = space/2;
 		outRect.bottom = space;
-
 		// Add top margin only for the first item to avoid double space between items
 		outRect.top = 0;
 	}

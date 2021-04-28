@@ -21,6 +21,8 @@
 
 package ch.threema.app.services;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -50,6 +52,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.GroupDetailActivity;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
@@ -103,6 +106,7 @@ public class GroupServiceImpl implements GroupService {
 	private final WallpaperService wallpaperService;
 	private final DeadlineListService mutedChatsListService, hiddenChatsListService;
 	private final RingtoneService ringtoneService;
+	private final IdListService blackListService;
 	private final SparseArray<Map<String, Integer>> groupMemberColorCache;
 	private final SparseArray<GroupModel> groupModelCache;
 	private final SparseArray<String[]> groupIdentityCache;
@@ -128,7 +132,8 @@ public class GroupServiceImpl implements GroupService {
 			WallpaperService wallpaperService,
 			DeadlineListService mutedChatsListService,
 			DeadlineListService hiddenChatsListService,
-			RingtoneService ringtoneService) {
+			RingtoneService ringtoneService,
+			IdListService blackListService) {
 		this.apiService = apiService;
 		this.groupApiService = groupApiService;
 
@@ -142,6 +147,7 @@ public class GroupServiceImpl implements GroupService {
 		this.mutedChatsListService = mutedChatsListService;
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.ringtoneService = ringtoneService;
+		this.blackListService = blackListService;
 
 		this.groupModelCache = cacheService.getGroupModelCache();
 		this.groupIdentityCache = cacheService.getGroupIdentityCache();
@@ -251,7 +257,7 @@ public class GroupServiceImpl implements GroupService {
 		ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
 			@Override
 			public void handle(GroupListener listener) {
-				listener.onMemberKicked(groupModel, userService.getIdentity());
+				listener.onMemberKicked(groupModel, userService.getIdentity(), identities.length);
 			}
 		});
 
@@ -429,7 +435,7 @@ public class GroupServiceImpl implements GroupService {
 	public boolean sendLeave(AbstractGroupMessage msg) {
 		if(msg != null) {
 			try {
-				//send a request sync to the creator!!
+				//send a leave to the creator!!
 				this.groupApiService.sendMessage(msg.getGroupId(),
 						msg.getGroupCreator(),
 						new String[]{msg.getFromIdentity(), msg.getGroupCreator()},
@@ -500,6 +506,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public boolean removeMemberFromGroup(final GroupModel group, final String identity) {
+		final int previousMemberCount = countMembers(group);
+
 		if(this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupIdAndIdentity(
 				group.getId(),
 				identity
@@ -509,13 +517,18 @@ public class GroupServiceImpl implements GroupService {
 			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
 				@Override
 				public void handle(GroupListener listener) {
-					listener.onMemberLeave(group, identity);
+					listener.onMemberLeave(group, identity, previousMemberCount);
 				}
 			});
 			return true;
 		}
 
 		return false;
+	}
+
+	@Override
+	public Intent getGroupEditIntent(@NonNull GroupModel groupModel, @NonNull Activity activity) {
+		return new Intent(activity, GroupDetailActivity.class);
 	}
 
 	@Override
@@ -531,11 +544,12 @@ public class GroupServiceImpl implements GroupService {
 
 
 	@Override
-	public GroupCreateMessageResult processGroupCreateMessage(final GroupCreateMessage groupCreateMessage) throws ThreemaException, InvalidEntryException {
+	public GroupCreateMessageResult processGroupCreateMessage(final GroupCreateMessage groupCreateMessage) {
 		final GroupCreateMessageResult result = new GroupCreateMessageResult();
 		result.success = false;
 
 		boolean isNewGroup;
+		final int previousMemberCount;
 
 		//check if i am in group
 		boolean iAmAGroupMember = Functional.select(groupCreateMessage.getMembers(), new IPredicateNonNull<String>() {
@@ -547,6 +561,7 @@ public class GroupServiceImpl implements GroupService {
 
 		try {
 			result.groupModel = this.getByAbstractGroupMessage(groupCreateMessage);
+			previousMemberCount = result.groupModel != null ? countMembers(result.groupModel) : 0;
 			isNewGroup = result.groupModel == null;
 
 		} catch (SQLException e) {
@@ -554,18 +569,25 @@ public class GroupServiceImpl implements GroupService {
 			return null;
 		}
 
-		if(!iAmAGroupMember) {
+		if (isNewGroup && this.blackListService != null && this.blackListService.has(groupCreateMessage.getFromIdentity())) {
+			logger.info("GroupCreateMessage {}: Received group create from blocked ID. Sending leave.", groupCreateMessage.getMessageId());
 
-			if(isNewGroup) {
-				//do nothing
-				//group not saved and i am not a member
+			sendLeave(groupCreateMessage);
+
+			result.success = true;
+			return result;
+		}
+
+		if (!iAmAGroupMember) {
+			if (isNewGroup) {
+				// i'm not a member of this new group
+				// ignore this groupCreate message
 				result.success = true;
 				result.groupModel = null;
-
 			}
 			else {
-				//user is kicked out of group
-				//remove all members
+				// i was kicked out of group
+				// remove all members
 				this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupId(
 						result.groupModel.getId());
 
@@ -575,7 +597,6 @@ public class GroupServiceImpl implements GroupService {
 				result.success = true;
 				result.groupModel = null;
 
-
 				//reset cache
 				this.resetIdentityCache(groupModel.getId());
 
@@ -583,7 +604,7 @@ public class GroupServiceImpl implements GroupService {
 				ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
 					@Override
 					public void handle(GroupListener listener) {
-						listener.onMemberKicked(groupModel, userService.getIdentity());
+						listener.onMemberKicked(groupModel, userService.getIdentity(), previousMemberCount);
 					}
 				});
 			}
@@ -591,8 +612,7 @@ public class GroupServiceImpl implements GroupService {
 			return result;
 		}
 
-
-		if(result.groupModel == null) {
+		if (result.groupModel == null) {
 			result.groupModel = new GroupModel();
 			result.groupModel
 					.setApiGroupId(groupCreateMessage.getGroupId().toString())
@@ -603,7 +623,7 @@ public class GroupServiceImpl implements GroupService {
 			this.cache(result.groupModel);
 
 		}
-		else if(result.groupModel.isDeleted()) {
+		else if (result.groupModel.isDeleted()) {
 			result.groupModel.setDeleted(false);
 			this.databaseServiceNew.getGroupModelFactory().update(result.groupModel);
 			isNewGroup = true;
@@ -650,12 +670,10 @@ public class GroupServiceImpl implements GroupService {
 					localSavedGroupMembers);
 
 			for(final GroupMemberModel groupMemberModel: localSavedGroupMembers) {
-				//fire event
-
 				ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
 					@Override
 					public void handle(GroupListener listener) {
-						listener.onMemberKicked(result.groupModel, groupMemberModel.getIdentity());
+						listener.onMemberKicked(result.groupModel, groupMemberModel.getIdentity(), previousMemberCount);
 					}
 				});
 			}
@@ -692,6 +710,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		GroupModel model = this.createGroup(name, groupMemberIdentities);
+
 		if (uploadPhotoResult != null) {
 			this.updateGroupPhoto(model, uploadPhotoResult);
 		}
@@ -755,6 +774,7 @@ public class GroupServiceImpl implements GroupService {
 	public Boolean addMemberToGroup(final GroupModel groupModel, final String identity) {
 		GroupMemberModel m = this.getGroupMember(groupModel, identity);
 		boolean isNewMember = m == null;
+		final int previousMemberCount = countMembers(groupModel);
 
 		//check if member already in group
 
@@ -797,7 +817,7 @@ public class GroupServiceImpl implements GroupService {
 			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
 				@Override
 				public void handle(GroupListener listener) {
-					listener.onNewMember(groupModel, identity);
+					listener.onNewMember(groupModel, identity, previousMemberCount);
 				}
 			});
 		}
@@ -817,6 +837,8 @@ public class GroupServiceImpl implements GroupService {
 		if (identities != null && identities.length > 0) {
 			ArrayList<String> newContacts = new ArrayList<>();
 			ArrayList<String> newMembers = new ArrayList<>();
+
+			int previousMemberCount = countMembers(groupModel);
 
 			// check for new contacts, if necessary, create them
 			if (!this.preferenceService.isBlockUnknown()) {
@@ -904,7 +926,7 @@ public class GroupServiceImpl implements GroupService {
 				@Override
 				public void handle(GroupListener listener) {
 					for (String identity: newMembers) {
-						listener.onNewMember(groupModel, identity);
+						listener.onNewMember(groupModel, identity, previousMemberCount);
 					}
 				}
 			});
@@ -1031,7 +1053,7 @@ public class GroupServiceImpl implements GroupService {
 			this.resetIdentityCache(groupModel.getId());
 
 			for(final String kickedGroupMemberIdentity: kickedGroupMemberIdentities) {
-				ListenerManager.groupListeners.handle(listener -> listener.onMemberKicked(groupModel, kickedGroupMemberIdentity));
+				ListenerManager.groupListeners.handle(listener -> listener.onMemberKicked(groupModel, kickedGroupMemberIdentity, existingMembers.length));
 			}
 		}
 		return groupModel;
@@ -1213,17 +1235,6 @@ public class GroupServiceImpl implements GroupService {
 		}
 	}
 
-	@Override
-	public int countMembers(@NonNull GroupModel groupModel) {
-		synchronized (this.groupIdentityCache) {
-			String[] existingIdentities = this.groupIdentityCache.get(groupModel.getId());
-			if (existingIdentities != null) {
-				return existingIdentities.length;
-			}
-		}
-		return (int) this.databaseServiceNew.getGroupMemberModelFactory().countMembers(groupModel.getId());
-	}
-
 	private boolean isGroupMember(GroupModel groupModel, String identity) {
 		if (!TestUtil.empty(identity)) {
 			for (String existingIdentity : this.getGroupIdentities(groupModel)) {
@@ -1328,6 +1339,34 @@ public class GroupServiceImpl implements GroupService {
 		return groupModel != null
 				&& this.userService.getIdentity() != null
 				&& this.userService.isMe(groupModel.getCreatorIdentity());
+	}
+
+	/**
+	 * Count members in a group
+	 * @param groupModel
+	 * @return Number of members in this group including group creator
+	 */
+	@Override
+	public int countMembers(@NonNull GroupModel groupModel) {
+		synchronized (this.groupIdentityCache) {
+			String[] existingIdentities = this.groupIdentityCache.get(groupModel.getId());
+			if (existingIdentities != null) {
+				return existingIdentities.length;
+			}
+		}
+		return (int) this.databaseServiceNew.getGroupMemberModelFactory().countMembers(groupModel.getId());
+	}
+
+	/**
+	 * Whether the provided group is an implicit note group (i.e. data is kept local)
+	 * @param groupModel of the group
+	 * @return true if the group is a note group, false otherwise
+	 */
+	@Override
+	public boolean isNotesGroup(@NonNull GroupModel groupModel) {
+		return
+			isGroupOwner(groupModel) &&
+			countMembers(groupModel) == 1;
 	}
 
 	@Override
@@ -1640,7 +1679,8 @@ public class GroupServiceImpl implements GroupService {
 		}
 	}
 
-	private void save(GroupModel model) {
+	@Override
+	public void save(GroupModel model) {
 		this.databaseServiceNew.getGroupModelFactory().createOrUpdate(
 				model
 		);

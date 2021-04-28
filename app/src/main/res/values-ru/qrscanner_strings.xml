@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="msg_default_status">Разместите QR код внутри прямоугольника видоискателя, чтобы проверить его.</string>
+    <string name="msg_default_status">Разместите QR код внутри прямоугольника видоискателя, чтобы проверить его.</string>
     <string name="msg_camera_framework_bug">Не удается получить доступ к камере Android. Убедитесь, что разрешение на доступ к камере предоставлено, или перезапустите устройство.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="msg_default_status">将二维码放在取景器矩形内进行扫描。</string>
+    <string name="msg_default_status">将二维码放在矩形扫描框内进行扫描。</string>
     <string name="msg_camera_framework_bug">无法访问 Android 相机。确保已授予访问相机的权限或重新启动设备。</string>
 </resources>

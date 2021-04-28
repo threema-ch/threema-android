@@ -43,6 +43,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -50,7 +51,6 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.ContactDetailActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
-import ch.threema.app.activities.GroupDetailActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.adapters.MessageListAdapter;
@@ -185,6 +184,7 @@ public class MessageSectionFragment extends MainFragment
 	private static final int TAG_DELETE_LEFT_GROUP = 10;
 	private static final int TAG_EDIT_GROUP = 11;
 	private static final int TAG_MARK_READ = 12;
+	private static final int TAG_MARK_UNREAD = 13;
 
 	private static final String BUNDLE_FILTER_QUERY = "filterQuery";
 	private static String highlightUid;
@@ -214,6 +214,8 @@ public class MessageSectionFragment extends MainFragment
 	private int currentFullSyncs = 0;
 	private String filterQuery;
 	private int cornerRadius;
+	private TagModel unreadTagModel;
+
 
 	private int archiveCount = 0;
 	private Snackbar archiveSnackbar;
@@ -580,6 +582,8 @@ public class MessageSectionFragment extends MainFragment
 	};
 
 	private void showConversation(ConversationModel conversationModel, View v) {
+		conversationTagService.unTag(conversationModel, unreadTagModel);
+
 		Intent intent = IntentDataUtil.getShowConversationIntent(conversationModel, activity);
 
 		if (intent == null) {
@@ -743,17 +747,15 @@ public class MessageSectionFragment extends MainFragment
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				String displayName = FileUtil.sanitizeFileName(conversationModel.getReceiver().getDisplayName());
-				String filename = FilenameUtils.normalizeNoEndSeparator("messages-" + displayName);
-				tempMessagesFile = new File(ConfigUtils.useContentUris() ? fileService.getTempPath() : fileService.getExtTmpPath(), filename + ".zip");
+				tempMessagesFile = FileUtil.getUniqueFile(ConfigUtils.useContentUris() ? fileService.getTempPath().getPath() : fileService.getExtTmpPath().getPath(), "threema-chat.zip");
 				FileUtil.deleteFileOrWarn(tempMessagesFile, "tempMessagesFile", logger);
 
-				if (backupChatService.backupChatToZip(conversationModel, tempMessagesFile, password, includeMedia, displayName)) {
+				if (backupChatService.backupChatToZip(conversationModel, tempMessagesFile, password, includeMedia)) {
 
 					if (tempMessagesFile != null && tempMessagesFile.exists() && tempMessagesFile.length() > 0) {
 						final Intent intent = new Intent(Intent.ACTION_SEND);
 						intent.setType(MimeUtil.MIME_TYPE_ZIP);
-						intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject) + " " + conversationModel.getReceiver().getDisplayName());
+						intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject));
 						intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.chat_history_attached) + "\n\n" + getString(R.string.share_conversation_body));
 						intent.putExtra(Intent.EXTRA_STREAM, fileService.getShareFileUri(tempMessagesFile, null));
 						intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -832,7 +834,6 @@ public class MessageSectionFragment extends MainFragment
 					return 0.7f;
 				}
 
-
 				@Override
 				public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 					// disable swiping and dragging for footer views
@@ -854,7 +855,7 @@ public class MessageSectionFragment extends MainFragment
 
 				@Override
 				public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-					// swipe has ended
+					// swipe has ended successfully
 
 					// required to clear swipe layout
 					messageListAdapter.notifyDataSetChanged();
@@ -1018,12 +1019,32 @@ public class MessageSectionFragment extends MainFragment
 					}
 				}
 			});
+			recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+				private final int TOUCH_SAFE_AREA_PX = 5;
+
+				// ignore touches at the very left and right edge of the screen to prevent interference with UI gestures
+				@Override
+				public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+					int width = getResources().getDisplayMetrics().widthPixels;
+					int touchX = (int) e.getRawX();
+
+					return touchX < TOUCH_SAFE_AREA_PX || touchX > width - TOUCH_SAFE_AREA_PX;
+				}
+
+				@Override
+				public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) { }
+
+				@Override
+				public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
+			});
 
 			//instantiate fragment
 			//
 			if(!this.requiredInstances()) {
 				logger.error("could not instantiate required objects");
 			}
+
+			this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
 		}
 		return fragmentView;
 	}
@@ -1076,7 +1097,7 @@ public class MessageSectionFragment extends MainFragment
 	}
 
 	private void editGroup(ConversationModel model, View view) {
-		Intent intent = new Intent(getActivity(), GroupDetailActivity.class);
+		Intent intent = groupService.getGroupEditIntent(model.getGroup(), activity);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, model.getGroup().getId());
 		AnimationUtil.startActivityForResult(activity, view, intent, 0);
 	}
@@ -1196,9 +1217,12 @@ public class MessageSectionFragment extends MainFragment
 
 		boolean isPrivate = hiddenChatsListService.has(receiver.getUniqueIdString());
 
-		if (conversationModel.hasUnreadMessage()) {
+		if (conversationModel.hasUnreadMessage() || conversationTagService.isTaggedWith(conversationModel, unreadTagModel)) {
 			labels.add(getString(R.string.mark_read));
 			tags.add(TAG_MARK_READ);
+		} else {
+			labels.add(getString(R.string.mark_unread));
+			tags.add(TAG_MARK_UNREAD);
 		}
 
 		if (isPrivate) {
@@ -1334,12 +1358,16 @@ public class MessageSectionFragment extends MainFragment
 				}
 				break;
 			case TAG_MARK_READ:
+				conversationTagService.unTag(conversationModel, unreadTagModel);
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
 						messageService.markConversationAsRead(conversationModel.getReceiver(), serviceManager.getNotificationService());
 					}
 				}).start();
+				break;
+			case TAG_MARK_UNREAD:
+				conversationTagService.tag(conversationModel, unreadTagModel);
 				break;
 		}
 	}

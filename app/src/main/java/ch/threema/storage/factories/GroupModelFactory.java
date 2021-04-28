@@ -79,7 +79,7 @@ public class GroupModelFactory extends ModelFactory {
 				orderBy));
 	}
 
-	private List<GroupModel> convertList(Cursor c) {
+	public List<GroupModel> convertList(Cursor c) {
 
 		List<GroupModel> result = new ArrayList<>();
 		if(c != null) {
@@ -111,7 +111,8 @@ public class GroupModelFactory extends ModelFactory {
 							.setSynchronizedAt(cursorHelper.getDate(GroupModel.COLUMN_SYNCHRONIZED_AT))
 							.setCreatedAt(cursorHelper.getDateByString(GroupModel.COLUMN_CREATED_AT))
 							.setDeleted(cursorHelper.getBoolean(GroupModel.COLUMN_DELETED))
-							.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED));
+							.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
+					;
 
 					return false;
 				}
@@ -285,7 +286,7 @@ public class GroupModelFactory extends ModelFactory {
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0 );",
+				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0, `groupKind` INT DEFAULT 0 );",
 				"CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `m_group` ( `apiGroupId`, `creatorIdentity` );"
 		};
 	}

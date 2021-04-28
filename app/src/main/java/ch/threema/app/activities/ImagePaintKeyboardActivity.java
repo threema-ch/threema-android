@@ -87,7 +87,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 
 				int keyboardHeight = rootView.getRootView().getHeight() - (statusBarHeight + navigationBarHeight + rect.height());
 
-				if ((currentKeyboardHeight - keyboardHeight) > getResources().getDimensionPixelSize(R.dimen.min_keyboard_size)) {
+				if ((currentKeyboardHeight - keyboardHeight) > getResources().getDimensionPixelSize(R.dimen.min_keyboard_height)) {
 					returnResult(textEntry.getText());
 				}
 				currentKeyboardHeight = keyboardHeight;

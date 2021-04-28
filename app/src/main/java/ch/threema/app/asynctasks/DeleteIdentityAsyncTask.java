@@ -37,7 +37,6 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
@@ -124,7 +123,6 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4);
 			File nonceDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(NonceDatabaseBlobService.DATABASE_NAME_V4);
 			File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4 + DatabaseServiceNew.DATABASE_BACKUP_EXT);
-			File labelDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(MediaItemsRoomDatabase.DATABASE_NAME);
 			File cacheDirectory = ThreemaApplication.getAppContext().getCacheDir();
 			File externalCacheDirectory = ThreemaApplication.getAppContext().getExternalCacheDir();
 
@@ -132,7 +130,6 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			secureDelete(databaseFile);
 			secureDelete(nonceDatabaseFile);
 			secureDelete(backupFile);
-			secureDelete(labelDatabaseFile);
 			secureDelete(cacheDirectory);
 			secureDelete(externalCacheDirectory);
 

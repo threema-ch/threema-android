@@ -74,8 +74,8 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
 					inputType,
 					avatarFile,
 					isAvatarRemoved,
-					GroupModel.GROUP_NAME_MAX_LENGTH_BYTES
-		).show(getSupportFragmentManager(), DIALOG_TAG_GROUPNAME);
+					GroupModel.GROUP_NAME_MAX_LENGTH_BYTES)
+			.show(getSupportFragmentManager(), DIALOG_TAG_GROUPNAME);
 	}
 
 	@Override

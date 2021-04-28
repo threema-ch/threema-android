@@ -20,7 +20,6 @@
     <string name="menu_about">Over Threema</string>
     <string name="menu_add_contact">Contactpersoon toevoegen</string>
     <string name="menu_done">Gereed</string>
-    <string name="menu_mobile_linking">Nummer koppelen</string>
     <string name="compose_message_and_enter">Tik hier om in te voeren</string>
     <string name="send">Verzenden</string>
     <string name="prefs_privacy">Privacy</string>
@@ -120,7 +119,7 @@
     <string name="linked_mobile">Mobiel nummer</string>
     <string name="public_nickname">Nickname</string>
     <string name="share_via">Delen via...</string>
-    <string name="share_subject">Threema-gesprek met</string>
+    <string name="share_subject">Threema-gesprek</string>
     <string name="message_delete_undo">Ongedaan maken</string>
     <string name="message_deleted">Bericht(en) verwijderd</string>
     <string name="mobile_already_linked">Uw Threema ID is al gekoppeld aan dit mobiele nummer</string>
@@ -359,7 +358,8 @@
     <string name="contact_format_last_name_first_name">Achternaam Voornaam</string>
     <string name="block_contact">Contactpersoon blokkeren</string>
     <string name="unblock_contact">Blokkering contactpersoon opheffen</string>
-    <string name="unread_messages">Ongelezen berichten</string>
+    <string name="unread_messages">%d ongelezen berichten</string>
+    <string name="one_unread_message">1 ongelezen bericht</string>
     <string name="really_unlink_contact_title">Koppeling contactpersoon verwijderen</string>
     <string name="really_unlink_contact">Weet u zeker dat u de koppeling van deze contactpersoon wilt verwijderen?</string>
     <string name="do_unlink_contact">Koppeling contactpersoon verwijderen</string>
@@ -676,7 +676,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_proximity_sensor_explain">Oordopje gebruiken voor het beluisteren van gesproken berichten als de nabijheidssensor is afgedekt</string>
     <string name="error_creating_group">Fout bij aanmaken van groep</string>
     <string name="no_media_found_generic">Geen media gevonden in deze chat</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">U kunt max. %d afbeeldingen tegelijkertijd versturen</string>
+    <string name="max_images_reached" tools:ignore="PluralsCandidate">U kunt max. %d afbeeldingen tegelijkertijd bewerken</string>
     <string name="enter_description">Beschrijf het probleem/de bug hier.</string>
     <string name="add_caption_hint">Aanvullend onderschrift toevoegen</string>
     <string name="disable">Uitschakelen</string>
@@ -796,7 +796,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_voice_call_sound">Ringtoon</string>
     <string name="prefs_sum_voice_call_sound">Ringtoon selecteren voor ontvangen Threema-oproepen</string>
     <string name="prefs_sum_voice_call_vibrate">Trillen bij ontvangst Threema-oproep</string>
-    <string name="prefs_title_voip_enable">Threema-Oproep inschakelen</string>
+    <string name="prefs_title_voip_enable">Threema-Oproepen inschakelen</string>
     <string name="webclient_invalid_push_token_message">Handmatige start vereist</string>
     <string name="threema_work_contact">Contactpersoon Threema Work</string>
     <string name="permission_phone_required">Geef toegang tot het oproepbeheer tijdens het gebruik van Threema-Oproep</string>
@@ -873,7 +873,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">ongewijzigd</string>
     <string name="safe_learn_more_button">Meer informatie</string>
-    <string name="safe_enable_explain">Alles wat u nodig hebt om te chatten wordt alleen op uw apparaat opgeslagen. U hebt geen account bij ons en we kunnen u niet helpen als u uw telefoon verliest of per ongeluk uw gegevens verwijdert.\n\nThreema Safe maakt automatisch back-ups aan van alle belangrijke gegevens zoals uw sleutelcodes, uw lijst contactpersonen en uw groepslidmaatschappen, anoniem op een beveiligde server naar keuze.</string>
+    <string name="safe_enable_explain">Alles wat u nodig hebt om te chatten wordt alleen op uw apparaat opgeslagen. U hebt geen account bij ons en we kunnen u niet helpen als u uw telefoon verliest of per ongeluk uw gegevens verwijdert.\n\nThreema Safe maakt automatisch back-ups aan van alle belangrijke gegevens zoals uw sleutelcodes, uw lijst contactpersonen en uw groepslidmaatschappen (maar niet de inhoud van de berichten), anoniem op een beveiligde server naar keuze.</string>
     <string name="safe_disable_confirm">Wilt u echt doorgaan zonder Threema Safe in te schakelen?</string>
     <string name="safe_configure_choose_password">Kies een wachtwoord. U hebt dit wachtwoord nodig om uw back-upbestanden van Threema Safe te herstellen.</string>
     <string name="safe_configure_choose_server">Kies een Threema Safe-server</string>
@@ -1133,17 +1133,12 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="an_error_occurred_during_send">Er is een fout opgetreden tijdens het verzenden van de berichten.</string>
     <string name="state_processing">verwerken</string>
     <string name="passphrase_locked">De wachtwoordzin is vergrendeld</string>
-    <string name="image_labeling_new">Nieuw: foto\'s zoeken</string>
-    <string name="tooltip_image_labeling">Om specifieke visuele mediabestanden in je galerij te vinden, voer je een zoekwoord in die de inhoud beschrijft en selecteer je het bestand uit de lijst met geïdentificeerde labels.</string>
     <string name="selected_media">Je selectie</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Galerie</string>
     <string name="attach_picture">Afbeelding</string>
     <string name="attach_video">Video</string>
     <string name="attach_location">Locatie</string>
-    <string name="image_labeling_toolbar_title">Filteren op</string>
-    <string name="no_labels_info">Geen resultaten gevonden</string>
-    <string name="image_label_query_hint">Object, Locatie, Activiteit?</string>
     <string name="filter_by_album">Filteren op album</string>
     <string name="media_date_taken">Datum aangemaakt: %s</string>
     <string name="media_date_added">Datum toegevoegd: %s</string>
@@ -1159,18 +1154,12 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="show_text">Tekst tonen</string>
     <string name="only_images_or_videos">Alleen foto\'s of video\'s kunnen worden geselecteerd</string>
     <string name="media_gallery_gifs">GIFS</string>
-    <string name="notification_channel_image_labeling">Voortgang foto-indexering</string>
-    <string name="notification_channel_image_labeling_desc">Indexering van openbare fotogalerijen in de achtergrond</string>
-    <string name="notification_image_labeling_desc">Mediagalerij indexeren</string>
     <string name="no_media_found_global">Geen media gevonden op dit apparaat</string>
-    <string name="prefs_sum_image_labeling">Zoeken naar openbare foto\'s in je galerij via zoekwoorden mogelijk maken</string>
-    <string name="prefs_image_labeling">Foto zoeken</string>
     <string name="enable_formatting">Opmaak inschakelen</string>
     <string name="original_file_no_longer_avilable">Het oorspronkelijke bestand is niet langer beschikbaar. Verzend het bericht opnieuw.</string>
     <string name="state_transcoding">transcoderen…</string>
     <string name="importing_files">Bestanden importeren…</string>
     <string name="tooltip_image_resolution_hint">Tik hier om de afbeeldingsresoluties aan te passen.</string>
-    <string name="image_labeling_stuck_error">Het indexeringsproces voor het zoekproces is vastgelopen en geannuleerd. Probeer het later opnieuw.</string>
     <string name="ballot_created_successfully">De poll is aangemaakt.</string>
     <string name="file_size">Grootte</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
@@ -1186,4 +1175,12 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="blur">Vervagen</string>
     <string name="face_blur_tooltip_title">Nieuw: gezichtsherkenning</string>
     <string name="face_blur_tooltip_text">Vind gezichten in de foto en vervaag ze of dek ze af met een smiley.</string>
+    <string name="transcoder_unsupported_audio_format">De audio kon niet worden getranscodeerd vanwege een gebrek aan systeemondersteuning</string>
+    <string name="transcoder_unknown_audio_error">Onbekende geluidstranscoderingsfout is opgetreden.</string>
+    <string name="video_size_explain">Zeer grote video\'s kunnen worden gecomprimeerd, ongeacht deze instelling.</string>
+    <string name="status_create_notes">*U bent hier in uw eentje*\nGebruik deze chat als een veilig notitieboekje voor tekst, mediabestanden of documenten.</string>
+    <string name="status_create_notes_off">*U bent niet langer alleen in deze chat*\nNieuwe berichten worden aan alle groepleden verzonden.</string>
+    <string name="note_group_howto">Hint: als u geen groepsleden toevoegt, blijven de berichten in deze groep lokaal. Dat is ideaal voor het veilig opslaan van notities, mediabestanden of documenten of deze naar uw desktop over te dragen.</string>
+    <string name="mark_unread">Markeren als ongelezen</string>
+    <string name="mark_read_short">Gelezen</string>
 </resources>

@@ -20,7 +20,6 @@
     <string name="menu_about">Sobre o Threema</string>
     <string name="menu_add_contact">Adicionar contato</string>
     <string name="menu_done">Concluído</string>
-    <string name="menu_mobile_linking">Vincular número</string>
     <string name="compose_message_and_enter">Toque aqui para digitar</string>
     <string name="send">Enviar</string>
     <string name="prefs_privacy">Privacidade</string>
@@ -120,7 +119,7 @@
     <string name="linked_mobile">Número do celular</string>
     <string name="public_nickname">Apelido</string>
     <string name="share_via">Compartilhar usando…</string>
-    <string name="share_subject">Conversa do Threema com</string>
+    <string name="share_subject">Conversa do Threema</string>
     <string name="message_delete_undo">Desfazer</string>
     <string name="message_deleted">Mensagem apagada</string>
     <string name="mobile_already_linked">Seu ID Threema já está vinculado a este número de celular</string>
@@ -358,7 +357,8 @@
     <string name="contact_format_last_name_first_name">Sobrenome nome</string>
     <string name="block_contact">Bloquear contato</string>
     <string name="unblock_contact">Desbloquear contato</string>
-    <string name="unread_messages">Mensagens não lidas</string>
+    <string name="unread_messages">%d mensagens não lidas</string>
+    <string name="one_unread_message">1 mensagem não lida</string>
     <string name="really_unlink_contact_title">Desvincular contato</string>
     <string name="really_unlink_contact">Você quer realmente desvincular esse contato?</string>
     <string name="do_unlink_contact">Desvincular contato</string>
@@ -679,7 +679,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="prefs_proximity_sensor_explain">Usar fone para reprodução de mensagens de voz se o sensor de proximidade estiver coberto</string>
     <string name="error_creating_group">Erro ao criar grupo</string>
     <string name="no_media_found_generic">Nenhuma mídia encontrada neste bate-papo</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">O máximo de %d fotos podem ser enviadas de uma só vez</string>
+    <string name="max_images_reached" tools:ignore="PluralsCandidate">O máximo de %d itens podem ser editados de uma só vez</string>
     <string name="enter_description">Por favor, descreva o erro/problema aqui.</string>
     <string name="add_caption_hint">Adicione uma legenda opcional</string>
     <string name="disable">Desabilitar</string>
@@ -799,7 +799,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="prefs_voice_call_sound">Tom de chamada</string>
     <string name="prefs_sum_voice_call_sound">Selecione o tom de chamada para chamadas recebidas do Threema</string>
     <string name="prefs_sum_voice_call_vibrate">Vibrar em chamadas recebidas do Threema</string>
-    <string name="prefs_title_voip_enable">Permitir Chamada do Threema</string>
+    <string name="prefs_title_voip_enable">Permitir chamadas do Threema</string>
     <string name="webclient_invalid_push_token_message">Necessário início manual</string>
     <string name="threema_work_contact">Contato do Threema Work</string>
     <string name="permission_phone_required">Habilitar permissão para gerenciar chamadas telefônicas enquanto usar a Chamada do Threema</string>
@@ -877,7 +877,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="disable_autostart_title">Início auto</string>
     <string name="unchanged">inalterado</string>
     <string name="safe_learn_more_button">Mais informação</string>
-    <string name="safe_enable_explain">Tudo o que você precisa conversar somente é armazenado no seu dispositivo. Você não tem uma conta conosco, e não podemos ajudar se você perder seu telefone ou excluir acidentalmente os seus dados.\n\nO Threema Safe cria backups automáticos de todos os dados importantes, incluindo suas chaves, lista de contatos e associações de grupo de forma anônima em um servidor seguro da sua escolha.</string>
+    <string name="safe_enable_explain">Tudo o que você precisa conversar é armazenado apenas no seu dispositivo. Você não tem uma conta conosco e não podemos ajudar se você perder seu celular ou excluir acidentalmente os seus dados.\n\nO Threema Safe cria backups automáticos de todos os dados importantes, incluindo suas chaves, lista de contatos e associações de grupo (sem nenhum conteúdo de mensagens) de forma anônima em um servidor seguro da sua escolha.</string>
     <string name="safe_disable_confirm">Tem certeza de que deseja continuar sem habilitar o Threema Safe?</string>
     <string name="safe_configure_choose_password">Escolha uma senha. Você precisará dessa senha para restaurar seu backup do Threema Safe.</string>
     <string name="safe_configure_choose_server">Escolha um servidor do Threema Safe</string>
@@ -1099,7 +1099,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="delete_everything">Excluir tudo</string>
     <string name="prefs_title_voip_video_enable">Ativar Chamadas de vídeo</string>
     <string name="video_calls">Chamadas de vídeo</string>
-    <string name="prefs_videocall_profile">Qualidade preferencial da imagem</string>
+    <string name="prefs_videocall_profile">Qualidade de imagem preferencial</string>
     <string name="videocall_profile_auto">Equilibrado (Recomendado)</string>
     <string name="videocall_profile_low_bandwidth">Consumo baixo de dados</string>
     <string name="videocall_profile_max_quality">Qualidade máxima</string>
@@ -1137,17 +1137,12 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="an_error_occurred_during_send">Ocorreu um erro ao enviar uma ou mais mensagens.</string>
     <string name="state_processing">processando</string>
     <string name="passphrase_locked">A frase secreta está bloqueada</string>
-    <string name="image_labeling_new">Novo: pesquisa de imagem</string>
-    <string name="tooltip_image_labeling">Para encontrar uma mídia visual específica na sua galeria, digite um termo que descreve o conteúdo e o selecione em uma lista de rótulos identificados.</string>
     <string name="selected_media">Sua seleção</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Galeria</string>
     <string name="attach_picture">Imagem</string>
     <string name="attach_video">Vídeo</string>
     <string name="attach_location">Localização</string>
-    <string name="image_labeling_toolbar_title">Filtrar por</string>
-    <string name="no_labels_info">Nenhum resultado encontrado</string>
-    <string name="image_label_query_hint">Objeto, Lugar, Atividade?</string>
     <string name="filter_by_album">Filtrar por álbum</string>
     <string name="media_date_taken">Tirado em: %s</string>
     <string name="media_date_added">Adicionado em: %s</string>
@@ -1163,24 +1158,18 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="show_text">Mostrar texto</string>
     <string name="only_images_or_videos">Somente imagens ou vídeos podem ser selecionados</string>
     <string name="media_gallery_gifs">GIFs</string>
-    <string name="notification_channel_image_labeling">Progresso de indexação de imagem</string>
-    <string name="notification_channel_image_labeling_desc">Executando a indexação de imagens da galeria pública em segundo plano</string>
-    <string name="notification_image_labeling_desc">Indexação da galeria de mídia</string>
     <string name="no_media_found_global">Nenhuma mídia encontrada neste dispositivo</string>
-    <string name="prefs_sum_image_labeling">Ative a pesquisa de imagens públicas na sua galeria com palavras-chave</string>
-    <string name="prefs_image_labeling">Pesquisa de imagem</string>
     <string name="enable_formatting">Ativar formatação</string>
     <string name="original_file_no_longer_avilable">O arquivo original não está mais acessível. Reenvie a mensagem.</string>
     <string name="state_transcoding">transcodificação</string>
     <string name="importing_files">Importando arquivos</string>
     <string name="tooltip_image_resolution_hint">Toque aqui para ajustar a resolução da imagem.</string>
-    <string name="image_labeling_stuck_error">O processo de indexação para a pesquisa de imagens travou e foi cancelado. Tente novamente mais tarde.</string>
     <string name="ballot_created_successfully">A enquete foi criada com sucesso.</string>
     <string name="file_size">Tamanho do arquivo</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30d</string>
     <string name="show_in_chat">Mostrar na conversa</string>
-    <string name="group_create_no_members">Tem certeza de que deseja criar um grupo vazio sem outros membros?</string>
+    <string name="group_create_no_members">Tem certeza de que deseja criar um grupo vazio?</string>
     <string name="notes">Anotações</string>
     <string name="blur_faces">Desfocar rostos</string>
     <string name="brush">Pincel</string>
@@ -1190,4 +1179,12 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="blur">Desfoque</string>
     <string name="face_blur_tooltip_title">Novo: reconhecimento de rostos</string>
     <string name="face_blur_tooltip_text">Encontre rostos na imagem e desfoque-as ou cubra-as com um smiley.</string>
+    <string name="transcoder_unsupported_audio_format">O áudio não pôde ser transcodificado devido à ausência de suporte do sistema.</string>
+    <string name="transcoder_unknown_audio_error">Ocorreu um erro de transcodificação de áudio desconhecido.</string>
+    <string name="video_size_explain">Vídeos muito grandes podem ser comprimidos independentemente dessa configuração.</string>
+    <string name="status_create_notes">*Você está sozinho(a) aqui*\nUse este chat como um bloco de anotações seguro para guardar texto, mídia ou documentos.</string>
+    <string name="status_create_notes_off">*Você não está mais sozinho(a) neste chat*\nNovas mensagens serão enviadas a todos os membros do grupo.</string>
+    <string name="note_group_howto">Dica: Se você não adicionar outros membros ao grupo, as mensagens deste grupo continuarão locais. Isso é perfeito para armazenar anotações, mídia ou documentos com segurança ou transferi-los para o computador.</string>
+    <string name="mark_unread">Marcar como não lido</string>
+    <string name="mark_read_short">Lido</string>
 </resources>

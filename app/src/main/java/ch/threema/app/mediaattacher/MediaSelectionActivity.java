@@ -35,22 +35,23 @@ import android.widget.Button;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import ch.threema.app.R;
 import ch.threema.app.activities.SendMediaActivity;
-import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
 
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
-
 public class MediaSelectionActivity extends MediaSelectionBaseActivity {
+
 	private ControlPanelButton selectButton, cancelButton;
 	private Button selectCounterButton;
 
@@ -59,35 +60,53 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		super.initActivity(null);
 		setControlPanelLayout();
 		setupControlPanelListeners();
-		setInitialMediaGrid();
-		handleSavedInstanceState(savedInstanceState);
 
-		BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-		updateUI(BottomSheetBehavior.STATE_EXPANDED);
+		// always open bottom sheet in expanded state right away
+		expandBottomSheet();
+		setInitialMediaGrid();
+
+		handleSavedInstanceState(savedInstanceState);
+	}
+
+	@Override
+	protected void setInitialMediaGrid() {
+		super.setInitialMediaGrid();
+		// hide media items dependent views until we have data loaded and set to grid
+		dateView.setVisibility(View.GONE);
+		controlPanel.setVisibility(View.GONE);
+		controlPanel.animate().translationY(getResources().getDimensionPixelSize(R.dimen.control_panel_height));
+
+		mediaAttachViewModel.getCurrentMedia().observe(this, new Observer<List<MediaAttachItem>>() {
+			@Override
+			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
+				if (mediaAttachItems.size() != 0) {
+					dateView.setVisibility(View.VISIBLE);
+					controlPanel.setVisibility(View.VISIBLE);
+					mediaAttachViewModel.getCurrentMedia().removeObserver(this);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onItemChecked(int count) {
-		int gridPaddingLeftRight = getResources().getDimensionPixelSize(R.dimen.grid_spacing);
-
 		if (count > 0) {
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
 			selectCounterButton.setVisibility(View.VISIBLE);
 			controlPanel.animate().translationY(0);
 			controlPanel.postDelayed(() -> bottomSheetLayout.setPadding(
-				gridPaddingLeftRight,
 				0,
-				gridPaddingLeftRight,
+				0,
+				0,
 				0), 300);
 		} else {
 			selectCounterButton.setVisibility(View.GONE);
 			controlPanel.animate().translationY(controlPanel.getHeight());
 			ValueAnimator animator = ValueAnimator.ofInt(bottomSheetLayout.getPaddingBottom(), 0);
 			animator.addUpdateListener(valueAnimator -> bottomSheetLayout.setPadding(
-				gridPaddingLeftRight,
 				0,
-				gridPaddingLeftRight,
+				0,
+				0,
 				(Integer) valueAnimator.getAnimatedValue()));
 			animator.setDuration(300);
 			animator.start();
@@ -100,6 +119,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		stub.inflate();
 
 		this.controlPanel = findViewById(R.id.control_panel);
+		controlPanel.setTranslationY(controlPanel.getHeight());
 		ConstraintLayout selectPanel = findViewById(R.id.select_panel);
 		this.cancelButton = selectPanel.findViewById(R.id.cancel);
 		this.selectButton = selectPanel.findViewById(R.id.select);
@@ -130,7 +150,14 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 			mediaItems.add(mediaItem);
 		}
-		setResult(ThreemaActivity.RESULT_OK, new Intent().putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems));
+
+		Intent resultIntent = new Intent();
+		resultIntent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
+		if (mediaAttachViewModel.getLastQuery() != null) {
+			resultIntent = IntentDataUtil.addLastMediaFilterToIntent(resultIntent,
+				mediaAttachViewModel.getLastQuery(), mediaAttachViewModel.getLastQueryType());
+		}
+		setResult(RESULT_OK, resultIntent);
 		finish();
 	}
 
@@ -148,7 +175,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
 				case PERMISSION_REQUEST_ATTACH_FILE:
-					updateUI(STATE_COLLAPSED);
+					updateUI(BottomSheetBehavior.STATE_COLLAPSED);
 					toolbar.setVisibility(View.GONE);
 					selectButton.setAlpha(0.3f);
 					selectButton.setOnClickListener(v -> {
@@ -176,5 +203,4 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 			}
 		}
 	}
-
 }

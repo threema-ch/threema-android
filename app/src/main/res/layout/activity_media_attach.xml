@@ -19,11 +19,10 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			style="?attr/bottomSheetStyle"
-			android:paddingLeft="4dp"
-			android:paddingRight="4dp"
 			app:behavior_hideable="true"
 			app:behavior_saveFlags="all"
 			android:clipToPadding="false"
+			android:layout_gravity="center"
 			app:layout_behavior="@string/bottom_sheet_behavior">
 
 			<ImageView
@@ -39,10 +38,12 @@
 				app:layout_constraintTop_toTopOf="parent"
 				app:layout_constraintBottom_toTopOf="@id/media_grid_recycler" />
 
-			<ch.threema.app.ui.GridRecyclerView
+			<ch.threema.app.ui.EmptyRecyclerView
 				android:id="@+id/media_grid_recycler"
 				android:layout_height="0dp"
 				android:layout_width="0dp"
+				android:paddingLeft="4dp"
+				android:paddingRight="4dp"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintRight_toRightOf="parent"

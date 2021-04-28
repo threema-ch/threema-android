@@ -4,7 +4,7 @@
     <string name="recording_stopped_title">Enregistrement interrompu</string>
     <string name="recording_stopped_message">Voulez-vous envoyer le message vocal enregistré maintenant ?</string>
     <string name="recording_canceled">L\'enregistrement a été annulé suite à une erreur d\'origine inconnue.</string>
-    <string name="cancel_recording">Annuler l\'enregistrement</string>
-    <string name="cancel_recording_message">Voulez-vous vraiment annuler l\'enregistrement ?</string>
+    <string name="cancel_recording">Délaisser l\'enregistrement</string>
+    <string name="cancel_recording_message">Voulez-vous vraiment annuler et délaisser l\'enregistrement ?</string>
     <string name="stop">Arrêter</string>
 </resources>

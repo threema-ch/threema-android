@@ -47,12 +47,19 @@
     <string name="voip_prefs_title_aec">Supprimer in eco</string>
     <string name="voip_prefs_aec_sw">Software per supprimer in eco</string>
     <string name="voip_prefs_aec_hw">Hardware per supprimer in eco</string>
+    <string name="voip_prefs_title_video_codec">Codecs da video</string>
+    <string name="voip_prefs_video_aec_hw">Accelerà la hardware</string>
+    <string name="voip_prefs_video_codec_no_vp8">Deactivà VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Deactivà H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Codecs da software</string>
     <string name="voip_connection_failed">Betg stà pussaivel da sa colliar.</string>
     <string name="voip_connection_lost">La colliaziun è interrutta</string>
     <string name="prefs_voip_reject_incoming_calls_title">Refusar telefonats da telefonins</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Refusar in telefonat da telefonin entrant, durant ch\'in telefonat da Threema è activ.</string>
     <string name="voip_contact_not_found">Chattà nagin contact da Threema per quest numer.</string>
     <string name="voip_another_pstn_call">Il telefonat n\'è betg pussaivel. In telefonat ordinarì è gia activ.</string>
+    <string name="voip_call_status_off_hours">Telefonat ordaifer il temp da lavur</string>
+    <string name="voip_peer_video_disabled">Il partenari da discurs ha deactivà videotelefonats.</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnosa WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Aviescha quest tool per diagnostitgar problems cun la creaziun d\'ina colliaziun da telefon.</string>

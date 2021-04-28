@@ -12,7 +12,7 @@
 		android:visibility="visible"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:foreground="@drawable/selector_avatar"
+		android:foreground="@drawable/selector_avatar_darkened"
 		android:contentDescription="@string/profile_picture"/>
 
 	<androidx.appcompat.widget.AppCompatImageView

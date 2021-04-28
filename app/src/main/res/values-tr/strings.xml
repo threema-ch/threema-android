@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kişiler</string>
-    <string name="title_section1">Sohbetleri</string>
+    <string name="title_section1">Sohbetler</string>
     <string name="title_compose_message">Sohbeti başlatın</string>
     <string name="title_choose_recipient">Alıcı Seçin</string>
     <string name="title_keyfingerprint">Parmak izi Kimliği</string>
@@ -20,7 +20,6 @@
     <string name="menu_about">Threema Hakkında</string>
     <string name="menu_add_contact">"Yeni Kişi "</string>
     <string name="menu_done">"Tamamlandı "</string>
-    <string name="menu_mobile_linking">Bağlantı numarası</string>
     <string name="compose_message_and_enter">Yazmak için buraya Dokunun</string>
     <string name="send">Gönder</string>
     <string name="prefs_privacy">Gizlilik Bilgilendirmesi</string>
@@ -121,7 +120,7 @@ bu kimlik için kaydettiği anahtarla eşleşmiyor . Bu, birisinin taranan kodu 
     <string name="linked_mobile">Mobil Telefon</string>
     <string name="public_nickname">Takma Ad</string>
     <string name="share_via">Şununla Paylaş…</string>
-    <string name="share_subject">Threema ile Konuşma</string>
+    <string name="share_subject">Threema sohbeti</string>
     <string name="message_delete_undo">Geri Al</string>
     <string name="message_deleted">Mesaj(lar) Silindi</string>
     <string name="mobile_already_linked">Threema ID\'niz zaten bu cep telefonu numarasına bağlı</string>
@@ -373,7 +372,7 @@ Threema içinde Silmek için bir temas senkronize sonra tekrar görünür. \ Sen
     <string name="contact_format_last_name_first_name">Soyisim - İsim</string>
     <string name="block_contact">Kişiyi engelle</string>
     <string name="unblock_contact">Kişinin engellemesini kaldır</string>
-    <string name="unread_messages">Okunmamış Mesajlar</string>
+    <string name="unread_messages">%d okunmamış mesajlar</string>
     <string name="really_unlink_contact_title">Kişinin bağlantısını kaldır</string>
     <string name="really_unlink_contact">Bu kişinin bağlantısını gerçekten kaldırmak istiyor musunuz?</string>
     <string name="do_unlink_contact">Kişinin bağlantısını kaldır</string>
@@ -823,7 +822,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="prefs_voice_call_sound">Zil</string>
     <string name="prefs_sum_voice_call_sound">Gelen Threema çağrıları için zil sesini seçin</string>
     <string name="prefs_sum_voice_call_vibrate">Gelen Threema çağrılarında titret</string>
-    <string name="prefs_title_voip_enable">Threema Çağrısını Etkinleştir</string>
+    <string name="prefs_title_voip_enable">Threema Çağrılarını Etkinleştir</string>
     <string name="webclient_invalid_push_token_message">Manuel başlatma gerekli</string>
     <string name="threema_work_contact">Threema Work iletişim</string>
     <string name="permission_phone_required">Threema Call kullanırken telefon çağrılarını yönetme iznine izin ver</string>
@@ -900,7 +899,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="disable_autostart_title">Otomatik Başlatma</string>
     <string name="unchanged">Değişmemiş</string>
     <string name="safe_learn_more_button">Daha fazla bilgi edin</string>
-    <string name="safe_enable_explain">Sohbet etmek için ihtiyacınız olan tek şey yalnızca cihazınızda saklanır. Bizde bir hesabınız yok ve telefonunuzu kaybederseniz veya verilerinizi yanlışlıkla silerseniz size yardımcı olamayız.\n\nThreema Safe, seçtiğiniz güvenli bir sunucuda anonim olarak anahtarlarınız, kişi listeniz ve grup üyelikleriniz dahil tüm önemli verilerin otomatik yedeklerini oluşturur.</string>
+    <string name="safe_enable_explain">Sohbet etmek için ihtiyacınız olan tek şey yalnızca cihazınızda saklanır. Bizde bir hesabınız yok ve telefonunuzu kaybederseniz veya verilerinizi yanlışlıkla silerseniz size yardımcı olamayız.\n\nThreema Safe, seçtiğiniz güvenli bir sunucuda anonim olarak anahtarlarınız, kişi listeniz ve grup üyelikleriniz (ancak mesaj içeriği yok) dahil olmak üzere tüm önemli verilerin otomatik yedeklerini oluşturur .</string>
     <string name="safe_disable_confirm">Threema Safe\'i etkinleştirmeden gerçekten devam etmek istiyor musunuz?</string>
     <string name="safe_configure_choose_password">Lütfen güçlü bir şifre seçin. Threema Safe yedeklemenizi geri yüklemek için bu şifreye ihtiyacınız olacaktır.</string>
     <string name="safe_configure_choose_server">Bir Threema Safe sunucusu seçin</string>
@@ -1045,6 +1044,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="whatsnew_title">%s 4.5 sürümüne hoş geldiniz</string>
     <string name="whatsnew_headline">%1$s 4.5 yepyeni bir medya deneyimi getiriyor.\n\nMedya çekmecesi arayüzü büyük bir revizyondan geçti ve şimdi isteğe bağlı bir makine öğrenimi tabanlı görsel arama özelliği sunuyor.\n\nAyrıca, tüm sohbetlere genel metin arama, iyileştirilmiş mesaj alıntıları ve daha fazlasını ekledik.</string>
     <string name="whatsnew2_title">Ne var ne yok?</string>
+    <string name="whatsnew2_body"><![CDATA[velt; p&gt; • Mesaj listesi: Bir sohbeti arşivlemek için sadece sola kaydırın &lt; / p> &lt; p> • Sohbet listesi: Mesaj göndermek için sağa kaydırın &lt; / p> &lt; p> •Telefonunuzun biyometrik kilit mekanizmasıyla %1$s doğrudan kilidini açın  lt; / p> &lt; p> • %1$s artık yerleri, İÇN\'leri paylaşmak veya haritaları görüntülemek için Google Haritalar\'a veya harici bir harita uygulamasına güvenmiyor &lt; / p> &lt; p> • Bu sürümde artık bir QR kod tarayıcı ve yerleşik bir kamera uygulaması var. Bu özellikleri kullanmak için lütfen %1$s cihazının kameraya erişmesineizin verin. %1$s eklentiler artık gerekli değildir ve güvenle kaldırılabilir. ve lt; / p>]]></string>
     <string name="tooltip_identity_popup">Threema ID\'nizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
     <string name="tap_to_start">%s\'i şimdi başlatmak için buraya hafifçe vurun.</string>
     <string name="two_years">2 yıl</string>
@@ -1111,13 +1111,13 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="delete_everything">Hepsini sil</string>
     <string name="prefs_title_voip_video_enable">Video görüşmelerine izin ver</string>
     <string name="video_calls">Video görüşmeleri</string>
-    <string name="prefs_videocall_profile">Tercih edilen görüntü kalitesi</string>
+    <string name="prefs_videocall_profile">Tercih edilen resim kalitesi</string>
     <string name="videocall_profile_auto">Dengeli (önerilir)</string>
     <string name="videocall_profile_low_bandwidth">Düşük veri tüketimi</string>
     <string name="videocall_profile_max_quality">Maksimum kalite</string>
     <string name="unable_to_play_video">Video oynatılamıyor</string>
     <string name="tooltip_voip_turn_on_camera">Kamerayı açmak için buraya hafifçe vurun</string>
-    <string name="prefs_videocall_profile_explain">Gerçek görüntü kalitesi ağa ve konuştuğunuz kişinin ayarlarına bağlıdır</string>
+    <string name="prefs_videocall_profile_explain">Gerçek görüntü kalitesi, ağa ve konuştuğunuz kişinin ayarlarına bağlıdır.</string>
     <string name="permission_camera_videocall_required">Video görüşmesi için lütfen kameraya erişime izin verin</string>
     <string name="feedback">Geri Bildirim</string>
     <string name="tooltip_voip_enable_speakerphone">Hoparlörü açmak için buraya hafifçe vurun</string>
@@ -1149,17 +1149,12 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="an_error_occurred_during_send">Bir veya daha fazla mesaj gönderilirken hata oluştu.</string>
     <string name="state_processing">İşleme</string>
     <string name="passphrase_locked">Parola Kilitlendi</string>
-    <string name="image_labeling_new">Yeni: Görsel Arama</string>
-    <string name="tooltip_image_labeling">Galerinizde belirli bir görsel medyayı bulmak için, içeriği tanımlayan bir terim girin ve tanımlanmış etiketler listesinden seçim yapınız.</string>
     <string name="selected_media">Seçiminiz</string>
     <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Fotoğraf Galerisi</string>
     <string name="attach_picture">Resim</string>
     <string name="attach_video">Video</string>
     <string name="attach_location">Yer</string>
-    <string name="image_labeling_toolbar_title">Tarafından Filtre</string>
-    <string name="no_labels_info">Hiçbir sonuç bulunamadı</string>
-    <string name="image_label_query_hint">Nesne, Yer, Etkinlik?</string>
     <string name="filter_by_album">Albüme göre filtrele</string>
     <string name="media_date_taken">Çekildiği tarih: %s</string>
     <string name="media_date_added">Eklenme tarihi: %s</string>
@@ -1175,16 +1170,10 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="show_text">Metni göster</string>
     <string name="only_images_or_videos">Yalnızca resimler veya videolar seçilebilir</string>
     <string name="media_gallery_gifs">GIF\'ler</string>
-    <string name="notification_channel_image_labeling">Görüntü indeksleme ilerlemesi</string>
-    <string name="notification_channel_image_labeling_desc">Arka planda genel galeri resimlerinin indekslenmesi</string>
-    <string name="notification_image_labeling_desc">Medya galerisi indeksleme</string>
     <string name="no_media_found_global">Bu cihazda hiçbir medya bulunamadı</string>
-    <string name="prefs_sum_image_labeling">Galerinizdeki genel resimleri anahtar kelimelere göre aramayı etkinleştirin</string>
-    <string name="prefs_image_labeling">Görsel arama</string>
     <string name="enable_formatting">Biçimlendirmeyi etkinleştir</string>
     <string name="original_file_no_longer_avilable">Orijinal dosyaya artık erişilemez. Lütfen mesajı tekrar gönderin.</string>
     <string name="state_transcoding">Kod dönüştürme</string>
     <string name="importing_files">Dosyaları içe aktarma</string>
     <string name="tooltip_image_resolution_hint">Görüntü çözünürlüğünü ayarlamak için buraya dokunun.</string>
-    <string name="image_labeling_stuck_error">Görsel arama için indeksleme işlemi takıldı ve iptal edildi. Lütfen daha sonra tekrar deneyin.</string>
 </resources>

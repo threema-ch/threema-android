@@ -105,6 +105,13 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 		return new MediaAttachAdapter.MediaGalleryHolder(itemView);
 	}
 
+	@Override
+	public void onViewRecycled(@NonNull MediaGalleryHolder holder) {
+		super.onViewRecycled(holder);
+		//cancel pending loads when item is out of view
+		Glide.with(context).clear(holder.imageView);
+	}
+
 	/**
 	 * This method is called for every media attach item that is scrolled into view.
 	 */
@@ -124,13 +131,14 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 			try {
 				Glide.with(context).load(mediaAttachItem.getUri())
 					.transition(withCrossFade())
+					.centerInside()
 					.addListener(new RequestListener<Drawable>() {
 						@Override
 						public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 							loadErrorIndicator.setVisibility(View.VISIBLE);
 							gifIndicator.setVisibility(View.GONE);
 							videoIndicator.setVisibility(View.GONE);
-							//redraw setChecked state in case holder is beeing recycled and reset click listeners
+							//redraw setChecked state in case holder is being recycled and reset click listeners
 							contentView.setChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().containsKey(mediaAttachItem.getId()));
 							contentView.setOnClickListener(null);
 							contentView.setOnLongClickListener(null);

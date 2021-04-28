@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Threema Work Android版</string>
+    <string name="enter_serial_body">请输入贵公司或组织提供的凭据</string>
+    <string name="serial_required_want_exit">许可证无效。您想重试还是退出Threema？</string>
+    <string name="checking_serial">正在检查凭据</string>
+    <string name="username_hint">用户名</string>
+    <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像电话号码一样。\n您的联系人可以通过此 ID 与您联系。</string>
+    <string name="new_wizard_nickname_explain">您的联系人会在通知中看到您的昵称</string>
+    <string name="new_wizard_help_your_friends_find_you">帮助您的联系人找到您！</string>
+    <string name="new_wizard_find_friends">在 Threema Work 上找到您的联系人</string>
+    <string name="new_wizard_sync_contacts_explain">打开查看哪些联系人正在使用 Threema 或 Threema Work。</string>
+    <string name="new_wizard_anonymous_confirm">您没有输入手机号码或电子邮件地址来链接到 Threema ID。您不会出现在联系人列表中。您真的要匿名使用 Threema Work 吗？</string>
+    <string name="new_wizard_setup_threema">设置 Threema Work</string>
+    <string name="new_wizard_welcome">欢迎使用 Threema Work！</string>
+    <string name="new_wizard_info_fingerprint">通过移动手指，您可以创建随机数据（称为熵），该数据用于生成
+与全新而唯一的 Threema ID 关联的密钥对。该密钥对包括一个的<b>公钥</b>是分配给您的联系人，而<b>私钥</b>安全地存储在您的手机上。您的联系人将使用您的公共密钥加密发送给您的信息。只有私钥的所有者才能解密这些消息，其他人都不能解密。</string>
+    <string name="new_wizard_info_link">如果您的联系人保存了您的电话号码，通过提供您的电话号码和电子邮件地址，Threema Work 可以帮助您的联系人自动在您的电话通讯录中找到您。
+数据将以单向加密（散列）形式存储在我们的服务器上。如果您想完全匿名使用 Threema Work，则可以跳过此步骤。</string>
+    <string name="threema_contact">Threema Work 联系人</string>
+    <string name="menu_about">关于 Threema Work</string>
+    <string name="list_theme_light">浅色</string>
+    <string name="list_theme_dark">深色（默认）</string>
+    <string name="private_threema_download"><![CDATA[如果您是私人用户，请<a href="https://play.google.com/store/apps/details?id=ch.threema.app">点击这里</a>下载 Threema。]]></string>
+    <string name="directory_search">在目录中搜索</string>
+    <string name="directory_title">公司目录</string>
+    <string name="directory_empty_view_text">找不到结果\n\n请输入至少3个字符，以开始在贵公司的 Threema 用户目录中进行搜索</string>
+</resources>

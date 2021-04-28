@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">村莊</string>
+    <string name="village">村</string>
+    <string name="town">城鎮</string>
+    <string name="isolated_dwelling">隔離式住所</string>
+    <string name="island">島嶼</string>
+    <string name="islet">小島</string>
+    <string name="suburb">郊區</string>
+    <string name="city">城市</string>
+    <string name="city_block">城市街區</string>
+    <string name="neighbourhood">鄰居</string>
+    <string name="locality">地區</string>
+    <string name="state">州</string>
+    <string name="farm">農場</string>
+    <string name="street">街道</string>
+    <string name="country">國家</string>
+</resources>

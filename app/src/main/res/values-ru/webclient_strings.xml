@@ -28,15 +28,15 @@
     <string name="webclient_protocol_version_too_new_threema">Ваше приложение не поддерживает эту версию Threema Web. Используйте более новую версию Threema Web.</string>
     <string name="webclient_session_already_exists">Сеанс, соответствующий сканированному вами QR-коду, уже существует. Перезагрузите Threema Web в веб-браузере и повторите попытку.</string>
     <string name="webclient_really_start_webclient_by_payload_body">Хотите запустить эту сессию Threema Web?</string>
-	<string name="webclient_cannot_restore">Не удается восстановить сессию Threema Web</string>
-	<string name="webclient_disabled">служба Threema Web не активирована</string>
+    <string name="webclient_cannot_restore">Не удается восстановить сессию Threema Web</string>
+    <string name="webclient_disabled">служба Threema Web не активирована</string>
     <string name="webclient_cannot_start">Не удается запустить сеанс Threema Web</string>
     <string name="webclient_constrained_by_mdm">Сервер не утвержден администратором.</string>
     <string name="webclient_clear_all_sessions">Очистить все сессии</string>
     <string name="webclient_clear_all_sessions_confirm">Действительно остановить и удалить все сессии Threema Web?</string>
     <string name="webclient_prefs_debug_tool_summary">Запустите это средство для отладки неполадок с настройкой соединения Threema Web</string>
-	<string name="webclient_diagnostics">Диагностика Threema Web</string>
-	<string name="webclient_diagnostics_start">Пуск</string>
-	<string name="webclient_diagnostics_intro">Нажмите кнопку «Пуск» для запуска теста</string>
-	<string name="webclient_diagnostics_done">Готово. Если у вас возникают неполадки с настройкой соединения Threema Web, отправьте данные в службу поддержки Threema.</string>
+    <string name="webclient_diagnostics">Диагностика Threema Web</string>
+    <string name="webclient_diagnostics_start">Пуск</string>
+    <string name="webclient_diagnostics_intro">Нажмите кнопку «Пуск» для запуска теста</string>
+    <string name="webclient_diagnostics_done">Готово. Если у вас возникают неполадки с настройкой соединения Threema Web, отправьте данные в службу поддержки Threema.</string>
 </resources>

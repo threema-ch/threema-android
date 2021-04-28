@@ -148,6 +148,10 @@ public class FileDataModel implements MediaMessageDataInterface {
 		return this.mimeType;
 	}
 
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+
 	public @NonNull String getThumbnailMimeType() {
 		if (this.thumbnailMimeType == null) {
 			return MimeUtil.MIME_TYPE_IMAGE_JPG;

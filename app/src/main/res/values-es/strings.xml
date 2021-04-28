@@ -20,7 +20,6 @@
     <string name="menu_about">Acerca de Threema</string>
     <string name="menu_add_contact">Agregar contacto</string>
     <string name="menu_done">Completado</string>
-    <string name="menu_mobile_linking">Número vinculado</string>
     <string name="compose_message_and_enter">Introducir mensaje</string>
     <string name="send">Enviar</string>
     <string name="prefs_privacy">Privacidad</string>
@@ -120,7 +119,7 @@
     <string name="linked_mobile">Número de teléfono móvil</string>
     <string name="public_nickname">Alias</string>
     <string name="share_via">Compartir mediante…</string>
-    <string name="share_subject">Chat de Threema con</string>
+    <string name="share_subject">Conversación de Threema</string>
     <string name="message_delete_undo">Deshacer</string>
     <string name="message_deleted">Mensaje eliminado</string>
     <string name="mobile_already_linked">Su ID de Threema ya está vinculado con este número de teléfono móvil</string>
@@ -360,7 +359,8 @@
     <string name="contact_format_last_name_first_name">Apellidos, Nombre de pila</string>
     <string name="block_contact">Bloquear contacto</string>
     <string name="unblock_contact">Desbloquear contacto</string>
-    <string name="unread_messages">Mensajes no leídos</string>
+    <string name="unread_messages">%d mensajes no leídos</string>
+    <string name="one_unread_message">1 mensaje no leído</string>
     <string name="really_unlink_contact_title">Cancelar vínculo</string>
     <string name="really_unlink_contact">¿Está seguro de que desea cancelar el vínculo con el contacto de la libreta de direcciones?</string>
     <string name="do_unlink_contact">Cancelar vínculo</string>
@@ -685,7 +685,7 @@ almacenado.</string>
     <string name="prefs_proximity_sensor_explain">Utilziar auricular para reproducir mensajes de voz si el sensor de proximidad está tapado</string>
     <string name="error_creating_group">Error al crear el grupo</string>
     <string name="no_media_found_generic">Este chat no contiene elementos multimedia</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Se pueden enviar un máximo de %d imágenes a la vez.</string>
+    <string name="max_images_reached" tools:ignore="PluralsCandidate">Se pueden editar un máximo de %d elementos a la vez.</string>
     <string name="enter_description">Describa aquí el problema o error.</string>
     <string name="add_caption_hint">Añada una captura opcional.</string>
     <string name="disable">Desactivar</string>
@@ -805,7 +805,7 @@ almacenado.</string>
     <string name="prefs_voice_call_sound">Tono llamada</string>
     <string name="prefs_sum_voice_call_sound">Seleccionar tono de llamada para llamadas entrantes Threema</string>
     <string name="prefs_sum_voice_call_vibrate">Vibrar cuando haya llamadas entrantes Threema</string>
-    <string name="prefs_title_voip_enable">Activar Threema Voz</string>
+    <string name="prefs_title_voip_enable">Habilitar llamadas de Threema</string>
     <string name="webclient_invalid_push_token_message">Se requiere inicio manual</string>
     <string name="threema_work_contact">Contacto de Threema Work</string>
     <string name="permission_phone_required">Dar permiso para administrar llamadas por teléfono mientras se usa Threema Voz.</string>
@@ -882,7 +882,7 @@ almacenado.</string>
     <string name="disable_autostart_title">Inicio auto.</string>
     <string name="unchanged">Sin cambio</string>
     <string name="safe_learn_more_button">Descubra más</string>
-    <string name="safe_enable_explain">Lo que necesitas para el chat se almacena solo en tu dispositivo. No tienes cuenta con nosotros y no podemos ayudarte si pierdes el teléfono o eliminas tus datos por accidente.\n\nThreema Safe crea copias de seguridad automáticas de todos los datos importantes, incluidas tus claves, tu lista de contactos y tus suscripciones a grupos, de forma anónima en un servidor seguro que elijas.</string>
+    <string name="safe_enable_explain">Lo que necesitas para el chat se almacena solo en tu dispositivo. No tienes cuenta con nosotros y no podemos ayudarte si pierdes el teléfono o eliminas tus datos por accidente.\n\nThreema Safe crea copias de seguridad automáticas de todos los datos importantes, incluidas tus claves, tu lista de contactos y tus suscripciones a grupos (no el contenido de los mensajes), de forma anónima en un servidor seguro que elijas.</string>
     <string name="safe_disable_confirm">¿Quieres continuar sin habilitar Threema Safe?</string>
     <string name="safe_configure_choose_password">Elige una contraseña. Necesitarás una contraseña para restablecer tu copia de seguridad de Threema Safe.</string>
     <string name="safe_configure_choose_server">Elige un servidor de Threema Safe</string>
@@ -1110,7 +1110,7 @@ almacenado.</string>
     <string name="videocall_profile_max_quality">Calidad máxima</string>
     <string name="unable_to_play_video">No se puede reproducir</string>
     <string name="tooltip_voip_turn_on_camera">Toque aquí para encender la cámara</string>
-    <string name="prefs_videocall_profile_explain">La calidad real de la imagen depende de la red y de los ajustes que tenga la persona con la que está hablando</string>
+    <string name="prefs_videocall_profile_explain">La calidad de imagen real depende de la red y de los ajustes que tenga la persona con la que está hablando.</string>
     <string name="permission_camera_videocall_required">Para hacer una videollamada, conceda acceso a la cámara.</string>
     <string name="feedback">Opinión</string>
     <string name="tooltip_voip_enable_speakerphone">Toque aquí para encender el manos libres</string>
@@ -1142,17 +1142,12 @@ almacenado.</string>
     <string name="an_error_occurred_during_send">Se ha producido un error al enviar uno o más mensajes.</string>
     <string name="state_processing">procesando</string>
     <string name="passphrase_locked">La frase de contraseña está bloqueada.</string>
-    <string name="image_labeling_new">Nuevo: Búsqueda de imagen</string>
-    <string name="tooltip_image_labeling">Para buscar un elemento visual concreto en su galería, introduzca un término que describa el contenido y selecciónelo en la lista de etiquetas identificadas.</string>
     <string name="selected_media">Su selección</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Galería</string>
     <string name="attach_picture">Foto</string>
     <string name="attach_video">Vídeo</string>
     <string name="attach_location">Ubicación</string>
-    <string name="image_labeling_toolbar_title">Filtrar por</string>
-    <string name="no_labels_info">"No se han encontrado coincidencias. "</string>
-    <string name="image_label_query_hint">¿Objeto, lugar, actividad?</string>
     <string name="filter_by_album">Filtrar por álbum</string>
     <string name="media_date_taken">Fecha de captura: %s</string>
     <string name="media_date_added">Fecha en que se añadió: %s</string>
@@ -1168,24 +1163,18 @@ almacenado.</string>
     <string name="show_text">Mostrar texto</string>
     <string name="only_images_or_videos">Solo se pueden seleccionar imágenes o vídeos</string>
     <string name="media_gallery_gifs">GIF</string>
-    <string name="notification_channel_image_labeling">Progreso de indexación de imagen</string>
-    <string name="notification_channel_image_labeling_desc">Realizando indexación de imágenes de galería pública en el fondo</string>
-    <string name="notification_image_labeling_desc">Indexación de galería de medios</string>
     <string name="no_media_found_global">No se encontraron medios en este dispositivo</string>
-    <string name="prefs_sum_image_labeling">Habilitar búsqueda de imágenes públicas en la galería por palabras clave</string>
-    <string name="prefs_image_labeling">Buscar imágenes</string>
     <string name="enable_formatting">Habilitar formato</string>
     <string name="original_file_no_longer_avilable">Ya no se puede acceder al archivo original. Vuelva a enviar el mensaje.</string>
     <string name="state_transcoding">transcodificación</string>
     <string name="importing_files">Importando archivos</string>
     <string name="tooltip_image_resolution_hint">Toca aquí para ajustar la resolución de imagen</string>
-    <string name="image_labeling_stuck_error">El proceso de indexación de la búsqueda de imágenes se atascó y se canceló. Inténtelo más tarde.</string>
     <string name="ballot_created_successfully">La encuesta se creó correctamente.</string>
     <string name="file_size">Tamaño archivo</string>
     <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 d</string>
     <string name="show_in_chat">Mostrar en chat</string>
-    <string name="group_create_no_members">¿Seguro que quieres crear un grupo vacío sin más miembros?</string>
+    <string name="group_create_no_members">¿Seguro que quiere crear un grupo vacío?</string>
     <string name="notes">Notas</string>
     <string name="blur_faces">Cara difuminada</string>
     <string name="brush">Pincel</string>
@@ -1195,4 +1184,12 @@ almacenado.</string>
     <string name="blur">Difuminar</string>
     <string name="face_blur_tooltip_title">Nuevo: reconocimiento de caras</string>
     <string name="face_blur_tooltip_text">Encuentra caras en la imagen y difumínalas o tápalas con una cara sonriente.</string>
+    <string name="transcoder_unsupported_audio_format">No se pudo transcodificar el sonido debido a una ausencia de compatibilidad en el sistema.</string>
+    <string name="transcoder_unknown_audio_error">Se ha producido un error desconocido al transcodificar el sonido.</string>
+    <string name="video_size_explain">Puede que se compriman los archivos de gran tamaño sea cual sea este ajuste.</string>
+    <string name="status_create_notes">*No está solo aquí*\nUse este chat como cuaderno seguro para apuntar mensajes de texto, medios documentos.</string>
+    <string name="status_create_notes_off">*Ya no está solo en este chat* \nLos nuevos mensajes se enviarán a todos los miembros del grupo.</string>
+    <string name="note_group_howto">Consejo: si no añade ningún miembro al grupo, los mensajes a este grupo permanecerán en almacenamiento local. Resulta idóneo para guardar con seguridad notas, medios y documentos o para transferir elementos al escritorio.</string>
+    <string name="mark_unread">Marcar no leído</string>
+    <string name="mark_read_short">Leído</string>
 </resources>

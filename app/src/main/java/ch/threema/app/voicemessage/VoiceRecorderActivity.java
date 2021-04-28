@@ -264,9 +264,13 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 			}
 			};
 			registerReceiver(audioStateChangedReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
-			try {
-				audioManager.startBluetoothSco();
-			} catch (Exception ignored) { }
+
+			if (!preferenceService.getVoiceRecorderBluetoothDisabled()) {
+				try {
+					audioManager.startBluetoothSco();
+				} catch (Exception ignored) {
+				}
+			}
 		} else {
 			if (bluetoothToogle != null) {
 				bluetoothToogle.setVisibility(View.INVISIBLE);
@@ -325,7 +329,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 		BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		boolean result = bluetoothAdapter != null && bluetoothAdapter.isEnabled() && bluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED;
 
-		logger.debug("isBluetoothEnabled = " + result);
+		logger.debug("isBluetoothEnabled = {}",result);
 
 		return result;
 	}
@@ -364,20 +368,21 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 	private void updateBluetoothButton() {
 		if (bluetoothToogle != null) {
-			@DrawableRes int stateRes = R.drawable.ic_bluetooth_searching_outline;
+			@DrawableRes int stateRes;
 
 			switch (scoAudioState) {
 				case AudioManager.SCO_AUDIO_STATE_CONNECTED:
 					stateRes = R.drawable.ic_bluetooth_connected;
+					preferenceService.setVoiceRecorderBluetoothDisabled(false);
 					break;
 				case AudioManager.SCO_AUDIO_STATE_DISCONNECTED:
-					stateRes = R.drawable.ic_bluetooth_disabled;
-					break;
-				case AudioManager.SCO_AUDIO_STATE_CONNECTING:
-					stateRes = R.drawable.ic_bluetooth_searching_outline;
-					break;
 				case AudioManager.SCO_AUDIO_STATE_ERROR:
 					stateRes = R.drawable.ic_bluetooth_disabled;
+					preferenceService.setVoiceRecorderBluetoothDisabled(true);
+					break;
+				case AudioManager.SCO_AUDIO_STATE_CONNECTING:
+				default:
+					stateRes = R.drawable.ic_bluetooth_searching_outline;
 					break;
 			}
 			bluetoothToogle.setImageResource(stateRes);
@@ -441,13 +446,13 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 		audioRecorder = new AudioRecorder(this);
 		audioRecorder.setOnStopListener(this);
-		logger.info("new audioRecorder instance " + audioRecorder);
+		logger.info("new audioRecorder instance {}", audioRecorder);
 		try {
 			mediaRecorder = audioRecorder.prepare(uri, MAX_VOICE_MESSAGE_LENGTH_MILLIS,
 			scoAudioState == AudioManager.SCO_AUDIO_STATE_CONNECTED ?
 			BLUETOOTH_SAMPLING_RATE_HZ :
 			DEFAULT_SAMPLING_RATE_HZ );
-			logger.info("new mediaRecorder instance " + mediaRecorder);
+			logger.info("Started recording with mediaRecorder instance {}", this.mediaRecorder);
 			if (mediaRecorder != null) {
 				startTimestamp = System.nanoTime();
 				mediaRecorder.start();
@@ -455,7 +460,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 		} catch (Exception e) {
 			logger.info("Error opening media recorder");
-			logger.error("Exception", e);
+			logger.error("Media Recorder Exception occurred", e);
 			releaseMediaRecorder();
 			return false;
 		}
@@ -506,12 +511,16 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 	private void pauseMedia() {
 		if (supportsPauseResume()) {
+			logger.info("Pause media recording");
 			if (status == MediaState.STATE_RECORDING) {
 				if (mediaRecorder != null) {
 					try {
 						mediaRecorder.pause();  // pause the recording
 					} catch (Exception e) {
-						//
+						logger.warn(
+							"Unexpected MediaRecorder Exception while pausing recording audio",
+							e
+						);
 					}
 					pauseTimestamp = System.nanoTime();
 					updateMediaState(MediaState.STATE_PAUSED);
@@ -522,7 +531,10 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 					try {
 						mediaPlayer.pause();  // pause the recording
 					} catch (Exception e) {
-						//
+						logger.warn(
+							"Unexpected MediaRecorder Exception while pausing playing audio",
+							e
+						);
 					}
 					pauseTimestamp = System.nanoTime();
 					updateMediaState(MediaState.STATE_PLAYING_PAUSED);
@@ -535,12 +547,16 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 	private void resumeRecording() {
 		if (supportsPauseResume()) {
+			logger.info("Resume media recording");
 			if (status == MediaState.STATE_PAUSED) {
 				if (mediaRecorder != null) {
 					try {
 						mediaRecorder.resume();  // pause the recording
 					} catch (Exception e) {
-						//
+						logger.warn(
+							"Unexpected MediaRecorder Exception while resuming playing audio",
+							e
+						);
 					}
 					pauseDuration += System.nanoTime() - pauseTimestamp;
 					updateMediaState(MediaState.STATE_RECORDING);
@@ -654,10 +670,13 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 				}
 				break;
 			case R.id.bluetooth_toggle:
-				if (audioManager.isBluetoothScoOn()) {
-					audioManager.stopBluetoothSco();
-				} else {
-					audioManager.startBluetoothSco();
+				try {
+					if (audioManager.isBluetoothScoOn()) {
+						audioManager.stopBluetoothSco();
+					} else {
+						audioManager.startBluetoothSco();
+					}
+				} catch (Exception ignored) {
 				}
 				updateBluetoothButton();
 				break;

@@ -82,7 +82,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						messageModel.setState(MessageState.valueOf(stateString));
 					}
 					catch (IllegalArgumentException x) {
-						logger.error("Invalid message stats " + stateString + " - ignore", x);
+						logger.error("Invalid message state " + stateString + " - ignore", x);
 					}
 				}
 

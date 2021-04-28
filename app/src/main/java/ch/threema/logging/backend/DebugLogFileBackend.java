@@ -21,7 +21,6 @@
 
 package ch.threema.logging.backend;
 
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -42,7 +41,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.app.BuildConfig;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.FileService;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
@@ -146,7 +145,7 @@ public class DebugLogFileBackend implements LogBackend {
 	 * @hidden Used only for tests.
 	 */
 	static File getLogFilePath() {
-		final File threemaDir = new File(Environment.getExternalStorageDirectory(), BuildConfig.MEDIA_PATH);
+		final File threemaDir = new File(ThreemaApplication.getAppContext().getExternalFilesDir(null), "log");
 		return new File(threemaDir, LOGFILE_NAME);
 	}
 
@@ -158,7 +157,7 @@ public class DebugLogFileBackend implements LogBackend {
 	@Nullable
 	private static File getLogFile() {
 		if (logFile == null || !logFile.exists()) {
-			final File threemaDir = new File(Environment.getExternalStorageDirectory(), BuildConfig.MEDIA_PATH);
+			final File threemaDir = new File(ThreemaApplication.getAppContext().getExternalFilesDir(null), "log");
 			if (!threemaDir.exists()) {
 				if (!threemaDir.mkdirs()) {
 					Log.e(TAG, "DebugLogFileBackend: Could not create threema directory");

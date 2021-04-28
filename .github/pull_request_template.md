@@ -1,7 +1,9 @@
 ## Description
 
 <!-- Please describe your change. If the change concerns the user interface,
-please include screenshots. -->
+please include screenshots. Note that improvements to translation strings
+should be submitted through OneSky, see CONTRIBUTING.md or README.md for
+more information. -->
 
 ## Checklist
 

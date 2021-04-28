@@ -219,6 +219,10 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 				if (resultCode == RESULT_OK) {
 					serviceManager.getScreenLockService().setAuthenticated(true);
+					if (composeMessageFragment != null) {
+						// mark conversation as read as soon as it's unhidden
+						composeMessageFragment.markAsRead();
+					}
 				} else {
 					finish();
 				}

@@ -208,7 +208,7 @@ public class FileServiceImpl implements FileService {
 		return true;
 	}
 
-	@Override
+	@Deprecated
 	public File getBackupPath() {
 		if (!this.backupPath.exists()) {
 			this.backupPath.mkdirs();
@@ -265,37 +265,49 @@ public class FileServiceImpl implements FileService {
 		return getAppDataPath().getAbsolutePath();
 	}
 
+	@Deprecated
 	private File getImagePath() {
-		if (!this.imagePath.exists()) {
-			this.imagePath.mkdirs();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+			if (!this.imagePath.exists()) {
+				this.imagePath.mkdirs();
+			}
 		}
 		return this.imagePath;
 	}
 
+	@Deprecated
 	private File getVideoPath() {
-		if (!this.videoPath.exists()) {
-			this.videoPath.mkdirs();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+			if (!this.videoPath.exists()) {
+				this.videoPath.mkdirs();
+			}
 		}
 		return this.videoPath;
 	}
 
+	@Deprecated
 	private File getAudioPath() {
-		if (!this.audioPath.exists()) {
-			this.audioPath.mkdirs();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+			if (!this.audioPath.exists()) {
+				this.audioPath.mkdirs();
+			}
 		}
 		return this.audioPath;
 	}
 
+	@Deprecated
 	private File getDownloadsPath() {
-		try {
-			if (!this.downloadsPath.exists()) {
-				this.downloadsPath.mkdirs();
-			} else if (!downloadsPath.isDirectory()) {
-				FileUtil.deleteFileOrWarn(this.downloadsPath, "Download Path", logger);
-				this.downloadsPath.mkdirs();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+			try {
+				if (!this.downloadsPath.exists()) {
+					this.downloadsPath.mkdirs();
+				} else if (!downloadsPath.isDirectory()) {
+					FileUtil.deleteFileOrWarn(this.downloadsPath, "Download Path", logger);
+					this.downloadsPath.mkdirs();
+				}
+			} catch (SecurityException e) {
+				logger.error("Exception", e);
 			}
-		} catch (SecurityException e) {
-			logger.error("Exception", e);
 		}
 		return this.downloadsPath;
 	}
@@ -612,33 +624,27 @@ public class FileServiceImpl implements FileService {
 	}
 
 	/**
-	 * return the file of a message file saved in the gallery (if exist)
+	 * return the filename of a message file saved in the gallery (if exist)
 	 */
-	private File constructGalleryMediaFilename(AbstractMessageModel messageModel) {
+	@Nullable
+	private String constructGalleryMediaFilename(AbstractMessageModel messageModel) {
 		String title = FileUtil.getMediaFilenamePrefix(messageModel);
 
 		switch (messageModel.getType()) {
 			case IMAGE:
-				return new File(getImagePath(), title + JPEG_EXTENSION);
+				return title + JPEG_EXTENSION;
 			case VIDEO:
-				return new File(getVideoPath(), title + MPEG_EXTENSION);
+				return title + MPEG_EXTENSION;
 			case VOICEMESSAGE:
-				return new File(getAudioPath(), title + VOICEMESSAGE_EXTENSION);
+				return title + VOICEMESSAGE_EXTENSION;
 			case FILE:
 				String filename = messageModel.getFileData().getFileName();
 				if (TestUtil.empty(filename)) {
 					filename = title + getMediaFileExtension(messageModel);
 				}
-
-				if (FileUtil.isImageFile(messageModel.getFileData())) {
-					return new File(getImagePath(), filename);
-				} if (FileUtil.isVideoFile(messageModel.getFileData())) {
-					return new File(getVideoPath(), filename);
-				} if (FileUtil.isAudioFile(messageModel.getFileData())) {
-					return new File(getAudioPath(), filename);
-				} else {
-					return new File(getDownloadsPath(), filename);
-				}
+				return filename;
+			default:
+				break;
 		}
 		return null;
 	}
@@ -685,7 +691,7 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
-	private void copyMediaFileIntoPublicDirectory(InputStream inputStream, File destFile, String mimeType) throws Exception {
+	private void copyMediaFileIntoPublicDirectory(InputStream inputStream, String filename, String mimeType) throws Exception {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			String relativePath;
 			Uri contentUri;
@@ -707,7 +713,7 @@ public class FileServiceImpl implements FileService {
 			}
 
 			final ContentValues contentValues = new ContentValues();
-			contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, destFile.getName());
+			contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
 			contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
 			contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath + "/" + BuildConfig.MEDIA_PATH);
 			contentValues.put(MediaStore.MediaColumns.IS_PENDING, true);
@@ -725,6 +731,20 @@ public class FileServiceImpl implements FileService {
 				throw new Exception("Unable to open file");
 			}
 		} else {
+			File destPath;
+			if (MimeUtil.isAudioFile(mimeType)) {
+				destPath = getAudioPath();
+			} else if (MimeUtil.isVideoFile(mimeType)) {
+				destPath = getVideoPath();
+			} else if (MimeUtil.isImageFile(mimeType)) {
+				destPath = getImagePath();
+			} else if (MimeUtil.isPdfFile(mimeType)) {
+				destPath = getDownloadsPath();
+			} else {
+				destPath = getDownloadsPath();
+			}
+
+			File destFile = new File(destPath, filename);
 			destFile = FileUtil.getUniqueFile(destFile.getParent(), destFile.getName());
 			try (FileOutputStream outputStream = new FileOutputStream(destFile)) {
 				IOUtils.copy(inputStream, outputStream);
@@ -738,8 +758,8 @@ public class FileServiceImpl implements FileService {
 	 * save the data of a message model into the gallery
 	 */
 	private void insertMessageIntoGallery(AbstractMessageModel messageModel) throws Exception {
-		File mediaFile = this.constructGalleryMediaFilename(messageModel);
-		if (mediaFile == null) {
+		String mediaFilename = this.constructGalleryMediaFilename(messageModel);
+		if (mediaFilename == null) {
 			return;
 		}
 
@@ -751,7 +771,7 @@ public class FileServiceImpl implements FileService {
 
 		if (FileUtil.isFilePresent(messageFile)) {
 			try (CipherInputStream cis = masterKey.getCipherInputStream(new FileInputStream(messageFile))) {
-				copyMediaFileIntoPublicDirectory(cis, mediaFile, MimeUtil.getMimeTypeFromMessageModel(messageModel));
+				copyMediaFileIntoPublicDirectory(cis, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
 			}
 		} else {
 			throw new ThreemaException("File not found.");
@@ -760,17 +780,16 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public void copyDecryptedFileIntoGallery(Uri sourceUri, AbstractMessageModel messageModel) throws Exception {
-		InputStream inputStream;
-		File mediaFile = this.constructGalleryMediaFilename(messageModel);
-		if (mediaFile == null) {
+		String mediaFilename = this.constructGalleryMediaFilename(messageModel);
+		if (mediaFilename == null) {
 			return;
 		}
 
 		ContentResolver cr = context.getContentResolver();
-		inputStream = cr.openInputStream(sourceUri);
-		if (inputStream != null) {
-			copyMediaFileIntoPublicDirectory(inputStream, mediaFile, MimeUtil.getMimeTypeFromMessageModel(messageModel));
-			inputStream.close();
+		try (final InputStream inputStream = cr.openInputStream(sourceUri)) {
+			if (inputStream != null) {
+				copyMediaFileIntoPublicDirectory(inputStream, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
+			}
 		}
 	}
 

@@ -28,15 +28,15 @@
     <string name="webclient_protocol_version_too_new_threema">Seu aplicativo não suporta essa versão do Threema Web. Use uma versão mais nova do Threema Web.</string>
     <string name="webclient_session_already_exists">A sessão do código QR que você escaneou já existe. Recarregue o Threema Web no seu navegador e tente novamente.</string>
     <string name="webclient_really_start_webclient_by_payload_body">Gostaria de iniciar a sessão do Threema Web agora?</string>
-	<string name="webclient_cannot_restore">Não é possível restaurar a sessão do Threema</string>
-	<string name="webclient_disabled">O Threema Web não está ativado</string>
+    <string name="webclient_cannot_restore">Não é possível restaurar a sessão do Threema</string>
+    <string name="webclient_disabled">O Threema Web não está ativado</string>
     <string name="webclient_cannot_start">Não é possível iniciar a sessão do Threema Web</string>
     <string name="webclient_constrained_by_mdm">O servidor não está aprovado pelo administrador.</string>
     <string name="webclient_clear_all_sessions">Limpar todas as sessões</string>
     <string name="webclient_clear_all_sessions_confirm">Tem certeza de que deseja interromper e remover todas as sessões do Threema Web?</string>
     <string name="webclient_prefs_debug_tool_summary">Inicie essa ferramenta para depurar problemas com a configuração de uma conexão do Threema Web</string>
-	<string name="webclient_diagnostics">Diagnóstico Threema Web</string>
-	<string name="webclient_diagnostics_start">Iniciar</string>
-	<string name="webclient_diagnostics_intro">Pressione o botão Iniciar para começar o teste.</string>
-	<string name="webclient_diagnostics_done">Pronto. Se você tiver problemas com o estabelecimento da conexão do Threema Web, envie esse registro para o suporte do Threema.</string>
+    <string name="webclient_diagnostics">Diagnóstico Threema Web</string>
+    <string name="webclient_diagnostics_start">Iniciar</string>
+    <string name="webclient_diagnostics_intro">Pressione o botão Iniciar para começar o teste.</string>
+    <string name="webclient_diagnostics_done">Pronto. Se você tiver problemas com o estabelecimento da conexão do Threema Web, envie esse registro para o suporte do Threema.</string>
 </resources>

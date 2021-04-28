@@ -163,10 +163,12 @@ public class MessageProcessor implements MessageProcessorInterface {
 			}
 
 			//check if sender is on blacklist
-			if(this.blackListService != null && this.blackListService.has(msg.getFromIdentity())) {
-				logger.debug("Message from {}: Contact blacklisted. Ignoring", msg.getFromIdentity());
-				//ignore message of blacklisted member
-				return ProcessIncomingResult.ignore();
+			if (!(msg instanceof AbstractGroupMessage)) {
+				if (this.blackListService != null && this.blackListService.has(msg.getFromIdentity())) {
+					logger.debug("Direct message from {}: Contact blacklisted. Ignoring", msg.getFromIdentity());
+					//ignore message of blacklisted member
+					return ProcessIncomingResult.ignore();
+				}
 			}
 
 			this.contactService.setActive(msg.getFromIdentity());

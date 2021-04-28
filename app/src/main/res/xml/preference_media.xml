@@ -10,6 +10,13 @@
 		android:key="pref_key_system_media"
 		android:title="@string/media">
 
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="@string/preferences__save_media"
+			android:summary="@string/prefs_sum_save_media"
+			android:icon="@drawable/ic_outline_save_alt_24"
+			android:title="@string/prefs_save_media"/>
+
 		<DropDownPreference
 			android:defaultValue="1"
 			android:entries="@array/list_image_size"
@@ -23,21 +30,16 @@
 			android:defaultValue="1"
 			android:entries="@array/list_video_size"
 			android:entryValues="@array/list_video_size_values"
+			android:icon="@drawable/ic_outline_video_settings_24"
 			android:key="@string/preferences__video_size"
 			android:title="@string/prefs_video_size"
 			android:summary="%s"/>
 
-		<CheckBoxPreference
-			android:defaultValue="false"
-			android:key="@string/preferences__save_media"
-			android:summary="@string/prefs_sum_save_media"
-			android:title="@string/prefs_save_media"/>
-
-		<CheckBoxPreference
-			android:defaultValue="false"
-			android:key="@string/preferences__image_labeling"
-			android:summary="@string/prefs_sum_image_labeling"
-			android:title="@string/prefs_image_labeling"/>
+		<Preference
+			android:key="@string/preferences__video_size_explain"
+			android:icon="@drawable/ic_info_outline"
+			android:summary="@string/video_size_explain"
+			android:selectable="false"/>
 
 	</PreferenceCategory>
 

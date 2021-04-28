@@ -23,16 +23,35 @@ package ch.threema.app.adapters.decorators;
 
 import android.content.Context;
 
+import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class FirstUnreadChatAdapterDecorator extends ChatAdapterDecorator {
-	public FirstUnreadChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
+	private int unreadMessagesCount = 0;
+
+	public FirstUnreadChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper, final int unreadMessagesCount) {
 		super(context, messageModel, helper);
+
+		this.unreadMessagesCount = unreadMessagesCount;
 	}
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		//nothing to decorate :-)
+		if (this.unreadMessagesCount < 1) {
+			return;
+		}
+
+		String s;
+		if (this.unreadMessagesCount > 1) {
+			s = getContext().getString(R.string.unread_messages, unreadMessagesCount);
+		} else {
+			s = getContext().getString(R.string.one_unread_message);
+		}
+
+		if(this.showHide(holder.bodyTextView, !TestUtil.empty(s))) {
+			holder.bodyTextView.setText(s);
+		}
 	}
 }

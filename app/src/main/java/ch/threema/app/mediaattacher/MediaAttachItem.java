@@ -25,8 +25,6 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.List;
-
 /**
  * A MediaAttachItem represents a media item in the attacher (e.g. a photo or a video).
  *
@@ -43,7 +41,6 @@ public class MediaAttachItem implements Parcelable {
 	private final int orientation;
 	private final int duration;
 	private final int type;
-	private List<String> labels;
 
 	public MediaAttachItem(
 		int id,
@@ -107,14 +104,6 @@ public class MediaAttachItem implements Parcelable {
 			return new MediaAttachItem[size];
 		}
 	};
-
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
 
 	public int getId() {
 		return id;

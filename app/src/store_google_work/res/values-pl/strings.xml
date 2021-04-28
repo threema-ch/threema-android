@@ -20,4 +20,7 @@
     <string name="list_theme_light">Jasny</string>
     <string name="list_theme_dark">Ciemny (domyślny)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Dla użytkowników prywatnych</a>]]></string>
+    <string name="directory_search">Szukaj w książce telefonicznej</string>
+    <string name="directory_title">Firmowa książka telefoniczna</string>
+    <string name="directory_empty_view_text">Nie znaleziono żadnych wpisów\n\nWpisz co najmniej 3 znaki nazwy, aby rozpocząć wyszukiwanie w Twojej firmowej książce telefonicznej użytkowników Threema.</string>
 </resources>

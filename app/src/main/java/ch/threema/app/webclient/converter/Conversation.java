@@ -40,6 +40,7 @@ public class Conversation extends Converter {
 	public final static String LATEST_MESSAGE = "latestMessage";
 	public final static String NOTIFICATIONS = "notifications";
 	public final static String IS_STARRED = "isStarred";
+	public final static String IS_UNREAD = "isUnread";
 
 	public interface Append {
 		void append(MsgpackObjectBuilder builder, ConversationModel conversation, Utils.ModelWrapper modelWrapper);
@@ -89,6 +90,12 @@ public class Conversation extends Converter {
 			if (isStarred) {
 				builder.put(IS_STARRED, isStarred);
 			}
+
+			final TagModel unreadTagModel = serviceManager.getConversationTagService()
+				.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
+			final boolean isUnread = serviceManager.getConversationTagService()
+				.isTaggedWith(conversation, unreadTagModel);
+			builder.put(IS_UNREAD, isUnread);
 
 			if(append != null) {
 				append.append(builder, conversation, model);

@@ -70,10 +70,12 @@ import ch.threema.app.activities.ballot.BallotWizardActivity;
 import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.listeners.QRCodeScanListener;
 import ch.threema.app.locationpicker.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
+import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.MediaItem;
@@ -227,7 +229,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			this.attachGalleryButton.setVisibility(View.GONE);
 		}
 
-		if (messageReceiver instanceof DistributionListMessageReceiver) {
+		if (messageReceiver instanceof DistributionListMessageReceiver ||
+			(messageReceiver instanceof GroupMessageReceiver && groupService != null && groupService.isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup()))) {
 			this.attachBallotButton.setVisibility(View.GONE);
 		}
 
@@ -254,8 +257,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	/* start section action methods */
 	@Override
 	public void onItemChecked(int count) {
-		int gridPaddingLeftRight = getResources().getDimensionPixelSize(R.dimen.grid_spacing);
-
 		if (this.selectFromGalleryItem != null) {
 			this.selectFromGalleryItem.setVisible(count == 0);
 		}
@@ -271,9 +272,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				// only slide up when previously hidden otherwise animate switch between panels
 				if (controlPanel.getTranslationY() != 0) {
 					controlPanel.animate().translationY(0).withEndAction(() -> bottomSheetLayout.setPadding(
-						gridPaddingLeftRight,
 						0,
-						gridPaddingLeftRight,
+						0,
+						0,
 						controlPanel.getHeight() - getResources().getDimensionPixelSize(R.dimen.media_attach_control_panel_shadow_size)));
 				} else {
 					AnimationUtil.bubbleAnimate(sendButton, 50);
@@ -281,9 +282,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					AnimationUtil.bubbleAnimate(editButton, 75);
 					AnimationUtil.bubbleAnimate(cancelButton, 100);
 					bottomSheetLayout.setPadding(
-						gridPaddingLeftRight,
 						0,
-						gridPaddingLeftRight,
+						0,
+						0,
 						controlPanel.getHeight() - getResources().getDimensionPixelSize(R.dimen.media_attach_control_panel_shadow_size)
 					);
 				}
@@ -309,9 +310,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			//animate padding change to avoid flicker
 			ValueAnimator animator = ValueAnimator.ofInt(bottomSheetLayout.getPaddingBottom(), 0);
 			animator.addUpdateListener(valueAnimator -> bottomSheetLayout.setPadding(
-				gridPaddingLeftRight,
 				0,
-				gridPaddingLeftRight,
+				0,
+				0,
 				(Integer) valueAnimator.getAnimatedValue()));
 			animator.setDuration(300);
 			animator.start();
@@ -319,9 +320,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			sendPanel.setVisibility(View.GONE);
 			attachPanel.setVisibility(View.VISIBLE);
 			bottomSheetLayout.setPadding(
-				gridPaddingLeftRight,
 				0,
-				gridPaddingLeftRight,
+				0,
+				0,
 				0);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				if (attachGalleryButton.getVisibility() == View.VISIBLE) {
@@ -375,15 +376,20 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			case R.id.edit:
 				if (mediaAttachAdapter != null) {
 					onEdit(mediaAttachViewModel.getSelectedMediaUris());
-					finish();
 				}
 				break;
 			case R.id.send:
 				if (mediaAttachAdapter != null) {
 					v.setAlpha(0.3f);
 					v.setClickable(false);
+					// return last filter to potentially re-use it when attaching more media in compose fragment
+					if (mediaAttachViewModel.getLastQueryType() != null) {
+						Intent resultIntent = IntentDataUtil.addLastMediaFilterToIntent(new Intent(),
+							mediaAttachViewModel.getLastQuery(),
+							mediaAttachViewModel.getLastQueryType());
+						setResult(RESULT_OK, resultIntent);
+					}
 					onSend(mediaAttachViewModel.getSelectedMediaUris());
-					finish();
 				}
 				break;
 			case R.id.attach_gallery:
@@ -461,7 +467,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-
 		if (resultCode == Activity.RESULT_OK) {
 			final String scanResult = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
 			if (scanResult != null && scanResult.length() > 0) {
@@ -488,8 +493,17 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					onEdit(FileUtil.getUrisFromResult(intent, getContentResolver()));
 					break;
 				case ThreemaActivity.ACTIVITY_ID_CREATE_BALLOT:
-					// fallthrough
+					finish();
+					break;
 				case ThreemaActivity.ACTIVITY_ID_SEND_MEDIA:
+					// catch last media filter and forward to compose message fragment
+					Intent resultIntent = new Intent();
+					if (intent != null && intent.hasExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_TYPE_QUERY)) {
+						IntentDataUtil.addLastMediaFilterToIntent(resultIntent,
+							intent.getStringExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY),
+							intent.getIntExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_TYPE_QUERY, -1));
+						setResult(RESULT_OK, resultIntent);
+					}
 					finish();
 					break;
 				case ThreemaActivity.ACTIVITY_ID_PICK_FILE:
@@ -560,6 +574,12 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
 			intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
 			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+			// pass on last filter to potentially re-use it when adding more media items
+			if (mediaAttachViewModel.getLastQuery() != null) {
+				intent = IntentDataUtil.addLastMediaFilterToIntent(intent,
+					mediaAttachViewModel.getLastQuery(),
+					mediaAttachViewModel.getLastQueryType());
+			}
 			AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 		} else {
 			Toast.makeText(MediaAttachActivity.this, R.string.only_images_or_videos, Toast.LENGTH_LONG).show();

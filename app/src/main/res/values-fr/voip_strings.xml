@@ -26,7 +26,7 @@
     <string name="voip_checking_compatibility">Nous vérifions si ce contact peut recevoir des appels Threema</string>
     <string name="voip_incompatible">Ce contact n\'est pas encore en mesure de recevoir des appels Threema.</string>
     <string name="voip_call_status_unavailable">Le destinataire de l\'appel est indisponible</string>
-    <string name="voip_call_status_rejected">Appel rejeté</string>
+    <string name="voip_call_status_rejected">Appel refusé</string>
     <string name="voip_call_status_busy">Le destinataire de l\'appel est occupé</string>
     <string name="voip_call_status_busy_short">Occupé</string>
     <string name="voip_call_status_disabled">Appels Threema désactivés par le destinataire</string>
@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Suppression de l\'écho</string>
     <string name="voip_prefs_aec_sw">Suppression logicielle de l\'écho</string>
     <string name="voip_prefs_aec_hw">Suppression matérielle de l\'écho</string>
+    <string name="voip_prefs_title_video_codec">Codecs vidéo</string>
+    <string name="voip_prefs_video_aec_hw">Accélération matérielle</string>
+    <string name="voip_prefs_video_codec_no_vp8">Désactiver VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Désactiver H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Codecs logiciels</string>
     <string name="voip_connection_failed">Impossible d\'établir la connexion.</string>
     <string name="voip_connection_lost">Connexion perdue</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rejeter les appels mobiles</string>

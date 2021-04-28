@@ -93,4 +93,12 @@ public class CountBoxView extends androidx.appcompat.widget.AppCompatTextView {
 		this.setBackgroundResource(backgroundRes);
 	}
 
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+		if (getMeasuredWidth() < getMeasuredHeight()) {
+			setMeasuredDimension(getMeasuredHeight(), getMeasuredHeight());
+		}
+	}
 }

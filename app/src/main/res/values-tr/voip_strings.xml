@@ -26,7 +26,7 @@
     <string name="voip_checking_compatibility">Bu kişinin Threema çağrıları alıp alamayacağını kontrol etme</string>
     <string name="voip_incompatible">Bu kişi henüz Threema çağrılarını alamıyor.</string>
     <string name="voip_call_status_unavailable">Çağrı alıcısı uygun değil</string>
-    <string name="voip_call_status_rejected">Arama reddedildi</string>
+    <string name="voip_call_status_rejected">Çağrı reddedildi</string>
     <string name="voip_call_status_busy">Çağrı alıcı meşgul</string>
     <string name="voip_call_status_busy_short">Meşgul</string>
     <string name="voip_call_status_disabled">Threema çağrıları alıcı tarafından devre dışı bırakıldı</string>

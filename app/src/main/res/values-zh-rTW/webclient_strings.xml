@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">無效的QR碼資料</string>
+    <string name="webclient_init_session">發起新工作階段</string>
+    <string name="webclient_sessions_really_delete">您真的要刪除 Threema 網頁版工作階段嗎？</string>
+    <string name="webclient_last_usage">上次使用：%s</string>
+    <string name="webclient_created_at">建立於：%1$s（%2$s）</string>
+    <string name="webclient_active_since">活動時間：%s</string>
+    <string name="webclient_enable">開啟 Threema 網頁版</string>
+    <string name="webclient_no_sessions_found">要進行連結，請在 PC 瀏覽器中開啟 <b>https://web.threema.ch</b>，然後點擊下面的按鈕以掃描QR碼。</string>
+    <string name="webclient_session_rename">重新命名工作階段</string>
+    <string name="webclient_session_label">新名稱</string>
+    <string name="webclient_session_start">開始工作階段</string>
+    <string name="webclient_session_stop">停止工作階段</string>
+    <string name="webclient_persistent">持續</string>
+    <string name="webclient_disposable">一次性</string>
+    <string name="webclient_unnamed_session">未命名工作階段</string>
+    <string name="webclient_session_remove">移除工作階段</string>
+    <string name="webclient_welcome_title">在您的電腦上聊天！</string>
+    <string name="webclient_welcome_explain">Threema 網頁版允許您在桌上型電腦或筆記型電腦上聊天，同时擁有對所有聯絡人，多媒體和聊天甚至過去對話的完全取用權限。\n\n<b>電話和電腦之間的所有通訊都是完全端到端加密的</b>，如果電話和電腦都在同一網路上，則使用直接連線。\n\n請注意：Threema 網頁版處於活動狀態時，可能會消耗更多電量。您可以隨時開啟或停用。</string>
+    <string name="webclient_launch">立即啟動 Threema 網頁版</string>
+    <string name="webclient_qr_scan_message">請掃描螢幕上顯示的QR碼。</string>
+    <string name="webclient_invalid_qr_code">Threema 網頁版上的QR碼無效</string>
+    <string name="webclient_new_connection_toast">Threema 網頁版工作階段已開始</string>
+    <string name="webclient_protocol_error">協定錯誤</string>
+    <string name="webclient_protocol_version_to_old">您的應用程式不支援此版本的 Threema 網頁版。請更新 Threema 至最新版本。</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">您的應用程式不支援此版本的 Threema 網頁版。請要求您的 Threema 網頁版實例的管理員升級至最新版本。</string>
+    <string name="webclient_protocol_version_too_new_threema">您的應用程式不支援此版本的 Threema 網頁版。請使用較新版本的 Threema 網頁版。</string>
+    <string name="webclient_session_already_exists">您掃描的QR碼工作階段已經存在。請在您的瀏覽器中重新載入 Threema 網頁版，然後再試一次。</string>
+    <string name="webclient_really_start_webclient_by_payload_body">您想立即開始這個 Threema 網頁版工作階段嗎？</string>
+    <string name="webclient_cannot_restore">無法還原 Threema 網頁版工作階段</string>
+    <string name="webclient_disabled">Threema 網頁版未開啟</string>
+    <string name="webclient_cannot_start">無法開始 Threema 網頁版工作階段</string>
+    <string name="webclient_constrained_by_mdm">伺服器未經管理員批准。</string>
+    <string name="webclient_clear_all_sessions">清除所有工作階段</string>
+    <string name="webclient_clear_all_sessions_confirm">您確定要停止並移除所有 Threema 網頁版工作階段嗎？</string>
+    <string name="webclient_prefs_debug_tool_summary">啟動此工具以調試與設定 Threema 網頁版連接有關的問題</string>
+    <string name="webclient_diagnostics">Threema 網頁版診斷</string>
+    <string name="webclient_diagnostics_start">開始</string>
+    <string name="webclient_diagnostics_intro">點擊「開始」以啟動測試。</string>
+    <string name="webclient_diagnostics_done">大功告成。如果您遇到 Threema 網頁版連線建立問題，請將此日誌傳送至 Threema 支援。</string>
+</resources>

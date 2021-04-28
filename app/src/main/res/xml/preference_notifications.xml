@@ -30,6 +30,7 @@
 			android:entryValues="@array/list_light_color_values"
 			android:key="@string/preferences__notification_light"
 			android:title="@string/prefs_light"
+			android:icon="@drawable/ic_outline_light_mode_24"
 			android:summary="%s"/>
 	</PreferenceCategory>
 	<PreferenceCategory
@@ -53,6 +54,7 @@
 			android:entryValues="@array/list_light_color_values"
 			android:key="@string/preferences__group_notification_light"
 			android:summary="%s"
+			android:icon="@drawable/ic_outline_light_mode_24"
 			android:title="@string/prefs_light"/>
 	</PreferenceCategory>
 	<PreferenceCategory
@@ -62,11 +64,13 @@
 			android:defaultValue="null"
 			android:key="@string/preferences__voip_ringtone"
 			android:summary="@string/prefs_sum_voice_call_sound"
+			android:icon="@drawable/ic_notifications_active_outline"
 			android:title="@string/prefs_voice_call_sound"/>
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="@string/preferences__voip_vibration"
 			android:summary="@string/prefs_sum_voice_call_vibrate"
+			android:icon="@drawable/ic_vibration_outline"
 			android:title="@string/prefs_vibrate"/>
 	</PreferenceCategory>
 	<PreferenceCategory
@@ -77,12 +81,14 @@
 			android:key="@string/preferences__inapp_sounds"
 			android:summaryOff="@string/prefs_inapp_sounds_off"
 			android:summaryOn="@string/prefs_inapp_sounds_on"
+			android:icon="@drawable/ic_outline_music_note_24"
 			android:title="@string/prefs_inapp_sounds"/>
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="@string/preferences__inapp_vibrate"
 			android:summaryOff="@string/prefs_inapp_vibrate_off"
 			android:summaryOn="@string/prefs_inapp_vibrate_on"
+			android:icon="@drawable/ic_vibration_outline"
 			android:title="@string/prefs_inapp_vibrate"/>
 	</PreferenceCategory>
 	<PreferenceCategory
@@ -91,6 +97,7 @@
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="@string/preferences__notification_preview"
+			android:icon="@drawable/ic_outline_preview_24"
 			android:title="@string/prefs_notification_preview"/>
 		<DropDownPreference
 			android:defaultValue="1"
@@ -98,6 +105,7 @@
 			android:entryValues="@array/list_notification_priority_values"
 			android:key="@string/preferences__notification_priority"
 			android:title="@string/prefs_title_notification_priority"
+			android:icon="@drawable/ic_baseline_priority_high_24"
 			android:summary="%s"/>
 	</PreferenceCategory>
 	<PreferenceCategory

@@ -570,6 +570,7 @@
 		<item name="android:colorBackgroundCacheHint">@null</item>
 		<item name="colorBackgroundFloating">@android:color/transparent</item>
 		<item name="attach_button_background">@color/attach_button_background_light</item>
+		<item name="attach_media_thumb_drawable" >@drawable/media_thumbscroll_light</item>
 	</style>
 
 	<style name="Theme.MediaAttacher.Dark" parent="Theme.Threema.WithToolbar.Dark">
@@ -583,6 +584,7 @@
 		<item name="android:colorBackgroundCacheHint">@null</item>
 		<item name="colorBackgroundFloating">@android:color/transparent</item>
 		<item name="attach_button_background">@color/attach_button_background_dark</item>
+		<item name="attach_media_thumb_drawable" >@drawable/media_thumbscroll_dark</item>
 	</style>
 
 </resources>

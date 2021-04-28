@@ -20,7 +20,6 @@
 	<string name="menu_about">About Threema</string>
 	<string name="menu_add_contact">New contact</string>
 	<string name="menu_done">Done</string>
-	<string name="menu_mobile_linking">Link Number</string>
 	<string name="compose_message_and_enter">Tap here to type</string>
 	<string name="send">Send</string>
 	<string name="prefs_privacy">Privacy</string>
@@ -46,7 +45,7 @@
 	<string name="prefs_title_typing_indicator">Send typing indicator</string>
 	<string name="prefs_media_title">Media &amp; Storage</string>
 	<string name="prefs_sum_media_title">Media and storage settings</string>
-	<string name="prefs_image_size">Image size</string>
+	<string name="prefs_image_size">Image dimensions</string>
 	<string name="prefs_notification_sound">Notification Sound</string>
 	<string name="prefs_sum_notification_sound">System default</string>
 	<string name="prefs_vibrate">Vibrate</string>
@@ -123,7 +122,7 @@
 	<string name="linked_mobile">Mobile Number</string>
 	<string name="public_nickname">Nickname</string>
 	<string name="share_via">Share via…</string>
-	<string name="share_subject">Threema conversation with</string>
+	<string name="share_subject">Threema conversation</string>
 	<string name="message_delete_undo">Undo</string>
 	<string name="message_deleted">Message(s) deleted</string>
 	<string name="mobile_already_linked">Your Threema ID is already linked to this mobile number</string>
@@ -379,7 +378,8 @@
 	<string name="contact_format_last_name_first_name">Last-Name First-Name</string>
 	<string name="block_contact">Block contact</string>
 	<string name="unblock_contact">Unblock contact</string>
-	<string name="unread_messages">Unread Messages</string>
+	<string name="unread_messages">%d unread Messages</string>
+	<string name="one_unread_message">1 unread Message</string>
 	<string name="really_unlink_contact_title">Unlink contact</string>
 	<string name="really_unlink_contact">Do you really want to unlink this contact?</string>
 	<string name="do_unlink_contact">Unlink Contact</string>
@@ -725,7 +725,7 @@
 	<string name="prefs_proximity_sensor_explain">Use earpiece for voice message playback if proximity sensor is covered</string>
 	<string name="error_creating_group">Error creating/updating group</string>
 	<string name="no_media_found_generic">No media found in this chat</string>
-	<string name="max_images_reached" tools:ignore="PluralsCandidate">Max. %d items can be sent at once</string>
+	<string name="max_images_reached" tools:ignore="PluralsCandidate">Max. %d items can be edited at once</string>
 	<string name="enter_description">Please describe bug/problem here.</string>
 	<string name="add_caption_hint">Add an optional caption</string>
 	<string name="disable">Disable</string>
@@ -845,7 +845,7 @@
 	<string name="prefs_voice_call_sound">Ringtone</string>
 	<string name="prefs_sum_voice_call_sound">Select ringtone for incoming Threema calls</string>
 	<string name="prefs_sum_voice_call_vibrate">Vibrate on incoming Threema calls</string>
-	<string name="prefs_title_voip_enable">Enable Threema Call</string>
+	<string name="prefs_title_voip_enable">Enable Threema Calls</string>
 	<string name="webclient_invalid_push_token_message">Manual start required</string>
 	<string name="threema_work_contact">Threema Work contact</string>
 	<string name="permission_phone_required">Allow permission to manage phone calls while using Threema Call</string>
@@ -922,7 +922,7 @@
 	<string name="disable_autostart_title">Autostart</string>
 	<string name="unchanged">unchanged</string>
 	<string name="safe_learn_more_button">Learn more</string>
-	<string name="safe_enable_explain">All you need to chat is stored only on your device. You don\'t have an account with us and we cannot help you out if you lose your phone or accidentally delete your data.\n\nThreema Safe creates automatic backups of all the important data, including your keys, your contact list and your group memberships, anonymously on a secure server of your choice.</string>
+	<string name="safe_enable_explain">All you need to chat is stored only on your device. You don\'t have an account with us and we cannot help you out if you lose your phone or accidentally delete your data.\n\nThreema Safe creates automatic backups of all the important data, including your keys, your contact list and your group memberships (but no message content), anonymously on a secure server of your choice.</string>
 	<string name="safe_disable_confirm">Do you really want to continue without enabling Threema Safe?</string>
 	<string name="safe_configure_choose_password">Please choose a strong password. You will need this password to restore your Threema Safe backup.</string>
 	<string name="safe_configure_choose_server">Choose a Threema Safe server</string>
@@ -1146,13 +1146,13 @@
 	<string name="delete_everything">Delete everything</string>
 	<string name="prefs_title_voip_video_enable">Allow video calls</string>
 	<string name="video_calls">Video calls</string>
-	<string name="prefs_videocall_profile">Preferred picture quality</string>
+	<string name="prefs_videocall_profile">Preferred image quality</string>
 	<string name="videocall_profile_auto">Balanced (recommended)</string>
 	<string name="videocall_profile_low_bandwidth">Low data consumption</string>
 	<string name="videocall_profile_max_quality">Maximum quality</string>
 	<string name="unable_to_play_video">Unable to play video</string>
 	<string name="tooltip_voip_turn_on_camera">Tap here to turn on the camera</string>
-	<string name="prefs_videocall_profile_explain">The actual picture quality depends on the network and the settings of the person you are talking to</string>
+	<string name="prefs_videocall_profile_explain">The actual image quality depends on the network and the settings of the person you are talking to</string>
 	<string name="permission_camera_videocall_required">For video calling, please allow access to the camera</string>
 	<string name="feedback">Feedback</string>
 	<string name="tooltip_voip_enable_speakerphone">Tap here to turn on speakerphone</string>
@@ -1184,17 +1184,12 @@
 	<string name="an_error_occurred_during_send">An error occurred sending one or more messages.</string>
 	<string name="state_processing">processing</string>
 	<string name="passphrase_locked">Passphrase is locked</string>
-	<string name="image_labeling_new">New: Image search</string>
-	<string name="tooltip_image_labeling">To find any particular visual media in your gallery, simply enter a term that describes the content and select it from the list of identified labels.</string>
 	<string name="selected_media">Your selection</string>
 	<string name="attach_gif">Gif</string>
 	<string name="attach_gallery">Gallery</string>
 	<string name="attach_picture">Picture</string>
 	<string name="attach_video">Video</string>
 	<string name="attach_location">Location</string>
-	<string name="image_labeling_toolbar_title">Filter by</string>
-	<string name="no_labels_info">No matches found</string>
-	<string name="image_label_query_hint">Object, Place, Activity?</string>
 	<string name="filter_by_album">Filter by album</string>
 	<string name="media_date_taken">Date taken: %s</string>
 	<string name="media_date_added">Date added: %s</string>
@@ -1210,24 +1205,18 @@
 	<string name="show_text">Show text</string>
 	<string name="only_images_or_videos">Only images or videos can be selected</string>
 	<string name="media_gallery_gifs">GIFs</string>
-	<string name="notification_channel_image_labeling">Image indexing progress</string>
-	<string name="notification_channel_image_labeling_desc">Performing indexing of public gallery images in the background</string>
-	<string name="notification_image_labeling_desc">Media gallery indexing</string>
 	<string name="no_media_found_global">No media found on this device</string>
-	<string name="prefs_sum_image_labeling">Enable searching public images in your gallery by keywords</string>
-	<string name="prefs_image_labeling">Image search</string>
 	<string name="enable_formatting">Enable formatting</string>
 	<string name="original_file_no_longer_avilable">The original file is no longer accessible. Please re-send the message.</string>
 	<string name="state_transcoding">transcoding</string>
 	<string name="importing_files">Importing files</string>
 	<string name="tooltip_image_resolution_hint">Tap here to adjust image resolution.</string>
-	<string name="image_labeling_stuck_error">The indexing process for image search got stuck and was cancelled. Please retry later.</string>
 	<string name="ballot_created_successfully">The poll was successfully created.</string>
 	<string name="file_size">File size</string>
 	<!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
 	<string name="thirty_days_abbrev">30d</string>
 	<string name="show_in_chat">Show in chat</string>
-	<string name="group_create_no_members">Are you sure you want to create an empty group with no other members?</string>
+	<string name="group_create_no_members">Are you sure you want to create an empty group?</string>
 	<string name="notes">Notes</string>
 	<string name="blur_faces">Blur faces</string>
 	<string name="brush">Brush</string>
@@ -1237,4 +1226,12 @@
 	<string name="blur">Blur</string>
 	<string name="face_blur_tooltip_title">New: Face recognition</string>
 	<string name="face_blur_tooltip_text">Find faces in the image and have them blurred or covered with a smiley.</string>
+	<string name="transcoder_unsupported_audio_format">Audio could not be transcoded due to missing system support.</string>
+	<string name="transcoder_unknown_audio_error">Unknown audio transcoding error occurred.</string>
+	<string name="video_size_explain">Very large videos may be compressed regardless of this setting.</string>
+	<string name="status_create_notes">*You\'re here alone*\nUse this chat as a secure notebook for text, media or documents.</string>
+	<string name="status_create_notes_off">*You\'re no longer alone in this chat*\nNew messages will be sent to all group members.</string>
+	<string name="note_group_howto">Hint: If you don\'t add any group members, messages to this group will stay local. That\'s ideal for securely storing notes, media or documents or transferring them to the desktop.</string>
+	<string name="mark_unread">Mark as unread</string>
+	<string name="mark_read_short">Read</string>
 </resources>

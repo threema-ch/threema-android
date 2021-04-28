@@ -31,7 +31,6 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.Date;
 
 import androidx.annotation.Nullable;
@@ -42,23 +41,20 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.mediaattacher.data.MediaItemsRoomDatabase;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.client.BoxTextMessage;
 import ch.threema.client.MessageId;
 import ch.threema.client.voip.VoipCallAnswerData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
-
-import static ch.threema.app.ThreemaApplication.getAppContext;
 
 public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	private static final Logger logger = LoggerFactory.getLogger(SettingsDeveloperFragment.class);

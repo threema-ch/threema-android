@@ -57,6 +57,7 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.CountBoxView;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -99,8 +100,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	private final List<ConversationModel> selectedChats = new ArrayList<>();
 	private String highlightUid;
 
-	// TODO: remove if custom tags are implemented
-	private final TagModel starTagModel;
+	private final TagModel starTagModel, unreadTagModel;
 
 	public static class MessageListViewHolder extends RecyclerView.ViewHolder {
 
@@ -119,7 +119,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		protected AvatarView avatarView;
 		protected ConversationModel conversationModel;
 		AvatarListItemHolder avatarListItemHolder;
-		//TODO: change this logic, if custom tags are implemented
 		final View tagStarOn;
 
 		MessageListViewHolder(final View itemView) {
@@ -208,8 +207,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 		this.isTablet = ConfigUtils.isTabletLayout();
 
-		// TODO: select the star model
 		this.starTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
+		this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
 	}
 
 	@Override
@@ -250,9 +249,9 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			final ConversationModel conversationModel = this.getEntity(position);
 			holder.conversationModel = conversationModel;
 
-			holder.itemView.setOnClickListener(new View.OnClickListener() {
+			holder.itemView.setOnClickListener(new DebouncedOnClickListener(500) {
 				@Override
-				public void onClick(View v) {
+				public void onDebouncedClick(View v) {
 					// position may have changed after the item was bound. query current position from holder
 					int currentPos = holder.getLayoutPosition();
 
@@ -304,7 +303,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			// holder.fromView.setText(from);
 			holder.fromView.setText(conversationModel.getReceiver().getDisplayName());
 
-			if (conversationModel.hasUnreadMessage() && messageModel != null && !messageModel.isOutbox()) {
+			if (messageModel != null && ((!messageModel.isOutbox() && conversationModel.hasUnreadMessage()) || this.conversationTagService.isTaggedWith(conversationModel, this.unreadTagModel))) {
 				holder.fromView.setTextAppearance(context, R.style.Threema_TextAppearance_List_FirstLine_Bold);
 				holder.subjectView.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine_Bold);
 				if (holder.groupMemberName != null && holder.dateView != null) {
@@ -313,6 +312,10 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				long unreadCount = conversationModel.getUnreadCount();
 				if (unreadCount > 0) {
 					holder.unreadCountView.setText(String.valueOf(unreadCount));
+					holder.unreadCountView.setVisibility(View.VISIBLE);
+					holder.unreadIndicator.setVisibility(View.VISIBLE);
+				} else if (this.conversationTagService.isTaggedWith(conversationModel, this.unreadTagModel)) {
+					holder.unreadCountView.setText("");
 					holder.unreadCountView.setVisibility(View.VISIBLE);
 					holder.unreadIndicator.setVisibility(View.VISIBLE);
 				}
@@ -432,7 +435,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 						}
 
 						if (conversationModel.isGroupConversation()) {
-							if (groupService.isGroupOwner(conversationModel.getGroup()) && groupService.countMembers(conversationModel.getGroup()) == 1) {
+							if (groupService.isNotesGroup(conversationModel.getGroup())) {
 								holder.deliveryView.setImageResource(R.drawable.ic_spiral_bound_booklet_outline);
 								holder.deliveryView.setContentDescription(context.getString(R.string.notes));
 							} else {
