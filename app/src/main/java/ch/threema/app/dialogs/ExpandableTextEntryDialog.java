@@ -79,10 +79,6 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		return dialog;
 	}
 
-	public void setCallback(ExpandableTextEntryDialogClickListener callback) {
-		this.callback = callback;
-	}
-
 	public interface ExpandableTextEntryDialogClickListener {
 		void onYes(String tag, Object data, String text);
 		void onNo(String tag);

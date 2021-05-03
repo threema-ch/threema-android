@@ -25,15 +25,16 @@
 		app:tint="?attr/textColorSecondary" />
 
 	<ch.threema.app.emojis.EmojiConversationTextView
-			android:id="@+id/choice_name_readonly"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textSize="16sp"
-			android:layout_marginRight="4dp"
-			android:layout_toRightOf="@+id/reorder_button"
-			android:layout_toLeftOf="@+id/edit_button"
-			android:layout_centerVertical="true"
-			android:text="X" />
+		android:id="@+id/choice_name_readonly"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textSize="16sp"
+		android:layout_marginRight="4dp"
+		android:layout_toRightOf="@+id/reorder_button"
+		android:layout_toLeftOf="@+id/edit_button"
+		android:layout_centerVertical="true"
+		android:text="X"
+		android:singleLine="true"/>
 
 	<ImageView
 		android:id="@+id/edit_button"
@@ -42,7 +43,7 @@
 		android:layout_centerVertical="true"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:tint="?attr/textColorSecondary"
+		app:tint="?attr/textColorSecondary"
 		android:contentDescription="@string/remove"
 		app:srcCompat="@drawable/ic_pencil_outline" />
 
