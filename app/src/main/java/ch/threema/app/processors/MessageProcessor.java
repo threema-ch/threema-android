@@ -194,6 +194,9 @@ public class MessageProcessor implements MessageProcessorInterface {
 					case ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC:
 						state = MessageState.USERDEC;
 						break;
+					case ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED:
+						state = MessageState.CONSUMED;
+						break;
 
 				}
 				if (state != null) {

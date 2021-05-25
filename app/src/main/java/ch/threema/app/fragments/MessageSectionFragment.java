@@ -216,7 +216,6 @@ public class MessageSectionFragment extends MainFragment
 	private int cornerRadius;
 	private TagModel unreadTagModel;
 
-
 	private int archiveCount = 0;
 	private Snackbar archiveSnackbar;
 
@@ -1042,9 +1041,9 @@ public class MessageSectionFragment extends MainFragment
 			//
 			if(!this.requiredInstances()) {
 				logger.error("could not instantiate required objects");
+			} else {
+				this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
 			}
-
-			this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
 		}
 		return fragmentView;
 	}

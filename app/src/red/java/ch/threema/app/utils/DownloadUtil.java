@@ -21,20 +21,6 @@
 
 package ch.threema.app.utils;
 
-import android.app.DownloadManager;
-import android.content.Context;
-import android.net.Uri;
-import android.os.Environment;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-
-import ch.threema.app.R;
-
-/**
- * Created by se on 06.08.14.
- */
 public class DownloadUtil  {
+	//stub
 }

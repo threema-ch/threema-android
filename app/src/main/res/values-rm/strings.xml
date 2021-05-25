@@ -12,8 +12,7 @@
     <string name="title_invite_friend">Envidar amis</string>
     <string name="invite_via">Envidar via ...</string>
     <string name="invite_email_body">Hallo\n\nTelechargia %1$s, il messenger segir che protegia tia e mia sfera privata.\n\nTrametta fotos, videos, messadis discurrids e lieus; fa gruppas ed enquistas; trametta documents e datotecas en tut ils formats (PDF, GIF, MP3 eav.).\n\nLain en futur communitgar ensemen via %1$s.\n\nTelechargia %1$s qua: https://threema.ch/download\n\nChars salids\nhttps://threema.id/%2$s</string>
-    <string name="invite_sms_body">Lain en futur communitgar ensemen via Threema. Telechargia qua Threema:
-https://threema.ch/download</string>
+    <string name="invite_sms_body">Hallo! Lass uns sicher und datenschutzkonform über %1$s kommunizieren! Meine Threema-ID: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. Il messenger segir che protegia tia e mia sfera privata.</string>
     <string name="enter_id_hint">Endatar l\'ID da Threema</string>
     <string name="account_links">Colliaziuns</string>
@@ -21,7 +20,7 @@ https://threema.ch/download</string>
     <string name="menu_about">Tge è Threema?</string>
     <string name="menu_add_contact">Agiuntar in contact</string>
     <string name="menu_done">Finì</string>
-	<string name="compose_message_and_enter">Scriver in messadi</string>
+    <string name="compose_message_and_enter">Scriver in messadi</string>
     <string name="send">Trametter</string>
     <string name="prefs_privacy">Sfera privata</string>
     <string name="prefs_notifications">Avis</string>
@@ -77,7 +76,7 @@ https://threema.ch/download</string>
     <string name="prefs_title_sum_message_log_on">Eveniments ed infurmaziuns davart la rait vegnan registrads en la datoteca debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">Eveniments na vegnan betg registrads</string>
     <string name="prefs_reset_push">Reinizialisar il simbol da push</string>
-    <string name="prefs_sum_reset_push">Registrar da nov l\'apparat cun FCM</string>
+    <string name="prefs_sum_reset_push">Registrar da nov l\'apparat cun FCM/HMS</string>
     <string name="prefs_notification_preview">Mussar la prevista</string>
     <string name="prefs_sum_reset_ringtones">Reinizialisar las configuraziuns da basa</string>
     <string name="prefs_title_reset_ringtones">Reinizialisar ils tuns dals avis</string>
@@ -375,7 +374,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="share_image">Parter il maletg</string>
     <string name="view_in_gallery">Guardar en la gallaria</string>
     <string name="file_saved">Memorisà la(s) %d datoteca(s).</string>
-    <string name="gcm_register_failed">Il simbol da push FCM n\'ha betg pudì vegnir reinizialisà. P.pl. empruvar pli tard anc ina giada.</string>
+    <string name="token_register_failed">Il simbol da push n\'ha betg pudì vegnir reinizialisà. P.pl. empruvar pli tard anc ina giada.</string>
     <string name="internet_connection_required">Nagina colliaziun d\'internet.</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d messadi(s) n\'ha(n) betg pudì vegnir tramess</string>
     <string name="prefs_sum_save_media">Chargiar automaticamain medias e maletgs da la camera e memorisar senza codar</string>
@@ -826,6 +825,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_auto_download_title">Telechargiar automaticamain las medias</string>
     <string name="prefs_auto_download_wifi">En il WLAN</string>
     <string name="prefs_auto_download_mobile">En raits mobilas</string>
+    <string name="rate_intro">Nus avain midà ad in nov design pli modern, perquai ch\'i na dat per ils emojis vegls nagins updates pli. Co plaschan ils novs emojis a tai?</string>
     <string name="rate_feedback_intro">Nus deplorain d\'udir quai. Schai p.pl. a nus tge che nus pudain far meglier.</string>
     <string name="rate_positive">Trametter recensiun</string>
     <string name="rate_title">Valitar ils novs emojis</string>
@@ -1008,7 +1008,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="delete">Stizzar</string>
     <string name="num_archived_chats">%d chats archivads</string>
     <string name="continue_recording">Registrar vinavant</string>
-    <string name="whatsnew_title">Tge è nov?</string>
+    <string name="whatsnew_title">%s not currently used</string>
+    <string name="whatsnew_headline">%1$s not currently used</string>
     <string name="whatsnew2_title">Tge è nov?</string>
     <string name="whatsnew2_body"><![CDATA[<p><b>Selecziun sperta dals maletgs</b>: Clicca sin il fermagl per visualisar tias medias a moda survesaivla en in slider prolungabel. En las configuraziuns da chat pos ti era deactivar questa funcziun:<i>Configuraziuns / chat / selecziun sperta dals maletgs</i>.</p>
 <p><b>Tschertga da maletgs</b>: Tschertga objects, activitads e lieus currents en tes maletgs. L\'identificaziun da maletgs sa basa sin in model da machine learning local e na trametta naginas datas a nus u ad autras partidas terzas. Perquai che l\'indexaziun dovra relativamain bleras resursas e dura in mument, è la tschertga da maletgs deactivada sco standard. Ti pos activar ella sut <i>Configuraziuns / Medias ed arcun / Tschertga da maletgs</i>.</p>
@@ -1039,7 +1040,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="edit_type_content_description">Mussar u elavurar %1$s %2$s</string>
     <string name="group">Gruppa</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Unsere Datenschutzerklärung wurde angepasst, um die folgende Änderung widerzuspiegeln:</p><p>%1$s ist nicht mehr von Google Play und Google Maps abhängig, um Karten- und OVI-Daten bereitzustellen.</p>Bitte überprüfen Sie die vollständige Datenschutzerklärung <a href="%2$s">hier</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Betg installà servetschs da Play. Betg pussaivel da midar sin «Push»</string>
+    <string name="play_services_not_installed_unable_to_use_push">Betg installà servetschs. Betg pussaivel da midar sin «Push»</string>
     <string name="unable_to_get_current_location">Betg pussaivel d\'eruir la posiziun actuala.</string>
     <string name="lp_search_place_min_chars">P.pl. inditgar almain 3 segns per tschertgar in lieu.</string>
     <string name="lp_search_place_no_matches">Chattà nagins lieus concordants. P.pl. midar la dumonda.</string>
@@ -1165,4 +1166,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="blur">Disfar</string>
     <string name="face_blur_tooltip_title">Nov: identificaziun da fatschas</string>
     <string name="face_blur_tooltip_text">Tschertga las fatschas sin la fotografia e disfa ellas u cuvra ellas cun in smiley.</string>
+    <string name="transcoder_unsupported_audio_format">Betg reussì da convertir il format da l\'audio, perquai ch\'il sistem na vegn betg sustegnì.</string>
+    <string name="transcoder_unknown_audio_error">Betg reussì da convertir il format da l\'audio pervia d\'ina errur betg enconuschenta.</string>
+    <string name="video_size_explain">Per pudair tramtter videos fitg gronds vegnan els cumprimids independentamain da questa configuraziun.</string>
 </resources>

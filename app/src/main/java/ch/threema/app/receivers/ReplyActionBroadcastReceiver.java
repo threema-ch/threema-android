@@ -93,6 +93,8 @@ public class ReplyActionBroadcastReceiver extends ActionBroadcastReceiver {
 				if (success != null) {
 					Toast.makeText(context, success ? R.string.message_sent : R.string.verify_failed, Toast.LENGTH_LONG).show();
 				}
+				notificationService.cancel(messageReceiver);
+
 				pendingResult.finish();
 			}
 		}.execute();

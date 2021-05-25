@@ -38,6 +38,7 @@ import java.util.concurrent.RejectedExecutionException;
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
@@ -45,6 +46,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.client.ProgressListener;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
@@ -655,6 +657,15 @@ public abstract class MessagePlayer {
 	protected void exception(int error, Exception x) {
 		if(this.getContext() != null) {
 			this.exception(this.getContext().getString(error), x);
+		}
+	}
+
+	@WorkerThread
+	protected void markAsConsumed() {
+		try {
+			messageService.markAsConsumed(getMessageModel());
+		} catch (ThreemaException e) {
+			logger.error("Unable to mark message as consumed", e);
 		}
 	}
 }

@@ -24,7 +24,7 @@
     <string name="send">送信</string>
     <string name="prefs_privacy">プライバシー</string>
     <string name="prefs_notifications">サウンドと通知</string>
-    <string name="prefs_chatdisplay">チャット</string>
+    <string name="prefs_chatdisplay">トーク</string>
     <string name="prefs_security">セキュリティ</string>
     <string name="prefs_sum_privacy">プライバシーに関する設定</string>
     <string name="prefs_sum_notifications">音とバイブレーションの設定</string>
@@ -34,7 +34,7 @@
     <string name="prefs_header_chat">トーク</string>
     <string name="prefs_header_reset">リセット</string>
     <string name="prefs_header_keyboard">キーボード</string>
-    <string name="prefs_sum_sync_contacts_on">Threema と端末の連絡先は同期されます</string>
+    <string name="prefs_sum_sync_contacts_on">Threemaと端末の連絡先は同期されます</string>
     <string name="prefs_sum_sync_contacts_off">Threema と端末の連絡先は同期されません</string>
     <string name="prefs_title_sync_contacts">連絡先の同期</string>
     <string name="prefs_sum_block_unknown_off">誰でもメッセージを送ることができます。
@@ -139,7 +139,7 @@
     <string name="creating_contact">新しい連絡先を追加</string>
     <string name="creating_contact_successful">連絡先の追加に成功しました</string>
     <string name="invalid_threema_qr_code">無効なQRコードです</string>
-    <string name="threema_contact">Threema連絡先</string>
+    <string name="threema_contact">Threemaの連絡先</string>
     <string name="first_name">名前</string>
     <string name="last_name">姓名</string>
     <string name="os_licenses">ライセンス</string>
@@ -382,7 +382,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="share_image">画像を共有</string>
     <string name="view_in_gallery">ギャラリーで見る</string>
     <string name="file_saved">%d 個のファイルが正常に保存されました。</string>
-    <string name="gcm_register_failed">FCMプッシュトークンの更新に失敗しました。しばらくしてからもう一度お試しください。</string>
+    <string name="token_register_failed">プッシュトークンのアップデートに失敗しました。もう一度試してください。</string>
     <string name="internet_connection_required">インターネットに接続できません</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d件のメッセージの送信に失敗しました</string>
     <string name="prefs_sum_save_media">受信した写真やビデオ、送信したカメラ画像を保存する</string>
@@ -573,7 +573,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="invalid_data">無効なデータです。送信できませんでした。</string>
     <string name="prefs_emoji_style">絵文字スタイル</string>
     <string name="prefs_android_emojis">システムの絵文字</string>
-    <string name="prefs_default_emojis">Threema 絵文字 (デフォルト)</string>
+    <string name="prefs_default_emojis">Threema絵文字 (デフォルト)</string>
     <string name="android_emojis_warning">注意: システムの文字セットによっては、Threemaがサポートするすべての絵文字を表示できない場合があります。</string>
     <string name="crop">クロップ</string>
     <string name="scan_id_mismatch_title">IDが一致しません</string>
@@ -594,7 +594,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_polling_interval">投票の間隔</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%dつのトークが削除されました</string>
     <string name="prefs_sendlog">ログを送信する</string>
-    <string name="prefs_sendlog_summary">問題を分析するためにログファイルを Threema に送信します</string>
+    <string name="prefs_sendlog_summary">問題を分析するためにログファイルをThreemaに送信します</string>
     <string name="permission_storage_required">メディアを保存したり送信したりするには、Threemaにストレージへのアクセス許可をしてください。</string>
     <string name="permission_location_required">位置情報を送信するには、Threemaに自分の位置情報へのアクセスを許可をしてください。</string>
     <string name="permission_contacts_required">連絡先を送信するには、Threemaに自分の連絡先へのアクセスを許可する必要があります。</string>
@@ -613,9 +613,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="off">オフ</string>
     <string name="new_wizard_select_country">あなたの国を選択</string>
     <string name="new_wizard_lets_get_started">ようこそ！</string>
-    <string name="new_wizard_setup_threema">Threema を始める</string>
+    <string name="new_wizard_setup_threema">Threemaを始める</string>
     <string name="new_wizard_restore_id_backup">エクスポート済みの ID を復元</string>
-    <string name="new_wizard_welcome">Threema にようこそ！</string>
+    <string name="new_wizard_welcome">Threemaにようこそ！</string>
     <string name="new_wizard_move_finger">画面に指を動かしてみてください</string>
     <string name="new_wizard_this_is_your_id">これがあなたのThreema IDです:</string>
     <string name="new_wizard_works_like_phone_number">Threema IDは、電話番号のようなものです。\n友達は、このIDを使ってあなたに連絡を取ることができます。</string>
@@ -758,8 +758,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_ipv6_preferred_off">IPv4 の接続のみが使用されます</string>
     <string name="prefs_ipv6_preferred_on">IPv4 より IPv6 の接続を優先します</string>
     <string name="prefs_title_ipv6_webrtc_allowed">通話とウェブに IPv6 を使用</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Threema 通話と Threema Web で IPv6 は許可されます</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Threema 通話と Threema Web で IPv6 は許可されません</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Threema通話とThreema Webで IPv6 は許可されます</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Threema通話とThreema WebでIPv6は許可されません</string>
     <string name="ipv6_requires_restart">この設定を適用するには、アプリを再起動する必要があります。</string>
     <string name="ipv6_restart_now">再起動する</string>
     <string name="on_cap">オン</string>
@@ -790,13 +790,13 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="backup_data_cancelled">バックアップはキャンセルされました</string>
     <string name="service_manager_not_available">Threemaを起動できません。端末の電源を切ってから、もう一度電源を入れてください。</string>
     <string name="message_sent">メッセージが送信されました</string>
-    <string name="threema_call">Threema 通話</string>
+    <string name="threema_call">Threema通話</string>
     <string name="threema_message_to">%sへのメッセージ</string>
     <string name="threema_call_with">%sへの通話</string>
-    <string name="prefs_title_voip">Threema 通話</string>
+    <string name="prefs_title_voip">Threema通話</string>
     <string name="prefs_title_force_turn">常にリレーコールを使用</string>
-    <string name="prefs_summary_force_turn_off">可能であれば直接接続を確立し、認証されていない連絡先には Threema のサーバーを介したリレーコールのみを使用します。直接接続では、IP アドレスが相手に知られる可能性があります。</string>
-    <string name="prefs_summary_force_turn_on">全通話で Threema のサーバーを介したリレーコールを使用し、IP アドレスを守ります。通話の品質が劣化する可能性があります。</string>
+    <string name="prefs_summary_force_turn_off">可能であれば直接接続を確立し、認証されていない連絡先にはThreemaのサーバーを介したリレーコールのみを使用します。直接接続では、IPアドレスが相手に知られる可能性があります。</string>
+    <string name="prefs_summary_force_turn_on">全通話でThreemaのサーバーを介したリレーコールを使用し、IP アドレスを守ります。通話の品質が劣化する可能性があります。</string>
     <string name="permission_record_audio_required">通話や音声メッセージを送信するには、マイクへのアクセスを許可してください。</string>
     <string name="prefs_voice_call_notifications">音声通話</string>
     <string name="prefs_voice_call_sound">着信音</string>
@@ -838,10 +838,10 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_auto_download_title">メディアの自動ダウンロード</string>
     <string name="prefs_auto_download_wifi">Wi-Fi 時</string>
     <string name="prefs_auto_download_mobile">モバイルデータ時</string>
-    <string name="rate_intro">Threema はいかがですか？</string>
+    <string name="rate_intro">Threemaはいかがですか？</string>
     <string name="rate_feedback_intro">サービスの改善点を教えてください (省略可)</string>
     <string name="rate_positive">レビューを送信</string>
-    <string name="rate_title">Threema を評価</string>
+    <string name="rate_title">Threemaを評価</string>
     <string name="rate_thank_you">貴重なレビューをありがとうございます！</string>
     <string name="disabled_by_policy_short">管理者により機能の無効化がされます</string>
     <string name="rate_forward_to_play_store">Google Play でも評価しますか？</string>
@@ -882,14 +882,14 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="safe_enable_explain">トークに必要なものは、あなたの端末にのみ保存されます。あなたは私たちのアカウントを持っていないので、携帯電話を紛失したり、誤ってデータを削除したりしても、私たちはあなたを助けることができません。\n\nThreema Safeは、あなたが選んだ安全なサーバーに、あなたのキー、連絡先リスト、グループメンバーなど、すべての重要なデータの自動バックアップを匿名で作成します。</string>
     <string name="safe_disable_confirm">本当にThreema Safeを有効にせずに続行しますか？</string>
     <string name="safe_configure_choose_password">強力なパスワードを選んでください。このパスワードは、Threema Safeのバックアップを復元する際に必要となります。</string>
-    <string name="safe_configure_choose_server">Threema Safe のサーバーを選択</string>
-    <string name="safe_configure_server_explain">Threema のサーバーまたは、指定されたサードパーティーのバックアップサーバーを代わりに使用することができます。</string>
+    <string name="safe_configure_choose_server">Threema Safeのサーバーを選択</string>
+    <string name="safe_configure_server_explain">Threemaのサーバーまたは、指定されたサードパーティーのバックアップサーバーを代わりに使用することができます。</string>
     <string name="safe_use_default_server">デフォルトのサーバーを使用</string>
     <string name="safe_test_server">テストサーバー</string>
     <string name="safe_advanced_options">詳細設定</string>
-    <string name="safe_enter_password">Threema Safe のパスワードを入力してください</string>
+    <string name="safe_enter_password">Threema Safeのパスワードを入力してください</string>
     <string name="safe_threema_id">Threema ID</string>
-    <string name="safe_restore_enter_id">復元をする Threema ID を入力してください</string>
+    <string name="safe_restore_enter_id">復元をするThreema IDを入力してください</string>
     <string name="safe_search_id_title">ID に接続されている電話番号またはメールアドレスを入力してください</string>
     <string name="safe_id_lookup">Threema IDを見る</string>
     <string name="safe_no_id_found">Threema IDが見つかりませんでした</string>
@@ -924,8 +924,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="safe_size">バックアップのサイズ</string>
     <string name="safe_version_mismatch">このバックアップのバージョンは、サポートされているバージョンよりも高いです。最新のバージョンにアップデートしてください。</string>
     <string name="safe_restore_failed">復元失敗</string>
-    <string name="safe_failed_notification">Threema Safe のバックアップが %d 日間連続して失敗しました。ここをタップして確認してください。</string>
-    <string name="safe_restore">Threema Safe から復元</string>
+    <string name="safe_failed_notification">Threema Safeのバックアップが %d 日間連続して失敗しました。ここをタップして確認してください。</string>
+    <string name="safe_restore">Threema Safeから復元</string>
     <string name="backup_restore_in_progress">バックアップまたは復元が進行中です。ステータス情報は通知を確認してください。</string>
     <string name="restore_error_body">復元が正常に完了しませんでした</string>
     <string name="forgot_your_id">ID を忘れましたか？</string>
@@ -1021,8 +1021,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="delete">削除</string>
     <string name="num_archived_chats">%d 件のアーカイブされたトーク</string>
     <string name="continue_recording">録音を続ける</string>
-    <string name="whatsnew_title">%s 4.5 にようこそ</string>
-    <string name="whatsnew_headline">%1$s 4.5 ではメディアに関する新しい変更が加わっています。\n\nメディアドロワーのインターフェイスは刷新され、AIを利用した画像検索もオプションで利用可能です。\n\nまた、すべてのトークから行えるグローバル検索、メッセージ引用の改善など、他にも様々な変更が追加されています。</string>
+    <string name="whatsnew_title">%s 4.5にようこそ</string>
+    <string name="whatsnew_headline">%1$s 4.5ではメディアに関する新しい変更が加わっています。\n\nメディアドロワーのインターフェイスは刷新され、AIを利用した画像検索もオプションで利用可能です。\n\nまた、すべてのトークから行えるグローバル検索、メッセージ引用の改善など、他にも様々な変更が追加されています。</string>
     <string name="whatsnew2_title">何かありましたか？</string>
     <string name="whatsnew2_body"><![CDATA[<p><b>メディアドロワー</b>: クリップのアイコンをタップすると、スクロール可能なドロワーでメディアファイルを参照できます。最新のメディアで自動的にドロワーを開きたくない場合は、
 トークの設定で画像のクイック選択オプションを無効にしてください（<i>設定/トーク/メディアのクイック選択</i>）。</p>
@@ -1065,7 +1065,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="wallpaper_default">デフォルトの壁紙</string>
     <string name="wallpaper_gallery">ギャラリーから選択する</string>
     <string name="wallpaper_none">表示しない</string>
-    <string name="wallpaper_threema">%s の壁紙</string>
+    <string name="wallpaper_threema">%sの壁紙</string>
     <string name="message_id">メッセージID</string>
     <string name="mime_type">MIMEタイプ</string>
     <string name="password_does_not_comply">パスワードが、管理者が設定したガイドラインに準拠していません。</string>
@@ -1184,6 +1184,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="blur">ぼかし</string>
     <string name="face_blur_tooltip_title">新規: 顔認証</string>
     <string name="face_blur_tooltip_text">画像の中から顔を見つけてぼかしたり、絵文字をかぶせたりします。</string>
+    <string name="listened_to">聞いた</string>
     <string name="transcoder_unsupported_audio_format">システムのサポートが不足しているため、オーディオをトランスコードできませんでした。</string>
     <string name="transcoder_unknown_audio_error">不明なオーディオトランスコーディングエラーが発生しました。</string>
     <string name="video_size_explain">非常に大きなサイズの動画は、この設定にかかわらず圧縮されることがあります。</string>
@@ -1192,4 +1193,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="note_group_howto">ヒント: あなたがメンバーを誰も追加しなかったら、このグループはローカルになります。メモやメディア、ドキュメントを安全に保存したり、パソコンに転送したりするのに最適です。</string>
     <string name="mark_unread">未読にする</string>
     <string name="mark_read_short">既読</string>
+    <string name="unread">未読</string>
+    <string name="missing_app_licence">有効なアプリのライセンスが見つからないため、新しい身元作成リクエストが出来ませんでした。</string>
+    <string name="set_backup_path">バックアップのパスを設定</string>
+    <string name="set_backup_path_intro">バックアップの保存場所を選んでください</string>
 </resources>

@@ -223,6 +223,9 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 				case TRANSCODING:
 					stateResource = R.string.state_transcoding;
 					break;
+				case CONSUMED:
+					stateResource = R.string.listened_to;
+					break;
 			}
 		} else {
 			stateResource = R.string.state_sent;

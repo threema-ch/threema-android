@@ -22,7 +22,6 @@
 package ch.threema.app.webclient.converter;
 
 import androidx.annotation.AnyThread;
-
 import ch.threema.app.webclient.exceptions.ConversionException;
 
 @AnyThread
@@ -35,6 +34,7 @@ public class MessageState extends Converter {
 	public static final String USERDEC = "user-dec";
 	public static final String PENDING = "pending";
 	public static final String SENDING = "sending";
+	public static final String CONSUMED = "consumed";
 
 	public static String convert(ch.threema.storage.models.MessageState state) throws ConversionException {
 		try {
@@ -56,6 +56,9 @@ public class MessageState extends Converter {
 					return MessageState.PENDING;
 				case SENDING:
 					return MessageState.SENDING;
+				case CONSUMED:
+					// TODO(WEBC-432): change to MessageState.CONSUMED as soon as Threema Web supports it
+					return MessageState.READ;
 				default:
 					throw new ConversionException("Unknown message state: " + state);
 			}

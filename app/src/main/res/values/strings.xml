@@ -78,7 +78,7 @@
 	<string name="prefs_title_sum_message_log_on">Events and network information will be logged to the file debug_log.txt</string>
 	<string name="prefs_title_sum_message_log_off">Events will not be logged</string>
 	<string name="prefs_reset_push">Reset push token</string>
-	<string name="prefs_sum_reset_push">Re-register the device for push notifications with FCM</string>
+	<string name="prefs_sum_reset_push">Re-register the device for push notifications with FCM/HMS</string>
 	<string name="prefs_notification_preview">Show message preview</string>
 	<string name="prefs_sum_reset_ringtones">Restore system defaults</string>
 	<string name="prefs_title_reset_ringtones">Reset notification sound settings</string>
@@ -396,7 +396,7 @@
 	<string name="share_image">Share Image</string>
 	<string name="view_in_gallery">View in Gallery</string>
 	<string name="file_saved">%d file(s) successfully saved.</string>
-	<string name="gcm_register_failed">Failed to update FCM push token, please try again later.</string>
+	<string name="token_register_failed">Failed to update push token, please try again later.</string>
 	<string name="internet_connection_required">No Internet connection.</string>
 	<string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d Message(s) could not be sent</string>
 	<string name="prefs_sum_save_media">Save incoming pictures and videos as well as outgoing camera pictures in unencrypted form</string>
@@ -1100,7 +1100,7 @@
 	<string name="edit_type_content_description">View or edit %1$s %2$s</string>
 	<string name="group">Group</string>
 	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Our Privacy Policy has been updated to reflect the following change:</p><p>%1$s no longer depends on Google Play and Google Maps to provide map and POI data.</p>Please review the full Privacy Policy <a href="%2$s">here</a>.]]></string>
-	<string name="play_services_not_installed_unable_to_use_push">Play Services not installed. Cannot switch to «push».</string>
+	<string name="play_services_not_installed_unable_to_use_push">Services not installed. Cannot switch to «push».</string>
 	<string name="unable_to_get_current_location">Unable to determine current location.</string>
 	<string name="lp_search_place_min_chars">Please enter at least three characters to search for a place.</string>
 	<string name="lp_search_place_no_matches">No matching places found. Please modify your query.</string>
@@ -1226,6 +1226,7 @@
 	<string name="blur">Blur</string>
 	<string name="face_blur_tooltip_title">New: Face recognition</string>
 	<string name="face_blur_tooltip_text">Find faces in the image and have them blurred or covered with a smiley.</string>
+	<string name="listened_to">listened</string>
 	<string name="transcoder_unsupported_audio_format">Audio could not be transcoded due to missing system support.</string>
 	<string name="transcoder_unknown_audio_error">Unknown audio transcoding error occurred.</string>
 	<string name="video_size_explain">Very large videos may be compressed regardless of this setting.</string>
@@ -1234,4 +1235,9 @@
 	<string name="note_group_howto">Hint: If you don\'t add any group members, messages to this group will stay local. That\'s ideal for securely storing notes, media or documents or transferring them to the desktop.</string>
 	<string name="mark_unread">Mark as unread</string>
 	<string name="mark_read_short">Read</string>
+	<string name="unread">Unread</string>
+	<string name="missing_app_licence">Could not create new identity request because no valid app licences could be found</string>
+	<string name="set_backup_path">Set backup path</string>
+	<string name="set_backup_path_intro">In the following screen please select the folder where data backups should be saved.</string>
 </resources>
+

@@ -22,6 +22,7 @@
 package ch.threema.storage.models;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 
 /**
  * Important: not stored in the db now
@@ -31,13 +32,13 @@ public class TagModel {
 	private final String tag;
 	@ColorInt private final int primaryColor;
 	@ColorInt private final int accentColor;
-	private final String name;
+	@StringRes final int nameRes;
 
-	public TagModel(String tag, @ColorInt int primaryColor, @ColorInt int accentColor, String name) {
+	public TagModel(String tag, @ColorInt int primaryColor, @ColorInt int accentColor, @StringRes int nameRes) {
 		this.tag = tag;
 		this.primaryColor = primaryColor;
 		this.accentColor = accentColor;
-		this.name = name;
+		this.nameRes = nameRes;
 	}
 
 	public String getTag() {
@@ -52,7 +53,7 @@ public class TagModel {
 		return this.accentColor;
 	}
 
-	public String getName() {
-		return this.name;
+	public @StringRes int getNameRes() {
+		return this.nameRes;
 	}
 }

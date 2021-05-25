@@ -241,7 +241,7 @@ public class SettingsAboutFragment extends ThreemaPreferenceFragment {
 				new AsyncTask<Void, Void, String>() {
 					@Override
 					protected void onPreExecute() {
-						GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_CHECK_UPDATE);
+						GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait).show(getActivity().getSupportFragmentManager(), DIALOG_TAG_CHECK_UPDATE);
 					}
 
 					@Override
@@ -268,9 +268,9 @@ public class SettingsAboutFragment extends ThreemaPreferenceFragment {
 
 					@Override
 					protected void onPostExecute(String error) {
-						DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_CHECK_UPDATE, true);
+						DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_CHECK_UPDATE, true);
 						if (error != null) {
-							SimpleStringAlertDialog.newInstance(R.string.check_updates, error).show(getFragmentManager(), "nu");
+							SimpleStringAlertDialog.newInstance(R.string.check_updates, error).show(getParentFragmentManager(), "nu");
 						} else {
 							Intent dialogIntent = IntentDataUtil.createActionIntentUpdateAvailable(updateMessage, updateUrl);
 							dialogIntent.putExtra(DownloadApkActivity.EXTRA_FORCE_UPDATE_DIALOG, true);

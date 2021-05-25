@@ -72,7 +72,6 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 	private final ContactService contactService;
 	private final PreferenceService preferenceService;
 	private final IdListService blackListIdentityService;
-	private final Context context;
 
 	public static final int VIEW_TYPE_NORMAL = 0;
 	public static final int VIEW_TYPE_COUNT = 2;
@@ -105,7 +104,6 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		this.values = updateRecentlyAdded(values);
 		this.ovalues = this.values;
 		this.contactService = contactService;
-		this.context = context;
 		this.preferenceService = preferenceService;
 		this.blackListIdentityService = blackListIdentityService;
 		this.defaultContactImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_contact);

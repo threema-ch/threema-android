@@ -930,7 +930,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setPushToken(String gcmToken) {
 		this.preferenceStore.save(
-			this.getKeyName(R.string.preferences__gcm_token),
+			this.getKeyName(R.string.preferences__push_token),
 			gcmToken,
 			true);
 	}
@@ -938,7 +938,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public String getPushToken() {
 		return this.preferenceStore.getString(
-			this.getKeyName(R.string.preferences__gcm_token),
+			this.getKeyName(R.string.preferences__push_token),
 			true
 		);
 	}

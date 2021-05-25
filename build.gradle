@@ -2,11 +2,17 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
+        flatDir { dirs 'app/libs' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
-        classpath 'org.owasp:dependency-check-gradle:5.3.2'
+        classpath 'org.owasp:dependency-check-gradle:6.1.6'
+
+        // Huawei agconnect plugin
+        classpath 'com.huawei.agconnect:agcp-1.4.2.300'
+        classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.4.2.300'
+        classpath 'com.huawei.agconnect:agconnect-core-1.4.0.300@aar'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -17,9 +23,19 @@ allprojects {
         google()
         mavenCentral()
         jcenter()
-        maven { url "https://dl.bintray.com/threema/maven" }
-        flatDir {
-            dirs 'libs'
+        flatDir { dirs 'libs' }
+
+        // Huawei
+        exclusiveContent {
+            forRepository {
+                maven { url 'https://developer.huawei.com/repo/' }
+            }
+            filter {
+                // Only matching dependencies will be installed from this repository.
+                includeGroup "com.huawei.hms"
+                includeGroup "com.huawei.android.hms"
+                includeGroup "com.huawei.hmf"
+            }
         }
     }
 
@@ -27,8 +43,9 @@ allprojects {
     apply plugin: 'org.owasp.dependencycheck'
     dependencyCheck {
         skipConfigurations += 'lintClassPath'
-        // Fail dependency check if any dependency has a CVE with any score (0-10)
-        failBuildOnCVSS 11
+        suppressionFile 'dependencyCheckSuppressions.xml'
+        // Fail dependency check if any dependency has a CVE with a score of 3+
+        failBuildOnCVSS 3
     }
 }
 

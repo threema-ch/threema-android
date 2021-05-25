@@ -45,12 +45,14 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.ShortcutService;
 import ch.threema.base.ThreemaException;
+import ch.threema.client.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.MessageContentsType;
 
 public class ConversationNotificationUtil {
 	private static final Logger logger = LoggerFactory.getLogger(ConversationNotificationUtil.class);
@@ -229,8 +231,13 @@ public class ConversationNotificationUtil {
 	}
 
 	public static NotificationService.FetchBitmap getFetchThumbnail(final AbstractMessageModel messageModel) {
-		if (messageModel.getType() == MessageType.IMAGE ||
-				messageModel.getType() == MessageType.VIDEO) {
+		if (messageModel.getMessageContentsType() == MessageContentsType.IMAGE ||
+			messageModel.getMessageContentsType() == MessageContentsType.VIDEO
+		) {
+			if (messageModel.getFileData() != null && messageModel.getFileData().getRenderingType() != FileData.RENDERING_MEDIA) {
+				return null;
+			}
+
 			return new NotificationService.FetchBitmap() {
 				@Override
 				public Bitmap fetch() {

@@ -55,7 +55,8 @@ public interface FileService {
 	File getBackupPath();
 
 	/**
-	 * get the Uri for data backup files
+	 * Get the Uri for data backup files
+	 * @return Uri of data backup path or null if not yet selected by user
 	 */
 	Uri getBackupUri();
 

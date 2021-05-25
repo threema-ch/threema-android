@@ -80,6 +80,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
@@ -115,6 +116,7 @@ import ch.threema.app.voip.util.VideoCapturerUtil;
 import ch.threema.app.voip.util.VoipStats;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
+import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
 import ch.threema.client.ThreemaFeature;
@@ -616,8 +618,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		// if the intent creation was initiated from the phone we additionally cancel a potentially already opened activity on the watch
 		final boolean cancelActivityOnWearable = intent.getBooleanExtra(EXTRA_CANCEL_WEAR, false);
-		if (cancelActivityOnWearable && ConfigUtils.isPlayServicesInstalled(getAppContext())) {
-			voipStateService.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
+		if (cancelActivityOnWearable && PushService.playServicesInstalled(getAppContext())) {
+			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 
 		final VoipICECandidatesData candidatesData =
@@ -789,8 +791,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				}
 			}.execute(new Pair<>(contact, callState.getCallId()));
 		}
-		if (ConfigUtils.isPlayServicesInstalled(getAppContext())){
-			voipStateService.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
+		if (PushService.playServicesInstalled(getAppContext())){
+			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 		disconnect();
 	}
@@ -1479,11 +1481,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 					}
 				});
 			}
-			this.voipStateService.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
+			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 
-		if (ConfigUtils.isPlayServicesInstalled(getAppContext())){
-			voipStateService.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
+		if (PushService.playServicesInstalled(getAppContext())){
+			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 
 		this.preDisconnect(callId);
@@ -1667,8 +1669,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@AnyThread
 	private synchronized void abortCall(@StringRes final int userMessage, @Nullable final String internalMessage, boolean showErrorNotification) {
 		this.abortCall(userMessage, internalMessage, null, showErrorNotification);
-		if (ConfigUtils.isPlayServicesInstalled(getAppContext())){
-			voipStateService.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
+		if (PushService.playServicesInstalled(getAppContext())){
+			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 	}
 

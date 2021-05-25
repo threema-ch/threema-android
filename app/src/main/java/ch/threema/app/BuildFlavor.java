@@ -29,9 +29,11 @@ public class BuildFlavor {
 	private final static String FLAVOR_SANDBOX = "sandbox";
 	private final static String FLAVOR_SANDBOX_WORK = "sandbox_work";
 	private final static String FLAVOR_RED = "red";
+	private final static String FLAVOR_HMS = "hms";
+	private final static String FLAVOR_HMS_WORK = "hms_work";
 
 	public enum LicenseType {
-		NONE, GOOGLE, SERIAL, GOOGLE_WORK
+		NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK
 	}
 
 	private static boolean initialized = false;
@@ -111,6 +113,14 @@ public class BuildFlavor {
 					sandbox = true;
 					name = "Red";
 					licenseType = LicenseType.GOOGLE_WORK;
+					break;
+				case FLAVOR_HMS:
+					name = "HMS";
+					licenseType = LicenseType.HMS;
+					break;
+				case FLAVOR_HMS_WORK:
+					name = "Hms Work";
+					licenseType = LicenseType.HMS_WORK;
 					break;
 				default:
 					throw new RuntimeException("invalid flavor build " + BuildConfig.FLAVOR);

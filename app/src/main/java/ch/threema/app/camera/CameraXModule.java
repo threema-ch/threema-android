@@ -61,8 +61,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresPermission;
-import androidx.annotation.experimental.UseExperimental;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraSelector;
@@ -80,6 +80,7 @@ import androidx.camera.core.impl.utils.executor.CameraXExecutors;
 import androidx.camera.core.impl.utils.futures.FutureCallback;
 import androidx.camera.core.impl.utils.futures.Futures;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.camera.view.video.ExperimentalVideo;
 import androidx.core.util.Preconditions;
@@ -91,7 +92,14 @@ import ch.threema.app.utils.ConfigUtils;
 
 import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
 
-/** CameraX use case operation built on @{link androidx.camera.core}. */
+/**
+ * CameraX use case operation built on @{link androidx.camera.core}.
+ *
+ * @deprecated Use {@link LifecycleCameraController}. See
+ * <a href="https://medium.com/androiddevelopers/camerax-learn-how-to-use-cameracontroller
+ * -e3ed10fffecf">migration guide</a>.
+ */
+@Deprecated
 @SuppressLint("RestrictedApi")
 @TargetApi(21)
 final class CameraXModule {
@@ -189,7 +197,7 @@ final class CameraXModule {
         }
     }
 
-    @UseExperimental(markerClass = ExperimentalVideo.class)
+    @OptIn(markerClass = ExperimentalVideo.class)
     @RequiresPermission(permission.CAMERA)
     void bindToLifecycleAfterViewMeasured() {
         if (mNewLifecycle == null) {
@@ -347,7 +355,7 @@ final class CameraXModule {
                 "Explicit open/close of camera not yet supported. Use bindtoLifecycle() instead.");
     }
 
-    @UseExperimental(markerClass = ExperimentalVideo.class)
+    @OptIn(markerClass = ExperimentalVideo.class)
     public void takePicture(Executor executor, OnImageCapturedCallback callback) {
         if (mImageCapture == null) {
             return;
@@ -364,7 +372,7 @@ final class CameraXModule {
         mImageCapture.takePicture(executor, callback);
     }
 
-    @UseExperimental(markerClass = ExperimentalVideo.class)
+    @OptIn(markerClass = ExperimentalVideo.class)
     public void takePicture(@NonNull ImageCapture.OutputFileOptions outputFileOptions,
             @NonNull Executor executor, OnImageSavedCallback callback) {
         if (mImageCapture == null) {

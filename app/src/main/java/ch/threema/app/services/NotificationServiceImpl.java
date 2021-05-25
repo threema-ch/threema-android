@@ -187,9 +187,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	public NotificationServiceImpl(Context context,
 	                               LockAppService lockAppService,
-	                               DeadlineListService mutedChatsListService,
 	                               DeadlineListService hiddenChatsListService,
-	                               DeadlineListService mentionOnlyChatsListService,
 	                               PreferenceService preferenceService,
 	                               RingtoneService ringtoneService) {
 		this.context = context;
@@ -787,7 +785,9 @@ public class NotificationServiceImpl implements NotificationService {
 					.setShowsUserInterface(false).build());
 			}
 
-			if (newestGroup.getMessageReceiver() instanceof ContactMessageReceiver) {
+			if (newestGroup.getMessageReceiver() instanceof GroupMessageReceiver) {
+				builder.addAction(getMarkAsReadAction(markReadPendingIntent));
+			} else if (newestGroup.getMessageReceiver() instanceof ContactMessageReceiver) {
 
 				if (conversationNotification.getMessageType().equals(MessageType.VOIP_STATUS))  {
 					// Create an intent for the call action
@@ -812,11 +812,15 @@ public class NotificationServiceImpl implements NotificationService {
 						builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_thumb_up_white_24dp, context.getString(R.string.acknowledge), ackPendingIntent)
 								.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP).build());
 					}
-					builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_mark_read, context.getString(R.string.mark_read_short), markReadPendingIntent)
-						.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ).build());
+					builder.addAction(getMarkAsReadAction(markReadPendingIntent));
 				}
 			}
 		}
+	}
+
+	private NotificationCompat.Action getMarkAsReadAction(PendingIntent markReadPendingIntent) {
+		return new NotificationCompat.Action.Builder(R.drawable.ic_mark_read, context.getString(R.string.mark_read_short), markReadPendingIntent)
+			.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ).build();
 	}
 
 	private void createSingleNotification(ConversationNotificationGroup newestGroup,
@@ -1037,7 +1041,7 @@ public class NotificationServiceImpl implements NotificationService {
 			synchronized (this.conversationNotifications) {
 				cancelPinLockedNewMessagesNotification();
 
-				//check if more then one group in the notification
+				//check if more than one group in the notification
 				ConversationNotification newestNotification = null;
 				HashSet<ConversationNotificationGroup> uniqueNotificationGroups = new HashSet<>();
 
@@ -1130,7 +1134,7 @@ public class NotificationServiceImpl implements NotificationService {
 		synchronized (this.conversationNotifications) {
 			cancelPinLockedNewMessagesNotification();
 
-			//check if more then one group in the notification
+			//check if more than one group in the notification
 			ConversationNotificationGroup newestGroup = null;
 			ConversationNotification newestNotification = null;
 			Map<String, ConversationNotificationGroup> uniqueNotificationGroups = new HashMap<>();

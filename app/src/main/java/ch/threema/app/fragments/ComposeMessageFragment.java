@@ -285,7 +285,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	public static final long VIBRATION_MSEC = 300;
 	private static final long MESSAGE_PAGE_SIZE = 100;
-	private static final int SCROLLBUTTON_VIEW_TIMEOUT = 3000;
+	public static final int SCROLLBUTTON_VIEW_TIMEOUT = 3000;
 	private static final int SMOOTHSCROLL_THRESHOLD = 10;
 	private static final int MAX_SELECTED_ITEMS = 100; // may not be larger than MESSAGE_PAGE_SIZE
 	private static final int MAX_FORWARDABLE_ITEMS = 50;
@@ -1318,6 +1318,13 @@ public class ComposeMessageFragment extends Fragment implements
 
 		if(this.typingIndicatorTextWatcher != null) {
 			this.typingIndicatorTextWatcher.stopTyping();
+		}
+
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+			// close keyboard to prevent layout corruption after unlocking phone
+			if (this.messageText != null) {
+				EditTextUtil.hideSoftKeyboard(this.messageText);
+			}
 		}
 		super.onStop();
 	}
@@ -2550,6 +2557,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.composeMessageAdapter.setThumbnailWidth(ConfigUtils.getPreferredThumbnailWidth(getContext(), false));
 			this.composeMessageAdapter.setGroupId(groupId);
 			this.composeMessageAdapter.setMessageReceiver(this.messageReceiver);
+			this.composeMessageAdapter.setUnreadMessagesCount(unreadCount);
 			this.insertToList(values, true, true, true);
 			updateToolbarTitle();
 		} else {

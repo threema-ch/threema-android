@@ -89,6 +89,7 @@ import androidx.camera.core.impl.LensFacingConverter;
 import androidx.camera.core.impl.utils.executor.CameraXExecutors;
 import androidx.camera.core.impl.utils.futures.FutureCallback;
 import androidx.camera.core.impl.utils.futures.Futures;
+import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.camera.view.video.ExperimentalVideo;
 import androidx.camera.view.video.OnVideoSavedCallback;
@@ -113,7 +114,12 @@ import ch.threema.app.utils.ConfigUtils;
  * <p>Because the Camera is a limited resource and consumes a high amount of power, CameraView must
  * be opened/closed. CameraView will handle opening/closing automatically through use of a {@link
  * LifecycleOwner}. Use {@link #bindToLifecycle(LifecycleOwner)} to start the camera.
+ *
+ * @deprecated Use {@link LifecycleCameraController}. See
+ * <a href="https://medium.com/androiddevelopers/camerax-learn-how-to-use-cameracontroller
+ * -e3ed10fffecf">migration guide</a>.
  */
+@Deprecated
 @SuppressLint("RestrictedApi")
 @TargetApi(21)
 public final class CameraView extends FrameLayout {

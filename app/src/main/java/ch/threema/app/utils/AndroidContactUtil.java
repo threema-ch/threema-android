@@ -688,11 +688,10 @@ public class AndroidContactUtil {
 	/**
 	 * Create a raw contact for the given identity. Put the identity into the SYNC1 column and set DISPLAY_NAME and data records for messaging and calling
 	 * @param identity
-	 * @param displayName
 	 * @param supportsVoiceCalls
 	 * @return LOOKUP_KEY of the newly created raw contact or null if no contact has been created
 	 */
-	public String createThreemaAndroidContact(String identity, String displayName, boolean supportsVoiceCalls) {
+	public String createThreemaAndroidContact(String identity, boolean supportsVoiceCalls) {
 		Context context = ThreemaApplication.getAppContext();
 		Account account = this.getAccount();
 		if (!TestUtil.required(account, identity)) {

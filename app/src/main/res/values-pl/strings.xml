@@ -76,7 +76,7 @@
     <string name="prefs_title_sum_message_log_on">Logi wydarzeń będą zapisywane do pliku debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">Wydarzenia nie będą zapisywały logów</string>
     <string name="prefs_reset_push">Zresetuj push token</string>
-    <string name="prefs_sum_reset_push">Zarejestruj urządzenie ponownie, aby uzyskać powiadomienia typu \"push\" z użyciem FCM</string>
+    <string name="prefs_sum_reset_push">Zarejestruj urządzenie ponownie, aby uzyskać powiadomienia typu \"push\" z użyciem FCM/HMS</string>
     <string name="prefs_notification_preview">Pokaż podgląd wiadomości</string>
     <string name="prefs_sum_reset_ringtones">Przywróć ustawienia systemowe</string>
     <string name="prefs_title_reset_ringtones">Zresetuj ustawienia dźwiękowe powiadomień</string>
@@ -375,7 +375,7 @@
     <string name="share_image">Udostępnij zdjęcie</string>
     <string name="view_in_gallery">Zobacz w galerii</string>
     <string name="file_saved">%d pliki zostały pomyślnie zapisane.</string>
-    <string name="gcm_register_failed">Nie udało się zresetować FCM Push Token, proszę spróbować ponownie.</string>
+    <string name="token_register_failed">Nie udało się zresetować Push Token, proszę spróbować ponownie.</string>
     <string name="internet_connection_required">Brak połączenia z Internetem.</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">Wysyłanie wiadomości nie powiodło %1$d</string>
     <string name="prefs_sum_save_media">Automatycznie pobieraj i dekoduj przychodzące media i dodaj je do galerii</string>
@@ -1063,7 +1063,7 @@ anonimowo?</string>
     <string name="edit_type_content_description">Pokaż lub edytuj %1$s %2$s</string>
     <string name="group">Grupa</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Nasza polityka prywatności została zaktualizowana, aby odzwierciedlić następującą zmianę:</p><p>%1$s nie zależy już od Google Play i Google Maps w celu dostarczenia map i danych POI.</p>Proszę zapoznać się z polityką prywatności <a href="%2$s">tutaj</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Aplikacja Play Services nie jest zainstalowana. Nie można przełączyć na „push”.</string>
+    <string name="play_services_not_installed_unable_to_use_push">Aplikacja Services nie jest zainstalowana. Nie można przełączyć na „push”.</string>
     <string name="unable_to_get_current_location">Nie można określić obecnej lokalizacji.</string>
     <string name="lp_search_place_min_chars">Wprowadź co najmniej trzy znaki, aby wyszukać miejsce.</string>
     <string name="lp_search_place_no_matches">Nie znaleziono pasujących miejsc. Zmień wyszukiwaną frazę.</string>
@@ -1189,6 +1189,7 @@ anonimowo?</string>
     <string name="blur">Rozmyj</string>
     <string name="face_blur_tooltip_title">Nowość: rozpoznawanie twarzy</string>
     <string name="face_blur_tooltip_text">Znajdź twarze na obrazie i rozmyj je lub zakryj buźkami</string>
+    <string name="listened_to">odsłuchane</string>
     <string name="transcoder_unsupported_audio_format">Nieudane transkodowanie dźwięku z powodu braku wsparcia systemowego.</string>
     <string name="transcoder_unknown_audio_error">Wystąpił nieznany  błąd transkodowania dźwięku.</string>
     <string name="video_size_explain">Bardzo duże filmy mogą być kompresowane niezależnie od wartości tego ustawienia.</string>
@@ -1197,4 +1198,8 @@ anonimowo?</string>
     <string name="note_group_howto">Wskazówka: Jeśli nie dodasz żadnych członków czy wiadomości do tej grupy, pozostanie ona lokalna. To idealne rozwiązanie, jeśli chcesz bezpiecznie przechowywać notatki, pliki multimedialne i dokumenty lub przenosić te je na pulpit.</string>
     <string name="mark_unread">Oznacz jako nieprzeczytane</string>
     <string name="mark_read_short">Przeczytane</string>
+    <string name="unread">Nieprzeczytane</string>
+    <string name="missing_app_licence">Nie udało się utworzyć nowego żądania tożsamości, ponieważ nie znaleziono ważnych licencji na aplikacje.</string>
+    <string name="set_backup_path">Ustaw ścieżkę do kopii zapasowej</string>
+    <string name="set_backup_path_intro">W następnym ekranie wybierz folder, w którym mają być zapisywane kopie zapasowe danych.</string>
 </resources>

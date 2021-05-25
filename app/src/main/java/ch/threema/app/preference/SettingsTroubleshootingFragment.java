@@ -54,13 +54,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.DropDownPreference;
-import androidx.preference.Preference.SummaryProvider;
 import androidx.preference.Preference;
+import androidx.preference.Preference.SummaryProvider;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.FcmRegistrationIntentService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -73,6 +72,7 @@ import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
@@ -105,8 +105,8 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 	private static final Logger logger = LoggerFactory.getLogger(SettingsTroubleshootingFragment.class);
 
 	private static final String DIALOG_TAG_REMOVE_WALLPAPERS = "removeWP";
-	private static final String DIALOG_TAG_GCM_REGISTER = "gcmReg";
-	private static final String DIALOG_TAG_GCM_RESULT = "gcmRes";
+	private static final String DIALOG_TAG_PUSH_REGISTER = "pushReg";
+	private static final String DIALOG_TAG_PUSH_RESULT = "pushRes";
 	private static final String DIALOG_TAG_RESET_RINGTONES = "rri";
 	private static final String DIALOG_TAG_IPV6_APP_RESTART = "rs";
 	private static final String DIALOG_TAG_POWERMANAGER_WORKAROUNDS = "hw";
@@ -137,10 +137,10 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 	private MessageService messageService;
 	private ContactService contactService;
 
-	private BroadcastReceiver gcmRegisterBroadcastReceiver;
+	private BroadcastReceiver pushTokenResetBroadcastReceiver;
 	private View fragmentView;
 
-	private boolean isPlayServicesInstalled;
+	private boolean pushServicesInstalled;
 
 	@Override
 	public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -153,23 +153,27 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("pref_key_troubleshooting");
 
 		sharedPreferences = getPreferenceManager().getSharedPreferences();
+		pushServicesInstalled = PushService.servicesInstalled(getContext());
 
-		gcmRegisterBroadcastReceiver = new BroadcastReceiver() {
+		pushTokenResetBroadcastReceiver = new BroadcastReceiver() {
 			// register listener for gcm registration result
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_GCM_REGISTER, true);
-				boolean sentToken = !PushUtil.pushTokenNeedsRefresh(context);
+				DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_PUSH_REGISTER, true);
 
-				SimpleStringAlertDialog.newInstance(-1, sentToken ?
-						(intent.getBooleanExtra(FcmRegistrationIntentService.EXTRA_CLEAR_TOKEN, false) ?
-								getString(R.string.push_token_cleared) :
-								getString(R.string.push_reset_text)) :
-						getString(R.string.gcm_register_failed)).show(getFragmentManager(), DIALOG_TAG_GCM_RESULT);
+				String message;
+				if (intent.getBooleanExtra(PushUtil.EXTRA_REGISTRATION_ERROR_BROADCAST, false)) {
+					message = getString(R.string.token_register_failed);
+				}
+				else if (intent.getBooleanExtra(PushUtil.EXTRA_CLEAR_TOKEN, false)) {
+					message = getString(R.string.push_token_cleared);
+				}
+				else {
+					message = getString(R.string.push_reset_text);
+				}
+				SimpleStringAlertDialog.newInstance(-1, message).show(getParentFragmentManager(), DIALOG_TAG_PUSH_RESULT);
 			}
 		};
-
-		isPlayServicesInstalled = ConfigUtils.isPlayServicesInstalled(getContext());
 
 		pollingTwoStatePreference = (TwoStatePreference) findPreference(getResources().getString(R.string.preferences__polling_switch));
 		pollingTwoStatePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -177,16 +181,16 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				boolean newCheckedValue = newValue.equals(true);
 				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
 					if (newCheckedValue) {
-						if (isPlayServicesInstalled) {
+						if (pushServicesInstalled) {
 							GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.enable_polling, R.string.push_disable_text, R.string.continue_anyway, R.string.cancel);
 							dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
-							dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_ENABLE_POLLING);
+							dialog.show(getParentFragmentManager(), DIALOG_TAG_REALLY_ENABLE_POLLING);
 							return false;
 						}
 						updatePollInterval();
 						return true;
 					} else {
-						if (isPlayServicesInstalled) {
+						if (pushServicesInstalled) {
 							lifetimeService.setPollingInterval(0);
 						} else {
 							Toast.makeText(getContext(), R.string.play_services_not_installed_unable_to_use_push, Toast.LENGTH_SHORT).show();
@@ -233,10 +237,10 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		resetPushPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				if (ConfigUtils.isPlayServicesInstalled(getActivity())) {
+				if (pushServicesInstalled) {
 					PushUtil.clearPushTokenSentDate(getActivity());
-					PushUtil.sendPushTokenToServer(getContext(), false, true);
-					GenericProgressDialog.newInstance(R.string.push_reset_title, R.string.please_wait).showNow(getFragmentManager(), DIALOG_TAG_GCM_REGISTER);
+					PushUtil.enqueuePushTokenUpdate(getContext(), false, true);
+					GenericProgressDialog.newInstance(R.string.push_reset_title, R.string.please_wait).showNow(getParentFragmentManager(), DIALOG_TAG_PUSH_REGISTER);
 				}
 				return true;
 			}
@@ -252,7 +256,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 						R.string.cancel);
 
 				dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_REMOVE_WALLPAPERS);
+				dialog.show(getParentFragmentManager(), DIALOG_TAG_REMOVE_WALLPAPERS);
 				return false;
 			}
 		});
@@ -267,7 +271,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 						R.string.cancel);
 
 				dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_RESET_RINGTONES);
+				dialog.show(getParentFragmentManager(), DIALOG_TAG_RESET_RINGTONES);
 				return false;
 			}
 		});
@@ -290,7 +294,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 						dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
 						dialog.setData(oldCheckedValue);
-						dialog.show(getFragmentManager(), DIALOG_TAG_IPV6_APP_RESTART);
+						dialog.show(getParentFragmentManager(), DIALOG_TAG_IPV6_APP_RESTART);
 						return false;
 					}
 					return true;
@@ -313,7 +317,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 								R.string.cancel);
 
 						dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
-						dialog.show(getFragmentManager(), DIALOG_TAG_POWERMANAGER_WORKAROUNDS);
+						dialog.show(getParentFragmentManager(), DIALOG_TAG_POWERMANAGER_WORKAROUNDS);
 					} else {
 						disableAutostart();
 					}
@@ -518,7 +522,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				R.string.cancel);
 
 			dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
-			dialog.show(getFragmentManager(), DIALOG_TAG_AUTOSTART_WORKAROUNDS);
+			dialog.show(getParentFragmentManager(), DIALOG_TAG_AUTOSTART_WORKAROUNDS);
 		} else {
 			requestDisableBatteryOptimizations(getString(R.string.app_name), R.string.cancel, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS_HUAWEI);
 		}
@@ -529,16 +533,16 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		super.onStart();
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(gcmRegisterBroadcastReceiver,
-				new IntentFilter(ThreemaApplication.INTENT_GCM_REGISTRATION_COMPLETE));
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(pushTokenResetBroadcastReceiver,
+				new IntentFilter(ThreemaApplication.INTENT_PUSH_REGISTRATION_COMPLETE));
 	}
 
 	@Override
 	public void onStop() {
 		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(gcmRegisterBroadcastReceiver);
+		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(pushTokenResetBroadcastReceiver);
 
-		DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_GCM_REGISTER, true);
+		DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_PUSH_REGISTER, true);
 
 		super.onStop();
 	}
@@ -555,13 +559,9 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				return;
 			}
 
-			if (isPlayServicesInstalled) {
-				PushUtil.sendPushTokenToServer(getContext(), newValue, true);
-				GenericProgressDialog.newInstance(-1, R.string.please_wait).showNow(getFragmentManager(), DIALOG_TAG_GCM_REGISTER);
-			} else {
-				if (newValue) { // polling enabled
-					PushUtil.sendPushTokenToServer(getContext(), true, false);
-				}
+			if (pushServicesInstalled) {
+				PushUtil.enqueuePushTokenUpdate(getContext(), newValue, true);
+				GenericProgressDialog.newInstance(R.string.push_reset_title, R.string.please_wait).showNow(getParentFragmentManager(), DIALOG_TAG_PUSH_REGISTER);
 			}
 		} else if (key.equals(getString(R.string.preferences__polling_interval))) {
 			updatePollInterval();
@@ -577,7 +577,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				3000,
 				1);
 		dialog.setTargetFragment(this, 0);
-		dialog.show(getFragmentManager(), DIALOG_TAG_SENDLOG);
+		dialog.show(getParentFragmentManager(), DIALOG_TAG_SENDLOG);
 	}
 
 
@@ -587,7 +587,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 			@Override
 			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.preparing_messages, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_SENDLOG);
+				GenericProgressDialog.newInstance(R.string.preparing_messages, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_SENDLOG);
 			}
 
 			@Override
@@ -631,7 +631,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 			@Override
 			protected void onPostExecute(Exception exception) {
 				if (isAdded()) {
-					DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_SENDLOG, true);
+					DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_SENDLOG, true);
 
 					if (exception != null) {
 						Toast.makeText(getActivity().getApplicationContext(), R.string.an_error_occurred, Toast.LENGTH_LONG).show();

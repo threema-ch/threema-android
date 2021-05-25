@@ -39,7 +39,7 @@ function print_usage() {
     echo ""
     echo "Options:"
     echo "  -n <version-name>    The version name. Example: '4.43k'"
-    echo "  -v <variant>         Variant to verify: Either googleplay or threemashop"
+    echo "  -v <variant>         Variant to verify: Either googleplay, threemashop or hms"
     echo "  -p <published-apk>   Path to the APK file extracted from the phone"
     echo "  -l <local-apk>       Optional: Path to the locally built APK"
     echo "  -h,--help            Print this help and exit"
@@ -115,6 +115,7 @@ fi
 case "$variant" in
     googleplay) variant_name="store_google" ;;
     threemashop) variant_name="store_threema" ;;
+    hms) variant_name="hms" ;;
     *) fail "Invalid build variant: $variant" ;;
 esac
 

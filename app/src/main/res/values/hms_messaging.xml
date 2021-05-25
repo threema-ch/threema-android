@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<string name="hiapp_download_url" translatable="false">https://a.vmall.com/download</string>
+	<string name="drm_dialog_message_hiapp_not_installed" priority="LT">Please install the latest version of AppGallery first.</string>
+
+	<string name="drm_dialog_message_apptouch_not_installed" priority="translator">Download the latest version of your app store to continue.</string>
+	<string name="drm_dialog_text_confirm" priority="translator">OK</string>
+	<string name="drm_dialog_message_apptouch_not_logged" priority="translator">Please log in first.</string>
+	<string name="drm_dialog_message_apptouch_agreement" priority="translator">Please agree to the %s terms of service first.</string>
+	<string name="drm_dialog_message_apptouch_other_errorcode" priority="translator">Unable to check purchase history (error %s). Contact customer service.</string>
+	<string name="drm_dialog_message_apptouch_over_limit" priority="translator">Max. number of devices reached for using this app with this account (%s).</string>
+	<string name="drm_dialog_message_apptouch_over_limit_without_name" priority="translator">Max. number of devices reached for using this app with this account.</string>
+
+	<string name="drm_dialog_message_get_sign_failed" priority="LT">Network error. Please check your Internet connection and try again.</string>
+	<string name="drm_dialog_message_no_internet" priority="LT">No Internet connection. Check your network settings and try again.</string>
+	<string name="drm_dialog_message_check_failed" priority="LT">This app was not purchased using this account (%s). Purchase the app or switch to another account.</string>
+	<string name="drm_dialog_message_check_failed_without_name" priority="LT">You have not purchased this app. Please purchase it first.</string>
+	<string name="drm_dialog_message_not_logged" priority="LT">Please log in with your HUAWEI ID.</string>
+	<string name="drm_dialog_message_user_interrupt" priority="LT">Failed to check purchase history. Please try again.</string>
+	<string name="drm_dialog_message_hiapp_agreement" priority="LT">Please agree to the AppGallery Terms of Service first.</string>
+	<string name="drm_dialog_message_gamebox_agreement" priority="LT">Please agree to the HUAWEI GameCenter Terms of Service first.</string>
+	<string name="drm_dialog_message_waiting" priority="LT">Checking purchase history… Please wait.</string>
+	<string name="drm_dialog_text_install" priority="LT">Install</string>
+	<string name="drm_dialog_text_quit" priority="LT">Quit</string>
+	<string name="drm_dialog_text_retry" priority="LT">OK</string>
+	<string name="drm_dialog_text_buy" priority="LT">Purchase</string>
+	<string name="drm_dialog_text_login" priority="LT">Log in</string>
+	<string name="drm_dialog_text_ok" priority="LT">OK</string>
+	<string name="drm_dialog_message_over_limit" priority="LT">You (%s) have exceeded the maximum number of devices that can be used with this app. Please switch to another HUAWEI ID and purchase again.</string>
+	<string name="drm_dialog_message_over_limit_without_name" priority="translator">You have reached the device limit for this app. Please try again with a different account.</string>
+	<string name="drm_dialog_message_other_errorcode" priority="LT">Failed to check purchase history, error code: %s. Please contact AppGallery customer service.</string>
+	<string name="drm_dialog_text_hasknow" priority="LT">OK</string>
+
+</resources>

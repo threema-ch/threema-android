@@ -119,6 +119,7 @@ public class ProtocolDefines {
 	public static final int DELIVERYRECEIPT_MSGREAD = 0x02;
 	public static final int DELIVERYRECEIPT_MSGUSERACK = 0x03;
 	public static final int DELIVERYRECEIPT_MSGUSERDEC = 0x04;
+	public static final int DELIVERYRECEIPT_MSGCONSUMED = 0x05;
 
 	/* payload types */
 	public static final int PLTYPE_ECHO_REQUEST = 0x00;
@@ -137,6 +138,7 @@ public class ProtocolDefines {
 	/* push token types */
 	public static final int PUSHTOKEN_TYPE_NONE = 0x00;
 	public static final int PUSHTOKEN_TYPE_GCM = 0x11;
+	public static final int PUSHTOKEN_TYPE_HMS = 0x13;
 
 	/* nonces */
 	public static final byte[] IMAGE_NONCE = new byte[]{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01};

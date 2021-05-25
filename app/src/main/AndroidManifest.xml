@@ -46,7 +46,7 @@
 
 	<!-- PROTECTION_NORMAL - granted automatically -->
 	<uses-permission android:name="android.permission.INTERNET"/>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
 	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 	<uses-permission android:name="android.permission.VIBRATE"/>
@@ -133,7 +133,6 @@
 		android:theme="@style/AppBaseTheme"
 		android:usesCleartextTraffic="false"
 		android:networkSecurityConfig="@xml/network_security_config"
-		android:requestLegacyExternalStorage="true"
 		android:manageSpaceActivity=".activities.StorageManagementActivity"
 		android:allowAudioPlaybackCapture="false"
 		android:appCategory="social"
@@ -145,26 +144,8 @@
 			android:name="android.max_aspect"
 			android:value="2.5"/>
 		<meta-data
-			android:name="firebase_analytics_collection_deactivated"
-			android:value="true"/>
-		<meta-data
-			android:name="google_analytics_adid_collection_enabled"
-			android:value="false"/>
-		<meta-data
-			android:name="google_analytics_ssaid_collection_enabled"
-			android:value="false" />
-		<meta-data
-			android:name="firebase_messaging_auto_init_enabled"
-			android:value="false"/>
-		<meta-data
 			android:name="android.provider.CONTACTS_STRUCTURE"
 			android:resource="@xml/contacts"/>
-		<meta-data
-			android:name="com.google.android.gms.version"
-			android:value="@integer/google_play_services_version"/>
-		<meta-data
-			android:name="com.google.android.gms.car.application"
-			android:resource="@xml/automotive_app_desc"/>
 
 		<activity
 			android:name=".activities.MainActivity"
@@ -413,11 +394,6 @@
 			android:configChanges="uiMode" />
 		<activity
 			android:name=".activities.GroupAdd2Activity"
-			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.Translucent">
-		</activity>
-		<activity
-			android:name=".activities.NotesEditActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:theme="@style/Theme.Threema.Translucent">
 		</activity>
@@ -811,17 +787,6 @@
 			android:enabled="true"
 			android:exported="false"/>
 		<service
-			android:name=".FcmListenerService">
-			<intent-filter>
-				<action android:name="com.google.firebase.MESSAGING_EVENT" />
-			</intent-filter>
-		</service>
-		<service
-			android:name=".FcmRegistrationIntentService"
-			android:exported="false"
-			android:permission="android.permission.BIND_JOB_SERVICE">
-		</service>
-		<service
 			android:name=".RecipientChooserTargetService"
 			android:label="@string/app_name"
 			android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
@@ -869,11 +834,6 @@
 			android:permission="android.permission.BIND_JOB_SERVICE"/>
 		<service
 			android:name=".jobs.WorkSyncService"
-			android:enabled="true"
-			android:exported="false"
-			android:permission="android.permission.BIND_JOB_SERVICE"/>
-		<service
-			android:name=".jobs.FcmRegistrationJobService"
 			android:enabled="true"
 			android:exported="false"
 			android:permission="android.permission.BIND_JOB_SERVICE"/>

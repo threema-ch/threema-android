@@ -41,23 +41,11 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
-import com.google.android.gms.common.data.FreezableUtils;
-import com.google.android.gms.tasks.Tasks;
-import com.google.android.gms.wearable.DataClient;
-import com.google.android.gms.wearable.DataEvent;
-import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataMapItem;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
-import com.google.android.gms.wearable.Wearable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
 
-import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -66,7 +54,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
@@ -80,6 +67,7 @@ import ch.threema.app.R;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
@@ -90,7 +78,6 @@ import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IdUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.voip.CallState;
 import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.Config;
@@ -99,6 +86,7 @@ import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.receivers.CallRejectReceiver;
 import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.MessageQueue;
 import ch.threema.client.voip.VoipCallAnswerData;
@@ -116,6 +104,7 @@ import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
 import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
+import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
 import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
@@ -199,44 +188,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private static final int RINGING_TIMEOUT_SECONDS = 60;
 	private static final int VOIP_CONNECTION_LINGER = 1000 * 5;
 
-	private DataClient.OnDataChangedListener wearableListener = new DataClient.OnDataChangedListener() {
-		@Override
-		public void onDataChanged(@NonNull DataEventBuffer eventsBuffer) {
-			logger.debug("onDataChanged Listener VoipState: " + eventsBuffer);
-			final List<DataEvent> events = FreezableUtils.freezeIterable(eventsBuffer);
-			for (DataEvent event : events) {
-				if (event.getType() == DataEvent.TYPE_CHANGED) {
-					String path = event.getDataItem().getUri().getPath();
-					logger.debug("received datachange path " + path);
-					if ("/accept-call".equals(path)) {
-						logger.debug("accept call block entered");
-						DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-						long callId = dataMapItem.getDataMap().getLong(EXTRA_CALL_ID, 0L);
-						String identity = dataMapItem.getDataMap().getString(EXTRA_CONTACT_IDENTITY);
-						final Intent intent = createAcceptIntent(callId, identity);
-						appContext.startService(intent);
-						//Listen again for hang up
-						Wearable.getDataClient(appContext).addListener(wearableListener);
-
-					} if("/reject-call".equals(path)) {
-						logger.debug("reject call block entered");
-						DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-						long callId = dataMapItem.getDataMap().getLong(EXTRA_CALL_ID, 0L);
-						String identity = dataMapItem.getDataMap().getString(EXTRA_CONTACT_IDENTITY);
-						final Intent rejectIntent = createRejectIntent(
-							callId,
-							identity,
-							VoipCallAnswerData.RejectReason.REJECTED
-						);
-						CallRejectService.enqueueWork(appContext, rejectIntent);
-					} if ("/disconnect-call".equals(path)){
-						logger.debug("disconnect call block entered");
-						VoipUtil.sendVoipCommand(appContext, VoipCallService.class, VoipCallService.ACTION_HANGUP);
-					}
-				}
-			}
-		}
-	};
+	private final WearableHandler wearableHandler;
 
 	public VoipStateService(ContactService contactService,
 	                        RingtoneService ringtoneService,
@@ -256,6 +208,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.notificationManagerCompat = NotificationManagerCompat.from(appContext);
 		this.notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		this.audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+		this.wearableHandler = new WearableHandler(appContext);
 	}
 
 	//region Logging
@@ -513,8 +466,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	/**
 	 * Create a new accept intent for the specified call ID / identity.
 	 */
-	private Intent createAcceptIntent(long callId, @NonNull String identity) {
-		final Intent intent = new Intent(appContext, VoipCallService.class);
+	public static Intent createAcceptIntent(long callId, @NonNull String identity) {
+		final Intent intent = new Intent(getAppContext(), VoipCallService.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
@@ -524,8 +477,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	/**
 	 * Create a new reject intent for the specified call ID / identity.
 	 */
-	private Intent createRejectIntent(long callId, @NonNull String identity, byte rejectReason) {
-		final Intent intent = new Intent(this.appContext, CallRejectReceiver.class);
+	public static Intent createRejectIntent(long callId, @NonNull String identity, byte rejectReason) {
+		final Intent intent = new Intent(getAppContext(), CallRejectReceiver.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
@@ -679,7 +632,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Set state to RINGING
 		this.setStateRinging(callId);
 
-		// play ringtone
+		// Play ringtone
 		this.playRingtone(messageReceiver, isMuted);
 
 		// Show call notification
@@ -762,9 +715,15 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				return true;
 			}
 
+			// Ensure that an answer wasn't already received
+			if (this.callState.answerReceived()) {
+				logCallWarning(callId, "Received extra answer, ignoring");
+				return true;
+			}
+
 			// Ensure that action was set
 			if (callAnswerData.getAction() == null) {
-			    logger.error("Call answer received without action, ignoring");
+			    logCallWarning(callId, "Call answer received without action, ignoring");
 			    return true;
 			}
 
@@ -791,15 +750,18 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					logCallInfo(callId, "Call answer received from {}: Unknown action: {}", callAnswerData.getAction());
 					break;
 			}
-		}
 
-		// Notify listeners
-		VoipListenerManager.messageListener.handle(listener -> {
-			final String identity = msg.getFromIdentity();
-			if (listener.handle(identity)) {
-				listener.onAnswer(identity, callAnswerData);
-			}
-		});
+			// Mark answer as received
+			this.callState.setAnswerReceived();
+
+			// Notify listeners
+			VoipListenerManager.messageListener.handle(listener -> {
+				final String identity = msg.getFromIdentity();
+				if (listener.handle(identity)) {
+					listener.onAnswer(identity, callAnswerData);
+				}
+			});
+		}
 
 		return true;
 	}
@@ -1343,9 +1305,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				logger.warn("No call notification found for {}", identity);
 			}
 		}
-		if (ConfigUtils.isPlayServicesInstalled(appContext)){
-			cancelOnWearable(TYPE_NOTIFICATION);
-			cancelOnWearable(TYPE_ACTIVITY);
+		if (PushService.playServicesInstalled(appContext)){
+			WearableHandler.cancelOnWearable(TYPE_NOTIFICATION);
+			WearableHandler.cancelOnWearable(TYPE_ACTIVITY);
 		}
 	}
 
@@ -1360,48 +1322,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			}
 			this.callNotificationTags.clear();
 		}
-		if (ConfigUtils.isPlayServicesInstalled(appContext)){
-			cancelOnWearable(TYPE_NOTIFICATION);
+		if (PushService.playServicesInstalled(appContext)){
+			WearableHandler.cancelOnWearable(TYPE_NOTIFICATION);
 		}
-	}
-
-	public void cancelOnWearable(@Component int component){
-		RuntimeUtil.runInAsyncTask(() -> {
-			try {
-				final List<Node> nodes = Tasks.await(
-					Wearable.getNodeClient(appContext).getConnectedNodes()
-				);
-				if (nodes != null) {
-					for (Node node : nodes) {
-						if (node.getId() != null) {
-							switch (component) {
-								case TYPE_NOTIFICATION:
-									Wearable.getMessageClient(appContext)
-										.sendMessage(node.getId(), "/cancel-notification", null);
-									break;
-								case TYPE_ACTIVITY:
-									Wearable.getMessageClient(appContext)
-										.sendMessage(node.getId(), "/cancel-activity", null);
-									break;
-								default:
-									break;
-							}
-						}
-					}
-				}
-			} catch (ExecutionException e) {
-				final String message = e.getMessage();
-				if (message != null && message.contains("Wearable.API is not available on this device")) {
-					logger.debug("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
-				} else {
-					logger.info("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
-				}
-			} catch (InterruptedException e) {
-				logger.info("cancelOnWearable: Interrupted while waiting for wearable client");
-				// Restore interrupted state...
-				Thread.currentThread().interrupt();
-			}
-		});
 	}
 
 	/**
@@ -1519,8 +1442,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		}
 
 		// WEARABLE
-		if (ConfigUtils.isPlayServicesInstalled(appContext)){
-			this.showWearableNotification(contact, callId, avatar);
+		if (PushService.playServicesInstalled(appContext)){
+			wearableHandler.showWearableNotification(contact, callId, avatar);
 		}
 	}
 
@@ -1589,37 +1512,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		} finally {
 			this.ringtoneAudioFocusAbandoned.complete(null);
 		}
-	}
-
-	/*
-	 *  Send information to the companion app on the wearable device
-	 */
-	@WorkerThread
-	private void showWearableNotification(
-		@NonNull ContactModel contact,
-		long callId,
-		@Nullable Bitmap avatar
-	) {
-		final DataClient dataClient = Wearable.getDataClient(appContext);
-
-		// Add data to the request
-		final PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/incoming-call");
-		putDataMapRequest.getDataMap().putLong(EXTRA_CALL_ID, callId);
-		putDataMapRequest.getDataMap().putString(EXTRA_CONTACT_IDENTITY, contact.getIdentity());
-		logger.debug("sending the following contactIdentity from VoipState to wearable " + contact.getIdentity());
-		putDataMapRequest.getDataMap().putString("CONTACT_NAME", NameUtil.getDisplayNameOrNickname(contact, true));
-		putDataMapRequest.getDataMap().putLong("CALL_TIME", System.currentTimeMillis());
-		if (avatar != null) {
-			final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			avatar.compress(Bitmap.CompressFormat.PNG, 100, buffer);
-			putDataMapRequest.getDataMap().putByteArray("CONTACT_AVATAR", buffer.toByteArray());
-		}
-
-		final PutDataRequest request = putDataMapRequest.asPutDataRequest();
-		request.setUrgent();
-
-		dataClient.addListener(wearableListener);
-		dataClient.putDataItem(request);
 	}
 
 	private PendingIntent createLaunchPendingIntent(

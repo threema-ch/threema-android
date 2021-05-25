@@ -27,7 +27,7 @@
 	<item
 		android:id="@+id/rotate"
 		android:enabled="true"
-		android:icon="@drawable/ic_rotate_right_outline"
+		android:icon="@drawable/ic_outline_rotate_90_degrees_ccw_24"
 		android:orderInCategory="50"
 		android:title="@string/rotate"
 		app:iconTint="@android:color/white"

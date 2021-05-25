@@ -13,7 +13,7 @@
 			android:layout_gravity="center"
 			android:contentDescription="@string/next"
 			android:transitionName="@string/transition_name_dots"
-			android:src="@drawable/animation_wizard1"/>
+			android:background="@drawable/animation_wizard1"/>
 
 	<LinearLayout
 			android:layout_width="wrap_content"

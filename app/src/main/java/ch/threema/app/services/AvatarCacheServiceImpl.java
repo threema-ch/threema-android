@@ -400,7 +400,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 						groupImage = AvatarConverterUtil.getAvatarBitmap(groupDefaultAvatar, color, this.avatarSizeSmall);
 					}
 				}
-			} else {
+			} else if (!highResolution) {
 				//resize image!
 				Bitmap converted = AvatarConverterUtil.convert(this.context.getResources(), groupImage);
 				if (groupImage != converted) {

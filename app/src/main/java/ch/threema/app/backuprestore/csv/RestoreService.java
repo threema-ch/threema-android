@@ -1402,6 +1402,8 @@ public class RestoreService extends Service {
 			state = MessageState.SENDING;
 		} else if (messageState.equals(MessageState.SENT.name())) {
 			state = MessageState.SENT;
+		} else if (messageState.equals(MessageState.CONSUMED.name())) {
+			state = MessageState.CONSUMED;
 		}
 
 		messageModel.setState(state);

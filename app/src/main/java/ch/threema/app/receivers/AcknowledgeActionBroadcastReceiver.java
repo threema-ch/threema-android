@@ -73,6 +73,9 @@ public class AcknowledgeActionBroadcastReceiver extends ActionBroadcastReceiver 
 				if (success != null) {
 					Toast.makeText(context, success ? R.string.message_acknowledged : R.string.an_error_occurred, Toast.LENGTH_LONG).show();
 				}
+
+				notificationService.cancel(messageReceiver);
+
 				pendingResult.finish();
 			}
 		}.execute();

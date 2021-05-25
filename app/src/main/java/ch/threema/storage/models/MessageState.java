@@ -30,5 +30,6 @@ public enum MessageState {
 	USERDEC,
 	TRANSCODING,
 	PENDING,
-	SENDING
+	SENDING,
+	CONSUMED
 }

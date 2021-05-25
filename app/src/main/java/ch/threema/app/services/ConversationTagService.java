@@ -24,6 +24,7 @@ package ch.threema.app.services;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
 import ch.threema.storage.models.TagModel;
@@ -37,42 +38,42 @@ public interface ConversationTagService {
 	/**
 	 * Select a {@link TagModel} by the key
 	 */
-	TagModel getTagModel(String tagKey);
+	@Nullable TagModel getTagModel(@NonNull String tagKey);
 
 	/**
 	 * Return all tags for the specified  {@link ConversationModel}.
 	 */
-	List<ConversationTagModel> getTagsForConversation(final ConversationModel conversation);
+	List<ConversationTagModel> getTagsForConversation(@NonNull final ConversationModel conversation);
 
 	/**
 	 * Tag the {@link ConversationModel} with the given {@link TagModel}
 	 */
-	boolean tag(ConversationModel conversation, TagModel tagModel);
+	boolean tag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
 
 	/**
 	 * Untag the {@link ConversationModel} with the given {@link TagModel}
 	 */
-	boolean unTag(ConversationModel conversation, TagModel tagModel);
+	boolean unTag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
 
 	/**
 	 * Toggle the {@link TagModel} of the {@link ConversationModel}
 	 */
-	boolean toggle(ConversationModel ConversationModel, TagModel tagModel, boolean silent);
+	boolean toggle(@Nullable ConversationModel ConversationModel, @Nullable TagModel tagModel, boolean silent);
 
 	/**
 	 * Return true, if the {@link ConversationModel} is tagged with {@link TagModel}
 	 */
-	boolean isTaggedWith(ConversationModel ConversationModel, TagModel tagModel);
+	boolean isTaggedWith(@Nullable ConversationModel ConversationModel, @Nullable TagModel tagModel);
 
 	/**
 	 * Remove all tags linked with the given {@link ConversationModel}
 	 */
-	void removeAll(ConversationModel conversation);
+	void removeAll(@Nullable ConversationModel conversation);
 
 	/**
 	 * Remove all tags linked with the given {@link TagModel}
 	 */
-	void removeAll(TagModel tagModel);
+	void removeAll(@Nullable TagModel tagModel);
 
 	/**
 	 * Get all tags regardless of type

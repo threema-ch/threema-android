@@ -35,7 +35,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.base.ThreemaException;
@@ -143,6 +142,10 @@ public interface MessageService {
 	void updateMessageState(final MessageId apiMessageId, final String identity, MessageState state, Date stateDate);
 	void updateMessageStateAtOutboxed(final MessageId apiMessageId, MessageState state, Date stateDate);
 	boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
+
+	@WorkerThread
+	boolean markAsConsumed(AbstractMessageModel message) throws ThreemaException;
+
 	void remove(AbstractMessageModel messageModel);
 
 	/**

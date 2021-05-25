@@ -429,9 +429,6 @@ public class SdpTest {
 		if (isOffer || videoEnabled) {
 			expectedMatchesPart2.add("^m=application 9 UDP/DTLS/SCTP webrtc-datachannel$");
 			expectedMatchesPart2.add("^c=IN IP4 0.0.0.0$");
-			if (!isOffer) {
-				expectedMatchesPart2.add("^b=AS:30$");
-			}
 			expectedMatchesPart2.add("^a=ice-ufrag:[^ ]+$");
 			expectedMatchesPart2.add("^a=ice-pwd:[^ ]+$");
 			expectedMatchesPart2.add("^a=ice-options:trickle renomination$");
@@ -484,7 +481,7 @@ public class SdpTest {
 			final String actual = i < actualLines.size() ? actualLines.get(i + offset) : null;
 			Log.d(TAG, "Validating \"" + actual + "\" against \"" + expected + "\"");
 			assertNotNull(actual);
-			assertTrue(actual.matches(expected));
+			assertTrue("Line \"" + actual + "\" did not match \"" + expected + "\"", actual.matches(expected));
 		}
 	}
 

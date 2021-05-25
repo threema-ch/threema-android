@@ -34,35 +34,32 @@
 		android:visibility="gone"/>
 
 	<LinearLayout
+		android:id="@+id/filename_container"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="bottom"
-		android:background="#55000000"
+		android:background="#0C000000"
 		android:duplicateParentState="true"
 		android:gravity="center_horizontal"
 		android:orientation="vertical"
-		android:paddingBottom="5dp"
-		android:paddingLeft="5dp"
-		android:paddingRight="5dp"
-		android:paddingTop="5dp">
-
-		<TextView
-			android:id="@+id/text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:singleLine="true"
-			android:textColor="@android:color/white"
-			android:textSize="12sp"/>
+		android:paddingBottom="4dp"
+		android:paddingLeft="4dp"
+		android:paddingRight="4dp"
+		android:paddingTop="4dp"
+		android:visibility="gone">
 
 		<TextView
 			android:id="@+id/text_filename"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:ellipsize="middle"
-			android:singleLine="true"
-			android:textColor="@android:color/white"
-			android:textSize="12sp"
-			android:visibility="gone"/>
+			android:fontFamily="sans-serif-condensed"
+			android:maxLines="2"
+			android:gravity="center_horizontal"
+			android:layout_gravity="center_horizontal"
+			android:textAlignment="center"
+			android:textColor="?attr/textColorSecondary"
+			android:textSize="12sp"/>
 
 	</LinearLayout>
 

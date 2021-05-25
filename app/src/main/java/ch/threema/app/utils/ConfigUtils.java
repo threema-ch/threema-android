@@ -59,8 +59,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.datatheorem.android.trustkit.TrustKit;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -70,6 +68,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Locale;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -571,12 +570,6 @@ public class ConfigUtils {
 		}
 	}
 
-	public static boolean isPlayServicesInstalled(Context context) {
-		GoogleApiAvailability apiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
-		int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-		return RuntimeUtil.isInTest() || (resultCode == ConnectionResult.SUCCESS);
-	}
-
 	public static boolean checkAvailableMemory(float required) {
 		// Get max available VM memory, exceeding this amount will throw an
 		// OutOfMemory exception
@@ -584,7 +577,9 @@ public class ConfigUtils {
 	}
 
 	public static boolean isWorkBuild() {
-		return BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.GOOGLE_WORK);
+		return (Arrays.asList(BuildFlavor.LicenseType.GOOGLE_WORK,
+					BuildFlavor.LicenseType.HMS_WORK)
+					.contains(BuildFlavor.getLicenseType()));
 	}
 
 	/**
@@ -619,8 +614,11 @@ public class ConfigUtils {
 	}
 
 	public static boolean isSerialLicensed() {
-		return (BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.GOOGLE_WORK) ||
-						BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.SERIAL));
+		return (
+			Arrays.asList(BuildFlavor.LicenseType.GOOGLE_WORK,
+				BuildFlavor.LicenseType.HMS_WORK,
+				BuildFlavor.LicenseType.SERIAL)
+				.contains(BuildFlavor.getLicenseType()));
 	}
 
 	/**

@@ -524,13 +524,13 @@ public class ServiceManager {
 							DeviceIdUtil.getDeviceId(getContext()));
 					break;
 				case GOOGLE_WORK:
+				case HMS_WORK:
 					this.licenseService = new LicenseServiceUser(
-							this.getAPIConnector(),
-							this.getPreferenceService(),
-							DeviceIdUtil.getDeviceId(getContext()));
+						this.getAPIConnector(),
+						this.getPreferenceService(),
+						DeviceIdUtil.getDeviceId(getContext()));
 					break;
 				default:
-					//TODO implement LVL
 					this.licenseService = new LicenseService() {
 						@Override
 						public String validate(Credentials credentials) {
@@ -645,7 +645,6 @@ public class ServiceManager {
 	public ConversationTagService getConversationTagService() {
 		if(null == this.conversationService) {
 			this.conversationTagService = new ConversationTagServiceImpl(
-				this.getContext(),
 				this.databaseServiceNew
 			);
 		}
@@ -675,9 +674,7 @@ public class ServiceManager {
 			this.notificationService = new NotificationServiceImpl(
 					this.getContext(),
 					this.getLockAppService(),
-					this.getMutedChatsListService(),
 					this.getHiddenChatsListService(),
-					this.getMentionOnlyChatsListService(),
 					this.getPreferenceService(),
 					this.getRingtoneService()
 			);

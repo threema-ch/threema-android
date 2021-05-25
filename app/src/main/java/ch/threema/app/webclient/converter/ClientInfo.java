@@ -33,10 +33,12 @@ import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.push.PushService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.PushUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
 
 @AnyThread
@@ -80,8 +82,10 @@ public class ClientInfo extends Converter {
 	private final static String DISABLE_CALLS = "disableCalls";
 	private final static String READONLY_PROFILE = "readonlyProfile";
 
-	public static MsgpackObjectBuilder convert(@NonNull Context appContext,
-	                                           @Nullable String pushToken) throws ConversionException {
+	public static MsgpackObjectBuilder convert(
+		@NonNull Context appContext,
+	    @Nullable String pushToken
+	) throws ConversionException {
 		// Services
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
@@ -104,7 +108,15 @@ public class ClientInfo extends Converter {
 		data.put(OS, "android");
 		data.put(OS_VERSION, Build.VERSION.RELEASE);
 		data.put(APP_VERSION, ConfigUtils.getFullAppVersion(appContext));
-		data.maybePut(PUSH_TOKEN, pushToken);
+		if (pushToken != null) {
+			// To be able to differentiate between HMS and FCM push tokens without any
+			// protocol changes, we'll prefix the push token with "hms;".
+			if (PushService.hmsServicesInstalled(appContext)) {
+				data.put(PUSH_TOKEN, "hms;" + pushToken);
+			} else {
+				data.put(PUSH_TOKEN, pushToken);
+			}
+		}
 
 		// Work stuff
 		if (ConfigUtils.isWorkBuild()) {

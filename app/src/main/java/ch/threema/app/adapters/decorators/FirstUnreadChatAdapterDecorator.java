@@ -29,7 +29,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class FirstUnreadChatAdapterDecorator extends ChatAdapterDecorator {
-	private int unreadMessagesCount = 0;
+	private int unreadMessagesCount;
 
 	public FirstUnreadChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper, final int unreadMessagesCount) {
 		super(context, messageModel, helper);
@@ -39,10 +39,6 @@ public class FirstUnreadChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		if (this.unreadMessagesCount < 1) {
-			return;
-		}
-
 		String s;
 		if (this.unreadMessagesCount > 1) {
 			s = getContext().getString(R.string.unread_messages, unreadMessagesCount);

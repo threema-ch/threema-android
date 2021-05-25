@@ -833,6 +833,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		return Integer.MAX_VALUE;
 	}
 
+	public void setUnreadMessagesCount(int unreadMessagesCount) {
+		this.unreadMessagesCount = unreadMessagesCount;
+	}
+
 	public boolean removeFirstUnreadPosition() {
 		if(this.firstUnreadPos >= 0) {
 			if(this.firstUnreadPos >= this.getCount()) {

@@ -28,6 +28,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.ContactsContract;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.listeners.SMSVerificationListener;
@@ -58,6 +61,7 @@ import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.APIConnector;
+import ch.threema.client.CreateIdentityRequestDataInterface;
 import ch.threema.client.IdentityBackupDecoder;
 import ch.threema.client.IdentityStoreInterface;
 import ch.threema.client.MessageQueue;
@@ -71,7 +75,7 @@ import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
 /**
  * This service class handle all user actions (db/identity....)
  */
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, CreateIdentityRequestDataInterface  {
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private final Context context;
@@ -109,34 +113,23 @@ public class UserServiceImpl implements UserService {
 		if (this.hasIdentity()) {
 			throw new ThreemaException("please remove your existing identity " + this.getIdentity());
 		}
-		String licenseKey = null;
-		String licenseUsername = null;
-		String licensePassword = null;
 
-		if(this.credentials != null) {
-			if(this.credentials instanceof SerialCredentials) {
-				licenseKey = ((SerialCredentials)this.credentials).licenseKey;
-			}
-			else if(this.credentials instanceof UserCredentials) {
-				licenseUsername = ((UserCredentials)this.credentials).username;
-				licensePassword = ((UserCredentials)this.credentials).password;
-			}
+		// no need to send a request if we have no licence
+		if (policySignature == null && policyResponseData == null && credentials == null) {
+			throw new ThreemaException(ThreemaApplication.getAppContext().getResources().getString(R.string.missing_app_licence));    /* Create identity phase 1 unsuccessful:*/
 		}
-		this.apiConnector.createIdentity(
+		else {
+			this.apiConnector.createIdentity(
 				this.identityStore,
 				newRandomSeed,
-				this.policyResponseData,
-				this.policySignature,
-				DeviceIdUtil.getDeviceId(this.context),
-				licenseKey,
-				licenseUsername,
-				licensePassword
-		);
+				this
+			);
+		}
 
 		this.sendFlags();
 
 		// identity has been successfully created. set push token
-		PushUtil.scheduleSendPushTokenToServer(context);
+		PushUtil.enqueuePushTokenUpdate(context, false, false);
 	}
 
 	@Override
@@ -325,7 +318,8 @@ public class UserServiceImpl implements UserService {
 				normalizedMobileNo,
 				this.getLanguage(),
 				this.identityStore,
-				BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK
+				(BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
+					BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK)
 					? "threemawork" : null
 		);
 
@@ -545,7 +539,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		// identity has been successfully restored. set push token
-		PushUtil.scheduleSendPushTokenToServer(context);
+		PushUtil.enqueuePushTokenUpdate(context, false, false);
 
 		return true;
 	}
@@ -645,5 +639,54 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
+	}
+
+	@Override
+	public JSONObject createIdentityRequestDataJSON() throws JSONException {
+		JSONObject baseObject = new JSONObject();
+
+		BuildFlavor.LicenseType licenseType = BuildFlavor.getLicenseType();
+		String deviceId = DeviceIdUtil.getDeviceId(this.context);
+
+		if (deviceId != null) {
+			baseObject.put("deviceId", deviceId);
+		}
+
+		if (licenseType == BuildFlavor.LicenseType.GOOGLE) {
+			baseObject.put("lvlResponseData", policyResponseData);
+			baseObject.put("lvlSignature", policySignature);
+		}
+		else if (licenseType == BuildFlavor.LicenseType.HMS) {
+			baseObject.put("hmsResponseData", policyResponseData);
+			baseObject.put("hmsSignature", policySignature);
+		}
+		else {
+			String licenseKey = null;
+			String licenseUsername = null;
+			String licensePassword = null;
+
+			if(this.credentials != null) {
+				if(this.credentials instanceof SerialCredentials) {
+					licenseKey = ((SerialCredentials)this.credentials).licenseKey;
+				}
+				else if(this.credentials instanceof UserCredentials) {
+					licenseUsername = ((UserCredentials)this.credentials).username;
+					licensePassword = ((UserCredentials)this.credentials).password;
+				}
+			}
+			if (licenseKey != null) {
+				baseObject.put("licenseKey", licenseKey);
+			}
+
+			if (licenseUsername != null) {
+				baseObject.put("licenseUsername", licenseUsername);
+			}
+
+			if (licensePassword != null) {
+				baseObject.put("licensePassword", licensePassword);
+			}
+		}
+
+		return baseObject;
 	}
 }

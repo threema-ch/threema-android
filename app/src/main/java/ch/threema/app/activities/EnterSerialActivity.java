@@ -48,6 +48,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.push.PushService;
 import ch.threema.app.services.AppRestrictionService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
@@ -72,6 +73,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	private Button loginButton;
 	private LicenseService licenseService;
 
+	@SuppressLint("StringFormatInvalid")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -128,7 +130,12 @@ public class EnterSerialActivity extends ThreemaActivity {
 		} else {
 			privateExplainText = findViewById(R.id.private_explain);
 			if (privateExplainText != null) {
-				privateExplainText.setText(Html.fromHtml(getString(R.string.private_threema_download)));
+				if (PushService.hmsServicesInstalled(this)) {
+					privateExplainText.setText(Html.fromHtml(String.format(getString(R.string.private_threema_download), getString(R.string.private_download_url_hms))));
+				}
+				else {
+					privateExplainText.setText(Html.fromHtml(String.format(getString(R.string.private_threema_download), getString(R.string.private_download_url))));
+				}
 				privateExplainText.setClickable(true);
 				privateExplainText.setMovementMethod (LinkMovementMethod.getInstance());
 			}

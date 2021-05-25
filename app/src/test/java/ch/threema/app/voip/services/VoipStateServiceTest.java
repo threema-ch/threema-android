@@ -35,6 +35,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.services.ContactService;
@@ -45,6 +46,7 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.voip.listeners.VoipMessageListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
+import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.MessageQueue;
 import ch.threema.client.voip.VoipCallAnswerData;
@@ -73,7 +75,7 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({LogUtil.class, SystemClock.class})
+@PrepareForTest({LogUtil.class, SystemClock.class, VoipUtil.class})
 @SuppressWarnings("FieldCanBeLocal")
 public class VoipStateServiceTest {
 	// Mocks
@@ -122,6 +124,10 @@ public class VoipStateServiceTest {
 		// Static mocks
 		mockStatic(LogUtil.class);
 		mockStatic(SystemClock.class);
+		mockStatic(VoipUtil.class);
+
+		// Clear message listeners (used by tests)
+		VoipListenerManager.messageListener.clear();
 
 		// Instantiate service
 		this.service = new VoipStateService(
@@ -374,12 +380,8 @@ public class VoipStateServiceTest {
 	 */
 	@Test
 	public void validateCallIdAnswer() {
-		// Start outgoing call
-		service.setInitiator(true);
-
 		// Detect message handling
 		final AtomicBoolean answerHandled = new AtomicBoolean(false);
-		VoipListenerManager.messageListener.clear();
 		VoipListenerManager.messageListener.add(new VoipMessageListener() {
 			@Override
 			public void onAnswer(String identity, VoipCallAnswerData data) {
@@ -400,29 +402,40 @@ public class VoipStateServiceTest {
 		msgData.setAction(VoipCallAnswerData.Action.REJECT);
 		msgData.setRejectReason(VoipCallAnswerData.RejectReason.UNKNOWN);
 
+		// Test function (local call ID is always 1)
+		final BiFunction<Integer, Boolean, Void> testProcessAnswer = (Integer callId, Boolean shouldBeHandled) -> {
+			// Outgoing call
+			service.setInitiator(true);
+
+			// Set current callId to 1
+			service.setStateInitializing(1);
+
+			// Set call ID of incoming answer
+			msgData.setCallId(callId);
+			answer.setData(msgData);
+
+			// Handle and assert
+			answerHandled.set(false);
+			service.handleCallAnswer(answer);
+			if (shouldBeHandled) {
+				assertTrue("Answer should have been handled", answerHandled.get());
+			} else {
+				assertFalse("Answer should not have been handled", answerHandled.get());
+			}
+
+			// Reset
+			service.setStateIdle();
+			return null;
+		};
+
 		// Process answer with valid call ID
-		service.setStateInitializing(1);
-		msgData.setCallId(1);
-		answer.setData(msgData);
-		answerHandled.set(false);
-		service.handleCallAnswer(answer);
-		assertTrue("Answer should have been handled", answerHandled.get());
+		testProcessAnswer.apply(1, true);
 
-		// Process answer with invalid call ID
-		service.setStateInitializing(1);
-		msgData.setCallId(2);
-		answer.setData(msgData);
-		answerHandled.set(false);
-		service.handleCallAnswer(answer);
-		assertFalse("Answer should not have been handled", answerHandled.get());
+		// Do not process answer with invalid call ID
+		testProcessAnswer.apply(2, false);
 
-		// Process answer with missing call ID
-		service.setStateInitializing(1);
-		msgData.setCallId(0);
-		answer.setData(msgData);
-		answerHandled.set(false);
-		service.handleCallAnswer(answer);
-		assertTrue("Answer should have been handled", answerHandled.get());
+		// Process answer with missing call ID (accepted for backwards compatibility)
+		testProcessAnswer.apply(0, true);
 	}
 
 	/**
@@ -466,5 +479,52 @@ public class VoipStateServiceTest {
 		msg.setData(new VoipCallHangupData());
 		service.handleRemoteCallHangup(msg);
 		assertTrue("Hangup should have been handled", service.getCallState().isIdle());
+	}
+
+	/**
+	 * Duplicate answers with the same Call ID: Should only be handled once.
+	 */
+	@Test
+	public void ignoreDuplicateAnswer() {
+		// Detect message handling
+		final AtomicBoolean answerHandled = new AtomicBoolean(false);
+		VoipListenerManager.messageListener.add(new VoipMessageListener() {
+			@Override
+			public void onAnswer(String identity, VoipCallAnswerData data) {
+				answerHandled.set(true);
+			}
+
+			@Override
+			public boolean handle(String identity) {
+				return true;
+			}
+		});
+
+		// Call ID is always 1
+		int callId = 1;
+
+		// Create answer
+		final VoipCallAnswerMessage answer = new VoipCallAnswerMessage();
+		answer.setFromIdentity("AAAAAAAA");
+		answer.setToIdentity("BBBBBBBB");
+		final VoipCallAnswerData msgData = new VoipCallAnswerData();
+		msgData.setAction(VoipCallAnswerData.Action.ACCEPT);
+		msgData.setAnswerData(new VoipCallAnswerData.AnswerData().setSdpType("answer").setSdp("sdpsdpsdp"));
+		msgData.setCallId(callId);
+		answer.setData(msgData);
+
+		// Outgoing call
+		service.setInitiator(true);
+		service.setStateInitializing(callId);
+
+		// Process first answer
+		answerHandled.set(false);
+		service.handleCallAnswer(answer);
+		assertTrue("Answer should have been handled", answerHandled.get());
+
+		// Process second answer
+		answerHandled.set(false);
+		service.handleCallAnswer(answer);
+		assertFalse("Answer should not have been handled", answerHandled.get());
 	}
 }

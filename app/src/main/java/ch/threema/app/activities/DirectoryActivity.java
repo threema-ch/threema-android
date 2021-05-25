@@ -69,6 +69,7 @@ import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.client.work.WorkDirectoryCategory;
 import ch.threema.client.work.WorkDirectoryContact;
 import ch.threema.client.work.WorkOrganization;
@@ -171,7 +172,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		}
 
 		WorkOrganization workOrganization = preferenceService.getWorkOrganization();
-		if (workOrganization != null) {
+		if (workOrganization != null && !TestUtil.empty(workOrganization.getName())) {
 			logger.info("Organization: " + workOrganization.getName());
 			getToolbar().setTitle(workOrganization.getName());
 		}
@@ -252,16 +253,22 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	}
 
 	private void launchContact(final WorkDirectoryContact workDirectoryContact, final int position) {
-		if (contactService.getByIdentity(workDirectoryContact.threemaId) == null) {
-			addContact(workDirectoryContact, new Runnable() {
-				@Override
-				public void run() {
-					openContact(workDirectoryContact.threemaId);
-					directoryAdapter.notifyItemChanged(position);
-				}
-			});
+		if (workDirectoryContact.threemaId != null) {
+			if (contactService.getByIdentity(workDirectoryContact.threemaId) == null) {
+				addContact(workDirectoryContact, new Runnable() {
+					@Override
+					public void run() {
+						openContact(workDirectoryContact.threemaId);
+						directoryAdapter.notifyItemChanged(position);
+					}
+				});
+			} else if (workDirectoryContact.threemaId.equalsIgnoreCase(contactService.getMe().getIdentity())) {
+				Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
+			} else {
+				openContact(workDirectoryContact.threemaId);
+			}
 		} else {
-			openContact(workDirectoryContact.threemaId);
+			Toast.makeText(this, R.string.contact_not_found, Toast.LENGTH_LONG).show();
 		}
 	}
 

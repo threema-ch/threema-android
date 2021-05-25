@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -127,41 +128,13 @@ public class APIConnector {
 	/**
 	 * Create a new identity and store it in the given identity store.
 	 *
-	 * @param identityStore the store for the new identity
-	 * @throws Exception
-	 */
-	public void createIdentity(IdentityStoreInterface identityStore) throws Exception {
-		createIdentity(identityStore, null);
-	}
-
-	/**
-	 * Create a new identity and store it in the given identity store.
-	 *
-	 * @param identityStore the store for the new identity
-	 * @param seed          additional random data to be used for key generation
-	 * @throws Exception
-	 */
-	public void createIdentity(IdentityStoreInterface identityStore, byte[] seed) throws Exception {
-		createIdentity(identityStore, seed, null, null, null, null, null, null);
-	}
-
-	/**
-	 * Create a new identity and store it in the given identity store.
-	 *
 	 * @param identityStore   the store for the new identity
 	 * @param seed            additional random data to be used for key generation
-	 * @param lvlResponseData response data from Google LVL
-	 * @param lvlSignature    signature from Google LVL
-	 * @param deviceId        unique device ID
-	 * @param licenseKey      license key for direct distribution (or null)
-	 * @param licenseUsername license username for work (or null)
-	 * @param licensePassword license password for work (or null)
+	 * @param requestData    licensing requestData based on build flavor (hms, google or serial)
 	 * @throws Exception
 	 */
 	public void createIdentity(IdentityStoreInterface identityStore, byte[] seed,
-							   String lvlResponseData, String lvlSignature,
-							   String deviceId, String licenseKey,
-							   String licenseUsername, String licensePassword) throws Exception {
+							   @NonNull CreateIdentityRequestDataInterface requestData) throws Exception {
 		String url = serverUrl + "identity/create";
 
 		/* generate new key pair and store */
@@ -199,31 +172,10 @@ public class APIConnector {
 		NaCl nacl = new NaCl(privateKey, tokenRespKeyPub);
 		byte[] clientResponse = nacl.encrypt(token, nonceStr.getBytes());
 
-		JSONObject p2Body = new JSONObject();
+		JSONObject p2Body = requestData.createIdentityRequestDataJSON();
 		p2Body.put("publicKey", Base64.encodeBytes(publicKey));
 		p2Body.put("token", tokenString);
 		p2Body.put("response", Base64.encodeBytes(clientResponse));
-
-		if (lvlResponseData != null && lvlSignature != null) {
-			p2Body.put("lvlResponseData", lvlResponseData);
-			p2Body.put("lvlSignature", lvlSignature);
-		}
-
-		if (deviceId != null) {
-			p2Body.put("deviceId", deviceId);
-		}
-
-		if (licenseKey != null) {
-			p2Body.put("licenseKey", licenseKey);
-		}
-
-		if (licenseUsername != null) {
-			p2Body.put("licenseUsername", licenseUsername);
-		}
-
-		if (licensePassword != null) {
-			p2Body.put("licensePassword", licensePassword);
-		}
 
 		String p2ResultString = doPost(url, p2Body.toString());
 		JSONObject p2Result = new JSONObject(p2ResultString);
@@ -1133,6 +1085,64 @@ public class APIConnector {
 		}
 		return workData;
 	}
+
+	/**
+	 * Fetch work contacts from work api
+	 *
+	 * @param username (threema work license username)
+	 * @param password (threema work license password)
+	 * @param identities (list of threema id to check)
+	 * @return list of valid threema work contacts - empty list if there are no matching contacts in this package
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	@NonNull
+	public List<WorkContact> fetchWorkContacts(@NonNull String username,
+	                                           @NonNull String password,
+	                                           @NonNull String[] identities) throws Exception {
+
+		List<WorkContact> contactsList = new ArrayList<>();
+		JSONObject request = new JSONObject();
+		request.put("username", username);
+		request.put("password", password);
+
+		JSONArray identityArray = new JSONArray();
+		for (String identity : identities) {
+			identityArray.put(identity);
+		}
+		request.put("contacts", identityArray);
+
+		String data = doPost(
+			this.workServerUrl + "identities",
+			request.toString());
+
+		if (data == null || data.length() == 0) {
+			return contactsList;
+		}
+
+		JSONObject jsonResponse = new JSONObject(data);
+
+		if (jsonResponse.has("contacts")) {
+			JSONArray contacts = jsonResponse.getJSONArray("contacts");
+
+			for (int n = 0; n < contacts.length(); n++) {
+				JSONObject contact = contacts.getJSONObject(n);
+
+				//validate fields
+				if (contact.has("id") && contact.has("pk")) {
+					contactsList.add(new WorkContact(
+						contact.getString("id"),
+						Base64.decode(contact.getString("pk")),
+						contact.has("first") ? contact.getString("first") : null,
+						contact.has("last") ? contact.getString("last") : null
+					));
+				}
+			}
+		}
+
+		return contactsList;
+	}
+
 	/**
 	 * Search the threema work directory without categories
 	 *

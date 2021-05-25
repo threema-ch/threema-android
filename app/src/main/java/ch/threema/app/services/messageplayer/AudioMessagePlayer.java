@@ -166,6 +166,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 			mediaPlayer.setDataSource(getContext(), uri);
 			mediaPlayer.prepare();
 			prepared(mediaPlayer, resume);
+			markAsConsumed();
 		} catch (Exception e) {
 			if (e instanceof IllegalArgumentException) {
 				showError(getContext().getString(R.string.file_is_not_audio));

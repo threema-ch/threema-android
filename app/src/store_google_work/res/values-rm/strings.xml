@@ -19,5 +19,5 @@
     <string name="menu_about">Davart Threema Work</string>
     <string name="list_theme_light">Cler</string>
     <string name="list_theme_dark">Stgir (standard)</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Per utilisaders privats</a>]]></string>
+    <string name="private_threema_download"><![CDATA[<a href=%s>Per utilisaders privats</a>]]></string>
 </resources>

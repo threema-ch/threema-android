@@ -51,7 +51,6 @@ import ch.threema.app.ui.SquareImageView;
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
@@ -98,8 +97,8 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 		public ImageView imageView;
 		public ControllerView playButton;
 		public ProgressBar progressBar;
-		public TextView textView;
 		public TextView topTextView;
+		public View textContainerView;
 		public int messageId;
 	}
 
@@ -181,7 +180,7 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 							boolean broken = false;
 
 							if (thumbnail != null && !thumbnail.isRecycled()) {
-								holder.topTextView.setVisibility(View.GONE);
+								holder.textContainerView.setVisibility(View.GONE);
 								holder.imageView.setImageBitmap(thumbnail);
 								holder.imageView.clearColorFilter();
 								holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -190,7 +189,7 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 									// try default avatar for mime type
 									thumbnail = fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType());
 									holder.topTextView.setText(messageModel.getFileData().getFileName());
-									holder.topTextView.setVisibility(View.VISIBLE);
+									holder.textContainerView.setVisibility(View.VISIBLE);
 									if (thumbnail != null) {
 										holder.imageView.setScaleType(ImageView.ScaleType.CENTER);
 										holder.imageView.setImageBitmap(thumbnail);
@@ -203,9 +202,9 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 									holder.imageView.setImageResource(R.drawable.ic_keyboard_voice_outline);
 									holder.imageView.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
 									holder.topTextView.setText(StringConversionUtil.secondsToString((long) (messageModel.getAudioData().getDuration()), false));
-									holder.topTextView.setVisibility(View.VISIBLE);
+									holder.textContainerView.setVisibility(View.VISIBLE);
 								} else {
-									holder.topTextView.setVisibility(View.GONE);
+									holder.textContainerView.setVisibility(View.GONE);
 									broken = true;
 								}
 							}
@@ -252,14 +251,14 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 			SquareImageView imageView = itemView.findViewById(R.id.image_view);
 			ControllerView playButton = itemView.findViewById(R.id.play_button);
 			ProgressBar progressBar = itemView.findViewById(R.id.progress_decoding);
-			TextView textView = itemView.findViewById(R.id.text);
 			TextView topTextView = itemView.findViewById(R.id.text_filename);
+			View textContainerView = itemView.findViewById(R.id.filename_container);
 
 			holder.imageView = imageView;
 			holder.playButton = playButton;
 			holder.progressBar = progressBar;
-			holder.textView = textView;
 			holder.topTextView = topTextView;
+			holder.textContainerView = textContainerView;
 			holder.messageId = 0;
 
 			itemView.setTag(holder);
@@ -274,7 +273,6 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 		if (holder.messageId != messageModel.getId()) {
 			// do not load contents again if it's unchanged
 			this.loadThumbnailBitmap(position, holder, messageModel);
-			holder.textView.setText(MessageUtil.getDisplayDate(this.getContext(), messageModel, true));
 			if (this.brokenThumbnails.contains(messageModel.getId())) {
 				holder.playButton.setBroken();
 				holder.playButton.setVisibility(View.VISIBLE);

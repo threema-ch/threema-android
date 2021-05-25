@@ -94,8 +94,10 @@ import androidx.transition.ChangeBounds;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.wearable.WearableHandler;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetListDialog;
@@ -1674,8 +1676,8 @@ public class CallActivity extends ThreemaActivity implements
 		final Intent answerIntent = new Intent(getIntent());
 		answerIntent.setClass(getApplicationContext(), VoipCallService.class);
 		ContextCompat.startForegroundService(this, answerIntent);
-		if (ConfigUtils.isPlayServicesInstalled(getApplicationContext())){
-			this.voipStateService.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
+		if (PushService.playServicesInstalled(getApplicationContext())){
+			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 	}
 

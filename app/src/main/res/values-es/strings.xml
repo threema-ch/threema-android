@@ -76,7 +76,7 @@
     <string name="prefs_title_sum_message_log_on">Los eventos se registran en el archivo debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">Los eventos no se registran</string>
     <string name="prefs_reset_push">Restablecer símbolo push</string>
-    <string name="prefs_sum_reset_push">Volver a registrar el dispositivo en FCM</string>
+    <string name="prefs_sum_reset_push">Volver a registrar el dispositivo en FCM//HMS</string>
     <string name="prefs_notification_preview">Mostrar vista previa</string>
     <string name="prefs_sum_reset_ringtones">Restaurar configuración predeterminada</string>
     <string name="prefs_title_reset_ringtones">Restablecer ajustes de sonidos de notificaciones</string>
@@ -377,7 +377,7 @@
     <string name="share_image">Compartir imagen</string>
     <string name="view_in_gallery">Ver en galería</string>
     <string name="file_saved">%d archivo(s) guardado(s) correctamente.</string>
-    <string name="gcm_register_failed">No se ha podido restablecer el símbolo push de FCM. Vuelva a intentarlo.</string>
+    <string name="token_register_failed">No se ha podido restablecer el símbolo push. Vuelva a intentarlo.</string>
     <string name="internet_connection_required">No hay conexión a Internet.</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">No se ha podido enviar %1$d mensaje(s)</string>
     <string name="prefs_sum_save_media">Cargar los elementos multimedia de forma automática al recibirlos y guardarlos sin cifrar en la galería.</string>
@@ -1058,7 +1058,7 @@ almacenado.</string>
     <string name="edit_type_content_description">Ver o editar %1$s %2$s</string>
     <string name="group">Grupo</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Nuestra política de privacidad se ha actualizado para reflejar el siguiente cambio:</p><p>%1$s ya no depende de Google Play y Google Maps para proporcionar datos de mapas y puntos de interés.</p>Por favor, revise la política de privacidad completa <a href="%2$s">aquí </a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Los servicios de Google Play no están instalados. No se puede cambiar a «push».</string>
+    <string name="play_services_not_installed_unable_to_use_push">Los servicios no están instalados. No se puede cambiar a «push».</string>
     <string name="unable_to_get_current_location">No se puede determinar la ubicación actual.</string>
     <string name="lp_search_place_min_chars">Introduce tres caracteres como mínimo para buscar un lugar.</string>
     <string name="lp_search_place_no_matches">No se encuentran lugares coincidentes. Modifica tu consulta.</string>
@@ -1184,6 +1184,7 @@ almacenado.</string>
     <string name="blur">Difuminar</string>
     <string name="face_blur_tooltip_title">Nuevo: reconocimiento de caras</string>
     <string name="face_blur_tooltip_text">Encuentra caras en la imagen y difumínalas o tápalas con una cara sonriente.</string>
+    <string name="listened_to">escuchado</string>
     <string name="transcoder_unsupported_audio_format">No se pudo transcodificar el sonido debido a una ausencia de compatibilidad en el sistema.</string>
     <string name="transcoder_unknown_audio_error">Se ha producido un error desconocido al transcodificar el sonido.</string>
     <string name="video_size_explain">Puede que se compriman los archivos de gran tamaño sea cual sea este ajuste.</string>
@@ -1192,4 +1193,8 @@ almacenado.</string>
     <string name="note_group_howto">Consejo: si no añade ningún miembro al grupo, los mensajes a este grupo permanecerán en almacenamiento local. Resulta idóneo para guardar con seguridad notas, medios y documentos o para transferir elementos al escritorio.</string>
     <string name="mark_unread">Marcar no leído</string>
     <string name="mark_read_short">Leído</string>
+    <string name="unread">No leído</string>
+    <string name="missing_app_licence">No se pudo crear una nueva solicitud de identidad porque no se encontraron licencias de aplicación válida.</string>
+    <string name="set_backup_path">Est. ruta copia segur.</string>
+    <string name="set_backup_path_intro">En la siguiente pantalla, selecciona la carpeta en la que se guardarán las copias de seguridad de datos.</string>
 </resources>

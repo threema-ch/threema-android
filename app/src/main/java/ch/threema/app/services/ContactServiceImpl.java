@@ -67,6 +67,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ContactTypingListener;
@@ -85,9 +86,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
 import ch.threema.client.APIConnector;
@@ -1005,7 +1004,9 @@ public class ContactServiceImpl implements ContactService {
 
 		if (contact == null) return;
 
-		if(contact.getPublicNickName() == null || !contact.getPublicNickName().equals(msg.getPushFromName())) {
+		if(msg.getPushFromName() != null && msg.getPushFromName().length() > 0 &&
+			!msg.getPushFromName().equals(contact.getIdentity()) &&
+			!msg.getPushFromName().equals(contact.getPublicNickName())) {
 			contact.setPublicNickName(msg.getPushFromName());
 			this.save(contact);
 		}
@@ -1076,7 +1077,6 @@ public class ContactServiceImpl implements ContactService {
 								&& ConfigUtils.isCallsEnabled(context, preferenceService, licenseService);
 							lookupKey = AndroidContactUtil.getInstance().createThreemaAndroidContact(
 								contactModel.getIdentity(),
-								NameUtil.getDisplayName(contactModel),
 								supportsVoiceCalls);
 
 							logger.debug("created android contact, lookup key " + lookupKey);

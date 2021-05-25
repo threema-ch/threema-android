@@ -135,7 +135,7 @@
 	<dimen name="contacts_scrollbar_tolerance">25dp</dimen>
 
 	<!-- image/media attach popup -->
-	<dimen name="control_panel_height">103dp</dimen>
+	<dimen name="control_panel_height">88dp</dimen> <!-- media_attach_button_size + 4 -->
 	<dimen name="image_attach_thumbnail_size">180dp</dimen>
 	<dimen name="image_attach_popup_maxwidth">600dp</dimen>
 	<dimen name="image_attach_popup_action_icon_size">24dp</dimen>
@@ -145,12 +145,18 @@
 	<dimen name="image_popup_text_size">12sp</dimen>
 	<dimen name="image_popup_text_margin_bottom">6dp</dimen>
 	<dimen name="qrcode_min_margin">24dp</dimen>
-	<dimen name="grid_spacing">4dp</dimen>
+	<dimen name="grid_spacing">2dp</dimen>
 	<dimen name="drag_handle_height">4dp</dimen>
 	<dimen name="drag_handle_topbottom_margin">8dp</dimen>
 	<dimen name="gallery_drawer_corner_radius">15dp</dimen>
 	<dimen name="broken_image_icon_size">32dp</dimen>
 	<dimen name="send_items_grid_action_icon_margin">3dp</dimen>
+
+	<!-- media attacher button dimensions -->
+	<dimen name="media_attach_button_radius">8dp</dimen>
+	<dimen name="media_attach_button_size">80dp</dimen>
+	<dimen name="media_attach_button_stroke_width">1dp</dimen>
+	<dimen name="media_attach_control_panel_shadow_size">3dp</dimen>
 
 	<!-- wizard -->
 	<dimen name="wizard_contents_padding">16dp</dimen>
@@ -301,11 +307,5 @@
 
 	<!-- reduced size of scrollbars -->
 	<dimen name="scrollbar_size">2dp</dimen>
-
-	<!-- media attacher button dimensions -->
-	<dimen name="media_attach_button_radius">8dp</dimen>
-	<dimen name="media_attach_button_size">88dp</dimen>
-	<dimen name="media_attach_button_stroke_width">1dp</dimen>
-	<dimen name="media_attach_control_panel_shadow_size">3dp</dimen>
 
 </resources>

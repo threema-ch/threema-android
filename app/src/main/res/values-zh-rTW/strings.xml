@@ -52,9 +52,9 @@
     <string name="prefs_sum_vibrate">收到訊息時震動</string>
     <string name="prefs_light">通知燈</string>
     <string name="prefs_sum_light">白色</string>
-    <string name="prefs_title_wallpaper">選擇背景</string>
+    <string name="prefs_title_wallpaper">選擇背景圖片</string>
     <string name="prefs_sum_wallpaper">選擇背景圖片</string>
-    <string name="prefs_title_wallpaper_switch">背景</string>
+    <string name="prefs_title_wallpaper_switch">背景圖片</string>
     <string name="prefs_title_enter">按「Enter」鍵傳送</string>
     <string name="prefs_sum_enter_on">按「Enter」鍵以立即傳送訊息</string>
     <string name="prefs_sum_enter_off">按「Enter」鍵以新增新行</string>
@@ -77,7 +77,7 @@
     <string name="prefs_title_sum_message_log_on">事件和網路訊息將記錄至 debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">事件將不會被記錄</string>
     <string name="prefs_reset_push">重設推播服務</string>
-    <string name="prefs_sum_reset_push">重新註冊裝置以透過FCM進行推播通知</string>
+    <string name="prefs_sum_reset_push">重新註冊裝置以透過FCM或HMS取得推播通知</string>
     <string name="prefs_notification_preview">顯示訊息預覽</string>
     <string name="prefs_sum_reset_ringtones">還原系統預設值</string>
     <string name="prefs_title_reset_ringtones">重設通知音效設定</string>
@@ -123,7 +123,7 @@
     <string name="share_via">分享至...</string>
     <string name="share_subject">Threema 對話</string>
     <string name="message_delete_undo">還原</string>
-    <string name="message_deleted">訊息已刪除</string>
+    <string name="message_deleted">則訊息已刪除</string>
     <string name="mobile_already_linked">您的 Threema ID 已連結至此電話號碼</string>
     <string name="email_already_linked">您的 Threema ID 已連結至此電子郵件地址</string>
     <string name="whoaaa">Threema 公告</string>
@@ -273,7 +273,7 @@ https://shop.threema.ch/retrieve_keys</string>
 在任何 Android 裝置上還原。請輸入密碼以保護您的資料備份。</string>
     <string name="restore_data_password_msg">輸入用於建立此備份的密碼。</string>
     <string name="backup_data_media">包括大型多媒體檔案（影片，文件，原始圖片）</string>
-    <string name="backup_data_new">建立數據資料</string>
+    <string name="backup_data_new">建立資料備份</string>
     <string name="pinentry_enter_pin">輸入您的 Threema PIN 碼以繼續</string>
     <string name="pinentry_wrong_pin">PIN 碼錯誤</string>
     <string name="prefs_sum_security_pin">鎖定取用 Threema 的使用者介面</string>
@@ -391,7 +391,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="share_image">分享圖片</string>
     <string name="view_in_gallery">在圖片庫中檢視</string>
     <string name="file_saved">%d 個檔案已成功儲存。</string>
-    <string name="gcm_register_failed">更新 FCM 推播服務失敗，請稍後再試</string>
+    <string name="token_register_failed">更新推播服務失敗，請稍後再試。</string>
     <string name="internet_connection_required">沒有網路連線。</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">無法傳送%1$d條訊息</string>
     <string name="prefs_sum_save_media">以未加密的形式儲存收到的圖片和影片，以及傳送的相機圖片。</string>
@@ -449,7 +449,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="not_enough_disk_space_title">儲存空間不足</string>
     <string name="not_enough_disk_space_text">至少釋放%1$s以接收訊息</string>
     <string name="sending_images">正在傳送圖片</string>
-    <string name="share_conversation_body">您需要配備 AES 支援的現代 ZIP 工具才能解壓縮檔案，例如 
+    <string name="share_conversation_body">您需要配備 AES 支援的現代 ZIP 工具才能解壓縮檔案，例如
 http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">此對話將作為加密的zip檔案傳送。請選擇密碼：</string>
     <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d個對話中有%1$d條新訊息</string>
@@ -496,13 +496,13 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回覆</string>
     <string name="wearable_reply_label">回覆 %s</string>
-    <string name="message_acknowledged">您對這則訊息表示了「同意」</string>
+    <string name="message_acknowledged">您對這則訊息表示「同意」。</string>
     <string name="push_disable_text">如果繼續，推播訊息將被停用，Threema 將會
 每15分鐘檢查一次新訊息。</string>
     <string name="ballot_intermediate_results_show">顯示中間結果</string>
     <string name="converting_video">正在處理影片</string>
-    <string name="video_size_small">高質量（佔用數據用量較少）</string>
-    <string name="video_size_large">低質量（佔用數據用量較多）</string>
+    <string name="video_size_small">高品質（佔用數據用量較少）</string>
+    <string name="video_size_large">低品質（佔用數據用量較多）</string>
     <string name="video_size_original">無（佔用大量數據用量）</string>
     <string name="prefs_video_size">影片壓縮</string>
     <string name="show_contact">顯示聯絡人</string>
@@ -514,10 +514,10 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="revocation_key_title">ID撤銷</string>
     <string name="revocation_key_not_set">未設定撤銷密碼</string>
     <string name="revocation_key_set_at">撤銷密碼設定為%1$s</string>
-    <string name="prefs_sum_remove_wallpapers">刪除所有個人背景</string>
-    <string name="prefs_title_remove_wallpapers">移除所有背景</string>
-    <string name="really_remove_wallpapers">您真的要移除所有背景嗎？</string>
-    <string name="wallpapers_removed">背景已移除</string>
+    <string name="prefs_sum_remove_wallpapers">刪除所有個人背景圖片</string>
+    <string name="prefs_title_remove_wallpapers">移除所有背景圖片</string>
+    <string name="really_remove_wallpapers">您真的要移除所有背景圖片嗎？</string>
+    <string name="wallpapers_removed">背景圖片已移除</string>
     <string name="invalid_backup">無效的備份資料。無法還原。</string>
     <string name="revocation_explain">您在這裡輸入的密碼，可讓您透過 https://myid.threema.ch/revoke 撤銷您的ID，以防丟失或被盜</string>
     <string name="no_unread_messages">沒有未讀訊息或 PIN 鎖被啟動</string>
@@ -554,7 +554,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="no_filename"><![CDATA[<沒有檔案名稱>]]></string>
     <string name="send_as_files">作為檔案傳送</string>
     <string name="send_as_files_warning">傳輸未壓縮的檔案和圖片可能會使用大量數據，
-而您的行動電話營運商可能會收取額外費用。我們建議僅在 WiFi 
+而您的行動電話營運商可能會收取額外費用。我們建議僅在 WiFi
 網路中上傳和下載檔案。</string>
     <string name="prefs_theme">設計主題</string>
     <string name="list_theme_light">淺色（預設）</string>
@@ -593,7 +593,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="prefs_emoji_style">表情符號樣式</string>
     <string name="prefs_android_emojis">系統表情符號</string>
     <string name="prefs_default_emojis">Threema 表情符號（預設）</string>
-    <string name="android_emojis_warning">注意：系統的字元集可能無法顯示 
+    <string name="android_emojis_warning">注意：系統的字元集可能無法顯示
 Threema 支援的所有表情符號。</string>
     <string name="crop">裁剪</string>
     <string name="scan_id_mismatch_title">ID不匹配</string>
@@ -619,7 +619,7 @@ Threema 支援的所有表情符號。</string>
     <string name="permission_storage_required">要儲存或傳送媒體，請允許 Threema 取用儲存權限。</string>
     <string name="permission_location_required">要傳送位置，請允許 Threema 取用您的位置的權限。</string>
     <string name="permission_contacts_required">要傳送聯絡人，請允許 Threema 讀取聯絡人的權限。</string>
-    <string name="message_declined">您對這則訊息表示了「不同意」</string>
+    <string name="message_declined">您對這則訊息表示「不同意」。</string>
     <string name="notifications_settings">通知設定</string>
     <string name="notifications_default">預設設定</string>
     <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">持續%d小時</string>
@@ -771,7 +771,7 @@ Threema 支援的所有表情符號。</string>
     <string name="android_backup_restart_threema">請稍等片刻。此應用將在幾秒鐘後後重新啟動。</string>
     <string name="battery_optimizations_title">停用電池最佳化</string>
     <string name="battery_optimizations_explain">電池最佳化使 %1$s 在電話進入睡眠模式時無法正常執行。請為 %2$s 停用電池最佳化。</string>
-    <string name="battery_optimizations_disable_guide">在下拉式選單中選擇「所有應用」</string>
+    <string name="battery_optimizations_disable_guide">在下拉式選單中選擇「所有應用程式」</string>
     <string name="battery_optimizations_disable_guide_ctd">在清單中搜尋%s並停用最佳化</string>
     <string name="battery_optimizations_disable_confirm">您真的要對%1$s保持開啟電池最佳化嗎？%2$s無法正常執行。</string>
     <string name="enter_text_hint">輸入文字</string>
@@ -799,9 +799,9 @@ Threema 支援的所有表情符號。</string>
     <string name="retry">重試</string>
     <string name="voice_message_record">錄製語音訊息</string>
     <string name="open_navdrawer">開啟應用程式抽屜</string>
-    <string name="profile_picture">個人資料相片</string>
+    <string name="profile_picture">大頭貼</string>
     <string name="profile_picture_release">誰可以看到您的大頭貼？</string>
-    <string name="picrelease_nobody">沒有人</string>
+    <string name="picrelease_nobody">無</string>
     <string name="picrelease_selected">選定的聯絡人</string>
     <string name="picrelease_everyone">任何人</string>
     <string name="prefs_title_receive_profilepics">顯示大頭貼</string>
@@ -857,7 +857,7 @@ Threema 支援的所有表情符號。</string>
     <string name="unknown_address">未知地址</string>
     <string name="your_location">您的位置</string>
     <string name="network_blocked_title">背景數據已停用</string>
-    <string name="network_blocked_body">%s無法在背景接收訊息。點擊這裡可開啟設定中的背景數據。</string>
+    <string name="network_blocked_body">%s 無法在背景接收訊息。點擊這裡可開啟設定中的背景數據。</string>
     <string name="reply_later">待會再聊</string>
     <string name="reply_on_my_way">我正在路上</string>
     <string name="reply_thank_you">謝謝</string>
@@ -883,7 +883,7 @@ Threema 支援的所有表情符號。</string>
     <string name="no_matching_work_contacts">找不到經管理員驗證的 Threema Work 聯絡人</string>
     <string name="all">所有</string>
     <string name="webclient_session_stop_all">關閉所有</string>
-    <string name="webclient_running_sessions">%d個Threema 網頁版工作階段正在執行</string>
+    <string name="webclient_running_sessions">%d個Threema 網頁版正在執行</string>
     <string name="passphrase_service_name">密碼服務</string>
     <string name="passphrase_service_description">密碼解鎖時的通知</string>
     <string name="webclient_service_description">Threema 網頁版工作階段執行時的通知</string>
@@ -1027,12 +1027,12 @@ Threema 支援的所有表情符號。</string>
     <string name="lp_use_this_location">傳送這個位置？</string>
     <string name="lp_search_place">輸入城市</string>
     <string name="lp_no_nearby_places_found">找不到附近的地方</string>
-    <string name="select_directory_for_backup">儲存在這裡</string>
+    <string name="select_directory_for_backup">儲存這裡的位置</string>
     <string name="data_backup_headline">建立資料備份以儲存您的所有資料，包括對話和媒體。</string>
     <string name="data_backup_save_path">備份路徑</string>
     <string name="change">變更</string>
     <string name="data_backup_last_date">上次成功的資料備份</string>
-    <string name="archived">已封存</string>
+    <string name="archived">已封存對話</string>
     <string name="to_archive">封存</string>
     <string name="message_archived">已封存%d個對話</string>
     <string name="archived_chats">已封存對話</string>
@@ -1044,7 +1044,7 @@ Threema 支援的所有表情符號。</string>
     <string name="notification_contact_has_joined">%1$s加入了%2$s。點擊這裡傳送訊息。</string>
     <string name="notification_contact_has_joined_multiple">%1$d個聯絡人已加入%2$s: %3$s。點擊這裡向他們傳送訊息。</string>
     <string name="system_default">系統預設</string>
-    <string name="open_in_maps_app">在地圖應用中開啟</string>
+    <string name="open_in_maps_app">在地圖應用程式中開啟</string>
     <string name="delete">刪除</string>
     <string name="num_archived_chats">%d個已封存的對話</string>
     <string name="continue_recording">繼續錄音</string>
@@ -1080,16 +1080,16 @@ Threema 支援的所有表情符號。</string>
     <string name="edit_type_content_description">檢視或編輯 %1$s %2$s</string>
     <string name="group">群組</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>我們的隱私權政策已更新，以反映以下變更：</p><p>%1$s 不再依靠 Google Play 和 Google Maps 提供地圖和POI 資料。</p>請在<a href="%2$s">這裡</a>檢視完整的隱私權政策。]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">未安裝 Google Play 服務，無法推播訊息。</string>
+    <string name="play_services_not_installed_unable_to_use_push">未安裝推播服務，無法推播訊息。</string>
     <string name="unable_to_get_current_location">無法判斷現在的位置。</string>
     <string name="lp_search_place_min_chars">請輸入至少三個字元以搜尋地點。</string>
     <string name="lp_search_place_no_matches">找不到匹配的地點。請修改您的查詢。</string>
-    <string name="wallpaper_default">預設背景</string>
+    <string name="wallpaper_default">預設背景圖片</string>
     <string name="wallpaper_gallery">從圖片庫中選擇</string>
-    <string name="wallpaper_none">空白背景</string>
-    <string name="wallpaper_threema">%s 背景圖片</string>
+    <string name="wallpaper_none">空白背景圖片</string>
+    <string name="wallpaper_threema">%s 預設背景圖片</string>
     <string name="message_id">訊息ID</string>
-    <string name="mime_type">MIME 類型</string>
+    <string name="mime_type">MIME類型</string>
     <string name="password_does_not_comply">密碼不符合管理員設定的準則。</string>
     <string name="audio_mute_due_to_focus_loss">由於其他應用程式正在播放音訊，目前音訊已暫時靜音</string>
     <string name="restore_data_backup_explain">請首先在「個人檔案」畫面中刪除您的 Threema ID 以還原資料備份。\n\n當應用程式重新啟動後，請選擇「從備份還原」&gt; 「其他還原選項」&gt;「資料備份」，然後選擇要還原的資料備份檔案。</string>
@@ -1206,6 +1206,7 @@ Threema 支援的所有表情符號。</string>
     <string name="blur">模糊處理</string>
     <string name="face_blur_tooltip_title">新增：人臉辨識</string>
     <string name="face_blur_tooltip_text">在圖片中找出面孔，將臉部模糊或以笑臉覆蓋。</string>
+    <string name="listened_to">已聽取</string>
     <string name="transcoder_unsupported_audio_format">由於缺少系統支援，音訊無法轉碼。</string>
     <string name="transcoder_unknown_audio_error">發生未知的音訊轉碼錯誤。</string>
     <string name="video_size_explain">就算設定為未壓縮，體積非常大的影片都有可能被壓縮。</string>
@@ -1214,4 +1215,8 @@ Threema 支援的所有表情符號。</string>
     <string name="note_group_howto">提示：如果您不新增任何群組成員，傳送至這個群組的訊息將保留在本地。這樣能方便您安全地儲存筆記、媒體和檔案，或將檔案轉移至桌面。</string>
     <string name="mark_unread">標示為未讀</string>
     <string name="mark_read_short">標示為已讀</string>
+    <string name="unread">未讀對話</string>
+    <string name="missing_app_licence">無法建立新的身份要求，因為找不到有效的應用程式許可證。</string>
+    <string name="set_backup_path">設定備份路徑</string>
+    <string name="set_backup_path_intro">在下一個畫面中，請選擇儲存資料備份的資料夾。</string>
 </resources>

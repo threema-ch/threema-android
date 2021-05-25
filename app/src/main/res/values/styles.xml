@@ -727,4 +727,10 @@
 		<item name="cornerFamily">rounded</item>
 		<item name="cornerSize">2dp</item>
 	</style>
+
+	<style name="Threema.MediaGallery.FastScroll" parent="">
+		<item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_media</item>
+		<item name="android:fastScrollTrackDrawable">@null</item>
+	</style>
+
 </resources>

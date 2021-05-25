@@ -724,7 +724,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		int oldRotation = SendMediaActivity.this.mediaItems.get(bigImagePos).getRotation();
-		int newRotation = (oldRotation + 90) % 360;
+		int newRotation = (oldRotation - 90) % 360;
 
 		int height = bigImageView.getDrawable().getBounds().width();
 		int width = bigImageView.getDrawable().getBounds().height();
@@ -739,7 +739,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			scalingFactor = (float) parentWidth / (float) width;
 		}
 
-		bigImageView.animate().rotationBy(90f)
+		bigImageView.animate().rotationBy(-90f)
 			.scaleX(scalingFactor)
 			.scaleY(scalingFactor)
 			.setDuration(IMAGE_ANIMATION_DURATION_MS)

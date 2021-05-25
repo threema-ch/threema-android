@@ -59,6 +59,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -76,6 +77,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
+import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
@@ -208,8 +210,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				@Override
 				public void run() {
 					if (intent.getAction().equals(IntentDataUtil.ACTION_LICENSE_NOT_ALLOWED)) {
-						if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.SERIAL ||
-							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK) {
+						if (Arrays.asList(BuildFlavor.LicenseType.SERIAL,
+								BuildFlavor.LicenseType.GOOGLE_WORK,
+								BuildFlavor.LicenseType.HMS_WORK).contains(BuildFlavor.getLicenseType())) {
 							//show enter serial stuff
 							startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
 						} else {
@@ -697,7 +700,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				CheckLicenseRoutine check = null;
 				try {
 					check = new CheckLicenseRoutine(
-							getApplicationContext(),
+							this,
 							serviceManager.getAPIConnector(),
 							serviceManager.getUserService(),
 							deviceService,
@@ -940,7 +943,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		this.invalidateOptionsMenu();
 
 		if (savedInstanceState == null) {
-			if (!ConfigUtils.isPlayServicesInstalled(this)) {
+			if (!PushService.servicesInstalled(this)) {
 				enablePolling(serviceManager);
 				if (!ConfigUtils.isBlackBerry() && !ConfigUtils.isAmazonDevice() && !ConfigUtils.isWorkBuild()) {
 					RuntimeUtil.runOnUiThread(() -> ShowOnceDialog.newInstance(R.string.push_not_available_title, R.string.push_not_available_text).show(getSupportFragmentManager(), "nopush"));

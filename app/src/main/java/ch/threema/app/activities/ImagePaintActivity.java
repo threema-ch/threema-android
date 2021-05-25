@@ -91,6 +91,8 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 
+import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
+
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(ImagePaintActivity.class);
 
@@ -454,9 +456,6 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 					return null;
 				}
 
-				originalImageWidth = options.outWidth;
-				originalImageHeight = options.outHeight;
-
 				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 				options.inJustDecodeBounds = false;
 
@@ -464,8 +463,17 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 					if (data != null) {
 						orgBitmap = BitmapFactory.decodeStream(new BufferedInputStream(data), null, options);
 						if (orgBitmap != null) {
+							if (exifOrientation != 0 || exifFlip != FLIP_NONE) {
+								orgBitmap = BitmapUtil.rotateBitmap(orgBitmap, exifOrientation, exifFlip);
+							}
+							if (orientation != 0 || flip != FLIP_NONE) {
+								orgBitmap = BitmapUtil.rotateBitmap(orgBitmap, orientation, flip);
+							}
 							bitmap = Bitmap.createBitmap(orgBitmap.getWidth() & ~0x1, orgBitmap.getHeight(), Bitmap.Config.RGB_565);
 							new Canvas(bitmap).drawBitmap(orgBitmap, 0, 0, null);
+
+							originalImageWidth = orgBitmap.getWidth();
+							originalImageHeight = orgBitmap.getHeight();
 						} else {
 							logger.info("could not open image");
 							return null;

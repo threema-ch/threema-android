@@ -85,6 +85,12 @@ public class WebClientMessagePlayer extends MessagePlayer {
 	}
 
 	@Override
+	public boolean open() {
+		markAsConsumed();
+		return super.open();
+	}
+
+	@Override
 	protected void open(File decryptedFile) { }
 
 	@Override

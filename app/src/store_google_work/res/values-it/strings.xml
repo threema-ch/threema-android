@@ -21,5 +21,5 @@ in modo anonimo.</string>
     <string name="menu_about">Informazioni su Threema Work</string>
     <string name="list_theme_light">Chiaro</string>
     <string name="list_theme_dark">Scuro (default)</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Per utenti privati</a>]]></string>
+    <string name="private_threema_download"><![CDATA[<a href=%s>Per utenti privati</a>]]></string>
 </resources>

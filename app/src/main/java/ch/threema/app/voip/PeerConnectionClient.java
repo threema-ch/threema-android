@@ -131,11 +131,9 @@ public class PeerConnectionClient {
 
 	private static final String AUDIO_TRACK_ID = "3MACALLa0";
 	private static final String AUDIO_CODEC_OPUS = "opus";
-	private static final String AUDIO_CODEC_PARAM_BITRATE = "maxaveragebitrate";
 	private static final String AUDIO_LEVEL_CONTROL_CONSTRAINT = "levelControl";
 
 	private static final String VIDEO_TRACK_ID = "3MACALLv0";
-	private static final String VIDEO_TRACK_TYPE = "video";
 
 	// Capturing settings. What's being sent may be lower.
 	private static final int VIDEO_WIDTH = 1920;
@@ -257,13 +255,13 @@ public class PeerConnectionClient {
 		 * Initialize the peer connection client.
 		 *
 		 * @param tracing Enable WebRTC trace logging. Should only be used for internal debugging.
-		 * @param useOpenSLES
+		 * @param useOpenSLES Use OpenSL ES
 		 * @param disableBuiltInAEC Disable acoustic echo cancelation
 		 * @param disableBuiltInAGC Disable automatic gain control
 		 * @param disableBuiltInNS Disable noise suppression
-		 * @param enableLevelControl
-		 * @param videoCallEnabled
-		 * @param videoCodecHwAcceleration
+		 * @param enableLevelControl Enable level control
+		 * @param videoCallEnabled Enable video calls
+		 * @param videoCodecHwAcceleration Enable video codec hardware acceleration
 		 * @param rtpHeaderExtensionConfig See {@link SdpPatcher}
 		 * @param forceTurn Whether TURN servers should be forced (relay only).
 		 * @param gatherContinually Whether ICE candidates should be gathered continually.
@@ -431,8 +429,6 @@ public class PeerConnectionClient {
 
 	/**
 	 * Enable or disable the use of ICE servers (defaults to enabled).
-	 *
-	 * @param enableIceServers
 	 */
 	public void setEnableIceServers(boolean enableIceServers) {
 		this.enableIceServers = enableIceServers;
@@ -493,22 +489,23 @@ public class PeerConnectionClient {
 
 	/**
 	 * Create the peer connection factory.
-	 * @return true if the factory was created, false otherwise.
+	 *
+	 * The future completes with true if the factory was created, false otherwise.
 	 */
 	@WorkerThread
-	private boolean createPeerConnectionFactoryInternal(@NonNull CompletableFuture<Boolean> future) {
+	private void createPeerConnectionFactoryInternal(@NonNull CompletableFuture<Boolean> future) {
 		logger.info("Create peer connection factory");
 		if (this.factory != null) {
 			logger.error("Peer connetion factory already initialized");
 			future.complete(false);
-			return false;
+			return;
 		}
 		try {
 			this.factoryInitializing.acquire();
 		} catch (InterruptedException e) {
 			logger.error("Interrupted while acquiring semaphore", e);
 			future.complete(false);
-			return false;
+			return;
 		}
 
 		this.isError = false;
@@ -605,7 +602,6 @@ public class PeerConnectionClient {
 
 		this.factoryInitializing.release();
 		future.complete(true);
-		return true;
 	}
 
 	@WorkerThread
@@ -1915,7 +1911,9 @@ public class PeerConnectionClient {
 		@Override
 		public void onFirstFrameAvailable() {
 			logger.debug("Camera first frame available");
-			events.onCameraFirstFrameAvailable();
+			if (events != null) {
+				events.onCameraFirstFrameAvailable();
+			}
 		}
 
 		@Override

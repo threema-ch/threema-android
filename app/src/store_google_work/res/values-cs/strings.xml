@@ -19,7 +19,7 @@
     <string name="menu_about">O aplikaci Threema Work</string>
     <string name="list_theme_light">Světlý</string>
     <string name="list_theme_dark">Tmavý (výchozí)</string>
-    <string name="private_threema_download"><![CDATA[Pro osobní používání <a href="https://play.google.com/store/apps/details?id=ch.threema.app">klepněte sem</a> a stáhněte si aplikaci Threema.]]></string>
+    <string name="private_threema_download"><![CDATA[Pro osobní používání <a href=%s>klepněte sem</a> a stáhněte si aplikaci Threema.]]></string>
     <string name="directory_search">Hledat v adresáři</string>
     <string name="directory_title">Adresář společnosti</string>
     <string name="directory_empty_view_text">Nebyly nalezeny žádné záznamy\n\n\n\nChcete-li zahájit vyhledávání v adresáři uživatelů Threema ve vaší společnosti, zadejte alespoň 3 znaky</string>

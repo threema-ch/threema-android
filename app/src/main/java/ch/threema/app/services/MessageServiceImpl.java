@@ -38,7 +38,6 @@ import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 import android.widget.Toast;
 
-import com.google.android.gms.common.util.ArrayUtils;
 import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.IOUtils;
@@ -79,6 +78,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationManagerCompat;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
@@ -475,16 +475,26 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
-	private Set<ContactModel> addProfilePicRecipient(Set<ContactModel> contacts, ContactModel contact, UserService userService, Date lastUpdated) {
-		if (contact != null) {
+	/**
+	 * Add provided contact to a list of contacts
+	 * - if it never received our profile picture
+	 * - if our profile pic was updated since it last received it
+	 * @param contacts List of contacts to add "contact" to if it should receive the profile picture
+	 * @param contact ContactModel to examine
+	 * @param userService
+	 * @param lastUpdated Date our profile pic was last updated
+	 * @return updated contacts
+	 */
+	private Set<ContactModel> addProfilePicRecipient(Set<ContactModel> contacts, ContactModel contact, UserService userService, @Nullable Date lastUpdated) {
+		if (contact != null && lastUpdated != null) {
 			String identity = contact.getIdentity();
 			if (!userService.getIdentity().equals(identity)) {
 				if (preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_EVERYONE ||
 						(preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_SOME &&
 						profilePicRecipientsService.has(identity))) {
-					Date date = contact.getProfilePicSentDate();
+					Date profilePicSentDate = contact.getProfilePicSentDate();
 
-					if (date == null || lastUpdated.after(date)) {
+					if (profilePicSentDate == null || lastUpdated.after(profilePicSentDate)) {
 						contacts.add(contact);
 					}
 				}
@@ -496,11 +506,6 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	public boolean sendProfilePicture(MessageReceiver[] messageReceivers) {
 		if (messageReceivers.length > 0) {
-			Date lastUpdated = preferenceService.getProfilePicLastUpdate();
-			if (lastUpdated == null) {
-				return false;
-			}
-
 			UserService userService;
 			try {
 				userService = ThreemaApplication.getServiceManager().getUserService();
@@ -510,6 +515,8 @@ public class MessageServiceImpl implements MessageService {
 			} catch (Exception e) {
 				return false;
 			}
+
+			Date lastUpdated = preferenceService.getProfilePicLastUpdate();
 
 			// create array of receivers that need an update
 			Set<ContactModel> outdatedContacts = new HashSet<>();
@@ -1070,7 +1077,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException {
-		logger.debug("markAsRead message = " + message.getApiMessageId() + " silent = " + silent);
+		logger.debug("markAsRead message = {} silent = {}", message.getApiMessageId(), silent);
 		boolean saved = false;
 
 		if (MessageUtil.canMarkAsRead(message)) {
@@ -1101,6 +1108,43 @@ public class MessageServiceImpl implements MessageService {
 					receipt.getMessageId(), receipt.getReceiptMessageIds()[0], receipt.getToIdentity());
 				this.messageQueue.enqueue(receipt);
 			}
+		}
+
+		return saved;
+	}
+
+	@Override
+	@WorkerThread
+	public boolean markAsConsumed(AbstractMessageModel message) throws ThreemaException {
+		logger.debug("markAsConsumed message = {}", message.getApiMessageId());
+		boolean saved = false;
+
+		if (MessageUtil.canMarkAsConsumed(message)) {
+			// save consumed state
+			message.setState(MessageState.CONSUMED);
+			message.setModifiedAt(new Date());
+
+			this.save(message);
+
+			saved = true;
+
+			if (BuildConfig.SEND_CONSUMED_DELIVERY_RECEIPTS) {
+				if (this.preferenceService.isReadReceipts()
+					&& message instanceof MessageModel
+					&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)) {
+					DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
+					receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED);
+
+					receipt.setReceiptMessageIds(new MessageId[]{new MessageId(Utils.hexStringToByteArray(message.getApiMessageId()))});
+					receipt.setFromIdentity(this.identityStore.getIdentity());
+					receipt.setToIdentity(message.getIdentity());
+					logger.info("Enqueue delivery receipt (consumed) message ID {} for message ID {} from {}",
+						receipt.getMessageId(), receipt.getReceiptMessageIds()[0], receipt.getToIdentity());
+					this.messageQueue.enqueue(receipt);
+				}
+			}
+
+			fireOnModifiedMessage(message);
 		}
 
 		return saved;
@@ -3641,7 +3685,12 @@ public class MessageServiceImpl implements MessageService {
 							}
 						}
 						if (imageByteArray != null) {
-							return ArrayUtils.concatByteArrays(new byte[NaCl.BOXOVERHEAD], imageByteArray);
+							fileDataModel.setFileSize(imageByteArray.length);
+							ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+							outputStream.write( new byte[NaCl.BOXOVERHEAD] );
+							outputStream.write( imageByteArray );
+
+							return outputStream.toByteArray( );
 						}
 					}
 				} catch (Exception e) {
@@ -3662,7 +3711,12 @@ public class MessageServiceImpl implements MessageService {
 								bitmap,
 								mediaItem.getExifRotation(),
 								mediaItem.getExifFlip()), mediaItem.getRotation(), mediaItem.getFlip());
-							return ArrayUtils.concatByteArrays(new byte[NaCl.BOXOVERHEAD], BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip()));
+
+							ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+							outputStream.write( new byte[NaCl.BOXOVERHEAD] );
+							outputStream.write( BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip()) );
+
+							return outputStream.toByteArray( );
 						}
 					}
 				} catch (Exception e) {

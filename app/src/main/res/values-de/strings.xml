@@ -79,7 +79,7 @@
 	<string name="prefs_title_sum_message_log_on">Ereignisse und Netzwerkinformationen werden in die Datei debug_log.txt geloggt</string>
 	<string name="prefs_title_sum_message_log_off">Ereignisse werden nicht geloggt</string>
 	<string name="prefs_reset_push">Push-Token zurücksetzen</string>
-	<string name="prefs_sum_reset_push">Gerät neu bei FCM registrieren</string>
+	<string name="prefs_sum_reset_push">Gerät neu bei FCM//HMS registrieren</string>
 	<string name="prefs_notification_preview">Vorschau anzeigen</string>
 	<string name="image_size_small">Klein (640x640)</string>
 	<string name="image_size_medium">Mittel (1024x1024)</string>
@@ -437,7 +437,7 @@
 	<string name="share_image">Bild teilen</string>
 	<string name="view_in_gallery">In Galerie ansehen</string>
 	<string name="file_saved">%d Datei(en) gespeichert.</string>
-	<string name="gcm_register_failed">FCM Push-Token konnte nicht aktualisiert werden. Bitte versuchen Sie es später
+	<string name="token_register_failed">Push-Token konnte nicht aktualisiert werden. Bitte versuchen Sie es später
 		erneut.
 	</string>
 	<string name="internet_connection_required">Keine Internet-Verbindung.</string>
@@ -1175,7 +1175,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="edit_type_content_description">%1$s %2$s anzeigen oder bearbeiten</string>
 	<string name="group">Gruppe</string>
 	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Unsere Datenschutzerklärung wurde angepasst, um die folgende Änderung widerzuspiegeln:</p><p>%1$s ist nicht mehr von Google Play und Google Maps abhängig, um Karten- und OVI-Daten bereitzustellen.</p>Bitte überprüfen Sie die vollständige Datenschutzerklärung <a href="%2$s">hier</a>.]]></string>
-	<string name="play_services_not_installed_unable_to_use_push">Play-Dienste nicht installiert. Kann nicht auf «Push» umschalten.</string>
+	<string name="play_services_not_installed_unable_to_use_push">Dienste nicht installiert. Kann nicht auf «Push» umschalten.</string>
 	<string name="unable_to_get_current_location">Der aktuelle Standort kann nicht ermittelt werden.</string>
 	<string name="lp_search_place_min_chars">Bitte geben Sie mindestens 3 Zeichen ein, um nach einem Ort zu suchen.</string>
 	<string name="lp_search_place_no_matches">Keine übereinstimmenden Orte gefunden. Bitte ändern Sie Ihre Abfrage.</string>
@@ -1234,7 +1234,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="ballot_open">Offene Umfragen</string>
 	<string name="translators">Übersetzer</string>
 	<string name="credits">Danksagungen</string>
-	<string name="translators_thanks">Vielen Dank unseren ehernamtlichen Übersetzern:\n%s</string>
+	<string name="translators_thanks">Vielen Dank unseren ehrenamtlichen Übersetzern:\n%s</string>
 	<string name="ballot_window_hide">Offene Umfragen verbergen</string>
 	<string name="ballot_window_show">Offene Umfragen anzeigen</string>
 	<string name="tooltip_video_call">Neben abhörsicheren Sprachanrufen bietet Threema jetzt auch Ende-zu-Ende-verschlüsselte Videoanrufe.</string>
@@ -1297,6 +1297,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="blur">Verwischen</string>
 	<string name="face_blur_tooltip_title">Neu: Gesichtserkennung</string>
 	<string name="face_blur_tooltip_text">Finden Sie Gesichter im Bild und lassen Sie sie verwischen oder mit einem Smiley überdecken.</string>
+	<string name="listened_to">angehört</string>
 	<string name="transcoder_unsupported_audio_format">Audio-Formatkonvertierung aufgrund fehlender Systemunterstützung fehlgeschlagen.</string>
 	<string name="transcoder_unknown_audio_error">Audio-Formatkonvertierung mit unbekantem Fehler fehlgeschlagen.</string>
 	<string name="video_size_explain">Sehr grosse Videos werden unabhängig von dieser Einstellung komprimiert, damit sie versendet werden können.</string>
@@ -1305,4 +1306,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="note_group_howto">Tipp: Wenn Sie keine Mitglieder hinzufügen, bleiben Nachrichten an diese Gruppe lokal. Das ist ideal, um Notizen, Medien oder Dokumente sicher zu speichern oder auf den Desktop zu übertragen.</string>
 	<string name="mark_unread">Als ungelesen markieren</string>
 	<string name="mark_read_short">Gelesen</string>
+	<string name="unread">Ungelesen</string>
+	<string name="set_backup_path">Backup-Pfad festlegen</string>
+	<string name="set_backup_path_intro">Bitte wählen Sie im folgenden Bildschirm den Ordner aus, in dem Daten-Backups gesichert werden sollen.</string>
 </resources>

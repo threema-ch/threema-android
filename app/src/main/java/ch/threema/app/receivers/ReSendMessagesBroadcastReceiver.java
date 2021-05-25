@@ -30,15 +30,13 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import java.util.ArrayList;
 
+import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -69,6 +67,7 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
 						MessageReceiver messageReceiver = getMessageReceiverFromMessageModel(failedMessage);
 						try {
 							messageService.resendMessage(failedMessage, messageReceiver, null);
+							notificationService.cancel(messageReceiver);
 						} catch (Exception e) {
 							RuntimeUtil.runOnUiThread(new Runnable() {
 								@Override

@@ -39,7 +39,7 @@ public class ProtocolStrings {
 	public static final String WORK_SERVER_URL_SANDBOX_IPV6 = "";
 
 	public static final String BLOB_UPLOAD_URL = "https://blobp-upload.threema.ch/upload";
-	public static final String BLOB_UPLOAD_URL_IPV6 = "https://blobp-upload.threema.ch/upload";
+	public static final String BLOB_UPLOAD_URL_IPV6 = "https://ds-blobp-upload.threema.ch/upload";
 	public static final String BLOB_URL_PATTERN = "https://blobp-%s.threema.ch/%s";
 	public static final String BLOB_URL_PATTERN_IPV6 = "https://ds-blobp-%s.threema.ch/%s";
 	public static final String BLOB_DONE_PATTERN = "https://blobp-%s.threema.ch/%s/done";

@@ -28,6 +28,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -36,8 +37,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -68,12 +70,14 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.FastScrollGridView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -85,7 +89,9 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
-public class MediaGalleryActivity extends ThreemaToolbarActivity implements AdapterView.OnItemClickListener, ActionBar.OnNavigationListener, GenericAlertDialog.DialogClickListener {
+import static ch.threema.app.fragments.ComposeMessageFragment.SCROLLBUTTON_VIEW_TIMEOUT;
+
+public class MediaGalleryActivity extends ThreemaToolbarActivity implements AdapterView.OnItemClickListener, ActionBar.OnNavigationListener, GenericAlertDialog.DialogClickListener, FastScrollGridView.ScrollListener {
 	private static final Logger logger = LoggerFactory.getLogger(MediaGalleryActivity.class);
 
 	private ThumbnailCache<?> thumbnailCache = null;
@@ -96,18 +102,27 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	private SpinnerMessageFilter spinnerMessageFilter;
 	private MediaGallerySpinnerAdapter spinnerAdapter;
 	private List<AbstractMessageModel> values;
-	private GridView gridView;
+	private FastScrollGridView gridView;
 	private EmptyView emptyView;
 	private TypedArray mediaTypeArray;
 	private int currentType;
 	private ActionMode actionMode = null;
 	private AbstractMessageModel initialMessageModel = null;
+	private TextView dateTextView;
+	private FrameLayout dateView;
 
 	public FileService fileService;
 	public MessageService messageService;
 	public ContactService contactService;
 	public GroupService groupService;
 	public DistributionListService distributionListService;
+
+	private final Handler dateViewHandler = new Handler();
+	private final Runnable dateViewTask = () -> RuntimeUtil.runOnUiThread(() -> {
+		if (dateView != null && dateView.getVisibility() == View.VISIBLE) {
+			AnimationUtil.slideOutAnimation(dateView, false, 1f, null);
+		}
+	});
 
 	private final int TYPE_ALL = 0;
 	private final int TYPE_IMAGE = 1;
@@ -196,6 +211,10 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	@Override
 	protected boolean initActivity(Bundle savedInstanceState) {
 		logger.debug("initActivity");
+
+		// set font size according to user preferences
+		getTheme().applyStyle(preferenceService.getFontStyle(), true);
+
 		if (!super.initActivity(savedInstanceState)) {
 			return false;
 		}
@@ -265,6 +284,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		});
 		this.gridView.setOnItemClickListener(this);
 		this.gridView.setNumColumns(ConfigUtils.isLandscape(this) ? 5 : 3);
+		this.gridView.setScrollListener(this);
 
 		processIntent(getIntent());
 
@@ -299,6 +319,9 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 
 		frameLayout.addView(this.emptyView);
 		this.gridView.setEmptyView(this.emptyView);
+
+		this.dateView = findViewById(R.id.date_separator_container);
+		this.dateTextView = findViewById(R.id.text_view);
 
 		if (savedInstanceState == null || mediaGalleryAdapter == null) {
 			setupAdapters(this.currentType, true);
@@ -467,6 +490,28 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		setupAdapters(itemPosition, false);
 
 		return true;
+	}
+
+	@Override
+	public void onScroll(int firstVisibleItem) {
+		if (this.mediaGalleryAdapter != null) {
+			if (dateView.getVisibility() != View.VISIBLE && mediaGalleryAdapter != null && mediaGalleryAdapter.getCount() > 0) {
+				AnimationUtil.slideInAnimation(dateView, false, 200);
+			}
+
+			dateViewHandler.removeCallbacks(dateViewTask);
+			dateViewHandler.postDelayed(dateViewTask, SCROLLBUTTON_VIEW_TIMEOUT);
+
+			final AbstractMessageModel messageModel = this.mediaGalleryAdapter.getItem(firstVisibleItem);
+			if (messageModel != null) {
+				final Date createdAt = messageModel.getCreatedAt();
+				if (createdAt != null) {
+					dateView.post(() -> {
+						dateTextView.setText(LocaleUtil.formatDateRelative(this, createdAt.getTime()));
+					});
+				}
+			}
+		}
 	}
 
 	private void selectAllMessages() {

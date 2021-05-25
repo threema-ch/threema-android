@@ -139,6 +139,13 @@ public static <fields>;
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
 
+# hms requirements
+-ignorewarnings
+-keepattributes Exceptions
+-keep class com.huawei.updatesdk.**{*;}
+-keep class com.huawei.hms.**{*;}
+-keep class com.huawei.android.sdk.drm.**{*;}
+
 # remove android log calls below error
 -assumenosideeffects class android.util.Log {
     public static *** v(...);

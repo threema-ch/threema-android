@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="voip_title">Threema 通話</string>
+    <string name="voip_title">Threema通話</string>
     <string name="voip_hangup">電話を切る</string>
     <string name="voip_toggle_mic">トグルマイク</string>
     <string name="voip_toggle_speaker">トグルスピーカー</string>

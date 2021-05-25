@@ -24,8 +24,6 @@ package ch.threema.app.asynctasks;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import androidx.fragment.app.FragmentManager;
+import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -42,8 +41,6 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
-import ch.threema.base.ThreemaException;
-import ch.threema.client.ProtocolDefines;
 import ch.threema.client.ThreemaConnection;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.NonceDatabaseBlobService;
@@ -76,15 +73,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 
 		try {
 			// clear push token
-			FirebaseInstanceId.getInstance().deleteInstanceId();
-			if (connection != null) {
-				try {
-					connection.setPushToken(ProtocolDefines.PUSHTOKEN_TYPE_GCM, "");
-				} catch (ThreemaException e) {
-					// ignore inability to clear push token due to missing connectivity
-					logger.debug("Exception", e);
-				}
-			}
+			PushService.deleteToken(ThreemaApplication.getAppContext());
 
 			serviceManager.getThreemaSafeService().unscheduleUpload();
 			serviceManager.getMessageService().removeAll();

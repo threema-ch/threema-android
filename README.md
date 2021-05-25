@@ -68,6 +68,20 @@ backup can then be imported into the self-compiled app.
 
 Note that the ID creation endpoint is monitored for abuse.
 
+### Huawei HMS Licensing
+
+When creating a new Threema ID using the Threema app bought on Huawei AppGallery, the
+app sends a [Huawei DRM Signature](https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-Guides/appgallerykit-paidapps-devguide-0000001073913394)
+to the directory server. This allows the server to verify that you have indeed
+bought the app, without being able to identify you.
+
+This means that a self-compiled app using the `hms` build variant cannot be
+used to create a new Threema ID. You can, however, use an app that was
+purchased over Huawei AppGallery to create an ID and then export a backup. This
+backup can then be imported into the self-compiled app.
+
+Note that the ID creation endpoint is monitored for abuse.
+
 ### Threema Shop Licensing
 
 If you bought a Threema for Android license in the [Threema Shop](https://shop.threema.ch/),
@@ -97,6 +111,8 @@ There are currently six product flavors:
 | `store_google`      | Google Play Store version (regular, paid app) | Google Play    |
 | `store_google_work` | Google Play Store version (work, free app)    | Threema Work   |
 | `store_threema`     | Threema Store version                         | Threema Shop   |
+| `hms`               | Huawei AppGallery version (regular, paid app) | Huawei HMS     |
+| `hms_work`          | Huawei AppGallery version (work, free app)    | Threema Work   |
 | `sandbox`           | Uses sandbox test environment¹                | Allowlist      |
 | `sandbox_work`      | Uses sandbox test environment¹                | Threema Work   |
 | `red`               | Uses sandbox test environment¹                | Threema Work   |

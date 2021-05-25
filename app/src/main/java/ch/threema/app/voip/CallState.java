@@ -80,6 +80,13 @@ public class CallState {
 	private final AtomicLong callId = new AtomicLong(0);
 
 	/**
+	 * Whether or not an answer for this call ID has been received yet.
+	 *
+	 * This flag is reset when the state transitions to DISCONNECTING or IDLE.
+	 */
+	private volatile boolean answerReceived = false;
+
+	/**
 	 * The incoming call counter is a transitional variable that is used as long as the call ID has
 	 * not yet been fully rolled out. It is being used to avoid problems if two calls are using the
 	 * default call ID "0". The counter is only incremented for incoming calls (in setStateRinging).
@@ -135,6 +142,13 @@ public class CallState {
 	}
 
 	/**
+	 * Return whether an answer was already received for this call.
+	 */
+	public synchronized boolean answerReceived() {
+		return this.answerReceived;
+	}
+
+	/**
 	 * Return an immutable snapshot of the current state.
 	 * This allows reading the state and the Call ID independently without locking.
 	 */
@@ -173,6 +187,7 @@ public class CallState {
 	public synchronized void setIdle() {
 		this.state.set(IDLE);
 		this.callId.set(0);
+		this.answerReceived = false;
 	}
 
 	public synchronized void setRinging(long callId) {
@@ -204,6 +219,10 @@ public class CallState {
 		this.callId.set(callId);
 	}
 
+	public synchronized void setAnswerReceived() {
+		this.answerReceived = true;
+	}
+
 	public synchronized void setCalling(long callId) {
 		final @State int state = this.state.get();
 		if (state != INITIALIZING) {
@@ -230,6 +249,7 @@ public class CallState {
 			logger.warn("Call ID changed from {} to {}", oldCallId, callId);
 		}
 		this.callId.set(callId);
+		this.answerReceived = false;
 	}
 
 	//endregion

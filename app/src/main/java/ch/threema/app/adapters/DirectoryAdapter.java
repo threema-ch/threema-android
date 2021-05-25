@@ -121,6 +121,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+		boolean isMe = false;
 		final DirectoryHolder holder = (DirectoryHolder) viewHolder;
 
 		final WorkDirectoryContact workDirectoryContact = this.getItem(position);
@@ -130,15 +131,20 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 		}
 
 		holder.contact = workDirectoryContact;
+		if (holder.contact != null) {
+			isMe = holder.contact.threemaId.equals(contactService.getMe().getIdentity());
+		}
 
 		if (this.onClickItemListener != null) {
-			holder.statusImageView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onClickItemListener.onAdd(holder.contact, viewHolder.getAdapterPosition());
-				}
-			});
-			holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(holder.contact, viewHolder.getAdapterPosition()));
+			if (!isMe) {
+				holder.statusImageView.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						onClickItemListener.onAdd(holder.contact, viewHolder.getAdapterPosition());
+					}
+				});
+				holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(holder.contact, viewHolder.getAdapterPosition()));
+			}
 		}
 
 		String name;
@@ -184,9 +190,10 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 		boolean isAddedContact = contactService.getByIdentity(workDirectoryContact.threemaId) != null;
 
 		holder.statusImageView.setBackgroundResource(isAddedContact ? 0 : this.backgroundRes);
-		holder.statusImageView.setImageResource(isAddedContact ? R.drawable.ic_keyboard_arrow_right_black_24dp : R.drawable.ic_add_circle_outline_black_24dp);
-		holder.statusImageView.setClickable(!isAddedContact);
-		holder.statusImageView.setFocusable(!isAddedContact);
+		holder.statusImageView.setImageResource(isMe ? R.drawable.ic_person_outline : (isAddedContact ? R.drawable.ic_keyboard_arrow_right_black_24dp : R.drawable.ic_add_circle_outline_black_24dp));
+		holder.statusImageView.setContentDescription(context.getString(isMe ? R.string.me_myself_and_i : (isAddedContact ? R.string.title_compose_message : R.string.menu_add_contact)));
+		holder.statusImageView.setClickable(!isAddedContact && !isMe);
+		holder.statusImageView.setFocusable(!isAddedContact && !isMe);
 	}
 
 	private static final DiffUtil.ItemCallback<WorkDirectoryContact> DIFF_CALLBACK =

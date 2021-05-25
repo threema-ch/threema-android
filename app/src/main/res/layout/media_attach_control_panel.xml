@@ -45,14 +45,14 @@
 			android:fillViewport="true"
 			android:clickable="false"
 			android:importantForAccessibility="no"
-			android:scrollbarSize="@dimen/scrollbar_size">
+			android:scrollbars="none">
 
 			<LinearLayout
 				android:id="@+id/attach_options_container"
 				android:layout_width="wrap_content"
 				android:layout_height="match_parent"
-				android:paddingLeft="4dp"
-				android:paddingRight="4dp"
+				android:paddingLeft="2dp"
+				android:paddingRight="2dp"
 				android:orientation="horizontal"
 				android:importantForAccessibility="no"
 				android:visibility="visible">

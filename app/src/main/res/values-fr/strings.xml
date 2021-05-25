@@ -76,7 +76,7 @@
     <string name="prefs_title_sum_message_log_on">Les événements seront consignés dans le fichier debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">Les événements ne seront pas consignés</string>
     <string name="prefs_reset_push">Réinitialiser le jeton Push</string>
-    <string name="prefs_sum_reset_push">Réenregistrer l\'appareil pour des notifications Push avec FCM</string>
+    <string name="prefs_sum_reset_push">Réenregistrer l\'appareil pour des notifications Push avec FCM ou HMS</string>
     <string name="prefs_notification_preview">Afficher l\'aperçu des messages</string>
     <string name="prefs_sum_reset_ringtones">Restaurer les paramètres système par défaut</string>
     <string name="prefs_title_reset_ringtones">Réinitialiser les paramètres sonores des notifications</string>
@@ -374,7 +374,7 @@
     <string name="share_image">Partager l\'image</string>
     <string name="view_in_gallery">Afficher dans la galerie</string>
     <string name="file_saved">%d fichier(s) bien enregistré(s).</string>
-    <string name="gcm_register_failed">Échec de la réinitialisation du jeton Push FCM, veuillez réessayer.</string>
+    <string name="token_register_failed">Échec de mise à jour du jeton Push, veuillez réessayer plus tard.</string>
     <string name="internet_connection_required">Pas de connexion à Internet.</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">Impossible d\'envoyer %1$d message(s)</string>
     <string name="prefs_sum_save_media">Enregistrer les médias entrants ainsi que les photos prises avec l\'appareil photo de manière non chiffrée</string>
@@ -1128,7 +1128,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="url_warning_body_alt">Le nom d’hôte du lien que vous vous êtes sur le point d’ouvrir est suspect.\n\nIl pourrait s’agir d’une tentative de vous piéger pour que vous ouvriez un site en prétendant être autre chose.\n\nSouhaitez-vous tout de même continuer ?</string>
     <string name="read_on">Lire sur…</string>
     <string name="forward_text">Transférer texte</string>
-    <string name="an_error_occurred_during_send">Une erreur s’est produite lors de l’envoi d’un ou plusieurs messages.</string>
+    <string name="an_error_occurred_during_send">Une erreur s’est produite lors de l’envoi d’un ou plusieurs messages</string>
     <string name="state_processing">traitement</string>
     <string name="passphrase_locked">La phrase secrète est verrouillée</string>
     <string name="selected_media">Votre sélection</string>
@@ -1173,6 +1173,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="blur">Brouiller</string>
     <string name="face_blur_tooltip_title">Nouveau : reconnaissance faciale</string>
     <string name="face_blur_tooltip_text">Trouvez les visages dans l\'image et brouillez-les ou couvrez-les d\'une émoticône.</string>
+    <string name="listened_to">écouté</string>
     <string name="transcoder_unsupported_audio_format">Impossible de transcoder l\'audio à cause de l\'absence de prise en charge par le système.</string>
     <string name="transcoder_unknown_audio_error">Erreur inconnue lors du transcodage de l\'audio.</string>
     <string name="video_size_explain">Les vidéos de très grande taille pourraient être compressées indépendamment du paramètre.</string>
@@ -1181,4 +1182,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="note_group_howto">Astuce : si vous n’ajoutez aucun membre à ce groupe, les messages envoyés à ce groupe resteront locaux. C’est idéal pour enregistrer des notes, médias et documents ou pour les transférer vers un ordinateur.</string>
     <string name="mark_unread">Marque comme non lu</string>
     <string name="mark_read_short">Lu</string>
+    <string name="unread">Non lu</string>
+    <string name="missing_app_licence">Impossible de créer une nouvelle demande d\'identité, car aucune licence d\'application valide n\'est trouvable</string>
+    <string name="set_backup_path">Définir le chemin de sauvegarde</string>
+    <string name="set_backup_path_intro">Veuillez sélectionner sur l\'écran suivant le dossier où les sauvegardes de données devraient être enregistrées.</string>
 </resources>

@@ -29,8 +29,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.hardware.display.DisplayManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -87,6 +85,7 @@ import static android.view.Surface.ROTATION_180;
 import static ch.threema.app.camera.CameraActivity.KEY_EVENT_ACTION;
 import static ch.threema.app.camera.CameraActivity.KEY_EVENT_EXTRA;
 
+@SuppressWarnings("deprecation")
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraFragment extends Fragment {
 	private static final Logger logger = LoggerFactory.getLogger(CameraFragment.class);
@@ -222,7 +221,7 @@ public class CameraFragment extends Fragment {
 		}
 	};
 
-	@SuppressLint("UnsafeExperimentalUsageError")
+	@SuppressLint("UnsafeOptInUsageError")
 	private final OnVideoSavedCallback onVideoSavedCallback = new OnVideoSavedCallback() {
 		@SuppressLint("StaticFieldLeak")
 		@Override
@@ -479,10 +478,16 @@ public class CameraFragment extends Fragment {
 				}
 
 				// play shutter sound
-				if (mediaActionSound != null) {
-					mediaActionSound.play(LessObnoxiousMediaActionSound.SHUTTER_CLICK);
-				}
+				cameraView.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mediaActionSound != null) {
+							mediaActionSound.play(LessObnoxiousMediaActionSound.SHUTTER_CLICK);
+						}
+					}
+				}, 100);
 
+/*
 				// We can only change the foreground Drawable using API level 23+ API
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 					// Display flash animation to indicate that photo was captured
@@ -505,7 +510,7 @@ public class CameraFragment extends Fragment {
 						}
 					}, cameraView.getFlash() == ImageCapture.FLASH_MODE_ON ? 1000 : 100);
 				}
-			}
+*/			}
 		});
 
 		TextView shutterExplainText = controlsContainer.findViewById(R.id.shutter_explain);
@@ -601,7 +606,7 @@ public class CameraFragment extends Fragment {
 		}
 	}
 
-	@SuppressLint("UnsafeExperimentalUsageError")
+	@SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
 	private void startVideoRecording() {
 		// play shutter sound
 		if (mediaActionSound != null) {
@@ -624,7 +629,7 @@ public class CameraFragment extends Fragment {
 
 	}
 
-	@SuppressLint("UnsafeExperimentalUsageError")
+	@SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
 	private void stopVideoRecording() {
 		if (timerView != null) {
 			timerView.stop();

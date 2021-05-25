@@ -85,6 +85,7 @@ public class BackupDataFragment extends Fragment implements
 	private static final String DIALOG_TAG_ENERGY_SAVING_REMINDER = "esr";
 	private static final String DIALOG_TAG_DISABLE_ENERGY_SAVING = "des";
 	private static final String DIALOG_TAG_PASSWORD = "pwd";
+	private static final String DIALOG_TAG_PATH_INTRO = "pathintro";
 
 	private BackupRestoreDataService backupRestoreDataService;
 	private View fragmentView;
@@ -96,6 +97,8 @@ public class BackupDataFragment extends Fragment implements
 	private TextView pathTextView;
 	private NestedScrollView scrollView;
 	private MaterialButton pathChangeButton;
+
+	private boolean launchedFromFAB = false;
 
 	@Override
 	public void onDestroyView() {
@@ -144,6 +147,7 @@ public class BackupDataFragment extends Fragment implements
 			fab.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					launchedFromFAB = true;
 					initiateBackup();
 				}
 			});
@@ -168,12 +172,16 @@ public class BackupDataFragment extends Fragment implements
 			pathChangeButton.findViewById(R.id.backup_path_change_btn).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					onPathChangeButtonClicked(v);
+					launchedFromFAB = false;
+					showPathSelectionIntro();
 				}
 			});
 
 			pathTextView = fragmentView.findViewById(R.id.backup_path);
-			pathTextView.setText(backupUri.toString());
+			pathTextView.setText(
+				backupUri == null ?
+				getString(R.string.not_set) :
+				backupUri.toString());
 		}
 
 		Date backupDate = preferenceService.getLastDataBackupDate();
@@ -189,7 +197,13 @@ public class BackupDataFragment extends Fragment implements
 		return this.fragmentView;
 	}
 
-	private void onPathChangeButtonClicked(View v) {
+	private void showPathSelectionIntro() {
+		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.set_backup_path, R.string.set_backup_path_intro, R.string.ok, R.string.cancel);
+		dialog.setTargetFragment(this);
+		dialog.show(getFragmentManager(), DIALOG_TAG_PATH_INTRO);
+	}
+
+	private void launchDocumentTree() {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 			try {
 				Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -217,7 +231,11 @@ public class BackupDataFragment extends Fragment implements
 			//show toast
 			Toast.makeText(ThreemaApplication.getAppContext(), R.string.backup_in_progress, Toast.LENGTH_SHORT).show();
 		} else {
-			checkBatteryOptimizations();
+			if (backupUri == null) {
+				showPathSelectionIntro();
+			} else {
+				checkBatteryOptimizations();
+			}
 		}
 	}
 
@@ -282,6 +300,9 @@ public class BackupDataFragment extends Fragment implements
 		switch (tag) {
 			case DIALOG_TAG_ENERGY_SAVING_REMINDER:
 				doBackup();
+				break;
+			case DIALOG_TAG_PATH_INTRO:
+				launchDocumentTree();
 				break;
 			default:
 				break;
@@ -368,6 +389,11 @@ public class BackupDataFragment extends Fragment implements
 							backupUri = treeUri;
 							preferenceService.setDataBackupUri(treeUri);
 							pathTextView.setText(treeUri.toString());
+
+							if (launchedFromFAB) {
+								checkBatteryOptimizations();
+							}
+
 							return;
 						}
 					}

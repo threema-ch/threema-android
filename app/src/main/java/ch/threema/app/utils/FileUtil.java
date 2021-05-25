@@ -721,21 +721,26 @@ public class FileUtil {
 		}
 
 		try {
+			Intent startIntent;
 			Intent getContentIntent = new Intent();
 			getContentIntent.setType(includeVideo ? MimeUtil.MIME_TYPE_VIDEO: MimeUtil.MIME_TYPE_IMAGE);
 			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
 			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
 			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
-			Intent pickIntent = new Intent(Intent.ACTION_PICK);
-			pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
-			Intent chooserIntent = Intent.createChooser(pickIntent, activity.getString(R.string.select_from_gallery));
-			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
 
-			if (fragment != null) {
-				fragment.startActivityForResult(chooserIntent, requestCode);
+			if (includeVideo) {
+				Intent pickIntent = new Intent(Intent.ACTION_PICK);
+				pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
+				startIntent = Intent.createChooser(pickIntent, activity.getString(R.string.select_from_gallery));
+				startIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
 			} else {
-				activity.startActivityForResult(chooserIntent, requestCode);
+				startIntent = getContentIntent;
+			}
+			if (fragment != null) {
+				fragment.startActivityForResult(startIntent, requestCode);
+			} else {
+				activity.startActivityForResult(startIntent, requestCode);
 			}
 		} catch (Exception e) {
 			logger.debug("Exception", e);

@@ -210,18 +210,24 @@ public class FileServiceImpl implements FileService {
 
 	@Deprecated
 	public File getBackupPath() {
-		if (!this.backupPath.exists()) {
-			this.backupPath.mkdirs();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+			if (!this.backupPath.exists()) {
+				this.backupPath.mkdirs();
+			}
 		}
 		return this.backupPath;
 	}
 
 	@Override
-	public @NonNull Uri getBackupUri() {
+	public @Nullable Uri getBackupUri() {
 		// check if backup path is overridden by user
 		Uri backupUri = preferenceService.getDataBackupUri();
 		if (backupUri != null) {
 			return backupUri;
+		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			return null;
 		}
 		return Uri.fromFile(getBackupPath());
 	}

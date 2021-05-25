@@ -8,7 +8,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent">
 
-		<GridView
+		<ch.threema.app.ui.FastScrollGridView
 				android:id="@+id/gridview"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
@@ -18,8 +18,24 @@
 				android:stretchMode="columnWidth"
 				android:gravity="center"
 				android:background="?android:windowBackground"
-				android:scrollbarSize="@dimen/scrollbar_size"
+				android:fastScrollEnabled="true"
 				android:listSelector="@android:color/transparent"/>
+
+		<FrameLayout
+			android:id="@+id/date_separator_container"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="top|center_horizontal"
+			android:paddingTop="5dp"
+			android:paddingBottom="3dp"
+			android:paddingLeft="3dp"
+			android:paddingRight="3dp"
+			android:clipToPadding="false"
+			android:layout_marginTop="?attr/actionBarSize"
+			android:visibility="gone">
+
+			<include layout="@layout/date_separator" />
+		</FrameLayout>
 
 	</FrameLayout>
 

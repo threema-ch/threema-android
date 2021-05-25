@@ -24,10 +24,13 @@ package ch.threema.app.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.preference.PreferenceManager;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.PushUtil;
 
 public class UpdateReceiver extends BroadcastReceiver {
@@ -38,8 +41,10 @@ public class UpdateReceiver extends BroadcastReceiver {
 		if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
 			logger.info("*** App was updated ***");
 
-			// force GCM register
+			// force token register
 			PushUtil.clearPushTokenSentDate(context);
 		}
 	}
+
+
 }

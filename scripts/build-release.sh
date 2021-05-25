@@ -33,8 +33,8 @@ function print_usage() {
     echo "Usage: $0 -v <variants> -n <version-name> [-b] [-k <dir>] [-o <dir>] [--no-image-export] --i-accept-the-android-sdk-license"
     echo ""
     echo "Options:"
-    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop"
-    echo "  -n <version-name>    The version name. Example: '4.43k'"
+    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, work, hms, hmswork"
+    echo "  -n <version-name>    The version name. Example: '4.53'"
     echo "  -b,--build           (Re)build the Docker image"
     echo "  -k,--keystore <dir>  Path to the keystore directory"
     echo "  -o,--outdir <dir>    Path to the release output directory, will be created if it doesn't exist"
@@ -105,10 +105,7 @@ releasedir=$(realpath $releasedir)
 IFS=', ' read -r -a variant_array <<< "$variants"
 for variant in "${variant_array[@]}"; do
     case $variant in
-        googleplay)
-            # Valid
-            ;;
-        threemashop)
+        googleplay | threemashop| work | hms | hmswork)
             # Valid
             ;;
         *)
@@ -122,7 +119,7 @@ fi
 name=${name//[^0-9\.a-zA-Z\-]/}
 if [[ "$name" == "" || "$name" == .* ]]; then
     log_error 'Please set a valid version name with "-n <name>".'
-    fail 'Example: "-n 4.43k"'
+    fail 'Example: "-n 4.43"'
 fi
 
 # Determine build version
@@ -163,6 +160,18 @@ for variant in "${variant_array[@]}"; do
         threemashop)
             target=assembleStore_threemaRelease
             variant_dir="store_threema"
+            ;;
+        work)
+            target=assembleStore_google_workRelease
+            variant_dir="store_google_work"
+            ;;
+        hms)
+            target=assembleHmsRelease
+            variant_dir="hms"
+            ;;
+        hmswork)
+            target=assembleHms_workRelease
+            variant_dir="hms_work"
             ;;
         *)
             fail "Invalid build variant: $variant"

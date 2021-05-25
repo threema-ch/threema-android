@@ -49,7 +49,28 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 		setContentView(R.layout.activity_wizard_start);
 
 		final ImageView imageView = findViewById(R.id.wizard_animation);
-		imageView.setBackgroundResource(R.drawable.animation_wizard1);
+		final AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
+		frameAnimation.setOneShot(true);
+		frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
+			@Override
+			public void onAnimationAdvanced(int currentFrame, int totalFrames) {
+			}
+
+			@Override
+			public void onAnimationCompleted() {
+				ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+					// the context of the activity
+					WizardStartActivity.this,
+
+					new Pair<>(findViewById(R.id.wizard_animation),
+						getString(R.string.transition_name_dots)),
+					new Pair<>(findViewById(R.id.wizard_footer),
+						getString(R.string.transition_name_logo))
+				);
+				launchNextActivity(options);
+			}
+		});
+
 		if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted()) {
 			imageView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -58,30 +79,17 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 					launchNextActivity(null);
 				}
 			});
-			imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-				AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
-				frameAnimation.setOneShot(true);
-				frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
-					@Override
-					public void onAnimationAdvanced(int currentFrame, int totalFrames) {
+			imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(frameAnimation::start);
+			imageView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					if (frameAnimation.isRunning()) {
+						// stop animation if it's still running after 5 seconds
+						frameAnimation.stop();
+						launchNextActivity(null);
 					}
-
-					@Override
-					public void onAnimationCompleted() {
-						ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-							// the context of the activity
-							WizardStartActivity.this,
-
-							new Pair<>(findViewById(R.id.wizard_animation),
-								getString(R.string.transition_name_dots)),
-							new Pair<>(findViewById(R.id.wizard_footer),
-								getString(R.string.transition_name_logo))
-						);
-						launchNextActivity(options);
-					}
-				});
-				frameAnimation.start();
-			});
+				}
+			}, 5000);
 		} else {
 			launchNextActivity(null);
 		}

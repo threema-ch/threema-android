@@ -55,7 +55,7 @@
 	<string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
 	<string name="preferences__lockout_timeout" translatable="false">pref_key_lock_timeout</string>
 	<string name="preferences__wizard_running" translatable="false">pref_wizard_running</string>
-	<string name="preferences__gcm_token" translatable="false">pref_gcm_token</string>
+	<string name="preferences__push_token" translatable="false">pref_push_token</string>
 	<string name="preferences__gif_autoplay" translatable="false">pref_gif_autoplay</string>
 	<string name="preferences__proximity_sensor" translatable="false">pref_proximity_sensor</string>
 	<string name="preferences__app_logo_light_url" translatable="false">pref_app_logo_light_url</string>
@@ -132,7 +132,7 @@
 	<string name="preferences__noti_channel_chat_update_seq" translatable="false">pref_nchan_update_seq</string>
 	<string name="preferences__noti_channel_voip_seq" translatable="false">pref_nchan_voip_seq</string>
 	<string name="preferences__tooltip_export_id_shown" translatable="false">pref_tooltip_export_id_shown</string>
-	<string name="preferences__gcm_token_sent_date" translatable="false">pref_gcm_token_sent_date</string>
+	<string name="preferences__token_sent_date" translatable="false">pref_token_sent_date</string>
 	<string name="preferences__work_directory_enabled" translatable="false">pref_work_directory_enabled</string>
 	<string name="preferences__work_safe_mdm_config" translatable="false">pref_work_safe_mdm_config</string>
 	<string name="preferences__app_lock_enabled" translatable="false">pref_app_lock_enabled</string>

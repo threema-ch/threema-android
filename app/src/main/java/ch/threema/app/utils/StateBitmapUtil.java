@@ -72,6 +72,7 @@ public class StateBitmapUtil {
 		this.messageStateBitmapResourceIds.put(MessageState.SENDING, R.drawable.ic_upload_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.PENDING, R.drawable.ic_upload_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.TRANSCODING, R.drawable.ic_outline_hourglass_top_24);
+		this.messageStateBitmapResourceIds.put(MessageState.CONSUMED, R.drawable.ic_baseline_hearing_24);
 
 		this.messageStateDescriptionMap.put(MessageState.READ, R.string.state_read);
 		this.messageStateDescriptionMap.put(MessageState.DELIVERED, R.string.state_delivered);
@@ -82,6 +83,7 @@ public class StateBitmapUtil {
 		this.messageStateDescriptionMap.put(MessageState.SENDING, R.string.state_sending);
 		this.messageStateDescriptionMap.put(MessageState.PENDING, R.string.state_pending);
 		this.messageStateDescriptionMap.put(MessageState.TRANSCODING, R.string.state_processing);
+		this.messageStateDescriptionMap.put(MessageState.CONSUMED, R.string.listened_to);
 
 		this.ackColor = context.getResources().getColor(R.color.material_green);
 		this.decColor = context.getResources().getColor(R.color.material_orange);

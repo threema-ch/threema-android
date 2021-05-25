@@ -8,7 +8,7 @@
 # - `SDK_VERSION`: Set this to the desired Android SDK version (e.g. `28`)
 # - `BUILD_TOOLS_VERSION`: Set this to the desired build tools version (e.g. `28.0.3`)
 
-FROM ubuntu:20.04
+FROM docker.io/ubuntu:20.04
 
 # Arguments
 ARG SDK_VERSION=29

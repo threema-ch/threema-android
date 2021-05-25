@@ -77,7 +77,7 @@
     <string name="prefs_title_sum_message_log_on">Eventi vengono registrati in un file debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">Eventi non vengono registrati</string>
     <string name="prefs_reset_push">Resettare push token</string>
-    <string name="prefs_sum_reset_push">Registrare il dispositivo da FCM</string>
+    <string name="prefs_sum_reset_push">Registrare il dispositivo da FCM//HMS</string>
     <string name="prefs_notification_preview">Visualizza anteprima</string>
     <string name="prefs_sum_reset_ringtones">Ripristina impostazioni predefinite del sistema</string>
     <string name="prefs_title_reset_ringtones">Reimposta le impostazioni relative all\'audio delle notifiche</string>
@@ -376,7 +376,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="contact_format_last_name_first_name">Cognome Nome</string>
     <string name="block_contact">Blocca contatto</string>
     <string name="unblock_contact">Sblocca contatto</string>
-    <string name="unread_messages">Messaggi non letti</string>
+    <string name="unread_messages">%d messaggi non letti</string>
     <string name="one_unread_message">1 messaggio non letto</string>
     <string name="really_unlink_contact_title">Rimuovi collegamento</string>
     <string name="really_unlink_contact">Vuoi davvero rimuovere il collegamento al contatto della rubrica?</string>
@@ -395,7 +395,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="share_image">Condividi immagine</string>
     <string name="view_in_gallery">Visualizza nella galleria</string>
     <string name="file_saved">%d file salvato/i con successo</string>
-    <string name="gcm_register_failed">Impossibile resettare push token FCM. Riprova.</string>
+    <string name="token_register_failed">Impossibile resettare push token. Riprova.</string>
     <string name="internet_connection_required">Nessuna connessione a Internet.</string>
     <string name="sending_message_failed" tools:ignore="PluralsCandidate">Invio di %1$d messaggo/i non è riuscito</string>
     <string name="prefs_sum_save_media">Carica i media automaticamente all\'entrata e salvali in forma non criptata nella
@@ -1067,7 +1067,7 @@ messaggi ogni 15 minuti.</string>
     <string name="edit_type_content_description">Visualizza o modifica %1$s %2$s</string>
     <string name="group">Gruppo</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Le nostre Norme sulla Privacy sono state aggiornate per riflettere la seguente modifica:</p><p>%1$s non dipende più da Google Play e Google Maps per fornire dati di mappe e POI.</p>Rivedi l\'intera Informativa sulla Privacy <a href="%2$s">qui</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Play Services non installato. Impossibile passare a «push».</string>
+    <string name="play_services_not_installed_unable_to_use_push">Services non installato. Impossibile passare a «push».</string>
     <string name="unable_to_get_current_location">Impossibile determinare la posizione attuale.</string>
     <string name="lp_search_place_min_chars">Inserisci almeno tre caratteri per cercare un luogo.</string>
     <string name="lp_search_place_no_matches">Nessun luogo corrispondente trovato. Modifica la tua richiesta.</string>
@@ -1193,11 +1193,17 @@ messaggi ogni 15 minuti.</string>
     <string name="blur">Sfocare</string>
     <string name="face_blur_tooltip_title">Nuovo: riconoscimento facciale</string>
     <string name="face_blur_tooltip_text">Cerca i visi nella foto e rendili sfocati o coprili con uno smiley.</string>
+    <string name="listened_to">ascoltato</string>
     <string name="transcoder_unsupported_audio_format">Impossibile convertire il formato audio poiché il sistema non è supportato.</string>
     <string name="transcoder_unknown_audio_error">Impossibile convertire il formato audio a causa di un errore sconosciuto.</string>
     <string name="video_size_explain">Per inviare video molto grandi questi vengono compressi indipendentemente da questa impostazione.</string>
     <string name="status_create_notes">*Non sono presenti altre persone*\nUsa questa chat come taccuino sicuro per testi, media o file.</string>
     <string name="status_create_notes_off">*Sono presenti altre persone in questa chat*\nI nuovi messaggi vengono inviati a tutti i membri del gruppo.</string>
     <string name="note_group_howto">Consiglio: Se non aggiungi dei membri i messaggi di questo gruppo rimangono locali. Questo è ideale per salvare o trasferire sul desktop in modo sicuro appunti, media o file.</string>
+    <string name="mark_unread">Segna come non letta</string>
     <string name="mark_read_short">Letto</string>
+    <string name="unread">Non letta</string>
+    <string name="missing_app_licence">Impossibile creare una nuova richiesta di identità perché non è stato possibile trovare licenze di app valide.</string>
+    <string name="set_backup_path">Definisci percorso backup</string>
+    <string name="set_backup_path_intro">Scegli nello schermo seguente il folder dove salvare i backup.</string>
 </resources>

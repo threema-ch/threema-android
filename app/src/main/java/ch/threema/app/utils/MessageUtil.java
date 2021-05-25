@@ -49,6 +49,7 @@ import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageUtil {
@@ -137,6 +138,22 @@ public class MessageUtil {
 	}
 
 	/**
+	 * return true if the message model can mark as consumed
+	 * @param message
+	 * @return
+	 */
+	public static boolean canMarkAsConsumed(@Nullable AbstractMessageModel message) {
+		return
+			(message instanceof MessageModel || message instanceof GroupMessageModel)
+			&& !message.isStatusMessage()
+			&& !message.isOutbox()
+			&& message.getState() != MessageState.CONSUMED
+			&& (message.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE ||
+				message.getMessageContentsType() == MessageContentsType.AUDIO )
+			&& (message.getState() == null || canChangeToState(message.getState(), MessageState.CONSUMED, message.isOutbox()));
+	}
+
+	/**
 	 * return true, if the user-acknowledge flag can be set
 	 * @param messageModel
 	 * @return
@@ -184,16 +201,18 @@ public class MessageUtil {
 				showState = messageState != null
 						&& ((messageModel.isOutbox() && messageState == MessageState.SENDFAILED)
 							|| (messageModel.isOutbox() && messageState == MessageState.SENDING)
-							|| (messageModel.isOutbox() && messageState == MessageState.PENDING && messageModel.getType() != MessageType.BALLOT));
+							|| (messageModel.isOutbox() && messageState == MessageState.PENDING && messageModel.getType() != MessageType.BALLOT)
+							|| (!messageModel.isOutbox() && messageModel.getState() == MessageState.CONSUMED));
 			} else if (messageModel instanceof DistributionListMessageModel) {
 				showState = false;
 			}
 			else if (messageModel instanceof MessageModel) {
 				if(!messageModel.isOutbox()) {
-					//inbox show icon only on acknowledged/declined
+					//inbox show icon only on acknowledged/declined or consumed
 					showState = messageState != null
 							&& (messageModel.getState() == MessageState.USERACK
-							|| messageModel.getState() == MessageState.USERDEC);
+							|| messageModel.getState() == MessageState.USERDEC
+							|| messageModel.getState() == MessageState.CONSUMED);
 				}
 				else {
 					//on outgoing message
@@ -268,7 +287,14 @@ public class MessageUtil {
 		return resolvedReceivers.toArray(new MessageReceiver[resolvedReceivers.size()]);
 	}
 
-	public static boolean canChangeToState(MessageState fromState, MessageState toState, boolean isOutbox) {
+	/**
+	 * Check if a MessageState change from fromState to toState is allowed
+	 * @param fromState State from which a state change is requested
+	 * @param toState State to which a state change is requested
+	 * @param isOutbox true, if it's an outgoing message
+	 * @return true if a state change is allowed, false otherwise
+	 */
+	public static boolean canChangeToState(@Nullable MessageState fromState, @Nullable MessageState toState, boolean isOutbox) {
 		if (fromState == null || toState == null) {
 			//invalid data
 			return false;
@@ -303,6 +329,9 @@ public class MessageUtil {
 				return true;
 			case USERDEC:
 				return true;
+			case CONSUMED:
+				return fromState != MessageState.USERACK
+					&& fromState != MessageState.USERDEC;
 			case PENDING:
 				return fromState == MessageState.SENDFAILED;
 			case SENDING:

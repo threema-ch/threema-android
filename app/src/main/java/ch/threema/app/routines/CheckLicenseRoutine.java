@@ -21,9 +21,12 @@
 
 package ch.threema.app.routines;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.ReceiverCallNotAllowedException;
 
+import com.DrmSDK.Drm;
+import com.DrmSDK.DrmCheckCallback;
 import com.google.android.vending.licensing.LicenseChecker;
 import com.google.android.vending.licensing.LicenseCheckerCallback;
 
@@ -56,6 +59,9 @@ public class CheckLicenseRoutine implements Runnable {
 	private final IdentityStoreInterface identityStore;
 	private static final String LICENSE_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqJArbOQT3Vi2KUEbyk+xq+DSsowwIYoudh3miXC7DmR6SVL6ji7XG8C+hmtR6t+Ytar64z87xgTPiEPiuyyg6/fp8ALRLAjM2FmZadSS4hSpvmJKb2ViFyUmcCJ8MoZ2QPxA+SVGZFdwIwwXdHPx2xUQw6ftyx0EF0hvF4nwHLvq89p03QtiPnIb0A3MOEXsq88xu2xAUge/BTvRWo0gWTtIJhTdZXY2CSib5d/G45xca0DKgOECAaMxVbFhE5jSyS+qZvUN4tABgDKBiEPuuzBBaHVt/m7MQoqoM6kcNrozACmIx6UdwWbkK3Isa9Xo9g3Yy6oc9Mp/9iKXwco4vwIDAQAB";
 
+	private static final String HMS_ID = "5190041000024384032";
+	private static final String HMS_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA26ccdC7mLHomHTnKvSRGg7Vuex19xD3qv8CEOUj5lcT5Z81ARby5CVhM/ZM9zKCQcrKmenn1aih6X+uZoNsvBziDUySkrzXPTX/NfoFDQlHgyXan/xsoIPlE1v0D9dLV7fgPOllHxmN8wiwF+woACo3ao/ra2VY38PCZTmfMX/V+hOLHsdRakgWVshzeYTtzMjlLrnYOp5AFXEjFhF0dB92ozAmLzjFJtwyMdpbVD+yRVr+fnLJ6ADhBpoKLjvpn8A7PhpT5wsvogovdr16u/uKhPy5an4DXE0bjWc76bE2SEse/bQTvPoGRw5TjHVWi7uDMFSz3OOGUqLSygucPdwIDAQAB";
+
 	public CheckLicenseRoutine(Context context,
 	                           APIConnector apiConnector,
 	                           UserService userService,
@@ -87,7 +93,11 @@ public class CheckLicenseRoutine implements Runnable {
 					break;
 				case SERIAL:
 				case GOOGLE_WORK:
+				case HMS_WORK:
 					this.checkSerial();
+					break;
+				case HMS:
+					this.checkDRM();
 					break;
 			}
 		}
@@ -100,7 +110,6 @@ public class CheckLicenseRoutine implements Runnable {
 		if(error != null) {
 			invalidLicense(error);
 		} else {
-
 			userService.setCredentials(licenseService.loadCredentials());
 
 			if(licenseService instanceof LicenseServiceThreema) {
@@ -133,14 +142,38 @@ public class CheckLicenseRoutine implements Runnable {
 		}
 	}
 
+	private void checkDRM() {
+		logger.debug("Check HMS license");
+
+		if (this.deviceService.isOnline() && !userService.hasIdentity()) {
+			DrmCheckCallback callback = new DrmCheckCallback() {
+				@Override
+				public void onCheckSuccess(String signData, String signature) {
+					logger.info("HMS License OK");
+					userService.setPolicyResponse(
+						signData,
+						signature
+					);
+				}
+
+				@Override
+				public void onCheckFailed(int errorCode) {
+					logger.debug("HMS License failed errorCode: {}", errorCode);
+
+				}
+			};
+			Drm.check((Activity) context, context.getPackageName(), HMS_ID, HMS_PUBLIC_KEY, callback);
+		}
+	}
+
 	private void checkLVL() {
-		logger.debug("check lvl");
+		logger.debug("Check GCM licence");
 		if(this.deviceService.isOnline()) {
 			final ThreemaLicensePolicy policy = new ThreemaLicensePolicy();
 			LicenseCheckerCallback callback = new LicenseCheckerCallback() {
 				@Override
 				public void allow(int reason) {
-					logger.debug("License OK");
+					logger.debug("GCM License OK");
 					userService.setPolicyResponse(
 							policy.getLastResponseData().responseData,
 							policy.getLastResponseData().signature
@@ -157,7 +190,7 @@ public class CheckLicenseRoutine implements Runnable {
 
 				@Override
 				public void applicationError(int errorCode) {
-					logger.debug("License check failed (code " + errorCode + ")");
+					logger.debug("GCM License check failed errorCode: {}", errorCode);
 					//invalidLicense("License check failed (code " + errorCode + ")");
 				}
 			};

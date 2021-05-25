@@ -110,6 +110,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.push.PushService;
 import ch.threema.app.receivers.ConnectivityChangeReceiver;
 import ch.threema.app.receivers.PinningFailureReportBroadcastReceiver;
 import ch.threema.app.receivers.RestrictBackgroundChangedReceiver;
@@ -214,7 +215,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_CHECK_ONLY = "check";
 	public static final String INTENT_DATA_ANIM_CENTER = "itemPos";
 	public static final String INTENT_DATA_PICK_FROM_CAMERA = "useCam";
-	public static final String INTENT_GCM_REGISTRATION_COMPLETE = "registrationComplete";
+	public static final String INTENT_PUSH_REGISTRATION_COMPLETE = "registrationComplete";
 	public static final String INTENT_DATA_PIN = "ppin";
 	public static final String INTENT_DATA_HIDE_RECENTS = "hiderec";
 	public static final String INTENT_ACTION_FORWARD = "ch.threema.app.intent.FORWARD";
@@ -873,12 +874,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			connection.addConnectionStateListener((newConnectionState, address) -> {
 				if (newConnectionState == ConnectionState.LOGGEDIN) {
 					final Context appContext = getAppContext();
-					if (ConfigUtils.isPlayServicesInstalled(appContext)) {
+					if (PushService.servicesInstalled(appContext)) {
 						if (PushUtil.isPushEnabled(appContext)) {
 							if (PushUtil.pushTokenNeedsRefresh(appContext)) {
-								PushUtil.scheduleSendPushTokenToServer(appContext);
+								PushUtil.enqueuePushTokenUpdate(appContext, false, false);
 							} else {
-								logger.debug("FCM token is still fresh. No update needed");
+								logger.debug("Push token is still fresh. No update needed");
 							}
 						}
 					}

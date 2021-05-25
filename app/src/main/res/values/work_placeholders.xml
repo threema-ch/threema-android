@@ -6,7 +6,9 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 	<string name="private_threema_download" tools:ignore="MissingTranslation"/>
-	<string name="directory_title" translatable="false"/>
-	<string name="directory_empty_view_text" translatable="false"/>
-	<string name="directory_search" translatable="false"/>
+	<string name="directory_title" tools:ignore="MissingTranslation"/>
+	<string name="directory_empty_view_text" tools:ignore="MissingTranslation"/>
+	<string name="directory_search" tools:ignore="MissingTranslation"/>
+	<string name="private_download_url_hms" tools:ignore="MissingTranslation"/>
+	<string name="private_download_url" tools:ignore="MissingTranslation"/>
 </resources>

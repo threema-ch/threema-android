@@ -66,6 +66,9 @@ public class MarkReadActionBroadcastReceiver extends ActionBroadcastReceiver {
 				if (success) {
 					logger.debug("Conversation read: " + messageReceiver.getUniqueIdString());
 				}
+
+				notificationService.cancel(messageReceiver);
+
 				pendingResult.finish();
 			}
 		}.execute();

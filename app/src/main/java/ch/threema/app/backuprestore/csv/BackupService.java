@@ -204,13 +204,20 @@ public class BackupService extends Service {
 				Date now = new Date();
 				DocumentFile zipFile = null;
 				Uri backupUri = this.fileService.getBackupUri();
+
+				if (backupUri == null) {
+					showBackupErrorNotification("Destination directory has not been selected yet");
+					stopSelf();
+					return START_NOT_STICKY;
+				}
+
 				String filename = "threema-backup_" + userService.getIdentity() + "_" + now.getTime() + "_1";
 
 				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(backupUri.getScheme())) {
 					zipFile = DocumentFile.fromFile(new File(backupUri.getPath(), INCOMPLETE_BACKUP_FILENAME_PREFIX + filename + ".zip"));
 					success = true;
 				} else {
-					DocumentFile directory = DocumentFile.fromTreeUri(getApplicationContext(), this.fileService.getBackupUri());
+					DocumentFile directory = DocumentFile.fromTreeUri(getApplicationContext(), backupUri);
 					if (directory != null && directory.exists()) {
 						try {
 							zipFile = directory.createFile(MimeUtil.MIME_TYPE_ZIP, INCOMPLETE_BACKUP_FILENAME_PREFIX + filename);
