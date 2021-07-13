@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/preview_bottom_sheet"
+	style="@style/Threema.Preview.BottomSheetStyle"
+	app:behavior_hideable="true"
+	app:behavior_saveFlags="all"
+	android:clipToPadding="false"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	app:behavior_peekHeight="0dp"
+	app:layout_behavior="@string/bottom_sheet_behavior"
+	android:clickable="true"
+	android:focusable="true">
+
+	<ImageView
+		android:id="@+id/preview_drag_handle"
+		android:layout_width="28dp"
+		android:layout_height="@dimen/drag_handle_height"
+		android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
+		android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
+		android:importantForAccessibility="no"
+		android:src="@drawable/bottomsheet_grapple_dark"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintBottom_toTopOf="@+id/filename_view" />
+
+	<TextView
+		android:id="@+id/filename_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="4dp"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:textColor="@color/dark_text_color_secondary"
+		android:singleLine="true"
+		android:ellipsize="middle"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/preview_drag_handle"
+		app:layout_constraintBottom_toTopOf="@+id/date_view"
+		app:layout_constraintHorizontal_bias="0.0"/>
+
+	<TextView
+		android:id="@+id/date_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="2dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:textColor="@color/dark_text_color_secondary"
+		android:singleLine="true"
+		android:ellipsize="middle"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/filename_view"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintHorizontal_bias="0.0"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

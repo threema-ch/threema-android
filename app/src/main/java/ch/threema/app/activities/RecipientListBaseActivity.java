@@ -23,11 +23,8 @@ package ch.threema.app.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.ClipData;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -75,6 +72,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
@@ -549,9 +547,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 						if (scheme != null && host != null) {
 							if (
-								(ThreemaApplication.uriScheme.equals(scheme) && "compose".equals(host))
+								(BuildConfig.uriScheme.equals(scheme) && "compose".equals(host))
 								||
-								("https".equals(scheme) && (getString(R.string.action_url).equals(host) || getString(R.string.contact_action_url).equals(host)) && "/compose".equals(dataUri.getPath()))
+								("https".equals(scheme) && (BuildConfig.actionUrl.equals(host) || BuildConfig.contactActionUrl.equals(host)) && "/compose".equals(dataUri.getPath()))
 							)
 							{
 								String text = dataUri.getQueryParameter("text");
@@ -744,14 +742,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_recipientlist, menu);
 
-		// Associate searchable configuration with the SearchView
 		this.searchMenuItem = menu.findItem(R.id.menu_search_messages);
 		this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
 
 		if (this.searchView != null) {
-			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-			SearchableInfo mSearchableInfo = searchManager.getSearchableInfo(getComponentName());
-			this.searchView.setSearchableInfo(mSearchableInfo);
 			this.searchView.setQueryHint(getString(R.string.hint_filter_list));
 			this.searchView.setOnQueryTextListener(this);
 			if (hideUi) {
@@ -1258,7 +1252,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-	                                       @NonNull String permissions[], @NonNull int[] grantResults) {
+	                                       @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
 				case REQUEST_READ_EXTERNAL_STORAGE:

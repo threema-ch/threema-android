@@ -31,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -43,28 +44,38 @@ public class ListViewBehavior extends CoordinatorLayout.Behavior<View> {
 	}
 
 	@Override
-	public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
-
+	public boolean layoutDependsOn(@NonNull CoordinatorLayout parent, @NonNull View child, @NonNull View dependency) {
 		return dependency instanceof Snackbar.SnackbarLayout;
 	}
 
 	@Override
-	public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
+	public boolean onDependentViewChanged(@NonNull CoordinatorLayout parent, @NonNull View child, @NonNull View dependency) {
 		logger.debug("onDependentViewChanged");
 
 		ViewGroup.LayoutParams layoutParams = child.getLayoutParams();
-		layoutParams.height = parent.getHeight() - dependency.getHeight();
-		child.setLayoutParams(layoutParams);
+		final int height = parent.getHeight() - dependency.getHeight();
 
-		return true;
+		if (height != layoutParams.height) {
+			layoutParams.height = height;
+			child.setLayoutParams(layoutParams);
+			logger.debug("*** height: " + layoutParams.height);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public void onDependentViewRemoved(CoordinatorLayout parent, View child, View dependency) {
+	public void onDependentViewRemoved(@NonNull CoordinatorLayout parent, View child, @NonNull View dependency) {
 		logger.debug("onDependentViewRemoved");
 
 		ViewGroup.LayoutParams layoutParams = child.getLayoutParams();
 		layoutParams.height = MATCH_PARENT;
 		child.setLayoutParams(layoutParams);
+	}
+
+	@Override
+	public boolean onLayoutChild(@NonNull CoordinatorLayout parent, @NonNull View child, int layoutDirection) {
+		return super.onLayoutChild(parent, child, layoutDirection);
 	}
 }

@@ -83,7 +83,9 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 					choiceRecyclerView.post(new Runnable() {
 						@Override
 						public void run() {
-							choiceRecyclerView.smoothScrollToPosition(lastVisibleBallotPosition);
+							try {
+								choiceRecyclerView.smoothScrollToPosition(lastVisibleBallotPosition);
+							} catch (IllegalArgumentException ignored) { }
 						}
 					});
 				}

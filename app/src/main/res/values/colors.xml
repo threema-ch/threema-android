@@ -240,5 +240,6 @@
 	<color name="attach_status_bar_collapsed_dark">#FF131313</color>
 	<color name="attach_button_background_light">#FFF1F1F1</color>
 	<color name="attach_button_background_dark">@color/dark_material_level3</color>
+	<color name="preview_navigation_area_bg">#44000000</color>
 
 </resources>

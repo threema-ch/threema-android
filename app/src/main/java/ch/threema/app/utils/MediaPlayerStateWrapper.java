@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 
@@ -46,7 +47,6 @@ import androidx.annotation.RequiresApi;
 public class MediaPlayerStateWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(MediaPlayerStateWrapper.class);
 
-	private static String TAG = "MediaPlayerStateWrapper";
 	private MediaPlayer mediaPlayer;
 	private State currentState;
 	private MediaPlayerStateWrapper stateWrapper;
@@ -302,5 +302,30 @@ public class MediaPlayerStateWrapper {
 
 	public void setScreenOnWhilePlaying(boolean screenOn) {
 		mediaPlayer.setScreenOnWhilePlaying(screenOn);
+	}
+
+	/**
+	 * Set playback parameters of MediaPlayer instance
+	 * @param playbackParams PlaybackParams to set
+	 * @return true if setting parameters was successful, false if MediaPlayer was in an invalid state or setting PlaybackParams failed.
+	 */
+	@RequiresApi(Build.VERSION_CODES.M)
+	public boolean setPlaybackParams(PlaybackParams playbackParams) {
+		// will not work with states Idle or Stopped
+		if (EnumSet.of(State.INITIALIZED, State.PREPARED, State.STARTED, State.PAUSED, State.PLAYBACK_COMPLETE, State.ERROR).contains(
+			currentState)) {
+			try {
+				mediaPlayer.setPlaybackParams(playbackParams);
+				return true;
+			} catch (IllegalArgumentException e) {
+				logger.info("Unable to set playback params {}", e.getMessage());
+			}
+		}
+		return false;
+	}
+
+	@RequiresApi(Build.VERSION_CODES.M)
+	public PlaybackParams getPlaybackParams() {
+		return mediaPlayer.getPlaybackParams();
 	}
 }

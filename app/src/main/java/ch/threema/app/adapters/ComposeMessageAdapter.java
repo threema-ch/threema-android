@@ -411,6 +411,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.transcoderView = itemView.findViewById(R.id.transcoder_view);
 					holder.readOnContainer = itemView.findViewById(R.id.read_on_container);
 					holder.readOnButton = itemView.findViewById(R.id.read_on_button);
+					holder.messageTypeButton = itemView.findViewById(R.id.message_type_button);
 				}
 				itemView.setTag(holder);
 			}

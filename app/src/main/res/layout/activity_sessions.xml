@@ -41,7 +41,7 @@
 					android:layout_gravity="center_horizontal"
 					android:layout_marginBottom="24dp"
 					android:src="@drawable/ic_phonelink_white_128dp"
-					android:tint="?attr/image_tint_default"/>
+					app:tint="?attr/image_tint_default" />
 
 				<TextView
 					android:id="@+id/empty_text"

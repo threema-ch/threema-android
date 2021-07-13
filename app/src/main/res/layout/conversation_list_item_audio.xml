@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:minHeight="52dp"
@@ -17,6 +18,8 @@
 		android:id="@+id/seek"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:paddingLeft="12dp"
+		android:paddingRight="10dp"
 		android:layout_centerVertical="true"
 		android:layout_marginLeft="@dimen/avatar_size_small"
 		android:layout_toLeftOf="@+id/document_size_view"
@@ -27,8 +30,47 @@
 		android:id="@+id/document_size_view"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
+		android:layout_marginRight="4dp"
+		android:layout_toLeftOf="@+id/speed_container"
 		android:layout_centerVertical="true"
 		android:text="00:00"/>
+
+	<FrameLayout
+		android:id="@+id/speed_container"
+		android:layout_width="44dp"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:layout_centerVertical="true">
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/read_on_button"
+			style="@style/Threema.Chip.AudioMessage"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:visibility="gone"/>
+
+		<com.google.android.material.button.MaterialButton
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
+			android:layout_gravity="center_vertical|right"
+			android:id="@+id/message_type_button"
+			style="@style/Threema.MaterialButton.Circle.Outline"
+			app:icon="@drawable/ic_microphone_outline"
+			app:iconSize="24dp"
+			app:iconGravity="textStart"
+			app:iconTint="?attr/textColorTertiary"
+			android:padding="0dp"
+			app:iconPadding="0dp"
+			android:insetLeft="0dp"
+			android:insetTop="0dp"
+			android:insetRight="0dp"
+			android:insetBottom="0dp"
+			android:clickable="false"
+			android:focusable="false"
+			android:importantForAccessibility="no"
+			app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.Button.Circle.Outline" />
+
+	</FrameLayout>
 
 </RelativeLayout>

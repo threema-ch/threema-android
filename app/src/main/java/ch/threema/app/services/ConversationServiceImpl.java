@@ -206,7 +206,7 @@ public class ConversationServiceImpl implements ConversationService {
 	}
 
 	@Override
-	public List<ConversationModel> getArchived() {
+	public List<ConversationModel> getArchived(String constraint) {
 		List<ConversationModel> conversationModels = new ArrayList<>();
 
 		for (ConversationModelParser parser : new ConversationModelParser[]{
@@ -214,7 +214,7 @@ public class ConversationServiceImpl implements ConversationService {
 				new GroupConversationModelParser(),
 				new DistributionListConversationModelParser()
 		}) {
-			parser.processArchived(conversationModels);
+			parser.processArchived(conversationModels, constraint);
 		}
 
 		Collections.sort(conversationModels, (conversationModel, conversationModel2) -> {
@@ -628,10 +628,25 @@ public class ConversationServiceImpl implements ConversationService {
 			}
 		}
 
-		public final List<ConversationModel> processArchived(List<ConversationModel> conversationModels) {
+		public final List<ConversationModel> processArchived(List<ConversationModel> conversationModels, String constraint) {
 			List<ConversationResult> res = this.selectAll(true);
-			for(ConversationResult r: res) {
-				conversationModels.add(this.parseResult(r, null, false));
+
+			if (!TestUtil.empty(constraint)) {
+				constraint = constraint.toLowerCase();
+				for(ConversationResult r: res) {
+					ConversationModel conversationModel = this.parseResult(r, null, false);
+					String title = conversationModel.toString();
+
+					if (!TestUtil.empty(title)) {
+						if (title.toLowerCase().contains(constraint)) {
+							conversationModels.add(conversationModel);
+						}
+					}
+				}
+			} else {
+				for(ConversationResult r: res) {
+					conversationModels.add(this.parseResult(r, null, false));
+				}
 			}
 			return conversationModels;
 		}

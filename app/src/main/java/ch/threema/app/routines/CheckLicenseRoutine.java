@@ -86,20 +86,18 @@ public class CheckLicenseRoutine implements Runnable {
 	}
 	@Override
 	public void run() {
-		if(this.deviceService.isOnline()) {
-			switch(BuildFlavor.getLicenseType()) {
-				case GOOGLE:
-					this.checkLVL();
-					break;
-				case SERIAL:
-				case GOOGLE_WORK:
-				case HMS_WORK:
-					this.checkSerial();
-					break;
-				case HMS:
-					this.checkDRM();
-					break;
-			}
+		switch(BuildFlavor.getLicenseType()) {
+			case GOOGLE:
+				this.checkLVL();
+				break;
+			case SERIAL:
+			case GOOGLE_WORK:
+			case HMS_WORK:
+				this.checkSerial();
+				break;
+			case HMS:
+				this.checkDRM();
+				break;
 		}
 	}
 
@@ -152,14 +150,19 @@ public class CheckLicenseRoutine implements Runnable {
 					logger.info("HMS License OK");
 					userService.setPolicyResponse(
 						signData,
-						signature
+						signature,
+						0
 					);
 				}
 
 				@Override
 				public void onCheckFailed(int errorCode) {
 					logger.debug("HMS License failed errorCode: {}", errorCode);
-
+					userService.setPolicyResponse(
+						null,
+						null,
+						errorCode
+					);
 				}
 			};
 			Drm.check((Activity) context, context.getPackageName(), HMS_ID, HMS_PUBLIC_KEY, callback);
@@ -167,40 +170,47 @@ public class CheckLicenseRoutine implements Runnable {
 	}
 
 	private void checkLVL() {
-		logger.debug("Check GCM licence");
-		if(this.deviceService.isOnline()) {
-			final ThreemaLicensePolicy policy = new ThreemaLicensePolicy();
-			LicenseCheckerCallback callback = new LicenseCheckerCallback() {
-				@Override
-				public void allow(int reason) {
-					logger.debug("GCM License OK");
-					userService.setPolicyResponse(
-							policy.getLastResponseData().responseData,
-							policy.getLastResponseData().signature
-					);
-				}
-
-				@Override
-				public void dontAllow(int reason) {
-					logger.debug("not allowed (code " + reason + ")");
-					//if (reason == ThreemaLicensePolicy.NOT_LICENSED) {
-					//	invalidLicense("Not licensed (code " + reason + ")");
-					//}
-				}
-
-				@Override
-				public void applicationError(int errorCode) {
-					logger.debug("GCM License check failed errorCode: {}", errorCode);
-					//invalidLicense("License check failed (code " + errorCode + ")");
-				}
-			};
-			LicenseChecker licenseChecker = new LicenseChecker(this.context, policy, LICENSE_PUBLIC_KEY);
-			try {
-				licenseChecker.checkAccess(callback);
+		logger.debug("Checking LVL licence");
+		final ThreemaLicensePolicy policy = new ThreemaLicensePolicy();
+		LicenseCheckerCallback callback = new LicenseCheckerCallback() {
+			@Override
+			public void allow(int reason) {
+				logger.debug("LVL License OK");
+				userService.setPolicyResponse(
+						policy.getLastResponseData().responseData,
+						policy.getLastResponseData().signature,
+						0
+				);
 			}
-			catch (ReceiverCallNotAllowedException x) {
-				logger.error("LVL: Receiver call not allowed", x);
+
+			@Override
+			public void dontAllow(int reason) {
+				// 561 == not licensed
+				// 291 == no connection
+				logger.debug("LVL License not allowed (code {})", reason);
+				userService.setPolicyResponse(
+					null,
+					null,
+					reason
+				);
 			}
+
+			@Override
+			public void applicationError(int errorCode) {
+				logger.debug("LVL License check failed errorCode: {}", errorCode);
+				userService.setPolicyResponse(
+					null,
+					null,
+					errorCode
+				);
+			}
+		};
+		LicenseChecker licenseChecker = new LicenseChecker(this.context, policy, LICENSE_PUBLIC_KEY);
+		try {
+			licenseChecker.checkAccess(callback);
+		}
+		catch (ReceiverCallNotAllowedException x) {
+			logger.error("LVL: Receiver call not allowed", x);
 		}
 	}
 }

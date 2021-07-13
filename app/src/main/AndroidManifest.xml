@@ -231,16 +231,6 @@
 					android:pathPrefix="/compose"
 					android:scheme="https"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
-				<action android:name="android.intent.action.VIEW"/>
-				<action android:name="android.intent.action.SENDTO"/>
-				<category android:name="android.intent.category.DEFAULT"/>
-				<category android:name="android.intent.category.BROWSABLE"/>
-				<data
-					android:host="${contactActionUrl}"
-					android:pathPrefix="/compose"
-					android:scheme="https"/>
-			</intent-filter>
 			<meta-data
 				android:name="android.service.chooser.chooser_target_service"
 				android:value=".RecipientChooserTargetService"/>
@@ -468,7 +458,6 @@
 		<activity
 			android:name=".activities.ballot.BallotWizardActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:label="@string/title_activity_new_ballot_wizard"
 			android:theme="@style/Theme.Threema.WithToolbar"/>
 		<activity
 			android:name=".filepicker.FilePickerActivity"
@@ -650,11 +639,6 @@
 			android:resizeableActivity="true"
 			android:windowSoftInputMode="adjustNothing"
 			android:configChanges="uiMode" />
-		<activity
-			android:name=".mediaattacher.MediaPreviewActivity"
-			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.MediaViewer">
-		</activity>
 		<activity
 			android:name=".threemasafe.ThreemaSafeConfigureActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"

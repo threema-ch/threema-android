@@ -183,7 +183,7 @@
     <string name="video_placeholder">Vidéo</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Restauration de la sauvegarde</string>
-    <string name="server_message_title">Message du serveur</string>
+    <string name="server_message_title">Message du serveur Threema</string>
     <string name="error">Erreur</string>
     <string name="no_contacts"><![CDATA[Vous n\'avez pas encore de contacts. Activez la synchronisation (Paramètres > Confidentialité), ou ajoutez des contacts manuellement en utilisant le bouton +.>]]></string>
     <string name="masterkey_title">Saisissez la phrase secrète</string>
@@ -466,8 +466,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="really_block_contact">Les futures messages de ce contact seront supprimés. Continuer ?</string>
     <string name="ballot_result_final">Résultat final</string>
     <string name="invalid_cannot_send">Vous ne pouvez pas envoyer de message à un contact erroné</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
-    <string name="ballot_answer_count_error">Veuillez définir au moins deux réponses pour cette enquête.</string>
+	<string name="ballot_answer_count_error">Veuillez définir au moins deux réponses pour cette enquête.</string>
     <string name="ballot_one_contact_not_supported">Attention : %1$s ne pourra pas participer à votre enquête.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attention : %1$d contacts ne pourront pas participer à votre enquête.</string>
     <string name="enable_polling">Utiliser l\'interrogation</string>
@@ -1183,7 +1182,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="mark_unread">Marque comme non lu</string>
     <string name="mark_read_short">Lu</string>
     <string name="unread">Non lu</string>
-    <string name="missing_app_licence">Impossible de créer une nouvelle demande d\'identité, car aucune licence d\'application valide n\'est trouvable</string>
+    <string name="missing_app_licence">L\'App Store n\'a pas pu valider votre achat. Si vous utilisez Google Play, veuillez supprimer les données de l\'application Google Play Store et redémarrer votre appareil.</string>
     <string name="set_backup_path">Définir le chemin de sauvegarde</string>
     <string name="set_backup_path_intro">Veuillez sélectionner sur l\'écran suivant le dossier où les sauvegardes de données devraient être enregistrées.</string>
+    <string name="tap_here_for_more">Touchez ici pour de plus amples informations</string>
+    <string name="another_connection_instructions">Le serveur a détecté deux connexions ou plus provenant d\'appareils différents ayant le même ID Threema.\n\nL\'utilisation simultanée du même ID Threema sur plusieurs appareils n\'est pas possible. Les nouveaux messages sont uniquement transmis sur l\'appareil s\'étant authentifié le plus récemment sur le serveur.\n\nSi vous utilisez un nouvel appareil, veuillez désinstaller ou désactiver %s sur l\'ancien appareil, puis redémarrez le nouveau.</string>
+    <string name="app_store_error_code">Code d\'erreur App Store : %d</string>
 </resources>

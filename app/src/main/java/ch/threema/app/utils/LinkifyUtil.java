@@ -50,6 +50,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.util.LinkifyCompat;
 import androidx.core.view.GestureDetectorCompat;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ContactDetailActivity;
@@ -79,9 +80,9 @@ public class LinkifyUtil {
 	}
 
 	private LinkifyUtil() {
-		this.add = Pattern.compile("\\b" + ThreemaApplication.uriScheme + "://add\\?id=\\S{8}\\b");
-		this.compose = Pattern.compile("\\b" + ThreemaApplication.uriScheme + "://compose\\?\\S+\\b");
-		this.license = Pattern.compile("\\b" + ThreemaApplication.uriScheme + "://license\\?key=\\S{11}\\b");
+		this.add = Pattern.compile("\\b" + BuildConfig.uriScheme + "://add\\?id=\\S{8}\\b");
+		this.compose = Pattern.compile("\\b" + BuildConfig.uriScheme + "://compose\\?\\S+\\b");
+		this.license = Pattern.compile("\\b" + BuildConfig.uriScheme + "://license\\?key=\\S{11}\\b");
 		this.gestureDetector = new GestureDetectorCompat(null, new GestureDetector.OnGestureListener() {
 			@Override
 			public boolean onDown(MotionEvent e) {

@@ -25,11 +25,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -48,6 +51,24 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.access.GroupAccessModel;
 
 public interface GroupService extends AvatarService<GroupModel> {
+
+	/**
+	 * Group state note yet determined
+	 */
+	public static final int UNDEFINED = 0;
+	/**
+	 * A local notes "group"
+	 */
+	public static final int NOTES = 1;
+	/**
+	 * A group with other people in it
+	 */
+	public static final int PEOPLE = 2;
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({UNDEFINED, NOTES, PEOPLE})
+	@interface GroupState {}
+
 	interface GroupFilter {
 		boolean sortingByDate();
 		boolean sortingAscending();
@@ -123,7 +144,6 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean isGroupMember(GroupModel groupModel);
 
 	boolean removeMemberFromGroup(GroupLeaveMessage msg);
-	boolean removeMemberFromGroup(GroupModel group, String identity);
 
 	int countMembers(@NonNull GroupModel groupModel);
 	boolean isNotesGroup(@NonNull GroupModel groupModel);

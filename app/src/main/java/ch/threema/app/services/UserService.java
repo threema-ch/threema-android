@@ -23,10 +23,10 @@ package ch.threema.app.services;
 
 import android.accounts.Account;
 import android.accounts.AccountManagerCallback;
-import androidx.annotation.Nullable;
 
 import java.util.Date;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.services.license.LicenseService;
 
 /**
@@ -118,7 +118,7 @@ public interface UserService {
 
 	boolean restoreIdentity(String identity, byte[] privateKey, byte[] publicKey) throws Exception;
 
-	void setPolicyResponse(String responseData, String signature);
+	void setPolicyResponse(String responseData, String signature, int policyErrorCode);
 
 	void setCredentials(LicenseService.Credentials credentials);
 

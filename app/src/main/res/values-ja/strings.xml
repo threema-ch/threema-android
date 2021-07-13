@@ -5,17 +5,17 @@
     <string name="title_compose_message">トークを作成</string>
     <string name="title_choose_recipient">受信者の選択</string>
     <string name="title_keyfingerprint">フィンガープリントキー</string>
-    <string name="title_mythreemaid">自分の Threema ID</string>
+    <string name="title_mythreemaid">自分のThreema ID</string>
     <string name="title_threemaid">Threema ID</string>
     <string name="title_adduser">連絡先を追加</string>
     <string name="title_enter_id">IDを入力</string>
     <string name="title_invite_friend">友達を招待する</string>
-    <string name="invite_via">友達を招待するアプリを選択...</string>
+    <string name="invite_via">共有先を選択...</string>
     <string name="invite_email_body">こんにちは！\n\nこれはユーザーのプライバシーを守る安全なインスタントメッセンジャーの %1$s の招待です。\n\nThreema ID: https://threema.id/%2$s\n\nそれではまた %1$s で！\n\n良い一日を！\n</string>
-    <string name="invite_sms_body">こんにちは！%1$s を使って安全でプライベートな会話をしましょう！Threema ID: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema。安全であなたのプライバシーを守るメッセンジャー。</string>
-    <string name="enter_id_hint">Threema ID を入力</string>
-    <string name="account_links">連携済みのアカウント</string>
+    <string name="invite_sms_body">こんにちは！%1$sを使って安全にプライベートな会話をしましょう！Threema ID: https://threema.id/%2$s</string>
+    <string name="invite_email_subject">Threemaは安全でプライバシーを守るメッセンジャーです</string>
+    <string name="enter_id_hint">Threema IDを入力</string>
+    <string name="account_links">紐付けされたアカウント</string>
     <string name="menu_settings">設定</string>
     <string name="menu_about">Threema について</string>
     <string name="menu_add_contact">新しい連絡先</string>
@@ -35,14 +35,14 @@
     <string name="prefs_header_reset">リセット</string>
     <string name="prefs_header_keyboard">キーボード</string>
     <string name="prefs_sum_sync_contacts_on">Threemaと端末の連絡先は同期されます</string>
-    <string name="prefs_sum_sync_contacts_off">Threema と端末の連絡先は同期されません</string>
+    <string name="prefs_sum_sync_contacts_off">Threemaと端末の連絡先は同期されません</string>
     <string name="prefs_title_sync_contacts">連絡先の同期</string>
     <string name="prefs_sum_block_unknown_off">誰でもメッセージを送ることができます。
 新しいユーザーからメッセージが届くと、自動的に連絡先に追加されます。</string>
     <string name="prefs_sum_block_unknown_on">連絡先に追加されているユーザーのみがメッセージを送ることができます。</string>
     <string name="prefs_title_block_unknown">不明な連絡先をブロック</string>
-    <string name="prefs_title_read_receipts">既読状態の送信</string>
-    <string name="prefs_title_typing_indicator">タイピング状態の送信</string>
+    <string name="prefs_title_read_receipts">「既読」の送信</string>
+    <string name="prefs_title_typing_indicator">「入力中」の送信</string>
     <string name="prefs_media_title">メディアとストレージ</string>
     <string name="prefs_sum_media_title">メディアとストレージ設定</string>
     <string name="prefs_image_size">画像サイズ</string>
@@ -52,8 +52,8 @@
     <string name="prefs_sum_vibrate">メッセージを受信するとバイブレーションを鳴らします</string>
     <string name="prefs_light">通知ライト</string>
     <string name="prefs_sum_light">白</string>
-    <string name="prefs_title_wallpaper">背景を選ぶ</string>
-    <string name="prefs_sum_wallpaper">背景画像の選択</string>
+    <string name="prefs_title_wallpaper">壁紙を選ぶ</string>
+    <string name="prefs_sum_wallpaper">壁紙の選択</string>
     <string name="prefs_title_wallpaper_switch">壁紙</string>
     <string name="prefs_title_enter">「エンター」で送信</string>
     <string name="prefs_sum_enter_on">エンターキーを押すとすぐにメッセージが送信されます</string>
@@ -95,24 +95,24 @@
     <string name="color_magenta">紅紫色</string>
     <string name="color_yellow">黄色</string>
     <string name="color_white">白色</string>
-    <string name="next">次へ</string>
+    <string name="next">次</string>
     <string name="finish">完了</string>
     <string name="please_wait">お待ちください...</string>
-    <string name="wizard_first_create_id">Threema ID を作成中...</string>
+    <string name="wizard_first_create_id">Threema IDを作成中...</string>
     <string name="wizard1_sync_contacts">連絡先の同期中...</string>
     <string name="wizard2_email_hint">メールアドレスを入力</string>
-    <string name="wizard2_email_linking">ID にメールアドレスを接続</string>
+    <string name="wizard2_email_linking">IDにメールアドレスを紐付け</string>
     <string name="wizard2_phone_hint">電話番号を入力</string>
     <string name="wizard2_phone_number_confirm_title">もう一度電話番号を入力する</string>
-    <string name="wizard2_phone_number_confirm">次の電話番号にSMSを送信します：\n\n%1$s は正しいですか？</string>
-    <string name="wizard2_phone_linking">ID に電話番号を接続</string>
+    <string name="wizard2_phone_number_confirm">次の電話番号にSMSを送信します: \n\n%1$sは正しいですか？</string>
+    <string name="wizard2_phone_linking">IDに電話番号を紐付け</string>
     <string name="wizard3_nickname_hint">ユーザー名を入力</string>
     <string name="set_nickname_title">ユーザー名を設定</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
     <string name="copy_message_action">コピー</string>
     <string name="delete_contact_action">連絡先を削除する</string>
-    <string name="scan_id">ID をスキャン</string>
+    <string name="scan_id">IDをスキャン</string>
     <string name="id_mismatch">スキャンした公開鍵が、サーバーが保存しているこのIDの鍵と一致しません。
 これは、誰かがスキャンしたコードを操作したことを意味し、その鍵を信用してはいけないということになります。</string>
     <string name="scan_successful">IDが正常にスキャンされ、連絡先が確認されました。</string>
@@ -126,7 +126,7 @@
     <string name="message_deleted">削除されたメッセージ</string>
     <string name="mobile_already_linked">あなたのThreema IDは既にこの電話番号に紐付けされています</string>
     <string name="email_already_linked">あなたのThreema IDは既にこのEメールアドレスに紐付けされています</string>
-    <string name="whoaaa">Threema通知</string>
+    <string name="whoaaa">Threemaの通知</string>
     <string name="really_delete_message_title">メッセージを削除</string>
     <string name="really_delete_thread">トークを削除</string>
     <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">本当に%d個のトークを削除しますか？
@@ -184,7 +184,7 @@
     <string name="click_here_to_change_passphrase">タップでパスフレーズを変更します</string>
     <string name="attach_camera">システムカメラ</string>
     <string name="menu_restore">バックアップから復元する</string>
-    <string name="restore_id_hint">復元する ID の文字列を入力または貼り付けしてください</string>
+    <string name="restore_id_hint">復元するIDの文字列を入力または貼り付けしてください</string>
     <string name="location_placeholder">位置情報</string>
     <string name="video_placeholder">動画</string>
     <string name="audio_placeholder">音声</string>
@@ -193,7 +193,8 @@
     <string name="error">エラー</string>
     <string name="no_contacts"><![CDATA[まだ連絡先がありません。同期をオン（「設定」>「プライバシー」）にするか、手動で連絡先を追加してください。]]></string>
     <string name="masterkey_title">パスフレーズを入力</string>
-    <string name="masterkey_body">Threema のマスターキーはパスフレーズで保護されています。キーのロックを解除するためのパスフレーズを入力してください。</string>
+    <string name="masterkey_body">Threemaのマスターキーはパスフレーズで保護されています。
+キーのロックを解除するためのパスフレーズを入力してください。</string>
     <string name="masterkey_unlocking">マスターキーの解除</string>
     <string name="verify_phonecall_text">電話を掛ける</string>
     <string name="prepare_call_message">電話番号を送信したら、すぐにお電話を差し上げます。あなたの認証コードが2回読み上げられます。1度しか試みませんので、準備ができたら続行してください。</string>
@@ -267,11 +268,11 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="backup_data_password_msg">データは ZIP ファイルで内部 USB ストレージに保存され、どの Android 端末でも復元が行なえます。
 データのバックアップを暗号化するためのパスワードを入力してください。</string>
     <string name="restore_data_password_msg">このバックアップを作成する際に使用したパスワードを入力してください</string>
-    <string name="backup_data_media">大きい容量のメディアを含む (動画、書類、未圧縮の写真)</string>
+    <string name="backup_data_media">大きい容量のメディアを含む (動画・書類・未圧縮の写真)</string>
     <string name="backup_data_new">データのバックアップを作成</string>
     <string name="pinentry_enter_pin">続けるにはあなたのThreema PINを入力してください</string>
     <string name="pinentry_wrong_pin">PINが正しくありません</string>
-    <string name="prefs_sum_security_pin">Threema の UI へのアクセスをロックします</string>
+    <string name="prefs_sum_security_pin">ThreemaのUIへのアクセスをロックします</string>
     <string name="prefs_title_pin_switch">アプリのロック</string>
     <string name="prefs_title_pin_code">PIN を設定</string>
     <string name="prefs_pin_grace">ロックするまでの時間</string>
@@ -410,7 +411,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="group_was_synchronized">グループは同期されました</string>
     <string name="verification_level2_work_explain">社内の連絡先で、組織により事前に登録されています。</string>
     <string name="verification_level3_work_explain">QRコードをスキャンして個人的にIDと公開鍵を確認した連絡先。</string>
-    <string name="verification_level3_explain">自分が QR コードをスキャンして身元と公開鍵を認証している連絡先です。</string>
+    <string name="verification_level3_explain">自分がQRコードをスキャンして身元と公開鍵を認証している連絡先です。</string>
     <string name="verification_level2_explain">自分の連絡帳に電話番号とメールアドレスが含まれている連絡先です。</string>
     <string name="verification_level1_explain">不明な連絡先：この連絡先が自分のIDに電話番号やメールアドレスを紐付けしていないか、またはアドレス帳にこれらの連絡先の詳細が含まれていません。</string>
     <string name="state_dialog_received">受信済</string>
@@ -426,7 +427,8 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="num_items_sected">%s 件を選択中</string>
     <string name="really_delete_media" tools:ignore="PluralsCandidate">本当に %d メディアメッセージを削除したいですか？</string>
     <string name="check_updates">アップデートを確認する</string>
-    <string name="masterkey_lock_explain">Threema はメモリ内にパスフレーズを保持します。もしパスフレーズを何度も要求される場合は、Threema を停止するタスクキラーまたはバッテリーセーバーが無効になっているかを確認してください。</string>
+    <string name="masterkey_lock_explain">Threemaはメモリ内にパスフレーズを保持します。
+もしパスフレーズを何度も要求される場合は、Threemaを停止するタスクキラーまたはバッテリーセーバーが無効になっているかを確認してください。</string>
     <string name="identity_already_exists">このIDは既に連絡先にありませ</string>
     <string name="share_contact">連絡先を共有</string>
     <string name="add_shortcut">ショートカットを追加</string>
@@ -452,30 +454,30 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="ballot_result_intermediate">途中経過</string>
     <string name="ballot_error_more_than_x_choices">少なくとも2つの選択肢を定義する必要があります</string>
     <string name="ballot_message_closed">結果はこちら</string>
-    <string name="ballot_vote_posted_successfully">投票は正常に行われました。</string>
+    <string name="ballot_vote_posted_successfully">投票に成功しました</string>
     <string name="ballot_vote_posted_failed">投票が失敗しました</string>
     <string name="attach_ballot">投票</string>
     <string name="ballot_overview">すべての投票</string>
     <string name="ballot_copy">投票を複製</string>
     <string name="ballot_remove">投票を削除</string>
     <string name="ballot_really_delete">投票を削除</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">本当に %1$d 個の投票を削除しますか？投票数を復元することはできません。</string>
+    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">本当に%1$d個の投票を削除しますか？
+投票を復元することはできません。</string>
     <string name="ballot_not_exist">投票が存在しません</string>
     <string name="ballot_tap_to_vote">タップで投票</string>
     <string name="ballot_tap_to_view_results">投票は終了しました。タップして結果を表示する。</string>
     <string name="ballot_subject_hint">投票のタイトルを入力</string>
     <string name="ballot_no_ballots_yet">投票はまだありません。</string>
     <string name="print">印刷</string>
-    <string name="ballot_wizard0_explain">Threema を通じてオンライン投票を今すぐ行いましょう。イベントのスケジュール、アンケートの作成、友達に聞きたいことなど用途は様々です。</string>
+    <string name="ballot_wizard0_explain">Threemaで投票を行いましょう。イベントのスケジュール、アンケートの作成、友達に聞きたいことなど用途は様々です。</string>
     <string name="ballot_add_choices">回答を追加</string>
     <string name="blocked_cannot_send">連絡先にブロックされているため、メッセージを送信できません</string>
     <string name="really_block_contact">これからこの連絡先から送られてくるメッセージは破棄されます。続行しますか？</string>
     <string name="ballot_result_final">最終結果</string>
     <string name="invalid_cannot_send">連絡先が非アクティブのため、メッセージを送信できません</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
-    <string name="ballot_answer_count_error">投票を作成するには2つ以上選択を追加してください</string>
-    <string name="ballot_one_contact_not_supported">警告：%1$s は投票に参加できなくなります。</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d の連絡先は投票に参加できなくなります。</string>
+	<string name="ballot_answer_count_error">投票を作成するには2つ以上の選択肢を追加してください</string>
+    <string name="ballot_one_contact_not_supported">警告: %1$sは投票に参加できなくなります。</string>
+    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告: %1$dの連絡先は投票に参加できなくなります。</string>
     <string name="enable_polling">投票を使う</string>
     <string name="contact_state_inactive">非アクティブ</string>
     <string name="contact_state_invalid">無効</string>
@@ -981,7 +983,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="pin_locked_cannot_send">アプリがロックされているため、送信できませんでした。</string>
     <string name="prefs_summary_hide_screenshots_notice">プライバシーの観点から、セキュリティ設定で「アプリのロック」が有効になっている場合は、プレビューとスクリーンショットが常時無効化されます。</string>
     <string name="work_select_categories">カテゴリーを選択</string>
-    <string name="my_profile">プロフィール</string>
+    <string name="my_profile">マイプロフィール</string>
     <string name="message_too_long">メッセージが長すぎるため、送信できませんでした。</string>
     <string name="database_migration_no_space">データベースの移行に失敗しました: 端末に十分なスペースが残っていません。</string>
     <string name="advanced_options">上級者向けオプション</string>
@@ -1098,9 +1100,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="tooltip_work_hint">この連絡先はThreema Workを利用しています。</string>
     <string name="video_camera_on">ビデオカメラが有効</string>
     <string name="video_camera_off">ビデオカメラが無効</string>
-    <string name="enable_picture_in_picture">ピクチャーインピクチャー・モードを開始</string>
+    <string name="enable_picture_in_picture">ピクチャ・イン・ピクチャ・モードを開始</string>
     <string name="call_with">通話 %s</string>
-    <string name="picture_in_picture_disabled_in_setting">ピクチャインピクチャ・モードは %s で無効になっています。システム設定で有効にしてください。</string>
+    <string name="picture_in_picture_disabled_in_setting">ピクチャ・イン・ピクチャ・モードは%sで無効になっています。システム設定で有効にしてください。</string>
     <string name="delete_everything">すべて削除</string>
     <string name="prefs_title_voip_video_enable">ビデオ通話を許可</string>
     <string name="video_calls">ビデオ通話</string>

@@ -89,12 +89,12 @@
 		android:layout_width="18dp"
 		android:layout_height="18dp"
 		android:layout_marginLeft="5dip"
-		android:tint="@color/material_red"
 		android:visibility="visible"
 		app:srcCompat="@drawable/ic_block"
 		app:layout_constraintBottom_toBottomOf="@id/subject"
 		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintLeft_toRightOf="@id/date"/>
+		app:layout_constraintLeft_toRightOf="@id/date"
+		app:tint="@color/material_red" />
 
 </ch.threema.app.ui.CheckableConstraintLayout>
 

@@ -249,7 +249,7 @@ public class FileDataModel implements MediaMessageDataInterface {
 	}
 
 	/**
-	 * Return the duration as set in the metadata field.
+	 * Return the duration in SECONDS as set in the metadata field.
 	 *
 	 * Note: Floats are converted to long integers.
 	 */

@@ -32,6 +32,7 @@ import androidx.lifecycle.MutableLiveData;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ConversationService;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ConversationModel;
 
@@ -45,6 +46,7 @@ import ch.threema.storage.models.ConversationModel;
 class ArchiveRepository {
 	private MutableLiveData<List<ConversationModel>> conversationModels;
 	private ConversationService conversationService;
+	private String filter = null;
 
 	ArchiveRepository() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -60,7 +62,7 @@ class ArchiveRepository {
 					@Nullable
 					@Override
 					public List<ConversationModel> getValue() {
-						return conversationService.getArchived();
+						return conversationService.getArchived(null);
 					}
 				};
 			}
@@ -76,9 +78,19 @@ class ArchiveRepository {
 		new AsyncTask<String, Void, Void>() {
 			@Override
 			protected Void doInBackground(String... strings) {
-				conversationModels.postValue(conversationService.getArchived());
+				conversationModels.postValue(conversationService.getArchived(filter));
 				return null;
 			}
 		}.execute();
+	}
+
+
+	public void setFilter(String constraint) {
+		if (!TestUtil.empty(constraint)) {
+			this.filter = constraint.trim();
+		}
+		else {
+			this.filter = null;
+		}
 	}
 }

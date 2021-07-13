@@ -25,8 +25,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -106,6 +104,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
@@ -270,6 +269,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private static final String DIALOG_TAG_CONFIRM_BLOCK = "block";
 	private static final String DIALOG_TAG_DECRYPTING_MESSAGES = "dcr";
 	private static final String DIALOG_TAG_SEARCHING = "src";
+	private static final String DIALOG_TAG_LOADING_MESSAGES = "loadm";
 
 	public static final String EXTRA_API_MESSAGE_ID = "apimsgid";
 	public static final String EXTRA_SEARCH_QUERY = "searchQuery";
@@ -849,6 +849,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		// resolution and layout may have changed after being attached to a new activity
 		ConfigUtils.getPreferredThumbnailWidth(activity, true);
+		ConfigUtils.getPreferredAudioMessageWidth(activity, true);
 	}
 
 	@Override
@@ -1927,6 +1928,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
+	@UiThread
 	private void handleIntent(Intent intent) {
 		logger.debug("handleIntent");
 		String conversationUid;
@@ -2044,7 +2046,7 @@ public class ComposeMessageFragment extends Fragment implements
 		// set wallpaper based on message receiver
 		this.setBackgroundWallpaper();
 
-		this.unreadCount = initConversationList();
+		this.initConversationList();
 
 		// work around the problem that the same original intent may be sent
 		// each time a singleTop activity (like this one) is coming back to front
@@ -2071,6 +2073,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		String defaultText = intent.getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
 		if (!TestUtil.empty(defaultText)) {
+			this.messageText.setText(null);
 			this.messageText.append(defaultText);
 		}
 
@@ -2392,12 +2395,14 @@ public class ComposeMessageFragment extends Fragment implements
 	/**
 	 * Loading the next records for the listview
 	 */
+	@WorkerThread
 	private List<AbstractMessageModel> getNextRecords() {
 		List<AbstractMessageModel> messageModels = this.messageService.getMessagesForReceiver(this.messageReceiver, this.nextMessageFilter);
 		this.valuesLoaded(messageModels);
 		return messageModels;
 	}
 
+	@WorkerThread
 	private List<AbstractMessageModel> getAllRecords() {
 		List<AbstractMessageModel> messageModels = this.messageService.getMessagesForReceiver(this.messageReceiver);
 		this.valuesLoaded(messageModels);
@@ -2490,108 +2495,126 @@ public class ComposeMessageFragment extends Fragment implements
 			this.currentPageReferenceId = values.get(values.size()-1).getId();
 		}
 	}
+
 	/**
-	 * initialize conversation list and return the unread message count
-	 *
-	 * @return
+	 * initialize conversation list and set the unread message count
+	 * @return number of unread messages
 	 */
-	private int initConversationList() {
-
-		final int unreadCount = (int) this.messageReceiver.getUnreadMessagesCount();
-
-		final List<AbstractMessageModel> values;
-		if(unreadCount > MESSAGE_PAGE_SIZE) {
-			//do not use next record, create a "custom" selector
-			//load ALL unread messages.
-			values = this.messageService.getMessagesForReceiver(this.messageReceiver, new MessageService.MessageFilter() {
+	@SuppressLint("StaticFieldLeak")
+	@UiThread
+	private void initConversationList() {
+		this.unreadCount = (int) this.messageReceiver.getUnreadMessagesCount();
+		if (this.unreadCount > MESSAGE_PAGE_SIZE) {
+			new AsyncTask<Void, Void, List<AbstractMessageModel>>() {
 				@Override
-				public long getPageSize() {
-					return -1;
+				protected void onPreExecute() {
+					GenericProgressDialog.newInstance(-1, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_LOADING_MESSAGES);
 				}
 
 				@Override
-				public Integer getPageReferenceId() {
-					return null;
+				protected List<AbstractMessageModel> doInBackground(Void... voids) {
+					return messageService.getMessagesForReceiver(messageReceiver, new MessageService.MessageFilter() {
+						@Override
+						public long getPageSize() {
+							return -1;
+						}
+
+						@Override
+						public Integer getPageReferenceId() {
+							return null;
+						}
+
+						@Override
+						public boolean withStatusMessages() {
+							return false;
+						}
+
+						@Override
+						public boolean withUnsaved() {
+							return false;
+						}
+
+						@Override
+						public boolean onlyUnread() {
+							return false;
+						}
+
+						@Override
+						public boolean onlyDownloaded() {
+							return false;
+						}
+
+						@Override
+						public MessageType[] types() {
+							return new MessageType[0];
+						}
+
+						@Override
+						public int[] contentTypes() {
+							return null;
+						}
+					});
 				}
 
 				@Override
-				public boolean withStatusMessages() {
-					return false;
+				protected void onPostExecute(List<AbstractMessageModel> values) {
+					valuesLoaded(values);
+					populateList(values);
+					DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_LOADING_MESSAGES, true);
 				}
-
-				@Override
-				public boolean withUnsaved() {
-					return false;
-				}
-
-				@Override
-				public boolean onlyUnread() {
-					return false;
-				}
-
-				@Override
-				public boolean onlyDownloaded() {
-					return false;
-				}
-
-				@Override
-				public MessageType[] types() {
-					return new MessageType[0];
-				}
-
-				@Override
-				public int[] contentTypes() {
-					return null;
-				}
-			});
-
-			this.valuesLoaded(values);
+			}.execute();
+		} else {
+			populateList(getNextRecords());
 		}
-		else {
-			values = this.getNextRecords();
-		}
+	}
 
-		if (this.composeMessageAdapter != null) {
+	/**
+	 * Populate ListView with provided message models
+	 * @param values
+	 */
+	@UiThread
+	private void populateList(List<AbstractMessageModel> values) {
+		if (composeMessageAdapter != null) {
 			// re-use existing adapter (for example on tablets)
-			this.composeMessageAdapter.clear();
-			this.composeMessageAdapter.setThumbnailWidth(ConfigUtils.getPreferredThumbnailWidth(getContext(), false));
-			this.composeMessageAdapter.setGroupId(groupId);
-			this.composeMessageAdapter.setMessageReceiver(this.messageReceiver);
-			this.composeMessageAdapter.setUnreadMessagesCount(unreadCount);
-			this.insertToList(values, true, true, true);
+			composeMessageAdapter.clear();
+			composeMessageAdapter.setThumbnailWidth(ConfigUtils.getPreferredThumbnailWidth(getContext(), false));
+			composeMessageAdapter.setGroupId(groupId);
+			composeMessageAdapter.setMessageReceiver(messageReceiver);
+			composeMessageAdapter.setUnreadMessagesCount(unreadCount);
+			insertToList(values, true, true, true);
 			updateToolbarTitle();
 		} else {
-			this.thumbnailCache = new ThumbnailCache<Integer>(null);
+			thumbnailCache = new ThumbnailCache<Integer>(null);
 
-			this.composeMessageAdapter = new ComposeMessageAdapter(
-					this.activity,
-					this.messagePlayerService,
-					this.messageValues,
-					this.userService,
-					this.contactService,
-					this.fileService,
-					this.messageService,
-					this.ballotService,
-					this.preferenceService,
-					this.downloadService,
-					this.licenseService,
-					this.messageReceiver,
-					this.convListView,
-					this.thumbnailCache,
-					ConfigUtils.getPreferredThumbnailWidth(getContext(), false),
-					this,
-					unreadCount
+			composeMessageAdapter = new ComposeMessageAdapter(
+				activity,
+				messagePlayerService,
+				messageValues,
+				userService,
+				contactService,
+				fileService,
+				messageService,
+				ballotService,
+				preferenceService,
+				downloadService,
+				licenseService,
+				messageReceiver,
+				convListView,
+				thumbnailCache,
+				ConfigUtils.getPreferredThumbnailWidth(getContext(), false),
+				ComposeMessageFragment.this,
+				unreadCount
 			);
 
 			//adding footer before setting the list adapter (android < 4.4)
-			if(null != this.convListView && !this.isGroupChat && !this.isDistributionListChat) {
+			if (null != convListView && !isGroupChat && !isDistributionListChat) {
 				//create the istyping instance for later use
-				this.isTypingView = layoutInflater.inflate(R.layout.conversation_list_item_typing, null);
-				this.convListView.addFooterView(this.isTypingView, null, false);
+				isTypingView = layoutInflater.inflate(R.layout.conversation_list_item_typing, null);
+				convListView.addFooterView(isTypingView, null, false);
 			}
 
-			this.composeMessageAdapter.setGroupId(groupId);
-			this.composeMessageAdapter.setOnClickListener(new ComposeMessageAdapter.OnClickListener() {
+			composeMessageAdapter.setGroupId(groupId);
+			composeMessageAdapter.setOnClickListener(new ComposeMessageAdapter.OnClickListener() {
 				@Override
 				public void resend(AbstractMessageModel messageModel) {
 					if (messageModel.isOutbox() && messageModel.getState() == MessageState.SENDFAILED && messageReceiver.isMessageBelongsToMe(messageModel)) {
@@ -2683,18 +2706,15 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			});
 
-			this.insertToList(values, false, !hiddenChatsListService.has(this.messageReceiver.getUniqueIdString()), false);
-			this.convListView.setAdapter(this.composeMessageAdapter);
-			this.convListView.setItemsCanFocus(false);
-			this.convListView.setVisibility(View.VISIBLE);
+			insertToList(values, false, !hiddenChatsListService.has(messageReceiver.getUniqueIdString()), false);
+			convListView.setAdapter(composeMessageAdapter);
+			convListView.setItemsCanFocus(false);
+			convListView.setVisibility(View.VISIBLE);
 		}
 
 		setIdentityColors();
 
-		//hack for android < 4.4.... remove footer after adding
 		removeIsTypingFooter();
-
-		return unreadCount;
 	}
 
 	/**
@@ -4160,24 +4180,16 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void configureSearchWidget(final MenuItem menuItem) {
-		// Associate searchable configuration with the SearchView
-		SearchManager searchManager =
-				(SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menuItem.getActionView();
-		SearchableInfo mSearchableInfo = searchManager.getSearchableInfo(activity.getComponentName());
 		if (searchView != null) {
-			searchView.setSearchableInfo(mSearchableInfo);
 			searchView.setOnQueryTextListener(queryTextListener);
 			searchView.setQueryHint(getString(R.string.hint_search_keyword));
 			searchView.setIconified(false);
-			searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-				@Override
-				public boolean onClose() {
-					if (searchActionMode != null) {
-						searchActionMode.finish();
-					}
-					return false;
+			searchView.setOnCloseListener(() -> {
+				if (searchActionMode != null) {
+					searchActionMode.finish();
 				}
+				return false;
 			});
 
 			LinearLayout linearLayoutOfSearchView = (LinearLayout) searchView.getChildAt(0);

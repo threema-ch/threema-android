@@ -39,9 +39,9 @@ import java.util.HashSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.listeners.SMSVerificationListener;
@@ -87,6 +87,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	private final PreferenceService preferenceService;
 	private String policyResponseData;
 	private String policySignature;
+	private int policyErrorCode;
     private LicenseService.Credentials credentials;
 	private Account account;
 
@@ -114,9 +115,10 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			throw new ThreemaException("please remove your existing identity " + this.getIdentity());
 		}
 
-		// no need to send a request if we have no licence
-		if (policySignature == null && policyResponseData == null && credentials == null) {
-			throw new ThreemaException(ThreemaApplication.getAppContext().getResources().getString(R.string.missing_app_licence));    /* Create identity phase 1 unsuccessful:*/
+		// no need to send a request if we have no licence.
+		// note that CheckLicenseRoutine may not have received an upstream response yet.
+		if (policySignature == null && policyResponseData == null && credentials == null && !BuildConfig.DEBUG) {
+			throw new ThreemaException(context.getString(R.string.missing_app_licence) + "\n" + context.getString(R.string.app_store_error_code, policyErrorCode));    /* Create identity phase 1 unsuccessful:*/
 		}
 		else {
 			this.apiConnector.createIdentity(
@@ -545,9 +547,10 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	}
 
 	@Override
-	public void setPolicyResponse(String responseData, String signature) {
+	public void setPolicyResponse(String responseData, String signature, int policyErrorCode) {
 		this.policyResponseData = responseData;
 		this.policySignature = signature;
+		this.policyErrorCode = policyErrorCode;
 	}
 
 

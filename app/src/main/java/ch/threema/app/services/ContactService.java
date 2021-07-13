@@ -31,8 +31,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
 import ch.threema.client.AbstractMessage;
@@ -111,6 +111,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	List<ContactModel> getByIdentities(List<String> identities);
 
 	List<ContactModel> getIsWork();
+	int countIsWork();
 
 	List<ContactModel> getCanReceiveProfilePics();
 

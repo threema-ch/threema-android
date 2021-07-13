@@ -22,6 +22,7 @@
 package ch.threema.app.listeners;
 
 import androidx.annotation.AnyThread;
+import ch.threema.app.services.GroupService;
 import ch.threema.storage.models.GroupModel;
 
 public interface GroupListener {
@@ -43,4 +44,10 @@ public interface GroupListener {
 	 * User left his own group.
 	 */
 	@AnyThread default void onLeave(GroupModel groupModel) { }
+
+	/**
+	 * Group State has possibly changed
+	 * Note that oldState may be equal to newState
+	 */
+	@AnyThread default void onGroupStateChanged(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) { };
 }

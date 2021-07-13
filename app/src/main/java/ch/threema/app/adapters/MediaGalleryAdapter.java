@@ -54,6 +54,7 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.MessageContentsType;
 
 import static ch.threema.storage.models.data.MessageContentsType.AUDIO;
 import static ch.threema.storage.models.data.MessageContentsType.FILE;
@@ -185,7 +186,16 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 								holder.imageView.clearColorFilter();
 								holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 							} else {
-								if (messageModel.getType() == MessageType.FILE && messageModel.getFileData().getMimeType() != null) {
+								if (messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE) {
+									holder.imageView.setScaleType(ImageView.ScaleType.CENTER);
+									holder.imageView.setImageResource(R.drawable.ic_keyboard_voice_outline);
+									holder.imageView.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
+									holder.topTextView.setText(StringConversionUtil.secondsToString(
+										messageModel.getType() == MessageType.FILE ?
+											messageModel.getFileData().getDuration():
+											messageModel.getAudioData().getDuration(), false));
+									holder.textContainerView.setVisibility(View.VISIBLE);
+								} else if (messageModel.getType() == MessageType.FILE) {
 									// try default avatar for mime type
 									thumbnail = fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType());
 									holder.topTextView.setText(messageModel.getFileData().getFileName());
@@ -197,12 +207,6 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 									} else {
 										broken = true;
 									}
-								} else if (messageModel.getType() == MessageType.VOICEMESSAGE) {
-									holder.imageView.setScaleType(ImageView.ScaleType.CENTER);
-									holder.imageView.setImageResource(R.drawable.ic_keyboard_voice_outline);
-									holder.imageView.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
-									holder.topTextView.setText(StringConversionUtil.secondsToString((long) (messageModel.getAudioData().getDuration()), false));
-									holder.textContainerView.setVisibility(View.VISIBLE);
 								} else {
 									holder.textContainerView.setVisibility(View.GONE);
 									broken = true;

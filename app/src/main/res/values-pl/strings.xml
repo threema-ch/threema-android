@@ -183,7 +183,7 @@
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Przywracanie backup-u</string>
-    <string name="server_message_title">Wiadomość z serwera</string>
+    <string name="server_message_title">Wiadomość z serwera Threema</string>
     <string name="error">Błąd</string>
     <string name="no_contacts"><![CDATA[Nie masz jeszcze żadnych kontaktów. Włącz synchronizację (Ustawienia > Priywatność), albo dodaj ręcznie używając przycisku +]]></string>
     <string name="masterkey_title">Wprowadź hasło</string>
@@ -468,8 +468,7 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="really_block_contact">Kolejne wiadomości od tego kontaktu będą usuwane. Kontynuować?</string>
     <string name="ballot_result_final">Ostateczny wynik</string>
     <string name="invalid_cannot_send">Nie możesz wysyłać wiadomości do nieprawidłowego kontaktu</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
-    <string name="ballot_answer_count_error">Wybierz co najmniej dwie odpowiedzi dla tej ankiety.</string>
+	<string name="ballot_answer_count_error">Wybierz co najmniej dwie odpowiedzi dla tej ankiety.</string>
     <string name="ballot_one_contact_not_supported">Ostrzeżenie: %1$s nie może wziąć udziału w tej ankiecie.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Ostrzeżenie: %1$d kontakty(-ów) nie może wziąć udziału w tej ankiecie.</string>
     <string name="enable_polling">Sprawdzaj serwer</string>
@@ -1199,7 +1198,10 @@ anonimowo?</string>
     <string name="mark_unread">Oznacz jako nieprzeczytane</string>
     <string name="mark_read_short">Przeczytane</string>
     <string name="unread">Nieprzeczytane</string>
-    <string name="missing_app_licence">Nie udało się utworzyć nowego żądania tożsamości, ponieważ nie znaleziono ważnych licencji na aplikacje.</string>
+    <string name="missing_app_licence">Sklep aplikacji nie mógł zweryfikować zakupu. Jeśli korzystasz z Google Play, usuń dane z aplikacji sklepu Google Play i ponownie uruchom urządzenie.</string>
     <string name="set_backup_path">Ustaw ścieżkę do kopii zapasowej</string>
     <string name="set_backup_path_intro">W następnym ekranie wybierz folder, w którym mają być zapisywane kopie zapasowe danych.</string>
+    <string name="tap_here_for_more">Dotknij tutaj, aby uzyskać więcej informacji</string>
+    <string name="another_connection_instructions">Serwer wykrył co najmniej dwa połączenia z różnych urządzeń z tym samym identyfikatorem Threema.\n\nNie można jednocześnie korzystać z tego samego identyfikatora Threema na kilku urządzeniach. Nowe wiadomości są przesyłane tylko do urządzenia, które ostatnio logowało się do serwera.\n\nJeśli przełączasz się na nowe urządzenie, odinstaluj lub wyłącz %s na starym urządzeniu, a potem ponownie uruchom nowe urządzenie.</string>
+    <string name="app_store_error_code">Kod błędu sklepu aplikacji: %d</string>
 </resources>

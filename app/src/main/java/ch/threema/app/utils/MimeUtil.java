@@ -21,9 +21,7 @@
 
 package ch.threema.app.utils;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.net.Uri;
 
 import java.lang.annotation.Retention;
 import java.util.HashMap;
@@ -36,8 +34,9 @@ import ch.threema.app.R;
 import ch.threema.app.exceptions.MalformedMimeTypeException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.MessageContentsType;
+import ch.threema.storage.models.data.media.FileDataModel;
 
-import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.client.file.FileData.RENDERING_MEDIA;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class MimeUtil {
@@ -199,9 +198,11 @@ public class MimeUtil {
 		return MIME_TYPE_ANY;
 	}
 
-	public static @MessageContentsType int getContentTypeFromMimeType(String mimeType) {
+	public static @MessageContentsType int getContentTypeFromFileData(@NonNull FileDataModel fileDataModel) {
+		String mimeType = fileDataModel.getMimeType();
+
 		int messageContentsType = MessageContentsType.FILE;
-		if (mimeType != null && mimeType.length() > 0) {
+		if (mimeType.length() > 0) {
 			if (MimeUtil.isGifFile(mimeType)) {
 				messageContentsType = MessageContentsType.GIF;
 			} else if (MimeUtil.isImageFile(mimeType)) {
@@ -209,7 +210,11 @@ public class MimeUtil {
 			} else if (MimeUtil.isVideoFile(mimeType)) {
 				messageContentsType = MessageContentsType.VIDEO;
 			} else if (MimeUtil.isAudioFile(mimeType)) {
-				messageContentsType = MessageContentsType.AUDIO;
+				if (fileDataModel.getRenderingType() == RENDERING_MEDIA) {
+					messageContentsType = MessageContentsType.VOICE_MESSAGE;
+				} else {
+					messageContentsType = MessageContentsType.AUDIO;
+				}
 			} else if (MimeUtil.isContactFile(mimeType)) {
 				messageContentsType = MessageContentsType.CONTACT;
 			}

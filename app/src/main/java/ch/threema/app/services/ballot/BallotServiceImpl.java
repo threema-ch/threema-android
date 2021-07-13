@@ -55,6 +55,7 @@ import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.AbstractMessage;
+import ch.threema.client.BadMessageException;
 import ch.threema.client.MessageTooLongException;
 import ch.threema.client.ProtocolDefines;
 import ch.threema.client.Utils;
@@ -94,7 +95,6 @@ public class BallotServiceImpl implements BallotService {
 	private final ServiceManager serviceManager;
 
 	private int openBallotId = 0;
-
 
 	public BallotServiceImpl(SparseArray<BallotModel> ballotModelCache,
 	                         SparseArray<LinkBallotModel> linkBallotModelCache,
@@ -338,35 +338,38 @@ public class BallotServiceImpl implements BallotService {
 	}
 
 	@Override
-	public BallotUpdateResult update(BallotCreateInterface createMessage) throws ThreemaException {
+	@NonNull
+	public BallotUpdateResult update(BallotCreateInterface createMessage) throws ThreemaException, BadMessageException {
 		//check if allowed
 		BallotData data = createMessage.getData();
 		if (data == null) {
 			throw new ThreemaException("invalid format");
 		}
 
-		boolean newBallot;
-		Date date = ((AbstractMessage)createMessage).getDate();
-
-
-		//check if the create message is a update or a insert
-		BallotModel existingModel = this.get(createMessage.getBallotId().toString(), createMessage.getBallotCreator());
+		final BallotModel.State toState;
 		final BallotModel ballotModel;
-		boolean isClosing = false;
 
-		if(existingModel != null) {
-			ballotModel = existingModel;
-			newBallot = false;
-		}
-		else {
-			newBallot = true;
-			ballotModel = new BallotModel();
-			ballotModel.setCreatorIdentity(createMessage.getBallotCreator());
-			ballotModel.setApiBallotId(createMessage.getBallotId().toString());
+		Date date = ((AbstractMessage)createMessage).getDate();
+		BallotModel existingModel = this.get(createMessage.getBallotId().toString(), createMessage.getBallotCreator());
 
-			//dirty hack
-			ballotModel.setCreatedAt(date);
-			ballotModel.setLastViewedAt(null);
+		if (existingModel != null) {
+			if (data.getState() == BallotData.State.CLOSED) {
+				ballotModel = existingModel;
+				toState = BallotModel.State.CLOSED;
+			} else {
+				throw new BadMessageException("Ballot with same ID already exists. Discarding message.", true);
+			}
+		} else {
+			if (data.getState() != BallotData.State.CLOSED) {
+				ballotModel = new BallotModel();
+				ballotModel.setCreatorIdentity(createMessage.getBallotCreator());
+				ballotModel.setApiBallotId(createMessage.getBallotId().toString());
+				ballotModel.setCreatedAt(date);
+				ballotModel.setLastViewedAt(null);
+				toState = BallotModel.State.OPEN;
+			} else {
+				throw new BadMessageException("New ballot with closed state requested. Discarding message.", true);
+			}
 		}
 
 		ballotModel.setName(data.getDescription());
@@ -396,20 +399,9 @@ public class BallotServiceImpl implements BallotService {
 				break;
 		}
 
-		switch (data.getState()) {
-			case OPEN:
-				ballotModel.setState(BallotModel.State.OPEN);
-				break;
-			case CLOSED:
-				if(ballotModel.getState() == BallotModel.State.OPEN) {
-					//ok, closing the ballot
-					isClosing = true;
-				}
-				ballotModel.setState(BallotModel.State.CLOSED);
-				break;
-		}
+		ballotModel.setState(toState);
 
-		if(newBallot) {
+		if (toState == BallotModel.State.OPEN) {
 			this.databaseServiceNew.getBallotModelFactory().create(
 					ballotModel
 			);
@@ -446,12 +438,13 @@ public class BallotServiceImpl implements BallotService {
 			throw new ThreemaException("invalid");
 		}
 
-		if(isClosing) {
-			//remove all votes!
+		if (toState == BallotModel.State.CLOSED) {
+			//remove all votes
 			this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotId(
 					ballotModel.getId()
 			);
 		}
+
 		//create choices of ballot
 		for(BallotDataChoice apiChoice: data.getChoiceList()) {
 			//check if choice already exist
@@ -465,7 +458,6 @@ public class BallotServiceImpl implements BallotService {
 
 			ballotChoiceModel.setName(apiChoice.getName());
 			ballotChoiceModel.setOrder(apiChoice.getOrder());
-
 			switch (data.getChoiceType()) {
 				case TEXT:
 					ballotChoiceModel.setType(BallotChoiceModel.Type.Text);
@@ -496,7 +488,7 @@ public class BallotServiceImpl implements BallotService {
 			}
 		}
 
-		if(newBallot) {
+		if (toState == BallotModel.State.OPEN) {
 			this.cache(ballotModel);
 			this.send(ballotModel, listener -> {
 				if (listener.handle(ballotModel)) {
@@ -506,22 +498,14 @@ public class BallotServiceImpl implements BallotService {
 
 			return new BallotUpdateResult(ballotModel, BallotUpdateResult.Operation.CREATE);
 		}
-		else if(isClosing) {
+		else {
+			// toState == BallotModel.State.CLOSED
 			this.send(ballotModel, listener -> {
 				if (listener.handle(ballotModel)) {
 					listener.onClosed(ballotModel);
 				}
 			});
 			return new BallotUpdateResult(ballotModel, BallotUpdateResult.Operation.CLOSE);
-		}
-		else {
-			ListenerManager.ballotListeners.handle(listener -> {
-				if(listener.handle(ballotModel)) {
-					listener.onModified(ballotModel);
-				}
-			});
-
-			return new BallotUpdateResult(ballotModel, BallotUpdateResult.Operation.UPDATE);
 		}
 	}
 
@@ -839,6 +823,7 @@ public class BallotServiceImpl implements BallotService {
 			default:
 				ballotData.setAssessmentType(BallotData.AssessmentType.SINGLE);
 		}
+
 		switch (ballotModel.getState()) {
 			case CLOSED:
 				ballotData.setState(BallotData.State.CLOSED);
@@ -847,7 +832,6 @@ public class BallotServiceImpl implements BallotService {
 			default:
 				ballotData.setState(BallotData.State.OPEN);
 		}
-
 
 		HashMap<String, Integer> participantPositions = new HashMap<>();
 		List<BallotVoteModel> voteModels = null;

@@ -54,6 +54,7 @@ import java.util.concurrent.ExecutionException;
 import javax.crypto.CipherInputStream;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
@@ -190,7 +191,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 	}
 
 	@UiThread
-	private boolean setImageView(ImageView wallpaperView, Bitmap bitmap) {
+	private boolean setImageView(ImageView wallpaperView, @Nullable Bitmap bitmap) {
 		if (wallpaperView != null) {
 			if (bitmap != null) {
 				wallpaperView.setImageBitmap(bitmap);
@@ -212,8 +213,8 @@ public class WallpaperServiceImpl implements WallpaperService {
 			try {
 				if (!hasEmptyWallpaper(messageReceiver).get()) {
 					bitmap = getWallpaperBitmap(messageReceiver, landscape).get();
-					return setImageView(wallpaperView, bitmap);
 				}
+				return setImageView(wallpaperView, bitmap);
 			} catch (InterruptedException e) {
 				logger.error("Exception", e);
 				// Restore interrupted state...

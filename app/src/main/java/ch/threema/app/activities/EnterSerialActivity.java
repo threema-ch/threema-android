@@ -44,6 +44,7 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -165,7 +166,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 		if (!ConfigUtils.isSerialLicenseValid()) {
 			if (scheme != null) {
-				if (scheme.startsWith(ThreemaApplication.uriScheme)) {
+				if (scheme.startsWith(BuildConfig.uriScheme)) {
 					parseUrlAndCheck(data);
 				} else if (scheme.startsWith("https")) {
 					String path = data.getPath();

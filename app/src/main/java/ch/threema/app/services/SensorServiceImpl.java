@@ -213,7 +213,7 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 			z = (z / norm_Of_g);
 			int inclination = (int) Math.round(Math.toDegrees(Math.acos(z)));
 
-			isFlatOnTable = (inclination < 30 || inclination > 150);
+			isFlatOnTable = (inclination < 20 || inclination > 160);
 		}
 	}
 

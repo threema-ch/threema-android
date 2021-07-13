@@ -546,7 +546,6 @@
 	</string>
 	<string name="ballot_result_final">Endresultat</string>
 	<string name="invalid_cannot_send">Sie können keine Nachrichten an einen ungültigen Kontakt senden</string>
-	<string name="title_activity_new_ballot_wizard">NeueUmfrageAssistentAktivität</string>
 	<string name="ballot_answer_count_error">Bitte mindestens zwei Antworten festlegen.</string>
 	<string name="ballot_one_contact_not_supported">Achtung: %1$s kann noch nicht an Umfragen teilnehmen.</string>
 	<string name="ballot_x_contact_not_supported">Achtung: %1$d Kontakte können noch nicht an Umfragen teilnehmen.
@@ -1307,6 +1306,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="mark_unread">Als ungelesen markieren</string>
 	<string name="mark_read_short">Gelesen</string>
 	<string name="unread">Ungelesen</string>
+	<string name="missing_app_licence">Der App Store konnte Ihre App-Lizenz nicht überprüfen. Falls Sie Google Play verwenden, löschen Sie die Daten der Google Play Store-App und starten Sie Ihr Handy neu.</string>
 	<string name="set_backup_path">Backup-Pfad festlegen</string>
 	<string name="set_backup_path_intro">Bitte wählen Sie im folgenden Bildschirm den Ordner aus, in dem Daten-Backups gesichert werden sollen.</string>
+	<string name="tap_here_for_more">Hier tippen für mehr Informationen</string>
+	<string name="another_connection_instructions">Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.\n\nEs ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.\n\nFalls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.</string>
+	<string name="app_store_error_code">App Store Fehlercode: %d</string>
 </resources>

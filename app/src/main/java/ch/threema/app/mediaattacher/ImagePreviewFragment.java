@@ -47,9 +47,8 @@ public class ImagePreviewFragment extends PreviewFragment {
 	private GifImageView gifView;
 	private SubsamplingScaleImageView imageView;
 
-	ImagePreviewFragment(MediaAttachItem mediaItem){
-		super();
-		this.mediaItem = mediaItem;
+	ImagePreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
+		super(mediaItem, mediaAttachViewModel);
 	}
 
 	@Override
@@ -85,7 +84,7 @@ public class ImagePreviewFragment extends PreviewFragment {
 
 						@Override
 						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-							if (resource != null && resource instanceof BitmapDrawable) {
+							if (resource instanceof BitmapDrawable) {
 								imageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
 							}
 						}

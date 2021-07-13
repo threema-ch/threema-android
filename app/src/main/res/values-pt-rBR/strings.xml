@@ -183,7 +183,7 @@
     <string name="video_placeholder">Vídeo</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Restaurando backup</string>
-    <string name="server_message_title">Mensagem do servidor</string>
+    <string name="server_message_title">Mensagem do servidor Threema</string>
     <string name="error">Erro</string>
     <string name="no_contacts"><![CDATA[Você ainda não tem nenhum contato. Ativar a sincronização (Configurações > Privacidade) ou adicionar contatos manualmente usando o botão +.]]></string>
     <string name="masterkey_title">Digite senha</string>
@@ -468,8 +468,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="really_block_contact">Mensagens futuras deste contato serão descartadas. Continuar?</string>
     <string name="ballot_result_final">Resultado final</string>
     <string name="invalid_cannot_send">Você não pode enviar mensagens a um contato inválido</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
-    <string name="ballot_answer_count_error">Por favor, defina ao menos duas respostas para esta enquete.</string>
+	<string name="ballot_answer_count_error">Por favor, defina ao menos duas respostas para esta enquete.</string>
     <string name="ballot_one_contact_not_supported">Aviso: %1$s não será capaz de participar da sua enquete.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Aviso: %1$d contatos não poderão participar da sua enquete.</string>
     <string name="enable_polling">Usar verificação</string>
@@ -1189,7 +1188,10 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="mark_unread">Marcar como não lido</string>
     <string name="mark_read_short">Lido</string>
     <string name="unread">Não lido</string>
-    <string name="missing_app_licence">Não foi possível criar uma solicitação de nova identidade porque nenhuma licença de app válida pode ser encontrada</string>
+    <string name="missing_app_licence">Não foi possível para a loja de app validar sua compra. Se utiliza o Google Play, limpe os dados do app Google Play e reinicie seu dispositivo.</string>
     <string name="set_backup_path">Definir caminho de backup</string>
     <string name="set_backup_path_intro">Na próxima tela, selecione a pasta onde os backups de dados devem ser salvos.</string>
+    <string name="tap_here_for_more">Toque aqui para mais informações</string>
+    <string name="another_connection_instructions">O servidor detectou duas ou mais conexões de dispositivos diferentes com a mesma ID do Threema.\n\nNão é possível usar a mesma ID do Threema em diversos dispositivos simultaneamente. Novas mensagens são transmitidas somente para o dispositivo que fez login pela última vez no servidor.\n\nSe você está trocando para um novo dispositivo, desinstale ou desative %s no antigo dispositivo e, depois, reinicie o novo.</string>
+    <string name="app_store_error_code">Código de erro da loja de app: %d</string>
 </resources>

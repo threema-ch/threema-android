@@ -488,7 +488,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="really_block_contact">I prossimi messaggi provenienti da questo contatto saranno eliminati. Vuoi continuare?</string>
     <string name="ballot_result_final">Risultato finale</string>
     <string name="invalid_cannot_send">Non puoi inviare messaggi a un contatto non valido</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
     <string name="ballot_answer_count_error">Indica almeno due opzioni per questo sondaggio.</string>
     <string name="ballot_one_contact_not_supported">Attenzione: %1$s non potrà partecipare al tuo sondaggio.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attenzione: %1$d contatti non potranno partecipare al tuo sondaggio.</string>
@@ -1203,7 +1202,10 @@ messaggi ogni 15 minuti.</string>
     <string name="mark_unread">Segna come non letta</string>
     <string name="mark_read_short">Letto</string>
     <string name="unread">Non letta</string>
-    <string name="missing_app_licence">Impossibile creare una nuova richiesta di identità perché non è stato possibile trovare licenze di app valide.</string>
+    <string name="missing_app_licence">L\'app store non è stato in grado di confermare l\'acquisto. Se usi Google Play, elimina i dati di Google Play Store App e riavvia il dispositivo.</string>
     <string name="set_backup_path">Definisci percorso backup</string>
     <string name="set_backup_path_intro">Scegli nello schermo seguente il folder dove salvare i backup.</string>
+    <string name="tap_here_for_more">Tocca qui per ulteriori informazioni</string>
+    <string name="another_connection_instructions">Il server ha individuato due o più connessioni da dispositivi diversi con lo stesso Threema ID.\n\nNon è possibile usare lo stesso Threema ID su diversi dispositivi contemporaneamente. I nuovi messaggi sono trasmessi solo al dispositivo che ha avuto accesso per ultimo al server.\n\nSe stai passando a un altro dispositivo, disinstalla o disattiva %s sul dispositivo precedente e riavvia quello nuovo.</string>
+    <string name="app_store_error_code">Codice errore app store: %d</string>
 </resources>

@@ -509,7 +509,7 @@ public class AnimationUtil {
 	public static void setFadingVisibility(View view, int visibility) {
 		if (view.getVisibility() != visibility) {
 			Transition transition = new Fade();
-			transition.setDuration(150);
+			transition.setDuration(170);
 			transition.addTarget(view);
 
 			TransitionManager.endTransitions((ViewGroup) view.getParent());

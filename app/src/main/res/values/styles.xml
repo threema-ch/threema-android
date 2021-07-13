@@ -728,9 +728,44 @@
 		<item name="cornerSize">2dp</item>
 	</style>
 
+	<style name="Threema.Chip.AudioMessage" parent="@style/Widget.MaterialComponents.Chip.Action">
+		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.AudioMessage</item>
+		<item name="android:textColor">@android:color/white</item>
+		<item name="chipBackgroundColor">?attr/colorAccent</item>
+		<item name="chipCornerRadius">14dp</item>
+		<item name="chipMinTouchTargetSize">28dp</item>
+		<item name="chipMinHeight">28dp</item>
+		<item name="chipStartPadding">2dp</item>
+		<item name="chipEndPadding">2dp</item>
+	</style>
+
+	<style name="Threema.TextAppearance.Chip.AudioMessage" parent="Threema.TextAppearance.Chip">
+		<item name="android:textSize">13sp</item>
+		<item name="android:fontFamily">sans-serif-condensed</item>
+		<item name="android:letterSpacing">0</item>
+	</style>
+
+	<style name="Threema.MaterialButton.Circle.Outline" parent="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon">
+		<item name="rippleColor">@android:color/transparent</item>
+		<item name="strokeColor">@android:color/transparent</item>
+	</style>
+
+	<style name="Threema.ShapeAppearance.Button.Circle.Outline" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">50%</item>
+	</style>
+
 	<style name="Threema.MediaGallery.FastScroll" parent="">
 		<item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_media</item>
 		<item name="android:fastScrollTrackDrawable">@null</item>
+	</style>
+
+	<style name="Threema.MediaGallery.FastScroll.Dark" parent="Threema.MediaGallery.FastScroll">
+		<item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_media_dark</item>
+	</style>
+
+	<style name="Threema.Preview.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+		<item name="android:background">@drawable/shape_rounded_bottomsheet</item>
 	</style>
 
 </resources>

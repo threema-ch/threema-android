@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import androidx.annotation.RequiresApi;
 
-
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ThreemaSafeUploadJobService extends JobService {
 	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeUploadJobService.class);
@@ -40,7 +39,7 @@ public class ThreemaSafeUploadJobService extends JobService {
 	public boolean onStartJob(JobParameters params) {
 		logger.debug("onStartJob");
 
-		ThreemaSafeUploadService.enqueueWork(getApplicationContext(), new Intent());
+		new Thread(() -> ThreemaSafeUploadService.enqueueWork(getApplicationContext(), new Intent()), "SafeUploadEnqueue").start();
 
 		// work has been queued, we no longer need this job
 		return false;

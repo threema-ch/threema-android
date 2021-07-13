@@ -31,6 +31,7 @@ import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.base.ThreemaException;
+import ch.threema.client.BadMessageException;
 import ch.threema.client.MessageTooLongException;
 import ch.threema.client.ballot.BallotCreateInterface;
 import ch.threema.client.ballot.BallotVoteInterface;
@@ -85,7 +86,14 @@ public interface BallotService {
 	long countBallots(BallotFilter filter);
 
 	boolean belongsToMe(Integer ballotModelId, MessageReceiver messageReceiver) throws NotAllowedException;
-	BallotUpdateResult update(BallotCreateInterface createMessage) throws ThreemaException;
+
+	/**
+	 * Create / Update ballot from createMessage
+	 * @param createMessage BallotCreateMessage received from server
+	 * @return BallotUpdateResult
+	 * @throws ThreemaException if an error occurred during processing
+	 */
+	@NonNull BallotUpdateResult update(BallotCreateInterface createMessage) throws ThreemaException, BadMessageException;
 	boolean update(BallotModel ballotModel);
 
 	BallotPublishResult publish(MessageReceiver messageReceiver, BallotModel ballotModel,

@@ -112,7 +112,7 @@ import ch.threema.storage.models.access.AccessModel;
 public class ContactServiceImpl implements ContactService {
 	private static final Logger logger = LoggerFactory.getLogger(ContactServiceImpl.class);
 
-	private static final int TYPING_TIMEOUT = 60*1000;
+	private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.MINUTE_IN_MILLIS;
 
 	private final Context context;
 	private final AvatarCacheService avatarCacheService;
@@ -295,17 +295,6 @@ public class ContactServiceImpl implements ContactService {
 				queryBuilder.appendWhere(ContactModel.COLUMN_IS_HIDDEN + "=0");
 			}
 
-/*			final Integer featureLevel = filter.requiredFeature();
-
-			if(featureLevel != null) {
-				if(filter.fetchMissingFeatureLevel() == null
-						|| !filter.fetchMissingFeatureLevel()) {
-					//filtering with sql
-					queryBuilder.appendWhere(ContactModel.COLUMN_FEATURE_LEVEL + ">=?");
-					placeholders.add(featureLevel.toString());
-				}
-			}
-*/
 			if (!filter.includeMyself() && getMe() != null) {
 				queryBuilder.appendWhere(ContactModel.COLUMN_IDENTITY + "!=?");
 				placeholders.add(getMe().getIdentity());
@@ -495,6 +484,23 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
+	public int countIsWork() {
+		int count = 0;
+		Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery(
+			"SELECT COUNT(*) FROM contacts " +
+			"WHERE " + ContactModel.COLUMN_IS_WORK + " = 1 " +
+			"AND " + ContactModel.COLUMN_IS_HIDDEN + " = 0", null);
+
+		if (c != null) {
+			if(c.moveToFirst()) {
+				count = c.getInt(0);
+			}
+			c.close();
+		}
+		return count;
+	}
+
+	@Override
 	public List<ContactModel> getCanReceiveProfilePics() {
 		return Functional.filter(this.find(new Filter() {
 			@Override
@@ -618,7 +624,7 @@ public class ContactServiceImpl implements ContactService {
 				};
 
 				typingTimerTasks.put(identity, newTimerTask);
-				typingTimer.schedule(newTimerTask, TYPING_TIMEOUT);
+				typingTimer.schedule(newTimerTask, TYPING_RECEIVE_TIMEOUT);
 			}
 		}
 	}

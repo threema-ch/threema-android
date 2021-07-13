@@ -36,6 +36,7 @@ function print_usage() {
     echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, work, hms, hmswork"
     echo "  -n <version-name>    The version name. Example: '4.53'"
     echo "  -b,--build           (Re)build the Docker image"
+    echo "  --no-cache           Clear Docker build cache"
     echo "  -k,--keystore <dir>  Path to the keystore directory"
     echo "  -o,--outdir <dir>    Path to the release output directory, will be created if it doesn't exist"
     echo "  --no-image-export    Skip the docker image export step"
@@ -82,6 +83,7 @@ license=""
 variants=""
 name=""
 build=0
+no_cache=""
 keystore=""
 export_image=1
 releasedir="$DIR/../release"
@@ -90,6 +92,7 @@ while [[ "$#" -gt 0 ]]; do
         -v) variants="$2"; shift ;;
         -n) name="$2"; shift ;;
         -b|--build) build=1 ;;
+        --no-cache) no_cache="--no-cache" ;;
         -k|--keystore) keystore="$2"; shift ;;
         -o|--outdir) releasedir="$2"; shift ;;
         --i-accept-the-android-sdk-license) license="accepted" ;;
@@ -105,7 +108,7 @@ releasedir=$(realpath $releasedir)
 IFS=', ' read -r -a variant_array <<< "$variants"
 for variant in "${variant_array[@]}"; do
     case $variant in
-        googleplay | threemashop| work | hms | hmswork)
+        googleplay | threemashop | work | hms | hmswork)
             # Valid
             ;;
         *)
@@ -142,7 +145,7 @@ if [ $build -eq 1 ]; then
     log_minor "app_version=$app_version"
     log_minor "sdk_version=$sdk_version"
     log_minor "build_tools_version=$build_tools_version"
-    docker build "$DIR/../scripts/" \
+    docker build $no_cache "$DIR/../scripts/" \
         --build-arg SDK_VERSION="$sdk_version" \
         --build-arg BUILD_TOOLS_VERSION="$build_tools_version" \
         -t "$DOCKERIMAGE:latest" \

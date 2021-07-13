@@ -24,8 +24,6 @@ package ch.threema.app.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,6 +51,7 @@ import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,13 +131,17 @@ public class ContactsSectionFragment
 	private static final String DIALOG_TAG_REALLY_DELETE_CONTACTS = "rdc";
 	private static final String DIALOG_TAG_SHARE_WITH = "wsw";
 
-	private final String RUN_ON_ACTIVE_SHOW_LOADING = "show_loading";
-	private final String RUN_ON_ACTIVE_HIDE_LOADING = "hide_loading";
-	private final String RUN_ON_ACTIVE_UPDATE_LIST = "update_list";
-	private final String RUN_ON_ACTIVE_REFRESH_LIST = "refresh_list";
-	private final String RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH = "pull_to_refresh";
+	private static final String RUN_ON_ACTIVE_SHOW_LOADING = "show_loading";
+	private static final String RUN_ON_ACTIVE_HIDE_LOADING = "hide_loading";
+	private static final String RUN_ON_ACTIVE_UPDATE_LIST = "update_list";
+	private static final String RUN_ON_ACTIVE_REFRESH_LIST = "refresh_list";
+	private static final String RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH = "pull_to_refresh";
 
-	private final String BUNDLE_FILTER_QUERY_C = "BundleFilterC";
+	private static final String BUNDLE_FILTER_QUERY_C = "BundleFilterC";
+	private static final String BUNDLE_SELECTED_TAB = "tabpos";
+
+	private static final int TAB_ALL_CONTACTS = 0;
+	private static final int TAB_WORK_ONLY = 1;
 
 	private ResumePauseHandler resumePauseHandler;
 	private ListView listView;
@@ -152,6 +155,7 @@ public class ContactsSectionFragment
 	private ExtendedFloatingActionButton floatingButtonView;
 	private EmojiTextView stickyInitialView;
 	private FrameLayout stickyInitialLayout;
+	private TabLayout workTabLayout;
 
 	private SynchronizeContactsService synchronizeContactsService;
 	private ContactService contactService;
@@ -159,17 +163,47 @@ public class ContactsSectionFragment
 	private LockAppService lockAppService;
 
 	private String filterQuery;
+	@SuppressLint("StaticFieldLeak")
+	private final TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
+		@Override
+		public void onTabSelected(TabLayout.Tab tab) {
+			if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
+				return;
+			}
+
+			new FetchContactsTask(contactService, false, tab.getPosition(), true) {
+				@Override
+				protected void onPostExecute(Pair<List<ContactModel>, FetchResults> result) {
+					final List<ContactModel> contactModels = result.first;
+
+					if (contactModels != null && contactListAdapter != null) {
+						contactListAdapter.updateData(contactModels);
+						if (!TestUtil.empty(filterQuery)) {
+							contactListAdapter.getFilter().filter(filterQuery);
+						}
+					}
+				}
+			}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+		}
+
+		@Override
+		public void onTabUnselected(TabLayout.Tab tab) {}
+
+		@Override
+		public void onTabReselected(TabLayout.Tab tab) {}
+	};
 
 	/**
 	 * Simple POJO to hold the number of contacts that were added in the last 24h / 30d.
 	 */
-	private static class RecentlyAddedCounts {
+	private static class FetchResults {
 		int last24h = 0;
 		int last30d = 0;
+		int workCount = 0;
 	}
 
 	// Contacts changed receiver
-	private BroadcastReceiver contactsChangedReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver contactsChangedReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (resumePauseHandler != null) {
@@ -181,6 +215,10 @@ public class ContactsSectionFragment
 	private void startSwipeRefresh() {
 		if (swipeRefreshLayout != null) {
 			swipeRefreshLayout.setRefreshing(true);
+
+			if (ConfigUtils.isWorkBuild() && workTabLayout != null) {
+				workTabLayout.selectTab(workTabLayout.getTabAt(TAB_ALL_CONTACTS), true);
+			}
 		}
 	}
 
@@ -241,7 +279,7 @@ public class ContactsSectionFragment
 	private final ResumePauseHandler.RunIfActive runIfActiveCreateList = new ResumePauseHandler.RunIfActive() {
 		@Override
 		public void runOnUiThread() {
-			createListAdapter();
+			createListAdapter(null);
 		}
 	};
 
@@ -363,35 +401,55 @@ public class ContactsSectionFragment
 	/**
 	 * An AsyncTask that fetches contacts and add counts in the background.
 	 *
-	 * NOTE: The ContactService needs to be passed in as a parameter!
 	 */
-	private abstract static class FetchContactsTask extends AsyncTask<ContactService, Void, Pair<List<ContactModel>, RecentlyAddedCounts>> {
-		@Override
-		protected Pair<List<ContactModel>, RecentlyAddedCounts> doInBackground(ContactService... contactServices) {
-			final ContactService contactService = contactServices[0];
+	private static class FetchContactsTask extends AsyncTask<Void, Void, Pair<List<ContactModel>, FetchResults>> {
+		ContactService contactService;
+		boolean isOnLaunch, forceWork;
+		int selectedTab;
 
-			// Fetch contacts
-			final List<ContactModel> allContacts = contactService.getAll();
+		FetchContactsTask(ContactService contactService, boolean isOnLaunch, int selectedTab, boolean forceWork) {
+			this.contactService = contactService;
+			this.isOnLaunch = isOnLaunch;
+			this.selectedTab = selectedTab;
+			this.forceWork = forceWork;
+		}
+
+		@Override
+		protected Pair<List<ContactModel>, FetchResults> doInBackground(Void... voids) {
+			List<ContactModel> allContacts = null;
 
 			// Count new contacts
-			final RecentlyAddedCounts counts = new RecentlyAddedCounts();
-			long now = System.currentTimeMillis();
-			long delta24h = 1000L * 3600 * 24;
-			long delta30d = delta24h * 30;
-			for (ContactModel contact : allContacts) {
-				final Date dateCreated = contact.getDateCreated();
-				if (dateCreated == null) {
-					continue;
-				}
-				if (now - dateCreated.getTime() < delta24h) {
-					counts.last24h += 1;
-				}
-				if (now - dateCreated.getTime() < delta30d) {
-					counts.last30d += 1;
+			final FetchResults results = new FetchResults();
+
+			if (ConfigUtils.isWorkBuild() && selectedTab == TAB_WORK_ONLY) {
+				results.workCount = contactService.countIsWork();
+				if (results.workCount > 0 || forceWork) {
+					allContacts = contactService.getIsWork();
 				}
 			}
 
-			return new Pair<>(allContacts, counts);
+			if (allContacts == null) {
+				allContacts = contactService.getAll();
+			}
+
+			if (!ConfigUtils.isWorkBuild()) {
+				long now = System.currentTimeMillis();
+				long delta24h = 1000L * 3600 * 24;
+				long delta30d = delta24h * 30;
+				for (ContactModel contact : allContacts) {
+					final Date dateCreated = contact.getDateCreated();
+					if (dateCreated == null) {
+						continue;
+					}
+					if (now - dateCreated.getTime() < delta24h) {
+						results.last24h += 1;
+					}
+					if (now - dateCreated.getTime() < delta30d) {
+						results.last30d += 1;
+					}
+				}
+			}
+			return new Pair<>(allContacts, results);
 		}
 	}
 
@@ -496,32 +554,24 @@ public class ContactsSectionFragment
 		if (searchMenuItem == null) {
 			inflater.inflate(R.menu.fragment_contacts, menu);
 
-			// Associate searchable configuration with the SearchView
 			if (getActivity() != null && this.isAdded()) {
-				SearchManager searchManager =
-					(SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-
 				this.searchMenuItem = menu.findItem(R.id.menu_search_contacts);
 				this.searchView = (SearchView) searchMenuItem.getActionView();
 
-				if (this.searchView != null && searchManager != null) {
-					SearchableInfo mSearchableInfo = searchManager.getSearchableInfo(getActivity().getComponentName());
-					if (this.searchView != null) {
-						if (!TestUtil.empty(filterQuery)) {
-							// restore filter
-							MenuItemCompat.expandActionView(searchMenuItem);
-							this.searchView.post(new Runnable() {
-								@Override
-								public void run() {
-									searchView.setQuery(filterQuery, true);
-									searchView.clearFocus();
-								}
-							});
-						}
-						this.searchView.setSearchableInfo(mSearchableInfo);
-						this.searchView.setQueryHint(getString(R.string.hint_filter_list));
-						this.searchView.setOnQueryTextListener(queryTextListener);
+				if (this.searchView != null) {
+					if (!TestUtil.empty(filterQuery)) {
+						// restore filter
+						MenuItemCompat.expandActionView(searchMenuItem);
+						this.searchView.post(new Runnable() {
+							@Override
+							public void run() {
+								searchView.setQuery(filterQuery, true);
+								searchView.clearFocus();
+							}
+						});
 					}
+					this.searchView.setQueryHint(getString(R.string.hint_filter_list));
+					this.searchView.setOnQueryTextListener(queryTextListener);
 				}
 			}
 		}
@@ -544,8 +594,23 @@ public class ContactsSectionFragment
 		}
 	};
 
+	private int getDesiredWorkTab(boolean isOnFirstLaunch, Bundle savedInstanceState) {
+		if (ConfigUtils.isWorkBuild()) {
+			if (isOnFirstLaunch) {
+				return TAB_WORK_ONLY; // may be overridden later if there are no work contacts
+			} else {
+				if (savedInstanceState != null) {
+					return savedInstanceState.getInt(BUNDLE_SELECTED_TAB, TAB_ALL_CONTACTS);
+				} else if (workTabLayout != null) {
+					return workTabLayout.getSelectedTabPosition();
+				}
+			}
+		}
+		return TAB_ALL_CONTACTS;
+	}
+
 	@SuppressLint("StaticFieldLeak")
-	protected void createListAdapter() {
+	protected void createListAdapter(final Bundle savedInstanceState) {
 		if (getActivity() == null) {
 			return;
 		}
@@ -554,11 +619,13 @@ public class ContactsSectionFragment
 			return;
 		}
 
-		new FetchContactsTask() {
+		final int[] desiredTabPosition = {getDesiredWorkTab(savedInstanceState == null, savedInstanceState)};
+
+		new FetchContactsTask(contactService, savedInstanceState == null, desiredTabPosition[0], false) {
 			@Override
-			protected void onPostExecute(Pair<List<ContactModel>, RecentlyAddedCounts> result) {
+			protected void onPostExecute(Pair<List<ContactModel>, FetchResults> result) {
 				final List<ContactModel> contactModels = result.first;
-				final RecentlyAddedCounts counts = result.second;
+				final FetchResults counts = result.second;
 				if (contactModels != null) {
 					updateContactsCounter(contactModels.size(), counts);
 					if (contactModels.size() > 0) {
@@ -576,9 +643,22 @@ public class ContactsSectionFragment
 						);
 						listView.setAdapter(contactListAdapter);
 					}
+
+					if (ConfigUtils.isWorkBuild()) {
+						if (savedInstanceState == null && desiredTabPosition[0] == TAB_WORK_ONLY && counts.workCount == 0) {
+							// fix selected tab as there is now work contact
+							desiredTabPosition[0] = TAB_ALL_CONTACTS;
+						}
+
+						if (desiredTabPosition[0] != workTabLayout.getSelectedTabPosition()) {
+							workTabLayout.removeOnTabSelectedListener(onTabSelectedListener);
+							workTabLayout.selectTab(workTabLayout.getTabAt(selectedTab));
+							workTabLayout.addOnTabSelectedListener(onTabSelectedListener);
+						}
+					}
 				}
 			}
-		}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this.contactService);
+		}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -588,23 +668,25 @@ public class ContactsSectionFragment
 			return;
 		}
 
+		int desiredTab = getDesiredWorkTab(false, null);
+
 		if (contactListAdapter != null) {
-			new FetchContactsTask() {
+			new FetchContactsTask(contactService, false, desiredTab, false) {
 				@Override
-				protected void onPostExecute(Pair<List<ContactModel>, RecentlyAddedCounts> result) {
+				protected void onPostExecute(Pair<List<ContactModel>, FetchResults> result) {
 					final List<ContactModel> contactModels = result.first;
-					final RecentlyAddedCounts counts = result.second;
+					final FetchResults counts = result.second;
 
 					if (contactModels != null && contactListAdapter != null && isAdded()) {
 						updateContactsCounter(contactModels.size(), counts);
 						contactListAdapter.updateData(contactModels);
 					}
 				}
-			}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this.contactService);
+			}.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 		}
 	}
 
-	private void updateContactsCounter(int numContacts, @Nullable RecentlyAddedCounts counts) {
+	private void updateContactsCounter(int numContacts, @Nullable FetchResults counts) {
 		if (getActivity() != null && listView != null && isAdded()) {
 			if (contactsCounterChip != null) {
 				if (numContacts > 1) {
@@ -664,7 +746,7 @@ public class ContactsSectionFragment
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View fragmentView = getView();
+		View headerView, fragmentView = getView();
 
 		logger.debug("*** onCreateView");
 		if (fragmentView == null) {
@@ -734,7 +816,7 @@ public class ContactsSectionFragment
 			});
 
 			if (!ConfigUtils.isWorkBuild()) {
-				View headerView = View.inflate(getActivity(), R.layout.header_contact_section, null);
+				headerView = View.inflate(getActivity(), R.layout.header_contact_section, null);
 				listView.addHeaderView(headerView, null, false);
 
 				View footerView = View.inflate(getActivity(), R.layout.footer_contact_section, null);
@@ -747,6 +829,12 @@ public class ContactsSectionFragment
 						shareInvite();
 					}
 				});
+			} else {
+				headerView = View.inflate(getActivity(), R.layout.header_contact_section_work, null);
+				listView.addHeaderView(headerView, null, false);
+
+				workTabLayout = ((TabLayout) headerView.findViewById(R.id.tab_layout));
+				workTabLayout.addOnTabSelectedListener(onTabSelectedListener);
 			}
 
 			this.swipeRefreshLayout = fragmentView.findViewById(R.id.swipe_container);
@@ -765,6 +853,7 @@ public class ContactsSectionFragment
 
 			this.stickyInitialView = fragmentView.findViewById(R.id.initial_sticky);
 			this.stickyInitialLayout = fragmentView.findViewById(R.id.initial_sticky_layout);
+			this.stickyInitialLayout.setVisibility(View.GONE);
 		}
 		return fragmentView;
 	}
@@ -859,7 +948,7 @@ public class ContactsSectionFragment
 		}
 
 		// fill adapter with data
-		createListAdapter();
+		createListAdapter(savedInstanceState);
 
 		// register a receiver that will receive info about changed contacts from contact sync
 		IntentFilter filter = new IntentFilter();
@@ -934,6 +1023,9 @@ public class ContactsSectionFragment
 
 		if (!TestUtil.empty(filterQuery)) {
 			outState.putString(BUNDLE_FILTER_QUERY_C, filterQuery);
+		}
+		if (ConfigUtils.isWorkBuild() && workTabLayout != null) {
+			outState.putInt(BUNDLE_SELECTED_TAB, workTabLayout.getSelectedTabPosition());
 		}
 		super.onSaveInstanceState(outState);
 	}

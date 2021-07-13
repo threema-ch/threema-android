@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities.wizard;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,7 +41,6 @@ import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.ui.NewWizardFingerPrintView;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 
@@ -94,6 +94,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 				}, PROGRESS_MAX);
 	}
 
+	@SuppressLint("StaticFieldLeak")
 	private void createIdentity(final byte[] bytes) {
 		new AsyncTask<Void, Void, String>() {
 			@Override

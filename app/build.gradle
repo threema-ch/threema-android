@@ -82,13 +82,10 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 679
-        versionName "4.54"
+        versionCode 682
+        versionName "4.55"
         resValue "string", "version_name_suffix", ""
         resValue "string", "app_name", "Threema"
-        resValue "string", "uri_scheme", "threema"
-        resValue "string", "action_url", "go.threema.ch"
-        resValue "string", "contact_action_url", "threema.id"
         // package name used for sync adapter
         resValue "string", "package_name", applicationId
         resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.profile"
@@ -107,9 +104,15 @@ android {
         buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
         buildConfigField "boolean", "SEND_CONSUMED_DELIVERY_RECEIPTS", "false"
 
+        // config fields for action URLs / deep links
+        buildConfigField "String", "uriScheme", "\"threema\""
+        buildConfigField "String", "actionUrl", "\"go.threema.ch\""
+        buildConfigField "String", "contactActionUrl", "\"threema.id\""
+
+        // duplicated for manifest
         manifestPlaceholders = [
-            actionUrl: "go.threema.ch",
             uriScheme: "threema",
+            actionUrl: "go.threema.ch",
             contactActionUrl: "threema.id"
         ]
 
@@ -149,14 +152,11 @@ android {
         }
         store_threema { }
         store_google_work {
-            versionName "4.54k"
+            versionName "4.55k"
             applicationId "ch.threema.app.work"
             testApplicationId 'ch.threema.app.work.test'
             resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Work"
-            resValue "string", "uri_scheme", "threemawork"
-            resValue "string", "action_url", "work.threema.ch"
-            resValue "string", "contact_action_url", "threema.id"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
             resValue "integer", "max_group_size", "256"
@@ -167,9 +167,14 @@ android {
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWork\""
             buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
 
+            // config fields for action URLs / deep links
+            buildConfigField "String", "uriScheme", "\"threemawork\""
+            buildConfigField "String", "actionUrl", "\"work.threema.ch\""
+            buildConfigField "String", "contactActionUrl", "\"threema.id\""
+
             manifestPlaceholders = [
-                actionUrl: "work.threema.ch",
                 uriScheme: "threemawork",
+                actionUrl: "work.threema.ch",
                 contactActionUrl: "threema.id"
             ]
         }
@@ -186,15 +191,12 @@ android {
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
         }
         sandbox_work {
-            versionName "4.54k"
+            versionName "4.55k"
             applicationId "ch.threema.app.sandbox.work"
             testApplicationId 'ch.threema.app.sandbox.work.test'
 
             resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Sandbox Work"
-            resValue "string", "uri_scheme", "threemawork"
-            resValue "string", "action_url", "work.threema.ch"
-            resValue "string", "contact_action_url", "threema.id"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
             resValue "integer", "max_group_size", "256"
@@ -209,22 +211,24 @@ android {
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
 
+            // config fields for action URLs / deep links
+            buildConfigField "String", "uriScheme", "\"threemawork\""
+            buildConfigField "String", "actionUrl", "\"work.threema.ch\""
+            buildConfigField "String", "contactActionUrl", "\"threema.id\""
+
             manifestPlaceholders = [
-                actionUrl: "work.threema.ch",
                 uriScheme: "threemawork",
+                actionUrl: "work.threema.ch",
                 contactActionUrl: "threema.id"
             ]
         }
         red { // Essentially like sandbox work, but with a different icon and accent color, used for internal testing
-            versionName "4.54r"
+            versionName "4.55r"
             applicationId "ch.threema.app.red"
             testApplicationId 'ch.threema.app.red.test'
 
             resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Red"
-            resValue "string", "uri_scheme", "threemawork"
-            resValue "string", "action_url", "work.threema.ch"
-            resValue "string", "contact_action_url", "threema.id"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.call"
             resValue "integer", "max_group_size", "256"
@@ -240,9 +244,14 @@ android {
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "boolean", "SEND_CONSUMED_DELIVERY_RECEIPTS", "true"
 
+            // config fields for action URLs / deep links
+            buildConfigField "String", "uriScheme", "\"threemawork\""
+            buildConfigField "String", "actionUrl", "\"work.threema.ch\""
+            buildConfigField "String", "contactActionUrl", "\"threema.id\""
+
             manifestPlaceholders = [
-                actionUrl: "work.threema.ch",
                 uriScheme: "threemawork",
+                actionUrl: "work.threema.ch",
                 contactActionUrl: "threema.id"
             ]
         }
@@ -251,14 +260,11 @@ android {
             resValue "string", "package_name", applicationId
         }
         hms_work {
-            versionName "4.54k"
+            versionName "4.55k"
             applicationId "ch.threema.app.work.hms"
             testApplicationId 'ch.threema.app.work.test.hms'
             resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Work"
-            resValue "string", "uri_scheme", "threemawork"
-            resValue "string", "action_url", "work.threema.ch"
-            resValue "string", "contact_action_url", "threema.id"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
             resValue "integer", "max_group_size", "256"
@@ -269,9 +275,14 @@ android {
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWork\""
             buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
 
+            // config fields for action URLs / deep links
+            buildConfigField "String", "uriScheme", "\"threemawork\""
+            buildConfigField "String", "actionUrl", "\"work.threema.ch\""
+            buildConfigField "String", "contactActionUrl", "\"threema.id\""
+
             manifestPlaceholders = [
-                actionUrl: "work.threema.ch",
                 uriScheme: "threemawork",
+                actionUrl: "work.threema.ch",
                 contactActionUrl: "threema.id"
             ]
         }
@@ -496,14 +507,15 @@ dependencies {
         //resolutionStrategy.failOnVersionConflict()
     }
 
-    implementation 'net.zetetic:android-database-sqlcipher:4.4.2'
+    implementation 'net.zetetic:android-database-sqlcipher:4.4.3'
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
-    implementation 'net.lingala.zip4j:zip4j:2.7.0'
+    implementation 'net.lingala.zip4j:zip4j:2.9.0'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.2'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.1'
-    implementation 'commons-io:commons-io:2.8.0'
+    // commons-io >2.6 requires android 8
+    implementation 'commons-io:commons-io:2.6'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
@@ -513,15 +525,16 @@ dependencies {
     implementation 'me.zhanghai.android.fastscroll:library:1.1.5'
 
     // AndroidX / Jetpack support libraries
+    implementation "androidx.core:core:1.5.0"
     implementation "androidx.preference:preference:1.1.1"
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.palette:palette:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation "androidx.work:work-runtime:2.5.0"
-    implementation 'androidx.fragment:fragment:1.3.3'
+    implementation 'androidx.fragment:fragment:1.3.5'
     implementation 'androidx.activity:activity:1.2.3'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
@@ -545,7 +558,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.3'
     implementation 'com.google.protobuf:protobuf-javalite:3.9.1'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on kitkat
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.22'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.26'
 
     // webclient dependencies
     implementation 'org.msgpack:msgpack-core:0.8.22!!'

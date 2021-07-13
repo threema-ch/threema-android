@@ -30,14 +30,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.appbar.MaterialToolbar;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -53,6 +55,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -63,7 +66,7 @@ import ch.threema.storage.models.ConversationModel;
 import static ch.threema.app.managers.ListenerManager.conversationListeners;
 import static ch.threema.app.managers.ListenerManager.messageListeners;
 
-public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
+public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, SearchView.OnQueryTextListener {
 	private static final Logger logger = LoggerFactory.getLogger(ArchiveActivity.class);
 	private static final String DIALOG_TAG_REALLY_DELETE_CHATS = "delc";
 
@@ -108,10 +111,17 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 			return false;
 		}
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.archived_chats);
+		MaterialToolbar toolbar = findViewById(R.id.material_toolbar);
+		toolbar.setNavigationOnClickListener(view -> finish());
+		toolbar.setTitle(R.string.archived_chats);
+		MenuItem filterMenu = toolbar.getMenu().findItem(R.id.menu_filter_archive);
+		ThreemaSearchView searchView = (ThreemaSearchView) filterMenu.getActionView();
+
+		if (searchView != null) {
+			searchView.setQueryHint(getString(R.string.hint_filter_list));
+			searchView.setOnQueryTextListener(this);
+		} else {
+			filterMenu.setVisible(false);
 		}
 
 		archiveAdapter = new ArchiveAdapter(this);
@@ -186,6 +196,17 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextChange(String newText) {
+		viewModel.filter(newText);
+		return true;
 	}
 
 	public class ArchiveAction implements ActionMode.Callback {

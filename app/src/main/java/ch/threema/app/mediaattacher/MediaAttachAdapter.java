@@ -135,6 +135,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 					.addListener(new RequestListener<Drawable>() {
 						@Override
 						public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+							logger.error("Glide Loading Exception ", e);
 							loadErrorIndicator.setVisibility(View.VISIBLE);
 							gifIndicator.setVisibility(View.GONE);
 							videoIndicator.setVisibility(View.GONE);
@@ -155,7 +156,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 
 							contentView.setOnLongClickListener(view -> {
 								clickListener.onItemLongClick(view, holder.getAdapterPosition(), mediaAttachItem);
-								return false;
+								return true;
 							});
 
 							if (mediaAttachItem.getType() == MediaItem.TYPE_GIF) {

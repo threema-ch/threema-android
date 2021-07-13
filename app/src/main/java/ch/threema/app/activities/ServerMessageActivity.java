@@ -42,13 +42,24 @@ public class ServerMessageActivity extends ThreemaActivity {
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.server_message_title);
+			actionBar.setTitle(R.string.warning);
 		}
 
 		setContentView(R.layout.activity_server_message);
 		this.serverMessageModel = IntentDataUtil.getServerMessageModel(this.getIntent());
 
-		((TextView)findViewById(R.id.server_message_text)).setText(this.serverMessageModel.getMessage());
+		String message = this.serverMessageModel.getMessage();
+
+		if (message == null) {
+			finish();
+			return;
+		}
+
+		if (message.startsWith("Another connection")) {
+			message = getString(R.string.another_connection_instructions, getString(R.string.app_name));
+		}
+
+		((TextView)findViewById(R.id.server_message_text)).setText(message);
 		findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

@@ -184,7 +184,7 @@
     <string name="video_placeholder">Видео</string>
     <string name="audio_placeholder">Аудио</string>
     <string name="restoring_backup">Восстановление резервной копии</string>
-    <string name="server_message_title">Сообщение сервера</string>
+    <string name="server_message_title">Сообщение сервера Threema</string>
     <string name="error">Ошибка</string>
     <string name="no_contacts"><![CDATA[У вас пока нет никаких контактов. Включите синхронизацию (Настройки > Приватность) или добавьте контакты вручную.]]></string>
     <string name="masterkey_title">Введите кодовую фразу</string>
@@ -466,8 +466,7 @@
     <string name="really_block_contact">Будущие сообщения от этого контакта приниматься не будут. Продолжить?</string>
     <string name="ballot_result_final">Окончательный результат</string>
     <string name="invalid_cannot_send">Вы не можете отправлять сообщения недействительному контакту</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
-    <string name="ballot_answer_count_error">Пожалуйста, задайте не менее двух вариантов ответов для этого опроса.</string>
+	<string name="ballot_answer_count_error">Пожалуйста, задайте не менее двух вариантов ответов для этого опроса.</string>
     <string name="ballot_one_contact_not_supported">Внимание! %1$s не сможет участвовать в вашем опросе.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Внимание! %1$d контакта(-ов) не смогут участвовать в вашем опросе.</string>
     <string name="enable_polling">Использовать polling</string>
@@ -1183,7 +1182,10 @@
     <string name="mark_unread">В непрочитанные</string>
     <string name="mark_read_short">Прочитано</string>
     <string name="unread">Непрочит.</string>
-    <string name="missing_app_licence">Не удалось создать новый запрос удостоверения, т.к. не найдены действительные лицензии приложения</string>
+    <string name="missing_app_licence">Магазину приложений не удалось проверить вашу покупку. Если вы используете Google Play, очистите данные приложения Google Play Маркет и перезагрузите устройство.</string>
     <string name="set_backup_path">Задать путь к рез. копии</string>
     <string name="set_backup_path_intro">На следующем экране выберите папку, в которой следует сохранять резервные копии данных.</string>
+    <string name="tap_here_for_more">Нажмите здесь для получения подробных сведений</string>
+    <string name="another_connection_instructions">Сервер обнаружил два или более подключения с различных устройств с одинаковым Threema ID.\n\nИспользовать один и тот же Threema ID на нескольких устройствах одновременно нельзя. Новые сообщения доставляются только на устройство, которое последним выполнило вход на сервер.\n\nЕсли вы начали использовать новое устройство, удалите или отключите %s на старом устройстве, после чего перезагрузите новое.</string>
+    <string name="app_store_error_code">Код ошибки магазина приложений: %d</string>
 </resources>

@@ -463,8 +463,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="really_block_contact">Ti na retschaivas nagins messadis pli da quest contact. Cuntinuar?</string>
     <string name="ballot_result_final">Resultat final</string>
     <string name="invalid_cannot_send">Ti na pos betg trametter messadis ad in contact nunvalaivel</string>
-    <string name="title_activity_new_ballot_wizard">NovaEnquistaAssistentActivitad</string>
-    <string name="ballot_answer_count_error">P.pl. crear almain duas respostas.</string>
+	<string name="ballot_answer_count_error">P.pl. crear almain duas respostas.</string>
     <string name="ballot_one_contact_not_supported">Attenziun: %1$s na po anc betg participar ad enquistas.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attenziun: %1$d contacts na pon anc betg participar ad enquistas.</string>
     <string name="enable_polling">Far in\'enquista</string>

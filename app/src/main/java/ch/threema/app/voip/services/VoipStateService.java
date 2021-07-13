@@ -1455,21 +1455,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				stopRingtone();
 			}
 
-			boolean isSystemMuted = !notificationManagerCompat.areNotificationsEnabled();
-
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				/* we do not play a ringtone sound if system-wide DND is enabled - except for starred contacts */
-				switch (notificationManager.getCurrentInterruptionFilter()) {
-					case NotificationManager.INTERRUPTION_FILTER_NONE:
-						isSystemMuted = true;
-						break;
-					case NotificationManager.INTERRUPTION_FILTER_PRIORITY:
-						isSystemMuted = !DNDUtil.getInstance().isStarredContact(messageReceiver);
-						break;
-					default:
-						break;
-				}
-			}
+			boolean isSystemMuted = DNDUtil.getInstance().isSystemMuted(messageReceiver, notificationManager, notificationManagerCompat);
 
 			if (!isMuted && !isSystemMuted) {
 				audioManager.requestAudioFocus(this, AudioManager.STREAM_RING, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);

@@ -237,8 +237,10 @@ public class VideoTranscoder {
 		try {
 			setup();
 			setupSuccess = true;
+		} catch(UnrecoverableVideoTranscoderException ex) {
+			logger.error("Setup failed due to unrecoverable video transcoder exception: {}", ex.getMessage(), ex);
 		} catch (Exception ex) {
-			logger.error("Failed while setting up VideoTranscoder: {}" , mSrcUri, ex);
+			logger.error("Unexpected error while setting up VideoTranscoder for file {}: {}" , mSrcUri, ex.getMessage(), ex);
 		}
 
 		try {
@@ -271,14 +273,20 @@ public class VideoTranscoder {
 		createComponents();
 
 		setOrientationHint();
-		calculateOutputDimensions();
+		if (!calculateOutputDimensions()) {
+			throw new UnrecoverableVideoTranscoderException("Unable to calculate dimensions");
+		}
 
 		createOutputFormats();
 		createVideoEncoder();
 		createVideoDecoder();
 
 		if (shouldIncludeAudio()) {
-			final String mimeType = mInputAudioComponent.getTrackFormat().getString(MediaFormat.KEY_MIME);
+			final MediaFormat trackFormat = mInputAudioComponent.getTrackFormat();
+			if (trackFormat == null) {
+				throw new UnrecoverableVideoTranscoderException("Could not detect audio track despite transcoding requested.");
+			}
+			final String mimeType = trackFormat.getString(MediaFormat.KEY_MIME);
 			if (mimeType.equalsIgnoreCase(Defaults.OUTPUT_AUDIO_MIME_TYPE)) {
 				logger.info("Keeping audio track, as in- and output format match");
 				audioTranscoder = Optional.of(new AudioNullTranscoder(
@@ -836,6 +844,10 @@ public class VideoTranscoder {
 		mInputVideoComponent = new MediaComponent(mContext, mSrcUri, MediaComponent.COMPONENT_TYPE_VIDEO);
 
 		MediaFormat inputFormat = mInputVideoComponent.getTrackFormat();
+		if(inputFormat == null) {
+			throw new UnrecoverableVideoTranscoderException("Could not detect video track");
+		}
+
 		if (inputFormat.containsKey("rotation-degrees")) {
 			// Decoded video is rotated automatically in Android 5.0 lollipop.
 			// Turn off here because we don't want to encode rotated one.
@@ -851,15 +863,12 @@ public class VideoTranscoder {
 		}
 	}
 
-	private void calculateOutputDimensions() {
+	private boolean calculateOutputDimensions() {
 		MediaFormat trackFormat = mInputVideoComponent.getTrackFormat();
 
-		int inputWidth = trackFormat.getInteger(MediaFormat.KEY_WIDTH);
-		int inputHeight = trackFormat.getInteger(MediaFormat.KEY_HEIGHT);
-
-		// If this is a portrait video taken by a device that supports orientation hints, the resolution will be swapped.
-		// If its landscape, a screencap, or a device that doesn't support hints, it won't be.
-		if (inputWidth >= inputHeight || mOrientationHint == 0 || mOrientationHint == 180) {
+		if (trackFormat != null) {
+			int inputWidth = trackFormat.getInteger(MediaFormat.KEY_WIDTH);
+			int inputHeight = trackFormat.getInteger(MediaFormat.KEY_HEIGHT);
 
 			if (inputWidth > mOutputVideoWidth || inputHeight > mOutputVideoHeight) {
 				float ratio = Math.min(mOutputVideoWidth / (float) inputWidth, mOutputVideoHeight / (float) inputHeight);
@@ -869,16 +878,12 @@ public class VideoTranscoder {
 				mOutputVideoHeight = inputHeight;
 				mOutputVideoWidth = inputWidth;
 			}
-		} else {
-			if (inputHeight > mOutputVideoWidth || inputWidth > mOutputVideoHeight) {
-				float ratio = Math.min(mOutputVideoWidth / (float) inputHeight, mOutputVideoHeight / (float) inputWidth);
-				mOutputVideoHeight = getRoundedSize(ratio, inputWidth);
-				mOutputVideoWidth = getRoundedSize(ratio, inputHeight);
-			} else {
-				mOutputVideoHeight = inputWidth;
-				mOutputVideoWidth = inputHeight;
-			}
+
+			logger.info("Input dimensions: {}x{} Output dimensions: {}x{} Orientation: {}", inputWidth, inputHeight, mOutputVideoWidth, mOutputVideoHeight, mOrientationHint);
+
+			return true;
 		}
+		return false;
 	}
 
 	private int getRoundedSize(float ratio, int size) {
@@ -945,8 +950,14 @@ public class VideoTranscoder {
 
 	private void createVideoDecoder() throws IOException {
 		MediaFormat inputFormat = mInputVideoComponent.getTrackFormat();
+		if(inputFormat == null) {
+			throw new UnrecoverableVideoTranscoderException("Could not detect video track");
+		}
 
 		if (mTrimEndTimeMs == TRIM_TIME_END) {
+			if (!inputFormat.containsKey(MediaFormat.KEY_DURATION)) {
+				throw new UnrecoverableVideoTranscoderException("Video key length duration could not be detected");
+			}
 			outputDurationUs = inputFormat.getLong(MediaFormat.KEY_DURATION);
 		} else {
 			outputDurationUs = (mTrimEndTimeMs - mTrimStartTimeMs) * 1000;
@@ -966,9 +977,14 @@ public class VideoTranscoder {
 	private int getOutputVideoBitRate() {
 		int inputBitRate = mOutputVideoBitRate;
 
+		if (mInputVideoComponent.getTrackFormat() == null) {
+			throw new UnrecoverableVideoTranscoderException("Video format could not be detected");
+		}
+
 		if (mInputVideoComponent.getTrackFormat().containsKey(MediaFormat.KEY_BIT_RATE)) {
 			inputBitRate = mInputVideoComponent.getTrackFormat().getInteger(MediaFormat.KEY_BIT_RATE);
 		} else {
+			logger.info("Track format could not detect video bitrate");
 			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 			try {
 				retriever.setDataSource(mContext, mSrcUri);
@@ -978,19 +994,17 @@ public class VideoTranscoder {
 					inputBitRate = Integer.parseInt(bitrate);
 				}
 			} catch (Exception e) {
-				logger.error("Error extracting bitrate", e);
+				throw new UnrecoverableVideoTranscoderException(
+					"Extracting Video bitrate failed",
+					e
+				);
 			} finally {
 				retriever.release();
+
 			}
 		}
 
-		if (false) {
-			// broken device
-			logger.info("Broken device that cannot properly read a video file's bitrate using MediaMetadataRetriever");
-			return mOutputVideoBitRate;
-		} else {
-			return Math.min(inputBitRate, mOutputVideoBitRate);
-		}
+		return Math.min(inputBitRate, mOutputVideoBitRate);
 	}
 
 	//endregion

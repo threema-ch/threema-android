@@ -113,6 +113,7 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
 
 public class NotificationServiceImpl implements NotificationService {
 	private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+	private static final long NOTIFY_AGAIN_TIMEOUT = 30 * DateUtils.SECOND_IN_MILLIS;
 
 	private final Context context;
 	private final LockAppService lockAppService;
@@ -530,6 +531,9 @@ public class NotificationServiceImpl implements NotificationService {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
 			long timestamp = System.currentTimeMillis();
+			boolean onlyAlertOnce = (timestamp - newestGroup.getLastNotificationDate()) < NOTIFY_AGAIN_TIMEOUT;
+			newestGroup.setLastNotificationDate(timestamp);
+
 			final NotificationCompat.Builder builder;
 
 			if (ConfigUtils.canDoGroupedNotifications()) {
@@ -547,7 +551,8 @@ public class NotificationServiceImpl implements NotificationService {
 						.setContentTitle(summaryText)
 						.setContentText(context.getString(R.string.notification_hidden_text))
 						.setSmallIcon(R.drawable.ic_notification_small)
-						.setColor(context.getResources().getColor(R.color.accent_light));
+						.setColor(context.getResources().getColor(R.color.accent_light))
+						.setOnlyAlertOnce(onlyAlertOnce);
 
 				// private version
 				builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_CHAT, notificationSchema, publicBuilder)
@@ -559,7 +564,7 @@ public class NotificationServiceImpl implements NotificationService {
 								.setColor(context.getResources().getColor(R.color.accent_light))
 								.setGroup(newestGroup.getGroupUid())
 								.setGroupSummary(false)
-								.setOnlyAlertOnce((updateExisting && numberOfNotificationsForCurrentChat == 1 ) || !ThreemaApplication.isNotifyAgain())
+								.setOnlyAlertOnce(onlyAlertOnce)
 								.setPriority(this.preferenceService.getNotificationPriority())
 								.setCategory(NotificationCompat.CATEGORY_MESSAGE)
 								.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
@@ -638,7 +643,7 @@ public class NotificationServiceImpl implements NotificationService {
 								.setWhen(timestamp)
 								.setPriority(this.preferenceService.getNotificationPriority())
 								.setCategory(NotificationCompat.CATEGORY_MESSAGE)
-								.setOnlyAlertOnce((this.conversationNotifications.size() == 1 && conversationNotification.getMessageType() == MessageType.IMAGE) || !ThreemaApplication.isNotifyAgain());
+								.setOnlyAlertOnce(onlyAlertOnce);
 
 				int smallIcon = getSmallIconResource(unreadConversationsCount);
 				if (smallIcon > 0) {
@@ -1243,21 +1248,15 @@ public class NotificationServiceImpl implements NotificationService {
 	public void cancelAllCachedConversationNotifications() {
 		this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
 
-		if (!conversationNotifications.isEmpty()){
-			for (ConversationNotification conversationNotification : conversationNotifications) {
-				this.conversationNotifications.remove(conversationNotification);
-				this.cancelAndDestroyConversationNotification(conversationNotification);
+		synchronized (this.conversationNotifications) {
+			if (!conversationNotifications.isEmpty()) {
+				for (ConversationNotification conversationNotification : conversationNotifications) {
+					this.conversationNotifications.remove(conversationNotification);
+					this.cancelAndDestroyConversationNotification(conversationNotification);
+				}
+				showDefaultPinLockedNewMessageNotification();
 			}
-			showDefaultPinLockedNewMessageNotification();
 		}
-	}
-
-	private HashSet<ConversationNotificationGroup> getConversationNotificationGroups() {
-		HashSet<ConversationNotificationGroup> groups = new HashSet<>();
-		for (ConversationNotification notification : this.conversationNotifications) {
-			groups.add(notification.getGroup());
-		}
-		return groups;
 	}
 
 	private NotificationSchema createNotificationSchema(ConversationNotificationGroup notificationGroup, CharSequence rawMessage) {
@@ -1524,8 +1523,8 @@ public class NotificationServiceImpl implements NotificationService {
 			new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_NOTICE, null)
 					.setSmallIcon(R.drawable.ic_error_red_24dp)
 					.setTicker(this.context.getString(R.string.server_message_title))
-					.setContentTitle(this.context.getString(R.string.app_name))
-					.setContentText(this.context.getString(R.string.server_message_title))
+					.setContentTitle(this.context.getString(R.string.server_message_title))
+					.setContentText(this.context.getString(R.string.tap_here_for_more))
 					.setContentIntent(pendingIntent)
 					.setLocalOnly(true)
 					.setPriority(NotificationCompat.PRIORITY_MAX)

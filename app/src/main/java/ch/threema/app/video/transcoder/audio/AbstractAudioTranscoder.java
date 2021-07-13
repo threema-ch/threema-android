@@ -92,6 +92,7 @@ public abstract class AbstractAudioTranscoder {
 	 * Should initialize outputFormat of the {@link AbstractAudioTranscoder} class.
 	 *
 	 * @throws IOException if a codec could not be initialized
+	 * @throws UnsupportedAudioFormatException if audio format is not supported by device
 	 */
 	public abstract void setup() throws IOException, UnsupportedAudioFormatException;
 

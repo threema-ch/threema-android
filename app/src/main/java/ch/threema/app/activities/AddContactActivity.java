@@ -41,7 +41,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-import ch.threema.app.utils.QRScannerUtil;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -50,6 +50,7 @@ import ch.threema.app.dialogs.NewContactDialog;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LockAppService;
@@ -59,10 +60,10 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.services.QRCodeParser;
 import ch.threema.app.webclient.services.QRCodeParserImpl;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.client.Base64;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
@@ -130,9 +131,9 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
 						if (scheme != null && host != null) {
 							if (
-									(ThreemaApplication.uriScheme.equals(scheme) && "add".equals(host))
+									(BuildConfig.uriScheme.equals(scheme) && "add".equals(host))
 											||
-											("https".equals(scheme) && getString(R.string.action_url).equals(host) && "/add".equals(dataUri.getPath()))
+											("https".equals(scheme) && BuildConfig.actionUrl.equals(host) && "/add".equals(dataUri.getPath()))
 							) {
 
 								String id = dataUri.getQueryParameter("id");
@@ -372,9 +373,9 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 				Uri uri = Uri.parse(payload);
 				if (uri != null) {
 					String scheme = uri.getScheme();
-					if (getString(R.string.uri_scheme).equals(scheme) && "add".equals(uri.getAuthority())) {
+					if (BuildConfig.uriScheme.equals(scheme) && "add".equals(uri.getAuthority())) {
 						scannedIdentity = uri.getQueryParameter("id");
-					} else if ("https".equals(scheme) && getString(R.string.contact_action_url).equals(uri.getHost())) {
+					} else if ("https".equals(scheme) && BuildConfig.contactActionUrl.equals(uri.getHost())) {
 						scannedIdentity = uri.getLastPathSegment();
 					}
 
@@ -437,6 +438,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			default:
 				break;
 		}
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
 
 	@Override

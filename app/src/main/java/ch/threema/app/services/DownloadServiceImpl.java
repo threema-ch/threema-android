@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.client.BlobLoader;
@@ -61,6 +63,8 @@ public class DownloadServiceImpl implements DownloadService {
 	}
 
 	@Override
+	@WorkerThread
+	@Nullable
 	public byte[] download(int id, byte[] blobId, boolean markAsDown, ProgressListener progressListener) {
 		PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
 		try {

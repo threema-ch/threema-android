@@ -51,7 +51,6 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
  */
 public class UpdateBusinessAvatarRoutine implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(UpdateBusinessAvatarRoutine.class);
-	private static final String TAG = "UpdateBusinessAvatarRoutine";
 
 	private final ContactService contactService;
 	private FileService fileService;

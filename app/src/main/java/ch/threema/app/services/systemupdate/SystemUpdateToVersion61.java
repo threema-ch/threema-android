@@ -74,7 +74,7 @@ public class SystemUpdateToVersion61 extends UpdateToVersion implements UpdateSy
 							final String body = fileMessages.getString(1);
 							if (body != null && body.length() > 0) {
 								FileDataModel fileDataModel = FileDataModel.create(body);
-								sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MimeUtil.getContentTypeFromMimeType(fileDataModel.getMimeType()) + " WHERE id = " + id);
+								sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MimeUtil.getContentTypeFromFileData(fileDataModel) + " WHERE id = " + id);
 							}
 						}
 					}

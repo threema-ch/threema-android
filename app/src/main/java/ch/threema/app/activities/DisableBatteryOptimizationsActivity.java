@@ -23,7 +23,6 @@ package ch.threema.app.activities;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -96,7 +95,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 			try {
 				startActivityForResult(newIntent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
 				return;
-			} catch (ActivityNotFoundException e) {
+			} catch (Exception e) {
 				// Some Samsung devices don't bother implementing this API
 				logger.error("Exception", e);
 				setResult(RESULT_OK);

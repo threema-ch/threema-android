@@ -94,7 +94,7 @@ public class VideoPopup extends DimmingPopupWindow {
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		if (layout == 0) {
-			topLayout = layoutInflater.inflate(R.layout.popup_video, null, true);
+			topLayout = layoutInflater.inflate(R.layout.fragment_video_preview, null, true);
 		} else {
 			topLayout = layoutInflater.inflate(layout, null, true);
 		}

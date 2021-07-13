@@ -29,4 +29,8 @@ public class UnrecoverableVideoTranscoderException extends RuntimeException {
 	public UnrecoverableVideoTranscoderException(final String message) {
 		super(message);
 	}
+
+	public UnrecoverableVideoTranscoderException(final String message, final Exception exception) {
+		super(message, exception);
+	}
 }

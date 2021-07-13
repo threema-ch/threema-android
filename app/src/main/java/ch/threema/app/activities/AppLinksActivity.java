@@ -83,26 +83,35 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 		final Uri appLinkData = getIntent().getData();
 		if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData != null){
 			final String threemaId = appLinkData.getLastPathSegment();
-			if (threemaId != null && threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
-				new AddContactAsyncTask(null, null, threemaId, false, () -> {
-					String text = appLinkData.getQueryParameter("text");
+			if (threemaId != null) {
+				if (threemaId.equalsIgnoreCase("compose")) {
+					Intent intent = new Intent(this, RecipientListActivity.class);
+					intent.setAction(appLinkAction);
+					intent.setData(appLinkData);
+					startActivity(intent);
+				} else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
+					new AddContactAsyncTask(null, null, threemaId, false, () -> {
+						String text = appLinkData.getQueryParameter("text");
 
-					Intent intent = new Intent(AppLinksActivity.this, text != null ?
+						Intent intent = new Intent(AppLinksActivity.this, text != null ?
 							ComposeMessageActivity.class :
 							ContactDetailActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
+						intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
 
-					if (text != null) {
-						text = text.trim();
-						intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
-					}
+						if (text != null) {
+							text = text.trim();
+							intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
+						}
 
-					startActivity(intent);
-				}).execute();
+						startActivity(intent);
+					}).execute();
+				} else {
+					Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+				}
 			} else {
-				Toast.makeText(this, R.string.invalid_threema_id, Toast.LENGTH_LONG).show();
+				Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
 			}
 		}
 		finish();

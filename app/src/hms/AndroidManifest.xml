@@ -3,6 +3,7 @@
           xmlns:tools="http://schemas.android.com/tools"
           android:installLocation="internalOnly"
           android:testOnly="false">
+	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
 	<application tools:ignore="GoogleAppIndexingWarning">
 

@@ -25,6 +25,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.msgpack.core.annotations.Nullable;
+
 import java.lang.ref.WeakReference;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -90,5 +92,9 @@ public class EmptyRecyclerView extends RecyclerView {
 	public void setEmptyView(View emptyView) {
 		this.emptyViewReference = new WeakReference<>(emptyView);
 		checkIfEmpty();
+	}
+
+	public @Nullable View getEmptyView() {
+		return this.emptyViewReference.get();
 	}
 }

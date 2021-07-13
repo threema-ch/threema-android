@@ -56,9 +56,9 @@ public interface ConversationService {
 	List<ConversationModel> getAll(boolean forceReloadFromDatabase, Filter filter);
 
 	/**
-	 * return a list of all conversation models that have been archived
+	 * return a list of all conversation models that have been archived and match the constraint (case-insensitive match)
 	 */
-	List<ConversationModel> getArchived();
+	List<ConversationModel> getArchived(String constraint);
 
 	/**
 	 * return the number of conversations that have been archived

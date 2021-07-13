@@ -55,6 +55,8 @@ import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 
+import static ch.threema.storage.models.data.MessageContentsType.VOICE_MESSAGE;
+
 abstract public class MediaViewFragment extends Fragment {
 	private static final Logger logger = LoggerFactory.getLogger(MediaViewFragment.class);
 
@@ -200,12 +202,12 @@ abstract public class MediaViewFragment extends Fragment {
 			String filename = null;
 
 			if (thumbnail == null) {
-				if (messageModel.getType() == MessageType.FILE) {
+				if (messageModel.getMessageContentsType() == VOICE_MESSAGE) {
+					thumbnail = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(getContext(), R.drawable.ic_keyboard_voice_outline), getResources().getColor(R.color.material_dark_grey));
+				} else if (messageModel.getType() == MessageType.FILE) {
 					thumbnail = BitmapUtil.tintImage(fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType()), getResources().getColor(R.color.material_dark_grey));
 					filename = messageModel.getFileData().getFileName();
 					isGeneric = true;
-				} else if (messageModel.getType() == MessageType.VOICEMESSAGE) {
-					thumbnail = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(getContext(), R.drawable.ic_keyboard_voice_outline), getResources().getColor(R.color.material_dark_grey));
 				}
 			}
 

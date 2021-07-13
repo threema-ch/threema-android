@@ -183,7 +183,7 @@
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Back-up herstellen</string>
-    <string name="server_message_title">Serverbericht</string>
+    <string name="server_message_title">Bericht van Threema-server</string>
     <string name="error">Fout</string>
     <string name="no_contacts"><![CDATA[U hebt nog geen contactpersonen. Schakel synchronisatie in (Instellingen > Privacy) of voeg contactpersonen handmatig toe.]]></string>
     <string name="masterkey_title">Wachtwoordzin invoeren</string>
@@ -468,8 +468,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="really_block_contact">Nieuwe berichten aan deze contactpersoon worden verwijderd. Doorgaan?</string>
     <string name="ballot_result_final">Eindresultaat</string>
     <string name="invalid_cannot_send">U kunt geen berichten versturen aan ongeldige contactpersonen</string>
-    <string name="title_activity_new_ballot_wizard">NewBallotWizardActivity</string>
-    <string name="ballot_answer_count_error">Geef ten minste 2 antwoorden op voor deze poll.</string>
+	<string name="ballot_answer_count_error">Geef ten minste 2 antwoorden op voor deze poll.</string>
     <string name="ballot_one_contact_not_supported">Waarschuwing: %1$s kan niet deelnemen aan uw poll.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Waarschuwing: %1$d contactpersonen kunnen niet deelnemen aan uw poll.</string>
     <string name="enable_polling">Poll gebruiken</string>
@@ -1185,7 +1184,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="mark_unread">Markeren als ongelezen</string>
     <string name="mark_read_short">Gelezen</string>
     <string name="unread">Ongelezen</string>
-    <string name="missing_app_licence">Nieuw identiteitsverzoek kon niet worden aangemaakt omdat er geen geldige app-licentie kon worden gevonden</string>
+    <string name="missing_app_licence">De app store kon je aankoop niet valideren. Als je Google Play gebruikt, verwijder dan de gegevens van de Google Play Store app en herstart je apparaat.</string>
     <string name="set_backup_path">Back-uppad instellen</string>
     <string name="set_backup_path_intro">Selecteer in het volgende scherm de map waar de back-upbestanden moeten worden.</string>
+    <string name="tap_here_for_more">Tik hier voor meer informatie</string>
+    <string name="another_connection_instructions">De server heeft twee of meer verbindingen gevonden van verschillende apparaten met hetzelfde Threema-ID.\n\nJe kunt hetzelfde Threema-ID niet op verschillende apparaten tegelijkertijd gebruiken. Nieuwe berichten worden alleen verzonden naar het apparaat dat als laatste is ingelogd op de server.\n\nAls je een nieuw apparaat gebruikt, verwijder dan de installatie van %s op het oude apparaat of schakel het uit en herstart het nieuwe apparaat.</string>
+    <string name="app_store_error_code">App store foutcode: %d</string>
 </resources>

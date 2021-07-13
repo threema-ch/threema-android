@@ -63,6 +63,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -77,6 +78,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
@@ -87,10 +89,10 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.CheckableFrameLayout;
+import ch.threema.app.ui.CheckableView;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.MediaGridItemDecoration;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -118,35 +120,47 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected GroupService groupService;
 
 	public static final String KEY_BOTTOM_SHEET_STATE = "bottom_sheet_state";
+	public static final String KEY_PREVIEW_MODE = "preview_mode";
+	private static final String KEY_PREVIEW_ITEM_POSITION = "preview_item";
+
 	protected static final int PERMISSION_REQUEST_ATTACH_FROM_GALLERY = 4;
 	protected static final int PERMISSION_REQUEST_ATTACH_FILE = 5;
 	protected static final int REQUEST_CODE_ATTACH_FROM_GALLERY = 2454;
 
-	protected CoordinatorLayout rootView;
+	protected CoordinatorLayout rootView, gridContainer, pagerContainer;
 	protected AppBarLayout appBarLayout;
-	protected MaterialToolbar toolbar;
+	protected MaterialToolbar toolbar, previewToolbar;
 	protected EmptyRecyclerView mediaAttachRecyclerView;
 	protected FastScroller fastScroller;
 	protected GridLayoutManager gridLayoutManager;
-	protected ConstraintLayout bottomSheetLayout;
+	protected ConstraintLayout bottomSheetLayout, previewBottomSheetLayout;
 	protected ImageView dragHandle;
 	protected FrameLayout controlPanel, dateView;
 	protected LinearLayout menuTitleFrame;
-	protected TextView dateTextView, menuTitle;
+	protected TextView dateTextView, menuTitle, previewFilenameTextView, previewDateTextView;
 	protected DisplayMetrics displayMetrics;
 	protected MenuItem selectFromGalleryItem;
 	protected PopupMenu bucketFilterMenu;
+	protected ViewPager2 previewPager;
+	private CheckableView checkBox;
 
 	protected MediaAttachViewModel mediaAttachViewModel;
 
 	protected MediaAttachAdapter mediaAttachAdapter;
+	protected ImagePreviewPagerAdapter imagePreviewPagerAdapter;
+
 	protected int peekHeightNumElements = 1;
+	private @ColorInt int savedStatusBarColor = 0;
 
 	private boolean isDragging = false;
 	private boolean bottomSheetScroll = false;
+	private boolean isPreviewMode = false;
+
+	BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior, previewBottomSheetBehavior;
 
 	// Locks
 	private final Object filterMenuLock = new Object();
+	private final Object previewLock = new Object();
 
 	/* start lifecycle methods */
 	@Override
@@ -160,15 +174,25 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		initActivity(savedInstanceState);
 	}
 
+	@Override
+	protected void onDestroy() {
+		logger.debug("*** onDestroy");
+		super.onDestroy();
+	}
+
 	@UiThread
 	protected void handleSavedInstanceState(Bundle savedInstanceState){
 		if (savedInstanceState != null) {
 			onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
 			int bottomSheetStyleState = savedInstanceState.getInt(KEY_BOTTOM_SHEET_STATE);
 			if (bottomSheetStyleState != 0) {
-				final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
-				bottomSheetBehavior.setState(bottomSheetStyleState);
 				updateUI(bottomSheetStyleState);
+			}
+			boolean previewModeState = savedInstanceState.getBoolean(KEY_PREVIEW_MODE);
+			int previewItemPosition = savedInstanceState.getInt(KEY_PREVIEW_ITEM_POSITION);
+
+			if (previewModeState) {
+				startPreviewMode(previewItemPosition, 50);
 			}
 		}
 	}
@@ -176,8 +200,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
 		outState.putInt(KEY_BOTTOM_SHEET_STATE, bottomSheetBehavior.getState());
+		outState.putBoolean(KEY_PREVIEW_MODE, isPreviewMode);
+		outState.putInt(KEY_PREVIEW_ITEM_POSITION, previewPager.getCurrentItem());
 	}
 
 	/* end lifecycle methods */
@@ -188,7 +213,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.displayMetrics = ThreemaApplication.getAppContext().getResources().getDisplayMetrics();
 
 		// The view model handles data associated with this view
-		this.mediaAttachViewModel = new ViewModelProvider(MediaSelectionBaseActivity.this).get(MediaAttachViewModel.class);
+		this.mediaAttachViewModel = new ViewModelProvider(this).get(MediaAttachViewModel.class);
 
 		// Initialize UI
 		this.setLayout();
@@ -203,6 +228,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				return true;
 			}
 			return false;
+		});
+		this.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				collapseBottomSheet();
+			}
 		});
 	}
 
@@ -228,11 +259,42 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.menuTitleFrame = findViewById(R.id.toolbar_title);
 		this.menuTitle = findViewById(R.id.toolbar_title_textview);
 		this.bottomSheetLayout = findViewById(R.id.bottom_sheet);
+		this.previewBottomSheetLayout = findViewById(R.id.preview_bottom_sheet);
 		this.mediaAttachRecyclerView = findViewById(R.id.media_grid_recycler);
 		this.dragHandle = findViewById(R.id.drag_handle);
 		this.controlPanel = findViewById(R.id.control_panel);
 		this.dateView = findViewById(R.id.date_separator_container);
 		this.dateTextView = findViewById(R.id.text_view);
+		this.gridContainer = findViewById(R.id.grid_container);
+		this.previewPager = findViewById(R.id.pager);
+		this.pagerContainer = findViewById(R.id.pager_container);
+		this.checkBox = findViewById(R.id.check_box);
+		this.previewFilenameTextView = findViewById(R.id.filename_view);
+		this.previewDateTextView = findViewById(R.id.date_view);
+
+		this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+		this.previewBottomSheetBehavior = BottomSheetBehavior.from(previewBottomSheetLayout);
+
+		MaterialToolbar previewToolbar = findViewById(R.id.preview_toolbar);
+		previewToolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+		this.checkBox.setOnClickListener(v -> {
+			checkBox.toggle();
+			MediaAttachItem mediaItem = imagePreviewPagerAdapter.getItem(previewPager.getCurrentItem());
+			if (checkBox.isChecked()) {
+				mediaAttachViewModel.addSelectedMediaItem(mediaItem.getId(), mediaItem);
+			} else {
+				mediaAttachViewModel.removeSelectedMediaItem(mediaItem.getId());
+			}
+		});
+
+		this.previewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+			@Override
+			public void onPageSelected(int position) {
+				super.onPageSelected(position);
+				updatePreviewInfo(position);
+			}
+		});
 
 		// fill background with transparent black to see chat behind drawer
 		FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
@@ -276,6 +338,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 		// Listen for layout changes
 		this.mediaAttachAdapter = new MediaAttachAdapter(this, this);
+		this.imagePreviewPagerAdapter = new ImagePreviewPagerAdapter(this);
+		this.previewPager.setOffscreenPageLimit(1);
 		this.mediaAttachRecyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 		this.mediaAttachRecyclerView.setAdapter(mediaAttachAdapter);
 		ProgressBar progressBar = (ProgressBar) getLayoutInflater().inflate(R.layout.item_progress, null);
@@ -422,6 +486,28 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		});
 	}
 
+	private void updatePreviewInfo(int position) {
+		MediaAttachItem mediaItem = imagePreviewPagerAdapter.getItem(position);
+		checkBox.setChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().containsKey(mediaItem.getId()));
+
+		previewBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+		previewFilenameTextView.setText(String.format("%s/%s", mediaItem.getBucketName(), mediaItem.getDisplayName()));
+		long taken = mediaItem.getDateTaken();
+		//multiply because of format takes millis
+		long modified = mediaItem.getDateModified() * 1000;
+		long added = mediaItem.getDateAdded() * 1000;
+		if (taken != 0) {
+			previewDateTextView.setText(String.format(getString(R.string.media_date_taken), LocaleUtil.formatTimeStampString(this, taken, false)));
+		} else if (added != 0) {
+			previewDateTextView.setText(String.format(getString(R.string.media_date_added), LocaleUtil.formatTimeStampString(this, added, false)));
+		} else if (modified != 0) {
+			previewDateTextView.setText(String.format(getString(R.string.media_date_modified), LocaleUtil.formatTimeStampString(this, modified, false)));
+		} else {
+			previewDateTextView.setText(getString(R.string.media_date_unknown));
+		}
+	}
+
 	/**
 	 * If the media grid is enabled and all necessary permissions are granted,
 	 * initialize and show it.
@@ -466,6 +552,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			// Observe the LiveData for current selection, passing in this activity as the LifecycleOwner and Observer.
 			mediaAttachViewModel.getCurrentMedia().observe(this, currentlyShowingItems -> {
 				mediaAttachAdapter.setMediaItems(currentlyShowingItems);
+				imagePreviewPagerAdapter.setMediaItems(currentlyShowingItems);
 				// Data loaded, we can now properly calculate the peek height and set/reset UI to expanded state
 				updatePeekHeight();
 			});
@@ -484,7 +571,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected void setListeners() {
 		this.appBarLayout.setOnClickListener(this);
 
-		BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
 		bottomSheetBehavior.setExpandedOffset(50);
 		bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 			@Override
@@ -503,7 +589,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
 				super.onScrolled(recyclerView, dx, dy);
 				setFirstVisibleItemDate();
-				final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
 
 				if (controlPanel.getTranslationY() == 0 && mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty() && bottomSheetBehavior.getState() == STATE_EXPANDED) {
 					controlPanel.animate().translationY(controlPanel.getHeight());
@@ -527,9 +612,77 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	public void onItemLongClick(View view, int position, MediaAttachItem mediaAttachItem) {
 		view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 
-		Intent intent = new Intent(this, MediaPreviewActivity.class);
-		intent.putExtra(MediaPreviewActivity.EXTRA_PARCELABLE_MEDIA_ITEM, mediaAttachItem);
-		AnimationUtil.startActivity(this, view, intent);
+		startPreviewMode(position, 0);
+	}
+
+	@Override
+	public void onBackPressed() {
+		logger.debug("*** onBackPressed");
+		synchronized (previewLock) {
+			if (pagerContainer.getVisibility() == View.VISIBLE) {
+				if (isPreviewMode) {
+					gridContainer.setVisibility(View.VISIBLE);
+					pagerContainer.setVisibility(View.GONE);
+					previewPager.setAdapter(null);
+					mediaAttachAdapter.notifyDataSetChanged();
+					onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
+
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+						getWindow().setStatusBarColor(savedStatusBarColor);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+							getWindow().setNavigationBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_expanded));
+						}
+					}
+					if (ConfigUtils.getAppTheme(this) != ConfigUtils.THEME_DARK) {
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+							getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+						}
+					}
+					isPreviewMode = false;
+				}
+			} else {
+				super.onBackPressed();
+			}
+		}
+	}
+
+	private void startPreviewMode(int position, int delay) {
+		logger.debug("*** startPreviewMode");
+		synchronized (previewLock) {
+			if (!isPreviewMode) {
+				pagerContainer.setVisibility(View.VISIBLE);
+				previewPager.setAdapter(imagePreviewPagerAdapter);
+				gridContainer.setVisibility(View.GONE);
+
+				logger.debug("*** setStatusBarColor");
+
+				toolbar.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+							savedStatusBarColor = getWindow().getStatusBarColor();
+							getWindow().setStatusBarColor(getResources().getColor(R.color.gallery_background));
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+								getWindow().setNavigationBarColor(getResources().getColor(R.color.gallery_background));
+							}
+						}
+						if (ConfigUtils.getAppTheme(MediaSelectionBaseActivity.this) != ConfigUtils.THEME_DARK) {
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+								getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+							}
+						}
+					}
+				}, delay);
+
+				previewPager.post(new Runnable() {
+					@Override
+					public void run() {
+						previewPager.setCurrentItem(position, false);
+					}
+				});
+				isPreviewMode = true;
+			}
+		}
 	}
 
 	public void setAllResultsGrid() {
@@ -585,6 +738,11 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	public void updateUI(int state){
 		Animation animation;
+
+		if (bottomSheetBehavior.getState() != state) {
+			bottomSheetBehavior.setState(state);
+		}
+
 		switch (state) {
 			case STATE_HIDDEN:
 				finish();
@@ -669,6 +827,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 				break;
 			case STATE_COLLAPSED:
+				bottomSheetBehavior.setDraggable(true);
+				bottomSheetScroll = true;
 				dateView.setVisibility(View.GONE);
 				bucketFilterMenu.getMenu().setGroupVisible(Menu.NONE, false);
 				menuTitleFrame.setClickable(false);
@@ -684,7 +844,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	 * number of items vertically.
 	 */
 	protected synchronized void updatePeekHeight() {
-		final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+		logger.debug("*** updatePeekHeight");
 
 		if (shouldShowMediaGrid()) {
 			final int numElements = this.peekHeightNumElements;
@@ -721,7 +881,10 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				peekHeightKnown = false;
 				logger.debug("Peek height could not yet be determined, no items found");
 			}
-			bottomSheetBehavior.setPeekHeight(peekHeight);
+
+			if (bottomSheetBehavior != null) {
+				bottomSheetBehavior.setPeekHeight(peekHeight);
+			}
 
 			// Recalculate the peek height when the layout changes the next time
 			if (!peekHeightKnown) {
@@ -821,8 +984,23 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	protected void expandBottomSheet() {
-		BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 		updateUI(BottomSheetBehavior.STATE_EXPANDED);
+	}
+
+	protected void collapseBottomSheet() {
+		Animation animation = toolbar.getAnimation();
+		if (animation != null) {
+			animation.cancel();
+		}
+
+		dragHandle.setVisibility(View.VISIBLE);
+		toolbar.setVisibility(View.GONE);
+		toolbar.post(() -> {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+			}
+		});
+
+		updateUI(STATE_COLLAPSED);
 	}
 }

@@ -732,8 +732,12 @@ public class FileUtil {
 			if (includeVideo) {
 				Intent pickIntent = new Intent(Intent.ACTION_PICK);
 				pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
-				startIntent = Intent.createChooser(pickIntent, activity.getString(R.string.select_from_gallery));
-				startIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
+				if (ConfigUtils.isXiaomiDevice()) {
+					startIntent = getContentIntent;
+				} else {
+					startIntent = Intent.createChooser(pickIntent, activity.getString(R.string.select_from_gallery));
+					startIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
+				}
 			} else {
 				startIntent = getContentIntent;
 			}

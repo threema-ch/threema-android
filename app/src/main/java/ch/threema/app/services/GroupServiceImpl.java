@@ -490,7 +490,17 @@ public class GroupServiceImpl implements GroupService {
 			GroupModel model = this.getByAbstractGroupMessage(msg);
 
 			if(model != null) {
+				@GroupState int groupState = getGroupState(model);
+
 				this.removeMemberFromGroup(model, msg.getFromIdentity());
+
+				ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
+					@Override
+					public void handle(GroupListener listener) {
+						listener.onGroupStateChanged(model, groupState, getGroupState(model));
+					}
+				});
+
 				return true;
 			}
 			else {
@@ -504,8 +514,7 @@ public class GroupServiceImpl implements GroupService {
 		return false;
 	}
 
-	@Override
-	public boolean removeMemberFromGroup(final GroupModel group, final String identity) {
+	private boolean removeMemberFromGroup(final GroupModel group, final String identity) {
 		final int previousMemberCount = countMembers(group);
 
 		if(this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupIdAndIdentity(
@@ -514,12 +523,7 @@ public class GroupServiceImpl implements GroupService {
 		)> 0) {
 			this.resetIdentityCache(group.getId());
 
-			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
-				@Override
-				public void handle(GroupListener listener) {
-					listener.onMemberLeave(group, identity, previousMemberCount);
-				}
-			});
+			ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(group, identity, previousMemberCount));
 			return true;
 		}
 
@@ -569,6 +573,8 @@ public class GroupServiceImpl implements GroupService {
 			return null;
 		}
 
+		@GroupState int groupState = getGroupState(result.groupModel);
+
 		if (isNewGroup && this.blackListService != null && this.blackListService.has(groupCreateMessage.getFromIdentity())) {
 			logger.info("GroupCreateMessage {}: Received group create from blocked ID. Sending leave.", groupCreateMessage.getMessageId());
 
@@ -608,6 +614,8 @@ public class GroupServiceImpl implements GroupService {
 					}
 				});
 			}
+
+			ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(result.groupModel, groupState, getGroupState(result.groupModel)));
 
 			return result;
 		}
@@ -695,6 +703,8 @@ public class GroupServiceImpl implements GroupService {
 			});
 		}
 
+		ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(result.groupModel, groupState, getGroupState(result.groupModel)));
+
 		return result;
 	}
 
@@ -735,7 +745,6 @@ public class GroupServiceImpl implements GroupService {
 		this.databaseServiceNew.getGroupModelFactory().create(groupModel);
 		this.cache(groupModel);
 
-		//if a name is set
 		for (String identity : groupMemberIdentities) {
 			this.addMemberToGroup(groupModel, identity);
 		}
@@ -749,6 +758,8 @@ public class GroupServiceImpl implements GroupService {
 				listener.onCreate(groupModel);
 			}
 		});
+
+		ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(groupModel, UNDEFINED, getGroupState(groupModel)));
 
 		//send event to server
 		this.groupApiService.sendMessage(groupModel, this.getGroupIdentities(groupModel), new GroupApiService.CreateApiMessage() {
@@ -835,6 +846,8 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public Boolean addMembersToGroup(final GroupModel groupModel, @Nullable final String[] identities) {
 		if (identities != null && identities.length > 0) {
+			@GroupState int groupState = getGroupState(groupModel);
+
 			ArrayList<String> newContacts = new ArrayList<>();
 			ArrayList<String> newMembers = new ArrayList<>();
 
@@ -931,13 +944,24 @@ public class GroupServiceImpl implements GroupService {
 				}
 			});
 
+			ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(groupModel, groupState, getGroupState(groupModel)));
+
 			return true;
 		}
 		return false;
 	}
 
+	private int getGroupState(@Nullable GroupModel groupModel) {
+		if (groupModel != null) {
+			return isNotesGroup(groupModel) ? NOTES : PEOPLE;
+		}
+		return UNDEFINED;
+	}
+
 	@Override
 	public GroupModel updateGroup(final GroupModel groupModel, String name, final String[] groupMemberIdentities, Bitmap photo, boolean removePhoto) throws Exception {
+		@GroupState int groupState = getGroupState(groupModel);
+
 		//existing members
 		String[] existingMembers = this.getGroupIdentities(groupModel);
 
@@ -1056,6 +1080,9 @@ public class GroupServiceImpl implements GroupService {
 				ListenerManager.groupListeners.handle(listener -> listener.onMemberKicked(groupModel, kickedGroupMemberIdentity, existingMembers.length));
 			}
 		}
+
+		ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(groupModel, groupState, getGroupState(groupModel)));
+
 		return groupModel;
 	}
 

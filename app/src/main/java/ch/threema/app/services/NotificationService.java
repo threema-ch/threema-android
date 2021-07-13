@@ -85,6 +85,7 @@ public interface NotificationService {
 		private final FetchBitmap fetchAvatar;
 		private final MessageReceiver messageReceiver;
 		private final String lookupUri;
+		private long lastNotificationDate = 0;
 
 		//reference to conversations
 		protected List<ConversationNotification> conversations = new ArrayList<>();
@@ -145,6 +146,14 @@ public interface NotificationService {
 					logger.debug("do not destroy ConversationNotification (conversationCount = " + this.conversations.size()+ ")");
 				}
 			}*/
+		}
+
+		public void setLastNotificationDate(long lastNotificationDate) {
+			this.lastNotificationDate = lastNotificationDate;
+		}
+
+		public long getLastNotificationDate() {
+			return this.lastNotificationDate;
 		}
 	}
 

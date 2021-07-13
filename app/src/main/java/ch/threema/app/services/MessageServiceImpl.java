@@ -120,6 +120,7 @@ import ch.threema.app.video.transcoder.VideoTranscoder;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.AbstractGroupMessage;
 import ch.threema.client.AbstractMessage;
+import ch.threema.client.BadMessageException;
 import ch.threema.client.BlobUploader;
 import ch.threema.client.BoxAudioMessage;
 import ch.threema.client.BoxImageMessage;
@@ -1491,7 +1492,7 @@ public class MessageServiceImpl implements MessageService {
 	                                                     MessageId messageId,
 	                                                     BallotCreateInterface message,
 	                                                     AbstractMessageModel messageModel)
-			throws ThreemaException
+			throws ThreemaException, BadMessageException
 	{
 		BallotUpdateResult result = this.ballotService.update(message);
 
@@ -1709,7 +1710,20 @@ public class MessageServiceImpl implements MessageService {
 		logger.debug("process incoming file");
 		if (messageModel == null) {
 			newModel = true;
-			messageModel = receiver.createLocalModel(MessageType.FILE, MimeUtil.getContentTypeFromMimeType(fileData.getMimeType()), message.getDate());
+
+			FileDataModel fileDataModel = new FileDataModel(
+				fileData.getFileBlobId(),
+				fileData.getEncryptionKey(),
+				fileData.getMimeType(),
+				fileData.getThumbnailMimeType(),
+				fileData.getFileSize(),
+				FileUtil.sanitizeFileName(fileData.getFileName()),
+				fileData.getRenderingType(),
+				fileData.getDescription(),
+				false,
+				fileData.getMetaData());
+
+			messageModel = receiver.createLocalModel(MessageType.FILE, MimeUtil.getContentTypeFromFileData(fileDataModel), message.getDate());
 			this.cache(messageModel);
 
 			messageModel.setApiMessageId(message.getMessageId().toString());
@@ -1718,18 +1732,7 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setIdentity(message.getFromIdentity());
 			// Save correlation id into db field instead json
 			messageModel.setCorrelationId(fileData.getCorrelationId());
-			messageModel.setFileData(
-					new FileDataModel(
-							fileData.getFileBlobId(),
-							fileData.getEncryptionKey(),
-							fileData.getMimeType(),
-							fileData.getThumbnailMimeType(),
-							fileData.getFileSize(),
-							FileUtil.sanitizeFileName(fileData.getFileName()),
-							fileData.getRenderingType(),
-							fileData.getDescription(),
-							false,
-							fileData.getMetaData()));
+			messageModel.setFileData(fileDataModel);
 
 			//create the record
 			receiver.saveLocalModel(messageModel);
@@ -2282,12 +2285,12 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<AbstractMessageModel> getMessagesForReceiver(MessageReceiver receiver, MessageFilter messageFilter) {
+	public List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter) {
 		return this.getMessagesForReceiver(receiver, messageFilter, true);
 	}
 
 	@Override
-	public List<AbstractMessageModel> getMessagesForReceiver(MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage) {
+	public List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage) {
 		try {
 			List<AbstractMessageModel> messages  = receiver.loadMessages(messageFilter);
 			if (!appendUnreadMessage) {
@@ -2346,7 +2349,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<AbstractMessageModel> getMessagesForReceiver(MessageReceiver receiver) {
+	public List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver) {
 		return this.getMessagesForReceiver(receiver, null);
 	}
 
@@ -3134,7 +3137,7 @@ public class MessageServiceImpl implements MessageService {
 				}
 				text += locationUri.toString();
 			} else {
-				text = model.getBody();
+				text = QuoteUtil.getMessageBody(model, false);
 			}
 
 			intent.setAction(Intent.ACTION_SEND);
@@ -3665,8 +3668,11 @@ public class MessageServiceImpl implements MessageService {
 
 					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, true, hasNoTransparency);
 					if (bitmap != null) {
-						bitmap = BitmapUtil.rotateBitmap(bitmap, mediaItem.getExifRotation(), mediaItem.getExifFlip());
-						byte[] imageByteArray;
+						bitmap = BitmapUtil.rotateBitmap(bitmap,
+							mediaItem.getExifRotation(),
+							mediaItem.getExifFlip());
+
+						final byte[] imageByteArray;
 						if (hasNoTransparency) {
 							imageByteArray = BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip());
 						} else {
@@ -3686,11 +3692,11 @@ public class MessageServiceImpl implements MessageService {
 						}
 						if (imageByteArray != null) {
 							fileDataModel.setFileSize(imageByteArray.length);
-							ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-							outputStream.write( new byte[NaCl.BOXOVERHEAD] );
-							outputStream.write( imageByteArray );
+							ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+							outputStream.write(new byte[NaCl.BOXOVERHEAD]);
+							outputStream.write(imageByteArray);
 
-							return outputStream.toByteArray( );
+							return outputStream.toByteArray();
 						}
 					}
 				} catch (Exception e) {
@@ -3707,16 +3713,19 @@ public class MessageServiceImpl implements MessageService {
 					if (inputStream != null && inputStream.available() > 0) {
 						bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream), null, null);
 						if (bitmap != null) {
-							bitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
+							bitmap = BitmapUtil.rotateBitmap(
 								bitmap,
 								mediaItem.getExifRotation(),
-								mediaItem.getExifFlip()), mediaItem.getRotation(), mediaItem.getFlip());
+								mediaItem.getExifFlip());
 
-							ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-							outputStream.write( new byte[NaCl.BOXOVERHEAD] );
-							outputStream.write( BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip()) );
+							final byte[] imageByteArray = BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip());
+							if (imageByteArray != null) {
+								ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+								outputStream.write(new byte[NaCl.BOXOVERHEAD]);
+								outputStream.write(imageByteArray);
 
-							return outputStream.toByteArray( );
+								return outputStream.toByteArray();
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -4036,7 +4045,7 @@ public class MessageServiceImpl implements MessageService {
 
 		for (MessageReceiver messageReceiver : resolvedReceivers) {
 
-			final AbstractMessageModel messageModel = messageReceiver.createLocalModel(MessageType.FILE, MimeUtil.getContentTypeFromMimeType(fileDataModel.getMimeType()), new Date());
+			final AbstractMessageModel messageModel = messageReceiver.createLocalModel(MessageType.FILE, MimeUtil.getContentTypeFromFileData(fileDataModel), new Date());
 			this.cache(messageModel);
 
 			messageModel.setOutbox(true);

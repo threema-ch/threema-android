@@ -105,7 +105,7 @@ public class AndroidContactUtil {
 	private Map<String, String> identityLookupCache = null;
 	private final Object identityLookupCacheLock = new Object();
 
-	private Account getAccount() {
+	private @Nullable Account getAccount() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if(serviceManager != null) {
 			UserService userService = serviceManager.getUserService();
@@ -686,7 +686,7 @@ public class AndroidContactUtil {
 	}
 
 	/**
-	 * Create a raw contact for the given identity. Put the identity into the SYNC1 column and set DISPLAY_NAME and data records for messaging and calling
+	 * Create a raw contact for the given identity. Put the identity into the SYNC1 column and set data records for messaging and calling
 	 * @param identity
 	 * @param supportsVoiceCalls
 	 * @return LOOKUP_KEY of the newly created raw contact or null if no contact has been created
@@ -717,31 +717,37 @@ public class AndroidContactUtil {
 		builder.withValue(ContactsContract.RawContacts.SYNC1, identity);
 		insertOperationList.add(builder.build());
 
+		Uri insertUri = ContactsContract.Data.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
+/*
 		logger.debug("   Create a Data record of type 'Nickname' for our RawContact");
-		builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
+		builder = ContentProviderOperation.newInsert(insertUri);
 		builder.withValueBackReference(ContactsContract.CommonDataKinds.Nickname.RAW_CONTACT_ID, 0);
 		builder.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE);
 		builder.withValue(ContactsContract.CommonDataKinds.Nickname.NAME, identity);
+		builder.withValue(ContactsContract.CommonDataKinds.Nickname.TYPE, ContactsContract.CommonDataKinds.Nickname.TYPE_CUSTOM);
+		builder.withValue(ContactsContract.CommonDataKinds.Nickname.LABEL, context.getString(R.string.title_threemaid));
 		insertOperationList.add(builder.build());
-
+*/
 		logger.debug("   Create a Data record of custom type");
-		builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
+		builder = ContentProviderOperation.newInsert(insertUri);
 		builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0);
 		builder.withValue(ContactsContract.Data.MIMETYPE, context.getString(R.string.contacts_mime_type));
 		//DATA1 have to be the identity to fetch in the activity
 		builder.withValue(ContactsContract.Data.DATA1, identity);
 		builder.withValue(ContactsContract.Data.DATA2, context.getString(R.string.app_name));
 		builder.withValue(ContactsContract.Data.DATA3, context.getString(R.string.threema_message_to, identity));
+		builder.withYieldAllowed(true);
 		insertOperationList.add(builder.build());
 
 		if (supportsVoiceCalls) {
 			logger.debug("   Create a Data record of custom type for call");
-			builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
+			builder = ContentProviderOperation.newInsert(insertUri);
 			builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0);
 			builder.withValue(ContactsContract.Data.MIMETYPE, context.getString(R.string.call_mime_type));
 			builder.withValue(ContactsContract.Data.DATA1, identity);
 			builder.withValue(ContactsContract.Data.DATA2, context.getString(R.string.app_name));
 			builder.withValue(ContactsContract.Data.DATA3, context.getString(R.string.threema_call_with, identity));
+			builder.withYieldAllowed(true);
 			insertOperationList.add(builder.build());
 		}
 

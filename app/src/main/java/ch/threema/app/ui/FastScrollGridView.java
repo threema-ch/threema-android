@@ -29,6 +29,7 @@ import android.widget.GridView;
 
 import androidx.appcompat.view.ContextThemeWrapper;
 import ch.threema.app.R;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 
 /**
@@ -44,7 +45,10 @@ public class FastScrollGridView extends GridView implements AbsListView.OnScroll
 	private final Runnable fastScrollRemoveTask = () -> RuntimeUtil.runOnUiThread(() -> setFastScrollAlwaysVisible(false));
 
 	public FastScrollGridView(Context context, AttributeSet attrs) {
-		super(new ContextThemeWrapper(context, R.style.Threema_MediaGallery_FastScroll), attrs);
+		super(new ContextThemeWrapper(context,
+			ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK ?
+			R.style.Threema_MediaGallery_FastScroll_Dark :
+			R.style.Threema_MediaGallery_FastScroll), attrs);
 		setOnScrollListener(this);
 	}
 

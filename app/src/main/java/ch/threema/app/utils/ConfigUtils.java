@@ -139,7 +139,7 @@ public class ConfigUtils {
 	private static Integer primaryColor = null, accentColor = null;
 	private static int emojiStyle = 0;
 	private static Boolean isTablet = null, isBiggerSingleEmojis = null, isMIUI10 = null, hasNoMapboxSupport = null;
-	private static int preferredThumbnailWidth = -1;
+	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1;
 
 	private static final float[] NEGATIVE_MATRIX = {
 			-1.0f,     0,     0,    0, 255, // red
@@ -268,8 +268,12 @@ public class ConfigUtils {
 		return hasNoMapboxSupport;
 	}
 
+	public static boolean isXiaomiDevice() {
+		return Build.MANUFACTURER.equalsIgnoreCase("Xiaomi");
+	}
+
 	public static boolean isMIUI10() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !Build.MANUFACTURER.equalsIgnoreCase("Xiaomi")) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !isXiaomiDevice()) {
 			return false;
 		}
 		if (isMIUI10 == null) {
@@ -1163,6 +1167,23 @@ public class ConfigUtils {
 			}
 		}
 		return preferredThumbnailWidth;
+	}
+
+	public static int getPreferredAudioMessageWidth(Context context, boolean reset) {
+		if (preferredAudioMessageWidth == -1 || reset) {
+			if (context != null) {
+				int width = context.getResources().getDisplayMetrics().widthPixels;
+				int height = context.getResources().getDisplayMetrics().heightPixels;
+
+				if (ConfigUtils.isTabletLayout()) {
+					width -= context.getResources().getDimensionPixelSize(R.dimen.message_fragment_width);
+				}
+
+				// width of audio message should be 80% of smallest display width
+				preferredAudioMessageWidth = (int) ((float) width < height ? width * 0.75f : height * 0.75f);
+			}
+		}
+		return preferredAudioMessageWidth;
 	}
 
 	public static int getPreferredImageDimensions(@PreferenceService.ImageScale int imageScale) {

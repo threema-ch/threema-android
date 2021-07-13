@@ -25,8 +25,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -61,6 +59,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -512,26 +511,19 @@ public class MessageSectionFragment extends MainFragment
 				if (searchMenuItem == null) {
 					inflater.inflate(R.menu.fragment_messages, menu);
 
-					// Associate searchable configuration with the SearchView
 					if (activity != null && this.isAdded()) {
-						SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-
 						searchMenuItem = menu.findItem(R.id.menu_search_messages);
 						this.searchView = (SearchView) searchMenuItem.getActionView();
 
-						if (this.searchView != null && searchManager != null) {
-							SearchableInfo mSearchableInfo = searchManager.getSearchableInfo(activity.getComponentName());
-							if (this.searchView != null) {
-								if (!TestUtil.empty(filterQuery)) {
-									// restore filter
-									MenuItemCompat.expandActionView(searchMenuItem);
-									searchView.setQuery(filterQuery, false);
-									searchView.clearFocus();
-								}
-								this.searchView.setSearchableInfo(mSearchableInfo);
-								this.searchView.setQueryHint(getString(R.string.hint_filter_list));
-								this.searchView.setOnQueryTextListener(queryTextListener);
+						if (this.searchView != null) {
+							if (!TestUtil.empty(filterQuery)) {
+								// restore filter
+								MenuItemCompat.expandActionView(searchMenuItem);
+								searchView.setQuery(filterQuery, false);
+								searchView.clearFocus();
 							}
+							this.searchView.setQueryHint(getString(R.string.hint_filter_list));
+							this.searchView.setOnQueryTextListener(queryTextListener);
 						}
 					}
 				}
@@ -548,8 +540,7 @@ public class MessageSectionFragment extends MainFragment
 										requestUnhideChats();
 									} else {
 										preferenceService.setPrivateChatsHidden(true);
-										fireSecretReceiverUpdate();
-										updateList();
+										updateList(null, null, new Thread(() -> fireSecretReceiverUpdate()));
 									}
 									return true;
 								}
@@ -631,8 +622,7 @@ public class MessageSectionFragment extends MainFragment
 				if (resultCode == Activity.RESULT_OK) {
 					serviceManager.getScreenLockService().setAuthenticated(true);
 					preferenceService.setPrivateChatsHidden(false);
-					fireSecretReceiverUpdate();
-					updateList(0, null, null);
+					updateList(0, null, new Thread(() -> fireSecretReceiverUpdate()));
 				}
 				break;
 			case ID_RETURN_FROM_SECURITY_SETTINGS:
@@ -731,8 +721,7 @@ public class MessageSectionFragment extends MainFragment
 				}
 				updateHiddenMenuVisibility();
 				if (ConfigUtils.hasProtection(preferenceService) && preferenceService.isPrivateChatsHidden()) {
-					fireSecretReceiverUpdate();
-					updateList();
+					updateList(null, null, new Thread(() -> fireSecretReceiverUpdate()));
 				}
 			}
 		}.execute();
@@ -1617,29 +1606,10 @@ public class MessageSectionFragment extends MainFragment
 		//ignore distribution lists
 	}
 
+	@WorkerThread
 	private void fireSecretReceiverUpdate() {
 		//fire a update for every secret receiver (to update webclient data)
-		for(ConversationModel c: Functional.filter(this.conversationService.getAll(false, new ConversationService.Filter() {
-			@Override
-			public boolean onlyUnread() {
-				return false;
-			}
-
-			@Override
-			public boolean noDistributionLists() {
-				return false;
-			}
-
-			@Override
-			public boolean noHiddenChats() {
-				return false;
-			}
-
-			@Override
-			public boolean noInvalid() {
-				return false;
-			}
-		}), new IPredicateNonNull<ConversationModel>() {
+		for(ConversationModel c: Functional.filter(this.conversationService.getAll(false, null), new IPredicateNonNull<ConversationModel>() {
 			@Override
 			public boolean apply(ConversationModel conversationModel) {
 				return conversationModel != null && hiddenChatsListService.has(conversationModel.getReceiver().getUniqueIdString());

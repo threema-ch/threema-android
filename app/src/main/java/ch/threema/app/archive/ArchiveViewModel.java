@@ -52,4 +52,9 @@ public class ArchiveViewModel extends ViewModel {
 	public void onDataChanged() {
 		repository.onDataChanged();
 	}
+
+	public void filter(String constraint) {
+		repository.setFilter(constraint);
+		repository.onDataChanged();
+	}
 }

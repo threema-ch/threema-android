@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2021 Threema GmbH
+ * Copyright (c) 2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,55 +21,68 @@
 
 package ch.threema.app.mediaattacher;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import ch.threema.app.R;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.ui.MediaItem;
 
-/**
- * The full-screen media preview that's shown when long-pressing on an item in the media attacher.
- */
-public class MediaPreviewActivity extends FragmentActivity {
-	public static String EXTRA_PARCELABLE_MEDIA_ITEM = "media_item";
+public class ImagePreviewPagerAdapter extends FragmentStateAdapter {
+	private final MediaAttachViewModel mediaAttachViewModel;
+	private List<MediaAttachItem> mediaAttachItems = new ArrayList<>();
 
+	public ImagePreviewPagerAdapter(FragmentActivity mediaSelectionBaseActivity) {
+		super(mediaSelectionBaseActivity);
+
+		this.mediaAttachViewModel = new ViewModelProvider(mediaSelectionBaseActivity).get(MediaAttachViewModel.class);
+	}
+
+	@NonNull
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_media_preview);
-
-		Intent intent = getIntent();
-		MediaAttachItem mediaAttachItem = intent.getParcelableExtra(EXTRA_PARCELABLE_MEDIA_ITEM);
-
+	public Fragment createFragment(int position) {
+		MediaAttachItem mediaAttachItem = getItem(position);
 		if (mediaAttachItem != null) {
 			int mimeType = mediaAttachItem.getType();
 			Bundle args = new Bundle();
 			args.putBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
 
-			Fragment fragment = null;
+			PreviewFragment fragment = null;
 			if (mimeType == MediaItem.TYPE_IMAGE || mimeType == MediaItem.TYPE_GIF) {
-				fragment = new ImagePreviewFragment(mediaAttachItem);
+				fragment = new ImagePreviewFragment(mediaAttachItem, mediaAttachViewModel);
 			} else if (mimeType == MediaItem.TYPE_VIDEO) {
-				fragment = new VideoPreviewFragment(mediaAttachItem);
+				fragment = new VideoPreviewFragment(mediaAttachItem, mediaAttachViewModel);
 			}
 
 			if (fragment != null) {
 				fragment.setArguments(args);
-				getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
+				return fragment;
 			} else {
 				Toast.makeText(ThreemaApplication.getAppContext(), "Unrecognized Preview Format", Toast.LENGTH_SHORT).show();
 			}
 		}
+		return new DummyPreviewFragment(mediaAttachItem, mediaAttachViewModel);
+	}
+
+	public void setMediaItems(List<MediaAttachItem> items) {
+		mediaAttachItems = items;
+		notifyDataSetChanged();
 	}
 
 	@Override
-	public void finish() {
-		super.finish();
-		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+	public int getItemCount() {
+		return mediaAttachItems.size();
+	}
+
+	public MediaAttachItem getItem(int position) {
+		return mediaAttachItems.get(position);
 	}
 }

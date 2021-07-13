@@ -192,7 +192,7 @@ Threema her başlatıldığında girmeniz gerekeceğini unutmayın .</string>
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Ses</string>
     <string name="restoring_backup">Yedeği geri yükleme</string>
-    <string name="server_message_title">Sunucudan Mesaj</string>
+    <string name="server_message_title">Mesaj Threema Sunucudan Mesaj</string>
     <string name="error">Hata</string>
     <string name="no_contacts"><![CDATA[Henüz hiç kişiniz yok. Senkronizasyonu açın (Ayarlar> Gizlilik) veya kişileri manuel olarak ekleyin.]]></string>
     <string name="masterkey_title">Parolayı Girin</string>
@@ -482,8 +482,7 @@ anket oluşturun veya arkadaşlarınıza istediğiniz her şeyi sorun.</string>
     <string name="really_block_contact">Bu kişiden gelecek iletiler silinecek. Devam et?</string>
     <string name="ballot_result_final">Son sonuç</string>
     <string name="invalid_cannot_send">Geçersiz bir kişiye mesaj gönderemezsiniz</string>
-    <string name="title_activity_new_ballot_wizard">Yeni Oy Sihirbazı Etkinliği</string>
-    <string name="ballot_answer_count_error">Lütfen anket için en az iki cevap girin.</string>
+	<string name="ballot_answer_count_error">Lütfen anket için en az iki cevap girin.</string>
     <string name="ballot_one_contact_not_supported">Uyarı: %1$s anketinize katılamayacak.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Uyarı: %1$d kişi anketinize katılamayacak.</string>
     <string name="enable_polling">Yoklama kullan</string>
@@ -1203,7 +1202,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="mark_unread">Okunmamış olarak işaretle</string>
     <string name="mark_read_short">Okuyun</string>
     <string name="unread">Okunmamış</string>
-    <string name="missing_app_licence">Geçerli uygulama lisansları bulunamadığı için yeni kimlik isteği oluşturulamadı</string>
+    <string name="missing_app_licence">Uygulama mağazası satın alma işleminizi doğrulayamadı. Google Play kullanıyorsanız, lütfen Google Play Store Uygulamasının verilerini temizleyin ve cihazınızı yeniden başlatın.</string>
     <string name="set_backup_path">Yedekleme yolunu ayarlayın</string>
     <string name="set_backup_path_intro">Aşağıdaki ekranda lütfen veri yedeklemelerinin kaydedileceği klasörü seçin.</string>
 </resources>

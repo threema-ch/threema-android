@@ -507,4 +507,7 @@ public interface PreferenceService {
 
 	void setVoiceRecorderBluetoothDisabled(boolean isEnabled);
 	boolean getVoiceRecorderBluetoothDisabled();
+
+	void setAudioPlaybackSpeed(float newSpeed);
+	float getAudioPlaybackSpeed();
 }

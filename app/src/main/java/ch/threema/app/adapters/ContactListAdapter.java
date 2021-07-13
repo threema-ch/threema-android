@@ -173,7 +173,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 	private void setupIndexer() {
 		int size = values.size();
-		String firstLetter, sortingValue;
+		String firstLetter;
 
 		alphaIndexer.clear();
 		positionIndexer.clear();

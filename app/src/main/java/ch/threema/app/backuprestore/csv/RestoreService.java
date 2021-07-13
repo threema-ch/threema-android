@@ -1435,7 +1435,7 @@ public class RestoreService extends Service {
 			String body = row.getString(Tags.TAG_MESSAGE_BODY);
 			if (!TestUtil.empty(body)) {
 				FileDataModel fileDataModel = FileDataModel.create(body);
-				messageContentsType = MimeUtil.getContentTypeFromMimeType(fileDataModel.getMimeType());
+				messageContentsType = MimeUtil.getContentTypeFromFileData(fileDataModel);
 			} else {
 				messageContentsType = MessageContentsType.FILE;
 			}

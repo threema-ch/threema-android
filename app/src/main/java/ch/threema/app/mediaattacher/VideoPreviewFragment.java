@@ -50,14 +50,14 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 	private ZoomableExoPlayerView videoView;
 	private SimpleExoPlayer videoPlayer;
 
-	VideoPreviewFragment(MediaAttachItem mediaItem){
-		super();
-		this.mediaItem = mediaItem;
+	VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
+		super(mediaItem, mediaAttachViewModel);
 	}
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		this.rootView = inflater.inflate(R.layout.popup_video, container, false);
+		this.rootView = inflater.inflate(R.layout.fragment_video_preview, container, false);
+
 		this.getViewLifecycleOwner().getLifecycle().addObserver(this);
 
 		return this.rootView;
@@ -91,7 +91,7 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
 	@Override
 	public void onPause(@NonNull LifecycleOwner owner) {
-		if (this.videoPlayer != null && this.videoPlayer.isPlaying()) {
+		if (this.videoPlayer != null) {
 			this.videoPlayer.pause();
 		}
 	}

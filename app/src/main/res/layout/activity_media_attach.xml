@@ -9,6 +9,11 @@
 	android:fitsSystemWindows="true">
 
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
+		android:id="@+id/grid_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:id="@+id/bottom_sheet_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -54,19 +59,21 @@
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 	<com.google.android.material.appbar.AppBarLayout
-		android:id="@id/appbar_layout"
+		android:id="@+id/appbar_layout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="@android:color/transparent"
 		app:elevation="0dp">
 
 		<com.google.android.material.appbar.MaterialToolbar
-			android:id="@id/toolbar"
+			android:id="@+id/toolbar"
+			style="?attr/materialToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			android:visibility="invisible"
 			app:menu="@menu/activity_media_attach"
-			app:navigationIcon="@null">
+			app:navigationIcon="@drawable/ic_arrow_down_ios_black_24dp"
+			app:navigationIconTint="?attr/textColorSecondary">
 
 			<LinearLayout
 				android:id="@+id/toolbar_title"
@@ -120,6 +127,53 @@
 
 		<include layout="@layout/date_separator" />
 	</FrameLayout>
+
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
+		android:id="@+id/pager_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:visibility="gone">
+
+		<androidx.viewpager2.widget.ViewPager2
+			android:id="@+id/pager"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/gallery_background" />
+
+		<com.google.android.material.appbar.AppBarLayout
+			android:id="@id/appbar_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/preview_navigation_area_bg"
+			app:elevation="0dp">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:id="@+id/preview_toolbar"
+				style="?attr/materialToolbarStyle"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				android:background="@android:color/transparent"
+				app:navigationIcon="@drawable/ic_arrow_left"
+				app:navigationIconTint="@color/dark_text_color_secondary">
+
+				<ch.threema.app.ui.CheckableView
+					android:id="@+id/check_box"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
+					android:layout_gravity="top|right"
+					android:layout_marginTop="12dp"
+					android:layout_marginRight="16dp"
+					android:background="@drawable/selector_grid_checkbox" />
+
+			</com.google.android.material.appbar.MaterialToolbar>
+
+		</com.google.android.material.appbar.AppBarLayout>
+
+		<include layout="@layout/bottom_sheet_media_preview"/>
+
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -28,6 +28,7 @@ import android.net.Uri;
 
 import java.io.IOException;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.utils.MimeUtil;
 
 /**
@@ -79,7 +80,7 @@ public class MediaComponent {
      * The MediaFormat for the selected track of this component.
      * @return
      */
-    public MediaFormat getTrackFormat() {
+    public @Nullable MediaFormat getTrackFormat() {
         return mTrackFormat;
     }
 

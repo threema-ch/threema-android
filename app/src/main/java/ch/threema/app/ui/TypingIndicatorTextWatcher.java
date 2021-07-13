@@ -24,6 +24,7 @@ package ch.threema.app.ui;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
@@ -31,6 +32,7 @@ import ch.threema.storage.models.ContactModel;
 
 public class TypingIndicatorTextWatcher implements TextWatcher {
 
+	private static final long TYPING_SEND_TIMEOUT = 10 * DateUtils.SECOND_IN_MILLIS;
 	private final Handler typingIndicatorHandler = new Handler();
 	private final UserService userService;
 	private final ContactModel contactModel;
@@ -87,7 +89,7 @@ public class TypingIndicatorTextWatcher implements TextWatcher {
 		if (editable != null && editable.length() == 0) {
 			typingIndicatorHandler.post(sendStoppedTyping);
 		} else {
-			typingIndicatorHandler.postDelayed(sendStoppedTyping, 10000);
+			typingIndicatorHandler.postDelayed(sendStoppedTyping, TYPING_SEND_TIMEOUT);
 		}
 	}
 

@@ -147,7 +147,13 @@ public class FlowControlledDataChannel {
 	 *            channel! When in doubt, post it to some other thread!
 	 */
 	public synchronized void bufferedAmountChange() {
-		final long bufferedAmount = this.dc.bufferedAmount();
+		final long bufferedAmount;
+		try {
+			bufferedAmount = this.dc.bufferedAmount();
+		} catch (IllegalStateException e) {
+			logger.warn("IllegalStateException when calling `dc.bufferedAmount`, data channel already disposed?");
+			return;
+		}
 
 		// Unpause once low water mark has been reached
 		if (bufferedAmount <= this.lowWaterMark && !this.readyFuture.isDone()) {

@@ -154,6 +154,16 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 
 		MediaFormat inputFormat = this.component.getTrackFormat();
 
+		if (inputFormat == null) {
+			throw new UnsupportedAudioFormatException("No input audio format could be detected");
+		}
+
+		if (!inputFormat.containsKey(MediaFormat.KEY_SAMPLE_RATE)) {
+			// Some manufacturer's buggy codec implementation return incomplete inputFormat objects.
+			// Observed on SM-A530F
+			throw new UnsupportedAudioFormatException("Audio format not properly supported by device manufacturer");
+		}
+
 		// Setup De/Encoder
 		this.setupAudioDecoder(inputFormat);
 		this.setupAudioEncoder(inputFormat);
@@ -161,7 +171,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		this.setState(State.DETECTING_INPUT_FORMAT);
 	}
 
-	private void setupAudioDecoder(MediaFormat inputFormat) throws IOException, UnsupportedAudioFormatException {
+	private void setupAudioDecoder(@NonNull MediaFormat inputFormat) throws IOException, UnsupportedAudioFormatException {
 		logger.debug("audio decoder: set sample rate to {}", inputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE));
 
 		if (logger.isDebugEnabled() && inputFormat.containsKey(MediaFormat.KEY_BIT_RATE)) {

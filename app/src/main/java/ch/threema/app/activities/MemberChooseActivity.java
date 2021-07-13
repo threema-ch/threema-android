@@ -21,9 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.app.SearchManager;
-import android.app.SearchableInfo;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -224,14 +221,10 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 			checkItem.setVisible(false);
 		}
 
-		// Associate searchable configuration with the SearchView
 		this.searchMenuItem = menu.findItem(R.id.menu_search_messages);
 		this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
 
 		if (this.searchView != null) {
-			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-			SearchableInfo mSearchableInfo = searchManager.getSearchableInfo(getComponentName());
-			this.searchView.setSearchableInfo(mSearchableInfo);
 			this.searchView.setQueryHint(getString(R.string.hint_filter_list));
 			this.searchView.setOnQueryTextListener(this);
 		} else {

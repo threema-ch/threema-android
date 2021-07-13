@@ -77,7 +77,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
-import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
@@ -104,6 +103,7 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
+import ch.threema.app.push.PushService;
 import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -717,7 +717,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 				if (this.checkLicenseBroadcastReceiver != null) {
 					try {
-						// http://stackoverflow.com/questions/2682043/how-to-check-if-receiver-is-registered-in-android
 						this.unregisterReceiver(this.checkLicenseBroadcastReceiver);
 					} catch (IllegalArgumentException e) {
 						logger.error("Exception", e);

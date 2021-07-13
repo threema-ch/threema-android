@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 
 import ch.threema.app.services.messageplayer.MessagePlayer;
@@ -52,6 +53,7 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public TranscoderView transcoderView;
 	public FrameLayout readOnContainer;
 	public Chip readOnButton;
+	public MaterialButton messageTypeButton;
 
 	public ControllerView controller;
 

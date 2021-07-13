@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -38,6 +39,7 @@ import java.util.Calendar;
 import java.util.Set;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
@@ -217,5 +219,34 @@ public class DNDUtil {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Check if the contact specified in messageReceiver is muted in the system. "Starred" contacts may override the global DND setting in "priority" mode
+	 * and should be signalled.
+	 * @param messageReceiver A MessageReceiver representing a ContactModel
+	 * @param notificationManager
+	 * @param notificationManagerCompat
+	 * @return false if the contact is not muted in the system and a ringtone should be played, false otherwise
+	 */
+	public boolean isSystemMuted(MessageReceiver messageReceiver, NotificationManager notificationManager, NotificationManagerCompat notificationManagerCompat) {
+		boolean isSystemMuted = !notificationManagerCompat.areNotificationsEnabled();
+
+		if (messageReceiver instanceof ContactMessageReceiver) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				/* we do not play a ringtone sound if system-wide DND is enabled - except for starred contacts */
+				switch (notificationManager.getCurrentInterruptionFilter()) {
+					case NotificationManager.INTERRUPTION_FILTER_NONE:
+						isSystemMuted = true;
+						break;
+					case NotificationManager.INTERRUPTION_FILTER_PRIORITY:
+						isSystemMuted = !isStarredContact(messageReceiver);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return isSystemMuted;
 	}
 }

@@ -164,6 +164,10 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 			logger.debug("starting prepare - streamType = {}", streamType);
 			setOutputStream(streamType);
 			mediaPlayer.setDataSource(getContext(), uri);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
+				mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(audioPlaybackSpeed).setPitch(1f));
+			}
 			mediaPlayer.prepare();
 			prepared(mediaPlayer, resume);
 			markAsConsumed();
@@ -392,6 +396,32 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		abandonFocus(false);
 
 		return super.stop();
+	}
+
+	@Override
+	public float togglePlaybackSpeed() {
+		float newSpeed = 1f;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mediaPlayer != null) {
+			float currentSpeed = mediaPlayer.getPlaybackParams().getSpeed();
+
+			if (currentSpeed == 1f) {
+				newSpeed = 1.5f;
+			} else if (currentSpeed == 1.5f) {
+				newSpeed = 2f;
+			} else if (currentSpeed == 2f) {
+				newSpeed = 0.5f;
+			}
+
+			if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+				if (!mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(newSpeed).setPitch(1f))) {
+					newSpeed = currentSpeed;
+				}
+			}
+		}
+
+		preferenceService.setAudioPlaybackSpeed(newSpeed);
+		return newSpeed;
 	}
 
 	@Override

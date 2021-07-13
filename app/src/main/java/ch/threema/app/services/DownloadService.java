@@ -21,9 +21,12 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.client.ProgressListener;
 
 public interface DownloadService{
+	@WorkerThread @Nullable
 	byte[] download(int id, byte[] blobId, boolean markAsDown, ProgressListener progressListener);
 	void complete(int id, byte[] blobId);
 	boolean cancel(int id);

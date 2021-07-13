@@ -57,6 +57,9 @@ public class VoipMediaButtonReceiver extends BroadcastReceiver {
 
 		if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
 			KeyEvent mediaButtonEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+			if (mediaButtonEvent == null) {
+				return;
+			}
 
 			logger.info("MediaButtonReceiver: mediaAction={}, keyCode={}",
 				intent.getAction(), mediaButtonEvent.getKeyCode());

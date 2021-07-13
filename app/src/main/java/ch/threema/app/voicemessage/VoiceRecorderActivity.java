@@ -63,6 +63,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SensorService;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -175,7 +176,13 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 			timerTextView = findViewById(R.id.timer_text);
 
 			sendButton = findViewById(R.id.send_button);
-			sendButton.setOnClickListener(this);
+			sendButton.setOnClickListener(new DebouncedOnClickListener(1000) {
+				@Override
+				public void onDebouncedClick(View v) {
+					stopAndReleaseMediaPlayer(mediaPlayer);
+					sendRecording(false);
+				}
+			});
 
 			discardButton = findViewById(R.id.discard_button);
 			discardButton.setOnClickListener(this);
@@ -626,10 +633,6 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.send_button:
-				stopAndReleaseMediaPlayer(mediaPlayer);
-				sendRecording(false);
-				break;
 			case R.id.discard_button:
 				stopAndReleaseMediaPlayer(mediaPlayer);
 				if (status == MediaState.STATE_RECORDING && getRecordingDuration() >= 5) {

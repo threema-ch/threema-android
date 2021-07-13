@@ -156,9 +156,12 @@ public interface MessageService {
 	boolean processIncomingContactMessage(AbstractMessage message) throws Exception;
 	boolean processIncomingGroupMessage(AbstractGroupMessage message) throws Exception;
 
-	List<AbstractMessageModel> getMessagesForReceiver(MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage);
-	List<AbstractMessageModel> getMessagesForReceiver(MessageReceiver receiver, MessageFilter messageFilter);
-	List<AbstractMessageModel> getMessagesForReceiver(MessageReceiver receiver);
+	@WorkerThread
+	List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage);
+	@WorkerThread
+	List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter);
+	@WorkerThread
+	List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver);
 	List<AbstractMessageModel> getMessageForBallot(BallotModel ballotModel);
 	List<AbstractMessageModel> getContactMessagesForText(String query);
 	List<AbstractMessageModel> getGroupMessagesForText(String query);

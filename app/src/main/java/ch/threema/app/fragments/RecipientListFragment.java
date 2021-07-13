@@ -61,6 +61,7 @@ import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.CheckableRelativeLayout;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
@@ -166,7 +167,12 @@ public abstract class RecipientListFragment extends ListFragment implements List
 
 		if (isMultiSelectAllowed()) {
 			getListView().setOnItemLongClickListener(this);
-			floatingActionButton.setOnClickListener(v -> onFloatingActionButtonClick());
+			floatingActionButton.setOnClickListener(new DebouncedOnClickListener(500) {
+				@Override
+				public void onDebouncedClick(View v) {
+					onFloatingActionButtonClick();
+				}
+			});
 		} else {
 			floatingActionButton.hide();
 		}
@@ -207,16 +213,18 @@ public abstract class RecipientListFragment extends ListFragment implements List
 
 	private void startMultiSelect() {
 		getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-		floatingActionButton.show();
 		if (isVisible) {
 			snackbar = SnackbarUtil.make(topLayout, "", Snackbar.LENGTH_INDEFINITE, 4);
-			snackbar.getView().setBackgroundColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+			snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+			snackbar.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary));
 			snackbar.getView().getLayoutParams().width = AppBarLayout.LayoutParams.MATCH_PARENT;
-			TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-			if (textView != null) {
-				textView.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary));
-			}
 			snackbar.show();
+			snackbar.getView().post(new Runnable() {
+				@Override
+				public void run() {
+					floatingActionButton.show();
+				}
+			});
 		}
 	}
 
@@ -232,10 +240,15 @@ public abstract class RecipientListFragment extends ListFragment implements List
 
 	private void stopMultiSelect() {
 		getListView().setChoiceMode(AbsListView.CHOICE_MODE_NONE);
-		floatingActionButton.hide();
 		if (snackbar != null && snackbar.isShown()) {
 			snackbar.dismiss();
 		}
+		floatingActionButton.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				floatingActionButton.hide();
+			}
+		}, 100);
 	}
 
 	private void onItemClick(View v) {

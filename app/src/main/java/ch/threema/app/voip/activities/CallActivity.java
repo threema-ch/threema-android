@@ -41,6 +41,7 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -94,10 +95,8 @@ import androidx.transition.ChangeBounds;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.wearable.WearableHandler;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetListDialog;
@@ -108,6 +107,7 @@ import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.SensorListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.push.PushService;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
@@ -134,6 +134,7 @@ import ch.threema.app.voip.services.VideoContext;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.app.wearable.WearableHandler;
 import ch.threema.client.APIConnector;
 import ch.threema.client.ThreemaFeature;
 import ch.threema.client.Utils;
@@ -276,6 +277,16 @@ public class CallActivity extends ThreemaActivity implements
 	private APIConnector apiConnector;
 
 	private ContactModel contact;
+
+	private static final int KEEP_ALIVE_DELAY = 20000;
+	private final static Handler keepAliveHandler = new Handler();
+	private final Runnable keepAliveTask = new Runnable() {
+		@Override
+		public void run() {
+			ThreemaApplication.activityUserInteract(CallActivity.this);
+			keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
+		}
+	};
 
 	/**
 	 * The result of a permission request.
@@ -802,6 +813,10 @@ public class CallActivity extends ThreemaActivity implements
 				this.preferenceService.setRejectMobileCalls(false);
 			}
 		}
+
+		// make sure lock screen is not activated during call
+		keepAliveHandler.removeCallbacksAndMessages(null);
+		keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
 	}
 
 	private boolean restoreState(@NonNull Intent intent, Bundle savedInstanceState) {
@@ -940,6 +955,9 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		this.preferenceService.setPipPosition(pipPosition);
+
+		// remove lockscreen keepalive
+		keepAliveHandler.removeCallbacksAndMessages(null);
 
 		// Remove uncaught exception handler
 		Thread.setDefaultUncaughtExceptionHandler(null);
@@ -1518,9 +1536,11 @@ public class CallActivity extends ThreemaActivity implements
 				private GestureDetector gestureDetector = new GestureDetector(CallActivity.this, new GestureDetector.SimpleOnGestureListener() {
 					@Override
 					public boolean onSingleTapConfirmed(MotionEvent e) {
-						videoViews.pipVideoRenderer.setTranslationX(0);
-						videoViews.pipVideoRenderer.setTranslationY(0);
-						videoViews.pipVideoRenderer.performClick();
+						if (videoViews != null && videoViews.pipVideoRenderer != null) {
+							videoViews.pipVideoRenderer.setTranslationX(0);
+							videoViews.pipVideoRenderer.setTranslationY(0);
+							videoViews.pipVideoRenderer.performClick();
+						}
 						return true;
 					}
 				});

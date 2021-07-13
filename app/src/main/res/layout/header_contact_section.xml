@@ -29,8 +29,8 @@
 		android:layout_marginLeft="34dp"
 		android:contentDescription="@string/title_invite_friend"
 		android:scaleType="center"
-		android:tint="?attr/textColorSecondary"
-		app:srcCompat="@drawable/ic_share_outline"/>
+		app:srcCompat="@drawable/ic_share_outline"
+		app:tint="?attr/textColorSecondary" />
 
 	<TextView
 		android:layout_width="wrap_content"

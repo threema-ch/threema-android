@@ -559,9 +559,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
 			if (MimeUtil.isVideoFile(mimeType) || MimeUtil.isImageFile(mimeType)) {
 				try {
+					logger.info("Number of taken persistable uri permissions" + getContentResolver().getPersistedUriPermissions().size());
 					getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 				} catch (Exception e) {
-					logger.info("Unable to take persistable uri permission");
+					logger.info("Unable to take persistable uri permission ", e);
 					uri = FileUtil.getFileUri(uri);
 				}
 
@@ -595,9 +596,11 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 		for (Uri uri : list) {
 			try {
+				// log the number of permissions due to limit https://commonsware.com/blog/2020/06/13/count-your-saf-uri-permission-grants.html
+				logger.info("Number of taken persistable uri permissions" + getContentResolver().getPersistedUriPermissions().size());
 				getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			} catch (Exception e) {
-				logger.info("Unable to take persistable uri permission");
+				logger.info("Unable to take persistable uri permission ", e);
 				uri = FileUtil.getFileUri(uri);
 			}
 

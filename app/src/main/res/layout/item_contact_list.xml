@@ -32,11 +32,11 @@
 		android:layout_height="24dp"
 		app:srcCompat="@drawable/ic_new_badge"
 		android:importantForAccessibility="no"
-		android:tint="?attr/colorAccent"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		android:visibility="gone" />
+		android:visibility="gone"
+		app:tint="?attr/colorAccent" />
 
 	<!-- avatar -->
 

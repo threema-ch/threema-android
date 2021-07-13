@@ -21,15 +21,16 @@
 
 package ch.threema.client.ballot;
 
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.ProtocolDefines;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
+import ch.threema.client.AbstractMessage;
+import ch.threema.client.ProtocolDefines;
+
 /**
- * A group creation message.
+ * A ballot creation message.
  */
 public class BallotCreateMessage extends AbstractMessage
 	implements BallotCreateInterface{

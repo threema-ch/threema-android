@@ -370,6 +370,10 @@ public abstract class MessagePlayer {
 		return false;
 	}
 
+	public float togglePlaybackSpeed() {
+		return 1f;
+	}
+
 	public MessagePlayer addListener(String key, PlayerListener listener) {
 		synchronized (this.playerListeners) {
 			this.playerListeners.put(key, listener);

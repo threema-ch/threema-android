@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.core.app.ActivityCompat;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.UserService;
@@ -43,7 +44,7 @@ public class ShareUtil {
 
 			Intent shareIntent = new Intent(Intent.ACTION_SEND);
 			shareIntent.setType("text/plain");
-			shareIntent.putExtra(Intent.EXTRA_TEXT, contactName + ": https://" + context.getString(R.string.contact_action_url) + "/" + identity);
+			shareIntent.putExtra(Intent.EXTRA_TEXT, contactName + ": https://" + BuildConfig.contactActionUrl + "/" + identity);
 
 			ActivityCompat.startActivity(context, Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
 		}

@@ -244,8 +244,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String PHONE_LINKED_PLACEHOLDER = "***";
 	public static final String EMAIL_LINKED_PLACEHOLDER = "***@***";
 
-	private static final long NOTIFICATION_TIMEOUT = 2000000000; // nanoseconds - equivalent to two seconds
-
 	public static final long ACTIVITY_CONNECTION_LIFETIME = 60000;
 	public static final int MAX_BLOB_SIZE_MB = 50;
 	public static final int MAX_BLOB_SIZE = MAX_BLOB_SIZE_MB * 1024 * 1024;
@@ -272,8 +270,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static boolean ipv6 = false;
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
 
-	public static String uriScheme;
-
 	public static ExecutorService sendMessageExecutorService = Executors.newFixedThreadPool(4);
 
 	private static boolean checkAppReplacingState(Context context) {
@@ -294,27 +290,26 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 	}
 
-	private static void showNotesGroupNotice(GroupModel groupModel, int previousMemberCount) throws ThreemaException {
-		GroupService groupService = serviceManager.getGroupService();
-		MessageService messageService = serviceManager.getMessageService();
+	private static void showNotesGroupNotice(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
+		if (oldState != newState) {
+			try {
+				GroupService groupService = serviceManager.getGroupService();
+				MessageService messageService = serviceManager.getMessageService();
+				if (groupService != null && messageService != null) {
+					String notice = null;
 
-		if (groupService != null && messageService != null) {
-			String notice = null;
-
-			if (previousMemberCount != groupService.countMembers(groupModel) && groupService.isGroupOwner(groupModel)) {
-				if (groupService.isNotesGroup(groupModel)) {
-					if (previousMemberCount == 2 || previousMemberCount == 0) {
+					if (newState == GroupService.NOTES) {
 						notice = serviceManager.getContext().getString(R.string.status_create_notes);
-					}
-				} else {
-					if (previousMemberCount == 1) {
+					} else if (newState == GroupService.PEOPLE && oldState != GroupService.UNDEFINED) {
 						notice = serviceManager.getContext().getString(R.string.status_create_notes_off);
 					}
-				}
 
-				if (notice != null) {
-					messageService.createStatusMessage(notice, groupService.createReceiver(groupModel));
+					if (notice != null) {
+						messageService.createStatusMessage(notice, groupService.createReceiver(groupModel));
+					}
 				}
+			} catch (ThreemaException e) {
+				logger.error("Exception", e);
 			}
 		}
 	}
@@ -378,8 +373,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 		/* Instantiate our own SecureRandom implementation to make sure this gets used everywhere */
 		new LinuxSecureRandom();
-
-		uriScheme = getAppContext().getString(R.string.uri_scheme);
 
 		/* prepare app version object */
 		appVersion = new AppVersion(
@@ -681,15 +674,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 	public static MasterKey getMasterKey() {
 		return masterKey;
-	}
-
-	public static boolean isNotifyAgain() {
-		// do not notify again if second messages arrives within NOTIFICATION_TIMEOUT;
-		long newTimeStamp = System.nanoTime();
-		boolean doNotifiy = newTimeStamp - lastNotificationTimeStamp > NOTIFICATION_TIMEOUT;
-		lastNotificationTimeStamp = newTimeStamp;
-
-		return doNotifiy;
 	}
 
 	public static void putMessageDraft(String chatId, CharSequence value) {
@@ -1098,7 +1082,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_create_group),
 							serviceManager.getGroupService().createReceiver(newGroupModel));
-					showNotesGroupNotice(newGroupModel, 0);
 				} catch (ThreemaException e) {
 					logger.error("Exception", e);
 				}
@@ -1193,12 +1176,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								}
 							}
 						}
-
-						if (myIdentity.equals(group.getCreatorIdentity())) {
-							if (previousMemberCount == 1) {
-								showNotesGroupNotice(group, previousMemberCount);
-							}
-						}
 					}
 
 				} catch (ThreemaException x) {
@@ -1231,8 +1208,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_group_member_left, memberName),
 							receiver);
-
-					showNotesGroupNotice(group, previousMemberCount);
 
 					BallotService ballotService = serviceManager.getBallotService();
 					ballotService.removeVotes(receiver, identity);
@@ -1270,7 +1245,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							serviceManager.getContext().getString(R.string.status_group_member_kicked, memberName),
 							receiver);
 
-					showNotesGroupNotice(group, previousMemberCount);
 
 					BallotService ballotService = serviceManager.getBallotService();
 					ballotService.removeVotes(receiver, identity);
@@ -1295,6 +1269,13 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				} catch (ThreemaException e) {
 					logger.error("Exception", e);
 				}
+			}
+
+			@Override
+			public void onGroupStateChanged(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
+				logger.debug("&&& onGroupStateChanged: {} -> {}", oldState, newState);
+
+				showNotesGroupNotice(groupModel, oldState, newState);
 			}
 		}, THREEMA_APPLICATION_LISTENER_TAG);
 

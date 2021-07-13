@@ -21,9 +21,12 @@
 
 package ch.threema.app.adapters.decorators;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.PowerManager;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -32,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -39,6 +43,8 @@ import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.AnimationUtil;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
@@ -128,6 +134,17 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		}, holder.messageBlockView);
 
 		holder.messagePlayer = audioMessagePlayer;
+		holder.readOnButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				float speed = audioMessagePlayer.togglePlaybackSpeed();
+				setSpeedButtonText(holder, speed);
+			}
+		});
+
+		setSpeedButtonText(holder, getPreferenceService().getAudioPlaybackSpeed());
+		holder.readOnButton.setVisibility(View.GONE);
+		holder.messageTypeButton.setVisibility(View.VISIBLE);
 		holder.controller.setOnClickListener(v -> {
 			int status = holder.controller.getStatus();
 
@@ -154,7 +171,6 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		});
 
 		RuntimeUtil.runOnUiThread(() -> {
-
 			holder.controller.setNeutral();
 
 			//reset progressbar
@@ -189,6 +205,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						break;
 					case MessagePlayer.State_PLAYING:
 						isPlaying = true;
+						changePlayingState(holder, true);
 						// fallthrough
 					case MessagePlayer.State_PAUSE:
 					case MessagePlayer.State_INTERRUPTED_PLAY:
@@ -280,30 +297,36 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 					.addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
 						@Override
 						public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
-							invalidate(holder, position);
-							keepScreenOn();
+							RuntimeUtil.runOnUiThread(() -> {
+								invalidate(holder, position);
+								keepScreenOn();
+								changePlayingState(holder, true);
+							});
 						}
 
 						@Override
 						public void onPause(AbstractMessageModel messageModel) {
-							invalidate(holder, position);
-							keepScreenOff();
+							RuntimeUtil.runOnUiThread(() -> {
+								invalidate(holder, position);
+								keepScreenOff();
+								changePlayingState(holder, false);
+							});
 						}
 
 						@Override
 						public void onStatusUpdate(AbstractMessageModel messageModel, final int pos) {
-								RuntimeUtil.runOnUiThread(() -> {
-									if (holder.position == position) {
-										if (holder.seekBar != null) {
-											holder.seekBar.setMax(holder.messagePlayer.getDuration());
-										}
-										updateProgressCount(holder, pos);
-
-										// make sure pinlock is not activated while playing
-										ThreemaApplication.activityUserInteract(helper.getFragment().getActivity());
-										keepScreenOnUpdate();
+							RuntimeUtil.runOnUiThread(() -> {
+								if (holder.position == position) {
+									if (holder.seekBar != null) {
+										holder.seekBar.setMax(holder.messagePlayer.getDuration());
 									}
-								});
+									updateProgressCount(holder, pos);
+
+									// make sure pinlock is not activated while playing
+									ThreemaApplication.activityUserInteract(helper.getFragment().getActivity());
+									keepScreenOnUpdate();
+								}
+							});
 						}
 
 						@Override
@@ -313,6 +336,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 								updateProgressCount(holder, 0);
 								invalidate(holder, position);
 								keepScreenOff();
+								changePlayingState(holder, false);
 							});
 						}
 					});
@@ -355,7 +379,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 		if(holder.contentView != null) {
 			//one size fits all :-)
-			holder.contentView.getLayoutParams().width = helper.getThumbnailWidth();
+			holder.contentView.getLayoutParams().width = ConfigUtils.getPreferredAudioMessageWidth(getContext(), false);
 		}
 
 		// format caption
@@ -376,6 +400,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 	}
 
+	@UiThread
 	private void updateProgressCount(final ComposeMessageHolder holder, int value) {
 		if (holder != null && holder.size != null && holder.seekBar != null) {
 			holder.seekBar.setProgress(value);
@@ -383,4 +408,19 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 	}
 
+	@UiThread
+	private synchronized void changePlayingState(final ComposeMessageHolder holder, boolean isPlaying) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			AnimationUtil.setFadingVisibility(holder.readOnButton, isPlaying ? View.VISIBLE : View.GONE);
+			AnimationUtil.setFadingVisibility(holder.messageTypeButton, isPlaying ? View.GONE : View.VISIBLE);
+		}
+	}
+
+	@SuppressLint("DefaultLocale")
+	private void setSpeedButtonText(final ComposeMessageHolder holder, float speed) {
+		holder.readOnButton.setText(
+			speed % 1.0 != 0L ?
+			String.format("%sx", speed) :
+			String.format(" %.0fx ", speed));
+	}
 }
