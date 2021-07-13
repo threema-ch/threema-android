@@ -45,6 +45,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.asynctasks.DeleteConversationsAsyncTask;
@@ -59,6 +60,7 @@ import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
@@ -184,6 +186,12 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 		// Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
 		viewModel.getConversationModels().observe(this, conversationsObserver);
 		viewModel.onDataChanged();
+
+		String filterQuery = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER);
+		if (!TestUtil.empty(filterQuery)) {
+			filterMenu.expandActionView();
+			searchView.setQuery(filterQuery, false);
+		}
 
 		return true;
 	}

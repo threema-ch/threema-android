@@ -203,6 +203,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_EDITFOCUS = "editfocus";
 	public static final String INTENT_DATA_GROUP = "group";
 	public static final String INTENT_DATA_DISTRIBUTION_LIST = "distribution_list";
+	public static final String INTENT_DATA_ARCHIVE_FILTER = "archiveFilter";
 	public static final String INTENT_DATA_QRCODE = "qrcodestring";
 	public static final String INTENT_DATA_QRCODE_TYPE_OK = "qrcodetypeok";
 	public static final String INTENT_DATA_MESSAGE_ID = "messageid";

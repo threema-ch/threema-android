@@ -1081,7 +1081,9 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onFooterClick(View view) {
-		AnimationUtil.startActivity(getActivity(), view,  new Intent(getActivity(), ArchiveActivity.class));
+		Intent intent = new Intent(getActivity(), ArchiveActivity.class);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
+		AnimationUtil.startActivity(getActivity(), view, intent);
 	}
 
 	private void editGroup(ConversationModel model, View view) {
