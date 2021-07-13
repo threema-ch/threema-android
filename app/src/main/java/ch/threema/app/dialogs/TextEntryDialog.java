@@ -77,6 +77,25 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	}
 
 	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int negative,
+	                                          String text, int inputType, int inputFilterType,
+	                                          int maxLines) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putString("text", text);
+		args.putInt("inputType", inputType);
+		args.putInt("inputFilterType", inputFilterType);
+		args.putInt("maxLines", maxLines);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
 	                                          @StringRes int positive, @StringRes int neutral, @StringRes int negative,
 	                                          String text, int inputType, int inputFilterType, int maxLength) {
 		TextEntryDialog dialog = new TextEntryDialog();

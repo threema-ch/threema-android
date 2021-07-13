@@ -46,8 +46,6 @@
 			android:layout_marginTop="5dip"
 			android:layout_toLeftOf="@+id/vote_count"
 			android:layout_toRightOf="@id/choice_radio"
-			android:ellipsize="end"
-			android:maxLines="3"
 			android:text="Name"
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textColor="?attr/textColorPrimary" />

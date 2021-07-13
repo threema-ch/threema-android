@@ -23,6 +23,7 @@ package ch.threema.app.activities.ballot;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
@@ -46,15 +47,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
 import ch.threema.app.dialogs.DateSelectorDialog;
+import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.dialogs.TimeSelectorDialog;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
-public class BallotWizardFragment1 extends BallotWizardFragment implements DateSelectorDialog.DateSelectorDialogListener, TimeSelectorDialog.TimeSelectorDialogListener, BallotWizardActivity.BallotWizardCallback {
+public class BallotWizardFragment1 extends BallotWizardFragment implements DateSelectorDialog.DateSelectorDialogListener, TimeSelectorDialog.TimeSelectorDialogListener, BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener, TextEntryDialog.TextEntryDialogClickListener {
 	private static final String DIALOG_TAG_SELECT_DATE = "selectDate";
 	private static final String DIALOG_TAG_SELECT_TIME = "selectTime";
 	private static final String DIALOG_TAG_SELECT_DATETIME = "selectDateTime";
+	private static final String DIALOG_TAG_EDIT_ANSWER = "editAnswer";
 
 	private RecyclerView choiceRecyclerView;
 	private List<BallotChoiceModel> ballotChoiceModelList;
@@ -65,6 +68,7 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 	private Date originalDate = null;
 	private LinearLayoutManager choiceRecyclerViewLayoutManager;
 	private int lastVisibleBallotPosition;
+	private int editItemPosition = -1;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -196,18 +200,56 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 		if(this.getBallotActivity() != null) {
 			this.ballotChoiceModelList = this.getBallotActivity().getBallotChoiceModelList();
 			this.listAdapter = new BallotWizard1Adapter(this.ballotChoiceModelList);
-			this.listAdapter.setOnChoiceListener(this::removeChoice);
+			this.listAdapter.setOnChoiceListener(this);
 			this.choiceRecyclerView.setAdapter(this.listAdapter);
 		}
 	}
 
-	private void removeChoice(int position) {
+	@Override
+	public void onEditClicked(int position) {
+		this.editItemPosition = position;
+		TextEntryDialog alertDialog = TextEntryDialog.newInstance(
+			R.string.edit_answer, 0,
+			R.string.ok,
+			R.string.cancel,
+			ballotChoiceModelList.get(position).getName(),
+			InputType.TYPE_CLASS_TEXT,
+			TextEntryDialog.INPUT_FILTER_TYPE_NONE,
+			5);
+		alertDialog.setTargetFragment(this, 0);
+		alertDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_ANSWER);
+	}
+
+	@Override
+	public void onYes(String tag, String text) {
+		if (!TestUtil.empty(text)) {
+			synchronized (ballotChoiceModelList) {
+				if (editItemPosition != -1) {
+					ballotChoiceModelList.get(editItemPosition).setName(text);
+					listAdapter.notifyItemChanged(editItemPosition);
+				}
+				editItemPosition = -1;
+			}
+		}
+		createChoiceEditText.requestFocus();
+	}
+
+	@Override
+	public void onNeutral(String tag) {
+	}
+
+	@Override
+	public void onNo(String tag) {
+		createChoiceEditText.requestFocus();
+	}
+
+	@Override
+	public void onRemoveClicked(int position) {
 		synchronized (ballotChoiceModelList) {
 			ballotChoiceModelList.remove(position);
 			listAdapter.notifyItemRemoved(position);
 		}
 	}
-
 
 	/**
 	 * Create a new Choice with a Input Alert.

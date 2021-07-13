@@ -130,6 +130,9 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
 	@Override
 	public void onMissingTitle() {
 		this.textInputLayout.setError(getString(R.string.title_cannot_be_empty));
+		this.editText.setFocusableInTouchMode(true);
+		this.editText.setFocusable(true);
+		this.editText.requestFocus();
 	}
 
 	@Override

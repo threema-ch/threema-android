@@ -1241,5 +1241,6 @@
 	<string name="tap_here_for_more">Tap here for more information</string>
 	<string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you\'re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.</string>
 	<string name="app_store_error_code">App store error code: %d</string>
+	<string name="edit_answer">Edit answer</string>
 </resources>
 

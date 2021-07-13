@@ -40,6 +40,7 @@ import ch.threema.storage.models.ballot.BallotChoiceModel;
 public class BallotWizard1Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 	public interface OnChoiceListener {
+		void onEditClicked(int position);
 		void onRemoveClicked(int position);
 	}
 
@@ -47,11 +48,13 @@ public class BallotWizard1Adapter extends RecyclerView.Adapter<RecyclerView.View
 
 		public TextView name;
 		public ImageView removeButton;
+		public ImageView editButton;
 
 		public BallotAdminChoiceItemHolder(@NonNull View itemView) {
 			super(itemView);
 			name = itemView.findViewById(R.id.choice_name_readonly);
 			removeButton = itemView.findViewById(R.id.remove_button);
+			editButton = itemView.findViewById(R.id.edit_button);
 		}
 
 		public void bind(BallotChoiceModel choiceModel, OnChoiceListener onChoiceListener) {
@@ -64,8 +67,15 @@ public class BallotWizard1Adapter extends RecyclerView.Adapter<RecyclerView.View
 						}
 					});
 					removeButton.setVisibility(View.VISIBLE);
+					editButton.setOnClickListener(view -> {
+						if (onChoiceListener != null) {
+							onChoiceListener.onEditClicked(getAdapterPosition());
+						}
+					});
+					editButton.setVisibility(View.VISIBLE);
 				} else {
 					removeButton.setVisibility(View.GONE);
+					editButton.setVisibility(View.GONE);
 				}
 			}
 		}
