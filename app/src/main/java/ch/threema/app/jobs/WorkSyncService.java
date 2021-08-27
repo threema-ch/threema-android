@@ -49,7 +49,6 @@ import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.VerificationLevel;
 import ch.threema.client.APIConnector;
@@ -172,36 +171,8 @@ public class WorkSyncService extends FixedJobIntentService {
 				logger.debug("contacts: " + workData.workContacts.size());
 */				List<ContactModel> existingWorkContacts = this.contactService.getIsWork();
 
-				boolean requireCheckMultipleIdentities = false;
 				for (WorkContact workContact : workData.workContacts) {
-
-					ContactModel existingContact = this.contactService.getByIdentity(workContact.threemaId);
-
-					if (existingContact == null) {
-						existingContact = new ContactModel(workContact.threemaId, workContact.publicKey);
-						requireCheckMultipleIdentities = true;
-					} else {
-						//try to remove
-						for (int x = 0; x < existingWorkContacts.size(); x++) {
-							if (existingWorkContacts.get(x).getIdentity().equals(workContact.threemaId)) {
-								existingWorkContacts.remove(x);
-								break;
-							}
-						}
-					}
-
-					if (!ContactUtil.isLinked(existingContact)
-						&& (workContact.firstName != null
-						|| workContact.lastName != null)) {
-						existingContact.setFirstName(workContact.firstName);
-						existingContact.setLastName(workContact.lastName);
-					}
-					existingContact.setIsWork(true);
-					existingContact.setIsHidden(false);
-					if (existingContact.getVerificationLevel() != VerificationLevel.FULLY_VERIFIED) {
-						existingContact.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
-					}
-					this.contactService.save(existingContact);
+					contactService.addWorkContact(workContact, existingWorkContacts);
 				}
 
 				//downgrade work contacts
@@ -232,14 +203,6 @@ public class WorkSyncService extends FixedJobIntentService {
 					// Save the Mini-MDM Parameters to a local file
 					AppRestrictionService.getInstance()
 						.storeWorkMDMSettings(workData.mdm);
-				}
-
-				// Check identity for type and state (only if new contacts added)
-				if (requireCheckMultipleIdentities) {
-					// force run
-					logger.debug("force run CheckIdentityStatesRoutine");
-					// TODO
-//					CheckIdentityStatesRoutine.start(true);
 				}
 
 				// update work info

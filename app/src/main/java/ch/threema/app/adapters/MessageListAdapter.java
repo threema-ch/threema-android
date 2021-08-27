@@ -58,6 +58,7 @@ import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.CountBoxView;
 import ch.threema.app.ui.DebouncedOnClickListener;
+import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -99,6 +100,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	private final ItemClickListener clickListener;
 	private final List<ConversationModel> selectedChats = new ArrayList<>();
 	private String highlightUid;
+	private RecyclerView recyclerView;
 
 	private final TagModel starTagModel, unreadTagModel;
 
@@ -512,15 +514,35 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			// footer
 			Chip archivedChip = h.itemView.findViewById(R.id.archived_text);
 
-			int count = conversationService.getArchivedCount();
-			if (count > 0) {
+			int archivedCount = conversationService.getArchivedCount();
+			if (archivedCount > 0) {
 				archivedChip.setVisibility(View.VISIBLE);
 				archivedChip.setOnClickListener(v -> clickListener.onFooterClick(v));
-				archivedChip.setText(String.format(context.getString(R.string.num_archived_chats), count));
+				archivedChip.setText(String.format(context.getString(R.string.num_archived_chats), archivedCount));
+				if (recyclerView != null) {
+					((EmptyRecyclerView) recyclerView).setNumHeadersAndFooters(0);
+				}
 			} else {
 				archivedChip.setVisibility(View.GONE);
+				if (recyclerView != null) {
+					((EmptyRecyclerView) recyclerView).setNumHeadersAndFooters(1);
+				}
 			}
 		}
+	}
+
+	@Override
+	public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+		super.onAttachedToRecyclerView(recyclerView);
+
+		this.recyclerView = recyclerView;
+	}
+
+	@Override
+	public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+		this.recyclerView = null;
+
+		super.onDetachedFromRecyclerView(recyclerView);
 	}
 
 	public void toggleItemChecked(ConversationModel model, int position) {
@@ -539,6 +561,10 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	public int getCheckedItemCount() {
 		return selectedChats.size();
+	}
+
+	public void refreshFooter() {
+		notifyItemChanged(getItemCount() - 1);
 	}
 
 	public List<ConversationModel> getCheckedItems() {

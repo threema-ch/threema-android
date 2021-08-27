@@ -435,7 +435,7 @@ public class BitmapUtil {
 			this.rotation = rotation;
 		}
 
-		public int getFlip() {
+		public @BitmapUtil.FlipType int getFlip() {
 			return flip;
 		}
 

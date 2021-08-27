@@ -34,8 +34,8 @@
 	<string name="prefs_header_chat">Chat</string>
 	<string name="prefs_header_reset">Reset</string>
 	<string name="prefs_header_keyboard">Keyboard</string>
-	<string name="prefs_sum_sync_contacts_on">Keep Threema users in sync with your device\'s address book</string>
-	<string name="prefs_sum_sync_contacts_off">Do not sync Threema users with your device\'s address book</string>
+	<string name="prefs_sum_sync_contacts_on">Keep Threema users in sync with your device’s address book</string>
+	<string name="prefs_sum_sync_contacts_off">Do not sync Threema users with your device’s address book</string>
 	<string name="prefs_title_sync_contacts">Sync contacts</string>
 	<string name="prefs_sum_block_unknown_off">Anybody can send you a message. New contacts will be added automatically
 		when the first message arrives.</string>
@@ -156,7 +156,7 @@
 	<string name="backup_and_delete">Backup and delete</string>
 	<string name="delete_id_title">Delete ID</string>
 	<string name="delete_id_message">Unless you have created a backup or exported and saved a copy of this ID, you will never be able to send or receive
-		messages with this ID again.\n\nIf you don\'t intend to use this ID again, you should remove any linked email
+		messages with this ID again.\n\nIf you don’t intend to use this ID again, you should remove any linked email
 		addresses/phone numbers before you delete it.</string>
 	<string name="delete_id_message2">Last warning: do you really want to delete your ID on this device?</string>
 	<string name="delete_id_sum">Permanently delete your ID and all data on this device</string>
@@ -196,7 +196,7 @@
 	<string name="restoring_backup">Restoring backup</string>
 	<string name="server_message_title">Message from Threema Server</string>
 	<string name="error">Error</string>
-	<string name="no_contacts"><![CDATA[You don\'t have any contacts yet. Turn on synchronization (Settings > Privacy) or add contacts manually.]]></string>
+	<string name="no_contacts"><![CDATA[You don’t have any contacts yet. Turn on synchronization (Settings > Privacy) or add contacts manually.]]></string>
 	<string name="masterkey_title">Enter Passphrase</string>
 	<string name="masterkey_body">Your Threema master key is protected by a passphrase. Enter your passphrase to unlock
 		the key.</string>
@@ -212,7 +212,7 @@
 	<string name="try_again">Try again</string>
 	<string name="decoding_message">Decrypting Message</string>
 	<string name="invalid_barcode">Invalid barcode type</string>
-	<string name="expired_barcode">This code has expired. Please scan it again directly from the other user\'s app.</string>
+	<string name="expired_barcode">This code has expired. Please scan it again directly from the other user’s app.</string>
 	<string name="pending">Pending</string>
 	<string name="unlinking_email">Unlinking email</string>
 	<string name="unlink">Unlink</string>
@@ -220,15 +220,15 @@
 	<string name="wrong_backupid_or_password_or_no_internet_connection">No connection to the internet, invalid ID export data or incorrect password</string>
 	<string name="prefs_header_other">Other</string>
 	<string name="an_error_occurred">An error occurred</string>
-	<string name="an_error_occurred_more">An error occurred: «%1$s»</string>
+	<string name="an_error_occurred_more">An error occurred: “%1$s”</string>
 	<string name="acknowledge">Agree</string>
 	<string name="decline">Disagree</string>
 	<string name="forward_message">Forward message</string>
 	<string name="file_is_not_a_image">Selected file is not an image</string>
 	<string name="connection_error">Connection error, please try again later.</string>
 	<string name="me_myself_and_i">Me</string>
-	<string name="really_forward">Forward to «%1$s»?</string>
-	<string name="really_send">Send to «%1$s»?</string>
+	<string name="really_forward">Forward to “%1$s”?</string>
+	<string name="really_send">Send to “%1$s”?</string>
 	<string name="ringtone_none">Silent</string>
 	<string name="no_camera_installed">No usable camera available</string>
 	<string name="save_message_action">Save</string>
@@ -281,14 +281,14 @@
 	<string name="backup_data_new">Create data backup</string>
 	<string name="pinentry_enter_pin">Enter your Threema PIN to continue</string>
 	<string name="pinentry_wrong_pin">PIN incorrect</string>
-	<string name="prefs_sum_security_pin">Lock access to Threema\'s UI</string>
+	<string name="prefs_sum_security_pin">Lock access to Threema’s UI</string>
 	<string name="prefs_title_pin_switch">App lock</string>
 	<string name="prefs_title_pin_code">Set a PIN</string>
 	<string name="prefs_pin_grace">Time to lock</string>
 	<string name="prefs_sum_pin_grace">Time until the screen lock is activated</string>
 	<string name="click_here_to_change_pin">PIN set. Tap here to change</string>
 	<string name="set_pin_menu_title">Set new PIN</string>
-	<string name="set_pin_summary_intro">Protect your privacy by setting a numeric PIN (digits only). This PIN can be used to lock access to Threema\'s UI after a grace time or to protect private chats</string>
+	<string name="set_pin_summary_intro">Protect your privacy by setting a numeric PIN (digits only). This PIN can be used to lock access to Threema’s UI after a grace time or to protect private chats</string>
 	<string name="set_pin_again_summary">Enter PIN again</string>
 	<string name="set_pin_hint">PIN</string>
 	<string name="title_addgroup">New group</string>
@@ -334,28 +334,28 @@
 	<string name="creating_group">Creating group</string>
 	<string name="updating_group">Updating group</string>
 	<string name="status_create_group">Group created.</string>
-	<string name="status_rename_group">Group renamed to «%1$s»</string>
+	<string name="status_rename_group">Group renamed to “%1$s”</string>
 	<string name="status_group_new_photo">Group updated.</string>
-	<string name="status_group_new_member">«%1$s» added to group.</string>
-	<string name="status_group_member_left">«%1$s» left the group.</string>
-	<string name="status_group_member_kicked">«%1$s» has been removed from the group.</string>
+	<string name="status_group_new_member">“%1$s” added to group.</string>
+	<string name="status_group_member_left">“%1$s” left the group.</string>
+	<string name="status_group_member_kicked">“%1$s” has been removed from the group.</string>
 	<string name="can_not_send_no_group_members">You cannot send a message to an empty group</string>
 	<string name="you_are_not_a_member_of_this_group">You are not a member of this group</string>
 	<string name="can_not_delete_not_valid">Cannot remove an invalid object</string>
 	<string name="can_not_delete_contact_until_in_group">The contact is still a member or creator of a group
 		conversation and therefore cannot be deleted. Leave or delete all groups that include this contact and try
 		again.</string>
-	<string name="can_not_delete_contact">Can\'t remove contact</string>
+	<string name="can_not_delete_contact">Can’t remove contact</string>
 	<string name="title_public_nickname">Nickname</string>
 	<string name="prefs_sum_excluded_sync_identities">The IDs listed here will be ignored when synchronizing contacts</string>
 	<string name="prefs_title_excluded_sync_identities">Exclusion list</string>
-	<string name="synchronize_contact">Linked System Contact</string>
+	<string name="synchronize_contact">Address book sync</string>
 	<string name="exclude_contact">Exclude from auto sync</string>
 	<string name="prefs_header_lists">Lists</string>
 	<string name="prefs_title_black_list">Blacklist</string>
 	<string name="prefs_sum_black_list">Messages from IDs listed here will be ignored.</string>
 	<string name="verified">Verified</string>
-	<string name="want_to_add_to_exclude_list">This contact is linked to a record in your phone\'s addressbook. If you
+	<string name="want_to_add_to_exclude_list">This contact is linked to a record in your phone’s addressbook. If you
 		delete it in Threema it will reappear after a contact sync.\nWould you like to exclude it from synchronization?</string>
 	<string name="no">No</string>
 	<string name="yes">Yes</string>
@@ -390,7 +390,7 @@
 	<string name="prefs_sum_validate_contacts">Validate all Threema contact links with the Android address directory</string>
 	<string name="prefs_title_fullscreen_ime">Fullscreen keyboard</string>
 	<string name="prefs_sum_fullscreen_ime_on">The keyboard covers the application if your device is in landscape mode</string>
-	<string name="prefs_sum_fullscreen_ime_off">Display a preview of the chat above the keyboard if there\'s room</string>
+	<string name="prefs_sum_fullscreen_ime_off">Display a preview of the chat above the keyboard if there’s room</string>
 	<string name="add_acount_from_within_threema">Manage your Threema ID from within Threema.</string>
 	<string name="save_image">Save Image</string>
 	<string name="share_image">Share Image</string>
@@ -412,7 +412,7 @@
 	<string name="no_matching_distribution_lists">No matching distribution lists</string>
 	<string name="is_typing">is typing…</string>
 	<string name="push_not_available_title">No push service found</string>
-	<string name="push_not_available_text">"We could not find a push service on your device because Google Play Services are not installed or outdated. Threema will check for new messages every 15 minutes.</string>
+	<string name="push_not_available_text">We could not find a push service on your device because Google Play Services are not installed or outdated. Threema will check for new messages every 15 minutes.</string>
 	<string name="backup_in_progress">Backup in progress</string>
 	<string name="backup_or_restore_success_body">Data backup successfully completed</string>
 	<string name="backup_or_restore_error">Threema Backup</string>
@@ -500,7 +500,7 @@
 	<string name="back">Back</string>
 	<string name="wearable_reply">Reply</string>
 	<string name="wearable_reply_label">Reply to %s</string>
-	<string name="message_acknowledged">«Agree» sent</string>
+	<string name="message_acknowledged">“Agree” sent</string>
 	<string name="push_disable_text">If you continue, push messages will be disabled and Threema will check for new
 		messages every 15 minutes.</string>
 	<string name="ballot_intermediate_results_show">Show intermediate results</string>
@@ -514,7 +514,7 @@
 	<string name="kick_user_from_group">Kick %1$s from group</string>
 	<string name="show_as_qrcode">Show as QR code</string>
 	<string name="qr_code">QR code</string>
-	<string name="really_leave_id_export">If you haven\'t already done so, save your ID export text string or the corresponding QR code to a safe place or print it. Your Threema ID cannot be restored without a backup.</string>
+	<string name="really_leave_id_export">If you haven’t already done so, save your ID export text string or the corresponding QR code to a safe place or print it. Your Threema ID cannot be restored without a backup.</string>
 	<string name="revocation_key_title">ID Revocation</string>
 	<string name="revocation_key_not_set">No revocation password set</string>
 	<string name="revocation_key_set_at">Password set %1$s</string>
@@ -598,7 +598,7 @@
 	<string name="prefs_emoji_style">Emoji style</string>
 	<string name="prefs_android_emojis">System Emojis</string>
 	<string name="prefs_default_emojis">Threema Emojis (default)</string>
-	<string name="android_emojis_warning">Note: The system\'s character set may not be able to display all emojis
+	<string name="android_emojis_warning">Note: The system’s character set may not be able to display all emojis
 		supported by Threema.</string>
 	<string name="crop">Crop</string>
 	<string name="scan_id_mismatch_title">ID mismatch</string>
@@ -624,7 +624,7 @@
 	<string name="permission_storage_required">To save or send media, allow Threema permission to access storage.</string>
 	<string name="permission_location_required">To send a location, allow Threema permission to access your position.</string>
 	<string name="permission_contacts_required">To send contacts, allow Threema permission to read contacts.</string>
-	<string name="message_declined">«Disagree» sent</string>
+	<string name="message_declined">“Disagree” sent</string>
 	<string name="notifications_settings">Notification settings</string>
 	<string name="notifications_default">Default settings</string>
 	<string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">For %d hour(s)</string>
@@ -638,7 +638,7 @@
 	<string name="on">on</string>
 	<string name="off">off</string>
 	<string name="new_wizard_select_country">Select your country</string>
-	<string name="new_wizard_lets_get_started">Let\'s get started!</string>
+	<string name="new_wizard_lets_get_started">Let’s get started!</string>
 	<string name="new_wizard_setup_threema">Set up Threema</string>
 	<string name="new_wizard_restore_id_backup">Restore exported ID</string>
 	<string name="new_wizard_welcome">Welcome to Threema!</string>
@@ -655,7 +655,7 @@
 	<string name="new_wizard_hint_email">Email (optional)</string>
 	<string name="new_wizard_find_friends">Find your friends on Threema</string>
 	<string name="new_wizard_sync_contacts_explain">Switch on to see which friends are using Threema.</string>
-	<string name="new_wizard_done_title">You\'re done!\nEverything correct?</string>
+	<string name="new_wizard_done_title">You’re done!\nEverything correct?</string>
 	<string name="new_wizard_linked_to">Linked to</string>
 	<string name="new_wizard_need_internet">A stable Internet connection is required to create your unique Threema ID. Please try again.</string>
 	<string name="new_wizard_more_information">More information</string>
@@ -685,13 +685,13 @@
 	<string name="not_linked">not linked</string>
 	<string name="linked">linked</string>
 	<string name="pending_sms_verification_notice">Your mobile number is not yet verified.</string>
-	<string name="no_sms_received">Didn\'t receive an SMS?</string>
+	<string name="no_sms_received">Didn’t receive an SMS?</string>
 	<string name="really_cancel_verify">Do you really want to abort the mobile number verification?</string>
 	<string name="verification_of">Verification of %s</string>
-	<string name="status_ballot_voting_changed">Poll «%1$s» has received a new vote</string>
-	<string name="status_ballot_user_first_vote">«%1$s» has cast a vote for «%2$s»</string>
-	<string name="status_ballot_user_modified_vote">«%1$s» has changed the vote for «%2$s»</string>
-	<string name="status_ballot_all_votes">Votes for «%1$s» complete</string>
+	<string name="status_ballot_voting_changed">Poll “%1$s” has received a new vote</string>
+	<string name="status_ballot_user_first_vote">“%1$s” has cast a vote for “%2$s”</string>
+	<string name="status_ballot_user_modified_vote">“%1$s” has changed the vote for “%2$s”</string>
+	<string name="status_ballot_all_votes">Votes for “%1$s” complete</string>
 	<string name="restore">Restore</string>
 	<string name="new_wizard_anonymous_confirm">You have entered neither a mobile number nor an email address to link to
 		your Threema ID. You will not appear on your friends\’ contact lists. Do you really want to use Threema
@@ -769,7 +769,7 @@
 	<string name="really_reset_ringtones">Really reset notification sound settings to defaults?</string>
 	<string name="reset_ringtones_confirm">Notification sound settings have been reset.</string>
 	<string name="prefs_language_override">Language</string>
-	<string name="threema_channel_intro">Threema Channel provides you with news about all things Threema. Would you like to subscribe to Threema Channel and add it to your contacts? It\'s free and you can unsubscribe at any time.</string>
+	<string name="threema_channel_intro">Threema Channel provides you with news about all things Threema. Would you like to subscribe to Threema Channel and add it to your contacts? It’s free and you can unsubscribe at any time.</string>
 	<string name="quote">Quote</string>
 	<string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Do you really want to delete %1$d contacts and all associated chats?</string>
 	<string name="contacts_deleted">Contacts have been deleted</string>
@@ -786,11 +786,11 @@
 	<string name="android_backup_restart_threema">Hold on. The app will be restarted in a few seconds.</string>
 	<string name="battery_optimizations_title">Disable Battery Optimizations</string>
 	<string name="battery_optimizations_explain">Battery optimization prevents %1$s from working correctly when your phone falls into sleep mode. Please disable battery optimization for %2$s.</string>
-	<string name="battery_optimizations_disable_guide">Select «All Apps» in the drop down menu</string>
+	<string name="battery_optimizations_disable_guide">Select “All Apps” in the drop down menu</string>
 	<string name="battery_optimizations_disable_guide_ctd">Search for %s in the list and deactivate the optimization</string>
 	<string name="battery_optimizations_disable_confirm">Do you really want to keep battery optimization switched on for %1$s? %2$s will not work correctly.</string>
 	<string name="enter_text_hint">Enter text</string>
-	<string name="backup_explain_text">If you switch or lose your device, nobody can restore your Threema ID or your chats if you don\'t have a backup. Please save your data using the appropriate backup options.</string>
+	<string name="backup_explain_text">If you switch or lose your device, nobody can restore your Threema ID or your chats if you don’t have a backup. Please save your data using the appropriate backup options.</string>
 	<string name="data_backup_explain">Data backups contain:\n\n&#9679; Your ID and your key pair\n&#9679; Contacts and trust levels\n&#9679; Group memberships\n&#9679; Chats\n&#9679; Media and files (optional)\n\nData will be saved to an encrypted ZIP file. It is recommended to move the file away from the device after the backup has completed successfully.</string>
 	<string name="draw">Draw</string>
 	<string name="edit">Edit</string>
@@ -858,9 +858,9 @@
 	<string name="notifications_disabled_settings">Edit system settings</string>
 	<string name="error_attaching_files">Error adding attachments.</string>
 	<string name="prefs_fix_powermanager_problems">Disable power restrictions</string>
-	<string name="prefs_fix_powermanager_problems_desc">Allow Threema to run in the background so it can receive messages even when it\'s not active.</string>
-	<string name="disable_powermanager_explain">In the following screen, make sure, «%s» is protected or excluded from any power management restrictions of your phone.Tap the «back» button when you\'re done.</string>
-	<string name="disable_autostart_explain">In the following screen, make sure «%s» is included in the list of apps that can autostart. Tap the «back» button when you\'re done.</string>
+	<string name="prefs_fix_powermanager_problems_desc">Allow Threema to run in the background so it can receive messages even when it’s not active.</string>
+	<string name="disable_powermanager_explain">In the following screen, make sure, “%s” is protected or excluded from any power management restrictions of your phone.Tap the “back” button when you’re done.</string>
+	<string name="disable_autostart_explain">In the following screen, make sure “%s” is included in the list of apps that can autostart. Tap the “back” button when you’re done.</string>
 	<string name="notification_priority_default">Low</string>
 	<string name="notification_priority_high">High</string>
 	<string name="notification_priority_max">Max</string>
@@ -874,9 +874,9 @@
 	<string name="network_blocked_title">Background data disabled</string>
 	<string name="network_blocked_body">%s is unable to receive messages in the background. Tap here to enable background data in settings.</string>
 	<string name="reply_later">Talk to you later</string>
-	<string name="reply_on_my_way">I\'m on my way</string>
+	<string name="reply_on_my_way">I’m on my way</string>
 	<string name="reply_thank_you">Thank you</string>
-	<string name="reply_youre_welcome">You\'re welcome</string>
+	<string name="reply_youre_welcome">You’re welcome</string>
 	<string name="prefs_auto_download_title">Automatically download media</string>
 	<string name="prefs_auto_download_wifi">On WiFi</string>
 	<string name="prefs_auto_download_mobile">On mobile data</string>
@@ -887,7 +887,7 @@
 	<string name="rate_thank_you">Thank you for your review!</string>
 	<string name="disabled_by_policy_short">Feature disabled by administrator</string>
 	<string name="rate_forward_to_play_store">Would you like to rate us on Google Play as well?</string>
-	<string name="rate_error">Could not send your review to the server. Please make sure you\'re connected to the internet before trying again.</string>
+	<string name="rate_error">Could not send your review to the server. Please make sure you’re connected to the internet before trying again.</string>
 	<string name="off_unless_i_was_mentioned">On, unless I was mentioned</string>
 	<string name="dnd">Do Not Disturb</string>
 	<string name="minus">Minus</string>
@@ -914,18 +914,18 @@
 	<string name="quote_not_found">Quoted message not found</string>
 	<string name="ballot_secret">secret</string>
 	<string name="password_too_short_generic">Password too short</string>
-	<string name="passwords_dont_match">Passwords don\'t match</string>
+	<string name="passwords_dont_match">Passwords don’t match</string>
 	<string name="test_unsuccessful">Test unsuccessful</string>
 	<string name="preparing_threema_safe">Preparing Threema Safe</string>
 	<string name="disable_powermanager_title">Power restrictions</string>
 	<string name="disable_autostart_title">Autostart</string>
 	<string name="unchanged">unchanged</string>
 	<string name="safe_learn_more_button">Learn more</string>
-	<string name="safe_enable_explain">All you need to chat is stored only on your device. You don\'t have an account with us and we cannot help you out if you lose your phone or accidentally delete your data.\n\nThreema Safe creates automatic backups of all the important data, including your keys, your contact list and your group memberships (but no message content), anonymously on a secure server of your choice.</string>
+	<string name="safe_enable_explain">All you need to chat is stored only on your device. You don’t have an account with us and we cannot help you out if you lose your phone or accidentally delete your data.\n\nThreema Safe creates automatic backups of all the important data, including your keys, your contact list and your group memberships (but no message content), anonymously on a secure server of your choice.</string>
 	<string name="safe_disable_confirm">Do you really want to continue without enabling Threema Safe?</string>
 	<string name="safe_configure_choose_password">Please choose a strong password. You will need this password to restore your Threema Safe backup.</string>
 	<string name="safe_configure_choose_server">Choose a Threema Safe server</string>
-	<string name="safe_configure_server_explain">You can use Threema\'s server or specify a third party backup server to use instead.</string>
+	<string name="safe_configure_server_explain">You can use Threema’s server or specify a third party backup server to use instead.</string>
 	<string name="safe_use_default_server">Use default server</string>
 	<string name="safe_test_server">Test server</string>
 	<string name="safe_advanced_options">Expert settings</string>
@@ -943,11 +943,11 @@
 	<string name="safe_delete_error">Error deleting backup: %s</string>
 	<string name="safe_delete_success">Backup successfully deleted on server</string>
 	<string name="safe_error_preparing">Error preparing Threema Safe backup</string>
-	<string name="safe_configure_choose_password_force">Please set a strong password to secure your Threema ID with Threema Safe. Don\'t forget what you enter here!</string>
+	<string name="safe_configure_choose_password_force">Please set a strong password to secure your Threema ID with Threema Safe. Don’t forget what you enter here!</string>
 	<string name="safe_deactivate">Turn off Threema Safe</string>
 	<string name="safe_deactivate_explain">If you disable Threema Safe, any existing backups will be deleted on the server. Continue?</string>
 	<string name="add_group_members">New member</string>
-	<string name="contact_add_confirm">Would you like to add the new contact «%1$s» to your contact list?</string>
+	<string name="contact_add_confirm">Would you like to add the new contact “%1$s” to your contact list?</string>
 	<string name="password_bad">Weak password</string>
 	<string name="prefs_fix_background_data">Enable Background Data</string>
 	<string name="prefs_fix_background_data_desc">To receive messages when Threema is in the background please enable both Background data and Unrestricted data usage</string>
@@ -955,7 +955,7 @@
 	<string name="safe_successful">Successful</string>
 	<string name="safe_unsuccessful">Failed</string>
 	<string name="safe_upload_failed">Upload failed</string>
-	<string name="safe_upload_size_exceeded">Server\'s upload size exceeded</string>
+	<string name="safe_upload_size_exceeded">Server’s upload size exceeded</string>
 	<string name="safe_connection_error">Connection error</string>
 	<string name="safe_server_name">Server name</string>
 	<string name="safe_max_backup_size">Max backup size</string>
@@ -980,8 +980,8 @@
 	<string name="empty_chat_title">Empty chat</string>
 	<string name="empty_chat_confirm">All messages in this chat will be deleted. Continue?</string>
 	<string name="emptying_chat">Emptying chat</string>
-	<string name="set_private">Mark as «private chat»</string>
-	<string name="unset_private">Deactivate «private chat»</string>
+	<string name="set_private">Mark as “private chat”</string>
+	<string name="unset_private">Deactivate “private chat”</string>
 	<string name="delete_group_message">Do you want to leave this group and delete it completely? All messages will be removed.</string>
 	<string name="delete_left_group_message">Do you really want to delete this group? All messages will be removed.</string>
 	<string name="chats">Chats</string>
@@ -1007,9 +1007,10 @@
 	<string name="voip_disabled">Threema calls are disabled</string>
 	<string name="hide_chat_enter_message_explain">This chat is marked as a private chat. To enter it, please set up access protection first.</string>
 	<string name="unknown">Unknown</string>
-	<string name="miui_notification_title">Important notice about notifications on MIUI 10</string>
-	<string name="miui_notification_body">MIUI 10 disables sound and lights for all newly created notification channels by default (except for some apps deemed «important» by Xiaomi). You will have to explicitly enable them for each channel in your phone\'s app-specific notification settings screen. Contact your phone\'s manufacturer for more information.</string>
-	<string name="dont_show_again">Don\'t show again</string>
+	<string name="miui_notification_title">Important notice about notifications on MIUI</string>
+	<string name="miui_notification_body">MIUI 10 disables sound and lights for all newly created notification channels by default (except for some apps deemed “important” by Xiaomi). You will have to explicitly enable them for each channel in your phone’s app-specific notification settings screen. Contact your phone’s manufacturer for more information.</string>
+	<string name="miui12_notification_body">MIUI disables sound, lights and floating notifications for all apps by default (except for some very popular apps deemed “important” by Xiaomi). You will have to manually enable these settings in your phone’s app-specific notification settings screen and repeat this procedure after each app update. Contact Xiaomi for more information.</string>
+	<string name="dont_show_again">Don’t show again</string>
 	<string name="miui_notification_prefs">MIUI settings</string>
 	<string name="threema_safe_upload_successful">Threema Safe backup successfully uploaded</string>
 	<string name="time_remaining">%s remaining</string>
@@ -1027,7 +1028,7 @@
 	<string name="message_too_long">Message too long. Cannot send.</string>
 	<string name="database_migration_no_space">Database migration failed: Not enough space left on device.</string>
 	<string name="advanced_options">Advanced options</string>
-	<string name="url_warning_body">The hostname of the link you\'re about to open is suspicious:\n\nDisplayed Hostname: <b>%s</b>\nReal hostname: <b>%s</b>\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
+	<string name="url_warning_body">The hostname of the link you’re about to open is suspicious:\n\nDisplayed Hostname: <b>%s</b>\nReal hostname: <b>%s</b>\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
 	<string name="url_warning_title">Phishing warning</string>
 	<string name="permission_camera_qr_required">To scan QR codes, Threema needs access to the camera</string>
 	<string name="voice_action_title">Voice Actions</string>
@@ -1063,31 +1064,19 @@
 	<string name="delete">Delete</string>
 	<string name="num_archived_chats">%d archived chats</string>
 	<string name="continue_recording">Continue recording</string>
-	<string name="whatsnew_title">Welcome to %s 4.5</string>
-	<string name="whatsnew_headline">%1$s 4.5 brings a whole new media experience.\n\nThe media drawer interface received a major overhaul and now features an optional machine learning based image search.\n\nFurthermore, we added global text search across all chats, improved message quoting and more.</string>
-	<string name="whatsnew2_title">What\'s new?</string>
-	<string name="whatsnew2_body">
-		<![CDATA[
-		<p><b>Media Drawer</b>: Tap the paper-clip icon to browse your media files in a scrollable drawer. In case you don\'t want the drawer to open up automatically with the most recent media, disable the image quick select option in the chat settings at <i>Settings / Chat / Media quick select</i>.</p>
-		<p><b>Image Search</b>: Search your images for common objects, activities, and places.<br>The image recognition is based on a local machine learning model and does not send data to Threema\'s server or any third party. As analyzing images is a rather expensive task and may take a long time, the option is disabled by default. You will find it at <i>Settings / Media & Storage / Image Search</i>.</p>
-		<p><b>Sending media files</b>: Send images with individual resolutions without having to change the global settings.</p>
-		<p><b>Video editor</b>: Trim videos before sending. Furthermore, the video transcoding process has been improved and now works in the background.</p>
-		<p><b>Save to gallery</b>: On Android 10 and above, media is now stored in the system\'s <i>Pictures, Video, Music,</i> and <i>Documents</i> folders due to new «Scoped Storage» requirements by Google.</p>
-		<p><b>Global search</b>: Search for text across all chats. Simply tap on <i>Menu / Search chats</i> when on %1$s\'s home screen.</p>
-		<p><b>Quotes</b>: %1$s now allows you to quote any type of media, including images, videos and voice messages.</p>
-		<p><b>100 new emojis</b>: Check the long-awaited fondue &#129749;</p>
-		<p><b>Large texts</b>: To keep the chat interface lean, messages with a lot of text show in a truncated chat bubble and can be expanded on demand.</p>
-		]]>
-	</string>
-	<string name="tooltip_identity_popup">Tap here to quickly display your Threema ID or to scan other people\'s IDs</string>
+	<string name="whatsnew_title">What’s new in %s 4.56?</string>
+	<string name="whatsnew_headline">The contact synchronization has been completely rewritten for increased performance and stability. As a consequence, manual linking of system contacts had to be removed and a separate validation option in settings is no longer necessary.\n\nIf you notice any problems with names or avatars of synchronized contacts or other unexpected behavior, please contact us through the usual bug reporting channels.\n\nThanks for testing %s!</string>
+	<string name="whatsnew2_title"></string>
+	<string name="whatsnew2_body"></string>
+	<string name="tooltip_identity_popup">Tap here to quickly display your Threema ID or to scan other people’s IDs</string>
 	<string name="tap_to_start">Tap here to start %s now.</string>
 	<string name="two_years">2 years</string>
 	<string name="invalid_backup_path">Invalid backup path</string>
 	<string name="backup_data_no_permission">Cannot write to this directory. Please choose another one.</string>
-	<string name="prefs_sum_show_unread_badge">Show a badge indicating the number of unread messages next to the messages icon</string>
-	<string name="prefs_title_show_unread_badge">Unread messages badge</string>
+	<string name="prefs_sum_show_unread_badge">Show badges in bottom navigation tabs</string>
+	<string name="prefs_title_show_unread_badge">Badges</string>
 	<string name="pinning_not_trusted">Certificate Pinning Failure. Please check if \"Entrust Root Certification Authority - G2\" is installed and activated in the credentials storage of your device.</string>
-	<string name="pinning_failed">Certificate Pinning Failure. Possible Man-in-the-middle attack. If you have an ad blocker, content filter, or firewall app installed such as «AdGuard», please disable it for Threema.</string>
+	<string name="pinning_failed">Certificate Pinning Failure. Possible Man-in-the-middle attack. If you have an ad blocker, content filter, or firewall app installed such as “AdGuard”, please disable it for Threema.</string>
 	<string name="open_myid_popup">Open quick access popup window</string>
 	<string name="logo">Logo / Scroll to top</string>
 	<string name="quote_subj_end">End quote</string>
@@ -1099,7 +1088,7 @@
 	<string name="edit_type_content_description">View or edit %1$s %2$s</string>
 	<string name="group">Group</string>
 	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Our Privacy Policy has been updated to reflect the following change:</p><p>%1$s no longer depends on Google Play and Google Maps to provide map and POI data.</p>Please review the full Privacy Policy <a href="%2$s">here</a>.]]></string>
-	<string name="play_services_not_installed_unable_to_use_push">Services not installed. Cannot switch to «push».</string>
+	<string name="play_services_not_installed_unable_to_use_push">Services not installed. Cannot switch to “push”.</string>
 	<string name="unable_to_get_current_location">Unable to determine current location.</string>
 	<string name="lp_search_place_min_chars">Please enter at least three characters to search for a place.</string>
 	<string name="lp_search_place_no_matches">No matching places found. Please modify your query.</string>
@@ -1133,7 +1122,7 @@
 	<string name="pencil">Pencil</string>
 	<string name="warning">Warning</string>
 	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on severs, we cannot help you out, if you forgot your PIN or password.</string>
-	<string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone\'s notification bar.</string>
+	<string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone’s notification bar.</string>
 	<string name="send_to_support">Send to Threema Support</string>
 	<string name="menu_legal">Legal</string>
 	<string name="tooltip_work_hint">This contact uses Threema Work.</string>
@@ -1163,12 +1152,12 @@
 	<string name="ballot_window_show">Show open polls</string>
 	<string name="tooltip_video_call">In addition to tap-proof voice calls, Threema now offers end-to-end encrypted video calls.</string>
 	<string name="tooltip_voip_other_party_video_on">The other party started a video call. Tap here to turn on your camera as well.</string>
-	<string name="tooltip_voip_other_party_video_disabled">The other party does not use a current app version or doesn\'t allow video calls.</string>
+	<string name="tooltip_voip_other_party_video_disabled">The other party does not use a current app version or doesn’t allow video calls.</string>
 	<string name="video_calls_new">New: Video Calls</string>
 	<string name="biometrics_not_enrolled">No biometrics are enrolled in the system.</string>
 	<string name="biometrics_not_avilable">Biometrics are not available on this system.</string>
 	<string name="biometrics_no_permission">Missing permission to access biometrics data or hardware.</string>
-	<string name="verification_settings_desc">The dots are an indicator for a contact\'s verification level.</string>
+	<string name="verification_settings_desc">The dots are an indicator for a contact’s verification level.</string>
 	<string name="verification_levels_title">Verification Levels</string>
 	<string name="work_verification_levels_title">Contacts in your Organization</string>
 	<string name="external_verification_levels_title">Other Contacts</string>
@@ -1177,7 +1166,7 @@
 	<string name="insert_datetime">Insert date and time</string>
 	<string name="prefs_sum_disable_smart_replies">Inhibit Smart Replies in Android notifications</string>
 	<string name="prefs_title_disable_smart_replies">Disable Smart Replies</string>
-	<string name="url_warning_body_alt">The hostname of the link you\'re about to open is suspicious.\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
+	<string name="url_warning_body_alt">The hostname of the link you’re about to open is suspicious.\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
 	<string name="read_on">Read on…</string>
 	<string name="forward_text">Forward text</string>
 	<string name="an_error_occurred_during_send">An error occurred sending one or more messages.</string>
@@ -1229,17 +1218,28 @@
 	<string name="transcoder_unsupported_audio_format">Audio could not be transcoded due to missing system support.</string>
 	<string name="transcoder_unknown_audio_error">Unknown audio transcoding error occurred.</string>
 	<string name="video_size_explain">Very large videos may be compressed regardless of this setting.</string>
-	<string name="status_create_notes">*You\'re here alone*\nUse this chat as a secure notebook for text, media or documents.</string>
-	<string name="status_create_notes_off">*You\'re no longer alone in this chat*\nNew messages will be sent to all group members.</string>
-	<string name="note_group_howto">Hint: If you don\'t add any group members, messages to this group will stay local. That\'s ideal for securely storing notes, media or documents or transferring them to the desktop.</string>
+	<string name="status_create_notes">*You’re here alone*\nUse this chat as a secure notebook for text, media or documents.</string>
+	<string name="status_create_notes_off">*You’re no longer alone in this chat*\nNew messages will be sent to all group members.</string>
+	<string name="note_group_howto">Hint: If you don’t add any group members, messages to this group will stay local. That’s ideal for securely storing notes, media or documents or transferring them to the desktop.</string>
 	<string name="mark_unread">Mark as unread</string>
 	<string name="mark_read_short">Read</string>
 	<string name="unread">Unread</string>
-	<string name="missing_app_licence">The app store was unable to validate your purchase. If you use Google Play, please clear the data of the Google Play Store App und reboot your device.</string>
+	<string name="missing_app_licence">The app store was unable to validate your purchase. If you use Google Play, please clear the data of the Google Play Store App and reboot your device.</string>
 	<string name="set_backup_path">Set backup path</string>
 	<string name="set_backup_path_intro">In the following screen please select the folder where data backups should be saved.</string>
 	<string name="tap_here_for_more">Tap here for more information</string>
-	<string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you\'re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.</string>
+	<string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you’re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.</string>
 	<string name="app_store_error_code">App store error code: %d</string>
+	<string name="download_failed">Download unsuccessful. Error code: %d</string>
+	<string name="edit_answer">Edit answer</string>
+	<string name="share_media">Share with another app…</string>
+	<string name="miui_battery_optimization">Please disable "battery optimization" for %s to perform this task. As Xiaomi does not allow apps to call this settings screen directly, you will have to do this manually in your phone’s settings. Please contact Xiaomi support if you need assistance with disabling battery optimization.</string>
+	<string name="forward_captions">Include captions</string>
+	<string name="importing_files_failed">Unable to import backup file. Make sure there’s enough free space on internal memory.</string>
+	<string name="label_continue">Continue</string>
+	<string name="select_date">Select a date</string>
+	<string name="select_time">Select a time</string>
+	<string name="recipients">Recipients: %s</string>
+	<string name="send_to">Send to %s</string>
 </resources>
 

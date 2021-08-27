@@ -40,6 +40,7 @@ import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
 import ch.threema.app.stores.IdentityStore;
+import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
@@ -291,7 +292,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 				if (!ContactUtil.isChannelContact(contactModel)) {
 					// regular contacts
 
-					Uri contactUri = ContactUtil.getAndroidContactUri(this.context, contactModel);
+					Uri contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel);
 					if (contactUri != null) {
 						// address book contact
 						try {

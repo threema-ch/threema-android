@@ -332,7 +332,7 @@
     <string name="title_public_nickname">Alias</string>
     <string name="prefs_sum_excluded_sync_identities">Los ID de esta lista se ignoran al sincronizar los contactos.</string>
     <string name="prefs_title_excluded_sync_identities">Lista de exclusión</string>
-    <string name="synchronize_contact">Contacto de libreta de direcciones vinculado</string>
+    <string name="synchronize_contact">Sincronización de la libreta de direcciones</string>
     <string name="exclude_contact">Excluir de la sincronización automática</string>
     <string name="prefs_header_lists">Listas</string>
     <string name="prefs_title_black_list">Contacto bloqueado</string>
@@ -469,7 +469,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="really_block_contact">Los mensajes futuros de este contacto se descartarán. ¿Continuar?</string>
     <string name="ballot_result_final">Resultado final</string>
     <string name="invalid_cannot_send">No puede enviar mensajes a un contacto no válido</string>
-	<string name="ballot_answer_count_error">Defina por lo menos dos respuestas para el sondeo.</string>
+    <string name="ballot_answer_count_error">Defina por lo menos dos respuestas para el sondeo.</string>
     <string name="ballot_one_contact_not_supported">Aviso: %1$s no podrá participar en su sondeo.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Aviso: %1$d contactos no podrán participar en su sondeo.</string>
     <string name="enable_polling">Usar sondeo</string>
@@ -967,8 +967,9 @@ almacenado.</string>
     <string name="voip_disabled">Las llamadas de Threema están deshabilitadas</string>
     <string name="hide_chat_enter_message_explain">Este chat está marcado como chat privado. Para entrar en él, establece primero la protección de acceso.</string>
     <string name="unknown">Desconocido</string>
-    <string name="miui_notification_title">Aviso importante sobre las notificaciones en MIUI 10</string>
+    <string name="miui_notification_title">Aviso importante sobre las notificaciones en MIUI</string>
     <string name="miui_notification_body">MIUI 10 deshabilita el sonido y las luces en todos los canales de notificaciones creados recientemente de forma predeterminada (excepto en algunas aplicaciones consideradas \"importantes\" por Xiaomi). Tendrás que habilitarlos de forma explícita para cada canal en la pantalla de ajustes de notificaciones específica de cada aplicación. Ponte en contacto con el fabricante si necesitas más información.</string>
+    <string name="miui12_notification_body">MIUI desactiva el sonido, las luces y las notificaciones flotantes de todas las aplicaciones de forma predeterminada (excepto algunas aplicaciones muy populares consideradas \"importantes\" por Xiaomi). Tendrás que activar manualmente estos ajustes en la pantalla de configuración de notificaciones específica de tu teléfono y repetir este procedimiento después de cada actualización de la aplicación. Ponte en contacto con Xiaomi para obtener más información.</string>
     <string name="dont_show_again">No volver a mostrar</string>
     <string name="miui_notification_prefs">Ajustes de MIUI</string>
     <string name="threema_safe_upload_successful">Copia de seguridad Threema Safe cargada correctamente.</string>
@@ -1023,20 +1024,6 @@ almacenado.</string>
     <string name="delete">Borrar</string>
     <string name="num_archived_chats">%d chats archivados</string>
     <string name="continue_recording">Continuar grabando</string>
-    <string name="whatsnew_title">Esto es %s 4.5</string>
-    <string name="whatsnew_headline">%1$s 4.5 ofrece una nueva experiencia multimedia.\n\nLa interfaz de cajón de medios recibió una sobrecarga importante y ahora incluye un aprendizaje automático opcional basado en la búsqueda de imágenes.\n\nAdemás, añadimos la búsqueda de texto global en todos los chats, hemos mejorado la cita de mensajes, etc.</string>
-    <string name="whatsnew2_title">Novedades</string>
-    <string name="whatsnew2_body"><![CDATA[
-		<p><b>Cajón de medios</b>: Toque el icono de clip para examinar tus archivos multimedia en un cajón desplazable. Si no quiere que el cajón se abra automáticamente con los archivos multimedia más recientes, deshabilite la opción de selección rápida de imagen en los ajustes del chat, en <i>Ajustes / Chat / Selección rápida de medios</i>.</p>
-		<p><b>Búsqueda de imágenes</b>: Busca objetos comunes, actividades y lugares en las imágenes.<br>El reconocimiento de imágenes se basa en un modelo de aprendizaje automático y no envía datos al servidor de Threema ni a un tercero. Puesto que analizar imágenes es una tarea bastante costosa y puede tardar bastante tiempo, la opción está deshabilitada de forma predeterminada. La encontrarás en <i>Ajustes / Medios y almacenamiento / Búsqueda de imágenes</i>.</p>
-		<p><b>Enviar archivos de medios</b>: Envía imágenes con resoluciones independientes sin tener que cambiar los ajustes globales.</p>
-		<p><b>Editor de vídeo</b>: Recorta vídeos antes de enviarlos. Además, el proceso de transcodificación de vídeos se ha mejorado y ahora funciona en segundo plano.</p>
-		<p><b>Guardar en la galería</b>: En Android 10 y posteriores, los medios se almacenan en las carpetas del sistema <i>Imágenes, Vídeo, Música</i> y <i>Documentos</i> debido a los nuevos requisitos «Almacenamiento específico» de Google.</p>
-		<p><b>Búsqueda global</b>: Busca texto en todos los chats. Solo tienes que tocar en <i>Menú / Buscar chats</i> cuando estés en la pantalla de inicio de %1$s.</p>
-		<p><b>Citas</b>: %1$s ahora permite citar cualquier tipo de medio, incluidas imágenes, vídeos y mensajes de voz.</p>
-		<p><b>100 nuevos emojis</b>: Echa un vistazo a la esperada \"fondue\" &#129749;</p>
-		<p><b>Textos grandes</b>: Para mantener ordenada la interfaz del chat, los mensajes con mucho texto se muestran en una burbuja de chat truncada y se puede ampliar a voluntad.</p>
-		]]></string>
     <string name="tooltip_identity_popup">Toque aquí para visualizar rápidamente su ID de Threema o para escanear el ID de otras personas.</string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
@@ -1193,10 +1180,20 @@ almacenado.</string>
     <string name="mark_unread">Marcar no leído</string>
     <string name="mark_read_short">Leído</string>
     <string name="unread">No leído</string>
-    <string name="missing_app_licence">The app store was unable to validate your purchase. If you use Google Play, please clear the data of the Google Play Store App und reboot your device.</string>
+    <string name="missing_app_licence">La tienda de aplicaciones no ha podido validar la compra. Si usas Google Play, borra los datos de la aplicación de la Tienda de Google Play y reinicia el dispositivo.</string>
     <string name="set_backup_path">Est. ruta copia segur.</string>
     <string name="set_backup_path_intro">En la siguiente pantalla, selecciona la carpeta en la que se guardarán las copias de seguridad de datos.</string>
-    <string name="tap_here_for_more">Tap here for more information</string>
-    <string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you\'re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.</string>
-    <string name="app_store_error_code">App store error code: %d</string>
+    <string name="tap_here_for_more">Toca aquí para obtener más información.</string>
+    <string name="another_connection_instructions">El servidor ha detectado dos o más conexiones desde diferentes dispositivos con el mismo ID de Threema.\n\nNo se puede utilizar el mismo ID de Threema en varios dispositivos a la vez. Los mensajes nuevos se transmiten solo al dispositivo que se conectó por última vez al servidor.\n\nSi vas a cambiar de dispositivo, por favor, desinstala o desactiva %s en el dispositivo antiguo y luego reinicia el nuevo.</string>
+    <string name="app_store_error_code">Código de error de la tienda: %d</string>
+    <string name="download_failed">Descarga fallida. Código de error: %d</string>
+    <string name="edit_answer">Editar respuesta</string>
+    <string name="share_media">Compartir con otra aplicación...</string>
+    <string name="miui_battery_optimization">Desactiva la \"optimización de la batería\" de %s para realizar esta tarea. Puesto que Xiaomi no permite que las aplicaciones activen directamente esta pantalla de ajustes, tendrás que hacerlo manualmente en los ajustes de tu teléfono. Ponte en contacto con el servicio de asistencia de Xiaomi si necesitas ayuda para deshabilitar la optimización de la batería.</string>
+    <string name="forward_captions">Incluir subtítulos</string>
+    <string name="importing_files_failed">No se puede importar el archivo de copia de seguridad. Asegúrate de que hay espacio libre suficiente en la memoria interna.</string>
+    <string name="label_continue">Continuar</string>
+    <string name="select_date">Selecciona una fecha</string>
+    <string name="select_time">Selecciona una hora</string>
+    <string name="recipients">Destinatarios: %s</string>
 </resources>

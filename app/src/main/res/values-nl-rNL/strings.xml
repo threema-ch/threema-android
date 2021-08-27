@@ -331,7 +331,7 @@
     <string name="title_public_nickname">Nickname</string>
     <string name="prefs_sum_excluded_sync_identities">De weergegeven ID\'s worden genegeerd tijdens het synchroniseren van contactpersonen.</string>
     <string name="prefs_title_excluded_sync_identities">Uitsluitingslijst</string>
-    <string name="synchronize_contact">Contactpersoon gekoppeld systeem</string>
+    <string name="synchronize_contact">Adresboek synchroniseren</string>
     <string name="exclude_contact">Uitsluiten van automatisch synchroniseren</string>
     <string name="prefs_header_lists">Lijsten</string>
     <string name="prefs_title_black_list">Blacklist</string>
@@ -468,7 +468,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="really_block_contact">Nieuwe berichten aan deze contactpersoon worden verwijderd. Doorgaan?</string>
     <string name="ballot_result_final">Eindresultaat</string>
     <string name="invalid_cannot_send">U kunt geen berichten versturen aan ongeldige contactpersonen</string>
-	<string name="ballot_answer_count_error">Geef ten minste 2 antwoorden op voor deze poll.</string>
+    <string name="ballot_answer_count_error">Geef ten minste 2 antwoorden op voor deze poll.</string>
     <string name="ballot_one_contact_not_supported">Waarschuwing: %1$s kan niet deelnemen aan uw poll.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Waarschuwing: %1$d contactpersonen kunnen niet deelnemen aan uw poll.</string>
     <string name="enable_polling">Poll gebruiken</string>
@@ -958,8 +958,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="voip_disabled">Threema oproepen zijn uitgeschakeld</string>
     <string name="hide_chat_enter_message_explain">Deze chat is aangemerkt als privéchat. Voer de toegangsbescherming in om de chat te openen.</string>
     <string name="unknown">Onbekend</string>
-    <string name="miui_notification_title">Belangrijk bericht over berichten op MIUI 10</string>
+    <string name="miui_notification_title">Belangrijk bericht over berichten op MIUI</string>
     <string name="miui_notification_body">MIUI 10 schakelt standaard de geluids- en de lichtsignalen uit voor alle nieuwe berichtenkanalen (behalve voor sommige apps die door Xiaomi zijn aangewezen als «belangrijk»). U moet ze via uw app-specifieke instellingsschermen voor elk kanaal handmatig weer inschakelen. Neem contact op met de fabrikant van uw telefoon voor meer informatie.</string>
+    <string name="miui12_notification_body">MIUI schakelt standaard de geluids- en de lichtsignalen en zwevende meldingen uit voor alle apps (behalve voor sommige apps die door Xiaomi zijn aangewezen als &lt;&lt;belangrijk&gt;&gt;). U moet ze via uw app-specifieke instellingsschermen voor elk kanaal handmatig weer inschakelen en dit voor elke update herhalen. Neem contact op met Xiaomi voor meer informatie.</string>
     <string name="dont_show_again">Niet meer weergeven</string>
     <string name="miui_notification_prefs">Instellingen MIUI</string>
     <string name="threema_safe_upload_successful">Threema Safe back-upbestand geüpload</string>
@@ -1014,20 +1015,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="delete">Verwijderen</string>
     <string name="num_archived_chats">%d gearchiveerde chats</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
-    <string name="whatsnew_title">Welkom bij %s 4.5</string>
-    <string name="whatsnew_headline">%1$s 4.5 geeft je een heel nieuwe media-ervaring.\n\nDe mediafunctie is helemaal opnieuw ontworpen en heeft nu een optionele machineleerfunctie op basis van het zoeken van afbeeldingen.\n\nDaarnaast hebben we algemene zoekfuncties naar tekst voor alle chats ingevoeerd, het citeren van berichten verbeterd en nog veel meer.</string>
-    <string name="whatsnew2_title">Wat is er nieuw?</string>
-    <string name="whatsnew2_body"><![CDATA[
-		<p><b>Mediascherm</b>: Tik op het paperclippictogram om je mediabestanden in een scrollbaar zijscherm te bekijken. Als je niet wilt dat het zijscherm automatisch wordt geopend met de meest recente media, kun je de optie Snelle selectie uitschakelen in de chatinstellingen via <i>Instellingen / Chat / Snelle selectie media</i>.</p>
-		<p><b>Afbeeldingen zoeken</b>: Zoek in je afbeeldingen naar voorwerpen, activiteiten en locaties.<br>De afbeeldingsherkenning is gebaseerd op een lokaal machineleermodel en verzendt geen gegevens naar externe servers. Aangezien het analyseren van afbeeldingen een nogal intensieve taak kan zijn en lang kan duren, is deze optie standaard uitgeschakeld. Je kunt haar inschakelen via <i>Instellingen / Media & Opslag / Afbeeldingen zoeken</i>.</p>
-		<p><b>Mediabestanden verzenden</b>: Afbeeldingen verzenden met individuele resoluties zonder de algemene instellingen te hoeven aanpassen.</p>
-		<p><b>Video bewerken</b>: Snijd video\'s bij voordat je ze verzendt. Daarnaast is het transcoderingsproces verbeterd en werkt dat nu in de achtergrond.</p>
-		<p><b>Opslaan in galerij</b>: Op Android 10 en hoger worden mediabestanden nu opgeslagen in de systeemmappen <i>Pictures, Video, Music,</i> en <i>Documents</i> vanwege de nieuwe «Scoped Storage»-vereisten van Google.</p>
-		<p><b>Algemene zoekopdrachten</b>: Zoek naar tekst in alle chats. Tik gewoon op <i>Menu / Chats zoeken</i> in het startscherm van %1$s.</p>
-		<p><b>Citaten</b>: Met %1$s kun je nu alle mediabestanden citeren, inclusief afbeeldingen, video\'s en gesproken berichten.</p>
-		<p><b>100 nieuwe emoji\'s</b>: Bekijk de langverwachte fondu &#129749;</p>
-		<p><b>Grotere tekstberichten</b>: Om het chatscherm overzichtelijk te houden, worden berichten met veel tekst ingekort in een spraakbubbel die je zelf kunt uitklappen.</p>
-		]]></string>
     <string name="tooltip_identity_popup">Tik hier om uw Threema-ID snel weer te geven of om de ID\'s van anderen te scannen</string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
@@ -1190,4 +1177,14 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="tap_here_for_more">Tik hier voor meer informatie</string>
     <string name="another_connection_instructions">De server heeft twee of meer verbindingen gevonden van verschillende apparaten met hetzelfde Threema-ID.\n\nJe kunt hetzelfde Threema-ID niet op verschillende apparaten tegelijkertijd gebruiken. Nieuwe berichten worden alleen verzonden naar het apparaat dat als laatste is ingelogd op de server.\n\nAls je een nieuw apparaat gebruikt, verwijder dan de installatie van %s op het oude apparaat of schakel het uit en herstart het nieuwe apparaat.</string>
     <string name="app_store_error_code">App store foutcode: %d</string>
+    <string name="download_failed">Niet gedownload. Foutcode: %d</string>
+    <string name="edit_answer">Antwoord bewerken</string>
+    <string name="share_media">Delen met andere app…</string>
+    <string name="miui_battery_optimization">Schakel \"batterij-optimalisatie\" voor %s uit om deze taak uit te voeren. Xiaomi staat niet toe dat apps dit instellingenscherm rechtstreeks benaderen, dus u moet dit handmatig doen via de instellingen van uw telefoon. Neem contact op met de klantenondersteuning van Xiaomi als u hulp nodig hebt bij het uitschakelen van de batterij-optimalisatie.</string>
+    <string name="forward_captions">Ondertitels opnemen</string>
+    <string name="importing_files_failed">Het back-upbestand kan niet worden geïmporteerd. Zorg ervoor dat er voldoende beschikbare ruimte is in het interne geheugen.</string>
+    <string name="label_continue">Doorgaan</string>
+    <string name="select_date">Selecteer een datum</string>
+    <string name="select_time">Selecteer een tijd</string>
+    <string name="recipients">Ontvanger: %s</string>
 </resources>

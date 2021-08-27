@@ -30,13 +30,12 @@
 		android:id="@+id/initial_image"
 		android:layout_width="24dp"
 		android:layout_height="24dp"
-		app:srcCompat="@drawable/ic_new_badge"
+		app:srcCompat="@drawable/ic_new_badge_filled"
 		android:importantForAccessibility="no"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		android:visibility="gone"
-		app:tint="?attr/colorAccent" />
+		android:visibility="gone" />
 
 	<!-- avatar -->
 

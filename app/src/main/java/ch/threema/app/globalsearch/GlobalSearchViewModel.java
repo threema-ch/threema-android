@@ -37,17 +37,26 @@ import ch.threema.storage.models.AbstractMessageModel;
  * their Context in the ViewModel.
  */
 
-abstract class GlobalSearchViewModel extends AndroidViewModel {
-	protected LiveData<List<AbstractMessageModel>> messageModels;
-
-	public GlobalSearchViewModel(Application application) {
-		super(application);
-	}
+public class GlobalSearchViewModel extends AndroidViewModel {
+	private final LiveData<List<AbstractMessageModel>> messageModels;
 
 	LiveData<List<AbstractMessageModel>> getMessageModels() {
 		return messageModels;
 	}
 
-	abstract void onQueryChanged(String query);
-	abstract LiveData<Boolean> getIsLoading();
+	private final GlobalSearchRepository repository;
+
+	public GlobalSearchViewModel(Application application) {
+		super(application);
+		repository = new GlobalSearchRepository();
+		messageModels = repository.getMessageModels();
+	}
+
+	void onQueryChanged(String query, int filterFlags) {
+		repository.onQueryChanged(query, filterFlags);
+	}
+
+	LiveData<Boolean> getIsLoading() {
+		return repository.getIsLoading();
+	}
 }

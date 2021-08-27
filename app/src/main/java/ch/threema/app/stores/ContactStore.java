@@ -82,29 +82,31 @@ public class ContactStore implements ContactStoreInterface {
 		Contact contact = this.getContactForIdentity(identity);
 
 		if (contact == null) {
-			if (fetch == true) {
+			if (fetch) {
 				try {
 					//check if identity is on black list
 					if(this.blackListService != null && this.blackListService.has(identity)) {
 						return null;
 					}
 
-					if(this.preferenceService != null && this.preferenceService.isSyncContacts()) {
-						//check if is on exclude list
-						if(this.excludeListService != null && !this.excludeListService.has(identity)) {
-							SynchronizeContactsUtil.startDirectly(identity);
+					if (this.preferenceService != null) {
+						if (this.preferenceService.isSyncContacts()) {
+							//check if is on exclude list
+							if (this.excludeListService != null && !this.excludeListService.has(identity)) {
+								SynchronizeContactsUtil.startDirectly(identity);
 
-							//try to select again
-							contact = this.getContactForIdentity(identity);
-							if(contact != null) {
-								return contact.getPublicKey();
+								//try to select again
+								contact = this.getContactForIdentity(identity);
+								if (contact != null) {
+									return contact.getPublicKey();
+								}
 							}
 						}
-					}
 
-					//do not fetch if block unknown is enabled
-					if(this.preferenceService.isBlockUnknown()) {
-						return null;
+						//do not fetch if block unknown is enabled
+						if (this.preferenceService.isBlockUnknown()) {
+							return null;
+						}
 					}
 
 					return this.fetchPublicKeyForIdentity(identity);

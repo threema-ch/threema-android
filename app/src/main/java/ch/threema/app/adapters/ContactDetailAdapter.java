@@ -21,6 +21,7 @@
 
 package ch.threema.app.adapters;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -28,10 +29,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
@@ -39,18 +38,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FingerPrintService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
+import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.NameUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -60,14 +60,14 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 
-	private Context context;
+	private final Context context;
 	private GroupService groupService;
+	private PreferenceService preferenceService;
 	private FingerPrintService fingerprintService;
 	private IdListService excludeFromSyncListService;
-	private ContactService contactService;
 	private IdListService blackListIdentityService;
-	private ContactModel contactModel;
-	private List<GroupModel> values;
+	private final ContactModel contactModel;
+	private final List<GroupModel> values;
 	private OnClickListener onClickListener;
 
 	public static class ItemHolder extends RecyclerView.ViewHolder {
@@ -87,14 +87,11 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public class HeaderHolder extends RecyclerView.ViewHolder {
 		private final VerificationLevelImageView verificationLevelImageView;
 		private final TextView threemaIdView, fingerprintView;
-		private final ImageView linkedContactAvatar, verificationLevelIconView;
-		private final TextView linkedContactName;
-		private final ImageView linkedContactTypeIcon;
 		private final CheckBox synchronize;
-		private final View nicknameContainer;
+		private final View nicknameContainer, synchronizeContainer;
+		private final ImageView syncSourceIcon;
 		private final TextView publicNickNameView;
 		private final LinearLayout groupMembershipTitle;
-		private final RelativeLayout linkedContactContainer;
 
 		public HeaderHolder(View view) {
 			super(view);
@@ -103,26 +100,15 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			this.threemaIdView = itemView.findViewById(R.id.threema_id);
 			this.fingerprintView = itemView.findViewById(R.id.key_fingerprint);
 			this.verificationLevelImageView = itemView.findViewById(R.id.verification_level_image);
-			this.verificationLevelIconView = itemView.findViewById(R.id.verification_information_icon);
-			this.linkedContactContainer = itemView.findViewById(R.id.linked_contact_container);
-			this.linkedContactAvatar = itemView.findViewById(R.id.linked_contact);
-			this.linkedContactName = itemView.findViewById(R.id.linked_name);
-			this.linkedContactTypeIcon = itemView.findViewById(R.id.linked_type_icon);
+			ImageView verificationLevelIconView = itemView.findViewById(R.id.verification_information_icon);
 			this.synchronize = itemView.findViewById(R.id.synchronize_contact);
+			this.synchronizeContainer = itemView.findViewById(R.id.synchronize_contact_container);
 			this.nicknameContainer = itemView.findViewById(R.id.nickname_container);
 			this.publicNickNameView = itemView.findViewById(R.id.public_nickname);
 			this.groupMembershipTitle = itemView.findViewById(R.id.group_members_title_container);
+			this.syncSourceIcon = itemView.findViewById(R.id.sync_source_icon);
 
-			this.linkedContactContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (onClickListener != null) {
-						onClickListener.onLinkedContactClick(v);
-					}
-				}
-			});
-
-			this.verificationLevelIconView.setOnClickListener(new View.OnClickListener() {
+			verificationLevelIconView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (onClickListener != null) {
@@ -131,7 +117,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				}
 			});
 		}
-
 	}
 
 	public ContactDetailAdapter(Context context, List<GroupModel> values, ContactModel contactModel) {
@@ -143,16 +128,17 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		try {
 			this.groupService = serviceManager.getGroupService();
 			this.fingerprintService = serviceManager.getFingerPrintService();
-			this.contactService = serviceManager.getContactService();
 			this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
+			this.preferenceService = serviceManager.getPreferenceService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
 	}
 
+	@NonNull
 	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		if (viewType == TYPE_ITEM) {
 			View v = LayoutInflater.from(parent.getContext())
 					.inflate(R.layout.item_contact_detail, parent, false);
@@ -168,7 +154,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	}
 
 	@Override
-	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 		if (holder instanceof ItemHolder) {
 			ItemHolder itemHolder = (ItemHolder) holder;
 			final GroupModel groupModel = getItem(position);
@@ -181,12 +167,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			} else {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_filled);
 			}
-			itemHolder.view.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onClickListener.onItemClick(v, groupModel);
-				}
-			});
+			itemHolder.view.setOnClickListener(v -> onClickListener.onItemClick(v, groupModel));
 		} else {
 			HeaderHolder headerHolder = (HeaderHolder) holder;
 
@@ -212,21 +193,28 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			headerHolder.verificationLevelImageView.setContactModel(contactModel);
 			headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
 
-			if (ContactUtil.isSynchronized(contactModel)) {
-				headerHolder.synchronize.setVisibility(View.VISIBLE);
+			if (preferenceService.isSyncContacts() && ContactUtil.isSynchronized(contactModel) &&
+				ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)) {
+				headerHolder.synchronizeContainer.setVisibility(View.VISIBLE);
+
+				Drawable icon = AndroidContactUtil.getInstance().getAccountIcon(contactModel);
+				if (icon != null) {
+					headerHolder.syncSourceIcon.setImageDrawable(icon);
+					headerHolder.syncSourceIcon.setVisibility(View.VISIBLE);
+				} else {
+					headerHolder.syncSourceIcon.setVisibility(View.INVISIBLE);
+				}
+
 				headerHolder.synchronize.setChecked(excludeFromSyncListService.has(contactModel.getIdentity()));
-				headerHolder.synchronize.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if (isChecked) {
-							excludeFromSyncListService.add(contactModel.getIdentity());
-						} else {
-							excludeFromSyncListService.remove(contactModel.getIdentity());
-						}
+				headerHolder.synchronize.setOnCheckedChangeListener((buttonView, isChecked) -> {
+					if (isChecked) {
+						excludeFromSyncListService.add(contactModel.getIdentity());
+					} else {
+						excludeFromSyncListService.remove(contactModel.getIdentity());
 					}
 				});
 			} else {
-				headerHolder.synchronize.setVisibility(View.GONE);
+				headerHolder.synchronizeContainer.setVisibility(View.GONE);
 			}
 
 			String nicknameString = contactModel.getPublicNickName();
@@ -234,33 +222,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				headerHolder.publicNickNameView.setText(contactModel.getPublicNickName());
 			} else {
 				headerHolder.nicknameContainer.setVisibility(View.GONE);
-			}
-
-			Bitmap avatar = null;
-			if (ContactUtil.isLinked(contactModel)) {
-				avatar = contactService.getAvatar(contactModel, false);
-
-				headerHolder.linkedContactName.setText(NameUtil.getDisplayName(contactModel));
-
-				if (headerHolder.linkedContactTypeIcon != null) {
-					Drawable icon = AndroidContactUtil.getInstance().getAccountIcon(contactModel.getIdentity());
-					if (icon != null) {
-						headerHolder.linkedContactTypeIcon.setImageDrawable(icon);
-						headerHolder.linkedContactTypeIcon.setVisibility(View.VISIBLE);
-					} else {
-						headerHolder.linkedContactTypeIcon.setVisibility(View.GONE);
-					}
-				}
-			} else {
-				headerHolder.linkedContactName.setText(R.string.touch_to_link);
-				if (headerHolder.linkedContactTypeIcon != null) {
-					headerHolder.linkedContactTypeIcon.setVisibility(View.GONE);
-				}
-			}
-			if (avatar != null) {
-				headerHolder.linkedContactAvatar.setImageBitmap(avatar);
-			} else {
-				headerHolder.linkedContactAvatar.setImageResource(R.drawable.ic_contact);
 			}
 
 			if (values.size() > 0) {
@@ -297,7 +258,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	}
 
 	public interface OnClickListener {
-		void onLinkedContactClick(View v);
 		void onItemClick(View v, GroupModel groupModel);
 		void onVerificationInfoClick(View v);
 	}

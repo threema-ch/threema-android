@@ -9,7 +9,7 @@
 	      android:right="1dp"
 	      android:left="0dp"
 	      android:top="0dp">
-		<shape xmlns:android="http://schemas.android.com/apk/res/android"
+		<shape
 		       android:shape="oval"
 		       android:useLevel="false">
 			<solid android:color="@color/accent_light"/>

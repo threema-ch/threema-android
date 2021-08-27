@@ -226,8 +226,6 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 					messageModel.setApiMessageId(messageId.toString());
 				}
 
-				logger.info("Enqueue group file message ID {} to {}", fileMessage.getMessageId(), fileMessage.getToIdentity());
-
 				return fileMessage;
 			}
 		}, messageModel, identities);

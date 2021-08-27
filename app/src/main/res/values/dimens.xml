@@ -308,4 +308,7 @@
 	<!-- reduced size of scrollbars -->
 	<dimen name="scrollbar_size">2dp</dimen>
 
+	<!-- vertical offset for badges in home nav bar -->
+	<dimen name="bottom_nav_badge_offset_vertical">2dp</dimen>
+
 </resources>

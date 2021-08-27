@@ -14,8 +14,8 @@
 		android:layout_height="wrap_content"
 		android:layout_marginTop="16dp"
 		android:fontFamily="sans-serif-medium"
-		android:paddingLeft="24dp"
-		android:paddingRight="24dp"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
 		android:text="@string/ballot_add_choices"
 		android:textColor="?attr/textColorPrimary"
 		android:textSize="24sp"
@@ -36,8 +36,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/ballotchoice_list_entry_height"
 		android:layout_marginBottom="@dimen/ballotchoice_bottom_margin"
-		android:paddingLeft="12dp"
-		android:paddingRight="8dp"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
 		android:layout_marginTop="2dp"
 		android:background="?attr/background_secondary"
 		android:minHeight="@dimen/ballotchoice_list_entry_height">
@@ -66,36 +66,36 @@
 			android:background="?compose_edittext_bubble" />
 
 		<ImageButton
+			style="?android:attr/borderlessButtonStyle"
 			android:id="@+id/add_date"
-			android:layout_width="wrap_content"
-			android:layout_height="46dp"
+			android:layout_width="@dimen/emoji_button_width"
+			android:layout_height="@dimen/emoji_button_width"
 			android:layout_toLeftOf="@+id/add_time"
-			android:layout_marginLeft="6dp"
-			android:layout_marginRight="12dp"
+			android:drawablePadding="0dp"
 			android:contentDescription="@string/insert_date"
 			app:srcCompat="@drawable/ic_event"
-			android:tint="?attr/textColorSecondary"
 			android:background="@drawable/selector_compose_button"
-			/>
+			app:tint="?attr/textColorSecondary" />
 
 		<ImageButton
+			style="?android:attr/borderlessButtonStyle"
 			android:id="@+id/add_time"
-			android:layout_width="wrap_content"
-			android:layout_height="46dp"
+			android:layout_width="@dimen/emoji_button_width"
+			android:layout_height="@dimen/emoji_button_width"
 			android:layout_toLeftOf="@+id/create_choice"
-			android:layout_marginRight="12dp"
+			android:drawablePadding="0dp"
 			android:contentDescription="@string/insert_datetime"
 			app:srcCompat="@drawable/ic_schedule"
-			android:tint="?attr/textColorSecondary"
 			android:background="@drawable/selector_compose_button"
-			/>
+			app:tint="?attr/textColorSecondary" />
 
 		<ImageButton
+			style="?android:attr/borderlessButtonStyle"
 			android:id="@+id/create_choice"
-			android:layout_width="wrap_content"
-			android:layout_height="46dp"
+			android:layout_width="@dimen/emoji_button_width"
+			android:layout_height="@dimen/emoji_button_width"
 			android:layout_alignParentRight="true"
-			android:layout_marginRight="13dp"
+			android:drawablePadding="0dp"
 			app:srcCompat="@drawable/ic_add_circle_black_24dp"
 			app:tint="@drawable/selector_button_tint"
 			android:contentDescription="@string/add_answer"

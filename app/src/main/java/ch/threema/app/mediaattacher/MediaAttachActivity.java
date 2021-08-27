@@ -91,6 +91,7 @@ import ch.threema.app.utils.RuntimeUtil;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 public class MediaAttachActivity extends MediaSelectionBaseActivity implements View.OnClickListener,
 									MediaAttachAdapter.ItemClickListener,
@@ -300,7 +301,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			}
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
 
-		} else if (BottomSheetBehavior.from(bottomSheetLayout).getState() == BottomSheetBehavior.STATE_EXPANDED) {
+		} else if (BottomSheetBehavior.from(bottomSheetLayout).getState() == STATE_EXPANDED) {
 			controlPanel.animate().translationY(
 				(float) controlPanel.getHeight() - getResources().getDimensionPixelSize(R.dimen.media_attach_control_panel_shadow_size)
 			).withEndAction(() -> {
@@ -365,7 +366,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				break;
 			case R.id.attach_qr_code:
 				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_QR_READER)) {
-					attachQR();
+					attachQR(v);
 				}
 				break;
 			case R.id.attach_contact:
@@ -424,10 +425,15 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					attachFile();
 					break;
 				case PERMISSION_REQUEST_QR_READER:
-					attachQR();
+					attachQR(attachQRButton);
 					break;
 				case PERMISSION_REQUEST_ATTACH_FROM_GALLERY:
-					attachImageFromGallery();
+					if (preferenceService.isShowImageAttachPreviewsEnabled()) {
+						finish();
+						startActivity(getIntent());
+					} else {
+						attachImageFromGallery();
+					}
 					break;
 				case PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA:
 					attachFromExternalCamera();
@@ -656,8 +662,13 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 	}
 
-	private void attachQR() {
-		QRScannerUtil.getInstance().initiateScan(this, true, null);
+	private void attachQR(View v) {
+		v.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				QRScannerUtil.getInstance().initiateScan(MediaAttachActivity.this, true, null);
+			}
+		}, 200);
 	}
 
 	private void prepareSendFileMessage(final ArrayList<Uri> uriList) {

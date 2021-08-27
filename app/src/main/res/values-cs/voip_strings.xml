@@ -20,7 +20,7 @@
     <!-- Shown when a call is being disconnected -->
     <string name="voip_status_disconnecting">Odpojování</string>
     <!-- Shown when the device of the callee is ringing -->
-    <string name="voip_status_ringing">Vyzvánění</string>
+    <string name="voip_status_ringing">Vytáčení</string>
     <string name="voip_mic_enable">Povolit mikrofon</string>
     <string name="voip_mic_disable">Zakázat mikrofon</string>
     <string name="voip_checking_compatibility">Ověřuje se, zda tento kontakt může přijmout Threema volání</string>
@@ -33,11 +33,11 @@
     <string name="voip_call_status_missed">Zmeškaný hovor</string>
     <string name="voip_call_finished_outbox">Odchozí hovor</string>
     <string name="voip_call_finished_inbox">Příchozí hovor</string>
-    <string name="voip_call_status_aborted">Zrušený hovor</string>
+    <string name="voip_call_status_aborted">Hovor zrušen</string>
     <string name="voip_return_call">Zpětné volání</string>
     <string name="voip_accept">Přijmout</string>
     <string name="voip_reject">Odmítnout</string>
-    <string name="voip_speakerphone">Hlasitý telefon</string>
+    <string name="voip_speakerphone">Hlasitý odposlech</string>
     <string name="voip_wired_headset">Sluchátka</string>
     <string name="voip_earpiece">Telefon</string>
     <string name="voip_bluetooth">Bluetooth</string>
@@ -52,8 +52,8 @@
     <string name="voip_prefs_video_codec_no_vp8">Zakázat VP8</string>
     <string name="voip_prefs_video_codec_no_h264hip">Zakázat H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Softwarové kodeky</string>
-    <string name="voip_connection_failed">Nepodařilo se navázat spojení</string>
-    <string name="voip_connection_lost">Ztráta spojení</string>
+    <string name="voip_connection_failed">Nezdařilo se navázat spojení</string>
+    <string name="voip_connection_lost">Spojení bylo ztraceno</string>
     <string name="prefs_voip_reject_incoming_calls_title">Odmítat mobilní hovory</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Odmítat příchozí mobilní hovory, pokud již probíhá Threema volání.</string>
     <string name="voip_contact_not_found">Pod tímto číslem nebyl nalezen žádný Threema kontakt.</string>

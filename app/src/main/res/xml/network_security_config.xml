@@ -24,4 +24,17 @@
 			<report-uri>https://3ma.ch/pinreport</report-uri>
 		</trustkit-config>
 	</domain-config>
+	<domain-config cleartextTrafficPermitted="false">
+		<domain includeSubdomains="true">test.threema.ch</domain>
+		<pin-set>
+			<pin digest="SHA-256">/mH2CVdSxVBMuKiRHplBP2GTFWs/l+KXHriAxRFNsaw=</pin>
+			<pin digest="SHA-256">bmsGGaIGEs1HWAUIE082NSPYTURvChScDmE7PjL+5RQ=</pin>
+		</pin-set>
+		<!-- TrustKit Android API -->
+		<!-- Enforce pinning validation -->
+		<trustkit-config enforcePinning="true" disableDefaultReportUri="true">
+			<!-- Reporting URL for pin validation reports -->
+			<report-uri>https://3ma.ch/pinreport</report-uri>
+		</trustkit-config>
+	</domain-config>
 </network-security-config>

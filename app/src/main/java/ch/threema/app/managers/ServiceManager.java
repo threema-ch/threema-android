@@ -382,6 +382,7 @@ public class ServiceManager {
 					this.getApiService(),
 					this.getWallpaperService(),
 					this.getLicenseService(),
+					this.getExcludedSyncIdentitiesService(),
 					this.getAPIConnector());
 		}
 
@@ -694,7 +695,9 @@ public class ServiceManager {
 					this.getPreferenceService(),
 					this.getDeviceService(),
 					this.getFileService(),
-					this.getIdentityStore()
+					this.getIdentityStore(),
+					this.getBlackListService(),
+					this.getLicenseService()
 			);
 		}
 

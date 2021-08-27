@@ -1549,7 +1549,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public boolean getVoiceRecorderBluetoothDisabled() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voicerecorder_bluetooth_disabled));
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voicerecorder_bluetooth_disabled), true);
 	}
 
 	@Override

@@ -34,6 +34,7 @@ import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.listeners.ChatListener;
+import ch.threema.app.listeners.ContactCountListener;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ContactTypingListener;
@@ -187,4 +188,5 @@ public class ListenerManager {
 	public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<QRCodeScanListener> qrCodeScanListener = new TypedListenerManager<>();
+	public static final TypedListenerManager<ContactCountListener> contactCountListener = new TypedListenerManager<>();
 }

@@ -23,7 +23,9 @@ package ch.threema.app.activities.ballot;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,9 +36,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -45,26 +49,29 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
-import ch.threema.app.dialogs.DateSelectorDialog;
-import ch.threema.app.dialogs.TimeSelectorDialog;
+import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
-public class BallotWizardFragment1 extends BallotWizardFragment implements DateSelectorDialog.DateSelectorDialogListener, TimeSelectorDialog.TimeSelectorDialogListener, BallotWizardActivity.BallotWizardCallback {
+import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
+import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
+
+public class BallotWizardFragment1 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener, TextEntryDialog.TextEntryDialogClickListener {
 	private static final String DIALOG_TAG_SELECT_DATE = "selectDate";
 	private static final String DIALOG_TAG_SELECT_TIME = "selectTime";
 	private static final String DIALOG_TAG_SELECT_DATETIME = "selectDateTime";
+	private static final String DIALOG_TAG_EDIT_ANSWER = "editAnswer";
 
 	private RecyclerView choiceRecyclerView;
 	private List<BallotChoiceModel> ballotChoiceModelList;
 	private BallotWizard1Adapter listAdapter = null;
 	private ImageButton createChoiceButton;
-	private ImageButton addDateButton, addDateTimeButton;
 	private EditText createChoiceEditText;
-	private Date originalDate = null;
+	private Long originalTimeInUtc = null;
 	private LinearLayoutManager choiceRecyclerViewLayoutManager;
 	private int lastVisibleBallotPosition;
+	private int editItemPosition = -1;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -167,23 +174,52 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 		});
 		this.createChoiceButton.setEnabled(false);
 
-		this.addDateButton = rootView.findViewById(R.id.add_date);
-		this.addDateButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				DateSelectorDialog dialog = DateSelectorDialog.newInstance(originalDate);
-				dialog.setTargetFragment(BallotWizardFragment1.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_SELECT_DATE);
+		ImageButton addDateButton = rootView.findViewById(R.id.add_date);
+		addDateButton.setOnClickListener(v -> {
+			final MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+				.setTitleText(R.string.select_date)
+				.setSelection(originalTimeInUtc != null ? originalTimeInUtc : MaterialDatePicker.todayInUtcMilliseconds())
+				.build();
+			datePicker.addOnPositiveButtonClickListener(selection -> {
+				Long date = datePicker.getSelection();
+				if (date != null) {
+					originalTimeInUtc = date;
+					createDateChoice(false);
+				}
+			});
+			if (isAdded()) {
+				datePicker.show(getParentFragmentManager(), DIALOG_TAG_SELECT_DATE);
 			}
 		});
 
-		this.addDateTimeButton = rootView.findViewById(R.id.add_time);
-		this.addDateTimeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				DateSelectorDialog dialog = DateSelectorDialog.newInstance(originalDate);
-				dialog.setTargetFragment(BallotWizardFragment1.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_SELECT_DATETIME);
+		ImageButton addDateTimeButton = rootView.findViewById(R.id.add_time);
+		addDateTimeButton.setOnClickListener(v -> {
+			final MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+				.setTitleText(R.string.select_date)
+				.setSelection(originalTimeInUtc != null ? originalTimeInUtc : MaterialDatePicker.todayInUtcMilliseconds())
+				.build();
+			datePicker.addOnPositiveButtonClickListener(selection -> {
+				Long date = datePicker.getSelection();
+				if (date != null) {
+					originalTimeInUtc = date;
+					final MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+						.setTitleText(R.string.select_time)
+						.setHour(0)
+						.setMinute(0)
+						.setTimeFormat(DateFormat.is24HourFormat(getContext()) ? CLOCK_24H : CLOCK_12H)
+						.build();
+					timePicker.addOnPositiveButtonClickListener(v1 -> {
+						originalTimeInUtc += timePicker.getHour() * DateUtils.HOUR_IN_MILLIS;
+						originalTimeInUtc += timePicker.getMinute() * DateUtils.MINUTE_IN_MILLIS;
+						createDateChoice(true);
+					});
+					if (isAdded()) {
+						timePicker.show(getParentFragmentManager(), DIALOG_TAG_SELECT_TIME);
+					}
+				}
+			});
+			if (isAdded()) {
+				datePicker.show(getParentFragmentManager(), DIALOG_TAG_SELECT_DATETIME);
 			}
 		});
 
@@ -192,22 +228,75 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 		return rootView;
 	}
 
+	private void createDateChoice(boolean showTime) {
+		if (createChoiceEditText != null) {
+			int format = DateUtils.FORMAT_UTC | DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE;
+			if (showTime) {
+				format |= DateUtils.FORMAT_SHOW_TIME;
+			}
+			if (!isSameYear(originalTimeInUtc)) {
+				format |= DateUtils.FORMAT_SHOW_YEAR;
+			}
+			String dateString = DateUtils.formatDateTime(getContext(), originalTimeInUtc, format);
+			createChoiceEditText.setText(dateString);
+			createChoice();
+		}
+	}
+
 	private void initAdapter() {
 		if(this.getBallotActivity() != null) {
 			this.ballotChoiceModelList = this.getBallotActivity().getBallotChoiceModelList();
 			this.listAdapter = new BallotWizard1Adapter(this.ballotChoiceModelList);
-			this.listAdapter.setOnChoiceListener(this::removeChoice);
+			this.listAdapter.setOnChoiceListener(this);
 			this.choiceRecyclerView.setAdapter(this.listAdapter);
 		}
 	}
 
-	private void removeChoice(int position) {
+	@Override
+	public void onEditClicked(int position) {
+		this.editItemPosition = position;
+		TextEntryDialog alertDialog = TextEntryDialog.newInstance(
+			R.string.edit_answer, 0,
+			R.string.ok,
+			R.string.cancel,
+			ballotChoiceModelList.get(position).getName(),
+			InputType.TYPE_CLASS_TEXT,
+			TextEntryDialog.INPUT_FILTER_TYPE_NONE,
+			5);
+		alertDialog.setTargetFragment(this, 0);
+		alertDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_ANSWER);
+	}
+
+	@Override
+	public void onYes(String tag, String text) {
+		if (!TestUtil.empty(text)) {
+			synchronized (ballotChoiceModelList) {
+				if (editItemPosition != -1) {
+					ballotChoiceModelList.get(editItemPosition).setName(text);
+					listAdapter.notifyItemChanged(editItemPosition);
+				}
+				editItemPosition = -1;
+			}
+		}
+		createChoiceEditText.requestFocus();
+	}
+
+	@Override
+	public void onNeutral(String tag) {
+	}
+
+	@Override
+	public void onNo(String tag) {
+		createChoiceEditText.requestFocus();
+	}
+
+	@Override
+	public void onRemoveClicked(int position) {
 		synchronized (ballotChoiceModelList) {
 			ballotChoiceModelList.remove(position);
 			listAdapter.notifyItemRemoved(position);
 		}
 	}
-
 
 	/**
 	 * Create a new Choice with a Input Alert.
@@ -255,48 +344,9 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements DateS
 		initAdapter();
 	}
 
-	@Override
-	public void onDateSet(String tag, Date date) {
-		if (date != null) {
-			originalDate = date;
-
-			if (DIALOG_TAG_SELECT_DATETIME.equals(tag)) {
-				TimeSelectorDialog dialog = TimeSelectorDialog.newInstance(date);
-				dialog.setTargetFragment(BallotWizardFragment1.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_SELECT_TIME);
-			} else if (DIALOG_TAG_SELECT_DATE.equals(tag) && this.createChoiceEditText != null) {
-				int format = DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE;
-				if (!isSameYear(date)) {
-					format |= DateUtils.FORMAT_SHOW_YEAR;
-				}
-				String dateString = DateUtils.formatDateTime(getActivity(), date.getTime(), format);
-
-				this.createChoiceEditText.setText(dateString);
-				createChoice();
-			}
-		}
-	}
-
-	@Override
-	public void onTimeSet(String tag, Date date) {
-		if (this.createChoiceEditText != null && date != null) {
-			// date and time
-			int format = DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME;
-			if (!isSameYear(date)) {
-				format |= DateUtils.FORMAT_SHOW_YEAR;
-			}
-			String dateString = DateUtils.formatDateTime(getActivity(), date.getTime(), format);
-			this.createChoiceEditText.setText(dateString);
-			createChoice();
-		}
-	}
-
-	@Override
-	public void onCancel(String tag, Date date) {}
-
-	private boolean isSameYear(Date date) {
+	private boolean isSameYear(long dateInMillis) {
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
+		cal.setTimeInMillis(dateInMillis);
 		Calendar cal1 = Calendar.getInstance();
 
 		return cal1.get(Calendar.YEAR) == cal.get(Calendar.YEAR);

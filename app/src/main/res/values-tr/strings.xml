@@ -482,7 +482,7 @@ anket oluşturun veya arkadaşlarınıza istediğiniz her şeyi sorun.</string>
     <string name="really_block_contact">Bu kişiden gelecek iletiler silinecek. Devam et?</string>
     <string name="ballot_result_final">Son sonuç</string>
     <string name="invalid_cannot_send">Geçersiz bir kişiye mesaj gönderemezsiniz</string>
-	<string name="ballot_answer_count_error">Lütfen anket için en az iki cevap girin.</string>
+    <string name="ballot_answer_count_error">Lütfen anket için en az iki cevap girin.</string>
     <string name="ballot_one_contact_not_supported">Uyarı: %1$s anketinize katılamayacak.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Uyarı: %1$d kişi anketinize katılamayacak.</string>
     <string name="enable_polling">Yoklama kullan</string>
@@ -987,6 +987,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="unknown">Bilinmeyen</string>
     <string name="miui_notification_title">MIUI 10 bildirimleri hakkında önemli uyarı</string>
     <string name="miui_notification_body">MIUI 10, varsayılan olarak yeni oluşturulan tüm bildirim kanalları için sesi ve ışıkları devre dışı bırakır (Xiaomi tarafından «önemli» kabul edilen bazı uygulamalar hariç). Bunları, telefonunuzun uygulamaya özgü bildirim ayarları ekranındaki her kanal için açıkça etkinleştirmeniz gerekir. Daha fazla bilgi için telefonunuzun üreticisine başvurun.</string>
+    <string name="miui12_notification_body">MIUI, varsayılan olarak tüm uygulamalar için sesi, ışıkları ve kayan bildirimleri devre dışı bırakır (Xiaomi tarafından \"önemli\" kabul edilen bazı çok popüler uygulamalar hariç). Telefonunuzun uygulamaya özel bildirim ayarları ekranında bu ayarları manuel olarak etkinleştirmeniz ve her uygulama güncellemesinden sonra bu prosedürü tekrarlamanız gerekecektir. Daha fazla bilgi için Xiaomi ile iletişime geçin.</string>
     <string name="dont_show_again">Bir daha gösterme</string>
     <string name="miui_notification_prefs">MIUI ayarları</string>
     <string name="threema_safe_upload_successful">Threema Güvenli yedekleme başarıyla yüklendi</string>
@@ -1041,10 +1042,6 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="delete">Sil</string>
     <string name="num_archived_chats">%d arşivlenmiş sohbet</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="whatsnew_title">%s 4.5 sürümüne hoş geldiniz</string>
-    <string name="whatsnew_headline">%1$s 4.5 yepyeni bir medya deneyimi getiriyor.\n\nMedya çekmecesi arayüzü büyük bir revizyondan geçti ve şimdi isteğe bağlı bir makine öğrenimi tabanlı görsel arama özelliği sunuyor.\n\nAyrıca, tüm sohbetlere genel metin arama, iyileştirilmiş mesaj alıntıları ve daha fazlasını ekledik.</string>
-    <string name="whatsnew2_title">Ne var ne yok?</string>
-    <string name="whatsnew2_body"><![CDATA[velt; p&gt; • Mesaj listesi: Bir sohbeti arşivlemek için sadece sola kaydırın &lt; / p> &lt; p> • Sohbet listesi: Mesaj göndermek için sağa kaydırın &lt; / p> &lt; p> •Telefonunuzun biyometrik kilit mekanizmasıyla %1$s doğrudan kilidini açın  lt; / p> &lt; p> • %1$s artık yerleri, İÇN\'leri paylaşmak veya haritaları görüntülemek için Google Haritalar\'a veya harici bir harita uygulamasına güvenmiyor &lt; / p> &lt; p> • Bu sürümde artık bir QR kod tarayıcı ve yerleşik bir kamera uygulaması var. Bu özellikleri kullanmak için lütfen %1$s cihazının kameraya erişmesineizin verin. %1$s eklentiler artık gerekli değildir ve güvenle kaldırılabilir. ve lt; / p>]]></string>
     <string name="tooltip_identity_popup">Threema ID\'nizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
     <string name="tap_to_start">%s\'i şimdi başlatmak için buraya hafifçe vurun.</string>
     <string name="two_years">2 yıl</string>
@@ -1205,4 +1202,17 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="missing_app_licence">Uygulama mağazası satın alma işleminizi doğrulayamadı. Google Play kullanıyorsanız, lütfen Google Play Store Uygulamasının verilerini temizleyin ve cihazınızı yeniden başlatın.</string>
     <string name="set_backup_path">Yedekleme yolunu ayarlayın</string>
     <string name="set_backup_path_intro">Aşağıdaki ekranda lütfen veri yedeklemelerinin kaydedileceği klasörü seçin.</string>
+    <string name="tap_here_for_more">Daha fazla bilgi için buraya dokunun</string>
+    <string name="another_connection_instructions">Sunucu, aynı Threema Kimliğine sahip farklı cihazlardan iki veya daha fazla bağlantı algıladı.\n\nAynı Threema ID\'yi aynı anda birkaç cihazda kullanmak mümkün değildir. Yeni mesajlar yalnızca sunucuda en son oturum açan cihaza iletilir.\n\nYeni bir cihaza geçiyorsanız, lütfen eski cihazda %s uygulamasını kaldırın veya devre dışı bırakın ve ardından yenisini yeniden başlatın.</string>
+    <string name="app_store_error_code">Uygulama mağazası hata kodu: %d</string>
+    <string name="download_failed">İndirme başarısız. Hata kodu: %d</string>
+    <string name="edit_answer">Cevabı düzenle</string>
+    <string name="share_media">Başka bir uygulamayla paylaş…</string>
+    <string name="miui_battery_optimization">Bu görevi gerçekleştirmek için lütfen %s için \"pil optimizasyonunu\" devre dışı bırakın. Xiaomi, uygulamaların bu ayarlar ekranını doğrudan aramasına izin vermediğinden, bunu telefonunuzun ayarlarından manuel olarak yapmanız gerekecektir. Pil optimizasyonunu devre dışı bırakma konusunda yardıma ihtiyacınız varsa lütfen Xiaomi desteği ile iletişime geçin.</string>
+    <string name="forward_captions">Altyazıları dahil et</string>
+    <string name="importing_files_failed">Yedek dosya içe aktarılamıyor. Dahili bellekte yeterli boş alan olduğundan emin olun.</string>
+    <string name="label_continue">Devam etmek</string>
+    <string name="select_date">Bir tarih seçin</string>
+    <string name="select_time">Bir zaman seçin</string>
+    <string name="recipients">Alıcılar: %s</string>
 </resources>

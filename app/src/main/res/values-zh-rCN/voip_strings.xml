@@ -8,7 +8,7 @@
     <string name="voip_switch_cam_front">切换到前置镜头</string>
     <string name="voip_switch_cam_rear">切换到后置摄像头</string>
     <string name="voip_toggle_video">切换视频模式</string>
-    <string name="voip_call_confirm">您要致电%1$s吗？</string>
+    <string name="voip_call_confirm">您要致电 %1$s 吗？</string>
     <string name="voip_error_call">在 Threema 通话中出错</string>
     <string name="voip_error_init_call">初始化通话时出错</string>
     <string name="voip_notification_title">Threema 通话来电</string>
@@ -43,7 +43,7 @@
     <string name="voip_bluetooth">蓝牙</string>
     <string name="voip_none">无法使用</string>
     <string name="voip_call_finished">Threema 通话已结束</string>
-    <string name="voip_another_call">无法连接。另一个 Threema 通话当前处于活动状态。</string>
+    <string name="voip_another_call">无法连接。另一个 Threema 通话目前正在进行中。</string>
     <string name="voip_prefs_title_aec">回声消除</string>
     <string name="voip_prefs_aec_sw">软件回声消除</string>
     <string name="voip_prefs_aec_hw">硬件回音消除</string>
@@ -57,7 +57,7 @@
     <string name="prefs_voip_reject_incoming_calls_title">拒绝手机通话</string>
     <string name="prefs_voip_reject_incoming_calls_summary">在 Threema 通话时拒绝来电。</string>
     <string name="voip_contact_not_found">找不到此号码与 Threema 关联的联系人。</string>
-    <string name="voip_another_pstn_call">无法发起通话，常规电话仍处于活动状态。</string>
+    <string name="voip_another_pstn_call">无法发起通话，常规电话仍正在进行中。</string>
     <string name="voip_call_status_off_hours">非工作时间通话</string>
     <string name="voip_peer_video_disabled">对方已禁止视频通话。</string>
     <!-- WebRTC debugger -->

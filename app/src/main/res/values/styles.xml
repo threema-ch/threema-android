@@ -150,21 +150,6 @@
 		<item name="android:colorPrimary">#000000</item>
 	</style>
 
-	<!-- Alert Dialog -->
-	<style name="Threema.AlertDialog.MediaPicker" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-		<item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
-		<item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-	</style>
-
-
-	<style name="PositiveButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
-		<item name="android:textColor">?attr/colorAccent</item>
-	</style>
-
-	<style name="NegativeButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
-		<item name="android:textColor">?attr/colorAccent</item>
-	</style>
-
 	<style name="Threema.AlertDialogStyle" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
 		<item name="materialAlertDialogTitlePanelStyle">@style/MaterialAlertDialog.MaterialComponents.Title.Panel</item>
 		<item name="materialAlertDialogTitleIconStyle">@style/MaterialAlertDialog.MaterialComponents.Title.Icon</item>
@@ -186,14 +171,18 @@
 		<item name="android:background">@color/dark_material_level3</item>>
 	</style>
 
-	<style name="Threema.AlertDialog.ButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+	<style name="Threema.AlertDialog.ButtonStyle" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
 		<item name="android:textAllCaps">false</item>
 		<item name="android:letterSpacing">0</item>
+		<item name="android:layout_marginLeft">4dp</item>
+		<item name="android:layout_marginRight">4dp</item>
+		<item name="shapeAppearance">?attr/shapeAppearanceSmallComponent</item>
+		<item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialComponents.Chip</item>
 	</style>
 
-	<style name="Threema.AlertDialog.ButtonStyle.Flush" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush">
-		<item name="android:textAllCaps">false</item>
-		<item name="android:letterSpacing">0</item>
+	<style name="Threema.AlertDialog.ButtonStyle.Flush" parent="@style/Threema.AlertDialog.ButtonStyle">
+		<item name="android:layout_marginLeft">0dp</item>
+		<item name="android:layout_marginRight">0dp</item>
 	</style>
 
 	<style name="Threema.AlertDialog.TitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
@@ -592,6 +581,11 @@
 		<item name="android:letterSpacing">0.08</item>
 	</style>
 
+	<style name="Threema.BadgeStyle" parent="@style/Widget.MaterialComponents.Badge">
+		<item name="backgroundColor">@color/messagelist_highlight_color</item>
+		<item name="badgeTextColor">@android:color/white</item>
+	</style>
+
 	<style name="Threema.BottomNavigationView" parent="@style/Widget.MaterialComponents.BottomNavigationView">
 		<item name="itemIconTint">@drawable/selector_bottom_navigation</item>
 		<item name="itemTextColor">@drawable/selector_bottom_navigation</item>
@@ -608,7 +602,7 @@
 		<item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Threema.BottomSheetDialog</item>
 	</style>
 
-	<style name="Threema.BottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.Light.BottomSheetDialog">
+	<style name="Threema.BottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
 		<item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
 	</style>
 
@@ -682,6 +676,14 @@
 		<item name="chipStartPadding">@dimen/chip_start_padding</item>
 	</style>
 
+	<style name="Threema.Chip.Inactive" parent="@style/Widget.MaterialComponents.Chip.Choice">
+		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip</item>
+		<item name="chipCornerRadius">18dp</item>
+		<item name="checkedIconEnabled">false</item>
+		<item name="android:checked">false</item>
+		<item name="chipMinHeight">36dp</item>
+	</style>
+
 	<style name="Threema.Chip.VideoTranscoder" parent="@style/Widget.MaterialComponents.Chip.Action">
 		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.VideoTranscoder</item>
 		<item name="android:textColor">@android:color/white</item>
@@ -691,10 +693,11 @@
 		<item name="chipMinHeight">28dp</item>
 	</style>
 
-	<style name="Threema.OutlinedButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
-		<item name="android:textAllCaps">false</item>
-		<item name="android:letterSpacing">0</item>
+	<style name="Threema.Chip.Choice" parent="@style/Widget.MaterialComponents.Chip.Choice">
+--		<item name="checkedIconTint">?attr/textColorPrimary</item>
 	</style>
+
+	<style name="Threema.OutlinedButton" parent="@style/Threema.AlertDialog.ButtonStyle.Flush"/>
 
 	<style name="Threema.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
 		<item name="android:textAllCaps">false</item>
@@ -766,6 +769,22 @@
 
 	<style name="Threema.Preview.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
 		<item name="android:background">@drawable/shape_rounded_bottomsheet</item>
+	</style>
+
+	<style name="Threema.ThemeOverlay.MaterialCalendar" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
+		<item name="materialCalendarHeaderTitle">@style/Threema.MaterialCalendarHeaderTitle</item>
+		<item name="buttonBarPositiveButtonStyle">@style/Threema.AlertDialog.ButtonStyle</item>
+		<item name="buttonBarNegativeButtonStyle">@style/Threema.AlertDialog.ButtonStyle</item>
+	</style>
+
+	<style name="Threema.ThemeOverlay.TimePicker" parent="@style/ThemeOverlay.MaterialComponents.TimePicker">
+		<item name="materialButtonStyle">@style/Threema.AlertDialog.ButtonStyle</item>
+		<item name="textAppearanceOverline">@style/Threema.Text.Overline</item>
+	</style>
+
+	<style name="Threema.MaterialCalendarHeaderTitle" parent="@style/Widget.MaterialComponents.MaterialCalendar.HeaderTitle">
+		<item name="android:textAppearance">@style/Threema.Text.Overline</item>
+		<item name="autoSizeTextType">none</item>
 	</style>
 
 </resources>

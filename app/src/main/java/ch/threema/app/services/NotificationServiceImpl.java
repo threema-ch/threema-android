@@ -824,7 +824,7 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	private NotificationCompat.Action getMarkAsReadAction(PendingIntent markReadPendingIntent) {
-		return new NotificationCompat.Action.Builder(R.drawable.ic_mark_read, context.getString(R.string.mark_read_short), markReadPendingIntent)
+		return new NotificationCompat.Action.Builder(R.drawable.ic_mark_read_bitmap, context.getString(R.string.mark_read_short), markReadPendingIntent)
 			.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ).build();
 	}
 

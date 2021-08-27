@@ -64,10 +64,13 @@ import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.CropImageActivity;
+import ch.threema.app.listeners.ContactListener;
+import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
@@ -78,6 +81,8 @@ import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -158,12 +163,33 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		this.isEditable = true;
 	}
 
+	private final ContactListener contactListener = new ContactListener() {
+		@Override
+		public void onModified(ContactModel modifiedContactModel) {
+			RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(modifiedContactModel, null));
+		}
+
+		@Override
+		public void onAvatarChanged(ContactModel contactModel) { }
+
+		@Override
+		public void onRemoved(ContactModel removedContactModel) { }
+
+		@Override
+		public boolean handle(String identity) {
+			if (avatarData.getContactModel() != null) {
+				return TestUtil.compare(avatarData.getContactModel().getIdentity(), identity);
+			}
+			return false;
+		}
+	};
+
 	/**
 	 * Load saved avatar for the specified model - do not call this if changes are to be deferred
 	 */
 	@SuppressLint("StaticFieldLeak")
 	@UiThread
-	public void loadAvatarForModel(ContactModel contactModel, GroupModel groupModel) {
+	public synchronized void loadAvatarForModel(ContactModel contactModel, GroupModel groupModel) {
 		new AsyncTask<Void, Void, Bitmap>() {
 			@Override
 			protected Bitmap doInBackground(Void... params) {
@@ -629,6 +655,16 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		} else {
 			setAvatarBitmap(groupService.getNeutralAvatar(hires));
 		}
+	}
+
+	@Override
+	public void onCreate(@NonNull LifecycleOwner owner) {
+		ListenerManager.contactListeners.add(this.contactListener);
+	}
+
+	@Override
+	public void onDestroy(@NonNull LifecycleOwner owner) {
+		ListenerManager.contactListeners.remove(this.contactListener);
 	}
 
 	public interface AvatarEditListener {

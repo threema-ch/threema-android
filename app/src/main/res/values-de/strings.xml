@@ -383,7 +383,7 @@
 		von Kontakten ignoriert.
 	</string>
 	<string name="prefs_title_excluded_sync_identities">Ausschlussliste</string>
-	<string name="synchronize_contact">Verknüpfter Adressbuch-Kontakt</string>
+	<string name="synchronize_contact">Adressbuch-Synchornoisation</string>
 	<string name="exclude_contact" tools:ignore="Typos">Von autom. Synchr. ausschliessen</string>
 	<string name="prefs_header_lists">Listen</string>
 	<string name="prefs_title_black_list">Blockierte Kontakte</string>
@@ -905,7 +905,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="backup_data_media_confirm" tools:ignore="Typos">Das Sichern von grossen Mediendateien in ein ZIP-Backup kann sehr lange dauern und die Prozessor- und Speicherkapazität Ihres Geräts überschreiten. Während des Backups können keine Threema-Nachrichten empfangen werden. Wollen Sie wirklich fortfahren?</string>
 	<string name="backup_data_cancelled">Backup angehalten</string>
 	<string name="service_manager_not_available">App kann nicht gestartet werden. Bitte schalten Sie Ihr Gerät vollständig aus und wieder ein.</string>
-	<string name="edit_name_only">Name festlegen</string>
+	<string name="edit_name_only">Name ändern</string>
 	<string name="message_sent">Nachricht wurde gesendet</string>
 	<string name="threema_call">Threema-Anruf</string>
 	<string name="threema_call_with">Anruf an %s</string>
@@ -1082,8 +1082,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="voip_disabled">Threema-Anrufe sind deaktiviert</string>
 	<string name="hide_chat_enter_message_explain">Dieser Chat ist als privat markiert. Um ihn anzuzeigen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
 	<string name="unknown">Unbekannt</string>
-	<string name="miui_notification_title">Wichtiger Hinweis für MIUI 10-Nutzer</string>
+	<string name="miui_notification_title">Wichtiger Hinweis für MIUI-Nutzer</string>
 	<string name="miui_notification_body">MIUI 10 unterbindet standardmässig Töne, LED und Popups für neu erstellte Benachrichtigungskanäle (ausser für einige Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb diese Parameter in den Threema-spezifischen Benachrichtigungseinstellungen Ihres Handys für jeden Kanal aktivieren. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+	<string name="miui12_notification_body">MIUI unterbindet standardmässig Töne, LED und Popups (ausser für einige sehr populäre Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb leider diese Optionen in den Threema-spezifischen Benachrichtigungseinstellungen Ihres Handys manuell aktivieren und die Prozedur nach jedem App-Update wiederholen. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
 	<string name="dont_show_again">Nicht mehr anzeigen</string>
 	<string name="miui_notification_prefs">MIUI-Einstellungen</string>
 	<string name="threema_safe_upload_successful">Threema Safe-Backup erfolgreich hochgeladen</string>
@@ -1138,29 +1139,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="delete">Löschen</string>
 	<string name="num_archived_chats">%d archivierte Chats</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="whatsnew_title">Wilkommen bei %s 4.5</string>
-	<string name="whatsnew_headline">%1$s bringt ein komplett neues Medienerlebnis.\n\nDie Medien-Schnellauswahl wurde neu gestaltet und bietet jetzt neben diversen Filtermöglichkeiten eine optionale, machine-learning basierte Bildersuche.\n\nAusserdem haben wir eine globale Textsuche über alle Chats eingeführt, das Zitieren verbessert und vieles mehr.</string>
-	<string name="whatsnew2_title">Was ist neu?</string>
-	<string name="whatsnew2_body">
-		<![CDATA[
-		<p><b>Medien-Schnellauswahl</b>: Klicken Sie auf die Büroklammer, um Ihre Medien übersichtlich in einem ausziehbaren Slider anzuzeigen. Sie können diese Funktion in den Chat-Einstellungen auch deaktivieren: <i>Einstellungen / Chat / Medien-Schnellauswahl</i>.</p>
-		<p><b>Bildersuche</b>: Durchsuchen Sie Ihre Bilder nach gängigen Objekten, Aktivitäten und Orten. Die Bilderkennung basiert auf einem lokalen Machine-Learning-Modell und sendet keine Daten an uns oder andere Drittparteien. Da die Indexierung relativ viele Ressourcen benötigt und einige Zeit dauert, ist die Bildersuche standardmässig deaktiviert. Sie können sie unter <i>Threema-Einstellungen / Medien & Speicher / Bildersuche</i> einschalten.</p>
-		<p><b>Medien versenden</b>: Bilder können nun mit individuell unterschiedlichen Auflösungen gesendet werden, ohne die globalen Einstellungen zu ändern.</p>
-		<p><b>Video-Editor</b>: Schneiden Sie Videos vor dem Versand zu. Ausserdem wurde der Video-Konvertierungsprozess verbessert, so dass er im Hintergrund laufen kann.</p>
-		<p><b>In Galerie speichern</b>: Aufgrund neuer Anforderungen von Google werden die explizit in der Galerie gespeicherten Medien ab Android 10 in den Ordnern des Systems abgelegt (<i>Pictures, Video, Music,</i> und <i>Documents</i>).</p>
-		<p><b>Globale Suche</b>: Suchen Sie in allen Chats nach Text. Sie können eine globale Suche vom %1$s-Heimbildschirm aus über <i>Menü / Chats durchsuchen</i> starten.</p>
-		<p><b>Zitate</b>: %1$s ermöglicht es jetzt, sämtliche Arten von Medien zu zitieren, einschliesslich Bildern, Videos oder Sprachnachrichten.</p>
-		<p><b>100 Neue Emojis</b>: Darunter das lange erwartete Fondue &#129749;</p>
-		<p><b>Lange Texte</b>: Um den Chat übersichtlich zu halten, werden sehr lange Textnachrichten gekürzt dargestellt und können auf Abruf vollständig angezeigt werden. Dabei ist es auch möglich, die Formatierungen zu deaktivieren.</p>
-		]]>
-	</string>
+	<string name="whatsnew_title">Was ist neu bei %s 4.56?</string>
+	<string name="whatsnew_headline">Die Kontaktsynchronisation wurde komplett neu geschrieben, um die Leistung und Stabilität zu erhöhen. Infolgedessen musste die manuelle Verknüpfung von Systemkontakten entfernt werden und eine separate Validierungsoption in den Einstellungen ist nun nicht mehr erforderlich.\n\nWenn Sie Probleme mit Namen oder Bildern von synchronisierten Kontakten oder ein anderes unerwartetes Verhalten feststellen, kontaktieren Sie uns bitte über die üblichen Bug-Reporting-Kanäle.\n\nVielen Dank fürs Testen von %s!</string>
 	<string name="tooltip_identity_popup">Tippen Sie hier, um schnell Ihre Threema-ID anzuzeigen oder die IDs von anderen Personen zu scannen</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
 	<string name="two_years">2 Jahre</string>
 	<string name="invalid_backup_path">Ungültiger Backup-Pfad</string>
 	<string name="backup_data_no_permission">Kein Schreibzugriff auf dieses Verzeichnis. Bitte wählen Sie ein anderes.</string>
-	<string name="prefs_sum_show_unread_badge">Symbol mit der Anzahl ungelesener Nachrichten neben dem Nachrichten-Symbol anzeigen</string>
-	<string name="prefs_title_show_unread_badge">Symbol für ungelesene Nachrichten</string>
+	<string name="prefs_sum_show_unread_badge">Plaketten in den Navigations-Tabs anzeigen</string>
+	<string name="prefs_title_show_unread_badge">Plaketten</string>
 	<string name="pinning_not_trusted">Zertifikat kann nicht überprüft werden. Stellen Sie sicher, dass das «Entrust Root Certification Authority - G2»-Sicherheitszertifikat im Zertifikatsspeicher Ihres Handys installiert und aktiviert ist.</string>
 	<string name="pinning_failed">Zertifikat kann nicht überprüft werden. Möglicher Man-in-the-Middle-Angriff. Wenn Sie eine Werbeblocker-, Inhaltsfilter- oder Firewall-App wie «AdGuard» installiert haben, deaktivieren Sie diese für Threema.</string>
 	<string name="open_myid_popup">Popup-Fenster für Schnellzugriff öffnen</string>
@@ -1312,4 +1299,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="tap_here_for_more">Hier tippen für mehr Informationen</string>
 	<string name="another_connection_instructions">Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.\n\nEs ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.\n\nFalls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.</string>
 	<string name="app_store_error_code">App Store Fehlercode: %d</string>
+	<string name="download_failed">Download fehlgeschlagen. Fehlercode: %d</string>
+	<string name="share_media">Mit anderer App teilen…</string>
+	<string name="miui_battery_optimization">Bitte deaktivieren Sie die «Akkuoptimierung» für %s, um diese Funktion zu ermöglichen. Da es Xiaomi nicht als notwendig erachtet, sich an die Android-Standards zu halten, müssen Sie dies manuell in den Einstellungen Ihres Handys vornehmen. Für Unterstützung bei der Deaktivierung der Akkuoptimierung kontaktieren Sie bitte den Xiaomi-Support.</string>
+	<string name="forward_captions">Beschriftungen mitsenden</string>
+	<string name="importing_files_failed">Importieren der Backup-Datei fehlgeschlagen. Stellen Sie sicher, dass genügend freier Platz im internen Speicher vorhanden ist.</string>
+	<string name="label_continue">Weiter</string>
+	<string name="select_date">Datum auswälen</string>
+	<string name="select_time">Zeit auswählen</string>
+	<string name="recipients">Empfänger: %s</string>
+	<string name="send_to">Senden an %s</string>
 </resources>

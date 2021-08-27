@@ -64,7 +64,7 @@ public class NotificationChannelSettings {
 	}
 
 	public String getDescription() {
-		if (ConfigUtils.isMIUI10()) {
+		if (ConfigUtils.getMIUIVersion() >= 10) {
 			return toString();
 		}
 		return description;

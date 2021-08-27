@@ -49,8 +49,6 @@ import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.routines.ValidateContactsIntegrationRoutine;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -58,7 +56,6 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
 
 public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implements CancelableHorizontalProgressDialog.ProgressDialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(SettingsPrivacyFragment.class);
@@ -68,15 +65,12 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 	private static final String DIALOG_TAG_DISABLE_SYNC = "dissync";
 
 	private static final int PERMISSION_REQUEST_CONTACTS = 1;
-	private static final int PERMISSION_REQUEST_VALIDATE_CONTACTS = 2;
 
 	private ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 	private SynchronizeContactsService synchronizeContactsService;
 	private TwoStatePreference contactSyncPreference;
-	private Preference validateContacts;
-	private CheckBoxPreference disableScreenshot, showBadge;
-	private boolean runIntegrationAfterSync = false;
-	private boolean disableScreenshotChecked = false, showBadgeChecked = false;
+	private CheckBoxPreference disableScreenshot;
+	private boolean disableScreenshotChecked = false;
 
 	private final SynchronizeContactsListener synchronizeContactsListener = new SynchronizeContactsListener() {
 		@Override
@@ -85,6 +79,7 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 				@Override
 				public void run() {
 					updateView();
+					GenericProgressDialog.newInstance(R.string.wizard1_sync_contacts, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_SYNC_CONTACTS);
 				}
 			});
 		}
@@ -95,7 +90,9 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 				@Override
 				public void run() {
 					updateView();
-					validateRunAfterIntegration();
+					if(SettingsPrivacyFragment.this.isAdded()) {
+						DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_SYNC_CONTACTS, true);
+					}
 				}
 			});
 		}
@@ -106,7 +103,6 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 				@Override
 				public void run() {
 					updateView();
-
 					if(SettingsPrivacyFragment.this.isAdded()) {
 						DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_SYNC_CONTACTS, true);
 					}
@@ -129,8 +125,6 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 
 		this.disableScreenshot = (CheckBoxPreference) findPreference(getString(R.string.preferences__hide_screenshots));
 		this.disableScreenshotChecked = this.disableScreenshot.isChecked();
-		this.showBadge = (CheckBoxPreference) findPreference(getResources().getString(R.string.preferences__show_unread_badge));
-		this.showBadgeChecked = this.showBadge.isChecked();
 
 		this.contactSyncPreference = (TwoStatePreference) findPreference(getResources().getString(R.string.preferences__sync_contacts));
 		CheckBoxPreference blockUnknown = (CheckBoxPreference) findPreference(getString(R.string.preferences__block_unknown));
@@ -197,17 +191,6 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			}
 		});
 
-		this.validateContacts = findPreference(getResources().getString(R.string.preferences__validate_contacts));
-		this.validateContacts.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				if (ConfigUtils.requestContactPermissions(getActivity(), SettingsPrivacyFragment.this, PERMISSION_REQUEST_VALIDATE_CONTACTS)) {
-					runContactIntegration(false);
-				}
-				return true;
-			}
-		});
-
 		if (Build.VERSION.SDK_INT < 29) {
 			PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference("pref_key_other");
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -217,94 +200,6 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 		}
 
 		this.updateView();
-	}
-
-	private void runContactIntegration(final boolean quiet) {
-		final ContactService contactService;
-
-		if(!this.requireInstances()) {
-			return;
-		}
-
-		try {
-			contactService = serviceManager.getContactService();
-		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-			logger.error("Exception", e);
-			return;
-		}
-
-		//disable
-		contactSyncPreference.setEnabled(false);
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				ValidateContactsIntegrationRoutine validateContactsIntegrationRoutine = new ValidateContactsIntegrationRoutine(contactService,
-						new ValidateContactsIntegrationRoutine.OnStatusUpdate() {
-							@Override
-							public void init(final int records) {
-								RuntimeUtil.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										if (!quiet) {
-											CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.prefs_validate_contacts_loading, 0, 0, records);
-											dialog.setTargetFragment(SettingsPrivacyFragment.this, 0);
-											dialog.show(getFragmentManager(), DIALOG_TAG_VALIDATE);
-										}
-									}
-								});
-							}
-
-							@Override
-							public void progress(final int record, ContactModel contact) {
-								RuntimeUtil.runOnUiThread(() -> DialogUtil.updateProgress(getFragmentManager(), DIALOG_TAG_VALIDATE, record + 1));
-							}
-
-							@Override
-							public void error(final Exception x) {
-								RuntimeUtil.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_VALIDATE, true);
-										DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_SYNC_CONTACTS, true);
-										updateView();
-										logger.error("Exception", x);
-									}
-								});
-							}
-
-							@Override
-							public void finished() {
-								if (isAdded()) {
-									//very bad stuff, sleep 1 sec to be sure the dialogs created
-									try {
-										Thread.sleep(1000);
-									} catch (InterruptedException e) {
-										//do nothing
-									}
-
-									RuntimeUtil.runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											updateView();
-											DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_VALIDATE, true);
-											DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_SYNC_CONTACTS, true);
-										}
-									});
-								}
-							}
-						});
-
-				validateContactsIntegrationRoutine.run();
-			}
-		}).start();
-	}
-
-	private void validateRunAfterIntegration() {
-		if(this.runIntegrationAfterSync) {
-			this.runIntegrationAfterSync = false;
-			this.runContactIntegration(true);
-		}
 	}
 
 	private void updateView() {
@@ -372,11 +267,7 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 
 	private void launchContactsSync() {
 		//start a Sync
-		if(synchronizeContactsService.instantiateSynchronizationAndRun()) {
-			this.runIntegrationAfterSync = true;
-			//show loading dialog
-			GenericProgressDialog.newInstance(R.string.wizard1_sync_contacts, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_SYNC_CONTACTS);
-		}
+		synchronizeContactsService.instantiateSynchronizationAndRun();
 	}
 
 	private boolean disableSync() {
@@ -426,8 +317,7 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 	public void onDetach() {
 		super.onDetach();
 
-		if (this.disableScreenshot.isChecked() != this.disableScreenshotChecked
-			|| this.showBadge.isChecked() != this.showBadgeChecked) {
+		if (this.disableScreenshot.isChecked() != this.disableScreenshotChecked) {
 			ConfigUtils.recreateActivity(getActivity());
 		}
 	}
@@ -439,13 +329,6 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			case PERMISSION_REQUEST_CONTACTS:
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 					launchContactsSync();
-				} else {
-					disableSync();
-				}
-				break;
-			case PERMISSION_REQUEST_VALIDATE_CONTACTS:
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					runContactIntegration(false);
 				} else {
 					disableSync();
 				}

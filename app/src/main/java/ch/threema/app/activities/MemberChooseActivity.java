@@ -343,13 +343,10 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 		if (contacts.size() > 0) {
 			if (snackbar == null) {
 				snackbar = SnackbarUtil.make(rootView, "", Snackbar.LENGTH_INDEFINITE, 4);
-				snackbar.getView().setBackgroundColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
+				snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
 				snackbar.getView().getLayoutParams().width = AppBarLayout.LayoutParams.MATCH_PARENT;
 			}
-			TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-			if (textView != null) {
-				textView.setTextColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSecondary));
-			}
+			snackbar.setTextColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSecondary));
 			snackbar.setText(getMemberNames());
 			if (!snackbar.isShown()) {
 				snackbar.show();

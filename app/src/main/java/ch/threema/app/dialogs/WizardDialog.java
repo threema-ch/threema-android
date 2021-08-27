@@ -41,7 +41,6 @@ public class WizardDialog extends ThreemaDialogFragment {
 
 	private WizardDialogCallback callback;
 	private Activity activity;
-	private Object object;
 
 	public static WizardDialog newInstance(int title, int positive, int negative) {
 		WizardDialog dialog = new WizardDialog();
@@ -74,10 +73,6 @@ public class WizardDialog extends ThreemaDialogFragment {
 	public interface WizardDialogCallback {
 		void onYes(String tag, Object data);
 		void onNo(String tag);
-	}
-
-	public void setData(Object o) {
-		object = o;
 	}
 
 	@Override

@@ -951,8 +951,7 @@ public class MessageServiceImpl implements MessageService {
 		return null;
 	}
 
-	private AbstractMessageModel getAbstractMessageModelByApiIdAndOutbox(final MessageId apiMessageId)
-	{
+	private AbstractMessageModel getAbstractMessageModelByApiIdAndOutbox(final MessageId apiMessageId) {
 		//contact message cache
 		synchronized (this.contactMessageCache) {
 			AbstractMessageModel messageModel = Functional.select(this.contactMessageCache, new IPredicateNonNull<MessageModel>() {
@@ -1246,8 +1245,6 @@ public class MessageServiceImpl implements MessageService {
 		MessageModel existingModel = this.databaseServiceNew.getMessageModelFactory()
 				.getByApiMessageIdAndIdentity(message.getMessageId(), message.getFromIdentity());
 
-		logger.info("processIncomingContactMessage: {} - A", message.getMessageId());
-
 		if (existingModel != null) {
 			//first search in cache
 			MessageModel savedMessageModel;
@@ -1326,9 +1323,11 @@ public class MessageServiceImpl implements MessageService {
 					receipt.getMessageId(), receipt.getReceiptMessageIds()[0], receipt.getToIdentity());
 				this.messageQueue.enqueue(receipt);
 			}
+
+			logger.info("processIncomingContactMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
 			return true;
 		}
-
+		logger.info("processIncomingContactMessage: {} FAILED", message.getMessageId());
 		return false;
 	}
 
@@ -1425,7 +1424,11 @@ public class MessageServiceImpl implements MessageService {
 			messageModel = this.saveGroupMessage((GroupFileMessage) message, messageModel);
 		}
 
-		logger.info("processIncomingGroupMessage: {} success = {}", message.getMessageId(), messageModel != null);
+		if (messageModel != null) {
+			logger.info("processIncomingGroupMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
+		} else {
+			logger.info("processIncomingGroupMessage: {} FAILED", message.getMessageId());
+		}
 
 		return messageModel != null;
 	}
@@ -1738,42 +1741,7 @@ public class MessageServiceImpl implements MessageService {
 			receiver.saveLocalModel(messageModel);
 		}
 
-		boolean hasThumbnail = fileData.getThumbnailBlobId() != null;
-
-		if(hasThumbnail) {
-			logger.info("Downloading thumbnail of message " + message.getMessageId());
-			//download thumbnail
-			final AbstractMessageModel messageModel1 = messageModel;
-
-			//use download service!
-			byte[] thumbnailBlob = this.downloadService.download(
-					messageModel.getId(),
-					fileData.getThumbnailBlobId(),
-					!(message instanceof AbstractGroupMessage),
-					new ProgressListener() {
-						@Override
-						public void updateProgress(int progress) {
-							updateMessageLoadingProgress(messageModel1, progress);
-						}
-
-						@Override
-						public void onFinished(boolean success) {
-							setMessageLoadingFinished(messageModel1, success);
-						}
-					});
-
-			byte[] thumbnail = NaCl.symmetricDecryptData(thumbnailBlob, fileData.getEncryptionKey(), ProtocolDefines.FILE_THUMBNAIL_NONCE);
-
-			try {
-				fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
-			} catch (Exception e) {
-				downloadService.error(messageModel.getId());
-				logger.info("Error writing thumbnail for message " + message.getMessageId());
-				throw e;
-			}
-
-			this.downloadService.complete(messageModel.getId(), fileData.getThumbnailBlobId());
-		}
+		downloadThumbnail(fileData, messageModel);
 
 		messageModel.setSaved(true);
 		receiver.saveLocalModel(messageModel);
@@ -1790,6 +1758,46 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		return messageModel;
+	}
+
+	public void downloadThumbnail(FileData fileData, AbstractMessageModel messageModel) throws Exception {
+		if (fileData.getThumbnailBlobId() != null) {
+			logger.info("Downloading thumbnail of message " + messageModel.getApiMessageId());
+			final AbstractMessageModel messageModel1 = messageModel;
+			byte[] thumbnailBlob = this.downloadService.download(
+				messageModel.getId(),
+				fileData.getThumbnailBlobId(),
+				!(messageModel instanceof GroupMessageModel),
+				new ProgressListener() {
+					@Override
+					public void updateProgress(int progress) {
+						updateMessageLoadingProgress(messageModel1, progress);
+					}
+
+					@Override
+					public void onFinished(boolean success) {
+						setMessageLoadingFinished(messageModel1, success);
+					}
+				});
+
+			if (thumbnailBlob == null) {
+				downloadService.error(messageModel.getId());
+				logger.info("Error downloading thumbnail for message " + messageModel.getApiMessageId());
+				throw new ThreemaException("Error downloading thumbnail");
+			}
+
+			byte[] thumbnail = NaCl.symmetricDecryptData(thumbnailBlob, fileData.getEncryptionKey(), ProtocolDefines.FILE_THUMBNAIL_NONCE);
+
+			try {
+				fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
+			} catch (Exception e) {
+				downloadService.error(messageModel.getId());
+				logger.info("Error writing thumbnail for message " + messageModel.getApiMessageId());
+				throw e;
+			}
+
+			this.downloadService.complete(messageModel.getId(), fileData.getThumbnailBlobId());
+		}
 	}
 
 	private GroupMessageModel saveGroupMessage(GroupTextMessage message, GroupMessageModel messageModel) throws Exception {
@@ -1862,7 +1870,7 @@ public class MessageServiceImpl implements MessageService {
 				type = MessageType.IMAGE;
 			} else if (messageModel.getMessageContentsType() == MessageContentsType.VIDEO) {
 				type = MessageType.VIDEO;
-			} else if (messageModel.getMessageContentsType() == MessageContentsType.AUDIO) {
+			} else if (messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE) {
 				type = MessageType.VOICEMESSAGE;
 			}
 		}
@@ -2418,13 +2426,13 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<AbstractMessageModel> getContactMessagesForText(String query) {
-		return this.databaseServiceNew.getMessageModelFactory().getMessagesByText(query);
+	public List<AbstractMessageModel> getContactMessagesForText(String query, boolean includeArchived) {
+		return this.databaseServiceNew.getMessageModelFactory().getMessagesByText(query, includeArchived);
 	}
 
 	@Override
-	public List<AbstractMessageModel> getGroupMessagesForText(String query) {
-		return this.databaseServiceNew.getGroupMessageModelFactory().getMessagesByText(query);
+	public List<AbstractMessageModel> getGroupMessagesForText(String query, boolean includeArchived) {
+		return this.databaseServiceNew.getGroupMessageModelFactory().getMessagesByText(query, includeArchived);
 	}
 
 	private void readMessageQueue() {
@@ -2710,7 +2718,6 @@ public class MessageServiceImpl implements MessageService {
 			}
 		});
 	}
-
 
 	@Override
 	public boolean downloadMediaMessage(AbstractMessageModel mediaMessageModel, ProgressListener progressListener) throws Exception {
@@ -3042,7 +3049,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public boolean shareMediaMessages(final Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris) {
+	public boolean shareMediaMessages(final Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris, String caption) {
 		if (TestUtil.required(context, models, shareFileUris)) {
 			if (models.size() > 0 && shareFileUris.size() > 0) {
 				Intent intent;
@@ -3060,6 +3067,9 @@ public class MessageServiceImpl implements MessageService {
 					intent.setType(getMimeTypeString(model));
 					if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(shareFileUri.getScheme())) {
 						intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					}
+					if (!TestUtil.empty(caption)) {
+						intent.putExtra(Intent.EXTRA_TEXT, caption);
 					}
 				} else {
 					intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -3473,7 +3483,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	/**
-	 * Send media messages of any kind to an arbitrary number of receivers
+	 * Send media messages of any kind to an arbitrary number of receivers using a thread pool
 	 * @param mediaItems List of MediaItems to be sent
 	 * @param messageReceivers List of MessageReceivers
 	 * @return AbstractMessageModel of a successfully queued message, null if no message could be queued
@@ -3485,11 +3495,10 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	/**
-	 * Send media messages of any kind to an arbitrary number of receivers
+	 * Send media messages of any kind to an arbitrary number of receivers using a thread pool
 	 * @param mediaItems List of MediaItems to be sent
 	 * @param messageReceivers List of MessageReceivers
 	 * @param sendResultListener Listener to notify when messages are queued
-	 * @return AbstractMessageModel of a successfully queued message, null if no message could be queued
 	 */
 	@AnyThread
 	@Override
@@ -3503,6 +3512,28 @@ public class MessageServiceImpl implements MessageService {
 		});
 	}
 
+	/**
+	 * Send media messages of any kind to an arbitrary number of receivers in a single thread i.e. one message after the other
+	 * @param mediaItems List of MediaItems to be sent
+	 * @param messageReceivers List of MessageReceivers
+	 */
+	@AnyThread
+	@Override
+	public void sendMediaSingleThread(
+		@NonNull final List<MediaItem> mediaItems,
+		@NonNull final List<MessageReceiver> messageReceivers) {
+		ThreemaApplication.sendMessageSingleThreadExecutorService.submit(() -> {
+			sendMedia(mediaItems, messageReceivers, null);
+		});
+	}
+
+	/**
+	 * Send media messages of any kind to an arbitrary number of receivers
+	 * @param mediaItems List of MediaItems to be sent
+	 * @param messageReceivers List of MessageReceivers
+	 * @param sendResultListener Listener to notify when messages are queued
+	 * @return AbstractMessageModel of a successfully queued message, null if no message could be queued
+	 */
 	@WorkerThread
 	@Override
 	public @Nullable AbstractMessageModel sendMedia(
@@ -4463,6 +4494,4 @@ public class MessageServiceImpl implements MessageService {
 		return (item.getStartTimeMs() != 0 && item.getStartTimeMs() != TIME_UNDEFINED) ||
 			(item.getEndTimeMs() != TIME_UNDEFINED && item.getEndTimeMs() != item.getDurationMs());
 	}
-
-	/******************************************************************************************************/
 }

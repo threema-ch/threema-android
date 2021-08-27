@@ -145,6 +145,7 @@ import ch.threema.app.adapters.ComposeMessageAdapter;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.asynctasks.EmptyChatAsyncTask;
 import ch.threema.app.cache.ThumbnailCache;
+import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.MessageDetailDialog;
@@ -258,7 +259,8 @@ public class ComposeMessageFragment extends Fragment implements
 	EmojiPicker.EmojiPickerListener,
 	MentionSelectorPopup.MentionSelectorListener,
 	OpenBallotNoticeView.VisibilityListener,
-	ThreemaToolbarActivity.OnSoftKeyboardChangedListener {
+	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
+	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(ComposeMessageFragment.class);
 
@@ -504,13 +506,13 @@ public class ComposeMessageFragment extends Fragment implements
 			if (newMessage != null) {
 				RuntimeUtil.runOnUiThread(() -> {
 					if (newMessage.isOutbox()) {
-						if (addMessageToList(newMessage, true)) {
+						if (addMessageToList(newMessage)) {
 							if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
 								playSentSound();
 							}
 						}
 					} else {
-						if (addMessageToList(newMessage, true) && !isPaused) {
+						if (addMessageToList(newMessage) && !isPaused) {
 							if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
 								playReceivedSound();
 							}
@@ -637,7 +639,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(final ContactModel modifiedContactModel) {
-			updateContactModelData(modifiedContactModel);
+			RuntimeUtil.runOnUiThread(() -> updateContactModelData(modifiedContactModel));
 		}
 
 		@Override
@@ -649,12 +651,9 @@ public class ComposeMessageFragment extends Fragment implements
 		public void onRemoved(ContactModel removedContactModel) {
 			if (contactModel != null && contactModel.equals(removedContactModel)) {
 				// our contact has been removed. finish activity.
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (activity != null) {
-							activity.finish();
-						}
+				RuntimeUtil.runOnUiThread(() -> {
+					if (activity != null) {
+						activity.finish();
 					}
 				});
 			}
@@ -1415,6 +1414,7 @@ public class ComposeMessageFragment extends Fragment implements
 			//clear all records to remove all references
 			if(this.composeMessageAdapter != null) {
 				this.composeMessageAdapter.clear();
+				this.composeMessageAdapter = null;
 			}
 
 		} catch (Exception x) {
@@ -2043,10 +2043,51 @@ public class ComposeMessageFragment extends Fragment implements
 			return;
 		}
 
+		// hide chat from view and prevent screenshots - may not work on some devices
+		if (this.hiddenChatsListService.has(this.messageReceiver.getUniqueIdString())) {
+			try {
+				getActivity().getWindow().addFlags(FLAG_SECURE);
+			} catch (Exception ignored) { }
+		}
+
 		// set wallpaper based on message receiver
 		this.setBackgroundWallpaper();
 
-		this.initConversationList();
+		this.initConversationList(intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY) ? (Runnable) () -> {
+				String apiMessageId = intent.getStringExtra(EXTRA_API_MESSAGE_ID);
+				String searchQuery = intent.getStringExtra(EXTRA_SEARCH_QUERY);
+
+				AbstractMessageModel targetMessageModel = messageService.getMessageModelByApiMessageId(apiMessageId, messageReceiver.getType());
+
+				if (targetMessageModel != null && !TestUtil.empty(apiMessageId) && !TestUtil.empty(searchQuery)) {
+					String identity;
+					if (targetMessageModel instanceof GroupMessageModel) {
+						identity = targetMessageModel.isOutbox() ? contactService.getMe().getIdentity() : targetMessageModel.getIdentity();
+					} else {
+						identity = targetMessageModel.getIdentity();
+					}
+
+					QuoteUtil.QuoteContent quoteContent = QuoteUtil.QuoteContent.createV2(
+						identity,
+						searchQuery,
+						searchQuery,
+						apiMessageId,
+						targetMessageModel,
+						messageReceiver.getType(),
+						null,
+						null
+					);
+
+					if (composeMessageAdapter != null) {
+						ComposeMessageAdapter.ConversationListFilter filter = (ComposeMessageAdapter.ConversationListFilter) composeMessageAdapter.getQuoteFilter(quoteContent);
+						searchV2Quote(apiMessageId, filter);
+
+						intent.removeExtra(EXTRA_API_MESSAGE_ID);
+					}
+				} else {
+					Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_not_found, Toast.LENGTH_SHORT).show();
+				}
+		} : null);
 
 		// work around the problem that the same original intent may be sent
 		// each time a singleTop activity (like this one) is coming back to front
@@ -2093,49 +2134,6 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		ListenerManager.chatListener.handle(listener -> listener.onChatOpened(conversationUid));
-
-		if (this.hiddenChatsListService.has(this.messageReceiver.getUniqueIdString())) {
-			// hide chat from view and prevent screenshots - may not work on some devices
-			try {
-				getActivity().getWindow().addFlags(FLAG_SECURE);
-			} catch (Exception e) {
-				//
-			}
-		}
-
-		if (intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY)) {
-			String apiMessageId = intent.getStringExtra(EXTRA_API_MESSAGE_ID);
-			String searchQuery = intent.getStringExtra(EXTRA_SEARCH_QUERY);
-
-			AbstractMessageModel targetMessageModel = messageService.getMessageModelByApiMessageId(apiMessageId, messageReceiver.getType());
-
-			if (targetMessageModel != null && !TestUtil.empty(apiMessageId) && !TestUtil.empty(searchQuery)) {
-				String identity;
-				if (targetMessageModel instanceof GroupMessageModel) {
-					identity = targetMessageModel.isOutbox() ? contactService.getMe().getIdentity() : targetMessageModel.getIdentity();
-				} else {
-					identity = targetMessageModel.getIdentity();
-				}
-
-				QuoteUtil.QuoteContent quoteContent = QuoteUtil.QuoteContent.createV2(
-					identity,
-					searchQuery,
-					searchQuery,
-					apiMessageId,
-					targetMessageModel,
-					messageReceiver.getType(),
-					null,
-					null
-				);
-
-				ComposeMessageAdapter.ConversationListFilter filter = (ComposeMessageAdapter.ConversationListFilter) composeMessageAdapter.getQuoteFilter(quoteContent);
-				searchV2Quote(apiMessageId, filter);
-
-				intent.removeExtra(EXTRA_API_MESSAGE_ID);
-			} else {
-				Toast.makeText(getContext().getApplicationContext(), R.string.message_not_found, Toast.LENGTH_SHORT).show();
-			}
-		}
 	}
 
 	private boolean validateSendingPermission() {
@@ -2292,8 +2290,8 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	@UiThread
-	private boolean addMessageToList(AbstractMessageModel message, boolean removeUnreadBar) {
-		if (message == null || this.messageReceiver == null) {
+	private boolean addMessageToList(AbstractMessageModel message) {
+		if (message == null || this.messageReceiver == null || this.composeMessageAdapter == null) {
 			return false;
 		}
 
@@ -2309,9 +2307,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		logger.debug("addMessageToList: started");
 
-		if (removeUnreadBar) {
-			this.composeMessageAdapter.removeFirstUnreadPosition();
-		}
+		this.composeMessageAdapter.removeFirstUnreadPosition();
 
 		// if previous message is from another date, add a date separator
 		synchronized (this.messageValues) {
@@ -2355,6 +2351,11 @@ public class ComposeMessageFragment extends Fragment implements
 			logger.debug("Update in progress");
 			return;
 		}
+
+		if (this.composeMessageAdapter == null) {
+			return;
+		}
+
 		this.composeMessageAdapter.notifyDataSetChanged();
 		this.convListView.post(new Runnable() {
 			@Override
@@ -2500,9 +2501,9 @@ public class ComposeMessageFragment extends Fragment implements
 	 * initialize conversation list and set the unread message count
 	 * @return number of unread messages
 	 */
-	@SuppressLint("StaticFieldLeak")
+	@SuppressLint({"StaticFieldLeak", "WrongThread"})
 	@UiThread
-	private void initConversationList() {
+	private void initConversationList(@Nullable Runnable runAfter) {
 		this.unreadCount = (int) this.messageReceiver.getUnreadMessagesCount();
 		if (this.unreadCount > MESSAGE_PAGE_SIZE) {
 			new AsyncTask<Void, Void, List<AbstractMessageModel>>() {
@@ -2561,10 +2562,16 @@ public class ComposeMessageFragment extends Fragment implements
 					valuesLoaded(values);
 					populateList(values);
 					DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_LOADING_MESSAGES, true);
+					if (runAfter != null) {
+						runAfter.run();
+					}
 				}
 			}.execute();
 		} else {
 			populateList(getNextRecords());
+			if (runAfter != null) {
+				runAfter.run();
+			}
 		}
 	}
 
@@ -2747,8 +2754,8 @@ public class ComposeMessageFragment extends Fragment implements
 					return;
 				}
 			}
-			convListView.setSelection(Integer.MAX_VALUE);
 		}
+		convListView.setSelection(Integer.MAX_VALUE);
 	}
 
 	private void setIdentityColors() {
@@ -3211,9 +3218,7 @@ public class ComposeMessageFragment extends Fragment implements
 					fileService.loadDecryptedMessageFiles(selectedMessages, new FileService.OnDecryptedFilesComplete() {
 						@Override
 						public void complete(ArrayList<Uri> uris) {
-							messageService.shareMediaMessages(activity,
-								new ArrayList<>(selectedMessages),
-								new ArrayList<>(uris));
+							shareMediaMessages(uris);
 						}
 
 						@Override
@@ -3241,9 +3246,7 @@ public class ComposeMessageFragment extends Fragment implements
 							if (messageModel.getType() == MessageType.FILE) {
 								filename = messageModel.getFileData().getFileName();
 							}
-							messageService.shareMediaMessages(activity,
-									new ArrayList<>(Collections.singletonList(messageModel)),
-									new ArrayList<>(Collections.singletonList(fileService.getShareFileUri(decryptedFile, filename))));
+							shareMediaMessages(Collections.singletonList(fileService.getShareFileUri(decryptedFile, filename)));
 						} else {
 							messageService.shareTextMessage(activity, messageModel);
 						}
@@ -3256,6 +3259,30 @@ public class ComposeMessageFragment extends Fragment implements
 				});
 			}
 		}
+	}
+
+	private void shareMediaMessages(List<Uri> uris) {
+		if (selectedMessages.size() == 1) {
+			ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
+				getString(R.string.share_media),
+				R.string.add_caption_hint, selectedMessages.get(0).getCaption(),
+				R.string.label_continue, R.string.cancel, true);
+			alertDialog.setData(uris);
+			alertDialog.setTargetFragment(this, 0);
+			alertDialog.show(getParentFragmentManager(), null);
+		} else {
+			messageService.shareMediaMessages(activity,
+				new ArrayList<>(selectedMessages),
+				new ArrayList<>(uris), null);
+		}
+	}
+
+	@Override
+	public void onYes(String tag, Object data, String text) {
+		List<Uri> uris = (List<Uri>) data;
+		messageService.shareMediaMessages(activity,
+			new ArrayList<>(selectedMessages),
+			new ArrayList<>(uris), text);
 	}
 
 	@Override
@@ -4308,19 +4335,15 @@ public class ComposeMessageFragment extends Fragment implements
 			RuntimeUtil.runOnUiThread(this::updateToolbarTitle);
 	}
 
+	@UiThread
 	private void updateContactModelData(final ContactModel contactModel) {
-		if(this.composeMessageAdapter != null) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					//update header
-					if(contactModel.getIdentity().equals(identity)) {
-						updateToolbarTitle();
-					}
+		//update header
+		if(contactModel.getIdentity().equals(identity)) {
+			updateToolbarTitle();
+		}
 
-					composeMessageAdapter.resetCachedContactModelData(contactModel);
-				}
-			});
+		if (composeMessageAdapter != null) {
+			composeMessageAdapter.resetCachedContactModelData(contactModel);
 		}
 	}
 
@@ -4440,7 +4463,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String permissions[], @NonNull int[] grantResults) {
+	                                       @NonNull String[] permissions, @NonNull int[] grantResults) {
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
 				case PERMISSION_REQUEST_SAVE_MESSAGE:

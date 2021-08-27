@@ -275,9 +275,13 @@ public class FileDataModel implements MediaMessageDataInterface {
 			this.mimeType = reader.nextString();
 			this.fileSize = reader.nextInteger();
 			this.fileName = reader.nextString();
-			Integer typeId = reader.nextInteger();
-			if (typeId != null) {
-				this.renderingType = typeId;
+			try {
+				Integer typeId = reader.nextInteger();
+				if (typeId != null) {
+					this.renderingType = typeId;
+				}
+			} catch (ClassCastException ignore) {
+				// ignore very old filedatamodel without rendering type
 			}
 			this.isDownloaded = reader.nextBool();
 			this.caption = reader.nextString();

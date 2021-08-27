@@ -95,7 +95,10 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	private MediaPlayer mediaPlayer;
 	private MediaState status = MediaState.STATE_NONE;
 	private TextView timerTextView;
-	private ImageView sendButton, discardButton, playButton, pauseButton, recordImage, bluetoothToogle;
+	private ImageView playButton;
+	private ImageView pauseButton;
+	private ImageView recordImage;
+	private ImageView bluetoothToogle;
 	private SeekBar seekBar;
 	private Uri uri;
 	private int recordingDuration;
@@ -106,7 +109,6 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	private AudioManager audioManager;
 	private BroadcastReceiver audioStateChangedReceiver;
 	private static int scoAudioState;
-	private boolean hasFocus = false;
 	private MessageReceiver messageReceiver;
 
 	private PreferenceService preferenceService;
@@ -175,7 +177,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 			timerTextView = findViewById(R.id.timer_text);
 
-			sendButton = findViewById(R.id.send_button);
+			ImageView sendButton = findViewById(R.id.send_button);
 			sendButton.setOnClickListener(new DebouncedOnClickListener(1000) {
 				@Override
 				public void onDebouncedClick(View v) {
@@ -184,7 +186,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 				}
 			});
 
-			discardButton = findViewById(R.id.discard_button);
+			ImageView discardButton = findViewById(R.id.discard_button);
 			discardButton.setOnClickListener(this);
 
 			playButton = findViewById(R.id.play_button);
@@ -226,8 +228,10 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 			blinkingHandler = new Handler();
 			seekBarHandler = new Handler();
 
-			if (!startRecording())
+			if (!startRecording()) {
+				Toast.makeText(this, R.string.recording_canceled, Toast.LENGTH_LONG).show();
 				reallyCancelRecording();
+			}
 
 		} else {
 			reallyCancelRecording();
@@ -324,7 +328,6 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 		// see: http://stackoverflow.com/questions/35318649/android-proximity-sensor-issue-only-in-samsung-devices
 		if (!hasFocus) {
 			reallyOnPause();
-			this.hasFocus = false;
 		}
 	}
 

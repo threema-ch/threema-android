@@ -26,16 +26,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,8 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -71,7 +66,6 @@ import ch.threema.app.adapters.ContactDetailAdapter;
 import ch.threema.app.dialogs.ContactEditDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
@@ -89,6 +83,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.TooltipPopup;
+import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
@@ -111,20 +106,16 @@ import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
 public class ContactDetailActivity extends ThreemaToolbarActivity
 		implements LifecycleOwner,
 					GenericAlertDialog.DialogClickListener,
-		           ContactEditDialog.ContactEditDialogClickListener,
-		           SelectorDialog.SelectorDialogClickListener {
+		            ContactEditDialog.ContactEditDialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(ContactDetailActivity.class);
 
 	private static final String DIALOG_TAG_EDIT = "cedit";
-	private static final String DIALOG_TAG_LINK_UNLINK_SELECTOR = "lu";
 	private static final String DIALOG_TAG_DELETE_CONTACT = "deleteContact";
 	private static final String DIALOG_TAG_EXCLUDE_CONTACT = "excludeContact";
-	private static final String DIALOG_TAG_UNLINK_CONTACT = "unlinkContact";
 	private static final String DIALOG_TAG_DELETING_CONTACT = "dliC";
 	private static final String DIALOG_TAG_ADD_CONTACT = "dac";
 	private static final String DIALOG_TAG_CONFIRM_BLOCK = "block";
 
-	private static final int PERMISSION_REQUEST_WRITE_CONTACTS = 1;
 	private static final int PERMISSION_REQUEST_CAMERA = 2;
 
 	private static final String RUN_ON_ACTIVE_RELOAD = "reload";
@@ -245,14 +236,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		@Override
 		public void onMemberLeave(GroupModel group, String leftIdentity, int previousMemberCount) {
 			if (leftIdentity.equals(identity)) {
-				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate); ;
+				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
 			}
 		}
 
 		@Override
 		public void onMemberKicked(GroupModel group, String kickedIdentity, int previousMemberCount) {
 			if (kickedIdentity.equals(identity)) {
-				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate); ;
+				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD_GROUP, runIfActiveGroupUpdate);
 			}
 		}
 
@@ -342,7 +333,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			return;
 		}
 
-
 		this.contactTitle = findViewById(R.id.contact_title);
 		this.workIcon = findViewById(R.id.work_icon);
 		ViewUtil.show(workIcon, contactService.showBadge(contact));
@@ -390,6 +380,11 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			}
 		});
 
+		if (preferenceService.isSyncContacts() && ContactUtil.isSynchronized(contact)) {
+			floatingActionButton.setContentDescription(getString(R.string.edit));
+			floatingActionButton.setImageResource(R.drawable.ic_outline_contacts_app_24);
+		}
+
 		if (getToolbar().getNavigationIcon() != null) {
 			getToolbar().getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 		}
@@ -433,13 +428,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	private ContactDetailAdapter setupAdapter() {
 		ContactDetailAdapter groupMembershipAdapter = new ContactDetailAdapter(this, this.groupList, contact);
 		groupMembershipAdapter.setOnClickListener(new ContactDetailAdapter.OnClickListener() {
-			@Override
-			public void onLinkedContactClick(View v) {
-				if (ConfigUtils.requestContactPermissions(ContactDetailActivity.this, null, PERMISSION_REQUEST_WRITE_CONTACTS)) {
-					linkOrUnlinkContact();
-				}
-			}
-
 			@Override
 			public void onItemClick(View v, GroupModel groupModel) {
 
@@ -485,22 +473,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	private void openContactEditor() {
-		Uri contactUri = ContactUtil.getLinkedUri(this, contactService, contact);
-
-		if (contactUri != null) {
-			Intent intent = new Intent(Intent.ACTION_EDIT);
-			intent.setDataAndType(contactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
-			intent.putExtra("finishActivityOnSaveCompleted", true);
-
-			// make sure users are coming back to threema and not the external activity
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-			if (intent.resolveActivity(getPackageManager()) != null) {
-				startActivity(intent);
-			} else {
-				Toast.makeText(ContactDetailActivity.this, "No contact editor found on device.", Toast.LENGTH_SHORT).show();
+		if (contact != null) {
+			if (!AndroidContactUtil.getInstance().openContactEditor(this, contact)) {
+				editName();
 			}
-		} else {
-			editName();
 		}
 	}
 
@@ -534,43 +510,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	private void reload() {
 		this.contactTitle.setText(NameUtil.getDisplayNameOrNickname(contact, true));
 		setScrimColor();
-	}
-
-	private void linkContact() {
-		// Creates a new Intent to insert or edit a contact
-		Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-		if (intent.resolveActivity(getPackageManager()) != null) {
-			startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_PICK_CONTACT);
-		} else {
-			Toast.makeText(this, "No contact picker found on device", Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	private void unlinkContact() {
-		GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
-				R.string.really_unlink_contact_title,
-				R.string.really_unlink_contact,
-				R.string.ok,
-				R.string.cancel);
-		dialogFragment.setData(contact);
-		dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_UNLINK_CONTACT);
-	}
-
-	private void linkOrUnlinkContact() {
-		if (ContactUtil.isLinked(contact)) {
-			SelectorDialog.newInstance(
-					getString(R.string.synchronize_contact),
-					new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.linked_contact_unlink_array))),
-					getString(R.string.cancel)).show(getSupportFragmentManager(), DIALOG_TAG_LINK_UNLINK_SELECTOR);
-		} else {
-			linkContact();
-		}
-	}
-
-	private void reallyUnlinkContact(ContactModel contactModel) {
-		if (contactService != null) {
-			contactService.unlink(contactModel);
-		}
 	}
 
 	@Override
@@ -838,36 +777,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		QRScannerUtil.getInstance().initiateScan(this, false, null);
 	}
 
-	private void link(final String lookupKey) {
-		if (TestUtil.empty(lookupKey)) {
-			return;
-		}
-		GenericProgressDialog.newInstance(-1, R.string.please_wait).show(getSupportFragmentManager(), "pleaseWait");
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					contactService.link(contact, lookupKey);
-				} catch (final Exception e) {
-				 	RuntimeUtil.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							logger.error("Exception", e);
-						}
-					});
-				} finally {
-				 	RuntimeUtil.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							DialogUtil.dismissDialog(getSupportFragmentManager(), "pleaseWait", true);
-						}
-					});
-				}
-			}
-		}).start();
-	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
@@ -882,41 +791,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 
 		switch (requestCode) {
-			case ACTIVITY_ID_PICK_CONTACT:
-				if (resultCode == RESULT_OK) {
-					Uri contactUri = intent.getData();
-					if (ContactUtil.isLinked(contact)) {
-						if (this.contactService != null) {
-							this.contactService.unlink(contact);
-						}
-
-					}
-					if (contactUri != null) {
-						Cursor cursor = getContentResolver().query(contactUri, new String[]{
-							ContactsContract.Contacts._ID,
-							ContactsContract.Contacts.LOOKUP_KEY
-						}, null, null, null);
-
-						//get the lookup key
-						if (cursor != null) {
-							String lookupKey = null;
-							int contactId = 0;
-							if (cursor.moveToFirst()) {
-								lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-								contactId = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-
-							}
-							cursor.close();
-							if (!TestUtil.empty(lookupKey)) {
-								if (contactId != 0) {
-									lookupKey += "/" + contactId;
-								}
-								this.link(lookupKey);
-							}
-						}
-					}
-				}
-				break;
 			case ACTIVITY_ID_GROUP_DETAIL:
 				// contacts may have been edited
 				this.groupList = this.groupService.getGroupsByIdentity(this.identity);
@@ -994,9 +868,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	@Override
 	public void onYes(String tag, Object data) {
 		switch (tag) {
-			case DIALOG_TAG_UNLINK_CONTACT:
-				reallyUnlinkContact((ContactModel) data);
-				break;
 			case DIALOG_TAG_DELETE_CONTACT:
 				deleteContact((ContactModel) data);
 				break;
@@ -1045,44 +916,19 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	@Override
-	public void onClick(String tag, int which, Object data) {
-		switch(which) {
-			case 0:
-				unlinkContact();
-				break;
-			case 1:
-				linkContact();
-				break;
-			default:
-				break;
-		}
-	}
-
-	@Override
-	public void onCancel(String tag) {}
-
-	@Override
 	public void onNo(String tag) {}
 
 	@TargetApi(Build.VERSION_CODES.M)
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
 										   @NonNull String permissions[], @NonNull int[] grantResults) {
-		switch (requestCode) {
-			case PERMISSION_REQUEST_WRITE_CONTACTS:
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					linkOrUnlinkContact();
-				} else if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-					ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.permission_contacts_required);
-				}
-				break;
-			case PERMISSION_REQUEST_CAMERA:
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					scanQR();
-				} else if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-					ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.permission_camera_qr_required);
-				}
-				break;
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode == PERMISSION_REQUEST_CAMERA) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				scanQR();
+			} else if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+				ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.permission_camera_qr_required);
+			}
 		}
 	}
 

@@ -27,6 +27,7 @@ import java.util.Date;
 
 import androidx.annotation.Nullable;
 import ch.threema.base.Contact;
+import ch.threema.base.VerificationLevel;
 
 public class ContactModel extends Contact implements ReceiverModel {
 
@@ -37,8 +38,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_LAST_NAME = "lastName";
 	public static final String COLUMN_PUBLIC_NICK_NAME = "publicNickName";
 	public static final String COLUMN_VERIFICATION_LEVEL = "verificationLevel";
-	public static final String COLUMN_ANDROID_CONTACT_ID= "androidContactId";
-	public static final String COLUMN_THREEMA_ANDROID_CONTACT_ID = "threemaAndroidContactId";
+	public static final String COLUMN_ANDROID_CONTACT_LOOKUP_KEY = "androidContactId"; /* The complete lookup key (consisting of key and ID) of the android contact this contact is linked with */
+	@Deprecated	public static final String COLUMN_THREEMA_ANDROID_CONTACT_ID = "threemaAndroidContactId";
 	public static final String COLUMN_IS_SYNCHRONIZED= "isSynchronized";
 	public static final String COLUMN_FEATURE_LEVEL = "featureLevel";
 	public static final String COLUMN_STATE = "state";
@@ -92,12 +93,16 @@ public class ContactModel extends Contact implements ReceiverModel {
 		super(identity, publicKey);
 	}
 
-
-	public String getAndroidContactId() {
+	/**
+	 * Get the complete lookup key (consisting of key with appended ID) of the android contact this contact is linked with
+	 * @return lookup key to be used for a contact lookup
+	 */
+	@Nullable
+	public String getAndroidContactLookupKey() {
 		return androidContactId;
 	}
 
-	public ContactModel setAndroidContactId(String androidContactId) {
+	public ContactModel setAndroidContactLookupKey(String androidContactId) {
 		this.androidContactId = androidContactId;
 		return this;
 	}
@@ -117,21 +122,41 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
+	/**
+	 * Deprecated. Do not use. Used to store the ID or lookup key of the raw contact created by Threema.
+	 * @return
+	 */
+	@Deprecated
 	public String getThreemaAndroidContactId() {
 		return this.threemaAndroidContactId;
 	}
 
+	/**
+	 * Deprecated. Do not use. Used to store the ID or lookup key of the raw contact created by Threema.
+	 * @return
+	 */
+	@Deprecated
 	public ContactModel setThreemaAndroidContactId(String id) {
 		this.threemaAndroidContactId = id;
 		return this;
 	}
 
+	/**
+	 * Whether the contact is synchronized with the address book, i.e. the information came from an automatic sync
+	 * or it was manually linked
+	 * @return true if the contact in androidContactId was automatically synced, false if it was manually linked or not linked at all.
+	 */
 	public boolean isSynchronized() {
 		return this.isSynchronized;
 	}
 
 	public ContactModel setIsSynchronized(boolean isSynchronized) {
 		this.isSynchronized = isSynchronized;
+
+		// degrade verification level as this contact is no longer connected to an address book contact
+		if (!isSynchronized && getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
+			setVerificationLevel(VerificationLevel.UNVERIFIED);
+		}
 		return this;
 	}
 

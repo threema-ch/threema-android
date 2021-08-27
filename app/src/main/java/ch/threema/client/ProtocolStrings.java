@@ -29,9 +29,9 @@ public class ProtocolStrings {
 	public static final String USER_AGENT = "Threema";
 
 	public static final String API_SERVER_URL = "https://apip.threema.ch/";
-	public static final String API_SERVER_URL_SANDBOX = "";
+	public static final String API_SERVER_URL_SANDBOX = "https://apip.test.threema.ch/";
 	public static final String API_SERVER_URL_IPV6 = "https://ds-apip.threema.ch/";
-	public static final String API_SERVER_URL_SANDBOX_IPV6 = "";
+	public static final String API_SERVER_URL_SANDBOX_IPV6 = "https://ds-apip.test.threema.ch/";
 
 	public static final String WORK_SERVER_URL = "https://apip-work.threema.ch/";
 	public static final String WORK_SERVER_URL_SANDBOX = "";

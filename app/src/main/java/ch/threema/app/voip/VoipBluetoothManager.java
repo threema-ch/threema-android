@@ -518,18 +518,23 @@ public class VoipBluetoothManager {
 	 */
 	@SuppressLint("HardwareIds")
 	protected void logBluetoothAdapterInfo(BluetoothAdapter localAdapter) {
-		logger.debug("BluetoothAdapter: "
+		try {
+			logger.debug("BluetoothAdapter: "
 				+ "enabled=" + localAdapter.isEnabled() + ", "
 				+ "state=" + adapterStateToString(localAdapter.getState()) + ", "
 				+ "name=" + localAdapter.getName() + ", "
 				+ "address=" + localAdapter.getAddress());
-		// Log the set of BluetoothDevice objects that are bonded (paired) to the local adapter.
-		Set<BluetoothDevice> pairedDevices = localAdapter.getBondedDevices();
-		if (!pairedDevices.isEmpty()) {
-			logger.debug("paired devices:");
-			for (BluetoothDevice device : pairedDevices) {
-				logger.debug(" name=" + device.getName() + ", address=" + device.getAddress());
+			// Log the set of BluetoothDevice objects that are bonded (paired) to the local adapter.
+			Set<BluetoothDevice> pairedDevices = localAdapter.getBondedDevices();
+			if (!pairedDevices.isEmpty()) {
+				logger.debug("paired devices:");
+				for (BluetoothDevice device : pairedDevices) {
+					logger.debug(" name=" + device.getName() + ", address=" + device.getAddress());
+				}
 			}
+		} catch (SecurityException e) {
+			// some calls on localAdapter may cause SecurityExceptions on some devices
+			logger.error("BT logging failed", e);
 		}
 	}
 

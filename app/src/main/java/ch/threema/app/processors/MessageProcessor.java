@@ -39,6 +39,7 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotVoteResult;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageDiskSizeUtil;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.client.AbstractGroupMessage;
@@ -126,7 +127,10 @@ public class MessageProcessor implements MessageProcessorInterface {
 
 		AbstractMessage msg;
 		try {
-			// check first, if contact of incoming message is a already known
+			if (ConfigUtils.isWorkBuild() && preferenceService.isBlockUnknown()) {
+				contactService.createWorkContact(boxmsg.getFromIdentity());
+			}
+
 			// try to fetch the key - throws MissingPublicKeyException if contact is blocked or fetching failed
 			msg = AbstractMessage.decodeFromBox(
 					boxmsg,

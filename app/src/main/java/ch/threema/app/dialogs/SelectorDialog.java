@@ -38,7 +38,6 @@ public class SelectorDialog extends ThreemaDialogFragment {
 	private SelectorDialogClickListener callback;
 	private SelectorDialogInlineClickListener inlineCallback;
 	private Activity activity;
-	private Object object;
 	private AlertDialog alertDialog;
 
 	public static SelectorDialog newInstance(String title, ArrayList<String> items, String negative, SelectorDialogInlineClickListener listener) {
@@ -101,10 +100,6 @@ public class SelectorDialog extends ThreemaDialogFragment {
 		void onClick(String tag, int which, Object data);
 		void onCancel(String tag);
 		void onNo(String tag);
-	}
-
-	public void setData(Object o) {
-		object = o;
 	}
 
 	@Override

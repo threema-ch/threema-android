@@ -21,6 +21,8 @@
 
 package ch.threema.app.activities;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.media.RingtoneManager;
@@ -37,6 +39,8 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatRadioButton;
 import ch.threema.app.R;
@@ -87,6 +91,20 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	protected int[] muteValues = {1, 2, 4, 8, 24, 144};
 	private int[] animCenterLocation = {0, 0};
 	protected String uid;
+
+	private final ActivityResultLauncher<Intent> ringtonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+				Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+				onRingtoneSelected(DIALOG_TAG_RINGTONE_SELECTOR, uri);
+			}
+		});
+
+	private final ActivityResultLauncher<Intent> ringtoneSettingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			refreshSettings();
+			updateUI();
+		});
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -336,7 +354,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 				Intent intent = new Intent(this, SettingsActivity.class);
 				intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsNotificationsFragment.class.getName());
 				intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true );
-				startActivityForResult(intent, ACTIVITY_ID_SETTINGS_NOTIFICATIONS);
+				ringtoneSettingsLauncher.launch(intent);
 				overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 				break;
 			default:
@@ -361,7 +379,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	}
 
 	protected void pickRingtone(String uniqueId) {
-
 		Uri existingUri = this.ringtoneService.getRingtoneFromUniqueId(uniqueId);
 		if (existingUri != null && existingUri.getPath().equals("null")) {
 			existingUri = null;
@@ -372,12 +389,17 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
 		Uri defaultUri = this.ringtoneService.getDefaultContactRingtone();
 
-		RingtoneSelectorDialog.newInstance(getString(R.string.prefs_notification_sound),
+		try {
+			Intent intent = RingtoneUtil.getRingtonePickerIntent(RingtoneManager.TYPE_NOTIFICATION, existingUri == null ? defaultUri : existingUri, defaultUri);
+			ringtonePickerLauncher.launch(intent);
+		} catch (ActivityNotFoundException e) {
+			RingtoneSelectorDialog.newInstance(getString(R.string.prefs_notification_sound),
 				RingtoneManager.TYPE_NOTIFICATION,
 				existingUri,
 				defaultUri,
 				true,
 				true).show(getSupportFragmentManager(), DIALOG_TAG_RINGTONE_SELECTOR);
+		}
 	}
 
 	protected void onDone() {
@@ -432,26 +454,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 		super.onSaveInstanceState(outState);
 
 		outState.putIntArray(BUNDLE_ANIMATION_CENTER, this.animCenterLocation);
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-
-		switch (requestCode) {
-			case ACTIVITY_ID_PICK_NTOTIFICATION:
-				if (resultCode == RESULT_OK) {
-					Uri ringtoneUri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-					ringtoneService.setRingtone(uid, ringtoneUri);
-					backupSoundCustom = ringtoneUri;
-					refreshSettings();
-				}
-				break;
-			case ACTIVITY_ID_SETTINGS_NOTIFICATIONS:
-				refreshSettings();
-				updateUI();
-				break;
-		}
 	}
 
 	@Override

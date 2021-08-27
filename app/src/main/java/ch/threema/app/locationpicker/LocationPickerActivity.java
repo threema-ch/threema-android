@@ -29,9 +29,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -336,15 +334,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 					@Override
 					public void onStyleLoaded(@NonNull Style style) {
 						// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
-						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-							setupLocationComponent(style);
-
-							if (locationComponent.getLastKnownLocation() == null) {
-								mapboxMap.animateCamera(CameraUpdateFactory.zoomTo(1));
-								showLocationNotAvailable();
-							}
-						}
-						updatePois();
+						setupLocationComponent(style);
+						zoomToCenter();
 					}
 				});
 				mapboxMap.getUiSettings().setAttributionEnabled(false);
@@ -523,6 +514,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 	private boolean checkLocationEnabled(LocationManager locationManager) {
 		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			setMapWithLocationFallback();
 			GenericAlertDialog.newInstance(R.string.send_location, R.string.location_services_disabled, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
 			return false;
 		}
@@ -582,11 +574,12 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	private void zoomToCenter() {
 		if (checkLocationEnabled(locationManager)) {
 			if (locationComponent != null) {
-				locationComponent.setLocationComponentEnabled(true);
 				Location location = locationComponent.getLastKnownLocation();
 				if (location != null) {
 					moveCameraAndUpdatePOIs(new LatLng(location.getLatitude(), location.getLongitude()), true, -1);
-				} else {
+				}
+				else {
+					setMapWithLocationFallback();
 					showLocationNotAvailable();
 				}
 			}
@@ -594,7 +587,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	}
 
 	private void showLocationNotAvailable() {
-		RuntimeUtil.runOnUiThread(() -> Toast.makeText(LocationPickerActivity.this, R.string.unable_to_get_current_location, Toast.LENGTH_SHORT).show());
+		RuntimeUtil.runOnUiThread(() -> Toast.makeText(LocationPickerActivity.this, R.string.unable_to_get_current_location, Toast.LENGTH_LONG).show());
 	}
 
 	@Override
@@ -608,7 +601,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	}
 
 	@Override
-	public void onNo(String tag, Object data) { }
+	public void onNo(String tag, Object data) {
+		// don't bother, we just stay at the fallback Zuerich location
+	}
 
 	@Override
 	public void onOK(String tag, Object object) {
@@ -623,35 +618,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
 			if (checkLocationEnabled(locationManager)) {
-				if (locationComponent == null) {
-					mapView.post(new Runnable() {
-						@SuppressLint("MissingPermission")
-						@Override
-						public void run() {
-							Criteria criteria = new Criteria();
-							criteria.setAccuracy(Criteria.ACCURACY_MEDIUM);
-							locationManager.requestSingleUpdate(criteria, new LocationListener() {
-								@Override
-								public void onLocationChanged(Location location) {
-									setupLocationComponent(mapboxMap.getStyle());
-									zoomToCenter();
-								}
-
-								@Override
-								public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-								@Override
-								public void onProviderEnabled(String provider) {}
-
-								@Override
-								public void onProviderDisabled(String provider) {}
-							}, null);
-						}
-					});
-				}
-				else {
-					zoomToCenter();
-				}
+				// init map again as it was skipped first time around in onCreate() without location permissions
+				initMap();
 			}
 		} else if (requestCode == REQUEST_CODE_PLACES) {
 			if (resultCode == RESULT_OK) {
@@ -691,6 +659,10 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			}
 		});
 
+		moveCamera(latLng, animate, zoomLevel);
+	}
+
+	private void moveCamera(LatLng latLng, boolean animate, int zoomLevel) {
 		CameraUpdate cameraUpdate = zoomLevel != -1 ?
 			CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel) :
 			CameraUpdateFactory.newLatLng(latLng);
@@ -714,5 +686,23 @@ public class LocationPickerActivity extends ThreemaActivity implements
 				}
 			});
 		}
+	}
+
+	private void setMapWithLocationFallback() {
+		mapView.post(() -> {
+			// try to get a last location from gps and network provider, else update POIS around Zuerich
+			Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if (location == null) {
+				location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			}
+			if (location == null) {
+				lastPosition = new LatLng(47.367302, 8.544616);
+			}
+			else {
+				lastPosition = new LatLng(location.getLatitude(), location.getLongitude());
+			}
+			moveCamera(lastPosition, true, 9);
+			updatePois();
+		});
 	}
 }

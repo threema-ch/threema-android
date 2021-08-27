@@ -21,6 +21,7 @@
 
 package ch.threema.app.services;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -74,6 +75,7 @@ import javax.crypto.CipherOutputStream;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -1438,6 +1440,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@SuppressLint("StaticFieldLeak")
+	@RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 	@Override
 	public void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, final boolean quiet) {
 		new AsyncTask<Void, Integer, Integer>() {

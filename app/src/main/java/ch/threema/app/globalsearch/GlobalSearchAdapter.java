@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2021 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,32 +36,40 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiImageSpan;
 import ch.threema.app.emojis.EmojiMarkupUtil;
+import ch.threema.app.services.ContactService;
+import ch.threema.app.services.GroupService;
+import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
+import ch.threema.app.utils.LocaleUtil;
+import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.data.LocationDataModel;
 
-public abstract class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final Logger logger = LoggerFactory.getLogger(GlobalSearchAdapter.class);
+	private static final String FLOW_CHARACTER = "\u25BA\uFE0E";
 
-	private static final int TYPE_HEADER = 0;
-	private static final int TYPE_ITEM = 1;
-	protected static final String FLOW_CHARACTER = "\u25BA\uFE0E";
+	private GroupService groupService;
+	private ContactService contactService;
 
-	protected final Context context;
-	protected GlobalSearchAdapter.OnClickItemListener onClickItemListener;
-	protected String queryString;
-	protected String headerString;
-	protected List<AbstractMessageModel> messageModels; // Cached copy of AbstractMessageModels
+	private final Context context;
+	private OnClickItemListener onClickItemListener;
+	private String queryString;
+	private List<AbstractMessageModel> messageModels; // Cached copy of AbstractMessageModels
 
-	static class ItemHolder extends RecyclerView.ViewHolder {
-		protected final TextView titleView;
-		protected final TextView dateView;
-		protected final TextView snippetView;
+	private static class ItemHolder extends RecyclerView.ViewHolder {
+		private final TextView titleView;
+		private final TextView dateView;
+		private final TextView snippetView;
 		private final AvatarView avatarView;
 		AvatarListItemHolder avatarListItemHolder;
 
@@ -78,36 +86,66 @@ public abstract class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerV
 		}
 	}
 
-	public class HeaderHolder extends RecyclerView.ViewHolder {
-		protected final TextView headerText;
-
-		public HeaderHolder(View view) {
-			super(view);
-
-			this.headerText = itemView.findViewById(R.id.header_text);
-		}
-	}
-
-	GlobalSearchAdapter(Context context, String headerString) {
-		this.headerString = headerString;
+	GlobalSearchAdapter(Context context) {
 		this.context = context;
+
+		try {
+			this.groupService = ThreemaApplication.getServiceManager().getGroupService();
+			this.contactService = ThreemaApplication.getServiceManager().getContactService();
+		} catch (Exception e) {
+			logger.error("Unable to get Services", e);
+		}
 	}
 
 	@NonNull
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		if (viewType == TYPE_ITEM) {
-			View v = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.item_global_search, parent, false);
+		View v = LayoutInflater.from(parent.getContext())
+			.inflate(R.layout.item_global_search, parent, false);
 
-			return new GlobalSearchAdapter.ItemHolder(v);
-		} else if (viewType == TYPE_HEADER) {
-			View v = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.header_global_search, parent, false);
+		return new ItemHolder(v);
+	}
 
-			return new GlobalSearchAdapter.HeaderHolder(v);
+	@Override
+	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+		ItemHolder itemHolder = (ItemHolder) holder;
+
+		if (messageModels != null) {
+			AbstractMessageModel current = getItem(position);
+
+			if (current instanceof GroupMessageModel) {
+				final ContactModel contactModel = current.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(current.getIdentity());
+				final GroupModel groupModel = groupService.getById(((GroupMessageModel) current).getGroupId());
+				AvatarListItemUtil.loadAvatar(position, groupModel, null, groupService, itemHolder.avatarListItemHolder);
+
+				String groupName = NameUtil.getDisplayName(groupModel, groupService);
+				itemHolder.titleView.setText(
+					String.format("%s %s %s", NameUtil.getDisplayNameOrNickname(contactModel, true), FLOW_CHARACTER, groupName)
+				);
+			} else {
+				final ContactModel contactModel = this.contactService.getByIdentity(current.getIdentity());
+				AvatarListItemUtil.loadAvatar(position, current.isOutbox() ? contactService.getMe() : contactModel, null, contactService, itemHolder.avatarListItemHolder);
+
+				String name = NameUtil.getDisplayNameOrNickname(context, current, contactService);
+				itemHolder.titleView.setText(
+					current.isOutbox() ?
+						name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
+						name
+				);
+			}
+			itemHolder.dateView.setText(LocaleUtil.formatDateRelative(context, current.getCreatedAt().getTime()));
+
+			setSnippetToTextView(current, itemHolder);
+
+			if (this.onClickItemListener != null) {
+				itemHolder.itemView.setOnClickListener(v -> onClickItemListener.onClick(current, itemHolder.itemView));
+			}
+		} else {
+			// Covers the case of data not being ready yet.
+			itemHolder.titleView.setText("No data");
+			itemHolder.dateView.setText("");
+			itemHolder.snippetView.setText("");
 		}
-		throw new RuntimeException("no matching item type");
 	}
 
 	/**
@@ -143,12 +181,13 @@ public abstract class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerV
 		return fullText;
 	}
 
+
 	void setMessageModels(List<AbstractMessageModel> messageModels){
 		this.messageModels = messageModels;
 		notifyDataSetChanged();
 	}
 
-	protected void setSnippetToTextView(AbstractMessageModel current, ItemHolder itemHolder) {
+	private void setSnippetToTextView(AbstractMessageModel current, ItemHolder itemHolder) {
 		String snippetText = null;
 		if (!TestUtil.empty(this.queryString)) {
 			switch (current.getType()) {
@@ -197,32 +236,20 @@ public abstract class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerV
 		}
 	}
 
-	protected AbstractMessageModel getItem(int position) {
-		return messageModels.get(position - 1);
+	private AbstractMessageModel getItem(int position) {
+		return messageModels.get(position);
 	}
 
 	// getItemCount() is called many times, and when it is first called,
 	// messageModels has not been updated (means initially, it's null, and we can't return null).
 	@Override
 	public int getItemCount() {
-		if (messageModels != null && messageModels.size() > 0) {
-			return messageModels.size() + 1; // account for header
+		if (messageModels != null) {
+			return messageModels.size();
 		}
 		else {
 			return 0;
 		}
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		if (isPositionHeader(position))
-			return TYPE_HEADER;
-
-		return TYPE_ITEM;
-	}
-
-	private boolean isPositionHeader(int position) {
-		return position == 0;
 	}
 
 	void setOnClickItemListener(OnClickItemListener onClickItemListener) {

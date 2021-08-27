@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Gravant un missatge</string>
+    <string name="recording_stopped_title">Gravació aturada</string>
+    <string name="recording_stopped_message">Voleu enviar el missatge de veu gravat ara?</string>
+    <string name="recording_canceled">S\'ha cancel·lat la gravació a causa d\'un error desconegut.</string>
+    <string name="cancel_recording">Descartar la gravació</string>
+    <string name="cancel_recording_message">Segur que voleu cancel·lar i descartar la gravació?</string>
+    <string name="stop">Aturar</string>
+</resources>

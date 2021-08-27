@@ -75,7 +75,7 @@ public class ContactModelFactory extends ModelFactory {
 
 	@Nullable
 	public ContactModel getByLookupKey(String lookupKey) {
-		return getFirst(ContactModel.COLUMN_ANDROID_CONTACT_ID + " =?",
+		return getFirst(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + " =?",
 				new String[]{
 					lookupKey
 				});
@@ -130,7 +130,7 @@ public class ContactModelFactory extends ModelFactory {
 						cursorFactory.getString(ContactModel.COLUMN_LAST_NAME))
 					.setPublicNickName(cursorFactory.getString(ContactModel.COLUMN_PUBLIC_NICK_NAME))
 					.setState(ContactModel.State.valueOf(cursorFactory.getString(ContactModel.COLUMN_STATE)))
-					.setAndroidContactId(cursorFactory.getString(ContactModel.COLUMN_ANDROID_CONTACT_ID))
+					.setAndroidContactLookupKey(cursorFactory.getString(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
 					.setThreemaAndroidContactId(cursorFactory.getString(ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID))
 					.setIsSynchronized(cursorFactory.getInt(ContactModel.COLUMN_IS_SYNCHRONIZED) == 1)
 					.setIsWork(cursorFactory.getInt(ContactModel.COLUMN_IS_WORK) == 1)
@@ -199,7 +199,7 @@ public class ContactModelFactory extends ModelFactory {
 			contactModel.setState(ContactModel.State.ACTIVE);
 		}
 		contentValues.put(ContactModel.COLUMN_STATE, contactModel.getState().toString());
-		contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_ID, contactModel.getAndroidContactId());
+		contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contactModel.getAndroidContactLookupKey());
 		contentValues.put(ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID, contactModel.getThreemaAndroidContactId());
 		contentValues.put(ContactModel.COLUMN_IS_SYNCHRONIZED, contactModel.isSynchronized());
 		contentValues.put(ContactModel.COLUMN_FEATURE_LEVEL, contactModel.getFeatureMask());
@@ -254,7 +254,7 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_PUBLIC_NICK_NAME + "` VARCHAR ," +
 						"`" + ContactModel.COLUMN_VERIFICATION_LEVEL + "` INTEGER ," +
 						"`" + ContactModel.COLUMN_STATE + "` VARCHAR DEFAULT 'ACTIVE' NOT NULL ," +
-						"`" + ContactModel.COLUMN_ANDROID_CONTACT_ID + "` VARCHAR ," +
+						"`" + ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + "` VARCHAR ," +
 						"`" + ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID + "` VARCHAR ," +
 						"`" + ContactModel.COLUMN_IS_SYNCHRONIZED + "` SMALLINT DEFAULT 0 ," +
 						"`" + ContactModel.COLUMN_FEATURE_LEVEL + "` INTEGER DEFAULT 0 NOT NULL ," +

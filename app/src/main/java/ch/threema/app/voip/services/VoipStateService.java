@@ -64,6 +64,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
@@ -1293,6 +1294,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	void cancelCallNotification(@NonNull String identity) {
 		// Cancel fullscreen activity launched by notification first
 		VoipUtil.sendVoipBroadcast(appContext, CallActivity.ACTION_CANCELLED);
+		ThreemaApplication.getAppContext().stopService(new Intent(ThreemaApplication.getAppContext(), VoipCallService.class));
 
 		this.stopRingtone();
 

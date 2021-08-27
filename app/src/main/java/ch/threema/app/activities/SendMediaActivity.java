@@ -232,7 +232,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return false;
 		}
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle("");
 
 		DeadlineListService hiddenChatsListService;
 		try {
@@ -471,6 +470,25 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			this.captionEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.no_emoji_button_padding_left), this.captionEditText.getPaddingTop(), this.captionEditText.getPaddingRight(), this.captionEditText.getPaddingBottom());
 		}
 
+		String recipients = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
+		if (!TestUtil.empty(recipients)) {
+			this.captionEditText.setHint(getString(R.string.send_to, recipients));
+			this.captionEditText.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					if (s == null || s.length() == 0) {
+						captionEditText.setHint(getString(R.string.send_to, recipients));
+					}
+				}
+			});
+		}
+
 		SendButton sendButton = findViewById(R.id.send_button);
 		sendButton.setOnClickListener(new DebouncedOnClickListener(500) {
 			@Override
@@ -660,6 +678,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		getToolbar().setTitle(R.string.send_media);
 		getMenuInflater().inflate(R.menu.activity_send_media, menu);
 
 		settingsItem = menu.findItem(R.id.settings);

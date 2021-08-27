@@ -32,10 +32,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.exceptions.MalformedMimeTypeException;
+import ch.threema.app.ui.MediaItem;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
+import static ch.threema.app.ui.MediaItem.TYPE_FILE;
+import static ch.threema.app.ui.MediaItem.TYPE_GIF;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
+import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
+import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
 import static ch.threema.client.file.FileData.RENDERING_MEDIA;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
@@ -247,5 +253,20 @@ public class MimeUtil {
 				break;
 		}
 		return mimeType;
+	}
+
+	public static @MediaItem.MediaType int getMediaTypeFromMimeType(String mimeType) {
+		if (MimeUtil.isImageFile(mimeType)) {
+			if (MimeUtil.isGifFile(mimeType)) {
+				return TYPE_GIF;
+			} else {
+				return TYPE_IMAGE;
+			}
+		} else if (MimeUtil.isVideoFile(mimeType)) {
+			return TYPE_VIDEO;
+		} else if (MimeUtil.isAudioFile(mimeType) && mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_AAC)) {
+			return TYPE_VOICEMESSAGE;
+		}
+		return TYPE_FILE;
 	}
 }

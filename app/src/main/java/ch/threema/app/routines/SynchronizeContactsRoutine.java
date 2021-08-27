@@ -22,9 +22,9 @@
 package ch.threema.app.routines;
 
 import android.Manifest;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -38,15 +38,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.core.content.ContextCompat;
+import androidx.annotation.RequiresPermission;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.stores.MatchTokenStore;
 import ch.threema.app.utils.AndroidContactUtil;
+import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
@@ -64,15 +67,17 @@ public class SynchronizeContactsRoutine implements Runnable {
 	private final LocaleService localeService;
 	private final ContentResolver contentResolver;
 	private final IdListService excludedSyncList;
-	private DeviceService deviceService;
+	private final DeviceService deviceService;
 	private final PreferenceService preferenceService;
 	private final IdentityStoreInterface identityStore;
+	private final IdListService blackListIdentityService;
+	private final LicenseService<?> licenseService;
 
 	private OnStatusUpdate onStatusUpdate;
-	private List<OnFinished> onFinished = new ArrayList<OnFinished>();
-	private List<OnStarted> onStarted = new ArrayList<OnStarted>();
+	private final List<OnFinished> onFinished = new ArrayList<OnFinished>();
+	private final List<OnStarted> onStarted = new ArrayList<OnStarted>();
 
-	private List<String> processingIdentities = new ArrayList<String>();
+	private final List<String> processingIdentities = new ArrayList<>();
 	private boolean abort = false;
 	private boolean running = false;
 
@@ -91,15 +96,17 @@ public class SynchronizeContactsRoutine implements Runnable {
 	}
 
 	public SynchronizeContactsRoutine(Context context,
-									  APIConnector apiConnector,
-									  ContactService contactService,
-									  UserService userService,
-									  LocaleService localeService,
-									  ContentResolver contentResolver,
-									  IdListService excludedSyncList,
-									  DeviceService deviceService,
+	                                  APIConnector apiConnector,
+	                                  ContactService contactService,
+	                                  UserService userService,
+	                                  LocaleService localeService,
+	                                  ContentResolver contentResolver,
+	                                  IdListService excludedSyncList,
+	                                  DeviceService deviceService,
 	                                  PreferenceService preferenceService,
-	                                  IdentityStoreInterface identityStore) {
+	                                  IdentityStoreInterface identityStore,
+	                                  IdListService blackListIdentityService,
+	                                  LicenseService<?> licenseService) {
 		this.context = context;
 		this.apiConnector = apiConnector;
 		this.userService = userService;
@@ -110,6 +117,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 		this.deviceService = deviceService;
 		this.preferenceService = preferenceService;
 		this.identityStore = identityStore;
+		this.licenseService = licenseService;
+		this.blackListIdentityService = blackListIdentityService;
 	}
 
 	public SynchronizeContactsRoutine addProcessIdentity(String identity) {
@@ -128,21 +137,23 @@ public class SynchronizeContactsRoutine implements Runnable {
 	}
 
 	public boolean fullSync() {
-		return this.processingIdentities == null || this.processingIdentities.size() == 0;
+		return this.processingIdentities.size() == 0;
 	}
 
 	@Override
+	@RequiresPermission(Manifest.permission.WRITE_CONTACTS)
 	public void run() {
+		logger.info("SynchronizeContacts run started.");
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-				ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+		if (!ConfigUtils.isPermissionGranted(context, Manifest.permission.WRITE_CONTACTS)) {
+			logger.info("No contacts permission. Aborting.");
 			return;
 		}
 
 		this.running = true;
 
 		for(OnStarted s: this.onStarted) {
-			s.started(this.processingIdentities == null || this.processingIdentities.size() == 0);
+			s.started(this.processingIdentities.size() == 0);
 		}
 
 		boolean success = false;
@@ -172,15 +183,22 @@ public class SynchronizeContactsRoutine implements Runnable {
 					emails, phoneNumbers, this.localeService.getCountryIsoCode(), false, identityStore, matchTokenStore);
 
 			final List<String> preSynchronizedIdentities = new ArrayList<>();
+			HashMap<String, Long> existingRawContacts = new HashMap<>();
 
 			if(this.fullSync()) {
 				List<String> synchronizedIdentities = this.contactService.getSynchronizedIdentities();
 				if (synchronizedIdentities != null) {
 					preSynchronizedIdentities.addAll(synchronizedIdentities);
 				}
+
+				existingRawContacts = AndroidContactUtil.getInstance().getAllThreemaRawContacts();
+				if (existingRawContacts != null) {
+					logger.debug("Number of existing raw contacts {}", existingRawContacts.size());
+				}
 			}
 
 			//looping result and create/update contacts
+			ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
 			for (Map.Entry<String, APIConnector.MatchIdentityResult> id : foundIds.entrySet()) {
 				if(this.abort) {
 					//abort!
@@ -200,7 +218,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					continue;
 				}
 
-				if(this.processingIdentities != null && this.processingIdentities.size() > 0 && !this.processingIdentities.contains(id.getKey())) {
+				if(this.processingIdentities.size() > 0 && !this.processingIdentities.contains(id.getKey())) {
 					continue;
 				}
 
@@ -210,7 +228,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 				final ContactMatchKeyEmail matchKeyEmail = (ContactMatchKeyEmail)id.getValue().refObjectEmail;
 				final ContactMatchKeyPhone matchKeyPhone = (ContactMatchKeyPhone)id.getValue().refObjectMobileNo;
 
-				int contactId;
+				long contactId;
 				String lookupKey;
 				if (matchKeyEmail != null) {
 					contactId = matchKeyEmail.contactId;
@@ -238,20 +256,69 @@ public class SynchronizeContactsRoutine implements Runnable {
 					contact.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
 				}
 
-				//update contact name
 				contact.setIsSynchronized(true);
 				contact.setIsHidden(false);
-				contact.setAndroidContactId(contactId > 0 ? lookupKey + "/" + contactId : lookupKey); // It can optionally also have a "/" and last known contact ID appended after that. This "complete" format is an important optimization and is highly recommended.
-				AndroidContactUtil.getInstance().updateNameByAndroidContact(contact);
-				AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
+				if (contactId > 0L) {
+					contact.setAndroidContactLookupKey(lookupKey + "/" + contactId); // It can optionally also have a "/" and last known contact ID appended after that. This "complete" format is an important optimization and is highly recommended.
+				}
 
-				//save the contact
-				this.contactService.save(contact);
+				if (fullSync()) {
+					Long parentContactId = existingRawContacts.get(contact.getIdentity());
 
+					if (parentContactId == null || parentContactId != contactId) {
+						if (contactId > 0L) {
+							// raw contact does not exist yet, create it
+							boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact, this.blackListIdentityService)
+								&& ConfigUtils.isCallsEnabled(context, preferenceService, licenseService);
+
+							// create a raw contact for our stuff and aggregate it
+							AndroidContactUtil.getInstance().createThreemaRawContact(
+								contentProviderOperations,
+								matchKeyEmail != null ?
+									matchKeyEmail.rawContactId :
+									matchKeyPhone.rawContactId,
+								contact,
+								supportsVoiceCalls);
+
+							// delete entry after processing - remaining ("stray") entries will be deleted from raw contacts after this run
+							existingRawContacts.remove(contact.getIdentity());
+						}
+					} else {
+						// all good - we can delete the hash
+						existingRawContacts.remove(contact.getIdentity());
+					}
+				}
+
+				try {
+					AndroidContactUtil.getInstance().updateNameByAndroidContact(contact);
+					AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
+
+					// save the contact
+					this.contactService.save(contact);
+				} catch (ThreemaException e) {
+					existingRawContacts.put(contact.getIdentity(), 0L);
+					logger.error("Contact lookup Exception", e);
+				}
+			}
+
+			if (contentProviderOperations.size() > 0) {
+				try {
+					context.getContentResolver().applyBatch(
+						ContactsContract.AUTHORITY,
+						contentProviderOperations);
+				} catch (Exception e) {
+					logger.error("Error during raw contact creation! ", e);
+				}
+				contentProviderOperations.clear();
+			}
+
+			// delete remaining / stray raw contacts
+			if (existingRawContacts.size() > 0) {
+				AndroidContactUtil.getInstance().deleteThreemaRawContacts(existingRawContacts);
 			}
 
 			if (preSynchronizedIdentities.size() > 0) {
-				logger.debug("degrade contact(s). found " + String.valueOf(preSynchronizedIdentities.size()) + " not synchronized contacts");
+				logger.debug("Degrade contact(s). found {} synchronized contacts that are not synchronized" , preSynchronizedIdentities.size());
 
 				List<ContactModel> contactModels = this.contactService.getByIdentities(preSynchronizedIdentities);
 				modifiedCount += this.contactService.save(
@@ -260,33 +327,20 @@ public class SynchronizeContactsRoutine implements Runnable {
 							@Override
 							public boolean process(ContactModel contactModel) {
 								contactModel.setIsSynchronized(false);
-								if(contactModel.getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
-									contactModel.setVerificationLevel(VerificationLevel.UNVERIFIED);
-								}
 								return true;
 							}
 						}
 				);
 			}
-
-			//after all, check integration
-			if(this.fullSync()) {
-				new ValidateContactsIntegrationRoutine(
-						this.contactService,
-						null
-				).run();
-			}
-
 			success = true;
 		} catch (final Exception x) {
-			logger.debug("failed");
 			success = false;
 			logger.error("Exception", x);
 			if (this.onStatusUpdate != null) {
 				this.onStatusUpdate.error(x);
 			}
 		} finally {
-			logger.debug("finished [success=" + success + ", modified=" + modifiedCount + ", inserted =" + insertedContacts.size() + ", deleted =" + deletedCount + "]");
+			logger.debug("Finished [success=" + success + ", modified=" + modifiedCount + ", inserted =" + insertedContacts.size() + ", deleted =" + deletedCount + "]");
 			for (OnFinished f : this.onFinished) {
 				f.finished(success, modifiedCount, insertedContacts, deletedCount);
 			}
@@ -308,10 +362,6 @@ public class SynchronizeContactsRoutine implements Runnable {
 		return this;
 	}
 
-	public void removeOnFinished(OnFinished onFinished) {
-		this.onFinished.remove(onFinished);
-	}
-
 	private Map<String, ContactMatchKeyPhone> readPhoneNumbers() {
 		Map<String, ContactMatchKeyPhone> phoneNumbers = new HashMap<>();
 		String selection;
@@ -325,6 +375,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		try (Cursor phonesCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 			new String[]{
+				ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID,
 				ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
 				ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY,
 				ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -334,20 +385,22 @@ public class SynchronizeContactsRoutine implements Runnable {
 			null)) {
 
 			if (phonesCursor != null && phonesCursor.getCount() > 0) {
-				int idColumnIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+				final int rawContactIdIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID);
+				final int idColumnIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
 				final int lookupKeyColumnIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY);
 				final int phoneNumberIndex = phonesCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
 
 				while (phonesCursor.moveToNext()) {
-					int contactId = phonesCursor.getInt(idColumnIndex);
+					long rawContactId = phonesCursor.getLong(rawContactIdIndex);
+					long contactId = phonesCursor.getLong(idColumnIndex);
 					String lookupKey = phonesCursor.getString(lookupKeyColumnIndex);
 					String phoneNumber = phonesCursor.getString(phoneNumberIndex);
 
-//					logger.debug("id: " + contactId + " phone: " + phoneNumber + " lookupKey: " + lookupKey);
 					if (lookupKey != null && !TestUtil.empty(phoneNumber)) {
 						ContactMatchKeyPhone matchKey = new ContactMatchKeyPhone();
 						matchKey.contactId = contactId;
 						matchKey.lookupKey = lookupKey;
+						matchKey.rawContactId = rawContactId;
 						matchKey.phoneNumber = phoneNumber;
 						phoneNumbers.put(phoneNumber, matchKey);
 					}
@@ -369,6 +422,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		try (Cursor emailsCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Email.CONTENT_URI,
 			new String[]{
+				ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID,
 				ContactsContract.CommonDataKinds.Email.CONTACT_ID,
 				ContactsContract.CommonDataKinds.Email.LOOKUP_KEY,
 				ContactsContract.CommonDataKinds.Email.DATA
@@ -378,20 +432,22 @@ public class SynchronizeContactsRoutine implements Runnable {
 			null)) {
 
 			if (emailsCursor != null && emailsCursor.getCount() > 0) {
-				int idColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.CONTACT_ID);
+				final int rawContactIdIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID);
+				final int idColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.CONTACT_ID);
 				final int lookupKeyColumnIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LOOKUP_KEY);
 				final int emailIndex = emailsCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
 
 				while (emailsCursor.moveToNext()) {
-					int contactId = emailsCursor.getInt(idColumnIndex);
+					long rawContactId = emailsCursor.getLong(rawContactIdIndex);
+					long contactId = emailsCursor.getLong(idColumnIndex);
 					String lookupKey = emailsCursor.getString(lookupKeyColumnIndex);
 					String email = emailsCursor.getString(emailIndex);
 
-//					logger.debug("id: " + contactId + " email: " + email + " lookupKey: " + lookupKey);
 					if (lookupKey != null && !TestUtil.empty(email)) {
 						ContactMatchKeyEmail matchKey = new ContactMatchKeyEmail();
 						matchKey.contactId = contactId;
 						matchKey.lookupKey = lookupKey;
+						matchKey.rawContactId = rawContactId;
 						matchKey.email = email;
 						emails.put(email, matchKey);
 					}
@@ -402,18 +458,17 @@ public class SynchronizeContactsRoutine implements Runnable {
 		return emails;
 	}
 
-
-	private class ContactMatchKey {
-		int contactId;
+	private static class ContactMatchKey {
+		long contactId;
 		String lookupKey;
+		long rawContactId;
 	}
 
-	private class ContactMatchKeyEmail extends ContactMatchKey {
+	private static class ContactMatchKeyEmail extends ContactMatchKey {
 		String email;
 	}
 
-	private class ContactMatchKeyPhone extends ContactMatchKey {
+	private static class ContactMatchKeyPhone extends ContactMatchKey {
 		String phoneNumber;
 	}
-
 }

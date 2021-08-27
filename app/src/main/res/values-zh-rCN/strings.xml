@@ -225,7 +225,7 @@
     <string name="connection_error">连接错误，请稍后再试。</string>
     <string name="me_myself_and_i">我自己</string>
     <string name="really_forward">转发到 %1$s？</string>
-    <string name="really_send">发送到«%1$s»？</string>
+    <string name="really_send">发送到 %1$s？</string>
     <string name="ringtone_none">静音</string>
     <string name="no_camera_installed">没有可用的摄像头</string>
     <string name="save_message_action">保存</string>
@@ -331,10 +331,10 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="creating_group">正在创建群组</string>
     <string name="updating_group">正在更新群组</string>
     <string name="status_create_group">群组已创建。</string>
-    <string name="status_rename_group">群组名称改为 «%1$s»</string>
+    <string name="status_rename_group">群组名称改为 “%1$s”</string>
     <string name="status_group_new_photo">群组已更新。</string>
     <string name="status_group_new_member">%1$s 已添加到群组。</string>
-    <string name="status_group_member_left">«%1$s» 离开了群组。</string>
+    <string name="status_group_member_left">%1$s 离开了群组。</string>
     <string name="status_group_member_kicked">%1$s 已从群组中移除。</string>
     <string name="can_not_send_no_group_members">您无法将消息发送到空群组</string>
     <string name="you_are_not_a_member_of_this_group">您不是此群组的成员</string>
@@ -346,7 +346,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="title_public_nickname">昵称</string>
     <string name="prefs_sum_excluded_sync_identities">同步联系人时，这里列出的ID将被忽略</string>
     <string name="prefs_title_excluded_sync_identities">排除清单</string>
-    <string name="synchronize_contact">链接系统联系人</string>
+    <string name="synchronize_contact">通讯录同步</string>
     <string name="exclude_contact">排除自动同步</string>
     <string name="prefs_header_lists">清单</string>
     <string name="prefs_title_black_list">黑名单</string>
@@ -409,7 +409,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no_matching_distribution_lists">没有匹配的通讯组列表</string>
     <string name="is_typing">输入中…</string>
     <string name="push_not_available_title">找不到推送服务</string>
-    <string name="push_not_available_text">“我们无法在您的设备上找到推送服务，因为 Google Play 服务没有安装或过时。Threema 会每15分钟检查一次新消息。</string>
+    <string name="push_not_available_text">我们无法在您的设备上找到推送服务，因为 Google Play 服务没有安装或过时。Threema 会每15分钟检查一次新消息。</string>
     <string name="backup_in_progress">正在进行备份</string>
     <string name="backup_or_restore_success_body">数据备份成功完成</string>
     <string name="backup_or_restore_error">Threema 备份</string>
@@ -488,8 +488,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="really_block_contact">来自此联系人今后的消息将被丢弃。是否继续？</string>
     <string name="ballot_result_final">最后结果</string>
     <string name="invalid_cannot_send">您无法向无效的联系人发送信息</string>
-	<string name="ballot_answer_count_error">请输入至少两个答案进行投票。</string>
-    <string name="ballot_one_contact_not_supported">警告：%1$s将无法参与您的投票。</string>
+    <string name="ballot_answer_count_error">请输入至少两个答案进行投票。</string>
+    <string name="ballot_one_contact_not_supported">警告：%1$s 将无法参与您的投票。</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人将无法参与您的投票。</string>
     <string name="enable_polling">使用投票</string>
     <string name="contact_state_inactive">不活跃</string>
@@ -508,7 +508,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="prefs_video_size">视频压缩</string>
     <string name="show_contact">显示联系人</string>
     <string name="chat_with">与 %1$s 聊天</string>
-    <string name="kick_user_from_group">将%1$s踢出群组</string>
+    <string name="kick_user_from_group">将 %1$s 踢出群组</string>
     <string name="show_as_qrcode">显示为二维码</string>
     <string name="qr_code">二维码</string>
     <string name="really_leave_id_export">如果您尚未这样做，请将ID导出文本字符串或相应的二维码保存到安全的地方或打印出来。如果没有备份，则无法还原 Threema ID。</string>
@@ -531,11 +531,11 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="attach_document">文件</string>
     <string name="parent_directory">父母</string>
     <string name="file_placeholder">文件</string>
-    <string name="internal_storage">内部存储器</string>
+    <string name="internal_storage">内部存储</string>
     <string name="no_activity_for_mime_type">找不到打开此文件的应用。</string>
     <string name="message_copied">消息已复制</string>
     <string name="open_from">从...打开</string>
-    <string name="file_one_contact_not_supported">%1$s无法接收文件。</string>
+    <string name="file_one_contact_not_supported">%1$s 无法接收文件。</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人无法收到您的文件。</string>
     <string name="mime_android_apk">Android 套件</string>
     <string name="mime_audio">音频文件</string>
@@ -683,7 +683,7 @@ Threema 支持的所有表情符号。</string>
     <string name="status_ballot_voting_changed">%1$s 投票获得了新一票</string>
     <string name="status_ballot_user_first_vote">%1$s 已对 %2$s 投了一票</string>
     <string name="status_ballot_user_modified_vote">%1$s 更改了 %2$s 的投票</string>
-    <string name="status_ballot_all_votes">已完成 «%1$s» 的投票</string>
+    <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
     <string name="restore">还原</string>
     <string name="new_wizard_anonymous_confirm">您没有输入手机号码或电子邮件地址链接到
 Threema ID。您将不会出现在朋友的联系人列表中。您确定要
@@ -780,7 +780,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="battery_optimizations_explain">电池优化使 %1$s 在手机进入睡眠模式时无法正常运行。请为 %2$s 禁用电池优化。</string>
     <string name="battery_optimizations_disable_guide">在下拉菜单中选择 “所有应用”</string>
     <string name="battery_optimizations_disable_guide_ctd">在列表中搜索%s并禁用优化</string>
-    <string name="battery_optimizations_disable_confirm">你确定要对%1$s保持打开电池优化吗？%2$s将无法正常运行。</string>
+    <string name="battery_optimizations_disable_confirm">你确定要对 %1$s 保持打开电池优化吗？%2$s 将无法正常运行。</string>
     <string name="enter_text_hint">输入文字</string>
     <string name="backup_explain_text">如果您切换或丢失设备，如果您没有备份，您将无法恢复您的 Threema ID 或会话。请使用适当的备份方法保存您的数据。</string>
     <string name="data_backup_explain">数据备份包含：\n\n&#9679; 您的ID和密钥对\n&#9679; 联系人和信任级别\n&#9679; 群组成员资格\n&#9679; 会话\n&#9679; 媒体和文件（可选）\n\n数据将保存到加密的 ZIP 文件中。建议备份成功完成后，将文件保存到其他地方。</string>
@@ -852,7 +852,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_fix_powermanager_problems">禁用电源限制</string>
     <string name="prefs_fix_powermanager_problems_desc">允许 Threema 在后台运行，即使不在活动状态也可以接收消息。</string>
     <string name="disable_powermanager_explain">在下一个屏幕中，确保对 %s 允许后台运行，以及设置 “允许应用忽略电池优化” 。完成后，点击 “返回” 按钮。</string>
-    <string name="disable_autostart_explain">在下一个屏幕中，确保 %s 在自动启动的应用程序列表中 。完成后，点击 “返回” 按钮。</string>
+    <string name="disable_autostart_explain">在下一个屏幕中，确保 %s 在自动启动的应用程序列表中。完成后，点击 “返回” 按钮。</string>
     <string name="notification_priority_default">低</string>
     <string name="notification_priority_high">高</string>
     <string name="notification_priority_max">最高</string>
@@ -999,8 +999,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="voip_disabled">Threema 通话被禁用</string>
     <string name="hide_chat_enter_message_explain">此会话标记为私密会话。如要进入该会话，请先设置访问保护。</string>
     <string name="unknown">未知</string>
-    <string name="miui_notification_title">有关 MIUI 10 通知的重要通知</string>
+    <string name="miui_notification_title">有关 MIUI 通知的重要提醒</string>
     <string name="miui_notification_body">MIUI 10 默认禁用所有新创建的通知频道的声音和灯光（除非是小米认为 “重要” 的一些应用除外）。您必须在手机特定应用的通知设置界面中为每个频道明确启用。请与手机的制造商联系以获取更多信息。</string>
+    <string name="miui12_notification_body">MIUI 默认禁用了所有应用的声音、灯光和浮动通知（除了一些被小米视为 “重要” 的非常流行的应用）。你需要在手机的应用通知权限设置中手动启用这些设置，并在每次应用更新后重复这些步骤。请联系小米公司了解更多信息。</string>
     <string name="dont_show_again">下次不再提示</string>
     <string name="miui_notification_prefs">MIUI 设置</string>
     <string name="threema_safe_upload_successful">Threema Safe 备份成功上传</string>
@@ -1055,18 +1056,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="num_archived_chats">%d个已封存的会话</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">欢迎使用 %s 4.5</string>
-    <string name="whatsnew_headline">%1$s 4.5 带来全新的媒体体验。\n\n媒体抽屉界面进行了重大改革，现在可以选择基于机器学习的图片搜索功能。\n\n此外，我们还增加了所有会话的全局文本搜索，改进了消息引用等功能。</string>
-    <string name="whatsnew2_title">有什么新消息？</string>
-    <string name="whatsnew2_body"><![CDATA[<p><b>媒体抽屉</b>：点击回形针图标，在可滚动的抽屉中浏览您的媒体文件。如果您不想让抽屉自动打开最新的媒体，请在会话设置中禁用图片快速选择选项，<i>“设置” > “会话” > “媒体快速选择”</i>.</p>。
-<p><b>图像搜索</b>：搜索您的图像中的常见对象、活动和地点。<br>图像识别基于本地机器学习模型，不向 Threema 的服务器或任何第三方发送数据。由于分析图像是一项相当昂贵的任务，可能需要很长时间，该选项默认为禁用。您可以在<i>设置 > 媒体和存储 > 图像搜索</i>中找到它。</p>
-<p><b>发送媒体文件</b>：发送具有单独分辨率的图像，而无需更改全局设置。</p>
-<p><b>视频编辑器</b>：在发送前修剪视频。此外，视频转码过程已得到改进，现在可在后台工作。</p>
-<p><b>保存到图库</b>。在 Android 10 及以上版本中，由于谷歌提出了新的 “范围存储” 要求，媒体现在将存储在系统的<i>图片、视频、音乐</i>和<i>文件</i>文件夹中。</p>
-<p><b>全局搜索</b>：在所有会话记录中搜索文本。只需在%1$s的主屏幕上点击<i>菜单 > “搜索会话记录” </i>即可。</p>。
-<p><b>引用</b>：%1$s现在允许您引用任何类型的媒体，包括图像、视频和语音消息。</p>
-<p><b>100个新表情</b>。有期待已久的火锅的表情&#129749;</p>。
-<p><b>大文本</b>：为了保持会话界面的精简性，有大量文本的消息会以截断的会话气泡的方式显示，并可根据需要展开。</p>]]></string>
     <string name="tooltip_identity_popup">点击这里可快速显示您的 Threema ID 或扫描其他人的 ID</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
@@ -1230,4 +1219,14 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="tap_here_for_more">点击这里查看更多信息</string>
     <string name="another_connection_instructions">服务器检测到相同的 Threema ID 在两个或更多的设备上同时连接。\n\n相同的 Threema ID 不可以在多个设备上同时使用。新的消息只会发送到最新登录的设备上。\n\n如果您要切换到新设备，请先在旧设备上卸载或禁用 %s，然后重启新设备。</string>
     <string name="app_store_error_code">应用商店错误代码：%d</string>
+    <string name="download_failed">下载失败。错误代码：%d</string>
+    <string name="edit_answer">编辑答案</string>
+    <string name="share_media">与其他应用分享...</string>
+    <string name="miui_battery_optimization">请为 %1$s 禁用 “电池优化” 以便 %1$s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
+    <string name="forward_captions">包含描述</string>
+    <string name="importing_files_failed">无法导入备份文件，请确保内部存储有足够的可用空间。</string>
+    <string name="label_continue">继续</string>
+    <string name="select_date">选择日期</string>
+    <string name="select_time">选择时间</string>
+    <string name="recipients">收件人：%s</string>
 </resources>

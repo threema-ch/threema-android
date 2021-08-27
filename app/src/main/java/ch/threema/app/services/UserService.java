@@ -49,12 +49,12 @@ public interface UserService {
 	boolean enableAccountAutoSync(boolean enable);
 
 	/**
-	 * Remove the Android Account (all Android-Threema Contacts will be deleted)
+	 * Remove the Account for the Sync Adapter (all Android-Threema Contacts will be deleted)
 	 */
 	void removeAccount();
 
 	/**
-	 * Remove the Android Account, see {@removeAccount}
+	 * Remove the Account for the Sync Adapter, see {@removeAccount}
 	 * @param callback Callback after adding
 	 */
 	boolean removeAccount(AccountManagerCallback<Boolean> callback);

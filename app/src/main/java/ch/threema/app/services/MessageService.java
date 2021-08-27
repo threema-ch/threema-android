@@ -128,6 +128,13 @@ public interface MessageService {
 	void sendMediaAsync(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers);
 	@AnyThread
 	void sendMediaAsync(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers, @Nullable MessageServiceImpl.SendResultListener sendResultListener);
+
+	@AnyThread
+	void sendMediaSingleThread(
+		@NonNull List<MediaItem> mediaItems,
+		@NonNull List<MessageReceiver> messageReceivers
+	);
+
 	@WorkerThread
 	AbstractMessageModel sendMedia(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers, @Nullable MessageServiceImpl.SendResultListener sendResultListener);
 
@@ -163,8 +170,8 @@ public interface MessageService {
 	@WorkerThread
 	List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver);
 	List<AbstractMessageModel> getMessageForBallot(BallotModel ballotModel);
-	List<AbstractMessageModel> getContactMessagesForText(String query);
-	List<AbstractMessageModel> getGroupMessagesForText(String query);
+	List<AbstractMessageModel> getContactMessagesForText(String query, boolean includeArchived);
+	List<AbstractMessageModel> getGroupMessagesForText(String query, boolean includeArchived);
 
 	MessageModel getContactMessageModel(final Integer id, boolean lazy);
 	GroupMessageModel getGroupMessageModel(final Integer id, boolean lazy);
@@ -193,7 +200,7 @@ public interface MessageService {
 	 */
 	long getTotalMessageCount();
 
-	boolean shareMediaMessages(Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris);
+	boolean shareMediaMessages(Context context, ArrayList<AbstractMessageModel> models, ArrayList<Uri> shareFileUris, String caption);
 	boolean viewMediaMessage(Context context, AbstractMessageModel model, Uri uri);
 	boolean shareTextMessage(Context context, AbstractMessageModel model);
 	AbstractMessageModel getMessageModelFromId(int id, String type);

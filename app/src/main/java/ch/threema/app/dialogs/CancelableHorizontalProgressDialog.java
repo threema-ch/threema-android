@@ -51,7 +51,6 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 	private TextView progressPercent;
 	private ProgressBar progressBar;
 	private int max;
-	private Object object;
 
 	/**
 	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
@@ -113,10 +112,6 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 		super.onAttach(activity);
 
 		this.activity = activity;
-	}
-
-	public void setData(Object o) {
-		object = o;
 	}
 
 	@NonNull

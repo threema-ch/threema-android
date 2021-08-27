@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2021 Threema GmbH
+ * Copyright (c) 2020-2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,10 +22,10 @@
 package ch.threema.app.globalsearch;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -38,20 +38,14 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 
-/**
- * A Repository is a class that abstracts access to multiple data sources.
- *
- * The Repository is not part of the Architecture Components libraries, but is a
- * suggested best practice for code separation and architecture. A Repository class
- * handles data operations. It provides a clean API to the rest of the app for app data.
- */
-abstract class GlobalSearchRepository {
+public class GlobalSearchRepository {
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 	private MutableLiveData<List<AbstractMessageModel>> messageModels;
-	protected MessageService messageService;
+	private MessageService messageService;
+
 	private String queryString = "";
 
-	GlobalSearchRepository(Application application) {
+	GlobalSearchRepository() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
 			messageService = null;
@@ -65,7 +59,7 @@ abstract class GlobalSearchRepository {
 					@Nullable
 					@Override
 					public List<AbstractMessageModel> getValue() {
-						return getMessagesForText(queryString);
+						return getMessagesForText(queryString, GlobalSearchActivity.FILTER_CHATS | GlobalSearchActivity.FILTER_GROUPS | GlobalSearchActivity.FILTER_INCLUDE_ARCHIVED);
 					}
 				};
 			}
@@ -76,9 +70,27 @@ abstract class GlobalSearchRepository {
 		return messageModels;
 	}
 
+	List<AbstractMessageModel> getMessagesForText(String queryString, int filterFlags) {
+		List<AbstractMessageModel> messageModels = new ArrayList<>();
+
+		boolean includeArchived = (filterFlags & GlobalSearchActivity.FILTER_INCLUDE_ARCHIVED) == GlobalSearchActivity.FILTER_INCLUDE_ARCHIVED;
+		if ((filterFlags & GlobalSearchActivity.FILTER_CHATS) == GlobalSearchActivity.FILTER_CHATS) {
+			messageModels.addAll(messageService.getContactMessagesForText(queryString, includeArchived));
+		}
+
+		if ((filterFlags & GlobalSearchActivity.FILTER_GROUPS) == GlobalSearchActivity.FILTER_GROUPS) {
+			messageModels.addAll(messageService.getGroupMessagesForText(queryString, includeArchived));
+		}
+
+		if (messageModels.size() > 0) {
+			Collections.sort(messageModels, (o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
+		}
+		return messageModels;
+	}
+
 	@SuppressLint("StaticFieldLeak")
-	public void onQueryChanged(String query) {
-		this.queryString = query;
+	void onQueryChanged(String query, int filterFlags) {
+		queryString = query;
 
 		new AsyncTask<String, Void, Void>() {
 			@Override
@@ -86,9 +98,10 @@ abstract class GlobalSearchRepository {
 				if (messageService != null) {
 					if (TestUtil.empty(query)) {
 						messageModels.postValue(new ArrayList<>());
+						isLoading.postValue(false);
 					} else {
 						isLoading.postValue(true);
-						messageModels.postValue(getMessagesForText(query));
+						messageModels.postValue(getMessagesForText(query, filterFlags));
 						isLoading.postValue(false);
 					}
 				}
@@ -97,9 +110,7 @@ abstract class GlobalSearchRepository {
 		}.execute();
 	}
 
-	public LiveData<Boolean> getIsLoading() {
+	LiveData<Boolean> getIsLoading() {
 		return isLoading;
 	}
-
-	abstract List<AbstractMessageModel> getMessagesForText(String queryString);
 }

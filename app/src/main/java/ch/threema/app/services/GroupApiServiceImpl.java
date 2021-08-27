@@ -129,6 +129,8 @@ public class GroupApiServiceImpl implements GroupApiService {
 			}
 		}
 
+		logger.info("Enqueue group message ID {} to {} receivers", messageId, pendingGroupMessages.size());
+
 		//fire queued first!
 		if(queued != null) {
 			for (AbstractGroupMessage groupMessage : pendingGroupMessages) {

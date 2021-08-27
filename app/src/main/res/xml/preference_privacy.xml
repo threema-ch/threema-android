@@ -18,13 +18,6 @@
 			android:icon="@drawable/ic_sync_outline"
 			android:widgetLayout="@layout/preference_switch_layout"/>
 
-		<Preference
-			android:dependency="@string/preferences__sync_contacts"
-			android:key="@string/preferences__validate_contacts"
-			android:summary="@string/prefs_sum_validate_contacts"
-			android:icon="@drawable/ic_outline_sync_alt_24"
-			android:title="@string/prefs_validate_contacts"/>
-
 		<CheckBoxPreference
 			android:defaultValue="false"
 			android:key="@string/preferences__block_unknown"
@@ -97,12 +90,6 @@
 			android:key="@string/preferences__direct_share"
 			android:summary="@string/prefs_sum_direct_share"
 			android:title="@string/prefs_title_direct_share"/>
-
-		<CheckBoxPreference
-			android:defaultValue="true"
-			android:key="@string/preferences__show_unread_badge"
-			android:summary="@string/prefs_sum_show_unread_badge"
-			android:title="@string/prefs_title_show_unread_badge"/>
 
 		<CheckBoxPreference
 			android:defaultValue="false"

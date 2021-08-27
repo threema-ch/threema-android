@@ -65,6 +65,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	public static final String EXTRA_CONFIRM = "confirm";
 	public static final String EXTRA_CANCEL_LABEL = "cancel";
 	public static final String EXTRA_WIZARD = "wizard";
+	private static final String DIALOG_TAG_MIUI_WARNING = "miui";
 
 	private String name;
 	@StringRes private int cancelLabel;
@@ -87,6 +88,12 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 
 		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK || intent.getBooleanExtra(EXTRA_WIZARD, false)) {
 			setTheme(R.style.Theme_Threema_Translucent_Dark);
+		}
+
+		if (ConfigUtils.getMIUIVersion() >= 11) {
+			String bodyText = getString(R.string.miui_battery_optimization, getString(R.string.app_name));
+			GenericAlertDialog.newInstance(R.string.battery_optimizations_title, bodyText, R.string.ok, 0).show(getSupportFragmentManager(), DIALOG_TAG_MIUI_WARNING);
+			return;
 		}
 
 		if (ConfigUtils.checkManifestPermission(this, getPackageName(), "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) {
@@ -124,7 +131,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	}
 
 	public static boolean isWhitelisted(Context context) {
-		// app is always whitelited in unit tests
+		// app is always whitelisted in unit tests
 		if (RuntimeUtil.isInTest()) {
 			return true;
 		}
@@ -133,6 +140,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 			try {
 				return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
 			} catch (Exception e) {
+				logger.error("Exception while checking if battery optimization is disabled", e);
 				// don't care about buggy phones not implementing this API
 				return true;
 			}
@@ -176,6 +184,9 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 				setResult(RESULT_OK);
 				finish();
 				break;
+			case DIALOG_TAG_MIUI_WARNING:
+				setResult(RESULT_CANCELED);
+				finish();
 		}
 	}
 

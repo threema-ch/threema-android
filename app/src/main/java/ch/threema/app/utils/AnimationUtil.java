@@ -50,6 +50,8 @@ import android.widget.LinearLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
@@ -478,10 +480,29 @@ public class AnimationUtil {
 		}
 	}
 
+	public static void slideDown(@NonNull Context context, @NonNull View v) {
+		slideDown(context, v, null);
+	}
 
-	public static void slideDown(Context context, View v){
+	public static void slideDown(@NonNull Context context, @NonNull View v, @Nullable Runnable onEndRunnable) {
 		Animation a = AnimationUtils.loadAnimation(context, R.anim.slide_down);
-		if (a != null){
+		if (a != null) {
+			if (onEndRunnable != null) {
+				a.setAnimationListener(new Animation.AnimationListener() {
+					@Override
+					public void onAnimationStart(Animation animation) {
+					}
+
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						onEndRunnable.run();
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+					}
+				});
+			}
 			a.reset();
 			if(v != null){
 				v.clearAnimation();

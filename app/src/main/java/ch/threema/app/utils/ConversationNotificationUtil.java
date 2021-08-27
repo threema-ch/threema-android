@@ -234,7 +234,7 @@ public class ConversationNotificationUtil {
 		if (messageModel.getMessageContentsType() == MessageContentsType.IMAGE ||
 			messageModel.getMessageContentsType() == MessageContentsType.VIDEO
 		) {
-			if (messageModel.getFileData() != null && messageModel.getFileData().getRenderingType() != FileData.RENDERING_MEDIA) {
+			if (messageModel.getType() == MessageType.FILE && messageModel.getFileData().getRenderingType() != FileData.RENDERING_MEDIA) {
 				return null;
 			}
 
@@ -244,10 +244,13 @@ public class ConversationNotificationUtil {
 					//get file service directly...
 					//... its the evil way!
 					FileService f = null;
-					try {
-						f = ThreemaApplication.getServiceManager().getFileService();
-					} catch (FileSystemNotPresentException e) {
-						logger.error("FileSystemNotPresentException", e);
+
+					if (ThreemaApplication.getServiceManager() != null) {
+						try {
+							f = ThreemaApplication.getServiceManager().getFileService();
+						} catch (FileSystemNotPresentException e) {
+							logger.error("FileSystemNotPresentException", e);
+						}
 					}
 
 					if (f != null) {

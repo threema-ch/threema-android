@@ -358,6 +358,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="block_contact">Bloccar il contact</string>
     <string name="unblock_contact">Debloccar il contact</string>
     <string name="unread_messages">%d messadis betg legids</string>
+    <string name="one_unread_message">1 messadi betg legì</string>
     <string name="really_unlink_contact_title">Allontanar la colliaziun</string>
     <string name="really_unlink_contact">Vuls ti propi allontanar la colliaziun cun il contact dal cudesch d\'adressas?</string>
     <string name="do_unlink_contact">Allontanar la colliaziun</string>
@@ -463,7 +464,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="really_block_contact">Ti na retschaivas nagins messadis pli da quest contact. Cuntinuar?</string>
     <string name="ballot_result_final">Resultat final</string>
     <string name="invalid_cannot_send">Ti na pos betg trametter messadis ad in contact nunvalaivel</string>
-	<string name="ballot_answer_count_error">P.pl. crear almain duas respostas.</string>
+    <string name="ballot_answer_count_error">P.pl. crear almain duas respostas.</string>
     <string name="ballot_one_contact_not_supported">Attenziun: %1$s na po anc betg participar ad enquistas.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attenziun: %1$d contacts na pon anc betg participar ad enquistas.</string>
     <string name="enable_polling">Far in\'enquista</string>
@@ -1007,18 +1008,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="delete">Stizzar</string>
     <string name="num_archived_chats">%d chats archivads</string>
     <string name="continue_recording">Registrar vinavant</string>
-    <string name="whatsnew_title">%s not currently used</string>
-    <string name="whatsnew_headline">%1$s not currently used</string>
-    <string name="whatsnew2_title">Tge è nov?</string>
-    <string name="whatsnew2_body"><![CDATA[<p><b>Selecziun sperta dals maletgs</b>: Clicca sin il fermagl per visualisar tias medias a moda survesaivla en in slider prolungabel. En las configuraziuns da chat pos ti era deactivar questa funcziun:<i>Configuraziuns / chat / selecziun sperta dals maletgs</i>.</p>
-<p><b>Tschertga da maletgs</b>: Tschertga objects, activitads e lieus currents en tes maletgs. L\'identificaziun da maletgs sa basa sin in model da machine learning local e na trametta naginas datas a nus u ad autras partidas terzas. Perquai che l\'indexaziun dovra relativamain bleras resursas e dura in mument, è la tschertga da maletgs deactivada sco standard. Ti pos activar ella sut <i>Configuraziuns / Medias ed arcun / Tschertga da maletgs</i>.</p>
-<p><b>Trametter medias</b>: Ti pos ussa trametter maletgs cun ina resoluziun individuala, senza stuair midar las configuraziuns globalas.</p>
-<p><b>Editur da videos</b>: Taglia ils videos avant che trametter els. Plinavant è il process da convertir videos vegnì meglierà, uschia ch\'el po lavurar davostiers.</p>
-<p><b>Memorisar en la gallaria</b>: Pervia da novas pretensiuns da Google vegnan - sin apparats cun Android 10 e sistems operativs pli actuals - las datotecas memorisadas en l\'ordinatur da medias general dal sistem (<i>Fotos, Videos, Musica,</i> e<i>Documents</i>).</p>
-<p><b>Tschertga globala</b>: Tschertga in text en tut ils chats. Ti pos tschertgar globalmain davent dal visur principal%1$s <i>Menu / Tschertga globala </i>.</p>
-<p><b>Citats</b>: %1$s pussibilitescha ussa da citar tut ils tips da medias, incl. maletgs, videos u messadis discurrids.</p>
-<p><b>100 emojis novs</b>: tranter auter il fondue &#129749; tant bramà;</p>
-<p><b>Texts lungs</b>: per avair la survista en il chat, vegnan scursanids messadis da text fitg lungs. Sin dumonda vegn visualisà l\'entir messadi. Igl è era pussaivel da deactivar las formataziuns.</p>]]></string>
     <string name="tooltip_identity_popup">Smatga qua per visualisar spert tia ID da Threema u per scannar las IDs dad autras persunas</string>
     <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
@@ -1165,7 +1154,20 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="blur">Disfar</string>
     <string name="face_blur_tooltip_title">Nov: identificaziun da fatschas</string>
     <string name="face_blur_tooltip_text">Tschertga las fatschas sin la fotografia e disfa ellas u cuvra ellas cun in smiley.</string>
+    <string name="listened_to">tedlà</string>
     <string name="transcoder_unsupported_audio_format">Betg reussì da convertir il format da l\'audio, perquai ch\'il sistem na vegn betg sustegnì.</string>
     <string name="transcoder_unknown_audio_error">Betg reussì da convertir il format da l\'audio pervia d\'ina errur betg enconuschenta.</string>
     <string name="video_size_explain">Per pudair tramtter videos fitg gronds vegnan els cumprimids independentamain da questa configuraziun.</string>
+    <string name="status_create_notes">*Mo ti es qua*\nDovra quest chat sco cudesch da notizias segir per texts, medias e documents.</string>
+    <string name="status_create_notes_off">*Ti n\'es betg pli suletta/sulet en quest chat*\nNovs messadis vegnan tramess a tut ils commembers da la gruppa.</string>
+    <string name="note_group_howto">Tip: Sche ti n\'agiunteschas nagins commembers, restan ils messadis a questa gruppa locals. Quai è ideal per arcunar a moda segira u per transferir sin il desktop notizias, medias u documents.</string>
+    <string name="mark_unread">Marcar sco betg legì</string>
+    <string name="mark_read_short">Legì</string>
+    <string name="unread">Betg legì</string>
+    <string name="missing_app_licence">L\'App Store n\'ha betg pudì verifitgar tia licenza da l\'app. Sche ti utiliseschas Google Play, stizzai las datas da l\'app Google Play Store e reaviescha tes telefonin.</string>
+    <string name="set_backup_path">Determinar il percurs al backup</string>
+    <string name="set_backup_path_intro">P.pl. tscherner el proxim visur l\'ordinatur, en il qual ils backups da datas duain vegnir memorisads.</string>
+    <string name="tap_here_for_more">Clicca qua per dapli infurmaziuns</string>
+    <string name="another_connection_instructions">Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.\n\nI n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.\n\nSche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.</string>
+    <string name="app_store_error_code">Code dal sbagl da l\'App Store: %d</string>
 </resources>

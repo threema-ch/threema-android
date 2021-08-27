@@ -128,8 +128,7 @@ public class Contact extends Converter {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
 					|| ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
 					== PackageManager.PERMISSION_GRANTED) {
-				final String lookupKey = contact.getThreemaAndroidContactId() != null ?
-						contact.getThreemaAndroidContactId() : contact.getAndroidContactId();
+				final String lookupKey = contact.getAndroidContactLookupKey();
 
 				// Get phone details
 				{

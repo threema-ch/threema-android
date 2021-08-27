@@ -37,13 +37,11 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.Fragment;
-import ch.threema.app.R;
 import ch.threema.app.utils.TestUtil;
 
 public class GenericAlertDialog extends ThreemaDialogFragment {
 	private DialogClickListener callback;
 	private Activity activity;
-	private Object object;
 	private AlertDialog alertDialog;
 	private boolean isHtml;
 
@@ -189,7 +187,7 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 
 		final String tag = this.getTag();
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.Threema_AlertDialog_MediaPicker);
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 		if (TestUtil.empty(titleString)) {
 			builder.setTitle(title);
 		} else {
@@ -224,11 +222,6 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 	@Override
 	public void onCancel(DialogInterface dialogInterface) {
 		callback.onNo(getTag(), object);
-	}
-
-	public GenericAlertDialog setData(Object o) {
-		object = o;
-		return this;
 	}
 
 	public GenericAlertDialog setTargetFragment(@Nullable Fragment fragment) {

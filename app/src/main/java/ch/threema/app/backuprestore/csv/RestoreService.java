@@ -72,6 +72,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BackupUtils;
@@ -85,6 +86,7 @@ import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
+import ch.threema.client.GroupId;
 import ch.threema.client.ProtocolDefines;
 import ch.threema.client.ThreemaConnection;
 import ch.threema.client.Utils;
@@ -124,6 +126,7 @@ public class RestoreService extends Service {
 	private ContactService contactService;
 	private FileService fileService;
 	private UserService userService;
+	private GroupService groupService;
 	private DatabaseServiceNew databaseServiceNew;
 	private PreferenceService preferenceService;
 	private ThreemaConnection threemaConnection;
@@ -269,6 +272,7 @@ public class RestoreService extends Service {
 			databaseServiceNew = serviceManager.getDatabaseServiceNew();
 			contactService = serviceManager.getContactService();
 			userService = serviceManager.getUserService();
+			groupService = serviceManager.getGroupService();
 			preferenceService = serviceManager.getPreferenceService();
 			threemaConnection = serviceManager.getConnection();
 		} catch (Exception e) {
@@ -877,6 +881,14 @@ public class RestoreService extends Service {
 					if (writeToDb) {
 						for (GroupMemberModel groupMemberModel : groupMemberModels) {
 							databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
+						}
+
+						if (!groupModel.isDeleted()) {
+							if (groupService.isGroupOwner(groupModel)) {
+								groupService.sendSync(groupModel);
+							} else {
+								groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId())));
+							}
 						}
 					}
 				} catch (Exception x) {

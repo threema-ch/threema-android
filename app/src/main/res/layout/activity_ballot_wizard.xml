@@ -39,9 +39,8 @@
 				android:paddingTop="10dp"
 				android:paddingBottom="10dp"
 				android:layout_gravity="center_vertical|left"
-				android:tint="?attr/textColorSecondary"
 				android:visibility="visible"
-					/>
+				custom:tint="?attr/textColorSecondary" />
 
 			<ImageView
 				style="?android:attr/buttonBarButtonStyle"
@@ -55,8 +54,8 @@
 				android:scaleX="-1"
 				android:paddingTop="10dp"
 				android:paddingBottom="10dp"
-				android:tint="?attr/textColorSecondary"
-				android:layout_gravity="center_vertical|left"/>
+				android:layout_gravity="center_vertical|left"
+				custom:tint="?attr/textColorSecondary" />
 
 		</FrameLayout>
 
@@ -88,8 +87,8 @@
 				android:layout_height="wrap_content"
 				android:paddingTop="10dp"
 				android:paddingBottom="10dp"
-				android:tint="?attr/textColorSecondary"
-				android:layout_gravity="center_vertical|right"/>
+				android:layout_gravity="center_vertical|right"
+				custom:tint="?attr/textColorSecondary" />
 
 		<Button
 				  style="@style/Threema.TextButton"

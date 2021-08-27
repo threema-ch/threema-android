@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:app="http://schemas.android.com/apk/res-auto"
-		android:id="@+id/content_frame"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/content_frame"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
 
 	<LinearLayout
 			android:orientation="vertical"
@@ -50,8 +49,8 @@
 				android:padding="16dp"
 				android:contentDescription="@string/new_wizard_more_information"
 				android:background="?attr/selectableItemBackgroundBorderless"
-				android:tint="?attr/textColorSecondary"
-				app:srcCompat="@drawable/ic_info_outline" />
+				app:srcCompat="@drawable/ic_info_outline"
+				app:tint="?attr/textColorSecondary" />
 
 		</LinearLayout>
 
@@ -92,72 +91,48 @@
 		</LinearLayout>
 
 		<LinearLayout
-				android:id="@+id/synchronize_contact_container"
-				android:orientation="vertical"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
+			android:id="@+id/synchronize_contact_container"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
 
-			<ch.threema.app.ui.SectionHeaderView
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:orientation="horizontal">
+
+				<ch.threema.app.ui.SectionHeaderView
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="10dp"
-					android:layout_marginBottom="5dp"
-					android:text="@string/synchronize_contact"/>
-
-			<RelativeLayout
-							android:id="@+id/linked_contact_container"
-							android:orientation="vertical"
-							android:layout_width="match_parent"
-							android:layout_height="48dp"
-							android:background="@drawable/listitem_background_selector">
+					android:layout_gravity="bottom"
+					android:text="@string/synchronize_contact" />
 
 				<ImageView
-					android:id="@+id/linked_contact"
-					android:visibility="visible"
-					android:layout_centerVertical="true"
-					android:layout_width="40dp"
-					android:layout_height="40dp"
-					app:srcCompat="@drawable/ic_contact"/>
+					android:id="@+id/sync_source_icon"
+					android:layout_marginLeft="8dp"
+					android:layout_width="24dp"
+					android:layout_height="24dp"
+					android:layout_gravity="center_vertical"
+					android:scaleType="centerInside" />
 
-				<ch.threema.app.emojis.EmojiTextView
-						android:id="@+id/linked_name"
-						android:text=""
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-						android:singleLine="true"
-						android:layout_marginRight="5dip"
-						android:layout_marginLeft="16dip"
-						android:layout_toRightOf="@id/linked_contact"
-						android:layout_toLeftOf="@+id/linked_type_icon"
-						android:layout_alignWithParentIfMissing="true"
-						android:layout_centerVertical="true"
-						android:ellipsize="marquee"/>
+			</LinearLayout>
 
-				<ImageView
-						android:id="@+id/linked_type_icon"
-						android:layout_width="28dp"
-						android:layout_height="28dp"
-						android:layout_alignParentRight="true"
-						android:layout_alignWithParentIfMissing="true"
-						android:layout_centerVertical="true"
-						android:adjustViewBounds="true"
-						android:src="@mipmap/ic_launcher"/>
-
-			</RelativeLayout>
-
-			<CheckBox
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/exclude_contact"
-					android:id="@+id/synchronize_contact"
-					android:paddingTop="10dp"
-					android:paddingBottom="10dp"
-					android:textSize="16sp"
-					android:checked="false"
-					android:visibility="visible"/>
+			<com.google.android.material.checkbox.MaterialCheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/exclude_contact"
+				android:id="@+id/synchronize_contact"
+				android:layout_marginTop="5dp"
+				android:layout_marginBottom="2dp"
+				android:textSize="16sp"
+				android:checked="false"
+				android:visibility="visible"
+				android:minWidth="0dp"
+				android:minHeight="0dp"/>
 
 		</LinearLayout>
+
 		<LinearLayout
 				android:id="@+id/group_members_title_container"
 				android:layout_width="match_parent"

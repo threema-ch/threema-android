@@ -47,6 +47,11 @@
     <string name="voip_prefs_title_aec">Yankı giderme</string>
     <string name="voip_prefs_aec_sw">Yazılım yankı iptali</string>
     <string name="voip_prefs_aec_hw">Donanım yankı iptali</string>
+    <string name="voip_prefs_title_video_codec">Video Codec\'leri</string>
+    <string name="voip_prefs_video_aec_hw">Donanım hızlandırılmış</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8\'i devre dışı bırakın</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-HiP\'yi devre dışı bırakın</string>
+    <string name="voip_prefs_video_codec_sw">Yazılım kodekleri</string>
     <string name="voip_connection_failed">Bağlantı kurulamadı</string>
     <string name="voip_connection_lost">Bağlantı koptu</string>
     <string name="prefs_voip_reject_incoming_calls_title">Mobil aramaları reddet</string>

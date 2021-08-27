@@ -28,11 +28,13 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.storage.models.ContactModel;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(LogUtil.class)
@@ -44,32 +46,32 @@ public class ContactUtilTest {
 	@Test
 	public void isLinked() {
 		Assert.assertFalse(ContactUtil.isLinked(null));
-		Assert.assertFalse(ContactUtil.isLinked(createModel("ECHOECHO").setAndroidContactId(null)));
-		Assert.assertTrue(ContactUtil.isLinked(createModel("ECHOECHO").setAndroidContactId("abc")));
+		Assert.assertFalse(ContactUtil.isLinked(createModel("ECHOECHO").setAndroidContactLookupKey(null)));
+		Assert.assertTrue(ContactUtil.isLinked(createModel("ECHOECHO").setAndroidContactLookupKey("abc")));
 	}
 
 	@Test
 	public void canHaveCustomAvatar() {
 		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(null));
 		// Normal contact, not linked
-		Assert.assertTrue(ContactUtil.canHaveCustomAvatar(createModel("ECHOECHO").setAndroidContactId(null)));
+		Assert.assertTrue(ContactUtil.canHaveCustomAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null)));
 		// Normal contact, linked
-		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(createModel("ECHOECHO").setAndroidContactId("ABC")));
+		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(createModel("ECHOECHO").setAndroidContactLookupKey("ABC")));
 		// Gateway contact, not linked
-		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(createModel("*COMPANY").setAndroidContactId(null)));
+		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(createModel("*COMPANY").setAndroidContactLookupKey(null)));
 		// Gateway contact, linked
-		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(createModel("*COMPANY").setAndroidContactId("ABC")));
+		Assert.assertFalse(ContactUtil.canHaveCustomAvatar(createModel("*COMPANY").setAndroidContactLookupKey("ABC")));
 	}
 
 	@Test
 	public void canChangeFirstName() {
 		Assert.assertFalse(ContactUtil.canChangeFirstName(null));
 
-		Assert.assertTrue(ContactUtil.canChangeFirstName(createModel("*COMPANY").setAndroidContactId(null)));
-		Assert.assertFalse(ContactUtil.canChangeFirstName(createModel("*COMPANY").setAndroidContactId("abc")));
+		Assert.assertTrue(ContactUtil.canChangeFirstName(createModel("*COMPANY").setAndroidContactLookupKey(null)));
+		Assert.assertFalse(ContactUtil.canChangeFirstName(createModel("*COMPANY").setAndroidContactLookupKey("abc")));
 
-		Assert.assertTrue(ContactUtil.canChangeFirstName(createModel("ECHOECHO").setAndroidContactId(null)));
-		Assert.assertFalse(ContactUtil.canChangeFirstName(createModel("ECHOECHO").setAndroidContactId("abc")));
+		Assert.assertTrue(ContactUtil.canChangeFirstName(createModel("ECHOECHO").setAndroidContactLookupKey(null)));
+		Assert.assertFalse(ContactUtil.canChangeFirstName(createModel("ECHOECHO").setAndroidContactLookupKey("abc")));
 	}
 
 
@@ -77,11 +79,11 @@ public class ContactUtilTest {
 	public void canChangeLastName() {
 		Assert.assertFalse(ContactUtil.canChangeLastName(null));
 
-		Assert.assertFalse(ContactUtil.canChangeLastName(createModel("*COMPANY").setAndroidContactId(null)));
-		Assert.assertFalse(ContactUtil.canChangeLastName(createModel("*COMPANY").setAndroidContactId("abc")));
+		Assert.assertFalse(ContactUtil.canChangeLastName(createModel("*COMPANY").setAndroidContactLookupKey(null)));
+		Assert.assertFalse(ContactUtil.canChangeLastName(createModel("*COMPANY").setAndroidContactLookupKey("abc")));
 
-		Assert.assertTrue(ContactUtil.canChangeLastName(createModel("ECHOECHO").setAndroidContactId(null)));
-		Assert.assertFalse(ContactUtil.canChangeLastName(createModel("ECHOECHO").setAndroidContactId("abc")));
+		Assert.assertTrue(ContactUtil.canChangeLastName(createModel("ECHOECHO").setAndroidContactLookupKey(null)));
+		Assert.assertFalse(ContactUtil.canChangeLastName(createModel("ECHOECHO").setAndroidContactLookupKey("abc")));
 	}
 
 	@Test
@@ -95,13 +97,13 @@ public class ContactUtilTest {
 		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(false);
 
 		// Normal contact, not linked
-		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Normal contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, not linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 
 
 
@@ -111,13 +113,13 @@ public class ContactUtilTest {
 		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(true);
 
 		// Normal contact, not linked
-		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Normal contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, not linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 
 
 
@@ -127,13 +129,13 @@ public class ContactUtilTest {
 		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(false);
 
 		// Normal contact, not linked
-		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Normal contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, not linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 
 
 
@@ -143,12 +145,12 @@ public class ContactUtilTest {
 		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(true);
 
 		// Normal contact, not linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Normal contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, not linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId(null), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
 		// Gateway contact, linked
-		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactId("ABC"), preferenceServiceMock, fileServiceMock));
+		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("*COMPANY").setAndroidContactLookupKey("ABC"), preferenceServiceMock, fileServiceMock));
 	}
 }

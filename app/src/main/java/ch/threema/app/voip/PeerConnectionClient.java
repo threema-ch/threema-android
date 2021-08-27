@@ -105,6 +105,7 @@ import ch.threema.app.R;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.WebRTCUtil;
+import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.signaling.CaptureState;
 import ch.threema.app.voip.signaling.ToSignalingMessage;
 import ch.threema.app.voip.util.SdpPatcher;
@@ -1895,7 +1896,12 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onCameraDisconnected() {
-			logger.debug("Camera disconnected");
+			logger.info("Camera disconnected");
+
+			// The camera disconnected. One way how this can happen,
+			// is if you open the system camera app while in PIP mode.
+			// Let's stop the capturing session.
+			VoipUtil.sendVoipBroadcast(appContext, VoipCallService.ACTION_STOP_CAPTURING);
 		}
 
 		@Override
@@ -1918,7 +1924,7 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onCameraClosed() {
-			logger.debug("Camera closed");
+			logger.info("Camera closed");
 		}
 	}
 

@@ -21,9 +21,12 @@
 
 package ch.threema.app.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
@@ -98,7 +101,6 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	private MediaGalleryAdapter mediaGalleryAdapter;
 	private MessageReceiver messageReceiver;
 	private String actionBarTitle;
-	private ActionBar actionBar;
 	private SpinnerMessageFilter spinnerMessageFilter;
 	private MediaGallerySpinnerAdapter spinnerAdapter;
 	private List<AbstractMessageModel> values;
@@ -124,16 +126,18 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		}
 	});
 
-	private final int TYPE_ALL = 0;
-	private final int TYPE_IMAGE = 1;
-	private final int TYPE_VIDEO = 2;
-	private final int TYPE_AUDIO = 3;
-	private final int TYPE_FILE = 4;
+	private static final int TYPE_ALL = 0;
+	private static final int TYPE_IMAGE = 1;
+	private static final int TYPE_VIDEO = 2;
+	private static final int TYPE_AUDIO = 3;
+	private static final int TYPE_FILE = 4;
 
 	private static final String DELETE_MESSAGES_CONFIRM_TAG = "reallydelete";
 	private static final String DIALOG_TAG_DELETING_MEDIA = "dmm";
 
-	private class SpinnerMessageFilter implements MessageService.MessageFilter {
+	private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 88;
+
+	private static class SpinnerMessageFilter implements MessageService.MessageFilter {
 		private @MessageContentsType int[] filter = null;
 
 		public void setFilterByType(int spinnerMessageType) {
@@ -288,24 +292,24 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 
 		processIntent(getIntent());
 
-		this.actionBar = getSupportActionBar();
-		if (this.actionBar == null) {
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar == null) {
 			logger.debug("no action bar");
 			finish();
 			return false;
 		}
-		this.actionBar.setDisplayHomeAsUpEnabled(true);
-		this.actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
 
 		// add text view if contact list is empty
 		this.mediaTypeArray = getResources().obtainTypedArray(R.array.media_gallery_spinner);
 		this.spinnerAdapter = new MediaGallerySpinnerAdapter(
-				this.actionBar.getThemedContext(), getResources().getStringArray(R.array.media_gallery_spinner),
+				actionBar.getThemedContext(), getResources().getStringArray(R.array.media_gallery_spinner),
 				this.actionBarTitle);
 
-		this.actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		this.actionBar.setListNavigationCallbacks(spinnerAdapter, this);
-		this.actionBar.setSelectedNavigationItem(this.currentType);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		actionBar.setSelectedNavigationItem(this.currentType);
 
 		this.spinnerMessageFilter = new SpinnerMessageFilter();
 		this.spinnerMessageFilter.setFilterByType(this.currentType);
@@ -448,7 +452,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		}
 	}
 
-	private List<AbstractMessageModel> getMessages(MessageReceiver receiver) {
+	private List<AbstractMessageModel> getMessages(MessageReceiver<AbstractMessageModel> receiver) {
 		List<AbstractMessageModel> values = null;
 		try {
 			values = receiver.loadMessages(this.spinnerMessageFilter);
@@ -541,8 +545,10 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	}
 
 	private void saveMessages() {
-		fileService.saveMedia(this, gridView, new CopyOnWriteArrayList<>(getSelectedMessages()), true);
-		actionMode.finish();
+		if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_SAVE_MESSAGE)) {
+			fileService.saveMedia(this, gridView, new CopyOnWriteArrayList<>(getSelectedMessages()), true);
+			actionMode.finish();
+		}
 	}
 
 	private List<AbstractMessageModel> getSelectedMessages() {
@@ -724,6 +730,30 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 				LogUtil.exception(e, this);
 			}
 		}
+	}
+
+	@Override
+	@TargetApi(23)
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			switch (requestCode) {
+				case PERMISSION_REQUEST_SAVE_MESSAGE:
+					fileService.saveMedia(this, gridView, new CopyOnWriteArrayList<>(getSelectedMessages()), true);
+					break;
+			}
+		} else {
+			switch (requestCode) {
+				case PERMISSION_REQUEST_SAVE_MESSAGE:
+					if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+						ConfigUtils.showPermissionRationale(this, gridView, R.string.permission_storage_required);
+					}
+					break;
+			}
+		}
+		actionMode.finish();
 	}
 }
 

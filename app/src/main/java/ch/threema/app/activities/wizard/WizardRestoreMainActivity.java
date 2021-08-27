@@ -321,7 +321,8 @@ public class WizardRestoreMainActivity extends WizardBackgroundActivity implemen
 
 					if (file != null) {
 						performDataBackupRestore(file);
-						file.deleteOnExit();
+					} else {
+						SimpleStringAlertDialog.newInstance(R.string.importing_files, R.string.importing_files_failed).show(getSupportFragmentManager(), "ifail");
 					}
 				});
 			}).start();

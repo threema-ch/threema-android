@@ -178,10 +178,7 @@ public class BackupDataFragment extends Fragment implements
 			});
 
 			pathTextView = fragmentView.findViewById(R.id.backup_path);
-			pathTextView.setText(
-				backupUri == null ?
-				getString(R.string.not_set) :
-				backupUri.toString());
+			pathTextView.setText(getDirectoryName(backupUri));
 		}
 
 		Date backupDate = preferenceService.getLastDataBackupDate();
@@ -197,12 +194,35 @@ public class BackupDataFragment extends Fragment implements
 		return this.fragmentView;
 	}
 
+	/**
+	 * Get the name of a directory from an Uri selected with Intent.ACTION_OPEN_DOCUMENT_TREE
+	 * @param directoryTreeUri Uri returned by ACTION_OPEN_DOCUMENT_TREE
+	 * @return Name of directory, a localized string "not set" if an empty Uri was provided, or the complete Uri as a String as a fallback
+	 */
+	private @NonNull String getDirectoryName(Uri directoryTreeUri) {
+		if (directoryTreeUri == null) {
+			return getString(R.string.not_set);
+		} else {
+			try {
+				DocumentFile documentFile = DocumentFile.fromTreeUri(getContext(), directoryTreeUri);
+				if (documentFile != null && documentFile.isDirectory()) {
+					String name = documentFile.getName();
+					if (!TestUtil.empty(name)) {
+						return name;
+					}
+				}
+			} catch (Exception ignored) {}
+		}
+		return directoryTreeUri.toString();
+	}
+
 	private void showPathSelectionIntro() {
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.set_backup_path, R.string.set_backup_path_intro, R.string.ok, R.string.cancel);
 		dialog.setTargetFragment(this);
 		dialog.show(getFragmentManager(), DIALOG_TAG_PATH_INTRO);
 	}
 
+	@UiThread
 	private void launchDocumentTree() {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 			try {
@@ -214,7 +234,7 @@ public class BackupDataFragment extends Fragment implements
 				startActivityForResult(i, REQUEST_CODE_DOCUMENT_TREE);
 			} catch (Exception e) {
 				Toast.makeText(getContext(), "Your device is missing an activity for Intent.ACTION_OPEN_DOCUMENT_TREE. Contact the manufacturer of the device.", Toast.LENGTH_SHORT).show();
-				logger.info("Broken device. No Activity for Intent.ACTION_OPEN_DOCUMENT_TREE");
+				logger.error("Broken device. No Activity for Intent.ACTION_OPEN_DOCUMENT_TREE", e);
 			}
 		} else {
 			Intent intent = new Intent(getContext(), FilePickerActivity.class);
@@ -388,7 +408,7 @@ public class BackupDataFragment extends Fragment implements
 							}
 							backupUri = treeUri;
 							preferenceService.setDataBackupUri(treeUri);
-							pathTextView.setText(treeUri.toString());
+							pathTextView.setText(getDirectoryName(treeUri));
 
 							if (launchedFromFAB) {
 								checkBatteryOptimizations();

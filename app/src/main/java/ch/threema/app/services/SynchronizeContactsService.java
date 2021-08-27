@@ -23,8 +23,6 @@ package ch.threema.app.services;
 
 import android.accounts.Account;
 
-import java.util.Date;
-
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 
 public interface SynchronizeContactsService {
@@ -37,10 +35,8 @@ public interface SynchronizeContactsService {
 	 */
 	SynchronizeContactsRoutine instantiateSynchronization(Account account);
 	boolean isSynchronizationInProgress();
-	Date getLatestFullSyncTime();
 	boolean isFullSyncInProgress();
 
 	boolean enableSync();
-	boolean disableSync();
 	boolean disableSync(Runnable runAfterRemovedAccount);
 }

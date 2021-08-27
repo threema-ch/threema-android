@@ -1064,7 +1064,8 @@ public class APIConnector {
 		// Since Release: work-directory
 		JSONObject jsonResponseOrganization = jsonResponse.optJSONObject("org");
 		if (jsonResponseOrganization != null) {
-			workData.organization.name = jsonResponseOrganization.optString("name");
+			workData.organization.name =
+				jsonResponseOrganization.isNull("name") ? null : jsonResponseOrganization.optString("name");
 		}
 
 		JSONObject directory = jsonResponse.optJSONObject("directory");
@@ -1133,8 +1134,8 @@ public class APIConnector {
 					contactsList.add(new WorkContact(
 						contact.getString("id"),
 						Base64.decode(contact.getString("pk")),
-						contact.has("first") ? contact.getString("first") : null,
-						contact.has("last") ? contact.getString("last") : null
+						contact.isNull("first") ? null : contact.getString("first"),
+						contact.isNull("last") ? null : contact.getString("last")
 					));
 				}
 			}
@@ -1205,7 +1206,6 @@ public class APIConnector {
 
 		JSONObject jsonResponse = new JSONObject(data);
 
-
 		if (jsonResponse.has("contacts") && !jsonResponse.isNull("contacts")) {
 
 			// Verify content
@@ -1253,9 +1253,13 @@ public class APIConnector {
 						contact.has("last") ? contact.optString("last") : null,
 						contact.has("csi") ? contact.optString("csi") : null
 					);
-					JSONObject jsonResponseOrganization = contact.optJSONObject("org");
-					if (jsonResponseOrganization != null) {
-						directoryContact.organization.name = jsonResponseOrganization.optString("name");
+
+					if (!contact.isNull("org")) {
+						JSONObject jsonResponseOrganization = contact.optJSONObject("org");
+
+						if (jsonResponseOrganization != null && !jsonResponseOrganization.isNull("name")) {
+							directoryContact.organization.name = jsonResponseOrganization.optString("name");
+						}
 					}
 
 					JSONArray categoryArray = contact.optJSONArray("cat");

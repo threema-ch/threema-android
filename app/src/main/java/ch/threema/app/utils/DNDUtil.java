@@ -193,12 +193,11 @@ public class DNDUtil {
 		}
 
 		Uri contactUri;
-		String lookupKey = contactModel.getThreemaAndroidContactId() != null ?
-				contactModel.getThreemaAndroidContactId() : contactModel.getAndroidContactId();
+		String lookupKey = contactModel.getAndroidContactLookupKey();
 
 		if (lookupKey != null) {
 			try {
-				contactUri = ContactUtil.getAndroidContactUri(context, contactModel);
+				contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel);
 			} catch (Exception e) {
 				logger.error("Could not get Android contact URI", e);
 				return false;

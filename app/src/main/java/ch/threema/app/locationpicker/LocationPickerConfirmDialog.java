@@ -54,7 +54,6 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 	private LocationConfirmDialogClickListener callback;
 	private Activity activity;
 	private String tag = null;
-	private Object object;
 
 	private static final Logger logger = LoggerFactory.getLogger(LocationPickerConfirmDialog.class);
 
@@ -68,10 +67,6 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 
 		dialog.setArguments(args);
 		return dialog;
-	}
-
-	public void setData(Object o) {
-		object = o;
 	}
 
 	public interface LocationConfirmDialogClickListener {

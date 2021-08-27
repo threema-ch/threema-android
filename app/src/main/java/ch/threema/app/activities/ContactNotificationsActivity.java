@@ -21,9 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
@@ -61,26 +58,6 @@ public class ContactNotificationsActivity extends NotificationsActivity {
 	@Override
 	void notifySettingsChanged() {
 		this.conversationService.refresh(this.contactModel);
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-
-		switch (requestCode) {
-			case ACTIVITY_ID_PICK_NTOTIFICATION:
-				if (resultCode == RESULT_OK) {
-					Uri ringtoneUri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-					ringtoneService.setRingtone(uid, ringtoneUri);
-					backupSoundCustom = ringtoneUri;
-					refreshSettings();
-				}
-				break;
-			case ACTIVITY_ID_SETTINGS_NOTIFICATIONS:
-				refreshSettings();
-				updateUI();
-				break;
-		}
 	}
 
 	@Override

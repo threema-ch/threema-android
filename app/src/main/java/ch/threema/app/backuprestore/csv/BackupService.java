@@ -555,7 +555,7 @@ public class BackupService extends Service {
 						.write(Tags.TAG_CONTACT_IDENTITY, contactModel.getIdentity())
 						.write(Tags.TAG_CONTACT_PUBLIC_KEY, Utils.byteArrayToHexString(contactModel.getPublicKey()))
 						.write(Tags.TAG_CONTACT_VERIFICATION_LEVEL, contactModel.getVerificationLevel().toString())
-						.write(Tags.TAG_CONTACT_ANDROID_CONTACT_ID, contactModel.getAndroidContactId())
+						.write(Tags.TAG_CONTACT_ANDROID_CONTACT_ID, contactModel.getAndroidContactLookupKey())
 						.write(Tags.TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID, contactModel.getThreemaAndroidContactId())
 						.write(Tags.TAG_CONTACT_FIRST_NAME, contactModel.getFirstName())
 						.write(Tags.TAG_CONTACT_LAST_NAME, contactModel.getLastName())
@@ -568,11 +568,13 @@ public class BackupService extends Service {
 					// Back up contact profile pictures
 					if (this.config.backupAvatars()) {
 						try {
-							ZipUtil.addZipStream(
-								zipOutputStream,
-								this.fileService.getContactAvatarStream(contactModel),
-								Tags.CONTACT_AVATAR_FILE_PREFIX + contactModel.getIdentity()
-							);
+							if (!userService.getIdentity().equals(contactModel.getIdentity())) {
+								ZipUtil.addZipStream(
+									zipOutputStream,
+									this.fileService.getContactAvatarStream(contactModel),
+									Tags.CONTACT_AVATAR_FILE_PREFIX + contactModel.getIdentity()
+								);
+							}
 						} catch (IOException e) {
 							// avatars are not THAT important, so we don't care if adding them fails
 							logger.warn("Could not back up avatar for contact {}: {}", contactModel.getIdentity(), e.getMessage());

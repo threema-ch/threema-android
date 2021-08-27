@@ -21,7 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
@@ -48,8 +47,8 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 		((TextView) findViewById(R.id.whatsnew_body)).setText(getString(R.string.whatsnew_headline, getString(R.string.app_name)));
 
 		findViewById(R.id.next_text).setOnClickListener(v -> {
-			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
-			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
+//			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
+//			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
 			finish();
 		});
 

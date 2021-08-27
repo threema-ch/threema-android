@@ -170,7 +170,7 @@ public class QuoteUtil {
 			if (receiverMatch) {
 				final MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(context, quotedMessageModel);
 				final String identity = quotedMessageModel.isOutbox() ? userService.getIdentity() : quotedMessageModel.getIdentity();
-				final String quotedText = TestUtil.empty(viewElement.text) ? viewElement.placeholder : viewElement.text;
+				final @NonNull String quotedText = TestUtil.empty(viewElement.text) ? (viewElement.placeholder != null ? viewElement.placeholder : "") : viewElement.text;
 				final @DrawableRes Integer icon = viewElement.icon;
 				Bitmap thumbnail = null;
 				try {

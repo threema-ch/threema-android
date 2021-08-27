@@ -31,10 +31,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.chip.Chip;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -70,24 +72,26 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 	private static final int QUERY_MIN_LENGTH = 2;
 	private static final long QUERY_TIMEOUT_MS = 500;
 
-	private GlobalSearchAdapter chatsAdapter, groupChatsAdapter;
-	private RecyclerView chatsRecyclerView, groupChatsRecyclerView;
-	private GlobalSearchViewModel chatsViewModel, groupChatsViewModel;
+	public static final int FILTER_CHATS = 0x1;
+	public static final int FILTER_GROUPS = 0x2;
+	public static final int FILTER_INCLUDE_ARCHIVED = 0x4;
+
+	private GlobalSearchAdapter chatsAdapter;
+	private GlobalSearchViewModel chatsViewModel;
 	private TextView emptyTextView;
 	private ProgressBar progressBar;
 	private DeadlineListService hiddenChatsListService;
 	private ContactService contactService;
 	private GroupService groupService;
 
+	private int filterFlags = FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED;
 	private String queryText;
-	private Handler queryHandler = new Handler();
-	private Runnable queryTask = new Runnable() {
+	private final Handler queryHandler = new Handler();
+	private final Runnable queryTask = new Runnable() {
 		@Override
 		public void run() {
-			chatsViewModel.onQueryChanged(queryText);
+			chatsViewModel.onQueryChanged(queryText, filterFlags);
 			chatsAdapter.onQueryChanged(queryText);
-			groupChatsViewModel.onQueryChanged(queryText);
-			groupChatsAdapter.onQueryChanged(queryText);
 		}
 	};
 
@@ -106,14 +110,10 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 
 			queryHandler.removeCallbacksAndMessages(null);
 			if (queryText != null && queryText.length() >= QUERY_MIN_LENGTH) {
-				emptyTextView.setVisibility(View.GONE);
 				queryHandler.postDelayed(queryTask, QUERY_TIMEOUT_MS);
 			} else {
-				emptyTextView.setVisibility(View.VISIBLE);
-				chatsViewModel.onQueryChanged(null);
+				chatsViewModel.onQueryChanged(null, filterFlags);
 				chatsAdapter.onQueryChanged(null);
-				groupChatsViewModel.onQueryChanged(null);
-				groupChatsAdapter.onQueryChanged(null);
 			}
 		}
 
@@ -195,65 +195,68 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		emptyTextView = findViewById(R.id.empty_text);
 		progressBar = findViewById(R.id.progress);
 
-		chatsAdapter = new GlobalSearchChatsAdapter(this, getString(R.string.chats));
-		chatsAdapter.setOnClickItemListener((messageModel, view) -> {
-			showMessage(messageModel, view);
-		});
+		chatsAdapter = new GlobalSearchAdapter(this);
+		chatsAdapter.setOnClickItemListener(this::showMessage);
 
-		groupChatsAdapter = new GlobalSearchGroupChatsAdapter(this, getString(R.string.title_tab_groups));
-		groupChatsAdapter.setOnClickItemListener((messageModel, view) -> {
-			showMessage(messageModel, view);
-		});
+		setupChip(R.id.chats, FILTER_CHATS);
+		setupChip(R.id.groups, FILTER_GROUPS);
+		setupChip(R.id.archived, FILTER_INCLUDE_ARCHIVED);
 
-		chatsRecyclerView = this.findViewById(R.id.recycler_chats);
+		RecyclerView chatsRecyclerView = this.findViewById(R.id.recycler_chats);
 		chatsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		chatsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 		chatsRecyclerView.setAdapter(chatsAdapter);
 
-		groupChatsRecyclerView = this.findViewById(R.id.recycler_groups);
-		groupChatsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-		groupChatsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-		groupChatsRecyclerView.setAdapter(groupChatsAdapter);
-
-		chatsViewModel = new ViewModelProvider(this).get(GlobalSearchChatsViewModel.class);
+		chatsViewModel = new ViewModelProvider(this).get(GlobalSearchViewModel.class);
 		chatsViewModel.getMessageModels().observe(this, messageModels -> {
-			messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
-				if (messageModel.getIdentity() != null) {
-					return !hiddenChatsListService.has(contactService.getUniqueIdString(messageModel.getIdentity()));
+			if (messageModels.size() > 0) {
+				messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
+					if (messageModel instanceof GroupMessageModel) {
+						if (((GroupMessageModel) messageModel).getGroupId() > 0) {
+							return !hiddenChatsListService.has(groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId()));
+						}
+					} else {
+						if (messageModel.getIdentity() != null) {
+							return !hiddenChatsListService.has(contactService.getUniqueIdString(messageModel.getIdentity()));
+						}
+					}
+					return true;
+				});
+			}
+
+			if (messageModels.size() == 0) {
+				if (queryText != null && queryText.length() >= QUERY_MIN_LENGTH) {
+					emptyTextView.setText(R.string.search_no_matches);
+				} else {
+					emptyTextView.setText(R.string.global_search_empty_view_text);
 				}
-				return true;
-			});
+				emptyTextView.setVisibility(View.VISIBLE);
+			} else {
+				emptyTextView.setVisibility(View.GONE);
+			}
 			chatsAdapter.setMessageModels(messageModels);
 		});
 
 		chatsViewModel.getIsLoading().observe(this, isLoading -> {
 			if (isLoading != null) {
-				if (isLoading) {
-					showProgressBar(true);
-				}
+				showProgressBar(isLoading);
 			}
 		});
-
-		groupChatsViewModel = new ViewModelProvider(this).get(GlobalSearchGroupChatsViewModel.class);
-		groupChatsViewModel.getMessageModels().observe(this, messageModels -> {
-			messageModels = Functional.filter(messageModels, (IPredicateNonNull<AbstractMessageModel>) messageModel -> {
-				if (((GroupMessageModel) messageModel).getGroupId() > 0) {
-					return !hiddenChatsListService.has(groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId()));
-				}
-				return true;
-			});
-			groupChatsAdapter.setMessageModels(messageModels);
-		});
-
-		groupChatsViewModel.getIsLoading().observe(this, isLoading -> {
-			if (isLoading != null) {
-				if (!isLoading) {
-					showProgressBar(false);
-				}
-			}
-		});
-
 		return true;
+	}
+
+	private void setupChip(@IdRes int id, int flag) {
+		// https://github.com/material-components/material-components-android/issues/1419
+		Chip chip = findViewById(id);
+		chip.setChecked(true);
+		chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (isChecked) {
+				filterFlags |= flag;
+			} else {
+				filterFlags  &= ~flag;
+			}
+			chatsViewModel.onQueryChanged(queryText, filterFlags);
+		});
 	}
 
 	private void showMessage(AbstractMessageModel messageModel, View view) {

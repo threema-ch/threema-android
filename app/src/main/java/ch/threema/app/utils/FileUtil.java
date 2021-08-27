@@ -85,7 +85,7 @@ public class FileUtil {
 
 	public static void selectFile(Activity activity, Fragment fragment, String[] mimeTypes, int ID, boolean multi, int sizeLimit, String initialPath) {
 		Intent intent;
-		Context context;
+		final Context context;
 
 		if (fragment != null) {
 			context = fragment.getActivity();
@@ -93,49 +93,79 @@ public class FileUtil {
 			context = activity;
 		}
 
-		if ((isMediaProviderSupported(context) && initialPath == null) || ConfigUtils.hasScopedStorage()) {
-			intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-			intent.addCategory(Intent.CATEGORY_OPENABLE);
-			if (mimeTypes.length > 1) {
-				intent.setType("*/*");
-				intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-			} else {
-				intent.setType(mimeTypes[0]);
-			}
-			// undocumented APIs according to https://issuetracker.google.com/issues/72053350
-			intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
-			intent.putExtra("android.content.extra.FANCY", true);
-			intent.putExtra("android.content.extra.SHOW_FILESIZE", true);
+		final boolean useOpenDocument = (isMediaProviderSupported(context) && initialPath == null) || ConfigUtils.hasScopedStorage();
+
+		if (useOpenDocument) {
+			intent = getOpenDocumentIntent(mimeTypes);
 		}
 		else {
-			intent = new Intent();
-			if (MimeUtil.isVideoFile(mimeTypes[0]) || MimeUtil.isImageFile(mimeTypes[0])) {
-				intent.setAction(Intent.ACTION_GET_CONTENT);
-			} else {
-				intent = new Intent(context, FilePickerActivity.class);
-				if (initialPath != null) {
-					intent.putExtra(INTENT_DATA_DEFAULT_PATH, initialPath);
-				}
-			}
-			intent.setType(mimeTypes[0]);
+			intent = getGetContentIntent(context, mimeTypes, initialPath);
 		}
 
+		addExtras(intent, multi, sizeLimit);
+
+		try {
+			startAction(activity, fragment, ID, intent);
+		} catch (ActivityNotFoundException e) {
+			if (useOpenDocument) {
+				// fallback to ACTION_GET_CONTENT on broken devices
+				intent = getGetContentIntent(context, mimeTypes, initialPath);
+				addExtras(intent, multi, sizeLimit);
+				try {
+					startAction(activity, fragment, ID, intent);
+					return;
+				} catch (ActivityNotFoundException ignored) {}
+			}
+			Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private static void startAction(Activity activity, Fragment fragment, int ID, Intent intent) throws ActivityNotFoundException {
+		if (fragment != null) {
+			fragment.startActivityForResult(intent, ID);
+		} else {
+			activity.startActivityForResult(intent, ID);
+		}
+	}
+
+	private static @NonNull Intent getOpenDocumentIntent(String[] mimeTypes) {
+		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		if (mimeTypes.length > 1) {
+			intent.setType("*/*");
+			intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+		} else {
+			intent.setType(mimeTypes[0]);
+		}
+		// undocumented APIs according to https://issuetracker.google.com/issues/72053350
+		intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+		intent.putExtra("android.content.extra.FANCY", true);
+		intent.putExtra("android.content.extra.SHOW_FILESIZE", true);
+
+		return intent;
+	}
+
+	private static @NonNull Intent getGetContentIntent(Context context, String[] mimeTypes, String initialPath) {
+		Intent intent = new Intent();
+		if (MimeUtil.isVideoFile(mimeTypes[0]) || MimeUtil.isImageFile(mimeTypes[0])) {
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+		} else {
+			intent = new Intent(context, FilePickerActivity.class);
+			if (initialPath != null) {
+				intent.putExtra(INTENT_DATA_DEFAULT_PATH, initialPath);
+			}
+		}
+		intent.setType(mimeTypes[0]);
+
+		return intent;
+	}
+
+	private static void addExtras(Intent intent, boolean multi, int sizeLimit) {
 		if (multi) {
 			intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 		}
-
 		if (sizeLimit > 0) {
 			intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, (long) sizeLimit);
-		}
-
-		try {
-			if (fragment != null) {
-				fragment.startActivityForResult(intent, ID);
-			} else {
-				activity.startActivityForResult(intent, ID);
-			}
- 		} catch (ActivityNotFoundException e) {
-			Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
 		}
 	}
 

@@ -113,6 +113,9 @@
 		android:name="android.hardware.bluetooth"
 		android:required="false"/>
 	<uses-feature
+		android:name="android.hardware.camera"
+		android:required="false"/>
+	<uses-feature
 		android:name="android.hardware.camera.any"
 		android:required="false"/>
 
@@ -702,7 +705,8 @@
 		<activity
 			android:name=".archive.ArchiveActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.WithToolbar" />
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:windowSoftInputMode="adjustResize" />
 		<activity
 			android:name=".activities.MapActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"

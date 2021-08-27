@@ -82,6 +82,8 @@ import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.dialogs.TextWithCheckboxDialog;
+import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.fragments.DistributionListFragment;
 import ch.threema.app.fragments.GroupListFragment;
 import ch.threema.app.fragments.RecentListFragment;
@@ -126,6 +128,7 @@ import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	CancelableHorizontalProgressDialog.ProgressDialogClickListener,
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener,
+	TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
 	SearchView.OnQueryTextListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(RecipientListBaseActivity.class);
@@ -149,7 +152,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private MenuItem searchMenuItem;
 	private ThreemaSearchView searchView;
 
-	private boolean isForward, hideUi, hideRecents, multiSelect;
+	private boolean hideUi, hideRecents, multiSelect;
 	private String captionText;
 	private final List<MediaItem> mediaItems = new ArrayList<>();
 	private final List<MessageReceiver> recipientMessageReceivers = new ArrayList<>();
@@ -217,7 +220,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void resetValues() {
-		isForward = hideUi = hideRecents = false;
+		hideUi = hideRecents = false;
 		mediaItems.clear();
 		originalMessageModels.clear();
 		tabs.clear();
@@ -499,7 +502,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							finish();
 						}
 					}
-					this.isForward = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_IS_FORWARD, false);
 
 					if (!TestUtil.empty(identity)) {
 						prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(contactService.getByIdentity(identity))));
@@ -525,7 +527,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						final ContactModel contactModel = ContactLookupUtil.phoneNumberToContact(this, contactService, uri.getSchemeSpecificPart());
 
 						if (contactModel != null) {
-							prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)));
+							prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
 							return;
 						} else {
 							finish();
@@ -566,7 +568,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									if (contactModel == null) {
 										addNewContact(targetIdentity);
 									} else {
-										prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)));
+										prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
 									}
 								}
 							}
@@ -607,7 +609,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 				} else if (action.equals(ThreemaApplication.INTENT_ACTION_FORWARD)) {
 					// internal forward using message id instead of media URI
-					isForward = true;
 					ArrayList<Integer> messageIds = IntentDataUtil.getAbstractMessageIds(intent);
 					String originalMessageType = IntentDataUtil.getAbstractMessageType(intent);
 
@@ -727,12 +728,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
 						Snackbar.make(rootView, R.string.contact_not_found, Snackbar.LENGTH_LONG).show();
 					} else {
-						prepareComposeIntent(new ArrayList<>(Collections.singletonList(newContactModel)));
+						prepareComposeIntent(new ArrayList<>(Collections.singletonList(newContactModel)), false);
 					}
 				}
 			}.execute();
 		} else {
-			prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)));
+			prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
 		}
 	}
 
@@ -771,12 +772,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		return messageReceiver;
 	}
 
-	private void prepareComposeIntent(ArrayList<Object> models) {
+	private void prepareComposeIntent(ArrayList<Object> recipients, boolean keepOriginalCaptions) {
 		Intent intent = null;
 		MessageReceiver messageReceiver = null;
-		ArrayList<MessageReceiver> messageReceivers = new ArrayList<>(models.size());
+		ArrayList<MessageReceiver> messageReceivers = new ArrayList<>(recipients.size());
 
-		for (Object model : models) {
+		for (Object model : recipients) {
 			messageReceiver = getMessageReceiver(model);
 			if (validateSendingPermission(messageReceiver)) {
 				messageReceivers.add(messageReceiver);
@@ -785,8 +786,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 		intent = IntentDataUtil.getComposeIntentForReceivers(this, messageReceivers);
 
-		if (originalMessageModels != null && originalMessageModels.size() > 0) {
-			this.forwardMessages(messageReceivers.toArray(new MessageReceiver[0]), intent);
+		if (originalMessageModels.size() > 0) {
+			this.forwardMessages(messageReceivers.toArray(new MessageReceiver[0]), intent, keepOriginalCaptions);
 		} else {
 			this.sendSharedMedia(messageReceivers.toArray(new MessageReceiver[0]), intent);
 		}
@@ -797,14 +798,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getCaption());
 			startComposeActivity(intent);
 		} else if (messageReceivers.length > 1 || mediaItems.size() > 0) {
-			messageService.sendMediaAsync(mediaItems, Arrays.asList(messageReceivers));
+			messageService.sendMediaSingleThread(mediaItems, Arrays.asList(messageReceivers));
 			startComposeActivity(intent);
 		} else {
 			startComposeActivity(intent);
 		}
 	}
 
-	void forwardSingleMessage(final MessageReceiver[] messageReceivers, final int i, final Intent intent) {
+	void forwardSingleMessage(final MessageReceiver[] messageReceivers, final int i, final Intent intent, final boolean keepOriginalCaptions) {
 		final AbstractMessageModel messageModel = originalMessageModels.get(i);
 		fileService.loadDecryptedMessageFile(messageModel, new FileService.OnDecryptedFileComplete() {
 			@Override
@@ -816,15 +817,18 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					if (decryptedFile != null) {
 						uri = Uri.fromFile(decryptedFile);
 					}
+
+					String caption = keepOriginalCaptions ? messageModel.getCaption() : captionText;
+
 					switch (messageModel.getType()) {
 						case IMAGE:
-							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null);
+							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null);
 							break;
 						case VIDEO:
-							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
+							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
 							break;
 						case VOICEMESSAGE:
-							sendForwardedMedia(messageReceivers, uri, captionText, MediaItem.TYPE_VOICEMESSAGE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_MEDIA, null);
+							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_VOICEMESSAGE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_MEDIA, null);
 							break;
 						case FILE:
 							int mediaType = MediaItem.TYPE_FILE;
@@ -832,19 +836,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							int renderingType = messageModel.getFileData().getRenderingType();
 
 							if (messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
-								if (MimeUtil.isVideoFile(mimeType)) {
-									mediaType = MediaItem.TYPE_VIDEO;
-								} else if (MimeUtil.isImageFile(mimeType)) {
-									if (MimeUtil.isGifFile(mimeType)) {
-										mediaType = MediaItem.TYPE_GIF;
-									} else {
-										mediaType = MediaItem.TYPE_IMAGE;
-									}
-								} else if (MimeUtil.isAudioFile(mimeType)) {
-									mediaType = MediaItem.TYPE_VOICEMESSAGE;
-								}
+								mediaType = MimeUtil.getMediaTypeFromMimeType(mimeType);
 							}
-							sendForwardedMedia(messageReceivers, uri, captionText, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
+							sendForwardedMedia(messageReceivers, uri, caption, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
 							break;
 						case LOCATION:
 							sendLocationMessage(messageReceivers, messageModel.getLocationData());
@@ -858,7 +852,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 				}
 				if (i < originalMessageModels.size() - 1) {
-					forwardSingleMessage(messageReceivers, i+1, intent);
+					forwardSingleMessage(messageReceivers, i+1, intent, keepOriginalCaptions);
 				} else {
 					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true);
 					startComposeActivity(intent);
@@ -873,10 +867,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	}
 
 	@UiThread
-	private void forwardMessages(final MessageReceiver[] messageReceivers, final Intent intent) {
+	private void forwardMessages(final MessageReceiver[] messageReceivers, final Intent intent, boolean keepOriginalCaptions) {
 		CancelableHorizontalProgressDialog.newInstance(R.string.sending_messages, 0, 0, originalMessageModels.size()).show(getSupportFragmentManager(), DIALOG_TAG_MULTISEND);
 
-		forwardSingleMessage(messageReceivers, 0, intent);
+		forwardSingleMessage(messageReceivers, 0, intent, keepOriginalCaptions);
 	}
 
 	private void startComposeActivityAsync(final Intent intent) {
@@ -903,13 +897,13 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		}
 	}
 
-	public void prepareForwardingOrSharing(final ArrayList<Object> models) {
+	public void prepareForwardingOrSharing(final ArrayList<Object> recipients) {
 		if (mediaItems.size() > 0 || originalMessageModels.size() > 0) {
 			String recipientName = "";
 
 			if (!((mediaItems.size() == 1 && MimeUtil.isTextFile(mediaItems.get(0).getMimeType()))
 				|| (originalMessageModels.size() == 1 && originalMessageModels.get(0).getType() == MessageType.TEXT))) {
-				for (Object model : models) {
+				for (Object model : recipients) {
 					if (recipientName.length() > 0) {
 						recipientName += ", ";
 					}
@@ -923,10 +917,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 				}
 
-				if (isForward) {
+				if (originalMessageModels.size() > 0) {
 					// forwarded content of any type
 					String presetCaption = null;
 					boolean expandable = false;
+					boolean hasCaptions = false;
 
 					if (originalMessageModels.size() == 1) {
 						presetCaption = originalMessageModels.get(0).getCaption();
@@ -936,10 +931,22 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							originalMessageModels.get(0).getType() == MessageType.FILE) {
 							expandable = true;
 						}
+					} else {
+						for (AbstractMessageModel messageModel: originalMessageModels) {
+							if (messageModel.getCaption() != null && !TextUtils.isEmpty(messageModel.getCaption())) {
+								hasCaptions = true;
+								break;
+							}
+						}
 					}
 
-					ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, expandable);
-					alertDialog.setData(models);
+					ThreemaDialogFragment alertDialog;
+					if (!expandable) {
+						alertDialog = TextWithCheckboxDialog.newInstance(getString(R.string.really_forward, recipientName), hasCaptions ? R.string.forward_captions : 0, R.string.send, R.string.cancel);
+					} else {
+						alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, expandable);
+					}
+					alertDialog.setData(recipients);
 					alertDialog.show(getSupportFragmentManager(), null);
 				} else {
 					// content shared by external apps may be referred to by content URIs which will not survive this activity. so in order to be able to use them later we have to copy these files to a local directory first
@@ -962,7 +969,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								if (numEditableMedia == mediaItems.size()) { // all files are images or videos
 									// all files are either images or videos => redirect to SendMediaActivity
 									recipientMessageReceivers.clear();
-									for (Object model : models) {
+									for (Object model : recipients) {
 										MessageReceiver messageReceiver = getMessageReceiver(model);
 										if (validateSendingPermission(messageReceiver)) {
 											recipientMessageReceivers.add(messageReceiver);
@@ -978,7 +985,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								} else {
 									// mixed media
 									ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
-									alertDialog.setData(models);
+									alertDialog.setData(recipients);
 									alertDialog.show(getSupportFragmentManager(), null);
 								}
 							}, ContextCompat.getMainExecutor(getApplicationContext()));
@@ -993,7 +1000,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		}
 
 		// fallback to starting new chat
-		prepareComposeIntent(models);
+		prepareComposeIntent(recipients, false);
 	}
 
 	@Override
@@ -1156,7 +1163,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				mediaItem.setImageScale(PreferenceService.ImageScale_ORIGINAL);
 			}
 		}
-		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));
+		messageService.sendMediaSingleThread(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));
 	}
 
 	@WorkerThread
@@ -1239,7 +1246,15 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					mediaItem.setCaption(text);
 				}
 			}
-			prepareComposeIntent((ArrayList<Object>) data);
+			prepareComposeIntent((ArrayList<Object>) data, false);
+		}
+	}
+
+	// return from TextWithCheckboxDialog
+	@Override
+	public void onYes(String tag, Object data, boolean checked) {
+		if (data instanceof ArrayList) {
+			prepareComposeIntent((ArrayList<Object>) data, checked);
 		}
 	}
 

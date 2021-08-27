@@ -36,6 +36,7 @@ import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 
 public class GroupMessageModelFactory extends AbstractMessageModelFactory {
@@ -97,26 +98,48 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 				});
 	}
 
-	public List<AbstractMessageModel> getMessagesByText(String text) {
-		return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
-			"SELECT * FROM " +
-				GroupMessageModel.TABLE +
-				" WHERE ( ( " + GroupMessageModel.COLUMN_BODY + " LIKE ? " +
-					" AND " + GroupMessageModel.COLUMN_TYPE + " IN (" +
-						MessageType.TEXT.ordinal() + "," +
-						MessageType.LOCATION.ordinal() + "," +
-						MessageType.BALLOT.ordinal() + ") )" +
-				" OR ( " + GroupMessageModel.COLUMN_CAPTION + " LIKE ? " +
-					" AND " + GroupMessageModel.COLUMN_TYPE + " IN (" +
-						MessageType.IMAGE.ordinal() + "," +
-						MessageType.FILE.ordinal() + ") ) )" +
-				" AND " + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + " = 0" +
-				" ORDER BY " + GroupMessageModel.COLUMN_CREATED_AT + " DESC" +
-				" LIMIT 200",
-			new String[] {
-				"%" + text + "%",
-				"%" + text + "%"
-			}));
+	public List<AbstractMessageModel> getMessagesByText(String text, boolean includeArchived) {
+		if (includeArchived) {
+			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+				"SELECT * FROM " + GroupMessageModel.TABLE +
+					" WHERE ( ( body LIKE ? " +
+					" AND type IN (" +
+					MessageType.TEXT.ordinal() + "," +
+					MessageType.LOCATION.ordinal() + "," +
+					MessageType.BALLOT.ordinal() + ") )" +
+					" OR ( caption LIKE ? " +
+					" AND type IN (" +
+					MessageType.IMAGE.ordinal() + "," +
+					MessageType.FILE.ordinal() + ") ) )" +
+					" AND isStatusMessage = 0" +
+					" ORDER BY createdAtUtc DESC" +
+					" LIMIT 200",
+				new String[]{
+					"%" + text + "%",
+					"%" + text + "%"
+				}));
+		} else {
+			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+				"SELECT * FROM " + GroupMessageModel.TABLE + " m" +
+					" INNER JOIN " + GroupModel.TABLE + " g ON g.id = m.groupId" +
+					" WHERE g.isArchived = 0" +
+					" AND ( ( m.body LIKE ? " +
+					" AND m.type IN (" +
+					MessageType.TEXT.ordinal() + "," +
+					MessageType.LOCATION.ordinal() + "," +
+					MessageType.BALLOT.ordinal() + ") )" +
+					" OR ( m.caption LIKE ? " +
+					" AND m.type IN (" +
+					MessageType.IMAGE.ordinal() + "," +
+					MessageType.FILE.ordinal() + ") ) )" +
+					" AND m.isStatusMessage = 0" +
+					" ORDER BY m.createdAtUtc DESC" +
+					" LIMIT 200",
+				new String[]{
+					"%" + text + "%",
+					"%" + text + "%"
+				}));
+		}
 	}
 
 	private List<AbstractMessageModel> convertAbstractList(Cursor cursor) {

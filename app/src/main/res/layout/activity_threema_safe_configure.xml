@@ -110,11 +110,11 @@
 				android:singleLine="true"
 				android:text="@string/safe_advanced_options"/>
 
-			<Space
+			<android.widget.Space
 				android:layout_width="8dp"
 				android:layout_height="0dp"
 				android:layout_weight="1">
-			</Space>
+			</android.widget.Space>
 
 			<com.google.android.material.button.MaterialButton
 				android:id="@+id/next"

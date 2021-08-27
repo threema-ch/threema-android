@@ -21,14 +21,10 @@
 
 package ch.threema.app.utils;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 
 import org.slf4j.Logger;
@@ -38,10 +34,8 @@ import java.util.Date;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
@@ -53,60 +47,13 @@ public class ContactUtil {
 	public static final int CHANNEL_NAME_MAX_LENGTH_BYTES = 256;
 
 	/**
-	 * return a valid uri to the given contact
-	 *
-	 * @param context context
-	 * @param contactModel contactmodel
-	 * @return null or a valid uri
-	 */
-	public static Uri getAndroidContactUri(Context context, ContactModel contactModel) {
-		if (contactModel != null) {
-			String contactLookupKey = contactModel.getAndroidContactId();
-
-			if (TestUtil.empty(contactLookupKey)) {
-				contactLookupKey = contactModel.getThreemaAndroidContactId();
-			}
-
-			if (!TestUtil.empty(contactLookupKey)) {
-				return getAndroidContactUri(context, contactLookupKey);
-			}
-		}
-		return null;
-	}
-
-	private static Uri getAndroidContactUri(Context context, String lookupKey) {
-		Uri contactLookupUri = null;
-
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-				ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-			contactLookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-
-			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-				if (contactLookupUri != null) {
-					// Some implementations of QuickContactActivity/Contact App Intents ( (e.g. 4.0.4 on Samsung or HTC Android 4-5) have troubles dealing
-					// with CONTENT_LOOKUP_URI style URIs - they crash with a NumberFormatException. To avoid this,
-					// we need to lookup the proper (number-only) contact ID.
-					try {
-						contactLookupUri = ContactsContract.Contacts.lookupContact(context.getContentResolver(), contactLookupUri);
-					} catch (Exception e) {
-						// Could be an old (non-lookup) URI - ignore
-						logger.error("Exception", e);
-					}
-				}
-			}
-		}
-
-		return contactLookupUri;
-	}
-
-	/**
 	 * check if this contact is *currently* linked to an android contact
 	 * @param contact
 	 * @return
 	 */
 	public static boolean isLinked(ContactModel contact) {
 		return contact != null
-				&& !TestUtil.empty(contact.getAndroidContactId());
+				&& !TestUtil.empty(contact.getAndroidContactLookupKey());
 	}
 
 	/**
@@ -140,18 +87,6 @@ public class ContactUtil {
 	 */
 	public static boolean isSynchronized(ContactModel contact) {
 		return contact != null && contact.isSynchronized();
-	}
-
-	public static Uri getLinkedUri(Context context, ContactService contactService, ContactModel contact) {
-		contactService.validateContactAggregation(contact, true);
-		final Uri contactUri = ContactUtil.getAndroidContactUri(context, contact);
-
-		if (TestUtil.required(contactUri) && TestUtil.required(contact)) {
-			if (AndroidContactUtil.getInstance().isAndroidContactNameMaster(contact)) {
-				return contactUri;
-			}
-		}
-		return null;
 	}
 
 	/**

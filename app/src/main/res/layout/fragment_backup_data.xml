@@ -67,8 +67,8 @@
 								android:layout_gravity="center"
 								android:adjustViewBounds="true"
 								android:src="@drawable/ic_backup_data_black_192dp"
-								android:tint="@color/text_color_secondary"
-								android:importantForAccessibility="no"/>
+								android:importantForAccessibility="no"
+								app:tint="@color/text_color_secondary" />
 
 						</FrameLayout>
 

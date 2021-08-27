@@ -129,7 +129,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		private int thumbnailWidth;
 		private final Fragment fragment;
 		protected int regularColor;
-		private final Map<String, ContactCache> contacts = new HashMap<String, ContactCache>();
+		private final Map<String, ContactCache> contacts = new HashMap<>();
 		private final Drawable stopwatchIcon;
 		private final int maxBubbleTextLength;
 		private final int maxQuoteTextLength;

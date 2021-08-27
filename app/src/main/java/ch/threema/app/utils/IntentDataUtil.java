@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -283,6 +284,7 @@ public class IntentDataUtil {
 		return 0;
 	}
 
+	@Nullable
 	public static String getAbstractMessageType(Intent intent) {
 		return intent.getStringExtra(INTENT_DATA_ABSTRACT_MESSAGE_TYPE);
 	}

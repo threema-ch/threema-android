@@ -23,7 +23,6 @@ package ch.threema.app.services;
 
 import android.content.Context;
 import android.os.PowerManager;
-import android.util.SparseArray;
 
 import com.neilalexander.jnacl.NaCl;
 
@@ -35,7 +34,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
@@ -50,11 +52,73 @@ public class DownloadServiceImpl implements DownloadService {
 	private static final String TAG = "DownloadService";
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":" + TAG;
 	private static final int DOWNLOAD_WAKELOCK_TIMEOUT = 10 * 1000;
-	private final SparseArray<BlobLoader> blobLoaders = new SparseArray<>();
+	private final ArrayList<Download> downloads = new ArrayList<>();
 	private final FileService fileService;
 	private final ApiService apiService;
-	private PowerManager powerManager;
+	private final PowerManager powerManager;
 
+	private final static class Download {
+		int messageModelId;
+		byte[] blobId;
+		BlobLoader blobLoader;
+
+		public Download(int messageModelId, byte[] blobId, BlobLoader blobLoader) {
+			this.messageModelId = messageModelId;
+			this.blobId = blobId;
+			this.blobLoader = blobLoader;
+		}
+	}
+
+	private @Nullable ArrayList<Download> getDownloadsByMessageModelId(int messageModelId) {
+		ArrayList<Download> matchingDownloads = new ArrayList<>();
+		for (Download download: this.downloads) {
+			if (download.messageModelId == messageModelId) {
+				matchingDownloads.add(download);
+			}
+		}
+		return matchingDownloads.size() > 0 ? matchingDownloads : null;
+	}
+
+	private @Nullable Download getDownloadByBlobId(@NonNull byte[] blobId) {
+		for (Download download: this.downloads) {
+			if (Arrays.equals(blobId, download.blobId)) {
+				return download;
+			}
+		}
+		return null;
+	}
+
+	private boolean removeDownloadByBlobId(@NonNull byte[] blobId) {
+		synchronized (this.downloads) {
+			Download download = getDownloadByBlobId(blobId);
+			if (download != null) {
+				logger.info("Blob {} remove downloader", Utils.byteArrayToHexString(blobId));
+				downloads.remove(download);
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private boolean removeDownloadByMessageModelId(int messageModelId, boolean cancel) {
+		synchronized (this.downloads) {
+			ArrayList<Download> matchingDownloads = getDownloadsByMessageModelId(messageModelId);
+			if (matchingDownloads != null) {
+				for (Download download: matchingDownloads) {
+					logger.info("Blob {} remove downloader for message {}. Cancel = {}",
+						Utils.byteArrayToHexString(download.blobId),
+						messageModelId,
+						cancel);
+					if (cancel) {
+						download.blobLoader.cancel();
+					}
+					this.downloads.remove(download);
+				}
+				return true;
+			}
+			return false;
+		}
+	}
 
 	public DownloadServiceImpl(Context context, FileService fileService, ApiService apiService) {
 		this.fileService = fileService;
@@ -65,19 +129,21 @@ public class DownloadServiceImpl implements DownloadService {
 	@Override
 	@WorkerThread
 	@Nullable
-	public byte[] download(int id, byte[] blobId, boolean markAsDown, ProgressListener progressListener) {
+	public byte[] download(int messageModelId, final byte[] blobId, boolean markAsDown, ProgressListener progressListener) {
 		PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
 		try {
 			if (wakeLock != null) {
 				wakeLock.acquire(DOWNLOAD_WAKELOCK_TIMEOUT);
 				logger.info("Acquire download wakelock");
 			};
-			logger.info("Download blob for message {}", id);
 
 			if (blobId == null) {
 				logger.warn("Blob ID is null");
 				return null;
 			}
+
+			String blobIdHex = Utils.byteArrayToHexString(blobId);
+			logger.info("Blob {} for message {} download requested", blobIdHex, messageModelId);
 
 			byte[] imageBlob = null;
 			File downloadFile = this.getTemporaryDownloadFile(blobId);
@@ -87,7 +153,7 @@ public class DownloadServiceImpl implements DownloadService {
 				//check if a temporary file exist
 				if (downloadFile.exists()) {
 					if (downloadFile.length() >= NaCl.BOXOVERHEAD) {
-						logger.warn("Blob download file for message {} already exists", id);
+						logger.warn("Blob {} download file already exists", blobIdHex);
 						try (FileInputStream fileInputStream = new FileInputStream(downloadFile)) {
 							return IOUtils.toByteArray(fileInputStream);
 						}
@@ -97,13 +163,14 @@ public class DownloadServiceImpl implements DownloadService {
 					}
 				}
 
-				BlobLoader blobLoader = null;
-				synchronized (this.blobLoaders) {
-					if (this.blobLoaders.get(id) == null) {
+				BlobLoader blobLoader;
+				synchronized (this.downloads) {
+					if (getDownloadByBlobId(blobId) == null) {
 						blobLoader = this.apiService.createLoader(blobId);
-						this.blobLoaders.append(id, blobLoader);
+						this.downloads.add(new Download(messageModelId, blobId, blobLoader));
+						logger.info("Blob {} downloader created", blobIdHex);
 					} else {
-						logger.info("Loader for message {} already exists. Not adding again.", id);
+						logger.info("Blob {} downloader already exists. Not adding again", blobIdHex);
 						return null;
 					}
 				}
@@ -114,14 +181,14 @@ public class DownloadServiceImpl implements DownloadService {
 
 
 				// load image from server
-				logger.info("Fetching blob for message {}", id);
+				logger.info("Blob {} now fetching", blobIdHex);
 				imageBlob = blobLoader.load(false);
 
 				if (imageBlob != null) {
-					synchronized (this.blobLoaders) {
+					synchronized (this.downloads) {
 						//check if loader already existing in array (otherwise its canceled)
-						if (this.blobLoaders.get(id) != null) {
-							logger.debug("Write blob to file");
+						if (getDownloadByBlobId(blobId) != null) {
+							logger.info("Blob {} now saving", blobIdHex);
 							//write to temporary file
 							FileUtil.createNewFileOrLog(downloadFile, logger);
 							if (downloadFile.isFile()) {
@@ -135,14 +202,18 @@ public class DownloadServiceImpl implements DownloadService {
 
 									//ok download saved, set as down if set
 									if (markAsDown) {
-										logger.info("Marking message {} as downloaded", id);
-										final BlobLoader loader = this.blobLoaders.get(id);
+										logger.info("Blob {} scheduled for marking as downloaded", blobIdHex);
 										try {
 											new Thread(() -> {
-												if (loader != null) {
-													loader.markAsDown(blobId);
+												synchronized (this.downloads) {
+													Download download = getDownloadByBlobId(blobId);
+													if (download != null) {
+														if (download.blobLoader != null) {
+															download.blobLoader.markAsDown(download.blobId);
+														}
+														logger.info("Blob {} marked as downloaded", blobIdHex);
+													}
 												}
-												logger.info("Marked message {} as downloaded", id);
 											}, "MarkAsDownThread").start();
 										} catch (Exception ignored) {
 											// markAsDown thread failed
@@ -166,15 +237,19 @@ public class DownloadServiceImpl implements DownloadService {
 			}
 
 			if (downloadSuccess) {
-				logger.info("Blob for message {} successfully downloaded. Size = {}", id, imageBlob.length);
+				logger.info("Blob {} successfully downloaded. Size = {}", blobIdHex, imageBlob.length);
 			} else {
-				logger.warn("Blob download for message {} failed.", id);
+				logger.warn("Blob {} download failed.", blobIdHex);
 			}
 
 			if (imageBlob == null) {
-				synchronized (this.blobLoaders) {
+				synchronized (this.downloads) {
 					// download failed. remove loader
-					this.blobLoaders.remove(id);
+					Download download = getDownloadByBlobId(blobId);
+					if (download != null) {
+						logger.info("Blob {} remove downloader. Download failed.", blobIdHex);
+						this.downloads.remove(download);
+					}
 				}
 			}
 			return imageBlob;
@@ -187,11 +262,9 @@ public class DownloadServiceImpl implements DownloadService {
 	}
 
 	@Override
-	public void complete(int id, byte[] blobId) {
-		synchronized (this.blobLoaders) {
-			// success has been signalled. remove loader
-			this.blobLoaders.remove(id);
-		}
+	public void complete(int messageModelId, byte[] blobId) {
+		// success has been signalled. remove loader
+		removeDownloadByBlobId(blobId);
 
 		// remove temp file
 		File f = this.getTemporaryDownloadFile(blobId);
@@ -201,40 +274,28 @@ public class DownloadServiceImpl implements DownloadService {
 	}
 
 	@Override
-	public boolean cancel(int id) {
-		synchronized (this.blobLoaders) {
-			BlobLoader l = this.blobLoaders.get(id);
-			if(l != null) {
-				logger.debug("cancel blob loader");
-				l.cancel();
-				this.blobLoaders.remove(id);
-				return true;
-			}
-		}
-
-		return false;
+	public boolean cancel(int messageModelId) {
+		return removeDownloadByMessageModelId(messageModelId, true);
 	}
 
 	@Override
 	public boolean isDownloading(int messageModelId) {
-		synchronized (this.blobLoaders) {
-			return this.blobLoaders.get(messageModelId) != null;
+		synchronized (this.downloads) {
+			return getDownloadsByMessageModelId(messageModelId) != null;
 		}
 	}
 
 	@Override
 	public boolean isDownloading() {
-		synchronized (this.blobLoaders) {
-			return this.blobLoaders.size() > 0;
+		synchronized (this.downloads) {
+			return this.downloads.size() > 0;
 		}
 	}
 
 	@Override
-	public void error(int id) {
-		synchronized (this.blobLoaders) {
-			// error has been signalled. remove loader
-			this.blobLoaders.remove(id);
-		}
+	public void error(int messageModelId) {
+		// error has been signalled. remove loaders for this MessageModel
+		removeDownloadByMessageModelId(messageModelId, false);
 	}
 
 	private File getTemporaryDownloadFile(byte[] blobId) {

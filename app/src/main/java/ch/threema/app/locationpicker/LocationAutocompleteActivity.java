@@ -35,9 +35,6 @@ import android.widget.ProgressBar;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,18 +46,21 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ThreemaEditText;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.NetworkUtil;
 
 import static ch.threema.app.locationpicker.PoiRepository.QUERY_MIN_LENGTH;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 
 public class LocationAutocompleteActivity extends ThreemaActivity {
-	private static final Logger logger = LoggerFactory.getLogger(LocationAutocompleteActivity.class);
+
+	private static final String DIALOG_TAG_NO_CONNECTION = "no_connection";
 
 	private static final long QUERY_TIMEOUT = 1000; // ms
 
@@ -159,9 +159,13 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 			places = newplaces;
 			refreshAdapter(places);
 
-			if (places.size() == 0 && (queryText != null && queryText.length() >= QUERY_MIN_LENGTH)) {
+			if (!NetworkUtil.isOnline()) {
+				SimpleStringAlertDialog.newInstance(R.string.send_location, R.string.internet_connection_required).show(getSupportFragmentManager(), DIALOG_TAG_NO_CONNECTION);
+			}
+			else if (places.size() == 0 && (queryText != null && queryText.length() >= QUERY_MIN_LENGTH)) {
 				emptyView.setup(R.string.lp_search_place_no_matches);
-			} else {
+			}
+			else {
 				emptyView.setup(R.string.lp_search_place_min_chars);
 			}
 		});
@@ -199,10 +203,9 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				this.finish();
-				return true;
+		if (item.getItemId() == android.R.id.home) {
+			this.finish();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

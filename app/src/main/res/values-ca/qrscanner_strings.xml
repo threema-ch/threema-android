@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">Posicioneu un codi QR dins el rectangle del visor per escanejar-lo.</string>
+    <string name="msg_camera_framework_bug">No es pot accedir a la càmera d\'Android. Assegureu-vos que s\'ha concedit el permís d\'accés a la càmera o reinicieu el vostre dispositiu.</string>
+</resources>

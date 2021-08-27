@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,14 +85,14 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 	private List<ContactModel> values, ovalues, recentlyAdded = new ArrayList<>();
 	private ContactListFilter contactListFilter;
-	private AvatarListener avatarListener;
-	private Bitmap defaultContactImage;
+	private final AvatarListener avatarListener;
+	private final Bitmap defaultContactImage;
 	private final HashMap<String, Integer> alphaIndexer = new HashMap<String, Integer>();
 	private final HashMap<Integer, String> positionIndexer = new HashMap<Integer, String>();
 	private String[] sections;
 	private Integer[] counts;
-	private LayoutInflater inflater;
-	private Collator collator;
+	private final LayoutInflater inflater;
+	private final Collator collator;
 
 	public interface AvatarListener {
 		void onAvatarClick(View view, int position);
@@ -474,6 +475,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		}
 	}
 
+	@NotNull
 	@Override
 	public Filter getFilter() {
 		if (contactListFilter == null)
@@ -521,5 +523,10 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			return getInitial(values.get(position), true);
 		}
 		return "";
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return values != null && getCount() == 0;
 	}
 }

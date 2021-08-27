@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * Taken from http://stackoverflow.com/questions/27414173/equivalent-of-listview-setemptyview-in-recyclerview/27801394#27801394
  */
 public class EmptyRecyclerView extends RecyclerView {
+	private int numHeadersAndFooters = 0;
 	private WeakReference<View> emptyViewReference;
 	final private AdapterDataObserver observer = new AdapterDataObserver() {
 		@Override
@@ -70,7 +71,7 @@ public class EmptyRecyclerView extends RecyclerView {
 
 	void checkIfEmpty() {
 		if (emptyViewReference != null && emptyViewReference.get() != null && getAdapter() != null) {
-			final boolean emptyViewVisible = getAdapter().getItemCount() == 0;
+			final boolean emptyViewVisible = getAdapter().getItemCount() == numHeadersAndFooters;
 			emptyViewReference.get().setVisibility(emptyViewVisible ? VISIBLE : GONE);
 			setVisibility(emptyViewVisible ? INVISIBLE : VISIBLE);
 		}
@@ -91,6 +92,15 @@ public class EmptyRecyclerView extends RecyclerView {
 
 	public void setEmptyView(View emptyView) {
 		this.emptyViewReference = new WeakReference<>(emptyView);
+		checkIfEmpty();
+	}
+
+	/**
+	 * Specify how many header or footer views this recyclerview has. This number will be considered when determining the "empty" status of the list
+	 * @param numHeadersAndFooters Number of headers and / or footers
+	 */
+	public void setNumHeadersAndFooters(int numHeadersAndFooters) {
+		this.numHeadersAndFooters = numHeadersAndFooters;
 		checkIfEmpty();
 	}
 

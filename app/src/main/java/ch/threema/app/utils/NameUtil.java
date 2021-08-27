@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.FilterableListAdapter;
@@ -42,6 +43,8 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import java8.util.J8Arrays;
+import java8.util.stream.Collectors;
 
 public class NameUtil {
 
@@ -317,5 +320,24 @@ public class NameUtil {
 
 			nickNameTextView.setVisibility(View.GONE);
 		}
+	}
+
+	/**
+	 * Extract first and last name from display name as provided by the Android contact database
+	 * If displayName is empty or null, empty strings will be returned for first/last name.
+	 *
+	 * @param displayName Name of the contact to split
+	 * @return A Pair containing first and last name
+	 */
+	@NonNull public static Pair<String, String> getFirstLastNameFromDisplayName(@Nullable String displayName) {
+		final String[] parts = displayName == null ? null : displayName.split(" ");
+		if (parts == null || parts.length == 0) {
+			return new Pair<>("", "");
+		}
+		final String firstName = parts[0];
+		final String lastName = J8Arrays.stream(parts)
+			.skip(1)
+			.collect(Collectors.joining(" "));
+		return new Pair<>(firstName, lastName);
 	}
 }

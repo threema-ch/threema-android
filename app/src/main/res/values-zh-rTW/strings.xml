@@ -332,7 +332,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="status_rename_group">群組名稱變更為「%1$s」</string>
     <string name="status_group_new_photo">群組已更新。</string>
     <string name="status_group_new_member">%1$s 已新增至群組。</string>
-    <string name="status_group_member_left">%1$s  離開了群組。</string>
+    <string name="status_group_member_left">%1$s 離開了群組。</string>
     <string name="status_group_member_kicked">%1$s 已從群組中移除。</string>
     <string name="can_not_send_no_group_members">您無法將訊息傳送到空群組</string>
     <string name="you_are_not_a_member_of_this_group">您不是此群組的成員</string>
@@ -344,7 +344,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="title_public_nickname">暱稱</string>
     <string name="prefs_sum_excluded_sync_identities">同步聯絡人時，這裡列出的ID將被忽略</string>
     <string name="prefs_title_excluded_sync_identities">排除清單</string>
-    <string name="synchronize_contact">連結系統聯絡人</string>
+    <string name="synchronize_contact">通訊錄同步</string>
     <string name="exclude_contact">排除自動同步</string>
     <string name="prefs_header_lists">清單</string>
     <string name="prefs_title_black_list">黑名單</string>
@@ -407,7 +407,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no_matching_distribution_lists">沒有匹配的通訊群組清單</string>
     <string name="is_typing">輸入中…</string>
     <string name="push_not_available_title">找不到推播服務</string>
-    <string name="push_not_available_text">“我們無法在您的裝置上找到推播服務，因為 Google Play 服務未安裝或過期。Threema 將每15分鐘檢查一次新訊息。</string>
+    <string name="push_not_available_text">我們無法在您的裝置上找到推播服務，因為 Google Play 服務未安裝或過期。Threema 將每15分鐘檢查一次新訊息。</string>
     <string name="backup_in_progress">正在進行備份</string>
     <string name="backup_or_restore_success_body">資料備份成功完成</string>
     <string name="backup_or_restore_error">Threema 備份</string>
@@ -486,8 +486,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="really_block_contact">來自此聯絡人今後的訊息將被捨棄。是否繼續？</string>
     <string name="ballot_result_final">最終結果</string>
     <string name="invalid_cannot_send">您不能向無效的聯絡人傳送訊息</string>
-	<string name="ballot_answer_count_error">請輸入至少兩個答案進行投票。</string>
-    <string name="ballot_one_contact_not_supported">警告：%1$s將無法參與您的投票。</string>
+    <string name="ballot_answer_count_error">請輸入至少兩個答案進行投票。</string>
+    <string name="ballot_one_contact_not_supported">警告：%1$s 將無法參與您的投票。</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d個聯絡人將無法參與您的投票。</string>
     <string name="enable_polling">使用投票</string>
     <string name="contact_state_inactive">非活躍</string>
@@ -533,7 +533,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="no_activity_for_mime_type">找不到開啟此檔案的應用程式。</string>
     <string name="message_copied">訊息已複製</string>
     <string name="open_from">從...開啟</string>
-    <string name="file_one_contact_not_supported">%1$s無法接收檔案。</string>
+    <string name="file_one_contact_not_supported">%1$s 無法接收檔案。</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d個聯絡人無法接收您的檔案。</string>
     <string name="mime_android_apk">Android 套件</string>
     <string name="mime_audio">音訊檔案</string>
@@ -678,7 +678,7 @@ Threema 支援的所有表情符號。</string>
     <string name="verification_of">%s的驗證</string>
     <string name="status_ballot_voting_changed">%1$s 投票取得了新一票</string>
     <string name="status_ballot_user_first_vote">%1$s 已對 %2$s 投了一票</string>
-    <string name="status_ballot_user_modified_vote">«%1$s» 變更了 «%2$s» 的投票</string>
+    <string name="status_ballot_user_modified_vote">%1$s 變更了 %2$s 的投票</string>
     <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
     <string name="restore">還原</string>
     <string name="new_wizard_anonymous_confirm">您沒有輸入電話號碼或電子郵件地址連結至 Threema ID，您將不會出現在好友的聯絡人名單中。您確定要匿名使用 Threema 嗎？</string>
@@ -772,7 +772,7 @@ Threema 支援的所有表情符號。</string>
     <string name="battery_optimizations_explain">電池最佳化使 %1$s 在電話進入睡眠模式時無法正常執行。請為 %2$s 停用電池最佳化。</string>
     <string name="battery_optimizations_disable_guide">在下拉式選單中選擇「所有應用程式」</string>
     <string name="battery_optimizations_disable_guide_ctd">在清單中搜尋%s並停用最佳化</string>
-    <string name="battery_optimizations_disable_confirm">您確定要對%1$s保持開啟電池最佳化嗎？%2$s無法正常執行。</string>
+    <string name="battery_optimizations_disable_confirm">您確定要對 %1$s 保持開啟電池最佳化嗎？%2$s 無法正常執行。</string>
     <string name="enter_text_hint">輸入文字</string>
     <string name="backup_explain_text">如果您切換或丟失裝置，如果您沒有備份，您將無法還原您的 Threema ID 或對話。請使用適當的備份方法儲存您的資料。</string>
     <string name="data_backup_explain">資料備份包括：\n\n&#9679; 您的ID和金鑰對\n&#9679; 聯絡人和信任等級\n&#9679; 群組成員資格\n&#9679; 對話\n&#9679; 媒體和檔案（選用）\n\n資料將儲存至加密的 ZIP 檔案中。建議備份成功完成後，將檔案儲存至其他地方。</string>
@@ -843,7 +843,7 @@ Threema 支援的所有表情符號。</string>
     <string name="error_attaching_files">新增附件時出錯。</string>
     <string name="prefs_fix_powermanager_problems">停用電源限制</string>
     <string name="prefs_fix_powermanager_problems_desc">允許 Threema 在背景執行，即使不在執行狀態也可以接收訊息。</string>
-    <string name="disable_powermanager_explain">在下一個畫面中，確保對「%s」允許背景執行，以及設定「忽略電池效能最佳化」。完成後，點擊「返回」按鈕。</string>
+    <string name="disable_powermanager_explain">在下一個畫面中，確保對 %s 允許背景執行，以及設定「忽略電池效能最佳化」。完成後，點擊「返回」按鈕。</string>
     <string name="disable_autostart_explain">在下一個畫面中，確保 %s 在自動啟動的應用程式清單中。完成後，點擊「返回」按鈕。</string>
     <string name="notification_priority_default">低</string>
     <string name="notification_priority_high">高</string>
@@ -991,8 +991,9 @@ Threema 支援的所有表情符號。</string>
     <string name="voip_disabled">Threema 通話被停用</string>
     <string name="hide_chat_enter_message_explain">此對話標示為私密對話。如要進入該對話，請先設定訪問保護。</string>
     <string name="unknown">未知</string>
-    <string name="miui_notification_title">有關 MIUI 10 通知的重要告示</string>
+    <string name="miui_notification_title">有關 MIUI 通知的重要告示</string>
     <string name="miui_notification_body">MIUI 10 預設停用所有新建立的通知頻道的音效和燈光（除非是小米認為「重要」的一些應用除外）。您必須在電話指定應用的通知設定畫面中為每個頻道明確開啟。請與電話製造業聯絡以取得更多訊息。</string>
+    <string name="miui12_notification_body">MIUI 預設停用了所有應用程式的音效、燈光和浮動通知（除了一些被小米視為「重要」的非常流行的應用程式）。你需要在電話的應用通知權限設定中手動開啟這些設定，並在每次應用程式更新後重複這些步驟。請聯絡小米公司以了解更多訊息。</string>
     <string name="dont_show_again">不再顯示</string>
     <string name="miui_notification_prefs">MIUI 設定</string>
     <string name="threema_safe_upload_successful">Threema Safe 備份成功上傳</string>
@@ -1047,18 +1048,6 @@ Threema 支援的所有表情符號。</string>
     <string name="delete">刪除</string>
     <string name="num_archived_chats">%d個已封存的對話</string>
     <string name="continue_recording">繼續錄音</string>
-    <string name="whatsnew_title">歡迎使用 %s 4.5</string>
-    <string name="whatsnew_headline">%1$s 4.5 帶來全新的多媒體體驗。\n\n多媒體抽屜畫面進行了重大改革，現在可以選擇基於機器學習的圖片搜尋功能。\n\n此外，我們還新增了所有對話的全域文字搜尋，改進了訊息引用等功能。</string>
-    <string name="whatsnew2_title">有什麼新消息？</string>
-    <string name="whatsnew2_body"><![CDATA[<p><b>媒體抽屜</b>：點擊回形針圖示，在可捲動的抽屜中流覽您的媒體檔案。 如果您不想讓抽屜自動打開最新的媒體，請在對話設定中停用圖片快速選擇選項，在「設定」>「對話」>「媒體快速選擇」</i>.</p>。
-<p><b>圖片搜尋</b>：搜尋您的圖片中的常見物件、活動和地點。 <br>圖片辨識基於本地機器學習模型，不向 Threema 的伺服器或任何第三方傳送資料。由於分析圖片是一項相當昂貴的任務，可能需要很長時間，該選項預設為停用。您可以在<i>「設定」>「媒體和儲存」>「影片搜尋」</i>中找到它。</p>
-<p><b>傳送多媒體檔案</b>：傳送具有單獨解析度的圖片，而無需更改全局設定。</p> <p>
-<p><b>影片編輯器</b>：在傳送前剪輯影片。此外，影片轉碼過程已得到改進，現在可在背景工作。</p>
-<p><b>保存到圖片庫</b>。在 Android 10 及以上版本中，由於 Google 提出了新的 「範圍儲存」 要求，多媒體現在將儲在在系統的<i>圖片、影片、音樂</i>和<i>檔案</i>資料夾中。</p>
-<p><b>全域搜尋</b>：在所有對話記錄中搜尋文本。只需在%1$s 的主螢幕上點擊<i>選單 >「搜尋對話記錄」</i>即可。</p>。
-<p><b>引用</b>：%1$s 現在允許您引用任何類型的媒體，包括圖片、影片和語音訊息。</p>
-<p><b>100個新表情</b>。有期待已久的火鍋的表情&#129749;</p>。
-<p><b>大文本</b>：為了保持對話介面的精簡性，有大量文本的資訊會以截斷的會話氣泡的方式顯示，並可根據需要展開。</p>]]></string>
     <string name="tooltip_identity_popup">點擊這裡可快速顯示您的 Threema ID 或掃描其他人的 ID</string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
@@ -1093,7 +1082,7 @@ Threema 支援的所有表情符號。</string>
     <string name="audio_mute_due_to_focus_loss">由於其他應用程式正在播放音訊，目前音訊已暫時靜音</string>
     <string name="restore_data_backup_explain">請首先在「個人檔案」畫面中刪除您的 Threema ID 以還原資料備份。\n\n當應用程式重新啟動後，請選擇「從備份還原」&gt; 「其他還原選項」&gt;「資料備份」，然後選擇要還原的資料備份檔案。</string>
     <string name="audio_focus_loss_complete">由於完全失去音訊焦點，通話已中斷。</string>
-    <string name="tap_for_picture_hold_for_video">點擊拍攝相片，長按拍攝影片</string>
+    <string name="tap_for_picture_hold_for_video">輕觸拍攝相片，長按錄製影片</string>
     <string name="sending_media">正在傳送媒體</string>
     <string name="permission_record_video_audio_required">請允許取用麥克風權限以錄製影片</string>
     <string name="media_files">檔案</string>
@@ -1221,4 +1210,14 @@ Threema 支援的所有表情符號。</string>
     <string name="tap_here_for_more">點擊這裡查看更多資訊</string>
     <string name="another_connection_instructions">伺服器檢測到相同的 Threema ID 在兩個或更多的裝置上同時連線。\n\n相同的 Threema ID 不可以在多個裝置上同時使用。新的訊息只會傳送至最新登入的裝置上。\n\n如果您要切換至新裝置，請先在舊裝置上解除安裝或停用 %s，然後重新啟動新裝置。</string>
     <string name="app_store_error_code">應用程式商店錯誤代碼：%d</string>
+    <string name="download_failed">下載失敗。錯誤代碼：%d</string>
+    <string name="edit_answer">編輯答案</string>
+    <string name="share_media">與其他應用程式分享...</string>
+    <string name="miui_battery_optimization">請為 %1$s 停用「電池最佳化」以便 %1$s 順利執行。由於小米不允許第三方應用程式直接開啟設定畫面，因此您必須手動開啟電話的相關設定畫面。如果您在停用電池最佳化方面需要協助，請聯絡小米支援。</string>
+    <string name="forward_captions">包括描述</string>
+    <string name="importing_files_failed">無法匯入備份檔案，請確保內部儲存有足夠的可用空間。</string>
+    <string name="label_continue">繼續</string>
+    <string name="select_date">選擇日期</string>
+    <string name="select_time">選擇時間</string>
+    <string name="recipients">收件者：%s</string>
 </resources>

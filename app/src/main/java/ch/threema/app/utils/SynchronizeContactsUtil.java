@@ -28,10 +28,6 @@ import android.os.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
@@ -42,36 +38,6 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SynchronizeContactsUtil {
 	private static final Logger logger = LoggerFactory.getLogger(SynchronizeContactsUtil.class);
-
-	private static final Timer executeSyncTimer = new Timer();
-	private static TimerTask executeSyncTask;
-	private static Date changedDate;
-
-	private static int timerRange = 10 * 1000;
-
-	public static void startTimed() {
-		//TIME THE SYNC
-		if(executeSyncTask != null) {
-			executeSyncTask.cancel();
-		}
-		changedDate = new Date();
-		executeSyncTask = new TimerTask() {
-			@Override
-			public void run() {
-				//check if a sync is called meanwhile
-				SynchronizeContactsService service = getSynchronizeContactsService();
-				if(service == null) {
-					return;
-				}
-				if(service.getLatestFullSyncTime() == null
-						|| service.getLatestFullSyncTime().before(changedDate)) {
-
-					startDirectly();
-				}
-			}
-		};
-		executeSyncTimer.schedule(executeSyncTask, timerRange);
-	}
 
 	public static void startDirectly() {
 		SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();

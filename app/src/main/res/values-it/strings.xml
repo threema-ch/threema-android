@@ -977,8 +977,9 @@ messaggi ogni 15 minuti.</string>
     <string name="voip_disabled">Le chiamate Threema Safe sono disabilitate</string>
     <string name="hide_chat_enter_message_explain">Questa chat è contrassegnata come privata. Per entrare devi prima impostare la protezione di accesso.</string>
     <string name="unknown">Sconosciuto</string>
-    <string name="miui_notification_title">Avviso importante sulle notifiche in MIUI 10</string>
+    <string name="miui_notification_title">Avviso importante sulle notifiche in MIUI</string>
     <string name="miui_notification_body">Per impostazione predefinita MIUI 10 disattiva i suoni e le luci per tutti i nuovi canali di notifica creati (a eccezione di alcune app che vengono considerate \"importanti\" da Xiaomi). Nel tuo telefono e a partire dalla schermata delle impostazioni di notifica specifica per l\'app dovrai attivarle esplicitamente per ciascun canale. Per maggiori informazioni, contatta il produttore del telefono.</string>
+    <string name="miui12_notification_body">Per impostazione predefinita MIUI disattiva i suoni, le luci e le notifiche mobili per tutte le app (a eccezione di alcune app molto popolari che vengono considerate \"importanti\" da Xiaomi). Dovrai attivare manualmente queste impostazioni nella schermata delle impostazioni delle notifiche specifica per l\'app e ripetere la procedura dopo ogni aggiornamento dell\'app. Per maggiori informazioni, contatta Xiaomi.</string>
     <string name="dont_show_again">Non mostrare di nuovo</string>
     <string name="miui_notification_prefs">Impostazioni MIUI</string>
     <string name="threema_safe_upload_successful">Backup Threema Safe caricato</string>
@@ -1033,19 +1034,6 @@ messaggi ogni 15 minuti.</string>
     <string name="delete">Elimina</string>
     <string name="num_archived_chats">%d chat archiviate</string>
     <string name="continue_recording">Continua registrazione</string>
-    <string name="whatsnew_title">Ecco %s 4.5</string>
-    <string name="whatsnew_headline">%1$s ti garantisce un\'esperienza mediale mai provata prima. \n\nLa selezione rapida dei file media è stata sottoposta a un redesign e offre, oltre a svariati filtri, la funzione opzionale di riconoscimento delle immagini basata sul machine learning.\n\nInoltre è stata introdotta la ricerca di testo a tappeto in tutte le chat, che rende più facile la citazione e molte altre cose.</string>
-    <string name="whatsnew2_title">Quali sono le novità?</string>
-    <string name="whatsnew2_body"><![CDATA[<p><b>Selezione rapida dei media</b>: Clicca sulla graffetta per visualizzare i tuoi media in uno slider estraibile. È possibile disattivare questa funzione nelle impostazioni di chat: <i>Impostazioni / Chat / Selezione rapida media</i>.</p>
-<p><b>Riconoscimento immagini</b>: Cerca tra le tue immagini oggetti, attività e luoghi comuni. Il riconoscimento delle immagini si basa su un modello di machine learning locale e non invia dati né a Threema né a terzi. Poiché l’indicizzazione richiede tempo e risorse, il riconoscimento delle immagini è disattivato per default. Puoi attivarlo alla voce <i>Impostazioni Threema / Media & Memoria / Riconoscimento immagini</i>.</p>
-<p><b>Invio media</b>: Ora puoi inviare le tue immagini con varie risoluzioni senza dover cambiare le impostazioni generali.</p>
-<p><b>Video editor</b>: Ora puoi montare il video prima di inviarlo. Inoltre è stato migliorato il processo di conversione del video, che ora si svolge in background.</p>
-<p><b>Salvare nella galleria</b>: In base ai nuovi requisiti di Google a partire da Android 10 i file saranno salvati nei folder media generali del sistema (<i>immagini, video, musica,</i> e <i>file</i>).</p>
-<p><b>Ricerca globale</b>: Cerca il testo in tutte le chat. Avvia la ricerca globale dallo schermo di casa %1$s alla voce <i>Menu / Cerca nelle chat</i>.</p>
-<p><b>Citare un messaggio</b>: Con %1$s ora è possibile citare qualsiasi tipo di media, comprese immagini, video o messaggi vocali.</p>
-<p><b>100 nuovi emoji</b>: C’è anche l‘attesissima fondue &#129749;</p>
-<p><b>Testi lunghi</b>: Per rendere la chat più leggibile, i testi molto lunghi vengono visualizzati in forma accorciata e su richiesta possono essere visualizzati per intero. È inoltre possibile disattivare la formattazione.</p>
-]]></string>
     <string name="tooltip_identity_popup">Tocca qui per visualizzare rapidamente il tuo Threema ID o per scansionare gli ID di altre persone</string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>
@@ -1208,4 +1196,14 @@ messaggi ogni 15 minuti.</string>
     <string name="tap_here_for_more">Tocca qui per ulteriori informazioni</string>
     <string name="another_connection_instructions">Il server ha individuato due o più connessioni da dispositivi diversi con lo stesso Threema ID.\n\nNon è possibile usare lo stesso Threema ID su diversi dispositivi contemporaneamente. I nuovi messaggi sono trasmessi solo al dispositivo che ha avuto accesso per ultimo al server.\n\nSe stai passando a un altro dispositivo, disinstalla o disattiva %s sul dispositivo precedente e riavvia quello nuovo.</string>
     <string name="app_store_error_code">Codice errore app store: %d</string>
+    <string name="download_failed">Download non riuscito. Codice errore: %d</string>
+    <string name="edit_answer">Modifica risposta</string>
+    <string name="share_media">Condividi con un\'altra app...</string>
+    <string name="miui_battery_optimization">Per eseguire questo task, disabilita \"ottimizzazione batteria\" per %s. Xiaomi non consente alle app di richiamare direttamente questa schermata di impostazioni, quindi dovrai farlo manualmente nelle impostazioni del telefono. Se hai bisogno di assistenza per disabilitare l\'ottimizzazione della batteria, contatta il supporto Xiaomi.</string>
+    <string name="forward_captions">Includi didascalie</string>
+    <string name="importing_files_failed">Impossibile importare il file di backup. Assicurati che ci sia spazio sufficiente nella memoria interna.</string>
+    <string name="label_continue">Continua</string>
+    <string name="select_date">Seleziona una data</string>
+    <string name="select_time">Seleziona un\'ora</string>
+    <string name="recipients">Destinatari: %s</string>
 </resources>

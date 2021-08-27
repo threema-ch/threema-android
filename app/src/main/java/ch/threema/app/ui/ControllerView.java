@@ -189,6 +189,11 @@ public class ControllerView extends FrameLayout {
 			progressBarIndeterminate.setVisibility(VISIBLE);
 		} else {
 			setVisibility(VISIBLE);
+			if (cancelable) {
+				status = STATUS_PROGRESSING;
+			} else {
+				status = STATUS_PROGRESSING_NO_CANCEL;
+			}
 		}
 		requestLayout();
 	}

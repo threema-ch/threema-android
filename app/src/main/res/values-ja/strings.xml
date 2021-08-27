@@ -475,7 +475,7 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="really_block_contact">これからこの連絡先から送られてくるメッセージは破棄されます。続行しますか？</string>
     <string name="ballot_result_final">最終結果</string>
     <string name="invalid_cannot_send">連絡先が非アクティブのため、メッセージを送信できません</string>
-	<string name="ballot_answer_count_error">投票を作成するには2つ以上の選択肢を追加してください</string>
+    <string name="ballot_answer_count_error">投票を作成するには2つ以上の選択肢を追加してください</string>
     <string name="ballot_one_contact_not_supported">警告: %1$sは投票に参加できなくなります。</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告: %1$dの連絡先は投票に参加できなくなります。</string>
     <string name="enable_polling">投票を使う</string>
@@ -1025,21 +1025,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="continue_recording">録音を続ける</string>
     <string name="whatsnew_title">%s 4.5にようこそ</string>
     <string name="whatsnew_headline">%1$s 4.5ではメディアに関する新しい変更が加わっています。\n\nメディアドロワーのインターフェイスは刷新され、AIを利用した画像検索もオプションで利用可能です。\n\nまた、すべてのトークから行えるグローバル検索、メッセージ引用の改善など、他にも様々な変更が追加されています。</string>
-    <string name="whatsnew2_title">何かありましたか？</string>
-    <string name="whatsnew2_body"><![CDATA[<p><b>メディアドロワー</b>: クリップのアイコンをタップすると、スクロール可能なドロワーでメディアファイルを参照できます。最新のメディアで自動的にドロワーを開きたくない場合は、
-トークの設定で画像のクイック選択オプションを無効にしてください（<i>設定/トーク/メディアのクイック選択</i>）。</p>
-<p><b>画像検索</b>: 共通のオブジェクト、アクティビティ、および場所について、画像を検索します。<br>画像認識はローカルの機械学習モデルに基づいており、データをThreemaのサーバーや第三者に送信しません。
-画像の分析はかなりコストのかかる作業であり、長い時間を要する可能性があるため、このオプションは初期状態では無効になっています。
-このオプションは、<i>設定 / メディアとストレージ / 画像検索</i>で見つけることができます。</p>
-<p><b>メディア</b><b> </b><b>ファイルの送信</b><b>: グローバル設定を変更することなく、個々の解像度の画像を送信できます。</p>
-<p><b>動画エディター</b>: 送信前に動画をトリミングします。
-さらに、ビデオのトランスコード処理が改善され、バックグラウンドで動作するようになりました。</p>
-<p><b>ギャラリーに保存</b>。Android 10以上では、Google の新しい「Scoped Storage」要件により、メディアはシステムの <i>写真、動画、音楽、</i> そして <i>文書</i> フォルダに保存されるようになりました。</p>
-<p><b>グローバル検索</b>: すべてのトークでテキストを検索できます。
-%1$s のホーム画面で <i>メニュー / ・トークの検索</i> をタップするだけです。</p>
-<p><b>引用</b>: %1$s では、画像、動画、音声メッセージなど、あらゆるタイプのメディアを引用できるようになりました。</p>
-<p><b>100個の新しい絵文字</b>。待望のフォンデュをチェック &#129749;</p>。
-<p><b>大きな文字</b>: トークインターフェイスを無駄のないものにするために、テキストの多いメッセージは切り捨てられたチャットバブルで表示され、必要に応じて拡大することができます。</p>]]></string>
     <string name="tooltip_identity_popup">ここをタップすると、自分のThreema IDを素早く表示したり、他の人のIDをスキャンすることができます。</string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
@@ -1199,4 +1184,10 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="missing_app_licence">有効なアプリのライセンスが見つからないため、新しい身元作成リクエストが出来ませんでした。</string>
     <string name="set_backup_path">バックアップのパスを設定</string>
     <string name="set_backup_path_intro">バックアップの保存場所を選んでください</string>
+    <string name="tap_here_for_more">詳しい情報はこちら</string>
+    <string name="app_store_error_code">App storeエラーコード: %d</string>
+    <string name="download_failed">ダウンロードに失敗しました。エラーコード: %d</string>
+    <string name="edit_answer">回答を編集</string>
+    <string name="share_media">他のアプリで共有</string>
+    <string name="forward_captions">キャプションを含む</string>
 </resources>

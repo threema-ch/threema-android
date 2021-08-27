@@ -29,6 +29,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -63,7 +64,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 	private SharedPreferences sharedPreferences;
 	private String downloadUrl;
 
-	private BroadcastReceiver downloadApkFinishedReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver downloadApkFinishedReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING, true);
@@ -74,21 +75,42 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 			if (referenceId > 0 && context != null) {
 				DownloadUtil.DownloadState downloadState = DownloadUtil.getNewestApkDownloadState(referenceId);
 				if (downloadState != null) {
-					Uri uri;
-					Intent installIntent;
-
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-						uri = NamedFileProvider.getUriForFile(DownloadApkActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", downloadState.getDestinationFile(), null);
-						installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-						installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-						installIntent.setData(uri);
-					} else {
-						uri = Uri.fromFile(downloadState.getDestinationFile());
-						installIntent = new Intent(Intent.ACTION_VIEW);
-						installIntent.setDataAndType(uri,"application/vnd.android.package-archive");
-						installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					int status = 0, reason = 0;
+					DownloadManager downloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+					DownloadManager.Query query = new DownloadManager.Query();
+					query.setFilterById(downloadState.getDownloadId());
+					Cursor cursor = null;
+					try {
+						cursor = downloadManager.query(query);
+						if (cursor.moveToFirst()) {
+							status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+							reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+						}
+					} finally {
+						if (cursor != null) {
+							cursor.close();
+						}
 					}
-					context.startActivity(installIntent);
+
+					if (status == DownloadManager.STATUS_SUCCESSFUL) {
+						Uri uri;
+						Intent installIntent;
+
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+							uri = NamedFileProvider.getUriForFile(DownloadApkActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", downloadState.getDestinationFile(), null);
+							installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+							installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+							installIntent.setData(uri);
+						} else {
+							uri = Uri.fromFile(downloadState.getDestinationFile());
+							installIntent = new Intent(Intent.ACTION_VIEW);
+							installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
+							installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						}
+						context.startActivity(installIntent);
+					} else {
+						Toast.makeText(getApplicationContext(), getString(R.string.download_failed, reason), Toast.LENGTH_LONG).show();
+					}
 
 					new Handler().postDelayed(new Runnable() {
 						@Override
@@ -160,6 +182,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
 				case PERMISSION_REQUEST_WRITE_FILE:

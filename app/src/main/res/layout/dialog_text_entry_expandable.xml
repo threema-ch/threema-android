@@ -28,6 +28,8 @@
 				android:layout_height="16dp"
 				android:layout_marginRight="8dp"
 				android:clickable="false"
+				android:contentDescription="@string/switched_on"
+				app:tint="?attr/textColorPrimary"
 				android:src="@drawable/ic_arrow_right_dark"/>
 
 		<TextView

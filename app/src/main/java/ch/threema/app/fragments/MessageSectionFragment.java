@@ -994,6 +994,7 @@ public class MessageSectionFragment extends MainFragment
 			EmptyView emptyView = new EmptyView(activity);
 			emptyView.setup(R.string.no_recent_conversations);
 			((ViewGroup) recyclerView.getParent()).addView(emptyView);
+			recyclerView.setNumHeadersAndFooters(-1);
 			recyclerView.setEmptyView(emptyView);
 			recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 				@Override
@@ -1081,7 +1082,9 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onFooterClick(View view) {
-		AnimationUtil.startActivity(getActivity(), view,  new Intent(getActivity(), ArchiveActivity.class));
+		Intent intent = new Intent(getActivity(), ArchiveActivity.class);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
+		AnimationUtil.startActivity(getActivity(), TestUtil.empty(filterQuery) ? view : null, intent);
 	}
 
 	private void editGroup(ConversationModel model, View view) {
@@ -1531,20 +1534,24 @@ public class MessageSectionFragment extends MainFragment
 
 							if (messageListAdapter != null) {
 								messageListAdapter.setData(conversationModels, changedPositions);
+								// make sure footer is refreshed
+								messageListAdapter.refreshFooter();
 							}
 
-							if (recyclerView != null && scrollToPosition != null) {
-								if (changedPositions != null && changedPositions.size() == 1) {
-									ConversationModel changedModel = changedPositions.get(0);
+							if (recyclerView != null) {
+								if (scrollToPosition != null) {
+									if (changedPositions != null && changedPositions.size() == 1) {
+										ConversationModel changedModel = changedPositions.get(0);
 
-									if (changedModel != null) {
-										final List<ConversationModel> copyOfModels = new ArrayList<>(conversationModels);
-										for (ConversationModel model : copyOfModels) {
-											if (model.equals(changedModel)) {
-												if (scrollToPosition > changedModel.getPosition()) {
-													recyclerView.scrollToPosition(changedModel.getPosition());
+										if (changedModel != null) {
+											final List<ConversationModel> copyOfModels = new ArrayList<>(conversationModels);
+											for (ConversationModel model : copyOfModels) {
+												if (model.equals(changedModel)) {
+													if (scrollToPosition > changedModel.getPosition()) {
+														recyclerView.scrollToPosition(changedModel.getPosition());
+													}
+													break;
 												}
-												break;
 											}
 										}
 									}

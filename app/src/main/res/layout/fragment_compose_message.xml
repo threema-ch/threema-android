@@ -311,8 +311,8 @@
 						android:focusable="true"
 						android:nextFocusLeft="@+id/embedded_text_editor"
 						android:nextFocusRight="@+id/attach_button"
-						android:tint="?attr/textColorSecondary"
-						app:srcCompat="@drawable/ic_camera_outline" />
+						app:srcCompat="@drawable/ic_camera_outline"
+						app:tint="?attr/textColorSecondary" />
 
 				</FrameLayout>
 
@@ -331,8 +331,8 @@
 					android:nextFocusLeft="@+id/embedded_text_editor"
 					android:nextFocusRight="@+id/send_button"
 					android:padding="8dp"
-					android:tint="?attr/textColorSecondary"
-					app:srcCompat="@drawable/ic_attachment" />
+					app:srcCompat="@drawable/ic_attachment"
+					app:tint="?attr/textColorSecondary" />
 
 				<ch.threema.app.ui.SendButton
 					android:id="@+id/send_button"

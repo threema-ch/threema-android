@@ -56,10 +56,13 @@ import ch.threema.app.activities.GroupDetailActivity;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -82,6 +85,7 @@ import ch.threema.client.IdentityState;
 import ch.threema.client.MessageId;
 import ch.threema.client.ProtocolDefines;
 import ch.threema.client.Utils;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupRequestSyncLogModelFactory;
 import ch.threema.storage.models.ContactModel;
@@ -271,6 +275,21 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public boolean remove(final GroupModel groupModel, boolean silent) {
+		ServiceManager serviceManager= ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			try {
+				// cannot assign ballot service fixed in the constructor because of circular dependency
+				ThreemaApplication.getServiceManager().getBallotService().remove(createReceiver(groupModel));
+			} catch (MasterKeyLockedException | FileSystemNotPresentException | NoIdentityException e) {
+				logger.error("Exception removing ballot models", e);
+				return false;
+			}
+		}
+		else {
+			logger.error("Missing serviceManager, cannot delete ballot models for group");
+			return false;
+		}
+
 		this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupId(groupModel.getId());
 		for(GroupMessageModel messageModel: this.databaseServiceNew.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getId())) {
 			//remove all message identity models

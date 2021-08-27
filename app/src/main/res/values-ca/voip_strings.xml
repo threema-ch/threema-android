@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Trucada Threema</string>
+    <string name="voip_hangup">Penjar</string>
+    <string name="voip_toggle_mic">Commuta el micròfon</string>
+    <string name="voip_toggle_speaker">Commuta l\'altaveu</string>
+    <string name="voip_switch_cam">Canvia la càmera</string>
+    <string name="voip_switch_cam_front">Canviada a la càmera frontal</string>
+    <string name="voip_switch_cam_rear">Canviada a la càmera posterior</string>
+    <string name="voip_toggle_video">Commuta el mode de vídeo</string>
+    <string name="voip_call_confirm">Voleu trucar a %1$s?</string>
+    <string name="voip_error_call">Error durant la trucada de Threema</string>
+    <string name="voip_error_init_call">Error inicialitzant la trucada</string>
+    <string name="voip_notification_title">Trucada de Threema entrant</string>
+    <string name="voip_notification_text">%1$s us està trucant</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Inicialitzant</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Connectant</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Desconnectant</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Trucant</string>
+    <string name="voip_mic_enable">Activar micròfon</string>
+    <string name="voip_mic_disable">Desactivar micròfon</string>
+    <string name="voip_checking_compatibility">Comprovant si aquest contacte pot rebre trucades de Threema</string>
+    <string name="voip_incompatible">Aquest contacte encara no pot rebre trucades de Threema.</string>
+    <string name="voip_call_status_unavailable">Destinatari de la trucada no disponible</string>
+    <string name="voip_call_status_rejected">Trucada rebutjada</string>
+    <string name="voip_call_status_busy">Destinatari de la trucada ocupat</string>
+    <string name="voip_call_status_busy_short">Ocupat</string>
+    <string name="voip_call_status_disabled">Trucades de Threema desactivades pel destinatari</string>
+    <string name="voip_call_status_missed">Trucada perduda</string>
+    <string name="voip_call_finished_outbox">Trucada sortint</string>
+    <string name="voip_call_finished_inbox">Trucada entrant</string>
+    <string name="voip_call_status_aborted">Trucada cancel·lada</string>
+    <string name="voip_return_call">Tornar la trucada</string>
+    <string name="voip_accept">Acceptar</string>
+    <string name="voip_reject">Rebutjar</string>
+    <string name="voip_speakerphone">Altaveu</string>
+    <string name="voip_wired_headset">Auriculars</string>
+    <string name="voip_earpiece">Telèfon</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">No disponible</string>
+    <string name="voip_call_finished">La trucada de Threema ha acabat</string>
+    <string name="voip_another_call">No es pot connectar. Hi ha una altra trucada de Threema activa actualment.</string>
+    <string name="voip_prefs_title_aec">Cancel·lació d\'eco</string>
+    <string name="voip_prefs_aec_sw">Cancel·lació d\'eco per programari</string>
+    <string name="voip_prefs_aec_hw">Cancel·lació d\'eco per maquinari</string>
+    <string name="voip_prefs_title_video_codec">Còdecs de vídeo</string>
+    <string name="voip_prefs_video_aec_hw">Acceleració de maquinari</string>
+    <string name="voip_prefs_video_codec_no_vp8">Desactivar VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Desactivar H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Còdecs de programari</string>
+    <string name="voip_connection_failed">No s\'ha pogut establir la connexió</string>
+    <string name="voip_connection_lost">Connexió perduda</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Rebutjar trucades de mòbil</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Rebutjar trucades de mòbil entrants mentre hi hagi una trucada de Threema activa.</string>
+    <string name="voip_contact_not_found">No s\'ha trobat el contacte de Threema per aquest número.</string>
+    <string name="voip_another_pstn_call">No es pot iniciar la trucada. Una trucada de telèfon estàndard segueix activa.</string>
+    <string name="voip_call_status_off_hours">Trucada fora d\'horari</string>
+    <string name="voip_peer_video_disabled">Les videotrucades s\'han desactivat per l\'altra part.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">Diagnòstics WebRTC</string>
+    <string name="voip_prefs_webrtc_debug_summary">Inicieu aquesta eina per depurar problemes establint una connexió de trucada de veu</string>
+    <string name="voip_webrtc_debug">Diagnòstics WebRTC</string>
+    <string name="voip_webrtc_debug_intro">Premeu el botó \"Iniciar\" per iniciar les proves.</string>
+    <string name="voip_webrtc_debug_start">Iniciar</string>
+    <string name="voip_webrtc_debug_done">Fet. Si continueu experimentant problemes amb l\'establiment de la connexió de trucada, envieu aquesta sortida al suport de Threema.</string>
+    <string name="voip_webrtc_debug_copied">S\'ha copiat al porta-retalls.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Copiar al porta-retalls</string>
+</resources>

@@ -689,6 +689,9 @@ public class ContactsSectionFragment
 	private void updateContactsCounter(int numContacts, @Nullable FetchResults counts) {
 		if (getActivity() != null && listView != null && isAdded()) {
 			if (contactsCounterChip != null) {
+				if (counts != null) {
+					ListenerManager.contactCountListener.handle(listener -> listener.onNewContactsCountUpdated(counts.last24h));
+				}
 				if (numContacts > 1) {
 					final StringBuilder builder = new StringBuilder();
 					builder.append(numContacts).append(" ").append(getString(R.string.title_section2));
@@ -1177,7 +1180,7 @@ public class ContactsSectionFragment
 
 		Intent messageIntent = new Intent(Intent.ACTION_SEND);
 		messageIntent.setType("text/plain");
-		@SuppressLint("WrongConstant") final List<ResolveInfo> messageApps = packageManager.queryIntentActivities(messageIntent, 0x00020000);
+		@SuppressLint({"WrongConstant", "InlinedApi"}) final List<ResolveInfo> messageApps = packageManager.queryIntentActivities(messageIntent, PackageManager.MATCH_ALL);
 
 		if (!messageApps.isEmpty()) {
 			ArrayList<BottomSheetItem> items = new ArrayList<>();

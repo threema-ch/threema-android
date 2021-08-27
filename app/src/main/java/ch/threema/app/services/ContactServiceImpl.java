@@ -68,8 +68,6 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
-import ch.threema.app.listeners.ContactListener;
-import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ContactTypingListener;
 import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
@@ -77,6 +75,7 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.stores.ContactStore;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AndroidContactUtil;
@@ -101,6 +100,7 @@ import ch.threema.client.IdentityType;
 import ch.threema.client.MessageQueue;
 import ch.threema.client.ProtocolDefines;
 import ch.threema.client.ThreemaFeature;
+import ch.threema.client.work.WorkContact;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
@@ -123,6 +123,7 @@ public class ContactServiceImpl implements ContactService {
 	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
 	private final PreferenceService preferenceService;
+	private final IdListService excludeFromSyncListService;
 	private final Map<String, ContactModel> contactModelCache;
 	private final IdListService blackListIdentityService, profilePicRecipientsService;
 	private DeadlineListService mutedChatsListService, hiddenChatsListService;
@@ -184,6 +185,7 @@ public class ContactServiceImpl implements ContactService {
 			ApiService apiService,
 			WallpaperService wallpaperService,
 			LicenseService licenseService,
+			IdListService excludeFromSyncListService,
 			APIConnector apiConnector) {
 
 		this.context = context;
@@ -204,6 +206,7 @@ public class ContactServiceImpl implements ContactService {
 		this.apiService = apiService;
 		this.wallpaperService = wallpaperService;
 		this.licenseService = licenseService;
+		this.excludeFromSyncListService = excludeFromSyncListService;
 		this.apiConnector = apiConnector;
 		this.typingTimer = new Timer();
 		this.typingTimerTasks = new HashMap<>();
@@ -540,11 +543,32 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
+	@Nullable
 	public List<String> getSynchronizedIdentities() {
 		Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery("" +
 				"SELECT identity FROM contacts " +
 				"WHERE isSynchronized = ?",
 				new String[]{"1"});
+
+		if(c != null) {
+			List<String> identities = new ArrayList<>();
+			while(c.moveToNext()) {
+				identities.add(c.getString(0));
+			}
+			c.close();
+			return identities;
+		}
+
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel) {
+		Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery("" +
+				"SELECT identity FROM contacts " +
+				"WHERE verificationLevel = ?",
+			new String[]{String.valueOf(verificationLevel.getCode())});
 
 		if(c != null) {
 			List<String> identities = new ArrayList<>();
@@ -710,7 +734,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public boolean remove(ContactModel model, boolean removeLink) {
+	public boolean remove(@NonNull ContactModel model, boolean removeLink) {
 		String uniqueIdString = getUniqueIdString(model);
 
 		clearAvatarCache(model);
@@ -744,10 +768,8 @@ public class ContactServiceImpl implements ContactService {
 
 		}
 
-		//remove android Contact
-		if(removeLink) {
-			//split contact
-			AndroidContactUtil.getInstance().deleteRawContactByIdentity(model.getIdentity());
+		if (removeLink) {
+			AndroidContactUtil.getInstance().deleteThreemaRawContact(model);
 		}
 
 		return true;
@@ -979,15 +1001,12 @@ public class ContactServiceImpl implements ContactService {
 	@Override
 	public void removeAll() {
 		for(ContactModel model: this.find(null)) {
-			//remove all
-			//do not remove link!
 			this.remove(model, false);
 		}
 	}
 
 	@Override
 	public ContactMessageReceiver createReceiver(ContactModel contact) {
-//		logger.debug("MessageReceiver", "create ContactMessageReceiver");
 		return new ContactMessageReceiver(contact,
 				this,
 				this.databaseServiceNew,
@@ -1019,268 +1038,40 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public boolean validateContactNames() {
-		List<ContactModel> androidContacts = this.getAll(true, true);
-
-		if(androidContacts != null) {
-			for(ContactModel c: androidContacts) {
-				if(AndroidContactUtil.getInstance().isAndroidContactNameMaster(c)) {
-					if (AndroidContactUtil.getInstance().updateNameByAndroidContact(c)) {
-						// update avatar
-						AndroidContactUtil.getInstance().updateAvatarByAndroidContact(c);
-						//update contact
-						this.save(c);
-						this.contactStore.reset(c);
-					}
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 *
-	 * @param contactModel
-	 * @param autoCorrect
-	 * @return
-	 */
-	@Override
-	public boolean validateContactAggregation(ContactModel contactModel, boolean autoCorrect) {
-		try {
-			boolean isAggregated = false; // whether the Threema raw contact is aggregated with a contact
-			boolean clear = false;
-			if (contactModel != null) {
-
-				//do not validate business ids
-				if(ContactUtil.isChannelContact(contactModel)) {
-					return true;
-				}
-
-				// do not validate hidden contacts
-				if (contactModel.isHidden()) {
-					return true;
-				}
-
-				logger.debug("starting validate integration for " + contactModel.toString());
-				if (this.preferenceService != null && this.preferenceService.isSyncContacts()) {
-					logger.debug("sync active, check integration");
-
-					String lookupKey = AndroidContactUtil.getInstance().getRawContactLookupKeyByIdentity(contactModel.getIdentity());
-					isAggregated = !TestUtil.empty(lookupKey);
-
-					if (isAggregated) {
-						logger.debug("found android contact, lookup key " + lookupKey);
-					} else {
-						logger.debug("no android contact found");
-					}
-
-					if (!isAggregated && autoCorrect) {
-						if (contactModel.getAndroidContactId() != null) {
-							logger.debug("autocorrect");
-							//create an identity record
-							boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contactModel, this.blackListIdentityService)
-								&& ConfigUtils.isCallsEnabled(context, preferenceService, licenseService);
-							lookupKey = AndroidContactUtil.getInstance().createThreemaAndroidContact(
-								contactModel.getIdentity(),
-								supportsVoiceCalls);
-
-							logger.debug("created android contact, lookup key " + lookupKey);
-						}
-					}
-
-					if (!TestUtil.empty(lookupKey) && !TestUtil.compare(lookupKey, contactModel.getThreemaAndroidContactId())) {
-						logger.debug("set android contact lookup key to model");
-						contactModel.setThreemaAndroidContactId(lookupKey);
-						this.save(contactModel);
-						isAggregated = true;
-						clear = true;
-					}
-
-					if (isAggregated) {
-						if (!TestUtil.empty(contactModel.getAndroidContactId())) {
-							logger.debug("android contact link found, check");
-							boolean isJoined = AndroidContactUtil.getInstance().isThreemaAndroidContactJoined(
-									contactModel.getIdentity(),
-									contactModel.getAndroidContactId());
-
-							if (isJoined) {
-								logger.debug("join exist");
-							} else {
-								logger.debug("join not exist");
-							}
-							//require a joined contact!
-							if (!isJoined && autoCorrect) {
-
-								//joining required.
-								isAggregated = AndroidContactUtil.getInstance().joinThreemaAndroidContact(
-										contactModel.getIdentity(),
-										contactModel.getAndroidContactId());
-
-								logger.debug("auto correct, success = " + String.valueOf(isAggregated));
-								clear = true;
-							}
-						}
-					}
-				} else {
-					isAggregated = true;
-
-					logger.debug("sync not active, check integration");
-					if (!TestUtil.empty(contactModel.getThreemaAndroidContactId())) {
-						//split contact
-						if (!TestUtil.empty(contactModel.getAndroidContactId())) {
-							isAggregated = false;
-
-							if (autoCorrect) {
-								logger.debug("autocorrect, split");
-								isAggregated = AndroidContactUtil.getInstance().splitThreemaAndroidContact(
-										contactModel.getIdentity(),
-										contactModel.getAndroidContactId());
-							}
-						}
-
-						//get the threema contact lookup key
-						if (isAggregated) {
-							String lookupKey = AndroidContactUtil.getInstance().getRawContactLookupKeyByIdentity(contactModel.getIdentity());
-							if (!TestUtil.empty(lookupKey)) {
-
-								logger.debug("threema android contact exist");
-								isAggregated = false;
-								if (autoCorrect) {
-									logger.debug("autocorrect");
-									AndroidContactUtil.getInstance().deleteRawContactByIdentity(contactModel.getIdentity());
-									isAggregated = true;
-								}
-							}
-						}
-
-						//reset the link to the threema android contact
-						contactModel.setThreemaAndroidContactId(null);
-						this.save(contactModel);
-						clear = true;
-					}
-				}
-			}
-
-			if (clear && this.avatarCacheService != null) {
-				this.avatarCacheService.reset(contactModel);
-			}
-
-
-			return isAggregated;
-		}
-		catch (Exception e) {
-			//ignore exception
-			logger.error("Exception", e);
+	public boolean updateAllContactNamesAndAvatarsFromAndroidContacts() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+			ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 			return false;
 		}
+
+		List<ContactModel> androidContacts = this.getAll(true, true);
+		if(androidContacts != null) {
+			for(ContactModel c: androidContacts) {
+				if(!TestUtil.empty(c.getAndroidContactLookupKey())) {
+					try {
+						if (AndroidContactUtil.getInstance().updateNameByAndroidContact(c)) {
+							AndroidContactUtil.getInstance().updateAvatarByAndroidContact(c);
+							this.save(c);
+							this.contactStore.reset(c);
+						}
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public void removeAllThreemaContactIds() {
 		for(ContactModel c: this.find(null)) {
-			c.setThreemaAndroidContactId(null);
 			if (c.isSynchronized()) {
-				c.setAndroidContactId(null);
+				c.setAndroidContactLookupKey(null);
 				c.setIsSynchronized(false);
-				// degrade verification level as this contact is no longer connected to an address book contact
-				if (c.getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
-					c.setVerificationLevel(VerificationLevel.UNVERIFIED);
-				}
 			}
 			this.save(c);
 		}
-	}
-
-	@Override
-	public boolean link(final ContactModel contact, String lookupKey) {
-		if(TestUtil.required(contact, lookupKey)) {
-			if(!TestUtil.compare(contact.getAndroidContactId(), lookupKey)) {
-				contact.setAndroidContactId(lookupKey);
-				AndroidContactUtil.getInstance().updateNameByAndroidContact(contact);
-				boolean isAvatarChanged = AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
-
-				this.save(contact);
-				boolean success = this.validateContactAggregation(contact, true);
-				if (success) {
-					if(this.avatarCacheService != null) {
-						this.avatarCacheService.reset(contact);
-					}
-					ListenerManager.contactSettingsListeners.handle(new ListenerManager.HandleListener<ContactSettingsListener>() {
-						@Override
-						public void handle(ContactSettingsListener listener) {
-							listener.onNameFormatChanged();
-							listener.onAvatarSettingChanged();
-						}
-					});
-					if (isAvatarChanged) {
-						ListenerManager.contactListeners.handle(new ListenerManager.HandleListener<ContactListener>() {
-							@Override
-							public void handle(ContactListener listener) {
-								listener.onAvatarChanged(contact);
-							}
-						});
-					}
-
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public boolean unlink(final ContactModel contact) {
-		if(contact != null) {
-			if(ContactUtil.isLinked(contact)) {
-				String androidContactId = contact.getAndroidContactId();
-
-				AndroidContactUtil.getInstance().splitThreemaAndroidContact(
-						contact.getIdentity(),
-						androidContactId);
-
-				// remove avatar
-				boolean isAvatarRemoved = this.fileService.removeAndroidContactAvatar(contact);
-
-				//reset the names
-				contact.setFirstName(null);
-				contact.setLastName(null);
-
-				//reset the link
-				contact.setAndroidContactId(null);
-				contact.setThreemaAndroidContactId(AndroidContactUtil.getInstance().getRawContactLookupKeyByIdentity(contact.getIdentity()));
-				contact.setIsSynchronized(false);
-
-				// degrade contact if server verified
-				if(contact.getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
-					contact.setVerificationLevel(VerificationLevel.UNVERIFIED);
-				}
-
-				this.save(contact);
-
-				if(this.avatarCacheService != null) {
-					this.avatarCacheService.reset(contact);
-				}
-				ListenerManager.contactSettingsListeners.handle(new ListenerManager.HandleListener<ContactSettingsListener>() {
-					@Override
-					public void handle(ContactSettingsListener listener) {
-						listener.onNameFormatChanged();
-						listener.onAvatarSettingChanged();
-					}
-				});
-				if (isAvatarRemoved) {
-					ListenerManager.contactListeners.handle(new ListenerManager.HandleListener<ContactListener>() {
-						@Override
-						public void handle(ContactListener listener) {
-							listener.onAvatarChanged(contact);
-						}
-					});
-				}
-
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -1559,8 +1350,8 @@ public class ContactServiceImpl implements ContactService {
 		String contactLookupUri = null;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-				if (contactModel != null && contactModel.getAndroidContactId() != null) {
-					Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contactModel.getAndroidContactId());
+				if (contactModel != null && contactModel.getAndroidContactLookupKey() != null) {
+					Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contactModel.getAndroidContactLookupKey());
 					if (lookupUri != null) {
 						contactLookupUri = lookupUri.toString();
 					}
@@ -1568,5 +1359,85 @@ public class ContactServiceImpl implements ContactService {
 			}
 		}
 		return contactLookupUri;
+	}
+
+	/**
+	 * Create a ContactModel for the provided Work contact. If a ContactModel already exists, it will be updated with the data from the Work API,
+	 * namely. name, verification level, work status. If the contact was hidden (i.e. added by a group), it will be visible after this operation
+	 * @param workContact WorkContact object for the contact to add
+	 * @param existingWorkContacts An optional list of ContactModels. If a ContactModel already exists for workContact, the ContactModel will be removed from this list
+	 * @return ContactModel of created or updated contact or null if public key of provided WorkContact was invalid
+	 */
+	@Override
+	@Nullable
+	public ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts) {
+		if (!ConfigUtils.isWorkBuild()) {
+			return null;
+		}
+
+		if (workContact.publicKey == null || workContact.publicKey.length != NaCl.PUBLICKEYBYTES) {
+			// ignore work contact with invalid public key
+			return null;
+		}
+
+		if (workContact.threemaId != null && workContact.threemaId.equals(getMe().getIdentity())) {
+			// do not add our own ID as a contact
+			return null;
+		}
+
+		ContactModel contactModel = getByIdentity(workContact.threemaId);
+
+		if (contactModel == null) {
+			contactModel = new ContactModel(workContact.threemaId, workContact.publicKey);
+		} else if (existingWorkContacts != null) {
+			// try to remove from list of existing work contacts
+			for (int x = 0; x < existingWorkContacts.size(); x++) {
+				if (existingWorkContacts.get(x).getIdentity().equals(workContact.threemaId)) {
+					existingWorkContacts.remove(x);
+					break;
+				}
+			}
+		}
+
+		if (!ContactUtil.isLinked(contactModel)
+			&& (workContact.firstName != null
+			|| workContact.lastName != null)) {
+			contactModel.setFirstName(workContact.firstName);
+			contactModel.setLastName(workContact.lastName);
+		}
+		contactModel.setIsWork(true);
+		contactModel.setIsHidden(false);
+		if (contactModel.getVerificationLevel() != VerificationLevel.FULLY_VERIFIED) {
+			contactModel.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+		}
+		this.save(contactModel);
+
+		return contactModel;
+	}
+
+	/**
+	 * Check if a contact for the provided identity exists, if not, try to fetch a contact from work api and add it to the contact database
+	 * @param identity Identity
+	 */
+	@Override
+	public void createWorkContact(@NonNull String identity) {
+		if (!ConfigUtils.isWorkBuild()) {
+			return;
+		}
+
+		if (contactStore.getPublicKeyForIdentity(identity, false) == null) {
+			LicenseService.Credentials credentials = this.licenseService.loadCredentials();
+			if ((credentials instanceof UserCredentials)) {
+				try {
+					List<WorkContact> workContacts = apiConnector.fetchWorkContacts(((UserCredentials) credentials).username, ((UserCredentials) credentials).password, new String[]{identity});
+					if (workContacts.size() > 0) {
+						WorkContact workContact = workContacts.get(0);
+						addWorkContact(workContact, null);
+					}
+				} catch (Exception e) {
+					logger.error("Error fetching work contact", e);
+				}
+			}
+		}
 	}
 }

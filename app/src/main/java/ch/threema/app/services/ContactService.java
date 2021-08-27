@@ -39,6 +39,7 @@ import ch.threema.client.AbstractMessage;
 import ch.threema.client.ContactDeletePhotoMessage;
 import ch.threema.client.ContactRequestPhotoMessage;
 import ch.threema.client.ContactSetPhotoMessage;
+import ch.threema.client.work.WorkContact;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 
@@ -118,6 +119,9 @@ public interface ContactService extends AvatarService<ContactModel> {
 	List<String> getSynchronizedIdentities();
 
 	@Nullable
+	List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel);
+
+	@Nullable
 	ContactModel getByPublicKey(byte[] publicKey);
 
 	void setIsHidden(String identity, boolean hidden);
@@ -189,19 +193,9 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 */
 	void updatePublicNickName(AbstractMessage msg);
 
-
-	/**
-	 * update all contact names with a android linkBallot
-	 * @return
-	 */
-	boolean validateContactNames();
-
-	boolean validateContactAggregation(ContactModel contactModel, boolean autoCorrect);
+	boolean updateAllContactNamesAndAvatarsFromAndroidContacts();
 
 	void removeAllThreemaContactIds();
-
-	boolean link(ContactModel contact, String lookupKey);
-	boolean unlink(ContactModel contact);
 
 	boolean rebuildColors();
 
@@ -226,4 +220,6 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	void setName(ContactModel contact, String firstName, String lastName);
 	String getAndroidContactLookupUriString(ContactModel contactModel);
+	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
+	void createWorkContact(@NonNull String identity);
 }

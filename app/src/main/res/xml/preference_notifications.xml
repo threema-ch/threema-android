@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:key="pref_key_notifications"
 	android:persistent="true"
 	android:summary="@string/prefs_sum_notifications"
@@ -118,6 +117,7 @@
 			android:title="@string/prefs_working_days_enable_title"
 			android:icon="@drawable/ic_do_not_disturb_filled"
 			android:widgetLayout="@layout/preference_switch_layout"/>
+
 		<MultiSelectListPreference
 			android:key="@string/preferences__working_days"
 			android:title="@string/prefs_title_working_days"
@@ -126,23 +126,18 @@
 			android:defaultValue="@array/working_days_default"
 			android:entryValues="@array/working_days_values"
 			android:entries="@array/working_days"/>
-		<com.takisoft.preferencex.TimePickerPreference
+
+		<Preference
 			android:key="@string/preferences__work_time_start"
 			android:title="@string/prefs_work_time_start"
 			android:summary="@string/prefs_work_time_start_sum"
-			android:defaultValue="08:00"
-			app:pref_hourFormat="auto"
-			app:pref_pickerTime="08:00"
-			app:pref_summaryHasTime="@string/prefs_work_time_start_sum_time"
 			android:dependency="@string/preferences__working_days_enable"/>
-		<com.takisoft.preferencex.TimePickerPreference
+
+		<Preference
 			android:key="@string/preferences__work_time_end"
 			android:title="@string/prefs_work_time_end"
 			android:summary="@string/prefs_work_time_end_sum"
-			android:defaultValue="17:00"
-			app:pref_hourFormat="auto"
-			app:pref_pickerTime="17:00"
-			app:pref_summaryHasTime="@string/prefs_work_time_end_sum_time"
 			android:dependency="@string/preferences__working_days_enable"/>
+
 	</PreferenceCategory>
 </PreferenceScreen>

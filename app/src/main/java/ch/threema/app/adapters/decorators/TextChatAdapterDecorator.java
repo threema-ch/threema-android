@@ -122,7 +122,8 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 		if (content != null) {
 			if (holder.secondaryTextView instanceof EmojiConversationTextView) {
 				holder.secondaryTextView.setText(formatTextString(content.quotedText, this.filterString, helper.getMaxQuoteTextLength() + 8));
-				((EmojiConversationTextView) holder.secondaryTextView).setFade(content.quotedText.length() > helper.getMaxQuoteTextLength());
+				((EmojiConversationTextView) holder.secondaryTextView).setFade(
+					content.quotedText != null && content.quotedText.length() > helper.getMaxQuoteTextLength());
 			}
 
 			ContactModel contactModel = this.helper.getContactService().getByIdentity(content.identity);

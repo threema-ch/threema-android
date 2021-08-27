@@ -21,11 +21,15 @@
 
 package ch.threema.app.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 
@@ -33,7 +37,7 @@ public class RingtoneUtil {
 	public static final Uri THREEMA_CALL_RINGTONE_URI = Uri.parse("android.resource://"+ BuildConfig.APPLICATION_ID + "/" + R.raw.threema_call);
 	public static final String THREEMA_CALL_RINGTONE_TITLE = "Threema Call";
 
-	public static String getRingtoneNameFromUri(Context context, Uri uri) {
+	public static String getRingtoneNameFromUri(Context context, @Nullable Uri uri) {
 		if (uri != null) {
 			if (uri.equals(THREEMA_CALL_RINGTONE_URI)) {
 				return THREEMA_CALL_RINGTONE_TITLE;
@@ -48,5 +52,22 @@ public class RingtoneUtil {
 			}
 		}
 		return context.getString(R.string.ringtone_none);
+	}
+
+	public static Intent getRingtonePickerIntent(int type, Uri currentUri, Uri defaultUri) throws ActivityNotFoundException {
+		// most tinkered devices will present a choice of more or less useful, or even plain useless excuses for a ringtone picker
+		// on an ACTION_RINGTONE_PICKER intent thus confusing the user. Let's use our own implementation in these cases
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !Build.MANUFACTURER.equalsIgnoreCase("Google")) {
+			throw new ActivityNotFoundException();
+		}
+
+		Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, type);
+		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentUri);
+		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, defaultUri);
+
+		return intent;
 	}
 }

@@ -42,7 +42,10 @@ import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
+import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.base.VerificationLevel;
 import ch.threema.client.APIConnector;
 import ch.threema.client.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
@@ -62,7 +65,9 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	private final PreferenceService preferenceService;
 	private final DeviceService deviceService;
 	private final Context context;
-	private FileService fileService;
+	private final FileService fileService;
+	private final IdListService blackListIdentityService;
+	private final LicenseService licenseService;
 
 	private Date latestFullSync;
 
@@ -74,7 +79,9 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 										  PreferenceService preferenceService,
 										  DeviceService deviceService,
 										  FileService fileService,
-	                                      IdentityStoreInterface identityStore) {
+	                                      IdentityStoreInterface identityStore,
+	                                      IdListService blackListIdentityService,
+	                                      LicenseService licenseService) {
 		this.excludedIdentityListService = excludedIdentityListService;
 		this.preferenceService = preferenceService;
 		this.deviceService = deviceService;
@@ -86,6 +93,8 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		this.userService = userService;
 		this.localeService = localeService;
 		this.identityStore = identityStore;
+		this.licenseService = licenseService;
+		this.blackListIdentityService = blackListIdentityService;
 	}
 
 	@Override
@@ -162,6 +171,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	public SynchronizeContactsRoutine instantiateSynchronization(Account account) {
 		logger.info("Running contact sync");
 		logger.debug("instantiateSynchronization with account {}", account);
+
 		final SynchronizeContactsRoutine routine =
 				new SynchronizeContactsRoutine(
 						this.context,
@@ -173,7 +183,9 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 						this.excludedIdentityListService,
 						this.deviceService,
 						this.preferenceService,
-						this.identityStore);
+						this.identityStore,
+						this.blackListIdentityService,
+						this.licenseService);
 
 		synchronized (this.pendingRoutines) {
 			this.pendingRoutines.add(routine);
@@ -208,11 +220,6 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	@Override
 	public boolean isSynchronizationInProgress() {
 		return this.pendingRoutines.size() > 0;
-	}
-
-	@Override
-	public Date getLatestFullSyncTime() {
-		return this.latestFullSync;
 	}
 
 	@Override
@@ -251,6 +258,10 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 					this.pendingRoutines.get(n).abort();
 				}
 			}
+
+			int numDeleted = AndroidContactUtil.getInstance().deleteAllThreemaRawContacts();
+			logger.debug("*** deleted {} raw contacts", numDeleted);
+
 			if(!this.userService.removeAccount(new AccountManagerCallback<Boolean>() {
 				@Override
 				public void run(AccountManagerFuture<Boolean> future) {
@@ -270,18 +281,21 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
 		if(contactService != null) {
 			contactService.removeAllThreemaContactIds();
+
+			// cleanup / degrade remaining identities that are still server verified
+			List<String> identities = contactService.getIdentitiesByVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+			if (identities != null && identities.size() > 0) {
+				for (ContactModel contactModel : contactService.getByIdentities(identities)) {
+					contactModel.setVerificationLevel(VerificationLevel.UNVERIFIED);
+					contactService.save(contactModel);
+				}
+			}
 		}
 
 		if(run != null) {
 			run.run();
 		}
 	}
-
-	@Override
-	public boolean disableSync() {
-		return this.disableSync(null);
-	}
-
 
 	private void finishedRoutine(final SynchronizeContactsRoutine routine) {
 		//remove from pending

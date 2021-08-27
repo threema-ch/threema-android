@@ -203,6 +203,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_EDITFOCUS = "editfocus";
 	public static final String INTENT_DATA_GROUP = "group";
 	public static final String INTENT_DATA_DISTRIBUTION_LIST = "distribution_list";
+	public static final String INTENT_DATA_ARCHIVE_FILTER = "archiveFilter";
 	public static final String INTENT_DATA_QRCODE = "qrcodestring";
 	public static final String INTENT_DATA_QRCODE_TYPE_OK = "qrcodetypeok";
 	public static final String INTENT_DATA_MESSAGE_ID = "messageid";
@@ -271,6 +272,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
 
 	public static ExecutorService sendMessageExecutorService = Executors.newFixedThreadPool(4);
+	public static ExecutorService sendMessageSingleThreadExecutorService = Executors.newSingleThreadExecutor();
 
 	private static boolean checkAppReplacingState(Context context) {
 		// workaround https://code.google.com/p/android/issues/detail?id=56296
@@ -1116,10 +1118,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			@Override
 			public void onRemove(GroupModel groupModel) {
 				try {
-
-					final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(groupModel);
-
-					serviceManager.getBallotService().remove(receiver);
 					serviceManager.getConversationService().removed(groupModel);
 					serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, null, null));
 				} catch (ThreemaException e) {
@@ -1432,7 +1430,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						SynchronizeContactsService synchronizeContactService = serviceManager.getSynchronizeContactsService();
 						boolean inSyncProcess = synchronizeContactService != null && synchronizeContactService.isSynchronizationInProgress();
 						if (!inSyncProcess) {
-							contactService.validateContactAggregation(createdContactModel, true);
+// TODO
+//							contactService.validateContactAggregation(createdContactModel);
 						}
 					}
 				} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
@@ -1654,7 +1653,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								ContactService c = serviceManager.getContactService();
 								if (c != null) {
 									//update contact names if changed!
-									c.validateContactNames();
+									c.updateAllContactNamesAndAvatarsFromAndroidContacts();
 								}
 							} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 								logger.error("Exception", e);

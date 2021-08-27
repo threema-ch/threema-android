@@ -43,6 +43,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.adapters.decorators.AnimGifChatAdapterDecorator;
@@ -213,6 +214,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	 * remove the contact saved stuff and update the list
 	 * @param contactModel
 	 */
+	@UiThread
 	public void resetCachedContactModelData(ContactModel contactModel) {
 		if(contactModel != null && this.decoratorHelper != null) {
 			if(this.decoratorHelper.getContactCache().remove(contactModel.getIdentity())
@@ -278,19 +280,17 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					case VOICEMESSAGE:
 						return o ? TYPE_AUDIO_SEND : TYPE_AUDIO_RECV;
 					case FILE:
-						if (m.getFileData() != null) {
-							String mimeType = m.getFileData().getMimeType();
-							int renderingType = m.getFileData().getRenderingType();
-							if (MimeUtil.isGifFile(mimeType)) {
-								return o ? TYPE_ANIMGIF_SEND : TYPE_ANIMGIF_RECV;
-							} else if (MimeUtil.isAudioFile(mimeType) && renderingType == FileData.RENDERING_MEDIA) {
-								return o ? TYPE_AUDIO_SEND : TYPE_AUDIO_RECV;
-							} else if (renderingType == FileData.RENDERING_MEDIA || renderingType == FileData.RENDERING_STICKER) {
-								if (MimeUtil.isImageFile(mimeType)) {
-									return o ? TYPE_FILE_MEDIA_SEND : TYPE_FILE_MEDIA_RECV;
-								} else if (MimeUtil.isVideoFile(mimeType)) {
-									return o ? TYPE_FILE_VIDEO_SEND : TYPE_FILE_MEDIA_RECV;
-								}
+						String mimeType = m.getFileData().getMimeType();
+						int renderingType = m.getFileData().getRenderingType();
+						if (MimeUtil.isGifFile(mimeType)) {
+							return o ? TYPE_ANIMGIF_SEND : TYPE_ANIMGIF_RECV;
+						} else if (MimeUtil.isAudioFile(mimeType) && renderingType == FileData.RENDERING_MEDIA) {
+							return o ? TYPE_AUDIO_SEND : TYPE_AUDIO_RECV;
+						} else if (renderingType == FileData.RENDERING_MEDIA || renderingType == FileData.RENDERING_STICKER) {
+							if (MimeUtil.isImageFile(mimeType)) {
+								return o ? TYPE_FILE_MEDIA_SEND : TYPE_FILE_MEDIA_RECV;
+							} else if (MimeUtil.isVideoFile(mimeType)) {
+								return o ? TYPE_FILE_VIDEO_SEND : TYPE_FILE_MEDIA_RECV;
 							}
 						}
 						return o ? TYPE_FILE_SEND : TYPE_FILE_RECV;

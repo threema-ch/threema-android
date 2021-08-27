@@ -36,7 +36,6 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.routines.ValidateContactsIntegrationRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UpdateSystemService;
@@ -84,10 +83,6 @@ public class SystemUpdateToVersion12 implements UpdateSystemService.SystemUpdate
 		if(serviceManager != null) {
 			try {
 				ContactService contactService = serviceManager.getContactService();
-				ValidateContactsIntegrationRoutine validateContactsIntegration = new ValidateContactsIntegrationRoutine(contactService,null);
-				if(validateContactsIntegration != null) {
-					validateContactsIntegration.run();
-				}
 
 				PreferenceService preferenceService = serviceManager.getPreferenceService();
 				if(preferenceService != null && preferenceService.isSyncContacts()) {

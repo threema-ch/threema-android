@@ -21,7 +21,6 @@
 
 package ch.threema.app.dialogs;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -30,6 +29,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 public class ThreemaDialogFragment extends DialogFragment {
+	protected Object object;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,5 +72,10 @@ public class ThreemaDialogFragment extends DialogFragment {
 				ft.commitNowAllowingStateLoss();
 			}
 		}
+	}
+
+	public ThreemaDialogFragment setData(Object o) {
+		object = o;
+		return this;
 	}
 }

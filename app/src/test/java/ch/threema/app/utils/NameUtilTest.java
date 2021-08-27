@@ -21,6 +21,7 @@
 
 package ch.threema.app.utils;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,7 @@ import org.mockito.Matchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import androidx.core.util.Pair;
 import ch.threema.app.services.UserService;
 import ch.threema.storage.models.ContactModel;
 
@@ -114,4 +116,41 @@ public class NameUtilTest {
 		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
 		assertEquals("~nickname", name);
 	}
+
+	@Test
+	public void testGetFirstLastNameFromDisplayNameNull() {
+		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName(null);
+		Assert.assertEquals("", firstLastName.first);
+		Assert.assertEquals("", firstLastName.second);
+	}
+
+	@Test
+	public void testGetFirstLastNameFromDisplayNameEmpty() {
+		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("");
+		Assert.assertEquals("", firstLastName.first);
+		Assert.assertEquals("", firstLastName.second);
+	}
+
+	@Test
+	public void testGetFirstLastNameFromDisplayNameOnlyFirst() {
+		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("joe");
+		Assert.assertEquals("joe", firstLastName.first);
+		Assert.assertEquals("", firstLastName.second);
+	}
+
+	@Test
+	public void testGetFirstLastNameFromDisplayNameTwoParts() {
+		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("john doe");
+		Assert.assertEquals("john", firstLastName.first);
+		Assert.assertEquals("doe", firstLastName.second);
+	}
+
+	@Test
+	public void testGetFirstLastNameFromDisplayNameSpanishCraziness() {
+		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("Pablo Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso");
+		// Yes, this is actually wrong, but we cannot know how to properly split first and last name.
+		Assert.assertEquals("Pablo", firstLastName.first);
+		Assert.assertEquals("Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso", firstLastName.second);
+	}
+
 }

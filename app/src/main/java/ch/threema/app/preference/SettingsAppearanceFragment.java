@@ -55,6 +55,8 @@ public class SettingsAppearanceFragment extends ThreemaPreferenceFragment implem
 	private SharedPreferences sharedPreferences;
 	private WallpaperService wallpaperService;
 	private FileService fileService;
+	private CheckBoxPreference showBadge;
+	private boolean showBadgeChecked = false;
 
 	@Override
 	public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -66,6 +68,9 @@ public class SettingsAppearanceFragment extends ThreemaPreferenceFragment implem
 		}
 
 		addPreferencesFromResource(R.xml.preference_appearance);
+
+		this.showBadge = (CheckBoxPreference) findPreference(getResources().getString(R.string.preferences__show_unread_badge));
+		this.showBadgeChecked = this.showBadge.isChecked();
 
 		CheckBoxPreference defaultColoredAvatar = (CheckBoxPreference) findPreference(getResources().getString(R.string.preferences__default_contact_picture_colored));
 		if(defaultColoredAvatar != null) {
@@ -324,5 +329,14 @@ public class SettingsAppearanceFragment extends ThreemaPreferenceFragment implem
 		wallpaperService.handleActivityResult(this, requestCode, resultCode, data, null);
 
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+
+		if (this.showBadge.isChecked() != this.showBadgeChecked) {
+			ConfigUtils.recreateActivity(getActivity());
+		}
 	}
 }

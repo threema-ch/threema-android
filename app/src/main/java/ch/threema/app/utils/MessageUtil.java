@@ -383,12 +383,12 @@ public class MessageUtil {
 	}
 
 	public static class MessageViewElement {
-		public final @DrawableRes Integer icon;
-		public final String placeholder;
-		public final Integer color;
-		public final String text;
-		public final String contentDescription;
-		protected MessageViewElement(@DrawableRes Integer icon, String placeholder, String text, String contentDescription, Integer color) {
+		public final @Nullable @DrawableRes Integer icon;
+		public final @Nullable String placeholder;
+		public final @Nullable Integer color;
+		public final @Nullable String text;
+		public final @Nullable String contentDescription;
+		protected MessageViewElement(@Nullable @DrawableRes Integer icon, @Nullable String placeholder, @Nullable String text, @Nullable String contentDescription, @Nullable Integer color) {
 			this.icon = icon;
 			this.placeholder = placeholder;
 			this.color = color;

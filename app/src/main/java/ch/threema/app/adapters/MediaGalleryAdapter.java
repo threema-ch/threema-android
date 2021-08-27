@@ -67,9 +67,9 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 	private static final Logger logger = LoggerFactory.getLogger(MediaGalleryAdapter.class);
 
 	private final List<AbstractMessageModel> values;
-	private FileService fileService;
-	private ThumbnailCache thumbnailCache;
-	private LayoutInflater layoutInflater;
+	private final FileService fileService;
+	private final ThumbnailCache thumbnailCache;
+	private final LayoutInflater layoutInflater;
 	private final List<Integer> brokenThumbnails = new ArrayList<Integer>();
 	@ColorInt private final int foregroundColor;
 
@@ -94,7 +94,7 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 		this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.textColorSecondary);
 	}
 
-	private class MediaGalleryHolder extends AbstractListItemHolder {
+	private static class MediaGalleryHolder extends AbstractListItemHolder {
 		public ImageView imageView;
 		public ControllerView playButton;
 		public ProgressBar progressBar;

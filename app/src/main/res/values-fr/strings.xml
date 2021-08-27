@@ -329,7 +329,7 @@
     <string name="title_public_nickname">Surnom</string>
     <string name="prefs_sum_excluded_sync_identities">Les ID indiqués ici seront ignorés lors de la synchronisation des contacts.</string>
     <string name="prefs_title_excluded_sync_identities">Liste d\'exclusion</string>
-    <string name="synchronize_contact">Contact système lié</string>
+    <string name="synchronize_contact">Synchronisation du carnet d\'adresses</string>
     <string name="exclude_contact">Exclure de la synchro automatique</string>
     <string name="prefs_header_lists">Listes</string>
     <string name="prefs_title_black_list">Liste noire</string>
@@ -466,7 +466,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="really_block_contact">Les futures messages de ce contact seront supprimés. Continuer ?</string>
     <string name="ballot_result_final">Résultat final</string>
     <string name="invalid_cannot_send">Vous ne pouvez pas envoyer de message à un contact erroné</string>
-	<string name="ballot_answer_count_error">Veuillez définir au moins deux réponses pour cette enquête.</string>
+    <string name="ballot_answer_count_error">Veuillez définir au moins deux réponses pour cette enquête.</string>
     <string name="ballot_one_contact_not_supported">Attention : %1$s ne pourra pas participer à votre enquête.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attention : %1$d contacts ne pourront pas participer à votre enquête.</string>
     <string name="enable_polling">Utiliser l\'interrogation</string>
@@ -957,8 +957,9 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="voip_disabled">Les appels Threema sont désactivés</string>
     <string name="hide_chat_enter_message_explain">Ce chat est marqué comme privé. Pour y accéder, veuillez d\'abord configurer la protection d\'accès.</string>
     <string name="unknown">Inconnu</string>
-    <string name="miui_notification_title">Avis important sur les notifications sur MIUI 10</string>
+    <string name="miui_notification_title">Avis important sur les notifications sur MIUI</string>
     <string name="miui_notification_body">MIUI 10 désactive par défaut le son et les lumières pour tous les canaux de notifications fraichement créés (à l\'exception de quelques applications considérées « importantes » par Xiaomi). Vous allez devoir les activer spécifiquement pour chaque canal depuis l\'écran de réglages de notifications spécifiques à l\'app dans votre téléphone. Contactez le fabricant de votre téléphone pour plus d\'informations.</string>
+    <string name="miui12_notification_body">MIUI 10 désactive par défaut le son, les lumières et les notifications flottantes pour toutes les applications par défaut (à l\'exception de quelques applications populaires considérées comme « importantes » par Xiaomi). Vous allez devoir activer manuellement ces paramètres depuis l\'écran de réglages de notifications spécifiques à l\'app dans votre téléphone et répéter ce processus après chaque mise à jour de l\'application. Contactez Xiaomi pour plus d\'informations.</string>
     <string name="dont_show_again">Ne plus afficher</string>
     <string name="miui_notification_prefs">Réglages MIUI</string>
     <string name="threema_safe_upload_successful">Sauvegarde Threema Safe bien transférée</string>
@@ -1013,19 +1014,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="delete">Supprimer</string>
     <string name="num_archived_chats">%d chats archivés</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
-    <string name="whatsnew_title">Bienvenue dans %s 4.5</string>
-    <string name="whatsnew_headline">%1$s 4.5 apporte une expérience multimédia flambante neuve.\n\nL\'interface de tiroir de média a bénéficié d\'une refonte majeure et propose désormais une recherche d\'images optionnelle basée sur l\'apprentissage automatique.\n\nDe plus, nous avons ajouté une recherche de texte globale à travers tous les chats, une citation améliorée des messages et bien plus.</string>
-    <string name="whatsnew2_title">Quoi de neuf ?</string>
-    <string name="whatsnew2_body"><![CDATA[
-		<p><b>Tiroir de média</b> : Touchez l\'icône de trombone pour parcourir vos fichiers média dans un tiroir défilant. Au cas où vous ne voulez pas que le tiroir s\'ouvre automatiquement avec les médias les plus récents, désactivez l\'option Sélection rapide de l\'image depuis les paramètres de chat, dans <i>Paramètres/Chat/Sélection rapide de l\'image</i>.</p>
-		<p><b>Recherche d\'image</b> : Recherchez des objets, des activités et des lieux communs dans vos images.<br>La reconnaissance des images est basée sur un modèle d\'apprentissage automatique local et n\'envoie pas de données aux serveurs de Threema ou à tout autre tiers. Puisque l\'analyse des images est une tâche plutôt coûteuse et qui peut prendre beaucoup de temps, l\'option est désactivée par défaut. Vous pouvez y accéder depuis <i>Paramètres/Médias et stockage/Recherche d’image</i>.</p>
-		<p><b>Envoi de fichiers média</b> : Envoyez des images avec des définitions individuelles sans devoir changer les paramètres globaux.</p>
-		<p><b>Montage vidéo</b> : Découpez les vidéos avant de les envoyer. De plus, le processus de transcodage des vidéos a été amélioré et celui-ci fonctionne désormais en arrière-plan.</p>
-		<p><b>Enregistrer dans la galerie</b> : Sur Android 10 et plus récent, les médias sont maintenant stockés dans les dossiers système <i>Photos, Vidéos, Musique</i> et <i>Documents</i> à cause des nouvelles exigences de « Stockage de portée » de Google.</p>
-		<p><b>Recherche globale</b> : Recherchez du texte à travers tous les chats. Touchez simplement <i>Menu/Rechercher dans les discussions</i> lorsque vous êtes sur l\'écran d\'accueil de %1$s.</p>
-		<p><b>Citations</b> : %1$s vous permet maintenant de citer n\'importe quel type de média, y compris les images, les vidéos et les messages vocaux.</p>
-		<p><b>100 nouvelles émoticônes</b> : Découvrez la tant attendue fondue &#129749;</p>
-		<p><b>Textes longs</b> : Pour conserver une interface de chat allégée, les messages contenant beaucoup de texte s\'affichent dans une bulle de chat tronquée qui peut être développée à volonté.</p> ]]></string>
     <string name="tooltip_identity_popup">Touchez ici pour afficher rapidement votre ID Threema ou scanner les ID d\'autres personnes</string>
     <string name="tap_to_start">Touchez ici pour lancer %s maintenant.</string>
     <string name="two_years">2 ans</string>
@@ -1188,4 +1176,14 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="tap_here_for_more">Touchez ici pour de plus amples informations</string>
     <string name="another_connection_instructions">Le serveur a détecté deux connexions ou plus provenant d\'appareils différents ayant le même ID Threema.\n\nL\'utilisation simultanée du même ID Threema sur plusieurs appareils n\'est pas possible. Les nouveaux messages sont uniquement transmis sur l\'appareil s\'étant authentifié le plus récemment sur le serveur.\n\nSi vous utilisez un nouvel appareil, veuillez désinstaller ou désactiver %s sur l\'ancien appareil, puis redémarrez le nouveau.</string>
     <string name="app_store_error_code">Code d\'erreur App Store : %d</string>
+    <string name="download_failed">Échec de téléchargement. Code d\'erreur : %d</string>
+    <string name="edit_answer">Modifier la réponse</string>
+    <string name="share_media">Partager avec une autre application…</string>
+    <string name="miui_battery_optimization">Veuillez désactiver « l\'optimisation de batterie » pour %s afin d\'effectuer cette tâche. Puisque Xiaomi ne permet pas aux applications d\'appeler directement cet écran de paramètres, vous allez devoir le faire manuellement depuis les paramètres de votre téléphone. Veuillez contacter l\'assistance de Xiaomi si vous avez besoin d\'aide pour désactiver l\'optimisation de batterie.</string>
+    <string name="forward_captions">Inclure les légendes</string>
+    <string name="importing_files_failed">Impossible d\'importer le fichier de sauvegarder. Assurez-vous d\'avoir assez d\'espace libre sur le support de stockage interne.</string>
+    <string name="label_continue">Continuer</string>
+    <string name="select_date">Sélectionner une date</string>
+    <string name="select_time">Sélectionner une heure</string>
+    <string name="recipients">Destinataires : %s</string>
 </resources>

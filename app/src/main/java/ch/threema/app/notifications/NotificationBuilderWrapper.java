@@ -35,10 +35,12 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -172,6 +174,16 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(ringtone.getScheme())) {
 					// https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
 					ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", ringtone, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+				} else if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
+					// content://settings/system/notification_sound
+					if (!ringtone.equals(Settings.System.DEFAULT_NOTIFICATION_URI)) {
+						// check if ringtone is still available
+						try (InputStream ignored = context.getContentResolver().openInputStream(ringtone)) {
+						} catch (Exception e) {
+							// cannot open ringtone - fallback to default ringtone
+							ringtone = Settings.System.DEFAULT_NOTIFICATION_URI;
+						}
+					}
 				}
 				notificationChannelSettings.setSound(ringtone);
 			} else {

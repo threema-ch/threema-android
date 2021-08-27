@@ -136,9 +136,9 @@ public class ConfigUtils {
 
 	private static int appTheme = THEME_NONE;
 	private static String localeOverride = null;
-	private static Integer primaryColor = null, accentColor = null;
+	private static Integer primaryColor = null, accentColor = null, miuiVersion = null;
 	private static int emojiStyle = 0;
-	private static Boolean isTablet = null, isBiggerSingleEmojis = null, isMIUI10 = null, hasNoMapboxSupport = null;
+	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasNoMapboxSupport = null;
 	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1;
 
 	private static final float[] NEGATIVE_MATRIX = {
@@ -272,22 +272,34 @@ public class ConfigUtils {
 		return Build.MANUFACTURER.equalsIgnoreCase("Xiaomi");
 	}
 
-	public static boolean isMIUI10() {
+	/**
+	 * return current MIUI version level or 0 if no Xiaomi device or MIUI version is not recognized or not relevant
+	 * @return MIUI version level or 0
+	 */
+	public static int getMIUIVersion() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !isXiaomiDevice()) {
-			return false;
+			return 0;
 		}
-		if (isMIUI10 == null) {
+		if (miuiVersion == null) {
+			miuiVersion = 0;
+
 			try {
 				Class<?> c = Class.forName("android.os.SystemProperties");
 				Method get = c.getMethod("get", String.class);
-				String miuiVersion = (String) get.invoke(c, "ro.miui.ui.version.name");
+				String version = (String) get.invoke(c, "ro.miui.ui.version.name");
 
-				isMIUI10 = miuiVersion != null && (miuiVersion.startsWith("V10") || miuiVersion.startsWith("V11"));
-			} catch (Exception e) {
-				return false;
-			}
+				if (version != null) {
+					if (version.startsWith("V10")) {
+						miuiVersion = 10;
+					} else if (version.startsWith("V11")) {
+						miuiVersion = 11;
+					} else if (version.startsWith("V12") || version.startsWith("V13")) {
+						miuiVersion = 12;
+					}
+				}
+			} catch (Exception ignored) { }
 		}
-		return isMIUI10;
+		return miuiVersion;
 	}
 
 	public static boolean canCreateV2Quotes() {
@@ -449,19 +461,13 @@ public class ConfigUtils {
 
 	/**
 	 * Get full user-facing application version string including alpha/beta version suffix
+	 * Deprecated! use getAppVersion()
 	 * @param context
 	 * @return version string
 	 */
+	@Deprecated
 	public static String getFullAppVersion(@NonNull Context context) {
-		String suffix = context.getString(R.string.version_name_suffix);
-
-		String versionString = getAppVersion(context);
-
-		if (!TestUtil.empty(suffix)) {
-			versionString += "-" + suffix;
-		}
-
-		return versionString;
+		return getAppVersion(context);
 	}
 
 	/**
@@ -850,6 +856,11 @@ public class ConfigUtils {
 
 	public static void invertColors(ImageView imageView) {
 		imageView.setColorFilter(new ColorMatrixColorFilter(NEGATIVE_MATRIX));
+	}
+
+	public static boolean isPermissionGranted(@NonNull Context context, @NonNull String permission) {
+		return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+			ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	/**

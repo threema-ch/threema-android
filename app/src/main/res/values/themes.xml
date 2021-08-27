@@ -58,6 +58,7 @@
 		<item name="textInputStyle">@style/Threema.TextInputStyle</item>
 		<item name="materialAlertDialogTheme">@style/Threema.AlertDialogStyle</item>
 		<item name="bottomNavigationStyle">@style/Threema.BottomNavigationView</item>
+		<item name="badgeStyle">@style/Threema.BadgeStyle</item>
 		<item name="bottomSheetDialogTheme">@style/Threema.BottomSheetDialog</item>
 		<item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
 		<item name="tabStyle">@style/Threema.TabLayout</item>
@@ -68,6 +69,8 @@
 		<item name="android:spinnerItemStyle">@style/Threema.SpinnerItemStyle</item>
 		<item name="android:spinnerDropDownItemStyle">@style/Threema.SpinnerPopupItemStyle</item>
 		<item name="chipStyle">@style/Threema.ChipStyle</item>
+		<item name="materialCalendarTheme">@style/Threema.ThemeOverlay.MaterialCalendar</item>
+		<item name="materialTimePickerTheme">@style/Threema.ThemeOverlay.TimePicker</item>
 
 		<!-- Material color attributes -->
 		<item name="colorPrimaryVariant">#111111</item>
@@ -305,6 +308,7 @@
 		<item name="textInputStyle">@style/Threema.TextInputStyle</item>
 		<item name="materialAlertDialogTheme">@style/Threema.AlertDialogStyle</item>
 		<item name="bottomNavigationStyle">@style/Threema.BottomNavigationView.Dark</item>
+		<item name="badgeStyle">@style/Threema.BadgeStyle</item>
 		<item name="bottomSheetDialogTheme">@style/Threema.BottomSheetDialog.Dark</item>
 		<item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
 		<item name="tabStyle">@style/Threema.TabLayout.Dark</item>
@@ -315,6 +319,8 @@
 		<item name="android:spinnerItemStyle">@style/Threema.SpinnerItemStyle</item>
 		<item name="android:spinnerDropDownItemStyle">@style/Threema.SpinnerPopupItemStyle</item>
 		<item name="chipStyle">@style/Threema.ChipStyle</item>
+		<item name="materialCalendarTheme">@style/Threema.ThemeOverlay.MaterialCalendar</item>
+		<item name="materialTimePickerTheme">@style/Threema.ThemeOverlay.TimePicker</item>
 
 		<!-- Material color attributes -->
 		<item name="colorPrimaryVariant">#EEEEEE</item>
@@ -561,7 +567,6 @@
 
 	<style name="Theme.MediaAttacher" parent="Theme.Threema.WithToolbar">
 		<item name="android:windowNoTitle">true</item>
-		<item name="colorPrimary">@android:color/transparent</item>
 		<item name="shape_border_toprounded_square">@drawable/shape_border_toprounded_square_light</item>
 		<item name="gallery_attach_item_background">@color/list_item_background_checked_light</item>
 		<item name="android:windowBackground">@color/transparent_activity_overlay</item>
@@ -575,7 +580,6 @@
 
 	<style name="Theme.MediaAttacher.Dark" parent="Theme.Threema.WithToolbar.Dark">
 		<item name="android:windowNoTitle">true</item>
-		<item name="colorPrimary">@android:color/transparent</item>
 		<item name="shape_border_toprounded_square">@drawable/shape_border_toprounded_square_dark</item>
 		<item name="gallery_attach_item_background">@color/list_item_background_checked_dark</item>
 		<item name="android:windowBackground">@color/transparent_activity_overlay</item>

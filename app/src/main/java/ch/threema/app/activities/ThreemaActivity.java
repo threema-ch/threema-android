@@ -59,16 +59,13 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 	final static public int ACTIVITY_ID_GROUP_ADD = 20028;
 	final static public int ACTIVITY_ID_GROUP_DETAIL = 20029;
 	final static public int ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK = 20032;
-	final static public int ACTIVITY_ID_PICK_CONTACT = 20034;
 	final static public int ACTIVITY_ID_MEDIA_VIEWER = 20035;
 	public static final int ACTIVITY_ID_CREATE_BALLOT = 20037;
 	final static public int ACTIVITY_ID_ID_SECTION = 20041;
 	final static public int ACTIVITY_ID_BACKUP_PICKER = 20042;
 	final static public int ACTIVITY_ID_COPY_BALLOT = 20043;
-	public static final int ACTIVITY_ID_PICK_NTOTIFICATION = 20045;
 	public static final int ACTIVITY_ID_CHECK_LOCK = 20046;
 	public static final int ACTIVITY_ID_PICK_FILE = 20047;
-	public static final int ACTIVITY_ID_SETTINGS_NOTIFICATIONS = 20048;
 	public static final int ACTIVITY_ID_PAINT = 20049;
 	public static final int ACTIVITY_ID_PICK_MEDIA = 20050;
 

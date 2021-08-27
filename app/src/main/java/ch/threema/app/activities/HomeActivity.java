@@ -37,7 +37,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,11 +44,9 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.slf4j.Logger;
@@ -94,6 +91,7 @@ import ch.threema.app.fragments.MessageSectionFragment;
 import ch.threema.app.fragments.MyIDFragment;
 import ch.threema.app.globalsearch.GlobalSearchActivity;
 import ch.threema.app.listeners.AppIconListener;
+import ch.threema.app.listeners.ContactCountListener;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.listeners.MessageListener;
 import ch.threema.app.listeners.ProfileListener;
@@ -303,15 +301,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		@Override
 		protected void onPostExecute(Integer count) {
 			if (activityWeakReference.get() != null) {
-				View bottomNavigationBadgeView = activityWeakReference.get().findViewById(R.id.navigation_badge_view);
-				if (bottomNavigationBadgeView != null) {
-					if (count > 0) {
-						bottomNavigationBadgeView.setVisibility(View.VISIBLE);
-						TextView tv = bottomNavigationBadgeView.findViewById(R.id.notification_badge);
-						tv.setText(String.valueOf(count));
-					} else {
-						bottomNavigationBadgeView.setVisibility(View.GONE);
+				BottomNavigationView bottomNavigationView = activityWeakReference.get().findViewById(R.id.bottom_navigation);
+				if (bottomNavigationView != null) {
+					BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.messages);
+					if (badgeDrawable.getVerticalOffset() == 0) {
+						badgeDrawable.setVerticalOffset(activityWeakReference.get().getResources().getDimensionPixelSize(R.dimen.bottom_nav_badge_offset_vertical));
 					}
+					badgeDrawable.setNumber(count);
+					badgeDrawable.setVisible(count > 0);
 				}
 			}
 		}
@@ -493,6 +490,26 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	};
 
+	private final ContactCountListener contactCountListener = new ContactCountListener() {
+		@Override
+		public void onNewContactsCountUpdated(int last24hoursCount) {
+			if (preferenceService != null && preferenceService.getShowUnreadBadge()) {
+				RuntimeUtil.runOnUiThread(() -> {
+					if (!isFinishing() && !isDestroyed() && !isChangingConfigurations()) {
+						BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+						if (bottomNavigationView != null) {
+							BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.contacts);
+							if (badgeDrawable.getVerticalOffset() == 0) {
+								badgeDrawable.setVerticalOffset(getResources().getDimensionPixelSize(R.dimen.bottom_nav_badge_offset_vertical));
+							}
+							badgeDrawable.setVisible(last24hoursCount > 0);
+						}
+					}
+				});
+			}
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
@@ -588,6 +605,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void showWhatsNew() {
+		final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
+
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
 				// so the app has just been updated
@@ -597,19 +616,20 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				}
 
 				if (!ConfigUtils.isWorkBuild() && !RuntimeUtil.isInTest() && !isFinishing()) {
-/*
-					isWhatsNewShown = true; // make sure this is set to false if no whatsnew activity is shown - otherwise pin lock will be skipped once
-
-					// Do not show whatsnew for users of the previous 4.5x version
-					int previous = preferenceService.getLatestVersion() % 1000;
-
-					if (previous < 663) {
-						Intent intent = new Intent(this, WhatsNewActivity.class);
-						startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
-						overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+					if (skipWhatsNew) {
+						isWhatsNewShown = false;
 					} else {
-*/						isWhatsNewShown = false;
-//					}
+						isWhatsNewShown = true; // make sure this is set to false if whatsnew is skipped - otherwise pin unlock will not be shown once
+
+						// Do not show whatsnew for users of the previous 4.5x version
+/*						int previous = preferenceService.getLatestVersion() % 1000;
+
+						if (previous < 650) {
+*/							Intent intent = new Intent(this, WhatsNewActivity.class);
+							startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
+							overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+//						}
+					}
 					preferenceService.setLatestVersion(this);
 				}
 			}
@@ -769,6 +789,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		ListenerManager.profileListeners.remove(this.profileListener);
 		ListenerManager.voipCallListeners.remove(this.voipCallListener);
 		ListenerManager.conversationListeners.remove(this.conversationListener);
+		ListenerManager.contactCountListener.remove(this.contactCountListener);
 
 		if (serviceManager != null) {
 			ThreemaConnection threemaConnection = serviceManager.getConnection();
@@ -870,6 +891,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			ListenerManager.profileListeners.add(this.profileListener);
 			ListenerManager.voipCallListeners.add(this.voipCallListener);
 			ListenerManager.conversationListeners.add(this.conversationListener);
+			ListenerManager.contactCountListener.add(this.contactCountListener);
 		} else {
 		 	RuntimeUtil.runOnUiThread(() -> showErrorTextAndExit(getString(R.string.service_manager_not_available)));
 		}
@@ -1097,15 +1119,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			bottomNavigationView.setSelectedItemId(initialItemId);
 		});
 
-		/// hack to display badge counters
 		if (preferenceService.getShowUnreadBadge()) {
-			BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
-			View v = bottomNavigationMenuView.getChildAt(Integer.valueOf(FRAGMENT_TAG_MESSAGES));
-			BottomNavigationItemView itemView = (BottomNavigationItemView) v;
-
-			View bottomNavigationViewBadge = LayoutInflater.from(this).inflate(R.layout.bottom_navigation_badge, bottomNavigationMenuView, false);
-			itemView.addView(bottomNavigationViewBadge);
-
 			new UpdateBottomNavigationBadgeTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 

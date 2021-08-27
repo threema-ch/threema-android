@@ -29,6 +29,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,14 +44,12 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 
 public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 	private ExpandableTextEntryDialogClickListener callback;
 	private Activity activity;
 	private AlertDialog alertDialog;
-	private Object object;
 
 	public static ExpandableTextEntryDialog newInstance(String title, int hint, int positive, int negative, boolean expandable) {
 		ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
@@ -82,10 +81,6 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 	public interface ExpandableTextEntryDialogClickListener {
 		void onYes(String tag, Object data, String text);
 		void onNo(String tag);
-	}
-
-	public void setData(Object o) {
-		object = o;
 	}
 
 	@Override
@@ -135,8 +130,6 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		final ImageView expandButton = dialogView.findViewById(R.id.expand_button);
 		final LinearLayout addCaptionLayout = dialogView.findViewById(R.id.add_caption_intro);
 
-		ConfigUtils.themeImageView(activity, expandButton);
-
 		addCaptionLayout.setClickable(true);
 		addCaptionLayout.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -158,7 +151,7 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 			public void afterTextChanged(Editable s) {}
 		});
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(),  R.style.Threema_AlertDialog_MediaPicker);
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity,  getTheme());
 		builder.setView(dialogView);
 
 		if (!TestUtil.empty(title)) {
@@ -200,23 +193,27 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 
 	private void toggleLayout(ImageView button, View v) {
 		InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+		EditText editText = v.findViewById(R.id.caption_edittext);
 
 		if(v.isShown()){
 			AnimationUtil.slideUp(activity, v);
 			v.setVisibility(View.GONE);
 			button.setRotation(0);
-			if (imm != null) {
+			if (imm != null && editText != null) {
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 			}
 		}
 		else{
 			v.setVisibility(View.VISIBLE);
-			AnimationUtil.slideDown(activity, v);
+			AnimationUtil.slideDown(activity, v, () -> {
+				if (editText != null) {
+					editText.requestFocus();
+					if (imm != null) {
+						imm.showSoftInput(editText, 0);
+					}
+				}
+			});
 			button.setRotation(90);
-			v.requestFocus();
-			if (imm != null) {
-				imm.showSoftInput(v, 0);
-			}
 		}
 	}
 }

@@ -92,18 +92,8 @@ public class MediaItem implements Parcelable {
 	public MediaItem(Uri uri, String mimeType, String caption) {
 		init();
 
-		if (MimeUtil.isImageFile(mimeType)) {
-			if (MimeUtil.isGifFile(mimeType)) {
-				this.type = TYPE_GIF;
-			} else {
-				this.type = TYPE_IMAGE;
-			}
-		} else if (MimeUtil.isVideoFile(mimeType)) {
-			this.type = TYPE_VIDEO;
-		} else if (MimeUtil.isAudioFile(mimeType) && mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_AAC)) {
-			this.type = TYPE_VOICEMESSAGE;
-		} else {
-			this.type = TYPE_FILE;
+		this.type = MimeUtil.getMediaTypeFromMimeType(mimeType);
+		if (this.type == TYPE_FILE) {
 			this.renderingType = FileData.RENDERING_DEFAULT;
 		}
 

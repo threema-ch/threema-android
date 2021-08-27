@@ -59,7 +59,6 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	protected boolean isLengthCheck = true;
 	protected int minLength, maxLength;
 	protected MaterialCheckBox checkBox;
-	protected Object object;
 
 	public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
 	                                              @StringRes int hint,
@@ -119,10 +118,6 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	public interface PasswordEntryDialogClickListener {
 		void onYes(String tag, String text, boolean isChecked, Object data);
 		void onNo(String tag);
-	}
-
-	public void setData(Object o) {
-		object = o;
 	}
 
 	@Override

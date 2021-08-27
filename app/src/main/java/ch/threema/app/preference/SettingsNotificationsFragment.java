@@ -21,6 +21,8 @@
 
 package ch.threema.app.preference;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,17 +31,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.format.DateFormat;
 import android.view.View;
 
-import com.takisoft.preferencex.TimePickerPreference;
+import com.google.android.material.timepicker.MaterialTimePicker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Set;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationManagerCompat;
@@ -57,6 +63,9 @@ import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
+
+import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
+import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 
 public class SettingsNotificationsFragment extends ThreemaPreferenceFragment implements GenericAlertDialog.DialogClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(SettingsNotificationsFragment.class);
@@ -76,15 +85,39 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	private final String[] weekdays = new String[7];
 	private final String[] shortWeekdays = new String[7];
 	private final String[] weekday_values = new String[]{"0", "1", "2", "3", "4", "5", "6"};
-	private TimePickerPreference startPreference, endPreference;
+	private Preference startPreference, endPreference;
 
 	private Preference ringtonePreference, groupRingtonePreference, voiceRingtonePreference;
+
+	private final ActivityResultLauncher<Intent> voipRingtonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+	result -> {
+		if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+			Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+			onRingtoneSelected(DIALOG_TAG_VOIP_NOTIFICATION, uri);
+		}
+	});
+
+	private final ActivityResultLauncher<Intent> contactTonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+				Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+				onRingtoneSelected(DIALOG_TAG_CONTACT_NOTIFICATION, uri);
+			}
+		});
+
+	private final ActivityResultLauncher<Intent> groupTonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+				Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+				onRingtoneSelected(DIALOG_TAG_GROUP_NOTIFICATION, uri);
+			}
+		});
 
 	private void initWorkingTimePrefs() {
 		if (!ConfigUtils.isWorkBuild()) {
 			// remove preferences
-			PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("pref_key_notifications");
-			PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference("pref_key_work_life_balance");
+			PreferenceScreen preferenceScreen = findPreference("pref_key_notifications");
+			PreferenceCategory preferenceCategory = findPreference("pref_key_work_life_balance");
 			preferenceScreen.removePreference(preferenceCategory);
 			return;
 		}
@@ -93,39 +126,77 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		System.arraycopy(dfs.getWeekdays(), 1, weekdays, 0, 7);
 		System.arraycopy(dfs.getShortWeekdays(), 1, shortWeekdays, 0, 7);
 
-		MultiSelectListPreference multiSelectListPreference = (MultiSelectListPreference) findPreference(getString(R.string.preferences__working_days));
+		MultiSelectListPreference multiSelectListPreference = findPreference(getString(R.string.preferences__working_days));
 		multiSelectListPreference.setEntries(weekdays);
-		multiSelectListPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				updateWorkingDaysSummary(preference, (Set<String>)newValue);
-				return true;
-			}
+		multiSelectListPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+			updateWorkingDaysSummary(preference, (Set<String>)newValue);
+			return true;
 		});
 
 		updateWorkingDaysSummary(multiSelectListPreference, multiSelectListPreference.getValues());
 
-		startPreference = (TimePickerPreference) findPreference(getString(R.string.preferences__work_time_start));
-		startPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				TimePickerPreference.TimeWrapper newTime = (TimePickerPreference.TimeWrapper) newValue;
-				int newTimeStamp = newTime.hour * 60 + newTime.minute;
-				int endTimeStamp = endPreference.getHourOfDay() * 60 + endPreference.getMinute();
+		startPreference = findPreference(getString(R.string.preferences__work_time_start));
+		updateTimeSummary(startPreference, R.string.prefs_work_time_start_sum);
+		startPreference.setOnPreferenceClickListener(preference -> {
+			int[] startTime = splitDateFromPrefs(R.string.preferences__work_time_start);
 
-				return newTimeStamp < endTimeStamp;
+			final MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+				.setTitleText(R.string.prefs_work_time_start)
+				.setHour(startTime != null ? startTime[0] : 0)
+				.setMinute(startTime != null ? startTime[1] : 0)
+				.setTimeFormat(DateFormat.is24HourFormat(getContext()) ? CLOCK_24H : CLOCK_12H)
+				.build();
+			timePicker.addOnPositiveButtonClickListener(v1 -> {
+				int[] endTime = splitDateFromPrefs(R.string.preferences__work_time_end);
+
+				if (endTime != null) {
+					int newTimeStamp = timePicker.getHour() * 60 + timePicker.getMinute();
+					int endTimeStamp = endTime[0] * 60 + endTime[1];
+
+					if (newTimeStamp >= endTimeStamp) {
+						return;
+					}
+				}
+				String newValue = String.format(Locale.US, "%02d:%02d", timePicker.getHour(), timePicker.getMinute());
+				sharedPreferences.edit().putString(getResources().getString(R.string.preferences__work_time_start), newValue).apply();
+				updateTimeSummary(startPreference, R.string.prefs_work_time_start_sum);
+			});
+			if (isAdded()) {
+				timePicker.show(getParentFragmentManager(), "startt");
 			}
+			return true;
 		});
-		endPreference = (TimePickerPreference) findPreference(getString(R.string.preferences__work_time_end));
-		endPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				TimePickerPreference.TimeWrapper newTime = (TimePickerPreference.TimeWrapper) newValue;
-				int newTimeStamp = newTime.hour * 60 + newTime.minute;
-				int startTimeStamp = startPreference.getHourOfDay() * 60 + startPreference.getMinute();
 
-				return newTimeStamp > startTimeStamp;
+		endPreference = findPreference(getString(R.string.preferences__work_time_end));
+		updateTimeSummary(endPreference, R.string.prefs_work_time_end_sum);
+		endPreference.setOnPreferenceClickListener(preference -> {
+			int[] endTime = splitDateFromPrefs(R.string.preferences__work_time_end);
+
+			final MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+				.setTitleText(R.string.prefs_work_time_end)
+				.setHour(endTime != null ? endTime[0] : 0)
+				.setMinute(endTime != null ? endTime[1] : 0)
+				.setTimeFormat(DateFormat.is24HourFormat(getContext()) ? CLOCK_24H : CLOCK_12H)
+				.build();
+			timePicker.addOnPositiveButtonClickListener(v1 -> {
+				int[] startTime = splitDateFromPrefs(R.string.preferences__work_time_start);
+
+				if (startTime != null) {
+					int newTimeStamp = timePicker.getHour() * 60 + timePicker.getMinute();
+					int startTimeStamp = startTime[0] * 60 + startTime[1];
+
+					if (newTimeStamp <= startTimeStamp) {
+						return;
+					}
+				}
+				String newValue = String.format(Locale.US, "%02d:%02d", timePicker.getHour(), timePicker.getMinute());
+				sharedPreferences.edit().putString(getResources().getString(R.string.preferences__work_time_end), newValue).apply();
+				updateTimeSummary(endPreference, R.string.prefs_work_time_end_sum);
+			});
+			if (isAdded()) {
+				timePicker.show(getParentFragmentManager(), "endt");
 			}
+			return true;
 		});
 	}
 
@@ -145,14 +216,33 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		preference.setSummary(summary);
 	}
 
+	@Nullable
+	private int[] splitDateFromPrefs(@StringRes int key) {
+		String value = sharedPreferences.getString(getString(key), null);
+		if (value == null) {
+			return null;
+		}
+		try {
+			String[] hourMinuteString = value.split(":");
+			int[] hourMinuteInt = new int[2];
+			hourMinuteInt[0] = Integer.parseInt(hourMinuteString[0]);
+			hourMinuteInt[1] = Integer.parseInt(hourMinuteString[1]);
+
+			return hourMinuteInt;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	@Override
 	public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
 		sharedPreferences = getPreferenceManager().getSharedPreferences();
 
 		addPreferencesFromResource(R.xml.preference_notifications);
 
-		if (!ConfigUtils.isMIUI10()) {
-			PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("pref_key_notifications");
+		int miuiVersion = ConfigUtils.getMIUIVersion();
+		if (miuiVersion < 10) {
+			PreferenceScreen preferenceScreen = findPreference("pref_key_notifications");
 			preferenceScreen.removePreference(findPreference("pref_key_miui"));
 		}
 
@@ -168,52 +258,32 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		voiceRingtonePreference = findPreference(getResources().getString(R.string.preferences__voip_ringtone));
 		updateRingtoneSummary(voiceRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__voip_ringtone), ""));
 
-		ringtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				RingtoneSelectorDialog dialog = RingtoneSelectorDialog.newInstance(getString(R.string.prefs_notification_sound),
-					RingtoneManager.TYPE_NOTIFICATION,
-					getRingtoneFromRingtonePref(R.string.preferences__notification_sound),
-					null,
-					true,
-					true);
-				dialog.setTargetFragment(SettingsNotificationsFragment.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_CONTACT_NOTIFICATION);
-				return true;
-			}
+		ringtonePreference.setOnPreferenceClickListener(preference -> {
+			chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
+				getRingtoneFromRingtonePref(R.string.preferences__notification_sound),
+				null,
+				getString(R.string.prefs_notification_sound),
+				DIALOG_TAG_CONTACT_NOTIFICATION);
+			return true;
 		});
-		groupRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				RingtoneSelectorDialog dialog = RingtoneSelectorDialog.newInstance(getString(R.string.prefs_notification_sound),
-					RingtoneManager.TYPE_NOTIFICATION,
-					getRingtoneFromRingtonePref(R.string.preferences__group_notification_sound),
-					null,
-					true,
-					true);
-				dialog.setTargetFragment(SettingsNotificationsFragment.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_GROUP_NOTIFICATION);
-				return true;
-			}
+		groupRingtonePreference.setOnPreferenceClickListener(preference -> {
+			chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
+				getRingtoneFromRingtonePref(R.string.preferences__group_notification_sound),
+				null,
+				getString(R.string.prefs_notification_sound),
+				DIALOG_TAG_GROUP_NOTIFICATION);
+			return true;
 		});
 		voiceRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-
-				RingtoneSelectorDialog dialog = RingtoneSelectorDialog.newInstance(getString(R.string.prefs_voice_call_sound),
-					RingtoneManager.TYPE_RINGTONE,
-					getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone),
-					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
-					true,
-					true);
-				dialog.setTargetFragment(SettingsNotificationsFragment.this, 0);
-				dialog.show(getFragmentManager(), DIALOG_TAG_VOIP_NOTIFICATION);
+				chooseRingtone(RingtoneManager.TYPE_RINGTONE, getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone), RingtoneUtil.THREEMA_CALL_RINGTONE_URI, getString(R.string.prefs_voice_call_sound), DIALOG_TAG_VOIP_NOTIFICATION);
 				return true;
 			}
 		});
 
 		if (ConfigUtils.isWorkRestricted()) {
-			CheckBoxPreference notificationPreview = (CheckBoxPreference) findPreference(getString(R.string.preferences__notification_preview));
+			CheckBoxPreference notificationPreview = findPreference(getString(R.string.preferences__notification_preview));
 
 			Boolean value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_message_preview));
 			if (value != null) {
@@ -222,18 +292,48 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 			}
 		}
 
-		if (ConfigUtils.isMIUI10()) {
-			ShowOnceDialog.newInstance(R.string.miui_notification_title, R.string.miui_notification_body).show(getFragmentManager(), DIALOG_TAG_MIUI_NOTICE);
+		if (miuiVersion >= 10) {
+			ShowOnceDialog.newInstance(
+				R.string.miui_notification_title,
+				miuiVersion >= 12 ?
+				R.string.miui12_notification_body:
+				R.string.miui_notification_body).show(getFragmentManager(), DIALOG_TAG_MIUI_NOTICE);
 
 			Preference miuiPreference = findPreference("pref_key_miui");
-			miuiPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					openMIUINotificationSettings();
-					return true;
-				}
+			miuiPreference.setOnPreferenceClickListener(preference -> {
+				openMIUINotificationSettings();
+				return true;
 			});
 		}
+	}
+
+	private void chooseRingtone(final int type, final Uri currentUri, final Uri defaultUri, final String title, final String tag) {
+		try {
+			Intent intent = RingtoneUtil.getRingtonePickerIntent(type, currentUri, defaultUri);
+
+			switch (tag) {
+				case DIALOG_TAG_VOIP_NOTIFICATION:
+					voipRingtonePickerLauncher.launch(intent);
+					break;
+				case DIALOG_TAG_CONTACT_NOTIFICATION:
+					contactTonePickerLauncher.launch(intent);
+					break;
+				case DIALOG_TAG_GROUP_NOTIFICATION:
+					groupTonePickerLauncher.launch(intent);
+					break;
+			}
+		} catch (ActivityNotFoundException e) {
+			RingtoneSelectorDialog dialog = RingtoneSelectorDialog.newInstance(
+				title,
+				type,
+				currentUri,
+				defaultUri,
+				true,
+				true);
+			dialog.setTargetFragment(SettingsNotificationsFragment.this, 0);
+			dialog.show(getFragmentManager(), tag);
+		}
+
 	}
 
 	@Override
@@ -269,6 +369,10 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 			summary = RingtoneUtil.getRingtoneNameFromUri(getContext(), Uri.parse(value));
 		}
 		preference.setSummary(summary);
+	}
+
+	private void updateTimeSummary(Preference preference, @StringRes int defaultSummary) {
+		preference.setSummary(sharedPreferences.getString(preference.getKey(), getString(defaultSummary)));
 	}
 
 	private void openMIUINotificationSettings() {

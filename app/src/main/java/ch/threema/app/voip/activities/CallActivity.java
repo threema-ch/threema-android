@@ -43,6 +43,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -410,7 +412,7 @@ public class CallActivity extends ThreemaActivity implements
 
 	//region Broadcast receivers
 
-	private BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -483,6 +485,23 @@ public class CallActivity extends ThreemaActivity implements
 						final VideoContext videoContext = voipStateService.getVideoContext();
 						if (videoContext != null) {
 							videoContext.clearRemoteVideoSinkProxy();
+						}
+
+						// Vibrate phone quickly to indicate that the remote video stream was enabled
+						if (preferenceService.isInAppVibrate()) {
+							try {
+								final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+								if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+									// VibrationEffect requires API>=26
+									final VibrationEffect effect = VibrationEffect.createOneShot(100, 128);
+									vibrator.vibrate(effect);
+								} else {
+									// Legacy method (API<26), use shorter vibration to compensate missing amplitude control
+									vibrator.vibrate(60);
+								}
+							} catch (Exception e) {
+								logger.warn("Could not vibrate device on incoming video stream", e);
+							}
 						}
 
 						if (!audioSelectorTooltipShown && currentAudioDevice == VoipAudioManager.AudioDevice.EARPIECE) {
@@ -587,7 +606,7 @@ public class CallActivity extends ThreemaActivity implements
 
 	//region Listeners
 
-	private ContactListener contactListener = new ContactListener() {
+	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(ContactModel modifiedContactModel) {
 			RuntimeUtil.runOnUiThread(CallActivity.this::updateContactInfo);
@@ -1031,7 +1050,7 @@ public class CallActivity extends ThreemaActivity implements
 		boolean incomingVideo = (videoMode & VIDEO_RENDER_FLAG_INCOMING) == VIDEO_RENDER_FLAG_INCOMING;
 		boolean outgoingVideo = (videoMode & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING;
 
-		if (this.videoViews != null) {
+		if (this.videoViews != null && this.commonViews != null) {
 			if (incomingVideo && outgoingVideo) {
 				this.videoViews.pipVideoRenderer.setVisibility(View.VISIBLE);
 			} else {
@@ -1720,9 +1739,8 @@ public class CallActivity extends ThreemaActivity implements
 			setResult(RESULT_CANCELED);
 			finish();
 		} else {
+			stopService(new Intent(this, VoipCallService.class));
 			disconnect(RESULT_CANCELED);
-			setResult(RESULT_CANCELED);
-			finish();
 		}
 	}
 
@@ -1811,7 +1829,6 @@ public class CallActivity extends ThreemaActivity implements
 	@UiThread
 	private void disconnect(int result) {
 		logger.info("disconnect");
-		stopService(new Intent(this, VoipCallService.class));
 		setResult(result);
 		finish();
 	}

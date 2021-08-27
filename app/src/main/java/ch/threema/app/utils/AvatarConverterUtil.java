@@ -21,6 +21,7 @@
 
 package ch.threema.app.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -46,6 +47,7 @@ import java.io.InputStream;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -80,6 +82,7 @@ public class AvatarConverterUtil {
 		return iconOffset;
 	}
 
+	@RequiresPermission(Manifest.permission.READ_CONTACTS)
 	public static Bitmap convert(Context context, Uri contactUri) {
 		Bitmap source = null;
 		SampleResult sampleResult;
