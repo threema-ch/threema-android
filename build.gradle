@@ -5,7 +5,7 @@ buildscript {
         flatDir { dirs 'app/libs' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:7.0.2'
         classpath 'org.owasp:dependency-check-gradle:6.1.6'
 
         // Huawei agconnect plugin

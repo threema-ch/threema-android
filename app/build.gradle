@@ -76,13 +76,13 @@ def keystores = [
 android {
     // NOTE: When adjusting compileSdkVersion or buildToolsVersion,
     //       make sure to adjust them in `scripts/Dockerfile` as well!
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
 
     defaultConfig {
         minSdkVersion 19
         //noinspection OldTargetApi
-        targetSdkVersion 29
+        targetSdkVersion 30
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
