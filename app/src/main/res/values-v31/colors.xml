@@ -20,18 +20,18 @@
 	<color name="backup_logos_background">@android:color/system_neutral1_50</color>;
 
 	<!-- message list -->
-	<color name="text_color_first_line">#ff3c4043</color>
+	<color name="text_color_first_line">@android:color/system_neutral1_700</color>
 	<color name="text_color_second_line">@color/text_color_secondary</color>
-	<color name="text_color_first_line_bold">#ff202124</color>
-	<color name="text_color_second_line_bold">#ff202124</color>
+	<color name="text_color_first_line_bold">@android:color/system_neutral1_900</color>
+	<color name="text_color_second_line_bold">@android:color/system_neutral1_900</color>
 	<color name="text_color_third_line">@color/text_color_tertiary</color>
 
 	<!-- message list dark -->
-	<color name="text_color_first_line_dark">#fff1f3f4</color>
+	<color name="text_color_first_line_dark">@android:color/system_neutral1_50</color>
 	<color name="text_color_second_line_dark">#ff9aa0a6</color>
-	<color name="text_color_first_line_bold_dark">#ffffffff</color>
-	<color name="text_color_second_line_bold_dark">#ffffffff</color>
-	<color name="text_color_third_line_dark">#ff8a9096</color>
+	<color name="text_color_first_line_bold_dark">@android:color/system_neutral1_0</color>
+	<color name="text_color_second_line_bold_dark">@android:color/system_neutral1_0</color>
+	<color name="text_color_third_line_dark">@android:color/system_neutral1_500</color>
 
 	<!-- chat bubbles -->
 	<!-- light -->
@@ -39,8 +39,8 @@
 	<color name="light_bubble_send">@android:color/system_neutral1_100</color>
 	<color name="bubble_status_light">@android:color/system_accent3_100</color>
 	<color name="unread_messages_text_color">#88000000</color>
-	<color name="unread_messages_bg_color">#fff7f8f9</color>
-	<color name="date_separator_bg_color">#ffbababa</color>
+	<color name="unread_messages_bg_color">@android:color/system_neutral1_10</color>
+	<color name="date_separator_bg_color">@android:color/system_neutral1_300</color>
 
 	<!-- selectors -->
 	<color name="bubble_selected">@android:color/system_accent3_300</color>
@@ -52,9 +52,9 @@
 	<color name="dark_bubble_recv">@android:color/system_neutral1_700</color>
 	<color name="dark_bubble_send">@android:color/system_neutral1_800</color>
 	<color name="bubble_status_dark">@android:color/system_accent3_100</color>
-	<color name="dark_unread_messages_text_color">#FFFFFFFF</color>
-	<color name="dark_unread_messages_bg_color">#ff7090B0</color>
-	<color name="dark_date_separator_bg_color">#ff404040</color>
+	<color name="dark_unread_messages_text_color">@android:color/system_neutral1_0</color>
+	<color name="dark_unread_messages_bg_color">@android:color/system_accent2_400</color>
+	<color name="dark_date_separator_bg_color">@android:color/system_neutral1_700</color>
 
 	<!-- selectors -->
 	<color name="bubble_selected_dark">@android:color/system_accent3_200</color>
@@ -67,7 +67,7 @@
 	<color name="compose_bubble_dark">#33000000</color> <!-- doesn't need material you customization -->
 
 	<!-- agnostic -->
-	<color name="date_separator_text_color">#FFffffff</color>
+	<color name="date_separator_text_color">@android:color/system_neutral1_0</color>
 
 	<!-- wizard step pager display -->
 	<color name="step_pager_previous_tab_color">@android:color/system_accent3_300</color>
@@ -77,10 +77,10 @@
 	<color name="gallery_background">@android:color/system_neutral1_900</color>
 	<color name="status_bar_detail">@android:color/system_neutral1_700</color>
 
-	<color name="text_color_primary">#ff202124</color>
-	<color name="text_color_secondary">#ff5f6368</color>
-	<color name="text_color_tertiary">#ffa5a5a5</color>
-	<color name="ballot_list_footer_background">#ffe3e3e3</color>
+	<color name="text_color_primary">@android:color/system_neutral1_900</color>
+	<color name="text_color_secondary">@android:color/system_neutral1_600</color>
+	<color name="text_color_tertiary">@android:color/system_neutral1_300</color>
+	<color name="ballot_list_footer_background">@android:color/system_neutral1_100</color>
 	<color name="image_tint_default">@color/material_grey_600</color>
 
 	<!-- material -->
@@ -162,14 +162,14 @@
 	<color name="new_wizard_color_primary">@android:color/white</color>
 	<color name="new_wizard_alpha_background">#33ffffff</color>
 	<color name="new_wizard_color_accent">@color/accent_dark</color>
-	<color name="new_wizard_color_accent_dark">#323232</color>
+	<color name="new_wizard_color_accent_dark">@color/cardview_background_dark</color>
 	<color name="new_wizard_color_button_disabled">#664caf50</color>
 
 	<color name="fab_label_background">#555555</color>
 	<color name="background_dim_light">#77ffffff</color>
 	<color name="background_dim_dark">#77000000</color>
-	<color name="item_controller_color">#FFAAAAAA</color>
-	<color name="imagepaint_overlay_select_color">#FFFFFFFF</color>
+	<color name="item_controller_color">@android:color/system_neutral1_300</color>
+	<color name="imagepaint_overlay_select_color">@android:color/system_neutral1_0</color>
 
 	<color name="list_item_background_checked">#40999999</color>
 	<!-- solid colors of selected list item background -->
@@ -199,13 +199,13 @@
 	<color name="mention_background_inverted">@color/material_grey_500</color>
 
 	<!-- tooltips -->
-	<color name="tooltip_text_color">@android:color/white</color>
-	<color name="tooltip_background_color">@color/material_indigo</color>
+	<color name="tooltip_text_color">@android:color/system_neutral1_0</color>
+	<color name="tooltip_background_color">@android:color/system_accent3_300</color>
 	<color name="tooltip_shadow_color">#40555555</color>
 
 	<!-- markup -->
-	<color name="markup_marker_color">#FFD3D3D3</color>
-	<color name="markup_marker_color_dark">#FF888888</color>
+	<color name="markup_marker_color">@android:color/system_neutral1_200</color>
+	<color name="markup_marker_color_dark">@android:color/system_neutral1_500</color>
 
 	<!-- qr scanner -->
 	<color name="possible_result_points">@android:color/system_accent3_400</color>
@@ -214,8 +214,8 @@
 	<color name="viewfinder_mask">#60000000</color>
 
 	<!-- Location Picker -->
-	<color name="lp_primary">#ff607d8b</color>
-	<color name="lp_marker_icon">#ffffffff</color>
+	<color name="lp_primary">@android:color/system_accent2_500</color>
+	<color name="lp_marker_icon">@android:color/system_neutral1_0</color>
 
 	<!-- Media Attacher	-->
 	<color name="transparent_activity_overlay">#4C000000</color>
@@ -223,8 +223,8 @@
 	<color name="mime_type_marker_background">#55000000</color>
 
 	<!-- preference headers -->
-	<color name="settings_second_line_text_color">#757575</color>
-	<color name="settings_second_line_text_color_dark">#b8b8b8</color>
+	<color name="settings_second_line_text_color">@android:color/system_neutral1_500</color>
+	<color name="settings_second_line_text_color_dark">@android:color/system_neutral1_300</color>
 	<color name="settings_multipane_selection_bg_light">#1a000000</color>
 	<color name="settings_multipane_selection_bg_dark">#39ffffff</color>
 
@@ -235,9 +235,9 @@
 	<!-- Media attacher -->
 	<color name="attach_status_bar_expanded_light">@android:color/white</color>
 	<color name="attach_status_bar_expanded_dark">@color/dark_material_level2</color>
-	<color name="attach_status_bar_collapsed_light">#FFB3B3B3</color>
-	<color name="attach_status_bar_collapsed_dark">#FF131313</color>
-	<color name="attach_button_background_light">#FFF1F1F1</color>
+	<color name="attach_status_bar_collapsed_light">@android:color/system_neutral1_300</color>
+	<color name="attach_status_bar_collapsed_dark">@android:color/system_neutral1_900</color>
+	<color name="attach_button_background_light">@android:color/system_neutral1_50</color>
 	<color name="attach_button_background_dark">@color/dark_material_level3</color>
 	<color name="preview_navigation_area_bg">#44000000</color>
 
