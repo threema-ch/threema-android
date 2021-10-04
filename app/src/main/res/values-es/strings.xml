@@ -1195,5 +1195,13 @@ almacenado.</string>
     <string name="label_continue">Continuar</string>
     <string name="select_date">Selecciona una fecha</string>
     <string name="select_time">Selecciona una hora</string>
-    <string name="recipients">Destinatarios: %s</string>
+    <string name="send_to">Enviar a %s</string>
+    <string name="receipts_override_choice_send">Enviar</string>
+    <string name="receipts_override_choice_dont_send">No enviar</string>
+    <string name="receipts_override_choice_default">Predeterminado (%s)</string>
+    <string name="unable_to_determine_recording_length">Grabación vacía o imposible determinar su duración</string>
+    <string name="prefs_header_receipts">Confirmaciones</string>
+    <string name="prefs_title_reset_receipts">Borrar ajustes individuales</string>
+    <string name="prefs_sum_reset_receipts">Restablecer ajustes específicos de contactos para confirmaciones de lectura e indicador de escritura a los predeterminados.</string>
+    <string name="reset_successful">Predeterminados restablecidos correctamente</string>
 </resources>

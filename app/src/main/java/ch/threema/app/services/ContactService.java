@@ -29,6 +29,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
@@ -85,6 +86,11 @@ public interface ContactService extends AvatarService<ContactModel> {
 		 * include hidden contacts
 		 */
 		Boolean includeHidden();
+
+		/*
+		 * Limit to contacts with individual settings fro read receipts and typing indicators
+		 */
+		Boolean onlyWithReceiptSettings();
 	}
 
 	ContactModel getMe();
@@ -115,7 +121,6 @@ public interface ContactService extends AvatarService<ContactModel> {
 	int countIsWork();
 
 	List<ContactModel> getCanReceiveProfilePics();
-
 	List<String> getSynchronizedIdentities();
 
 	@Nullable
@@ -195,7 +200,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	boolean updateAllContactNamesAndAvatarsFromAndroidContacts();
 
-	void removeAllThreemaContactIds();
+	void removeAllSystemContactLinks();
 
 	boolean rebuildColors();
 
@@ -222,4 +227,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	String getAndroidContactLookupUriString(ContactModel contactModel);
 	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
 	void createWorkContact(@NonNull String identity);
+
+	@WorkerThread
+	boolean resetReceiptsSettings();
 }

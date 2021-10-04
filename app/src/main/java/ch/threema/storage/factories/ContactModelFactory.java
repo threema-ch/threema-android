@@ -142,7 +142,9 @@ public class ContactModelFactory extends ModelFactory {
 					.setProfilePicSentDate(cursorFactory.getDate(ContactModel.COLUMN_PROFILE_PIC_SENT_DATE))
 					.setDateCreated(cursorFactory.getDate(ContactModel.COLUMN_DATE_CREATED))
 					.setIsRestored(cursorFactory.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
-					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1);
+					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
+					.setReadReceipts(cursorFactory.getInt(ContactModel.COLUMN_READ_RECEIPTS))
+					.setTypingIndicators(cursorFactory.getInt(ContactModel.COLUMN_TYPING_INDICATORS));
 
 				switch (cursorFactory.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL))
 				{
@@ -217,6 +219,8 @@ public class ContactModelFactory extends ModelFactory {
 		contentValues.put(ContactModel.COLUMN_IS_HIDDEN, contactModel.isHidden());
 		contentValues.put(ContactModel.COLUMN_IS_RESTORED, contactModel.isRestored());
 		contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
+		contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
+		contentValues.put(ContactModel.COLUMN_TYPING_INDICATORS, contactModel.getTypingIndicators());
 
 		if (insert) {
 			//never update identity field
@@ -267,7 +271,9 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_IS_HIDDEN + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_RESTORED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
-						"PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
+						"`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_TYPING_INDICATORS + "` TINYINT DEFAULT 0," +
+					"PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
 		};
 	}
 

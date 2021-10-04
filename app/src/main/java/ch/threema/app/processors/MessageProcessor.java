@@ -405,6 +405,10 @@ public class MessageProcessor implements MessageProcessorInterface {
 			logger.error("File not found", f);
 			return true;
 		}
+		catch (BadMessageException e) {
+			logger.warn("Bad message exception", e);
+			return e.shouldDrop();
+		}
 		catch (Exception e) {
 			logger.error("Unknown exception", e);
 			return false;

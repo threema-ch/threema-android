@@ -5,6 +5,12 @@
   -->
 <network-security-config>
 	<!-- Official Android N API -->
+	<base-config cleartextTrafficPermitted="false">
+		<trust-anchors>
+			<certificates src="system" />
+			<certificates src="user" />
+		</trust-anchors>
+	</base-config>
 	<domain-config cleartextTrafficPermitted="false">
 		<domain includeSubdomains="true">threema.ch</domain>
 		<pin-set>

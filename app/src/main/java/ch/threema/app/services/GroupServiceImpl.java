@@ -511,14 +511,14 @@ public class GroupServiceImpl implements GroupService {
 			if(model != null) {
 				@GroupState int groupState = getGroupState(model);
 
-				this.removeMemberFromGroup(model, msg.getFromIdentity());
-
-				ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
-					@Override
-					public void handle(GroupListener listener) {
-						listener.onGroupStateChanged(model, groupState, getGroupState(model));
-					}
-				});
+				if (this.removeMemberFromGroup(model, msg.getFromIdentity())) {
+					ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
+						@Override
+						public void handle(GroupListener listener) {
+							listener.onGroupStateChanged(model, groupState, getGroupState(model));
+						}
+					});
+				}
 
 				return true;
 			}

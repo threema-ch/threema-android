@@ -1190,5 +1190,13 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="label_continue">Continuar</string>
     <string name="select_date">Selecione uma data</string>
     <string name="select_time">Selecione um horário</string>
-    <string name="recipients">Destinatários: %s</string>
+    <string name="send_to">Enviar para %s</string>
+    <string name="receipts_override_choice_send">Enviar</string>
+    <string name="receipts_override_choice_dont_send">Não enviar</string>
+    <string name="receipts_override_choice_default">Padrão (%s)</string>
+    <string name="unable_to_determine_recording_length">Gravação vazia ou não foi possível determinar a duração</string>
+    <string name="prefs_header_receipts">Confirmações</string>
+    <string name="prefs_title_reset_receipts">Limpar configurações individuais</string>
+    <string name="prefs_sum_reset_receipts">Restaurar configurações específicas do contato para confirmações de leitura e indicador de digitação para padrão</string>
+    <string name="reset_successful">Restauração para padrão bem-sucedida</string>
 </resources>

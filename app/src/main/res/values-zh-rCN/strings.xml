@@ -1061,8 +1061,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
     <string name="backup_data_no_permission">无法写入此目录。请选择另一个。</string>
-    <string name="prefs_sum_show_unread_badge">在消息图标旁边显示徽章，表示未读消息的数量</string>
-    <string name="prefs_title_show_unread_badge">未读邮件徽章</string>
+    <string name="prefs_sum_show_unread_badge">在底部导航栏显示未读消息提示</string>
+    <string name="prefs_title_show_unread_badge">未读消息提示</string>
     <string name="pinning_not_trusted">证书固定失败。请检查是否在设备的凭据存储中安装并激活了 “委托根证书颁发机构-G2”。</string>
     <string name="pinning_failed">证书固定失败。可能发生中间人攻击。如果您安装了广告拦截器、内容过滤器或防火墙应用程序，例如 AdGuard，请禁用后重开 Threema。</string>
     <string name="open_myid_popup">打开快速访问弹出窗口</string>
@@ -1222,11 +1222,19 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="download_failed">下载失败。错误代码：%d</string>
     <string name="edit_answer">编辑答案</string>
     <string name="share_media">与其他应用分享...</string>
-    <string name="miui_battery_optimization">请为 %1$s 禁用 “电池优化” 以便 %1$s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
+    <string name="miui_battery_optimization">请为 %s 禁用 “电池优化” 以便 %s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
     <string name="forward_captions">包含描述</string>
     <string name="importing_files_failed">无法导入备份文件，请确保内部存储有足够的可用空间。</string>
     <string name="label_continue">继续</string>
     <string name="select_date">选择日期</string>
     <string name="select_time">选择时间</string>
-    <string name="recipients">收件人：%s</string>
+    <string name="send_to">发送到 %s</string>
+    <string name="receipts_override_choice_send">发送</string>
+    <string name="receipts_override_choice_dont_send">不要发送</string>
+    <string name="receipts_override_choice_default">默认（%s）</string>
+    <string name="unable_to_determine_recording_length">录音为空白或无法确定录音长度</string>
+    <string name="prefs_header_receipts">消息回执和输入状态</string>
+    <string name="prefs_title_reset_receipts">清除个别设置</string>
+    <string name="prefs_sum_reset_receipts">将特定联系人的已读回执和输入状态设置重置为默认值</string>
+    <string name="reset_successful">成功重置为默认值</string>
 </resources>

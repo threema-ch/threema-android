@@ -28,15 +28,14 @@ import android.text.format.Formatter;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +77,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 	private MessageService messageService;
 	private ConversationService conversationService;
 	private TextView totalView, usageView, freeView, messageView, inuseView;
-	private Spinner timeSpinner, messageTimeSpinner;
+	private MaterialAutoCompleteTextView timeSpinner, messageTimeSpinner;
 	private Button deleteButton, messageDeleteButton;
 	private ProgressBar progressBar;
 	private boolean isCancelled, isMessageDeleteCancelled;
@@ -156,36 +155,18 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			}
 		});
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-				R.array.storagemanager_timeout, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.storagemanager_timeout, android.R.layout.simple_spinner_dropdown_item);
 		timeSpinner.setAdapter(adapter);
-		timeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				selectedSpinnerItem = position;
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				selectedSpinnerItem = 0;
-			}
+		timeSpinner.setText(adapter.getItem(selectedSpinnerItem), false);
+		timeSpinner.setOnItemClickListener((parent, view, position, id) -> {
+			selectedSpinnerItem = position;
 		});
 
-		ArrayAdapter<CharSequence> messageCleanupAdapter = ArrayAdapter.createFromResource(this,
-				R.array.storagemanager_timeout, android.R.layout.simple_spinner_item);
-		messageCleanupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		final ArrayAdapter<CharSequence> messageCleanupAdapter = ArrayAdapter.createFromResource(this, R.array.storagemanager_timeout, android.R.layout.simple_spinner_dropdown_item);
 		messageTimeSpinner.setAdapter(messageCleanupAdapter);
-		messageTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				selectedMessageSpinnerItem = position;
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				selectedMessageSpinnerItem = 0;
-			}
+		messageTimeSpinner.setText(messageCleanupAdapter.getItem(selectedMessageSpinnerItem), false);
+		messageTimeSpinner.setOnItemClickListener((parent, view, position, id) -> {
+			selectedMessageSpinnerItem = position;
 		});
 
 		storageFull.post(new Runnable() {

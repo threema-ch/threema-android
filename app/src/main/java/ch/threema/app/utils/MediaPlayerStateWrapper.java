@@ -304,6 +304,14 @@ public class MediaPlayerStateWrapper {
 		mediaPlayer.setScreenOnWhilePlaying(screenOn);
 	}
 
+	public void setOnPreparedListener(MediaPlayer.OnPreparedListener onPreparedListener) {
+		mediaPlayer.setOnPreparedListener(onPreparedListener);
+	}
+
+	public void setOnCompletionListener(MediaPlayer.OnCompletionListener onCompletionListener) {
+		mediaPlayer.setOnCompletionListener(onCompletionListener);
+	}
+
 	/**
 	 * Set playback parameters of MediaPlayer instance
 	 * @param playbackParams PlaybackParams to set

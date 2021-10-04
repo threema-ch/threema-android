@@ -81,7 +81,7 @@
 		app:layout_constraintVertical_chainStyle="packed"
 		app:layout_constraintHorizontal_chainStyle="packed"
 		app:layout_constraintHorizontal_bias="0"
-		app:layout_constrainedWidth="true"/>
+		app:layout_constrainedWidth="false"/>
 	<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
 	<ch.threema.app.emojis.EmojiTextView

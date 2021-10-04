@@ -75,24 +75,6 @@
 					tools:layout_conversion_absoluteWidth="40dp" />
 
 				<ImageView
-					android:id="@+id/picrelease_config"
-					android:layout_width="40dp"
-					android:layout_height="40dp"
-					android:layout_marginEnd="16dp"
-					android:background="@drawable/circle_transparent"
-					android:contentDescription="@string/configure"
-					android:rotation="180"
-					android:scaleType="center"
-					app:layout_constraintBottom_toBottomOf="@+id/picrelease_spinner"
-					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintTop_toTopOf="@+id/picrelease_spinner"
-					app:srcCompat="@drawable/ic_settings_outline_24dp"
-					app:tint="?attr/colorAccent"
-					tools:layout_conversion_absoluteHeight="40dp"
-					tools:layout_conversion_absoluteWidth="40dp" />
-
-
-				<ImageView
 					android:id="@+id/my_id_qr"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -138,20 +120,6 @@
 					tools:layout_conversion_absoluteHeight="16dp"
 					tools:layout_conversion_absoluteWidth="366dp" />
 
-
-				<TextView
-					android:id="@+id/picrelease_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="8dp"
-					android:text="@string/profile_picture_release"
-					android:textAppearance="@style/Threema.Text.Overline"
-					android:textColor="@null"
-					app:layout_constraintStart_toStartOf="@+id/nickname"
-					app:layout_constraintTop_toBottomOf="@+id/profile_edit"
-					tools:layout_conversion_absoluteHeight="16dp"
-					tools:layout_conversion_absoluteWidth="366dp" />
-
 				<TextView
 					android:id="@+id/my_id_title"
 					android:layout_width="wrap_content"
@@ -171,28 +139,44 @@
 					tools:layout_editor_absoluteX="16dp"
 					tools:layout_editor_absoluteY="16dp" />
 
-				<androidx.appcompat.widget.AppCompatSpinner
-					android:id="@+id/picrelease_spinner"
-					style="@style/Base.Widget.AppCompat.Spinner"
-					android:layout_width="wrap_content"
+				<ImageView
+					android:id="@+id/picrelease_config"
+					android:layout_width="40dp"
 					android:layout_height="40dp"
-					app:layout_constraintStart_toStartOf="@+id/picrelease_text"
-					app:layout_constraintTop_toBottomOf="@+id/picrelease_text"
-					tools:layout_conversion_absoluteHeight="48dp"
-					tools:layout_conversion_absoluteWidth="48dp" />
+					android:layout_marginEnd="16dp"
+					android:layout_marginTop="4dp"
+					android:background="@drawable/circle_transparent"
+					android:contentDescription="@string/configure"
+					android:rotation="180"
+					android:scaleType="center"
+					app:layout_constraintBottom_toBottomOf="@+id/picrelease_text"
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintTop_toTopOf="@+id/picrelease_text"
+					app:srcCompat="@drawable/ic_settings_outline_24dp"
+					app:tint="?attr/colorAccent" />
 
-				<androidx.constraintlayout.widget.ConstraintLayout
-					android:id="@+id/constraintLayout2"
-					android:layout_width="wrap_content"
+				<com.google.android.material.textfield.TextInputLayout
+					android:id="@+id/picrelease_text"
+					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
 					android:layout_marginStart="16dp"
-					android:layout_marginTop="16dp"
+					android:layout_marginEnd="72dp"
+					android:hint="@string/profile_picture_release"
+					app:expandedHintEnabled="false"
 					app:layout_constraintStart_toStartOf="parent"
-					app:layout_constraintTop_toTopOf="parent"
-					tools:layout_conversion_absoluteHeight="48dp"
-					tools:layout_conversion_absoluteWidth="366dp">
+					app:layout_constraintEnd_toEndOf="parent"
+					app:layout_constraintTop_toBottomOf="@+id/nickname">
 
-				</androidx.constraintlayout.widget.ConstraintLayout>
+					<com.google.android.material.textfield.MaterialAutoCompleteTextView
+						android:id="@+id/picrelease_spinner"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:focusable="false"
+						android:inputType="none" />
+
+				</com.google.android.material.textfield.TextInputLayout>
 
 				<ch.threema.app.emojis.EmojiTextView
 					android:id="@+id/my_id"

@@ -22,9 +22,6 @@
 package ch.threema.client;
 
 import ch.threema.base.Contact;
-import ch.threema.client.*;
-
-import java.util.Collection;
 
 public class Helpers {
 
@@ -43,26 +40,13 @@ public class Helpers {
 			}
 
 			@Override
-			public Collection<Contact> getAllContacts() {
-				return null;
-			}
-
-			@Override
 			public void addContact(Contact contact) { }
 
 			@Override
-			public void hideContact(Contact contact, boolean hide) {
-
-			}
+			public void hideContact(Contact contact, boolean hide) { }
 
 			@Override
 			public void removeContact(Contact contact) { }
-
-			@Override
-			public void addContactStoreObserver(ContactStoreObserver observer) { }
-
-			@Override
-			public void removeContactStoreObserver(ContactStoreObserver observer) { }
 		};
 	}
 

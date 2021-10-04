@@ -1186,5 +1186,13 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="label_continue">Doorgaan</string>
     <string name="select_date">Selecteer een datum</string>
     <string name="select_time">Selecteer een tijd</string>
-    <string name="recipients">Ontvanger: %s</string>
+    <string name="send_to">Verzenden naar %s</string>
+    <string name="receipts_override_choice_send">Verzenden</string>
+    <string name="receipts_override_choice_dont_send">Niet verzenden</string>
+    <string name="receipts_override_choice_default">Standaard (%s)</string>
+    <string name="unable_to_determine_recording_length">Lege opname of kan lengte niet bepalen</string>
+    <string name="prefs_header_receipts">Leesbevestigingen</string>
+    <string name="prefs_title_reset_receipts">Individuele instellingen wissen</string>
+    <string name="prefs_sum_reset_receipts">Contactspecifieke instellingen voor leesbevestigingen en invoerindicator naar standaard herstellen</string>
+    <string name="reset_successful">Hersteld naar standaard</string>
 </resources>

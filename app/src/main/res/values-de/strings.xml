@@ -44,7 +44,7 @@
 	</string>
 	<string name="prefs_title_block_unknown">Unbekannte blockieren</string>
 	<string name="prefs_title_read_receipts">Lesebestätigungen senden</string>
-	<string name="prefs_title_typing_indicator">Melden wenn ich tippe</string>
+	<string name="prefs_title_typing_indicator">Melden, wenn ich tippe</string>
 	<string name="prefs_media_title">Medien &amp; Speicher</string>
 	<string name="prefs_sum_media_title">Einstellungen zu Medien, Dateien und Speicherplatz</string>
 	<string name="prefs_image_size">Bild-Abmessungen</string>
@@ -383,7 +383,7 @@
 		von Kontakten ignoriert.
 	</string>
 	<string name="prefs_title_excluded_sync_identities">Ausschlussliste</string>
-	<string name="synchronize_contact">Adressbuch-Synchornoisation</string>
+	<string name="synchronize_contact">Adressbuch-Synchronisation</string>
 	<string name="exclude_contact" tools:ignore="Typos">Von autom. Synchr. ausschliessen</string>
 	<string name="prefs_header_lists">Listen</string>
 	<string name="prefs_title_black_list">Blockierte Kontakte</string>
@@ -1307,6 +1307,13 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="label_continue">Weiter</string>
 	<string name="select_date">Datum auswälen</string>
 	<string name="select_time">Zeit auswählen</string>
-	<string name="recipients">Empfänger: %s</string>
 	<string name="send_to">Senden an %s</string>
+	<string name="receipts_override_choice_send">Senden</string>
+	<string name="receipts_override_choice_dont_send">Nicht senden</string>
+	<string name="receipts_override_choice_default">Standard (%s)</string>
+	<string name="unable_to_determine_recording_length">Aufnahme leer oder Länge kann nicht bestimmt werden</string>
+	<string name="prefs_header_receipts">Bestätigungen</string>
+	<string name="prefs_title_reset_receipts">Individuelle Einstellungen zurücksetzen</string>
+	<string name="prefs_sum_reset_receipts">Kontaktspezifische Einstellungen für Lesebestätigungen und «Melden wenn ich tippe» auf Standard zurücksetzen</string>
+	<string name="reset_successful">Erfolgreich auf Standardeinstellungen zurückgesetzt</string>
 </resources>

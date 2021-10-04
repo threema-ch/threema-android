@@ -67,6 +67,7 @@ import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MimeUtil;
 
 public class VoiceRecorderActivity extends AppCompatActivity implements View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener, SensorListener {
@@ -92,7 +93,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	}
 
 	private MediaRecorder mediaRecorder;
-	private MediaPlayer mediaPlayer;
+	private MediaPlayerStateWrapper mediaPlayer;
 	private MediaState status = MediaState.STATE_NONE;
 	private TextView timerTextView;
 	private ImageView playButton;
@@ -580,21 +581,36 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	 * @return Duration in ms or 0 if the media player was unable to open this file
 	 */
 	private int getDurationFromFile() {
-		MediaPlayer mediaPlayer = MediaPlayer.create(this, uri);
-		if (mediaPlayer != null) {
-			int duration = mediaPlayer.getDuration();
-			mediaPlayer.release();
+		MediaPlayer durationCheckMediaPlayer = MediaPlayer.create(this, uri);
+		if (durationCheckMediaPlayer != null) {
+			int duration = durationCheckMediaPlayer.getDuration();
+			durationCheckMediaPlayer.release();
 			return duration;
 		}
 		return 0;
 	}
 
 	private void returnData() {
-		MediaItem mediaItem = new MediaItem(uri, MimeUtil.MIME_TYPE_AUDIO_AAC, null);
-		mediaItem.setDurationMs(getDurationFromFile());
-		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+		releaseMediaRecorder();
 
-		this.finish();
+		if (this.mediaPlayer != null) {
+			this.mediaPlayer.release();
+			this.mediaPlayer = null;
+		}
+
+		long fileduration = (long) getDurationFromFile();
+		if (fileduration > 0) {
+			if (fileduration < DateUtils.SECOND_IN_MILLIS) {
+				fileduration = DateUtils.SECOND_IN_MILLIS;
+			}
+			MediaItem mediaItem = new MediaItem(uri, MimeUtil.MIME_TYPE_AUDIO_AAC, null);
+			mediaItem.setDurationMs(fileduration);
+			messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+			this.finish();
+		}
+		else {
+			Toast.makeText(this, R.string.unable_to_determine_recording_length, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
@@ -692,7 +708,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 		}
 	}
 
-	private void stopAndReleaseMediaPlayer(MediaPlayer mp) {
+	private void stopAndReleaseMediaPlayer(MediaPlayerStateWrapper mp) {
 		if (mp != null) {
 			stopTimer();
 			stopUpdateSeekbar();
@@ -713,7 +729,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 				stopAndReleaseMediaPlayer(mediaPlayer);
 			}
 
-			mediaPlayer = new MediaPlayer();
+			mediaPlayer = new MediaPlayerStateWrapper();
 			if (scoAudioState == AudioManager.SCO_AUDIO_STATE_CONNECTED) {
 				mediaPlayer.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
 			} else {

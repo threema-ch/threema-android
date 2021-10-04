@@ -198,7 +198,7 @@
     <string name="try_again">Zkusit znovu</string>
     <string name="decoding_message">Dešifrování zprávy</string>
     <string name="invalid_barcode">Neplatný typ čárového kódu</string>
-    <string name="expired_barcode">Tento kód vypršel. Znovu jej skenovat znovu přímo z aplikace druhého uživatele.</string>
+    <string name="expired_barcode">Tento kód expiroval. Naskenujte jej prosím znovu přímo z aplikace druhého uživatele.</string>
     <string name="pending">Čekám</string>
     <string name="unlinking_email">Odpojení e‑mailu</string>
     <string name="unlink">Odpojit</string>
@@ -273,7 +273,7 @@ klíč uzamčen</string>
     <string name="prefs_sum_pin_grace">Čas do aktivace zámku obrazovky</string>
     <string name="click_here_to_change_pin">PIN nastaven. Klepněte sem pro jeho změnu</string>
     <string name="set_pin_menu_title">Nastavit nový PIN</string>
-    <string name="set_pin_summary_intro">Ochrana soukromí nastavením PIN kódu (pouze číslice). Tento PIN kód lze použít k zablokování přístupu k uživatelskému rozhraní aplikace Threema po uplynutí určené doby nebo k ochraně soukromých chatů</string>
+    <string name="set_pin_summary_intro">Ochraňte své soukromí nastavením PIN kódu (pouze číslice). Tento PIN kód lze použít k zablokování přístupu k uživatelskému rozhraní aplikace Threema po uplynutí zvolené doby nebo k zabezpečení soukromých konverzací</string>
     <string name="set_pin_again_summary">Zadejte PIN znovu</string>
     <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">Nová skupina</string>
@@ -338,7 +338,7 @@ klíč uzamčen</string>
     <string name="prefs_title_black_list">Ignorovaná ID</string>
     <string name="prefs_sum_black_list">Zprávy od zde uvedených ID budou ignorovány.</string>
     <string name="verified">Ověřený</string>
-    <string name="want_to_add_to_exclude_list">Tento kontakt je propojen s adresářem telefonu. Jestli ho smažete, v Threema se objeví znovu po synchronizaci kontaktů.\nChcete ho vyloučit ze synchronizace?</string>
+    <string name="want_to_add_to_exclude_list">Tento kontakt je propojen s adresářem telefonu. Jestliže ho smažete, v aplikaci Threema se objeví znovu po synchronizaci kontaktů.\nPřejete si ho vyloučit ze synchronizace?</string>
     <string name="no">Ne</string>
     <string name="yes">Ano</string>
     <string name="deleting_contact">Mažu kontakt</string>
@@ -371,7 +371,7 @@ klíč uzamčen</string>
     <string name="prefs_sum_validate_contacts">Ověří provázanost Threema kontaktů s Android adresářem</string>
     <string name="prefs_title_fullscreen_ime">Celoobrazovková klávesnice</string>
     <string name="prefs_sum_fullscreen_ime_on">Pokud je zařízení v poloze na šířku, klávesnice zakrývá celou plochu. Zobrazen je pouze text psané zprávy.</string>
-    <string name="prefs_sum_fullscreen_ime_off">Pokud je místo, zobrazí náhled chatu nad klávesnicí</string>
+    <string name="prefs_sum_fullscreen_ime_off">Pokud zbývá místo, zobrazí se náhled konverzace nad klávesnicí</string>
     <string name="add_acount_from_within_threema">"Upravuje Vaše změny související s Threema ID
 "</string>
     <string name="save_image">Uložit obrázek</string>
@@ -476,7 +476,7 @@ http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id4254243
     <string name="contact_state_inactive">Neaktivní</string>
     <string name="contact_state_invalid">Chybný</string>
     <string name="back">Zpět</string>
-    <string name="wearable_reply">Odpověď</string>
+    <string name="wearable_reply">Odpovědět</string>
     <string name="wearable_reply_label">Odpovědět %s</string>
     <string name="message_acknowledged">Souhlas odeslán</string>
     <string name="push_disable_text">Pokud volbu potvrdíte, zprávy push budou zakázány a Threema bude kontrolovat nové zprávy každých 15 minut.</string>
@@ -491,7 +491,7 @@ http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id4254243
     <string name="kick_user_from_group">Vyloučit ze skupiny člena „%1$s“</string>
     <string name="show_as_qrcode">Zobrazit jako QR kód</string>
     <string name="qr_code">QR kód</string>
-    <string name="really_leave_id_export">Pokud jste tak ještě neučinili, uložte záložní řetězec ID nebo odpovídající QR kód na bezpečné místo nebo jej vytiskněte. Threema ID je vaše identita, která nemůže být nijak obnovena bez Vaší zálohy.</string>
+    <string name="really_leave_id_export">Pokud jste tak ještě neučinili, uložte textový záložní řetězec vašeho ID nebo jemu odpovídající QR kód na bezpečné místo, nebo jej vytiskněte. Threema ID je vaše identita, která nemůže být bez zálohy nijak obnovena.</string>
     <string name="revocation_key_title">Zrušení/odvolání ID</string>
     <string name="revocation_key_not_set">Heslo pro odvolání ID není zadáno</string>
     <string name="revocation_key_set_at">Heslo pro %1$s</string>
@@ -648,7 +648,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="not_linked">nepropojené</string>
     <string name="linked">propojené</string>
     <string name="pending_sms_verification_notice">Vaše číslo mobilního telefonu zatím nebylo ověřeno.</string>
-    <string name="no_sms_received">Neobdrželi jste SMS?</string>
+    <string name="no_sms_received">Nepřišla vám SMS?</string>
     <string name="really_cancel_verify">Skutečně si přejete přerušit proces ověření mobilního čísla?</string>
     <string name="verification_of">Ověření %s</string>
     <string name="status_ballot_voting_changed">V anketě „%1$s“ přibyl další hlas</string>
@@ -674,7 +674,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="select_all">Vybrat vše</string>
     <string name="deleting_messages">Mazání zpráv</string>
     <string name="media_gallery_files">Soubory</string>
-    <string name="prefs_gif_autoplay">Automaticky přehrávat animované GIFy</string>
+    <string name="prefs_gif_autoplay">Autom. přehrávat animované GIFy</string>
     <string name="media_gallery_audio">Hlasové zprávy</string>
     <string name="action_clone_group">Kopírovat skupinu</string>
     <string name="clone_group_message">Tímto vytvoříte kopii této skupiny, ve které budete správcem. Přejete si pokračovat?</string>
@@ -727,7 +727,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="really_reset_ringtones">Skutečně si přejete obnovit nastavení zvuků oznámení na výchozí hodnoty?</string>
     <string name="reset_ringtones_confirm">Nastavení zvuků oznámení bylo obnoveno.</string>
     <string name="prefs_language_override">Jazyk</string>
-    <string name="threema_channel_intro">Informační kanál Threemy nabízí zprávy o všech novinkách. Chcete se přihlásit k odběru kanálu a přidat jej do svých kontaktů? Je zdarma a můžete se kdykoliv odhlásit.</string>
+    <string name="threema_channel_intro">Threema Channel je informační kanál aplikace Threema, který vás formou zpráv informuje o všech novinkách. Přejete si přihlásit se k odběru kanálu a přidat jej mezi kontakty? Je zdarma a můžete se z něj kdykoliv odhlásit.</string>
     <string name="quote">Citovat</string>
     <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Skutečně si přejete odstranit následující počet kontaktů: %1$d a všechny k nim přidružené konverzace?</string>
     <string name="contacts_deleted">Kontakty byly smazány</string>
@@ -742,13 +742,13 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="check_now">Zkontrolovat</string>
     <string name="discard">Odstranit</string>
     <string name="android_backup_restart_threema">Vydržte. Aplikace bude restartována během několika sekund.</string>
-    <string name="battery_optimizations_title">Vypnutí spořiče baterie</string>
+    <string name="battery_optimizations_title">Vypnutí optimalizace baterie</string>
     <string name="battery_optimizations_explain">Optimalizace baterie zabraňuje funkci %1$s pracovat správně ve chvíli, kdy vaše zařízení přejde do režimu spánku. Vypněte prosím optimalizaci baterie aplikace %2$s.</string>
     <string name="battery_optimizations_disable_guide">V rozbalovací nabídce vyberte možnost „Všechny aplikace“</string>
-    <string name="battery_optimizations_disable_guide_ctd">Vyhledejte %s v seznamu a vypněte optimalizaci</string>
-    <string name="battery_optimizations_disable_confirm">Skutečně si přejete pro aplikaci %1$s ponechat optimalizaci baterie zapnutou? %2$s nebude pracovat správně.</string>
+    <string name="battery_optimizations_disable_guide_ctd">Vyhledejte v seznamu aplikaci %s a vypněte pro ni optimalizaci baterie</string>
+    <string name="battery_optimizations_disable_confirm">Skutečně si přejete ponechat aplikaci %1$s optimalizaci baterie zapnutou? %2$s nebude pracovat správně.</string>
     <string name="enter_text_hint">Vložte text</string>
-    <string name="backup_explain_text">Pokud se mobil rozbije nebo ho ztratíte, nikdo již nedokáže obnovit Vaše Threema ID ani vlastní konverzace bez záložních dat. Pravidelně zálohujte a ukládejte zálohovaná data na bezpečné místo.</string>
+    <string name="backup_explain_text">Pokud mobil vyměníte nebo ho ztratíte, nikdo již nedokáže obnovit vaše Threema ID ani konverzace bez provedené zálohy. Pravidelně proto pomocí odpovídajících možností zálohy vytvářejte a ukládejte je na bezpečné místo.</string>
     <string name="data_backup_explain">Zálohovaná data obsahují: \n\n&#9679; Vaše ID a šifrovací klíče \n&#9679; Kontakty a jejich úrovně ověření \n&#9679; Členství ve skupinách \n&#9679; Konverzace \n&#9679; Obrázky a jiné soubory (volitelné)\n\nData budou uložena do šifrovaného souboru ZIP. Po úspěšném vytvoření zálohy doporučujeme tento soubor překopírovat do jiného zařízení.</string>
     <string name="draw">Editace</string>
     <string name="edit">Upravit</string>
@@ -817,7 +817,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="notifications_disabled_settings">Upravte nastavení systému</string>
     <string name="error_attaching_files">Přílohy se nezdařilo načíst</string>
     <string name="prefs_fix_powermanager_problems">Vypnutí úsporného režimu</string>
-    <string name="prefs_fix_powermanager_problems_desc">Povolit aplikaci Threema běh na pozadí, pokud nepřijímá zprávy</string>
+    <string name="prefs_fix_powermanager_problems_desc">Povolit aplikaci Threema běžet na pozadí, aby mohla přijímat zprávy i když není aktivní (na popředí).</string>
     <string name="disable_powermanager_explain">Na následující obrazovce se ujistěte, že «%s» je nemonitorovaná (vyloučená) nebo chráněna z omezení správy napájení vašeho telefonu. Až budete hotovi, klepněte na tlačítko «zpět».</string>
     <string name="disable_autostart_explain">Ujistěte se, že na následující obrazovce je aplikace „%s“ zahrnuta v seznamu aplikací, které se spouští automaticky. Jakmile budete hotovi, klepněte na tlačítko „zpět“.</string>
     <string name="notification_priority_default">Nízká</string>
@@ -884,7 +884,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="safe_disable_confirm">Skutečně si přejete pokračovat bez aktivace Threema Safe?</string>
     <string name="safe_configure_choose_password">Zvolte si prosím silné heslo. Toto heslo budete v budoucnu potřebovat k obnovení dat ze zálohy Threema Safe.</string>
     <string name="safe_configure_choose_server">Vyberte Threema Safe server</string>
-    <string name="safe_configure_server_explain">Můžete použít server společnosti Threema nebo server třetí strany.</string>
+    <string name="safe_configure_server_explain">Můžete použít server společnosti Threema nebo pro zálohy určit server třetí strany.</string>
     <string name="safe_use_default_server">Použít výchozí server</string>
     <string name="safe_test_server">Otestovat server</string>
     <string name="safe_advanced_options">Expertní nastavení</string>
@@ -897,12 +897,12 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="safe_no_backup_found">Na serveru nebyla nalezena žádná záloha. Zkontrolujte ID a heslo.</string>
     <string name="safe_select_id">Bylo nalezeno více dat s tímto Threema ID. Vyberte ID, které chcete použít:</string>
     <string name="safe_backup_now">Zálohovat</string>
-    <string name="safe_enable_explain_short">Aktivace Threema Safe vytvoří automatické zabezpečené a anonymní zálohy všech vašich důležitých dat.</string>
+    <string name="safe_enable_explain_short">Povolením Threema Safe vytvoříte automatické zabezpečené a anonymní zálohy všech vašich důležitých dat.</string>
     <string name="safe_deleting">Vymazává se záloha Threema Safe</string>
     <string name="safe_delete_error">Chyba při mazání zálohy: %s</string>
     <string name="safe_delete_success">Zálohy byly úspěšně smazány ze serveru</string>
     <string name="safe_error_preparing">Chyba během přípravy zálohy Threema Safe</string>
-    <string name="safe_configure_choose_password_force">Zadejte prosím silné heslo pro zabezpečení Vašich dat v Threema Safe záloze. Heslo si opravdu zapamatujte!</string>
+    <string name="safe_configure_choose_password_force">Zadejte prosím silné heslo pro zabezpečení vašeho Threema ID funkcí Threema Safe. Zadané heslo si dobře zapamatujte!</string>
     <string name="safe_deactivate">Deaktivace Threema Safe</string>
     <string name="safe_deactivate_explain">Pokud deaktivujete službu Threema Safe, budou ze serveru odstraněny všechny existující zálohy. Pokračovat?</string>
     <string name="add_group_members">Přidat člena</string>
@@ -968,6 +968,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="unknown">Neznámý</string>
     <string name="miui_notification_title">Důležité upozornění týkající se systému oznámení v systému MIUI</string>
     <string name="miui_notification_body">MIUI 10 standardně vypne zvuk i světelné (LED) upozornění pro všechny nově vytvořené oznamovací kanály (s výjimkou některých aplikací, které společnost Xiaomi pokládá za \"důležité\"). Budete je muset ručně zapnout v nastavení telefonu (sekce oznámení). Další informace získáte od výrobce telefonu.</string>
+    <string name="miui12_notification_body">MIUI ve výchozím nastavení ve všech aplikacích vypíná zvuková, plovoucí a světelná oznámení (kromě některých velmi populárních aplikací považovaných společností Xiaomi za „důležité“). Tato nastavení budete muset zapnout ručně ve vašem zařízení v sekci nastavení oznámení a opakovat tuto proceduru po každé aktualizaci aplikace. Pro více informací prosím kontaktujte společnost Xiaomi.</string>
     <string name="dont_show_again">Příště nezobrazovat</string>
     <string name="miui_notification_prefs">Nastavení MIUI</string>
     <string name="threema_safe_upload_successful">Záloha Threema Safe byla úspěšně nahrána</string>
@@ -1001,7 +1002,7 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="lp_use_this_location">Odeslat tuto polohu?</string>
     <string name="lp_search_place">Zadejte město nebo adresu</string>
     <string name="lp_no_nearby_places_found">Blízká místa nebyla nalezena</string>
-    <string name="select_directory_for_backup">Uložit zde</string>
+    <string name="select_directory_for_backup">Uložit sem</string>
     <string name="data_backup_headline">Záloha všech dat, včetně konverzací a médií.</string>
     <string name="data_backup_save_path">Cesta pro zálohu dat</string>
     <string name="change">Změnit</string>
@@ -1014,21 +1015,21 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="no_archived_chats">Nemáte žádné archivované konverzace.\n\nArchivaci konverzace provedete na seznamu konverzací jejím odsunutím doleva</string>
     <string name="add_contact_enter_id_hint">Zadejte Threema ID kontaktu, který chcete přidat</string>
     <string name="notification_channel_new_contact">Nové kontakty</string>
-    <string name="notification_channel_new_contact_desc">Oznámení o nových kontaktech</string>
+    <string name="notification_channel_new_contact_desc">Oznámení o nových kontaktech</string>
     <string name="notification_contact_has_joined">Kontakt %1$s se připojil do aplikace %2$s. Klepnutím sem mu odešlete zprávu.</string>
     <string name="notification_contact_has_joined_multiple">Do aplikace %2$s se připojilo více kontaktů (%1$d): %3$s. Klepnutím sem jim odešlete zprávu.</string>
     <string name="system_default">Systémové nastavení</string>
     <string name="open_in_maps_app">Zobrazit v externí mapě</string>
     <string name="delete">Odstranit</string>
     <string name="num_archived_chats">Archivovaných konverzací: %d</string>
-    <string name="continue_recording">Pokračuje nahrávání</string>
+    <string name="continue_recording">Pokračovat v nahrávání</string>
     <string name="tooltip_identity_popup">Klepnutím sem zobrazíte vaše Threema ID nebo naskenujete ID ostatních uživatelů</string>
     <string name="tap_to_start">Klepnutím sem spustíte aplikaci %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pro zálohu dat</string>
     <string name="backup_data_no_permission">Nelze zapisovat do tohoto adresáře. Vyberte jiný.</string>
-    <string name="prefs_sum_show_unread_badge">Vedle ikony aplikace zobrazit puntík s počtem nepřečtených zpráv</string>
-    <string name="prefs_title_show_unread_badge">Indikovat nepřečtené zprávy</string>
+    <string name="prefs_sum_show_unread_badge">Zobrazit ve spodních navigačních záložkách puntíky</string>
+    <string name="prefs_title_show_unread_badge">Puntíky</string>
     <string name="pinning_not_trusted">Selhání při komunikaci s certifikátem. Zkontrolujte, zda je v úložišti vašeho zařízení (credentials storage) nainstalován a aktivován certifikát «Entrust Root Certification Authority - G2».</string>
     <string name="pinning_failed">Selhání při komunikaci s certifikátem. Možný útok Man-in-the-middle. Pokud máte nainstalovaný blokovač reklam, filtr obsahu nebo firewall, například „AdGuard“, deaktivujte jej pro Threemu prosím.</string>
     <string name="open_myid_popup">Otevřete vyskakovací okno pro podrobnosti</string>
@@ -1187,9 +1188,19 @@ zadat pouze vaše křestní jméno nebo pseudonym. Pokud nenastavíte žádnou p
     <string name="download_failed">Stažení se nezdařilo. Kód chyby: %d</string>
     <string name="edit_answer">Upravit odpověď</string>
     <string name="share_media">Sdílet v jiné aplikaci…</string>
+    <string name="miui_battery_optimization">Vypněte prosím „optimalizaci baterie“ aplikace %s, aby bylo možné provést tento úkon. Jelikož operační systém od Xiaomi neumožňuje zobrazit obrazovku s nastavením přímo, bude nutné provést úpravy vašeho zařízení ručně v sekci nastavení. Kontaktujte prosím podporu společnosti Xiaomi, jestliže budete potřebovat další pomoc s vypnutím optimalizace baterie.</string>
     <string name="forward_captions">Zahrnout titulky</string>
+    <string name="importing_files_failed">Nezdařilo se importovat soubor se zálohou. Ujistěte se, že je ve vnitřním úložišti zařízení dostatek volného místa.</string>
     <string name="label_continue">Pokračovat</string>
     <string name="select_date">Vyberte datum</string>
     <string name="select_time">Vyberte čas</string>
-    <string name="recipients">Příjemci: %s</string>
+    <string name="send_to">Odeslat kontaktu %s</string>
+    <string name="receipts_override_choice_send">Odeslat</string>
+    <string name="receipts_override_choice_dont_send">Neodesílat</string>
+    <string name="receipts_override_choice_default">Výchozí (%s)</string>
+    <string name="unable_to_determine_recording_length">Prázdné nahrávání nebo nelze určit jeho délku</string>
+    <string name="prefs_header_receipts">Potvrzení</string>
+    <string name="prefs_title_reset_receipts">Vymazat individuální nastavení</string>
+    <string name="prefs_sum_reset_receipts">Obnovit nastavení potvrzení o přečtení a indikaci psaní na výchozí hodnoty</string>
+    <string name="reset_successful">Výchozí nastavení byla úspěšně obnovena</string>
 </resources>

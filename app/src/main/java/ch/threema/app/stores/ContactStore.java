@@ -21,22 +21,14 @@
 
 package ch.threema.app.stores;
 
-import android.os.NetworkOnMainThreadException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.IdListService;
@@ -49,7 +41,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
 import ch.threema.client.APIConnector;
 import ch.threema.client.ContactStoreInterface;
-import ch.threema.client.ContactStoreObserver;
 import ch.threema.client.IdentityState;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
@@ -58,12 +49,11 @@ import ch.threema.storage.models.ContactModel;
 public class ContactStore implements ContactStoreInterface {
 	private static final Logger logger = LoggerFactory.getLogger(ContactStore.class);
 
-	private APIConnector apiConnector;
+	private final APIConnector apiConnector;
 	private final PreferenceService preferenceService;
-	private DatabaseServiceNew databaseServiceNew;
+	private final DatabaseServiceNew databaseServiceNew;
 	private final IdListService blackListService;
 	private final IdListService excludeListService;
-	private final HashMap<String, ContactModel> cache = new HashMap<>();
 
 	public ContactStore(APIConnector apiConnector,
 	                    PreferenceService preferenceService,
@@ -122,14 +112,16 @@ public class ContactStore implements ContactStoreInterface {
 	}
 
 	/**
-	 * Fetch a public key for a identity and save the contact
+	 * Fetch a public key for an identity, create a contact and save it
 	 *
-	 * @param identity
+	 * @param identity Identity to add a contact for
 	 * @throws ThreemaException if a contact with this identity already exists
-	 * @return
+	 *          FileNotFoundException if identity was not found on the server
+	 * @return public key of identity in case of success, null otherwise
 	 */
-	public byte[] fetchPublicKeyForIdentity(String identity) throws FileNotFoundException {
-
+	@WorkerThread
+	@Nullable
+	public byte[] fetchPublicKeyForIdentity(String identity) throws FileNotFoundException, ThreemaException {
 		APIConnector.FetchIdentityResult result = null;
 		try {
 			Contact contact = this.getContactForIdentity(identity);
@@ -141,8 +133,6 @@ public class ContactStore implements ContactStoreInterface {
 			result = this.apiConnector.fetchIdentity(identity);
 		}
 		catch (FileNotFoundException e) {
-			throw e;
-		} catch (NetworkOnMainThreadException e) {
 			throw e;
 		} catch (Exception e) {
 			//do nothing
@@ -189,45 +179,17 @@ public class ContactStore implements ContactStoreInterface {
 	 */
 	@Nullable
 	public ContactModel getContactModelForIdentity(String identity) {
-		if (!this.cache.containsKey(identity)) {
-			return this.databaseServiceNew.getContactModelFactory().getByIdentity(identity);
-		}
-
-		return this.cache.get(identity);
+		return this.databaseServiceNew.getContactModelFactory().getByIdentity(identity);
 	}
 
 	@Nullable
 	public ContactModel getContactModelForPublicKey(final byte[] publicKey) {
-		//check cache first
-		for(String identity: this.cache.keySet()) {
-			if (Arrays.equals(publicKey, this.cache.get(identity).getPublicKey())) {
-				return this.cache.get(identity);
-			}
-		}
-
 		return this.databaseServiceNew.getContactModelFactory().getByPublicKey(publicKey);
-		/*
-		return Functional.select(ContactModelFactory.getAll(this.databaseServiceNew)this.databaseService.getContactDao().queryForAll(), new IPredicateNonNull<ContactModel>() {
-			@Override
-			public boolean apply(ContactModel contactModel) {
-				return Arrays.equals(publicKey, contactModel.getPublicKey());
-			}
-		});*/
 	}
 
 	@Nullable
 	public ContactModel getContactModelForLookupKey(final String lookupKey) {
 		return this.databaseServiceNew.getContactModelFactory().getByLookupKey(lookupKey);
-	}
-
-	@Override
-	public Collection<Contact> getAllContacts() {
-		Collection<Contact> contacts = new ArrayList<>();
-
-		contacts.addAll(this.databaseServiceNew.getContactModelFactory().getAll());
-
-		return contacts;
-
 	}
 
 	@Override
@@ -284,24 +246,7 @@ public class ContactStore implements ContactStoreInterface {
 
 	public void removeContact(final ContactModel contactModel) {
 		this.databaseServiceNew.getContactModelFactory().delete(contactModel);
-
-		synchronized (this.cache) {
-			this.cache.remove(contactModel.getIdentity());
-		}
-
 		fireOnRemovedContact(contactModel);
-	}
-
-	@Override
-	@Deprecated
-	public void addContactStoreObserver(ContactStoreObserver observer) {
-		//NOT IN USE
-	}
-
-	@Override
-	@Deprecated
-	public void removeContactStoreObserver(ContactStoreObserver observer) {
-		//NOT IN USE
 	}
 
 	private void fireOnNewContact(final ContactModel createdContactModel) {
@@ -335,19 +280,5 @@ public class ContactStore implements ContactStoreInterface {
 				}
 			}
 		});
-	}
-
-	public void reset(final ContactModel contactModel) {
-		synchronized (this.cache) {
-			ContactModel cached = Functional.select(this.cache, new IPredicateNonNull<ContactModel>() {
-				@Override
-				public boolean apply(@NonNull ContactModel contact) {
-					return contact.getIdentity().equals(contactModel.getIdentity());
-				}
-			});
-			if(cached != null) {
-//				this.cache.put(contactModel.getIdentity(), contactModel);
-			}
-		}
 	}
 }

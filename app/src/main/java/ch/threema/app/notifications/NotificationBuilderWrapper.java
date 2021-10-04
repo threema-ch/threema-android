@@ -21,6 +21,7 @@
 
 package ch.threema.app.notifications;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -174,7 +175,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(ringtone.getScheme())) {
 					// https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
 					ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", ringtone, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-				} else if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
+				} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
 					// content://settings/system/notification_sound
 					if (!ringtone.equals(Settings.System.DEFAULT_NOTIFICATION_URI)) {
 						// check if ringtone is still available
@@ -182,6 +183,8 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 						} catch (Exception e) {
 							// cannot open ringtone - fallback to default ringtone
 							ringtone = Settings.System.DEFAULT_NOTIFICATION_URI;
+							logger.error("Unable to open ringtone. Falling back to default", e);
+							logger.info("Attempted to open {}", ringtone.toString());
 						}
 					}
 				}
@@ -382,7 +385,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 				.setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
 				.build();
 
-		NotificationChannel newNotificationChannel = new NotificationChannel(
+		@SuppressLint("WrongConstant") NotificationChannel newNotificationChannel = new NotificationChannel(
 				hash, hash.substring(0, 16),
 				notificationChannelSettings.getImportance());
 

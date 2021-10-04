@@ -66,7 +66,7 @@ public class IdentityStatesWorker extends Worker {
 	@NonNull
 	@Override
 	public Result doWork() {
-		logger.info("@@@@ Starting IdentityStatesWorker");
+		logger.info("Starting IdentityStatesWorker");
 
 		if (this.contactService == null) {
 			logger.info("ContactService not available while updating IdentityStates");
@@ -103,6 +103,11 @@ public class IdentityStatesWorker extends Worker {
 			@Override
 			public Boolean includeHidden() {
 				return true;
+			}
+
+			@Override
+			public Boolean onlyWithReceiptSettings() {
+				return false;
 			}
 		});
 

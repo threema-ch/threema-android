@@ -40,6 +40,7 @@ import ch.threema.client.GroupId;
 import ch.threema.client.MessageId;
 import ch.threema.client.MessageQueue;
 import ch.threema.client.Utils;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupApiServiceImpl implements GroupApiService {
@@ -119,13 +120,17 @@ public class GroupApiServiceImpl implements GroupApiService {
 					logger.error("Exception", e);
 					continue;
 				}
-				AbstractGroupMessage groupMessage = createApiMessage.create(messageId);
-				groupMessage.setGroupId(groupId);
-				groupMessage.setGroupCreator(groupCreatorId);
-				groupMessage.setFromIdentity(this.userService.getIdentity());
-				groupMessage.setToIdentity(identity);
 
-				pendingGroupMessages.add(groupMessage);
+				ContactModel contactModel = this.contactService.getByIdentity(identity);
+				if (contactModel != null && contactModel.getState() != ContactModel.State.INVALID) {
+					AbstractGroupMessage groupMessage = createApiMessage.create(messageId);
+					groupMessage.setGroupId(groupId);
+					groupMessage.setGroupCreator(groupCreatorId);
+					groupMessage.setFromIdentity(this.userService.getIdentity());
+					groupMessage.setToIdentity(identity);
+
+					pendingGroupMessages.add(groupMessage);
+				}
 			}
 		}
 

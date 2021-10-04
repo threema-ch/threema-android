@@ -1035,9 +1035,10 @@ public class PeerConnectionClient {
 		executor.execute(() -> {
 			enableLocalAudioTrack = enable;
 			if (localAudioTrack != null) {
-				if (localAudioTrack.enabled() != enableLocalAudioTrack) {
-					localAudioTrack.setEnabled(enableLocalAudioTrack);
-					this.sendSignalingMessage(CaptureState.microphone(enableLocalAudioTrack));
+				if (localAudioTrack.enabled() != enable) {
+					logger.info("Changing MICROPHONE capturing state to {}", (enable ? "ON" : "OFF"));
+					localAudioTrack.setEnabled(enable);
+					this.sendSignalingMessage(CaptureState.microphone(enable));
 				}
 			}
 		});

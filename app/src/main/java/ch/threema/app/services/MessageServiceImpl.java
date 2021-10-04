@@ -1081,8 +1081,20 @@ public class MessageServiceImpl implements MessageService {
 		boolean saved = false;
 
 		if (MessageUtil.canMarkAsRead(message)) {
-			boolean sendDeliveryReceipt = MessageUtil.canSendDeliveryReceipt(message)
-					&&  this.preferenceService.isReadReceipts();
+			ContactModel contactModel = this.contactService.getByIdentity(message.getIdentity());
+
+			boolean sendDeliveryReceipt = MessageUtil.canSendDeliveryReceipt(message);
+			if (sendDeliveryReceipt && contactModel != null) {
+				if (this.preferenceService.isReadReceipts()) {
+					if (contactModel.getReadReceipts() == ContactModel.DONT_SEND) {
+						sendDeliveryReceipt = false;
+					}
+				} else {
+					if (contactModel.getReadReceipts() != ContactModel.SEND) {
+						sendDeliveryReceipt = false;
+					}
+				}
+			}
 
 			//save is read
 			message.setRead(true);

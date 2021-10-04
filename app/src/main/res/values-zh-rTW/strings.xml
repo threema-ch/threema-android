@@ -11,7 +11,7 @@
     <string name="title_enter_id">輸入ID</string>
     <string name="title_invite_friend">邀請好友</string>
     <string name="invite_via">透過...邀請好友</string>
-    <string name="invite_email_body">你好，\n\n我使用%1$s，這是保護使用者隱私的安全即時通訊工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n讓我們透過%1$s進行通訊！\n\n乾杯\n</string>
+    <string name="invite_email_body">你好，\n\n我使用%1$s，這是保護使用者隱私的安全即時通訊工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n讓我們透過%1$s進行通訊吧！\n\n乾杯\n</string>
     <string name="invite_sms_body">嘿！讓我們使用%1$s以安全和符合隱私的方式進行通訊！我的 Threema ID：https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema，保護隱私的安全即時通訊工具。</string>
     <string name="enter_id_hint">輸入 Threema ID</string>
@@ -1053,8 +1053,8 @@ Threema 支援的所有表情符號。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">無效的備份路徑</string>
     <string name="backup_data_no_permission">無法寫入此目錄。請選擇另一個。</string>
-    <string name="prefs_sum_show_unread_badge">在訊息圖示旁邊顯示徽章，表示未讀訊息的數量</string>
-    <string name="prefs_title_show_unread_badge">未讀訊息徽章</string>
+    <string name="prefs_sum_show_unread_badge">在導覽列顯示未讀訊息提示</string>
+    <string name="prefs_title_show_unread_badge">未讀訊息提示</string>
     <string name="pinning_not_trusted">憑證固定失敗。請檢查裝置認證儲存中是否安裝並啟動了「委託根認證機構 - G2」。</string>
     <string name="pinning_failed">憑證固定失敗。可能發生了中間人攻擊。如果您安裝了廣告攔截器、內容過濾器或防火牆應用程式，例如 AdGuard，請停用後重啟 Threema。</string>
     <string name="open_myid_popup">開啟快速存取彈出式視窗</string>
@@ -1213,11 +1213,19 @@ Threema 支援的所有表情符號。</string>
     <string name="download_failed">下載失敗。錯誤代碼：%d</string>
     <string name="edit_answer">編輯答案</string>
     <string name="share_media">與其他應用程式分享...</string>
-    <string name="miui_battery_optimization">請為 %1$s 停用「電池最佳化」以便 %1$s 順利執行。由於小米不允許第三方應用程式直接開啟設定畫面，因此您必須手動開啟電話的相關設定畫面。如果您在停用電池最佳化方面需要協助，請聯絡小米支援。</string>
+    <string name="miui_battery_optimization">請為 %s 停用「電池最佳化」以便 %s 順利執行。由於小米不允許第三方應用程式直接開啟設定畫面，因此您必須手動開啟電話的相關設定畫面。如果您在停用電池最佳化方面需要協助，請聯絡小米支援。</string>
     <string name="forward_captions">包括描述</string>
     <string name="importing_files_failed">無法匯入備份檔案，請確保內部儲存有足夠的可用空間。</string>
     <string name="label_continue">繼續</string>
     <string name="select_date">選擇日期</string>
     <string name="select_time">選擇時間</string>
-    <string name="recipients">收件者：%s</string>
+    <string name="send_to">傳送至 %s</string>
+    <string name="receipts_override_choice_send">傳送</string>
+    <string name="receipts_override_choice_dont_send">不要傳送</string>
+    <string name="receipts_override_choice_default">預設（%s）</string>
+    <string name="unable_to_determine_recording_length">錄音為空白或無法確定錄音長度</string>
+    <string name="prefs_header_receipts">訊息標記和打字狀態</string>
+    <string name="prefs_title_reset_receipts">清除個別設定</string>
+    <string name="prefs_sum_reset_receipts">將特定聯絡人的已讀標記和打字狀態設定重設為預設值</string>
+    <string name="reset_successful">成功重設為預設值</string>
 </resources>

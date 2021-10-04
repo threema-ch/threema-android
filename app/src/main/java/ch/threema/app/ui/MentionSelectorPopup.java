@@ -217,15 +217,16 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 
 	private MentionSelectorAdapter updateList(boolean init) {
 		List<ContactModel> groupContacts = contactService.getByIdentities(groupService.getGroupIdentities(groupModel));
+		final boolean isSortingFirstName = preferenceService.isContactListSortingFirstName();
 
-		Collections.sort(groupContacts, (model1, model2) -> ContactUtil.getSafeNameString(model1, preferenceService).compareTo(
-			ContactUtil.getSafeNameString(model2, preferenceService)
+		Collections.sort(groupContacts, (model1, model2) -> ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
+			ContactUtil.getSafeNameString(model2, isSortingFirstName)
 		));
 
 		groupContacts.add(allContactModel);
 
 		if (!init && filterText.length() - filterStart > 0) {
-			groupContacts = Functional.filter(groupContacts, (IPredicateNonNull<ContactModel>) contactModel -> ContactUtil.getSafeNameString(contactModel, preferenceService).toLowerCase().contains(filterText.substring(filterStart).toLowerCase()));
+			groupContacts = Functional.filter(groupContacts, (IPredicateNonNull<ContactModel>) contactModel -> ContactUtil.getSafeNameString(contactModel, isSortingFirstName).toLowerCase().contains(filterText.substring(filterStart).toLowerCase()));
 		}
 
 		if (groupContacts.size() < 1) {

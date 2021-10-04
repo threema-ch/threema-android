@@ -25,12 +25,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import ch.threema.app.R;
+import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -72,6 +74,15 @@ public class WizardFragment2 extends WizardFragment {
 				}
 			});
 		}
+		this.nicknameText.setOnKeyListener((v, keyCode, event) -> {
+			if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+				if (getActivity() != null && isAdded()) {
+					((WizardBaseActivity) getActivity()).nextPage();
+				}
+				return true;
+			}
+			return false;
+		});
 
 		return rootView;
 	}
@@ -93,11 +104,18 @@ public class WizardFragment2 extends WizardFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		new Handler().postDelayed(() -> RuntimeUtil.runOnUiThread(this::initValues), 50);
-		if (this.nicknameText != null) {
-			this.nicknameText.requestFocus();
-			EditTextUtil.showSoftKeyboard(this.nicknameText);
-		}
+		new Handler().postDelayed(() -> {
+			RuntimeUtil.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					initValues();
+					if (nicknameText != null) {
+						nicknameText.requestFocus();
+						EditTextUtil.showSoftKeyboard(nicknameText);
+					}
+				}
+			});
+		}, 50);
 	}
 
 	@Override

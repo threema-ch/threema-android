@@ -151,7 +151,7 @@ els missatges.</string>
     <string name="verify_failed_not_linked">Ha fallat la verificació del vostre número de mòbil. El procés de verificació s\'ha cancel·lat.</string>
     <string name="check_incoming_sms">Comprovant els SMS entrants</string>
     <string name="backup_title">Exportar l\'ID</string>
-    <string name="backup_sum">Exportar el vostre ID de Threema</string>
+    <string name="backup_sum">Exportar la vostra ID de Threema</string>
     <string name="backup_and_delete">Còpia de seguretat i eliminació</string>
     <string name="delete_id_title">Eliminar ID</string>
     <string name="delete_id_message">A menys que hàgiu creat una còpia de seguretat o exportat i desat una còpia d\'aquesta ID mai més podreu enviar o rebre missatges amb aquesta ID.\n\nSi no voleu tornar a utilitzar aquesta ID hauríeu d\'eliminar totes les adreces de correu electrònic i números de telèfon enllaçats abans d\'esborrar-la.</string>
@@ -504,7 +504,7 @@ de contacte</string>
     <string name="kick_user_from_group">Expulsar %1$s del grup</string>
     <string name="show_as_qrcode">Mostrar com a codi QR</string>
     <string name="qr_code">Codi QR</string>
-    <string name="really_leave_id_export">Si encara no ho heu fet, deseu la cadena de text de l\'exportació de la vostra ID o el corresponent codi QR en un lloc segur o imprimiu-lo. El vostre ID de Threema no es pot restaurar sense una còpia de seguretat.</string>
+    <string name="really_leave_id_export">Si encara no ho heu fet, deseu la cadena de text de l\'exportació de la vostra ID o el corresponent codi QR en un lloc segur o imprimiu-lo. La vostra ID de Threema no es pot restaurar sense una còpia de seguretat.</string>
     <string name="revocation_key_title">Revocació d\'ID</string>
     <string name="revocation_key_not_set">No s\'ha definit la contrasenya de revocació</string>
     <string name="revocation_key_set_at">Contrasenya definida %1$s</string>
@@ -1042,13 +1042,14 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="continue_recording">Continuar gravant</string>
     <string name="whatsnew_title">What\'s new in %s 4.56?</string>
     <string name="whatsnew_headline">The contact synchronization has been completely rewritten for increased performance and stability. As a consequence, manual linking of system contacts had to be removed and a separate validation option in settings is now longer necessary.\n\nIf you notice any problems with names or avatars of synchronized contacts or other unexpected behavior, please contact us through the usual bug reporting channels.\n\nThanks for testing %s!</string>
+    <string name="whatsnew2_title">Què hi ha de nou?</string>
     <string name="tooltip_identity_popup">Toqueu aquí per mostrar ràpidament la vostra ID de Threema o per escanejar la ID d\'altra gent</string>
     <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
     <string name="invalid_backup_path">Camí de còpia no vàlid</string>
     <string name="backup_data_no_permission">No es pot escriure en aquest directori. Escolliu-ne un altre.</string>
-    <string name="prefs_sum_show_unread_badge">Mostrar un distintiu indicant el nombre de missatges no llegits al costat de la icona de missatges</string>
-    <string name="prefs_title_show_unread_badge">Distintiu de missatges no llegits</string>
+    <string name="prefs_sum_show_unread_badge">Mostrar insígnies a les pestanyes de navegació inferiors</string>
+    <string name="prefs_title_show_unread_badge">Insígnies</string>
     <string name="pinning_not_trusted">Error de Fixació de Certificat. Comproveu si \"Entrust Root Certification Authority - G2\" està instal·lada i activada a l\'emmagatzematge de credencials del vostre dispositiu.</string>
     <string name="pinning_failed">Error de Fixació de Certificat. Possible atac \"Man-in-the-middle\". Si teniu un bloquejador d\'anuncis, filtre de contingut, o aplicació de tallafocs instal·lades com \"AdGuard\", desactiveu-los per a Threema.</string>
     <string name="open_myid_popup">Obrir la finestra emergent d\'accés ràpid</string>
@@ -1213,5 +1214,13 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="label_continue">Continuar</string>
     <string name="select_date">Seleccioneu una data</string>
     <string name="select_time">Seleccioneu una hora</string>
-    <string name="recipients">Destinataris: %s</string>
+    <string name="send_to">Enviar a %s</string>
+    <string name="receipts_override_choice_send">Enviar</string>
+    <string name="receipts_override_choice_dont_send">No enviar</string>
+    <string name="receipts_override_choice_default">Predeterminat (%s)</string>
+    <string name="unable_to_determine_recording_length">Gravació buida o no se\'n pot determinar la longitud</string>
+    <string name="prefs_header_receipts">Confirmacions</string>
+    <string name="prefs_title_reset_receipts">Netejar configuracions individuals</string>
+    <string name="prefs_sum_reset_receipts">Restablir les configuracions específiques del contacte per confirmacions i indicador d\'escriptura a les predeterminades</string>
+    <string name="reset_successful">Correctament restablertes a predeterminades</string>
 </resources>

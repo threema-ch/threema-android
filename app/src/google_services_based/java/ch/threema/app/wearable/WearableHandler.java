@@ -135,7 +135,7 @@ public class WearableHandler {
 			} catch (ExecutionException e) {
 				final String message = e.getMessage();
 				if (message != null && message.contains("Wearable.API is not available on this device")) {
-					logger.info("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
+					logger.debug("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
 				} else {
 					logger.info("cancelOnWearable: ExecutionException while trying to connect to wearable: {}", message);
 				}

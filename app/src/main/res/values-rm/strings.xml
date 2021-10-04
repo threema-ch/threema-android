@@ -954,6 +954,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="unknown">Nunenconuschent</string>
     <string name="miui_notification_title">Infurmaziun impurtanta per utilisaders da MIUI 10</string>
     <string name="miui_notification_body">MIUI 10 supprima sco standard tuns, LED e popups per novs chanals d\'infurmaziun (cun excepziun d\'insaquants apps che Xiaomi considerescha sco «impurtants»). En las configuraziuns d\'infurmaziun specificas per Threema stos ti perquai activar quests parameters per tut ils chanals. Contactescha il producent da tes telefonin per ulteriuras infurmaziuns.</string>
+    <string name="miui12_notification_body">MIUI supprima sco standard tuns, LED e popups (cun excepziun d\'insaquantas apps che Xiaomi considerescha sco «impurtantas»). Deplorablamain stos ti perquai activar manualmain questa opziun en las configuraziuns d\'infurmaziun da tes telefonin specificas per Threema – e quai danovamain suenter mintga update da l\'app. Contactescha il producent da tes telefonin per ulteriuras infurmaziuns.</string>
     <string name="dont_show_again">Betg mussar pli</string>
     <string name="miui_notification_prefs">Configuraziuns MIUI</string>
     <string name="threema_safe_upload_successful">Chargià si cun success il backup da Threema Safe</string>
@@ -1170,4 +1171,21 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="tap_here_for_more">Clicca qua per dapli infurmaziuns</string>
     <string name="another_connection_instructions">Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.\n\nI n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.\n\nSche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.</string>
     <string name="app_store_error_code">Code dal sbagl da l\'App Store: %d</string>
+    <string name="download_failed">Download betg reussì. Code dal sbagl: %d</string>
+    <string name="share_media">Parter cun in\'autra app...</string>
+    <string name="miui_battery_optimization">P.pl. deactivar l\'optimaziun da l\'accu per %s per pudair duvrar questa funcziun. Cunquai che Xiaomi na considerescha betg sco necessari d\'observar ils standards d\'Android, stos ti far manualmain quella midada en las configuraziuns da tes telefonin. Sche ti dovras agid da deactivar l\'optimaziun da l\'accu, contactescha p.pl. il support da Xiaomi.</string>
+    <string name="forward_captions">Includer las legendas</string>
+    <string name="importing_files_failed">Betg reussì d\'importar la datoteca da backup. Procura per avunda capacitad da l\'arcun intern.</string>
+    <string name="label_continue">Vinavant</string>
+    <string name="select_date">Tscherner la data</string>
+    <string name="select_time">Tscherner il temp</string>
+    <string name="send_to">Trametter a %s</string>
+    <string name="receipts_override_choice_send">Trametter</string>
+    <string name="receipts_override_choice_dont_send">Betg trametter</string>
+    <string name="receipts_override_choice_default">Standard (%s)</string>
+    <string name="unable_to_determine_recording_length">Registraziun vida u betg pussaivel da determinar la lunghezza</string>
+    <string name="prefs_header_receipts">Confermas</string>
+    <string name="prefs_title_reset_receipts">Redefinir configuraziuns individualas</string>
+    <string name="prefs_sum_reset_receipts">"Redefinir il standard per las configuraziuns specificas dals contacts per la conferma da lectura e «Mussar che jau scriv» "</string>
+    <string name="reset_successful">Redefinì cun success las config. da standard</string>
 </resources>

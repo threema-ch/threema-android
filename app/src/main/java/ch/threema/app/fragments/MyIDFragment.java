@@ -31,12 +31,13 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,6 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -165,9 +165,9 @@ public class MyIDFragment extends MainFragment
 						@Override
 						public void run() {
 							if (isAdded() && !isDetached() && fragmentView != null) {
-								AppCompatSpinner spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+								MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
 								if (spinner != null) {
-									spinner.setSelection(preferenceService.getProfilePicRelease());
+									spinner.setText((CharSequence) spinner.getAdapter().getItem(preferenceService.getProfilePicRelease()), false);
 								}
 							}
 						}
@@ -262,25 +262,16 @@ public class MyIDFragment extends MainFragment
 				this.fragmentView.findViewById(R.id.profile_edit).setOnClickListener(this);
 			}
 
-			AppCompatSpinner spinner = fragmentView.findViewById(R.id.picrelease_spinner);
-			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_item);
-			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_dropdown_item);
 			spinner.setAdapter(adapter);
-			spinner.setSelection(preferenceService.getProfilePicRelease());
-			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					int oldPosition = preferenceService.getProfilePicRelease();
-					preferenceService.setProfilePicRelease(position);
-					picReleaseConfImageView.setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
-					if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
-						launchProfilePictureRecipientsSelector(view);
-					}
-				}
-
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {
-
+			spinner.setText(adapter.getItem(preferenceService.getProfilePicRelease()), false);
+			spinner.setOnItemClickListener((parent, view, position, id) -> {
+				int oldPosition = preferenceService.getProfilePicRelease();
+				preferenceService.setProfilePicRelease(position);
+				picReleaseConfImageView.setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
+				if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
+					launchProfilePictureRecipientsSelector(view);
 				}
 			});
 
@@ -317,8 +308,6 @@ public class MyIDFragment extends MainFragment
 	}
 
 	private void updatePendingState(final View fragmentView, boolean force) {
-		logger.debug("*** updatePendingState");
-
 		if(!this.requiredInstances()) {
 			return;
 		}
@@ -344,8 +333,6 @@ public class MyIDFragment extends MainFragment
 	@SuppressLint("StaticFieldLeak")
 	private boolean updatePendingStateTexts(View fragmentView) {
 		boolean pending = false;
-
-		logger.debug("*** updatePendingStateTexts");
 
 		if(!this.requiredInstances()) {
 			return false;

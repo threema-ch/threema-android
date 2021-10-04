@@ -69,8 +69,10 @@ import ch.threema.client.ProtocolDefines;
 import ch.threema.client.ThreemaFeature;
 import ch.threema.client.TypingIndicatorMessage;
 import ch.threema.client.Utils;
+import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.ThreemaApplication.getServiceManager;
 
 /**
  * This service class handle all user actions (db/identity....)
@@ -477,7 +479,29 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
 	@Override
 	public boolean isTyping(String toIdentity, boolean isTyping) {
-		if (!preferenceService.isTypingIndicator()) {
+		boolean canSendIsTyping = this.preferenceService.isTypingIndicator();
+
+		ContactModel contactModel = null;
+		try {
+			if (getServiceManager() != null) {
+				contactModel = getServiceManager().getContactService().getByIdentity(toIdentity);
+			}
+		} catch (Exception e) {
+			logger.error("Can't get ContactService for isTyping", e);
+		}
+		if (contactModel != null) {
+			if (canSendIsTyping) {
+				if (contactModel.getTypingIndicators() == ContactModel.DONT_SEND) {
+					canSendIsTyping = false;
+				}
+			} else {
+				if (contactModel.getReadReceipts() == ContactModel.SEND) {
+					canSendIsTyping = true;
+				}
+			}
+		}
+
+		if (!canSendIsTyping) {
 			return false;
 		}
 

@@ -17,6 +17,14 @@
 			android:defaultValue="1"/>
 
 		<DropDownPreference
+			android:key="@string/preferences__language_override"
+			android:title="@string/prefs_language_override"
+			android:icon="@drawable/ic_language_outline"
+			android:entries="@array/list_language_override"
+			android:entryValues="@array/list_language_override_values"
+			android:defaultValue=""/>
+
+		<DropDownPreference
 			android:key="@string/preferences__emoji_style"
 			android:title="@string/prefs_emoji_style"
 			android:icon="@drawable/ic_tag_faces_outline"
@@ -43,13 +51,11 @@
 			android:summaryOn="@string/prefs_sum_receive_profilepics_on"
 			android:title="@string/prefs_title_receive_profilepics"/>
 
-	<DropDownPreference
-			android:key="@string/preferences__language_override"
-			android:title="@string/prefs_language_override"
-			android:icon="@drawable/ic_language_outline"
-			android:entries="@array/list_language_override"
-			android:entryValues="@array/list_language_override_values"
-			android:defaultValue=""/>
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__show_unread_badge"
+			android:summary="@string/prefs_sum_show_unread_badge"
+			android:title="@string/prefs_title_show_unread_badge"/>
 
 	</PreferenceCategory>
 

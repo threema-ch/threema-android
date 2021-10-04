@@ -25,14 +25,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -56,8 +59,10 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.threema.app.R;
+import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 
 /**
@@ -189,6 +194,19 @@ public class WizardFragment3 extends WizardFragment {
 					}
 				}
 			});
+
+			if (!ConfigUtils.isWorkBuild()) {
+				this.phoneText.setImeOptions(EditorInfo.IME_ACTION_GO);
+				this.phoneText.setOnKeyListener((v, keyCode, event) -> {
+					if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+						if (getActivity() != null && isAdded()) {
+							((WizardBaseActivity) getActivity()).nextPage();
+						}
+						return true;
+					}
+					return false;
+				});
+			}
 		}
 
 		TextView presetEmailText = rootView.findViewById(R.id.preset_email_text);
@@ -390,11 +408,19 @@ public class WizardFragment3 extends WizardFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		initValues();
-		if (this.phoneText != null) {
-			this.phoneText.requestFocus();
-			EditTextUtil.showSoftKeyboard(this.phoneText);
-		}
+
+		new Handler().postDelayed(() -> {
+			RuntimeUtil.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					initValues();
+					if (phoneText != null) {
+						phoneText.requestFocus();
+						EditTextUtil.showSoftKeyboard(phoneText);
+					}
+				}
+			});
+		}, 50);
 	}
 
 	@Override

@@ -282,10 +282,10 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	public void onSoftKeyboardOpened(int softKeyboardHeight) {
-		logger.info("%%% Potential keyboard height = " + softKeyboardHeight + " Min = " + minKeyboardHeight);
+		logger.debug("Potential keyboard height = " + softKeyboardHeight + " Min = " + minKeyboardHeight);
 
 		if (softKeyboardHeight >= minKeyboardHeight) {
-			logger.info("%%% Soft keyboard open detected");
+			logger.debug("Soft keyboard open detected");
 
 			this.softKeyboardOpen = true;
 			saveSoftKeyboardHeight(softKeyboardHeight);
@@ -295,7 +295,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	public void onSoftKeyboardClosed() {
-		logger.info("%%% Soft keyboard closed");
+		logger.debug("Soft keyboard closed");
 
 		this.softKeyboardOpen = false;
 
@@ -353,11 +353,11 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 	public void saveSoftKeyboardHeight(int softKeyboardHeight) {
 		if (ConfigUtils.isLandscape(this)) {
-			logger.info("%%% Keyboard height (landscape): " + softKeyboardHeight);
+			logger.info("Keyboard height (landscape): " + softKeyboardHeight);
 			PreferenceManager.getDefaultSharedPreferences(this)
 				.edit().putInt(LANDSCAPE_HEIGHT, softKeyboardHeight).apply();
 		} else {
-			logger.info("%%% Keyboard height (portrait): " + softKeyboardHeight);
+			logger.info("Keyboard height (portrait): " + softKeyboardHeight);
 			PreferenceManager.getDefaultSharedPreferences(this)
 				.edit().putInt(PORTRAIT_HEIGHT, softKeyboardHeight).apply();
 		}

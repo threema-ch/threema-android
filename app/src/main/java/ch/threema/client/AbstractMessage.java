@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Date;
 
+import ch.threema.base.Contact;
 import ch.threema.base.ThreemaException;
 import ch.threema.client.ballot.BallotCreateMessage;
 import ch.threema.client.ballot.BallotData;
@@ -45,7 +45,16 @@ import ch.threema.client.ballot.GroupBallotVoteMessage;
 import ch.threema.client.file.FileData;
 import ch.threema.client.file.FileMessage;
 import ch.threema.client.file.GroupFileMessage;
-import ch.threema.client.voip.*;
+import ch.threema.client.voip.VoipCallAnswerData;
+import ch.threema.client.voip.VoipCallAnswerMessage;
+import ch.threema.client.voip.VoipCallHangupData;
+import ch.threema.client.voip.VoipCallHangupMessage;
+import ch.threema.client.voip.VoipCallOfferData;
+import ch.threema.client.voip.VoipCallOfferMessage;
+import ch.threema.client.voip.VoipCallRingingData;
+import ch.threema.client.voip.VoipCallRingingMessage;
+import ch.threema.client.voip.VoipICECandidatesData;
+import ch.threema.client.voip.VoipICECandidatesMessage;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -91,7 +100,10 @@ public abstract class AbstractMessage {
 			throw new BadMessageException("Message is not for own identity, cannot decode");
 		}
 
-		/* obtain public key of sender */
+		// check if contact already exists
+		Contact contact = contactStore.getContactForIdentity(boxmsg.getFromIdentity());
+
+		/* obtain public key of sender. note that this creates a new contact if one doesn't exist already for this identity */
 		byte[] senderPublicKey = contactStore.getPublicKeyForIdentity(boxmsg.getFromIdentity(), fetch);
 
 		if (senderPublicKey == null) {
@@ -321,6 +333,15 @@ public abstract class AbstractMessage {
 				groupleavemsg.setGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
 				msg = groupleavemsg;
 
+				if (contact == null) {
+					// ignore leave from previously unknown contact
+					Contact newContact = contactStore.getContactForIdentity(boxmsg.getFromIdentity());
+					if (newContact != null) {
+						contactStore.removeContact(newContact);
+						logger.info("Received group leave from unknown identity {}", boxmsg.getFromIdentity());
+						throw new BadMessageException("Received group leave from unknown identity. dropping", true);
+					}
+				}
 				break;
 			}
 
@@ -706,7 +727,7 @@ public abstract class AbstractMessage {
 			}
 
 			default:
-				logger.warn("Unsupported message type {}", type);
+				logger.info("Unsupported message type {}", type);
 				break;
 		}
 

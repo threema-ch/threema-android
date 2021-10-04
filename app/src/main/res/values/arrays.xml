@@ -326,4 +326,10 @@
 		<item>1</item>
 		<item>2</item>
 	</string-array>
+
+	<string-array name="receipts_override_choices">
+		<item></item>
+		<item>@string/receipts_override_choice_send</item>
+		<item>@string/receipts_override_choice_dont_send</item>
+	</string-array>
 </resources>

@@ -122,7 +122,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		Date recentlyAddedDate = new Date(System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS);
 
 		for (ContactModel contactModel : all) {
-			if (contactModel != null && contactModel.getDateCreated() != null && recentlyAddedDate.before(contactModel.getDateCreated()) && !ContactUtil.isChannelContact(contactModel)) {
+			if (contactModel != null && contactModel.getDateCreated() != null && recentlyAddedDate.before(contactModel.getDateCreated()) && !ContactUtil.isChannelContact(contactModel) && !"ECHOECHO".equalsIgnoreCase(contactModel.getIdentity())) {
 				recents.add(contactModel);
 			}
 		}
@@ -132,7 +132,6 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			Collections.sort(recents, (o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()));
 			this.recentlyAdded = recents.subList(0, Math.min(recents.size() , MAX_RECENTLY_ADDED_CONTACTS));
 
-			all.removeAll(this.recentlyAdded);
 			all.addAll(0, this.recentlyAdded);
 		} else {
 			this.recentlyAdded.clear();
@@ -192,7 +191,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 				continue;
 			}
 
-			firstLetter = getInitial(c, false);
+			firstLetter = getInitial(c, false, i);
 
 			if (PLACEHOLDER_BLANK_HEADER.equals(firstLetter) ||
 					PLACEHOLDER_CHANNELS.equals(firstLetter) ||
@@ -215,7 +214,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		ArrayList<String> sectionList = new ArrayList<String>(alphaIndexer.keySet());
 		Collections.sort(sectionList, collator);
 		if (sectionList.contains(PLACEHOLDER_CHANNELS)) {
-			// replace channels placeholder by copyright sign AFTER sorting
+			// replace channels placeholder by star sign AFTER sorting
 			sectionList.set(sectionList.indexOf(PLACEHOLDER_CHANNELS), CHANNEL_SIGN);
 			if (alphaIndexer.containsKey(PLACEHOLDER_CHANNELS)) {
 				alphaIndexer.put(CHANNEL_SIGN, alphaIndexer.get(PLACEHOLDER_CHANNELS));
@@ -232,16 +231,25 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		countsList.toArray(counts);
 	}
 
-	private String getInitial(ContactModel c, boolean afterSorting) {
+	private String getInitial(ContactModel c, boolean afterSorting, int position) {
 		String firstLetter, sortingValue;
 
-		sortingValue = ContactUtil.getSafeNameStringNoNickname(c, preferenceService);
+		sortingValue = ContactUtil.getSafeNameString(c, preferenceService.isContactListSortingFirstName());
 		if (sortingValue.length() == 0) {
 			firstLetter = PLACEHOLDER_BLANK_HEADER;
 		} else {
 			if (ContactUtil.isChannelContact(c)) {
 				firstLetter = afterSorting ? CHANNEL_SIGN : PLACEHOLDER_CHANNELS;
-			} else if (recentlyAdded != null && recentlyAdded.size() > 0 && recentlyAdded.contains(c)) {
+			} else if (recentlyAdded != null && recentlyAdded.size() > 0 && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
+				if (contactListFilter != null && contactListFilter.getFilterString() != null) {
+					if (position > 0) {
+						for (int i = Math.min(position - 1, MAX_RECENTLY_ADDED_CONTACTS - 1) ; i >= 0; i--) {
+							if (values.get(i).equals(values.get(position))) {
+								return getIndexCharacter(sortingValue);
+							}
+						}
+					}
+				}
 				firstLetter = afterSorting ? RECENTLY_ADDED_SIGN : PLACEHOLDER_RECENTLY_ADDED;
 			} else {
 				firstLetter = getIndexCharacter(sortingValue);
@@ -358,9 +366,9 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 				holder);
 
 		String previousInitial = PLACEHOLDER_CHANNELS;
-		String currentInitial = getInitial(contactModel, true);
+		String currentInitial = getInitial(contactModel, true, position);
 		if (position > 0) {
-			previousInitial = getInitial(values.get(position - 1), true);
+			previousInitial = getInitial(values.get(position - 1), true, position - 1);
 		}
 		if (previousInitial != null && !previousInitial.equals(currentInitial)) {
 			if (RECENTLY_ADDED_SIGN.equals(currentInitial)) {
@@ -520,7 +528,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 	public String getInitial(int position) {
 		if (position < values.size() && position > 0) {
-			return getInitial(values.get(position), true);
+			return getInitial(values.get(position), true, position);
 		}
 		return "";
 	}

@@ -71,7 +71,7 @@
 			style="@style/WizardHintedEditText"
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/wizard_hinted_edittext_height"
-			android:imeOptions="actionDone"
+			android:imeOptions="actionGo"
 			android:inputType="text|textNoSuggestions|textPassword"
 			android:nextFocusForward="@+id/safe_password1"
 			android:singleLine="true"

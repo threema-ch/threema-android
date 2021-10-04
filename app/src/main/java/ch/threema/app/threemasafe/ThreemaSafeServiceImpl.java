@@ -167,6 +167,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_CONTACT_NICKNAME = "nickname";
 	private static final String TAG_SAFE_CONTACT_HIDDEN = "hidden";
 	private static final String TAG_SAFE_CONTACT_PRIVATE = "private";
+	private static final String TAG_SAFE_CONTACT_READ_RECEIPTS = "readReceipts";
+	private static final String TAG_SAFE_CONTACT_TYPING_INDICATORS = "typingIndicators";
 
 	private static final String TAG_SAFE_GROUPS = "groups";
 	private static final String TAG_SAFE_GROUP_ID = "id";
@@ -897,6 +899,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						contactModel.setDateCreated(new Date(contact.optLong(TAG_SAFE_CONTACT_CREATED_AT, System.currentTimeMillis())));
 						contactModel.setColor(ColorUtil.getInstance().getRecordColor((int) contactModelFactory.count()));
 						contactModel.setIsRestored(true);
+						contactModel.setTypingIndicators(contact.optInt(TAG_SAFE_CONTACT_TYPING_INDICATORS, ContactModel.DEFAULT));
+						contactModel.setReadReceipts(contact.optInt(TAG_SAFE_CONTACT_READ_RECEIPTS, ContactModel.DEFAULT));
 						contactModelFactory.createOrUpdate(contactModel);
 
 						if (contact.optBoolean(TAG_SAFE_CONTACT_PRIVATE, false)) {
@@ -1242,6 +1246,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		contact.put(TAG_SAFE_CONTACT_LAST_NAME, contactModel.getLastName());
 		contact.put(TAG_SAFE_CONTACT_NICKNAME, contactModel.getPublicNickName());
 		contact.put(TAG_SAFE_CONTACT_HIDDEN, contactModel.isHidden());
+		contact.put(TAG_SAFE_CONTACT_TYPING_INDICATORS, contactModel.getTypingIndicators());
+		contact.put(TAG_SAFE_CONTACT_READ_RECEIPTS, contactModel.getReadReceipts());
 		contact.put(TAG_SAFE_CONTACT_PRIVATE, hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)));
 
 		return contact;

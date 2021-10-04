@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +44,14 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.BlackListActivity;
 import ch.threema.app.activities.ExcludedSyncIdentitiesActivity;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
+import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -57,12 +60,13 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
-public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implements CancelableHorizontalProgressDialog.ProgressDialogClickListener {
+public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implements CancelableHorizontalProgressDialog.ProgressDialogClickListener, GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(SettingsPrivacyFragment.class);
 
 	private static final String DIALOG_TAG_VALIDATE = "vali";
 	private static final String DIALOG_TAG_SYNC_CONTACTS = "syncC";
 	private static final String DIALOG_TAG_DISABLE_SYNC = "dissync";
+	private static final String DIALOG_TAG_RESET_RECEIPTS = "rece";
 
 	private static final int PERMISSION_REQUEST_CONTACTS = 1;
 
@@ -123,11 +127,11 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			logger.error("Exception", e);
 		}
 
-		this.disableScreenshot = (CheckBoxPreference) findPreference(getString(R.string.preferences__hide_screenshots));
+		this.disableScreenshot = findPreference(getString(R.string.preferences__hide_screenshots));
 		this.disableScreenshotChecked = this.disableScreenshot.isChecked();
 
-		this.contactSyncPreference = (TwoStatePreference) findPreference(getResources().getString(R.string.preferences__sync_contacts));
-		CheckBoxPreference blockUnknown = (CheckBoxPreference) findPreference(getString(R.string.preferences__block_unknown));
+		this.contactSyncPreference = findPreference(getResources().getString(R.string.preferences__sync_contacts));
+		CheckBoxPreference blockUnknown = findPreference(getString(R.string.preferences__block_unknown));
 
 		if (SynchronizeContactsUtil.isRestrictedProfile(getActivity())) {
 			// restricted android profile (e.g. guest user)
@@ -135,19 +139,17 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			this.contactSyncPreference.setEnabled(false);
 			this.contactSyncPreference.setSelectable(false);
 		} else {
-			this.contactSyncPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					boolean newCheckedValue = newValue.equals(true);
-					if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
-						if (newCheckedValue) {
-							enableSync();
-						} else {
-							disableSync();
-						}
+			this.contactSyncPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+				boolean newCheckedValue = newValue.equals(true);
+				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
+					if (newCheckedValue) {
+						enableSync();
+					} else {
+						disableSync();
 					}
-					//always return true, fix samsung preferences handler
-					return true;
 				}
+				//always return true, fix samsung preferences handler
+				return true;
 			});
 		}
 
@@ -175,24 +177,28 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			this.disableScreenshot.setSelectable(false);
 		}
 
-		findPreference("pref_excluded_sync_identities").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(getActivity(), ExcludedSyncIdentitiesActivity.class));
-				return false;
-			}
+		findPreference("pref_excluded_sync_identities").setOnPreferenceClickListener(preference -> {
+			startActivity(new Intent(getActivity(), ExcludedSyncIdentitiesActivity.class));
+			return false;
 		});
 
-		findPreference("pref_black_list").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+		findPreference("pref_black_list").setOnPreferenceClickListener(preference -> {
+			startActivity(new Intent(getActivity(), BlackListActivity.class));
+			return false;
+		});
+
+		findPreference("pref_reset_receipts").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(getActivity(), BlackListActivity.class));
+				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.prefs_title_reset_receipts, getString(R.string.prefs_sum_reset_receipts) + "?", R.string.yes, R.string.no);
+				dialog.setTargetFragment(SettingsPrivacyFragment.this);
+				dialog.show(getFragmentManager(), DIALOG_TAG_RESET_RECEIPTS);
 				return false;
 			}
 		});
 
 		if (Build.VERSION.SDK_INT < 29) {
-			PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference("pref_key_other");
+			PreferenceCategory preferenceCategory = findPreference("pref_key_other");
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 				preferenceCategory.removePreference(findPreference(getResources().getString(R.string.preferences__direct_share)));
 			}
@@ -307,6 +313,24 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 		return false;
 	}
 
+	private void resetReceipts() {
+		new Thread(() -> {
+			try {
+				ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
+				contactService.resetReceiptsSettings();
+				RuntimeUtil.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(getContext(), R.string.reset_successful, Toast.LENGTH_SHORT).show();
+					}
+				});
+			} catch (Exception e) {
+				logger.error("ContactService not available", e);
+				Toast.makeText(getContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
+			}
+		}, "ResetReceiptSettings").start();
+	}
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		preferenceFragmentCallbackInterface.setToolbarTitle(R.string.prefs_privacy);
@@ -338,4 +362,12 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 
 	@Override
 	public void onCancel(String tag, Object object) { }
+
+	@Override
+	public void onYes(String tag, Object data) {
+		resetReceipts();
+	}
+
+	@Override
+	public void onNo(String tag, Object data) {	}
 }

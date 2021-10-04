@@ -654,20 +654,19 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		return null;
 	}
 
-	private String getTextFromIntent(Intent intent) {
+	private @Nullable String getTextFromIntent(Intent intent) {
 		String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
 		String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-		String textIntent;
-		if (subject != null && subject.length() > 0 && !subject.equals(text)) {
-			textIntent = subject;
-			if (!TextUtils.isEmpty(text)) {
-				textIntent += " - " + text;
-			}
+
+		if (TestUtil.empty(text)) {
+			return subject;
 		}
-		else {
-			textIntent = text;
+
+		if (TestUtil.empty(subject) || text.startsWith(subject)) {
+			return text;
 		}
-		return textIntent;
+
+		return subject + " - " + text;
 	}
 
 	private void addMediaItem(String mimeType, @NonNull Uri uri, @Nullable String caption) {

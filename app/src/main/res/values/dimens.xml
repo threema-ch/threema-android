@@ -310,5 +310,6 @@
 
 	<!-- vertical offset for badges in home nav bar -->
 	<dimen name="bottom_nav_badge_offset_vertical">2dp</dimen>
+	<dimen name="header_contact_section_work_height">40dp</dimen>
 
 </resources>

@@ -138,7 +138,9 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 					if (messageState != MessageState.SENT && !(messageModel.getType() == MessageType.BALLOT && messageModel instanceof GroupMessageModel)) {
 						Date modifiedAt = messageModel.getModifiedAt();
 						modifiedText.setText(TextUtil.capitalize(getString(stateResource)));
-						modifiedDate.setText(modifiedAt != null ? LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()) : "");
+						modifiedDate.setText(modifiedAt != null ?
+							LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()) :
+							(messageModel.getPostedAt(true) != null ? LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getPostedAt(true).getTime()) : ""));
 						modifiedText.setVisibility(View.VISIBLE);
 						modifiedDate.setVisibility(View.VISIBLE);
 					}

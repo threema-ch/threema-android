@@ -167,7 +167,7 @@ public class ServiceManager {
 	private SystemScreenLockService systemScreenLockService;
 	private ShortcutService shortcutService;
 
-	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService;
+	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService, readReceiptsRecipientsService, isTypingRecipientsService;
 	private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
 	private DistributionListService distributionListService;
 	private MessageProcessor messageProcessor;
@@ -382,7 +382,6 @@ public class ServiceManager {
 					this.getApiService(),
 					this.getWallpaperService(),
 					this.getLicenseService(),
-					this.getExcludedSyncIdentitiesService(),
 					this.getAPIConnector());
 		}
 

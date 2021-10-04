@@ -260,7 +260,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 			}
 
 			int numDeleted = AndroidContactUtil.getInstance().deleteAllThreemaRawContacts();
-			logger.debug("*** deleted {} raw contacts", numDeleted);
+			logger.debug("Deleted {} raw contacts", numDeleted);
 
 			if(!this.userService.removeAccount(new AccountManagerCallback<Boolean>() {
 				@Override
@@ -280,7 +280,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		}
 
 		if(contactService != null) {
-			contactService.removeAllThreemaContactIds();
+			contactService.removeAllSystemContactLinks();
 
 			// cleanup / degrade remaining identities that are still server verified
 			List<String> identities = contactService.getIdentitiesByVerificationLevel(VerificationLevel.SERVER_VERIFIED);

@@ -131,7 +131,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private String myIdentity;
 
 	private GroupModel groupModel;
-	private RecyclerView groupDetailRecyclerView;
 	private GroupDetailAdapter groupDetailAdapter;
 	private CollapsingToolbarLayout collapsingToolbar;
 	private ResumePauseHandler resumePauseHandler;
@@ -172,13 +171,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 	};
 
-	private class SelectorInfo {
+	private static class SelectorInfo {
 		public View view;
 		public ContactModel contactModel;
 		public ArrayList<Integer> optionsMap;
 	}
 
-	private ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
+	private final ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
 		@Override
 		public void onSortingChanged() { }
 
@@ -197,7 +196,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		public void onNotificationSettingChanged(String uid) { }
 	};
 
-	private ContactListener contactListener = new ContactListener() {
+	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(ContactModel modifiedContactModel) {
 			resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
@@ -214,7 +213,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 	};
 
-	private GroupListener groupListener = new GroupListener() {
+	private final GroupListener groupListener = new GroupListener() {
 		@Override
 		public void onCreate(GroupModel newGroupModel) {
 			resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
@@ -291,7 +290,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		this.avatarEditView = findViewById(R.id.avatar_edit_view);
 		this.collapsingToolbar = findViewById(R.id.collapsing_toolbar);
 		this.floatingActionButton = findViewById(R.id.floating);
-		this.groupDetailRecyclerView = findViewById(R.id.group_members_list);
+		RecyclerView groupDetailRecyclerView = findViewById(R.id.group_members_list);
 		this.collapsingToolbar.setTitle(" ");
 		this.groupNameEditText = findViewById(R.id.group_title);
 
@@ -387,11 +386,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
 
-		this.groupDetailRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+		groupDetailRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 		setupAdapter();
 
-		this.groupDetailRecyclerView.setAdapter(this.groupDetailAdapter);
+		groupDetailRecyclerView.setAdapter(this.groupDetailAdapter);
 
 		final Observer<List<ContactModel>> groupMemberObserver = new Observer<List<ContactModel>>() {
 			@Override
@@ -530,9 +529,10 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private void sortGroupMembers() {
+		final boolean isSortingFirstName = preferenceService.isContactListSortingFirstName();
 		List<ContactModel> contactModels = groupDetailViewModel.getGroupContacts();
-		Collections.sort(contactModels, (model1, model2) -> ContactUtil.getSafeNameString(model1, preferenceService).compareTo(
-				ContactUtil.getSafeNameString(model2, preferenceService)
+		Collections.sort(contactModels, (model1, model2) -> ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
+				ContactUtil.getSafeNameString(model2, isSortingFirstName)
 		));
 		groupDetailViewModel.setGroupContacts(contactModels);
 	}
@@ -611,56 +611,50 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finishUp();
-				return true;
-			case R.id.action_send_message:
-				if (groupModel != null) {
-					Intent intent = new Intent(this, ComposeMessageActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
-					startActivity(intent);
-					finish();
-				}
-				break;
-			case R.id.menu_resync:
-				this.syncGroup();
-				break;
-			case R.id.menu_leave_group:
-				int leaveMessageRes = operationMode == MODE_READONLY ? R.string.really_leave_group_message : R.string.really_leave_group_admin_message;
+		int itemId = item.getItemId();
+		if (itemId == android.R.id.home) {
+			finishUp();
+			return true;
+		} else if (itemId == R.id.action_send_message) {
+			if (groupModel != null) {
+				Intent intent = new Intent(this, ComposeMessageActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+				intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+				startActivity(intent);
+				finish();
+			}
+		} else if (itemId == R.id.menu_resync) {
+			this.syncGroup();
+		} else if (itemId == R.id.menu_leave_group) {
+			int leaveMessageRes = operationMode == MODE_READONLY ? R.string.really_leave_group_message : R.string.really_leave_group_admin_message;
 
-				GenericAlertDialog.newInstance(
-						R.string.action_leave_group,
-						Html.fromHtml(getString(leaveMessageRes)),
-						R.string.ok,
-						R.string.cancel)
-						.show(getSupportFragmentManager(), DIALOG_TAG_LEAVE_GROUP);
-				break;
-			case R.id.menu_delete_group:
-				GenericAlertDialog.newInstance(
-						R.string.action_delete_group,
-						groupService.isGroupOwner(groupModel) ? R.string.delete_my_group_message : R.string.delete_group_message,
-						R.string.ok,
-						R.string.cancel)
-						.show(getSupportFragmentManager(), DIALOG_TAG_DELETE_GROUP);
-				break;
-			case R.id.menu_gallery:
-				if (groupId > 0 && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
-					Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
-					mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
-					startActivity(mediaGalleryIntent);
-				}
-				break;
-			case R.id.menu_clone_group:
-				GenericAlertDialog.newInstance(
-						R.string.action_clone_group,
-						R.string.clone_group_message,
-						R.string.yes,
-						R.string.no)
-						.show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP_CONFIRM);
-				break;
+			GenericAlertDialog.newInstance(
+				R.string.action_leave_group,
+				Html.fromHtml(getString(leaveMessageRes)),
+				R.string.ok,
+				R.string.cancel)
+				.show(getSupportFragmentManager(), DIALOG_TAG_LEAVE_GROUP);
+		} else if (itemId == R.id.menu_delete_group) {
+			GenericAlertDialog.newInstance(
+				R.string.action_delete_group,
+				groupService.isGroupOwner(groupModel) ? R.string.delete_my_group_message : R.string.delete_group_message,
+				R.string.ok,
+				R.string.cancel)
+				.show(getSupportFragmentManager(), DIALOG_TAG_DELETE_GROUP);
+		} else if (itemId == R.id.menu_gallery) {
+			if (groupId > 0 && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
+				Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
+				mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+				startActivity(mediaGalleryIntent);
+			}
+		} else if (itemId == R.id.menu_clone_group) {
+			GenericAlertDialog.newInstance(
+				R.string.action_clone_group,
+				R.string.clone_group_message,
+				R.string.yes,
+				R.string.no)
+				.show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP_CONFIRM);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -808,18 +802,16 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
-			switch (requestCode) {
-				case ThreemaActivity.ACTIVITY_ID_GROUP_ADD:
-					// some users were added
-					groupDetailViewModel.addGroupContacts(IntentDataUtil.getContactIdentities(data));
-					sortGroupMembers();
-					this.hasChanges = true;
-					break;
-				default:
-					if (this.avatarEditView != null) {
-						this.avatarEditView.onActivityResult(requestCode, resultCode, data);
-					}
-					super.onActivityResult(requestCode, resultCode, data);
+			if (requestCode == ThreemaActivity.ACTIVITY_ID_GROUP_ADD) {
+				// some users were added
+				groupDetailViewModel.addGroupContacts(IntentDataUtil.getContactIdentities(data));
+				sortGroupMembers();
+				this.hasChanges = true;
+			} else {
+				if (this.avatarEditView != null) {
+					this.avatarEditView.onActivityResult(requestCode, resultCode, data);
+				}
+				super.onActivityResult(requestCode, resultCode, data);
 			}
 		}
 

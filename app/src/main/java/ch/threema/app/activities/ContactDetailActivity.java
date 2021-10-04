@@ -380,7 +380,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			}
 		});
 
-		if (preferenceService.isSyncContacts() && ContactUtil.isSynchronized(contact)) {
+		if (contact.getAndroidContactLookupKey() != null) {
 			floatingActionButton.setContentDescription(getString(R.string.edit));
 			floatingActionButton.setImageResource(R.drawable.ic_outline_contacts_app_24);
 		}
@@ -844,7 +844,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		IdListService excludeFromSyncListService = this.serviceManager.getExcludedSyncIdentitiesService();
 
 		//second question, if the contact is a synced contact
-		if (ContactUtil.isSynchronized(contactModel) && excludeFromSyncListService != null
+		if (contactModel.getAndroidContactLookupKey() != null && excludeFromSyncListService != null
 				&& !excludeFromSyncListService.has(contactModel.getIdentity())) {
 
 			GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(

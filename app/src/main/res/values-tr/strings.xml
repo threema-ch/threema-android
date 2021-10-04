@@ -153,9 +153,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağın
     <string name="backup_sum">Threema ID\'nizi dışa aktarın</string>
     <string name="backup_and_delete">Yedekle ve Sil</string>
     <string name="delete_id_title">Kimliği Sil</string>
-    <string name="delete_id_message">Bir yedek oluşturmadıysanız veya bu kimliğin bir kopyasını dışa aktarıp kaydetmediyseniz, bu kimliğe
-sahip mesajları bir daha gönderemez veya alamazsınız. \ N \ n Bu kimliği tekrar kullanmak istemiyorsanız, bağlı e-posta
-adreslerini / telefon numaralarını silmeden önce.</string>
+    <string name="delete_id_message">Bir yedek oluşturmadığınız veya bu kimliğin bir kopyasını dışa aktarıp kaydetmediğiniz sürece, bir daha asla gönderemez veya tekrar bu kimliğe sahip mesajları.\n\nBu kimliği tekrar kullanmayı düşünmüyorsanız,
+silmeden önce bağlantılı tüm e-posta adreslerini/telefon numaralarını kaldırmalısınız .</string>
     <string name="delete_id_message2">Son uyarı: Bu cihazdaki kimliğinizi gerçekten silmek istiyor musunuz?</string>
     <string name="delete_id_sum">Kimliğinizi ve bu cihazdaki tüm verileri kalıcı olarak silin</string>
     <string name="backup_password_summary">Kimlik dışa aktarma işleminiz bir şifre ile şifrelenir. Harfler, sayılar ve simgelerden oluşan bir kombinasyon kullanın. Buraya ne girdiğinizi unutmayın!</string>
@@ -278,14 +277,14 @@ Kilitlendiğinde yeni mesajlar genel bir bildirimi tetikler</string>
     <string name="backup_data_new">Veri yedeklemesi oluşturma</string>
     <string name="pinentry_enter_pin">Devam etmek için Threema PIN\'inizi girin</string>
     <string name="pinentry_wrong_pin">PIN yanlış</string>
-    <string name="prefs_sum_security_pin">Threema Kullanıcı Arayüzüne erişimi kilitleme</string>
+    <string name="prefs_sum_security_pin">Erişimi kilitleyin</string>
     <string name="prefs_title_pin_switch">Uygulama koruması</string>
     <string name="prefs_title_pin_code">PIN belirleyin</string>
     <string name="prefs_pin_grace">Kilitlenme zamanı</string>
     <string name="prefs_sum_pin_grace">Ekran kilidinin etkinleşmesine kadar geçen süre</string>
     <string name="click_here_to_change_pin">PIN ayarlandı. Değiştirmek için buraya hafifçe vurun</string>
     <string name="set_pin_menu_title">Yeni PIN ayarla</string>
-    <string name="set_pin_summary_intro">Sayısal bir PIN (yalnızca rakamlar) ayarlayarak gizliliğinizi koruyun. Bu PIN, yetkisiz bir süre geçtikten sonra Threema\'nın kullanıcı arayüzüne erişimi kilitlemek veya özel sohbetleri korumak için kullanılabilir</string>
+    <string name="set_pin_summary_intro">Korumak için kullanılabilir Sayısal bir PIN (yalnızca rakamlar) ayarlayarak gizliliğinizi koruyun. Bu PIN, belirli bir sürenin ardından Threema\'nın kullanıcı arayüzüne erişimi kilitlemek veya özel sohbetleri korumak için kullanılabilir.</string>
     <string name="set_pin_again_summary">PIN kodunu tekrar girin</string>
     <string name="set_pin_hint">TOPLU İĞNE</string>
     <string name="title_addgroup">Yeni Grup</string>
@@ -504,7 +503,7 @@ anket oluşturun veya arkadaşlarınıza istediğiniz her şeyi sorun.</string>
     <string name="kick_user_from_group">Gruptan %1$s başladı</string>
     <string name="show_as_qrcode">QR kodu olarak göster</string>
     <string name="qr_code">QR kod</string>
-    <string name="really_leave_id_export">Henüz yapmadıysanız, kimlik dışa aktarma metin dizenizi veya ilgili QR kodunu güvenli bir yere kaydedin veya yazdırın. Threema ID\'niz yedek olmadan geri yüklenemez.</string>
+    <string name="really_leave_id_export">Henüz yapmadıysanız, kimlik dışa aktarma metin dizenizi veya ilgili QR kodunu güvenli bir yere kaydedin veya yazdırın. Kişisel Threema kimliği yedek olmadan geri alınamaz.</string>
     <string name="revocation_key_title">Kimlik İptali</string>
     <string name="revocation_key_not_set">İptal şifresi ayarlanmadı</string>
     <string name="revocation_key_set_at">%1$s şifre seti</string>
@@ -640,7 +639,7 @@ Yalnızca WiFi ağlarına dosya yüklemenizi ve indirmenizi öneririz .</string>
     <string name="new_wizard_hint_email">E-posta isteğe bağlı)</string>
     <string name="new_wizard_find_friends">Threema\'da arkadaşlarınızı bulun</string>
     <string name="new_wizard_sync_contacts_explain">Hangi arkadaşların Threema kullandığını görmek için açın.</string>
-    <string name="new_wizard_done_title">Bitti!\nHerşey doğru mu?</string>
+    <string name="new_wizard_done_title">Bitti!\nHer şey doğru mu?</string>
     <string name="new_wizard_linked_to">İle bağlantılı</string>
     <string name="new_wizard_need_internet">Benzersiz Threema ID\'nizi oluşturmak için sabit bir İnternet bağlantısı gerekir. Lütfen tekrar deneyin.</string>
     <string name="new_wizard_more_information">Daha fazla bilgi</string>
@@ -1214,5 +1213,13 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="label_continue">Devam etmek</string>
     <string name="select_date">Bir tarih seçin</string>
     <string name="select_time">Bir zaman seçin</string>
-    <string name="recipients">Alıcılar: %s</string>
+    <string name="send_to">%s adresine gönder</string>
+    <string name="receipts_override_choice_send">Göndermek</string>
+    <string name="receipts_override_choice_dont_send">gönderme</string>
+    <string name="receipts_override_choice_default">Varsayılan ( %s )</string>
+    <string name="unable_to_determine_recording_length">Boş kayıt veya uzunluk belirlenemiyor</string>
+    <string name="prefs_header_receipts">Gelirler</string>
+    <string name="prefs_title_reset_receipts">Bireysel ayarları temizle</string>
+    <string name="prefs_sum_reset_receipts">Okundu bilgileri ve yazma göstergesi için kişiye özel ayarları varsayılana sıfırlayın</string>
+    <string name="reset_successful">Varsayılanlara başarıyla sıfırlandı</string>
 </resources>

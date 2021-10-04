@@ -1155,8 +1155,8 @@ public class ComposeMessageFragment extends Fragment implements
 						@Override
 						public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
 
-							logger.info("%%% system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
-							logger.info("%%% stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
+							logger.debug("system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
+							logger.debug("stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
 
 							if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
 								activity.onSoftKeyboardClosed();
@@ -1477,6 +1477,8 @@ public class ComposeMessageFragment extends Fragment implements
 							}
 						}
 
+						lastFirstVisibleItem = firstVisibleItem;
+
 						if (dateView.getVisibility() != View.VISIBLE && composeMessageAdapter != null && composeMessageAdapter.getCount() > 0) {
 							AnimationUtil.slideInAnimation(dateView, false, 200);
 						}
@@ -1484,14 +1486,15 @@ public class ComposeMessageFragment extends Fragment implements
 						dateViewHandler.removeCallbacks(dateViewTask);
 						dateViewHandler.postDelayed(dateViewTask, SCROLLBUTTON_VIEW_TIMEOUT);
 
-						lastFirstVisibleItem = firstVisibleItem;
 						if (composeMessageAdapter != null) {
 							AbstractMessageModel abstractMessageModel = composeMessageAdapter.getItem(firstVisibleItem);
 							if (abstractMessageModel != null) {
-								Date createdAt = abstractMessageModel.getCreatedAt();
+								final Date createdAt = abstractMessageModel.getCreatedAt();
 								if (createdAt != null) {
+									final String text = LocaleUtil.formatDateRelative(getActivity(), createdAt.getTime());
+									dateTextView.setText(text);
 									dateView.post(() -> {
-										dateTextView.setText(LocaleUtil.formatDateRelative(getActivity(), createdAt.getTime()));
+										dateTextView.setText(text);
 									});
 								}
 							}

@@ -1202,5 +1202,13 @@ anonimowo?</string>
     <string name="label_continue">Kontynuuj</string>
     <string name="select_date">Wybierz datę</string>
     <string name="select_time">Wybierz godzinę</string>
-    <string name="recipients">Odbiorcy: %s</string>
+    <string name="send_to">Wysłano do  %s</string>
+    <string name="receipts_override_choice_send">Wyślij</string>
+    <string name="receipts_override_choice_dont_send">Nie wysyłaj</string>
+    <string name="receipts_override_choice_default">Domyślnie (%s)</string>
+    <string name="unable_to_determine_recording_length">Puste nagranie lub niemożność określenia jego długości</string>
+    <string name="prefs_header_receipts">Potwierdzenia</string>
+    <string name="prefs_title_reset_receipts">Usuń indywidualne ustawienia</string>
+    <string name="prefs_sum_reset_receipts">Przywróć domyślne ustawienia specyficzne dla kontaktów i potwierdzeń przeczytania oraz wskaźnika pisania.</string>
+    <string name="reset_successful">Skutecznie przywrócono ustawienia domyślne</string>
 </resources>

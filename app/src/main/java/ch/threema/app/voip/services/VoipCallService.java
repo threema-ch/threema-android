@@ -80,13 +80,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.BackgroundErrorNotification;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
@@ -208,7 +208,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	// Listeners
 	private VoipMessageListener voipMessageListener;
-	private PhoneStateListener hangUpRtcOnDeviceCallAnswered = new PSTNCallStateListener();
+	private final PhoneStateListener hangUpRtcOnDeviceCallAnswered = new PSTNCallStateListener();
 
 	// Receivers
 	private IncomingMobileCallReceiver incomingMobileCallReceiver;
@@ -240,7 +240,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	private static final int ICE_DISCONNECTED_SOUND_TIMEOUT_MS = 1000;
 
 	// Camera handling
-	private @NonNull AtomicBoolean switchCamInProgress = new AtomicBoolean(false);
+	private final AtomicBoolean switchCamInProgress = new AtomicBoolean(false);
 	private final Object capturingLock = new Object(); // Lock whenever modifying capturing
 	private volatile boolean isCapturing = false; // Always synchronize on capturingLock!
 
@@ -251,7 +251,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	// Broadcast receivers
 	private MeteredStatusChangedReceiver meteredStatusChangedReceiver;
-	private BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		@UiThread
 		public void onReceive(Context context, Intent intent) {

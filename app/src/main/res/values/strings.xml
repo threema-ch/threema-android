@@ -3,7 +3,7 @@
 	<string name="title_section2">Contacts</string>
 	<string name="title_section1">Chats</string>
 	<string name="title_compose_message">Start chat</string>
-	<string name="title_choose_recipient">Select Recipient</string>
+	<string name="title_choose_recipient">Select Recipients</string>
 	<string name="title_keyfingerprint">Key Fingerprint</string>
 	<string name="title_mythreemaid">My Threema ID</string>
 	<string name="title_threemaid">Threema ID</string>
@@ -1239,7 +1239,14 @@
 	<string name="label_continue">Continue</string>
 	<string name="select_date">Select a date</string>
 	<string name="select_time">Select a time</string>
-	<string name="recipients">Recipients: %s</string>
 	<string name="send_to">Send to %s</string>
+	<string name="receipts_override_choice_send">Send</string>
+	<string name="receipts_override_choice_dont_send">Don\'t send</string>
+	<string name="receipts_override_choice_default">Default (%s)</string>
+	<string name="unable_to_determine_recording_length">Empty recording or unable to determine length</string>
+	<string name="prefs_header_receipts">Receipts</string>
+	<string name="prefs_title_reset_receipts">Clear individual settings</string>
+	<string name="prefs_sum_reset_receipts">Reset contact-specific settings for read receipts and typing indicator to default</string>
+	<string name="reset_successful">Successfully reset to defaults</string>
 </resources>
 

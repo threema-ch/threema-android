@@ -146,6 +146,11 @@ public class WorkUserListFragment extends RecipientListFragment {
 					public Boolean includeHidden() {
 						return false;
 					}
+
+					@Override
+					public Boolean onlyWithReceiptSettings() {
+						return false;
+					}
 				}), new IPredicateNonNull<ContactModel>() {
 					@Override
 					public boolean apply(@NonNull ContactModel type) {

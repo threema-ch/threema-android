@@ -1184,5 +1184,13 @@
     <string name="label_continue">Продолжить</string>
     <string name="select_date">Выберите дату</string>
     <string name="select_time">Выберите время</string>
-    <string name="recipients">Получатели: %s</string>
+    <string name="send_to">Отправить %s</string>
+    <string name="receipts_override_choice_send">Отправить</string>
+    <string name="receipts_override_choice_dont_send">Не отправлять</string>
+    <string name="receipts_override_choice_default">По умолчанию (%s)</string>
+    <string name="unable_to_determine_recording_length">Пустая запись или невозможно определить длину</string>
+    <string name="prefs_header_receipts">Уведомления</string>
+    <string name="prefs_title_reset_receipts">Сбросить индивидуальные настройки</string>
+    <string name="prefs_sum_reset_receipts">Сброс уведомлений о прочтении и индикатора ввода текста для конкретных контактов до настроек по умолчанию</string>
+    <string name="reset_successful">Успешно сброшено до настроек по умолчанию</string>
 </resources>

@@ -23,12 +23,10 @@ package ch.threema.client;
 
 import ch.threema.base.Contact;
 
-import java.util.Collection;
-
 public interface ContactStoreInterface {
 
 	/**
-	 * Obtain the public key for the given identity.
+	 * Obtain the public key for the given identity and creates a contact if it doesn't already exist
 	 *
 	 * @param identity desired identity
 	 * @param fetch if true, attempt to synchronously fetch the key from the server if necessary
@@ -38,14 +36,9 @@ public interface ContactStoreInterface {
 
 	Contact getContactForIdentity(String identity);
 
-	Collection<Contact> getAllContacts();
-
 	void addContact(Contact contact);
 
 	void hideContact(Contact contact, boolean hide);
 
 	void removeContact(Contact contact);
-
-	void addContactStoreObserver(ContactStoreObserver observer);
-	void removeContactStoreObserver(ContactStoreObserver observer);
 }

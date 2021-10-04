@@ -83,6 +83,11 @@ public class SystemUpdateToVersion39 extends  UpdateToVersion implements UpdateS
 				public Boolean includeHidden() {
 					return true;
 				}
+
+				@Override
+				public Boolean onlyWithReceiptSettings() {
+					return false;
+				}
 			});
 		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 			logger.error("update script 39 failed", e);

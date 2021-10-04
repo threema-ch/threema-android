@@ -23,8 +23,11 @@ package ch.threema.storage.models;
 
 import android.text.format.DateUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import ch.threema.base.Contact;
 import ch.threema.base.VerificationLevel;
@@ -40,7 +43,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_VERIFICATION_LEVEL = "verificationLevel";
 	public static final String COLUMN_ANDROID_CONTACT_LOOKUP_KEY = "androidContactId"; /* The complete lookup key (consisting of key and ID) of the android contact this contact is linked with */
 	@Deprecated	public static final String COLUMN_THREEMA_ANDROID_CONTACT_ID = "threemaAndroidContactId";
-	public static final String COLUMN_IS_SYNCHRONIZED= "isSynchronized";
+	@Deprecated public static final String COLUMN_IS_SYNCHRONIZED = "isSynchronized";
 	public static final String COLUMN_FEATURE_LEVEL = "featureLevel";
 	public static final String COLUMN_STATE = "state";
 	public static final String COLUMN_COLOR = "color";
@@ -52,6 +55,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_IS_HIDDEN = "isHidden"; /* whether this contact is visible in the contact list */
 	public static final String COLUMN_IS_RESTORED = "isRestored"; /* whether this contact has been restored from a backup and not yet been contacted */
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this contact has been archived by user */
+	public static final String COLUMN_READ_RECEIPTS = "readReceipts"; /* whether read receipts should be sent to this contact */
+	public static final String COLUMN_TYPING_INDICATORS = "typingIndicators"; /* whether typing indicators should be sent to this contact */
 
 	public enum State {
 		/**
@@ -75,6 +80,17 @@ public class ContactModel extends Contact implements ReceiverModel {
 		INVALID
 	}
 
+	/**
+	 * Policy for sending read receipts or typing indicators
+	 */
+	public static final int DEFAULT = 0; // use the global setting
+	public static final int SEND = 1; // always send, regardless of global setting
+	public static final int DONT_SEND = 2; // never send
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({DEFAULT, SEND, DONT_SEND})
+	public @interface OverridePolicy {}
+
 	// Timeout for avatars of linked contacts
 	public static long DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY = DateUtils.DAY_IN_MILLIS * 14;
 
@@ -88,6 +104,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private boolean isWork, isHidden, isRestored, isArchived;
 	private Date avatarExpires, profilePicSent, dateCreated;
 	private int type;
+	private @OverridePolicy int readReceipts, typingIndicators;
 
 	public ContactModel(String identity, byte[] publicKey) {
 		super(identity, publicKey);
@@ -104,6 +121,10 @@ public class ContactModel extends Contact implements ReceiverModel {
 
 	public ContactModel setAndroidContactLookupKey(String androidContactId) {
 		this.androidContactId = androidContactId;
+		// degrade verification level as this contact is no longer connected to an address book contact
+		if (androidContactId == null && getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
+			setVerificationLevel(VerificationLevel.UNVERIFIED);
+		}
 		return this;
 	}
 
@@ -145,18 +166,24 @@ public class ContactModel extends Contact implements ReceiverModel {
 	 * Whether the contact is synchronized with the address book, i.e. the information came from an automatic sync
 	 * or it was manually linked
 	 * @return true if the contact in androidContactId was automatically synced, false if it was manually linked or not linked at all.
+	 *
+	 * @Deprecated Use getAndroidContactLookupKey() != null to determine if the contact is synchronized with the address book
 	 */
+	@Deprecated
 	public boolean isSynchronized() {
 		return this.isSynchronized;
 	}
 
+	/**
+	 * Sets whether this contact is synchronized with the address book, either from an automatic sync or manually
+	 * @param isSynchronized
+	 * @return ContactModel for a builder
+	 *
+	 * @Deprecated Use setAndroidContactLookupKey()
+	 */
+	@Deprecated
 	public ContactModel setIsSynchronized(boolean isSynchronized) {
 		this.isSynchronized = isSynchronized;
-
-		// degrade verification level as this contact is no longer connected to an address book contact
-		if (!isSynchronized && getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
-			setVerificationLevel(VerificationLevel.UNVERIFIED);
-		}
 		return this;
 	}
 
@@ -259,6 +286,24 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
+	public @OverridePolicy int getReadReceipts() {
+		return readReceipts;
+	}
+
+	public ContactModel setReadReceipts(@OverridePolicy int readReceipts) {
+		this.readReceipts = readReceipts;
+		return this;
+	}
+
+	public @OverridePolicy int getTypingIndicators() {
+		return typingIndicators;
+	}
+
+	public ContactModel setTypingIndicators(@OverridePolicy int typingIndicators) {
+		this.typingIndicators = typingIndicators;
+		return this;
+	}
+
 	public Object[] getModifiedValueCandidates() {
 		return new Object[] {
 			this.getPublicKey(),
@@ -279,7 +324,9 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.dateCreated,
 			this.isHidden,
 			this.isRestored,
-			this.isArchived
+			this.isArchived,
+			this.readReceipts,
+			this.typingIndicators
 		};
 	}
 

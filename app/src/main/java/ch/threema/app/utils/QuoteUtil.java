@@ -320,12 +320,12 @@ public class QuoteUtil {
 			switch (messageModel.getType()) {
 				case IMAGE:
 				case FILE:
-				case TEXT:
 				case VIDEO:
-				case BALLOT:
 				case VOICEMESSAGE:
+				case TEXT:
+				case BALLOT:
 				case LOCATION:
-					return true;
+					return messageModel.getApiMessageId() != null;
 				default:
 					return false;
 			}

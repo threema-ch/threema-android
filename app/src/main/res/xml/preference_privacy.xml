@@ -30,17 +30,23 @@
 
 	<PreferenceCategory
 		android:key="pref_key_chat"
-		android:title="@string/prefs_header_chat">
+		android:title="@string/prefs_header_receipts">
 
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="@string/preferences__read_receipts"
-			android:title="@string/prefs_title_read_receipts"/>
+			android:title="@string/prefs_title_read_receipts" />
 
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="@string/preferences__typing_indicator"
-			android:title="@string/prefs_title_typing_indicator"/>
+			android:title="@string/prefs_title_typing_indicator" />
+
+		<Preference
+			android:enabled="true"
+			android:key="pref_reset_receipts"
+			android:summary="@string/prefs_sum_reset_receipts"
+			android:title="@string/prefs_title_reset_receipts"/>
 
 	</PreferenceCategory>
 

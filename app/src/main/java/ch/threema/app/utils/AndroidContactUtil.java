@@ -39,12 +39,14 @@ import android.os.Build;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -99,6 +101,7 @@ public class AndroidContactUtil {
 	};
 
 	private static final String[] RAW_CONTACT_PROJECTION = new String[] {
+		ContactsContract.RawContacts._ID,
 		ContactsContract.RawContacts.CONTACT_ID,
 		ContactsContract.RawContacts.SYNC1,
 	};
@@ -122,19 +125,29 @@ public class AndroidContactUtil {
 		return userService.getAccount();
 	}
 
+	public static class RawContactInfo {
+		public final long contactId;
+		public final long rawContactId;
+
+		RawContactInfo(long contactId, long rawContactId) {
+			this.contactId = contactId;
+			this.rawContactId = rawContactId;
+		}
+	}
+
 	private static class ContactName {
 		final String firstName;
 		final String lastName;
 
-		public ContactName(String firstName, String lastName) {
-			this.firstName = firstName;
-			this.lastName = lastName;
+		public ContactName(@Nullable String firstName, @Nullable String lastName) {
+			this.firstName = firstName != null ? firstName.trim() : firstName;
+			this.lastName = lastName != null ? lastName.trim() : lastName;
 		}
 	}
 
 	/**
 	 * Return a valid uri to the given contact that can be used to build an intent for the contact app
-	 * It is safe to call this method if permission to access contacts is not granted
+	 * It is safe to call this method if permission to access contacts is not granted - null will be returned in that case
 	 *
 	 * @param contactModel ContactModel for which to get the Android contact URI
 	 * @return a valid uri pointing to the android contact or null if permission was not granted, no android contact is linked or android contact could not be looked up
@@ -175,54 +188,50 @@ public class AndroidContactUtil {
 	 * @param contactModel ContactModel
 	 * @return true if setting or deleting the avatar was successful, false otherwise
 	 */
-	public boolean updateAvatarByAndroidContact(ContactModel contactModel) {
+	public boolean updateAvatarByAndroidContact(@NonNull ContactModel contactModel) {
 		if (fileService == null) {
 			logger.info("FileService not available");
 			return false;
 		}
 
 		String androidContactId = contactModel.getAndroidContactLookupKey();
-
-		if(TestUtil.empty(androidContactId)) {
+		if (TestUtil.empty(androidContactId)) {
 			return false;
 		}
 
+		// contactUri will be null if permission is not granted
 		Uri contactUri = getAndroidContactUri(contactModel);
-		if (contactUri == null) {
-			return false;
-		}
+		if (contactUri != null) {
+			Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
 
-		Bitmap bitmap = null;
-		if (ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)) {
-			bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
-		}
-
-		if (bitmap != null) {
-			try {
-				fileService.writeAndroidContactAvatar(contactModel, BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
-				contactModel.setAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
-				return true;
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		} else {
-			// delete old avatar
-			boolean success = fileService.removeAndroidContactAvatar(contactModel);
-			if (success) {
-				contactModel.setAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
-				return true;
+			if (bitmap != null) {
+				try {
+					fileService.writeAndroidContactAvatar(contactModel, BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
+					contactModel.setAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+					return true;
+				} catch (Exception e) {
+					logger.error("Exception", e);
+				}
+			} else {
+				// delete old avatar
+				boolean success = fileService.removeAndroidContactAvatar(contactModel);
+				if (success) {
+					contactModel.setAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+					return true;
+				}
 			}
 		}
 
+		logger.info("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey(), contactUri);
 		return false;
 	}
 
 	/**
 	 * Update the name of this contact according to the name of the Android contact
-	 * Note that the ContactModel needs to be saved to the ContactStore to apply the changes
+	 * Note that the ContactModel needs to be saved to the ContactStore to apply the changes!
 	 *
 	 * @param contactModel ContactModel
-	 * @return true if setting the name was successful, false otherwise
+	 * @return true if the name has changed, false otherwise
 	 */
 	@RequiresPermission(Manifest.permission.READ_CONTACTS)
 	public boolean updateNameByAndroidContact(@NonNull ContactModel contactModel) throws ThreemaException {
@@ -231,6 +240,9 @@ public class AndroidContactUtil {
 			ContactName contactName = this.getContactName(namedContactUri);
 
 			if (contactName == null) {
+				logger.info("Unable to get contact name for {} lookupKey = {} namedUri = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey(), namedContactUri);
+				// remove contact link to unresolvable contact
+				contactModel.setAndroidContactLookupKey(null);
 				throw new ThreemaException("Unable to get contact name");
 			}
 
@@ -239,6 +251,10 @@ public class AndroidContactUtil {
 				contactModel.setFirstName(contactName.firstName);
 				contactModel.setLastName(contactName.lastName);
 				return true;
+			}
+		} else {
+			if (contactModel != null) {
+				logger.info("Unable to get android contact uri for {} lookupkey = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey());
 			}
 		}
 		return false;
@@ -291,11 +307,12 @@ public class AndroidContactUtil {
 						}
 					} else {
 						// no contact name found
+						logger.info("No contact name found for contact ID {} uri = {}", contactId, contactUri.toString());
 						return null;
 					}
 				}
 			} else {
-				logger.debug("Contact not found: {}", contactUri.toString());
+				logger.info("Contact not found: {}", contactUri.toString());
 			}
 		} catch (PatternSyntaxException e) {
 			logger.error("Exception", e);
@@ -409,6 +426,10 @@ public class AndroidContactUtil {
 			return;
 		}
 
+		if (systemRawContactId == 0L) {
+			return;
+		}
+
 		int backReference = contentProviderOperations.size();
 		logger.debug("Adding contact: " + identity);
 
@@ -448,10 +469,12 @@ public class AndroidContactUtil {
 			builder.withValueBackReference(ContactsContract.AggregationExceptions.RAW_CONTACT_ID2, backReference);
 			builder.withValue(ContactsContract.AggregationExceptions.TYPE, ContactsContract.AggregationExceptions.TYPE_KEEP_TOGETHER);
 			contentProviderOperations.add(builder.build());
+
+		logger.info("Create a raw contact for ID {} and aggregate it with system raw contact {}", identity, systemRawContactId);
 	}
 
 	/**
-	 * Delete the raw contact where the given identity matches the entry in the contact's SYNC1 column
+	 * Delete all raw contacts where the given identity matches the entry in the contact's SYNC1 column
 	 * It's safe to call this method without contacts permission
 	 *
 	 * @param contactModel ContactModel whose raw contact we want to be deleted
@@ -485,10 +508,10 @@ public class AndroidContactUtil {
 	/**
 	 * Delete all raw contacts specified in rawContacts Map
 	 *
-	 * @param rawContacts HashMap of the rawContacts to delete. The key of the map entry contains the identity
+	 * @param rawContacts Map of the rawContacts to delete. The key of the map entry contains the identity
 	 * @return Number of raw contacts that were supposed to be deleted. Does not necessarily represent the real number of deleted raw contacts.
 	 */
-	public int deleteThreemaRawContacts(@NonNull HashMap<String, Long> rawContacts) {
+	public int deleteThreemaRawContacts(@NonNull ListMultimap<String, RawContactInfo> rawContacts) {
 		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
 			return 0;
 		}
@@ -504,16 +527,17 @@ public class AndroidContactUtil {
 
 		ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
 
-		for (Map.Entry<String, Long> rawContact : rawContacts.entrySet()) {
-			if (!TestUtil.empty(rawContact.getKey())) {
+		for (Map.Entry<String, RawContactInfo> rawContact : rawContacts.entries()) {
+			if (!TestUtil.empty(rawContact.getKey()) && rawContact.getValue().rawContactId != 0L) {
 				ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(
 					ContactsContract.RawContacts.CONTENT_URI
 						.buildUpon()
 						.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
 						.appendQueryParameter(ContactsContract.RawContacts.SYNC1, rawContact.getKey())
 						.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-						.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build()
-				);
+						.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build())
+						.withSelection(ContactsContract.RawContacts._ID+" = ?", new String[] {String.valueOf(rawContact.getValue().rawContactId)});
+
 				contentProviderOperations.add(builder.build());
 			}
 		}
@@ -543,7 +567,7 @@ public class AndroidContactUtil {
 	 */
 	public int deleteAllThreemaRawContacts() {
 		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
-			return  0;
+			return 0;
 		}
 
 		Account account = this.getAccount();
@@ -568,10 +592,10 @@ public class AndroidContactUtil {
 	/**
 	 * Get a list of all Threema raw contacts from the contact database. This may include "stray" contacts.
 	 *
-	 * @return HashMap containing identity as key and android contact id as value
+	 * @return List containing pairs of identity and android contact id, null if permissions have not been granted
 	 */
 	@Nullable
-	public HashMap<String, Long> getAllThreemaRawContacts() {
+	public ListMultimap<String, RawContactInfo> getAllThreemaRawContacts() {
 		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
 			return null;
 		}
@@ -586,15 +610,16 @@ public class AndroidContactUtil {
 			.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
 			.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build();
 
-		HashMap<String, Long> rawContacts = new HashMap<>();
+		ListMultimap<String, RawContactInfo> rawContacts = ArrayListMultimap.create();
 		Cursor cursor = null;
 		try {
 			cursor = contentResolver.query(rawContactUri, RAW_CONTACT_PROJECTION, null, null, null);
 			if (cursor != null){
 				while (cursor.moveToNext()) {
-					Long contactId = cursor.getLong(0);
-					String identity = cursor.getString(1);
-					rawContacts.put(identity, contactId);
+					long rawContactId = cursor.getLong(0);
+					long contactId = cursor.getLong(1);
+					String identity = cursor.getString(2);
+					rawContacts.put(identity, new RawContactInfo(contactId, rawContactId));
 				}
 			}
 		} catch (Exception e) {
@@ -655,7 +680,7 @@ public class AndroidContactUtil {
 			return null;
 		}
 
-		if (!contactModel.isSynchronized() || contactModel.getAndroidContactLookupKey() == null) {
+		if (contactModel.getAndroidContactLookupKey() == null) {
 			return null;
 		}
 

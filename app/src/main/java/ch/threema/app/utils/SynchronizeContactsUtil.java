@@ -47,6 +47,7 @@ public class SynchronizeContactsUtil {
 	}
 
 	public static void startDirectly(String forIdentity) {
+		logger.info("Starting single contact sync for identity {}", forIdentity);
 		SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();
 		if(routine != null) {
 			routine.addProcessIdentity(forIdentity);

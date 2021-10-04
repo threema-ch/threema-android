@@ -95,6 +95,11 @@ public class UserMemberListFragment extends MemberListFragment {
 						public Boolean includeHidden() {
 							return false;
 						}
+
+						@Override
+						public Boolean onlyWithReceiptSettings() {
+							return false;
+						}
 					});
 				} else if (profilePics) {
 					contactModels = contactService.getCanReceiveProfilePics();

@@ -21,14 +21,23 @@
 
 package ch.threema.client.file;
 
-import ch.threema.base.Contact;
-import ch.threema.base.ThreemaException;
-import ch.threema.client.*;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
+
+import ch.threema.base.Contact;
+import ch.threema.base.ThreemaException;
+import ch.threema.client.AbstractMessage;
+import ch.threema.client.BadMessageException;
+import ch.threema.client.BoxedMessage;
+import ch.threema.client.ContactStoreInterface;
+import ch.threema.client.GroupId;
+import ch.threema.client.IdentityStoreInterface;
+import ch.threema.client.MissingPublicKeyException;
+import ch.threema.client.NonceFactory;
+import ch.threema.client.NonceStoreInterface;
+import ch.threema.client.ProtocolDefines;
 
 public class ProtocolTest {
 
@@ -178,11 +187,6 @@ public class ProtocolTest {
 			}
 
 			@Override
-			public Collection<Contact> getAllContacts() {
-				return null;
-			}
-
-			@Override
 			public void addContact(Contact contact) { }
 
 			@Override
@@ -190,12 +194,6 @@ public class ProtocolTest {
 
 			@Override
 			public void removeContact(Contact contact) { }
-
-			@Override
-			public void addContactStoreObserver(ContactStoreObserver observer) { }
-
-			@Override
-			public void removeContactStoreObserver(ContactStoreObserver observer) { }
 		};
 	}
 

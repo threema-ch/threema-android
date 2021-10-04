@@ -171,6 +171,10 @@ public class ContactsSectionFragment
 				return;
 			}
 
+			if (actionMode != null) {
+				actionMode.finish();
+			}
+
 			new FetchContactsTask(contactService, false, tab.getPosition(), true) {
 				@Override
 				protected void onPostExecute(Pair<List<ContactModel>, FetchResults> result) {
@@ -215,10 +219,6 @@ public class ContactsSectionFragment
 	private void startSwipeRefresh() {
 		if (swipeRefreshLayout != null) {
 			swipeRefreshLayout.setRefreshing(true);
-
-			if (ConfigUtils.isWorkBuild() && workTabLayout != null) {
-				workTabLayout.selectTab(workTabLayout.getTabAt(TAB_ALL_CONTACTS), true);
-			}
 		}
 	}
 
@@ -345,7 +345,7 @@ public class ContactsSectionFragment
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(ContactModel modifiedContactModel) {
-			logger.debug("*** onModified " + modifiedContactModel.getIdentity());
+			logger.debug("onModified " + modifiedContactModel.getIdentity());
 			if (resumePauseHandler != null) {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_UPDATE_LIST, runIfActiveUpdateList);
 			}
@@ -353,7 +353,7 @@ public class ContactsSectionFragment
 
 		@Override
 		public void onAvatarChanged(ContactModel contactModel) {
-			logger.debug("*** onAvatarChanged -> onModified " + contactModel.getIdentity());
+			logger.debug("onAvatarChanged -> onModified " + contactModel.getIdentity());
 			this.onModified(contactModel);
 		}
 
@@ -421,10 +421,12 @@ public class ContactsSectionFragment
 			// Count new contacts
 			final FetchResults results = new FetchResults();
 
-			if (ConfigUtils.isWorkBuild() && selectedTab == TAB_WORK_ONLY) {
+			if (ConfigUtils.isWorkBuild()) {
 				results.workCount = contactService.countIsWork();
-				if (results.workCount > 0 || forceWork) {
-					allContacts = contactService.getIsWork();
+				if (selectedTab == TAB_WORK_ONLY) {
+					if (results.workCount > 0 || forceWork) {
+						allContacts = contactService.getIsWork();
+					}
 				}
 			}
 
@@ -455,7 +457,7 @@ public class ContactsSectionFragment
 
 	@Override
 	public void onResume() {
-		logger.debug("*** onResume");
+		logger.debug("onResume");
 		if (this.resumePauseHandler != null) {
 			this.resumePauseHandler.onResume();
 		}
@@ -470,7 +472,7 @@ public class ContactsSectionFragment
 	@Override
 	public void onPause() {
 		super.onPause();
-		logger.debug("*** onPause");
+		logger.debug("onPause");
 
 		if (this.resumePauseHandler != null) {
 			this.resumePauseHandler.onPause();
@@ -480,7 +482,7 @@ public class ContactsSectionFragment
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		logger.debug("*** onCreate");
+		logger.debug("onCreate");
 
 		setRetainInstance(true);
 		setHasOptionsMenu(true);
@@ -497,12 +499,12 @@ public class ContactsSectionFragment
 	@Override
 	public void onAttach(@NonNull Activity activity) {
 		super.onAttach(activity);
-		logger.debug("*** onAttach");
+		logger.debug("onAttach");
 	}
 
 	@Override
 	public void onDestroy() {
-		logger.debug("*** onDestroy");
+		logger.debug("onDestroy");
 
 		removeListeners();
 
@@ -515,7 +517,7 @@ public class ContactsSectionFragment
 
 	@Override
 	public void onHiddenChanged(boolean hidden) {
-		logger.debug("*** onHiddenChanged: " + hidden);
+		logger.debug("onHiddenChanged: " + hidden);
 		if (hidden) {
 			if (actionMode != null) {
 				actionMode.finish();
@@ -539,7 +541,7 @@ public class ContactsSectionFragment
 		super.onPrepareOptionsMenu(menu);
 
 		// move search item to popup if the lock item is visible
-		if (lockAppService.isLockingEnabled()) {
+		if (lockAppService != null && lockAppService.isLockingEnabled()) {
 			this.searchMenuItem.setShowAsAction(SHOW_AS_ACTION_NEVER | SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 		} else {
 			this.searchMenuItem.setShowAsAction(SHOW_AS_ACTION_ALWAYS | SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
@@ -548,7 +550,7 @@ public class ContactsSectionFragment
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		logger.debug("*** onCreateOptionsMenu");
+		logger.debug("onCreateOptionsMenu");
 		searchMenuItem = menu.findItem(R.id.menu_search_contacts);
 
 		if (searchMenuItem == null) {
@@ -704,6 +706,22 @@ public class ContactsSectionFragment
 					contactsCounterChip.setVisibility(View.GONE);
 				}
 			}
+			if (ConfigUtils.isWorkBuild() && counts != null) {
+				if (workTabLayout != null) {
+					FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
+					if (counts.workCount > 0) {
+						workTabLayout.setVisibility(View.VISIBLE);
+						layoutParams.topMargin = getResources().getDimensionPixelSize(R.dimen.header_contact_section_work_height);
+					} else {
+						if (workTabLayout.getSelectedTabPosition() != 0) {
+							workTabLayout.selectTab(workTabLayout.getTabAt(0));
+						}
+						workTabLayout.setVisibility(View.GONE);
+						layoutParams.topMargin = 0;
+					}
+					listView.setLayoutParams(layoutParams);
+				}
+			}
 		}
 	}
 
@@ -751,7 +769,7 @@ public class ContactsSectionFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View headerView, fragmentView = getView();
 
-		logger.debug("*** onCreateView");
+		logger.debug("onCreateView");
 		if (fragmentView == null) {
 			fragmentView = inflater.inflate(R.layout.fragment_contacts, container, false);
 
@@ -833,10 +851,7 @@ public class ContactsSectionFragment
 					}
 				});
 			} else {
-				headerView = View.inflate(getActivity(), R.layout.header_contact_section_work, null);
-				listView.addHeaderView(headerView, null, false);
-
-				workTabLayout = ((TabLayout) headerView.findViewById(R.id.tab_layout));
+				workTabLayout = fragmentView.findViewById(R.id.work_contacts_tab_layout);
 				workTabLayout.addOnTabSelectedListener(onTabSelectedListener);
 			}
 
@@ -864,7 +879,7 @@ public class ContactsSectionFragment
 	@Override
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		logger.debug("*** onViewCreated");
+		logger.debug("onViewCreated");
 
 		if (getActivity() != null && listView != null) {
 			// add text view if contact list is empty
@@ -1104,7 +1119,7 @@ public class ContactsSectionFragment
 	}
 
 	private void setupListeners() {
-		logger.debug("*** setup listeners");
+		logger.debug("setup listeners");
 
 		//set listeners
 		ListenerManager.contactListeners.add(this.contactListener);
@@ -1114,7 +1129,7 @@ public class ContactsSectionFragment
 	}
 
 	private void removeListeners() {
-		logger.debug("*** remove listeners");
+		logger.debug("remove listeners");
 
 		ListenerManager.contactListeners.remove(this.contactListener);
 		ListenerManager.contactSettingsListeners.remove(this.contactSettingsListener);

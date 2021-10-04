@@ -90,9 +90,6 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_GROUP_CREATE = 0x4a;
 	public static final int MSGTYPE_GROUP_RENAME = 0x4b;
 	public static final int MSGTYPE_GROUP_LEAVE = 0x4c;
-	public static final int MSGTYPE_GROUP_ADD_MEMBER = 0x4d;
-	public static final int MSGTYPE_GROUP_REMOVE_MEMBER = 0x4e;
-	public static final int MSGTYPE_GROUP_DESTROY = 0x4f;
 	public static final int MSGTYPE_GROUP_SET_PHOTO = 0x50;
 	public static final int MSGTYPE_GROUP_REQUEST_SYNC = 0x51;
 	public static final int MSGTYPE_GROUP_BALLOT_CREATE = 0x52;

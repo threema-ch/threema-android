@@ -374,15 +374,18 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	};
 
 	private void updateBottomNavigation() {
-		RuntimeUtil.runOnUiThread(() -> {
-			try {
-				new UpdateBottomNavigationBadgeTask(HomeActivity.this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			} catch (RejectedExecutionException e) {
+		if (preferenceService.getShowUnreadBadge()) {
+			RuntimeUtil.runOnUiThread(() -> {
 				try {
-					new UpdateBottomNavigationBadgeTask(HomeActivity.this).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-				} catch (RejectedExecutionException ignored) {}
-			}
-		});
+					new UpdateBottomNavigationBadgeTask(HomeActivity.this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				} catch (RejectedExecutionException e) {
+					try {
+						new UpdateBottomNavigationBadgeTask(HomeActivity.this).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+					} catch (RejectedExecutionException ignored) {
+					}
+				}
+			});
+		}
 	}
 
 	private final ConversationListener conversationListener = new ConversationListener() {
@@ -499,6 +502,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 						if (bottomNavigationView != null) {
 							BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.contacts);
+							badgeDrawable.setBackgroundColor(ConfigUtils.getAccentColor(HomeActivity.this));
 							if (badgeDrawable.getVerticalOffset() == 0) {
 								badgeDrawable.setVerticalOffset(getResources().getDimensionPixelSize(R.dimen.bottom_nav_badge_offset_vertical));
 							}
@@ -1119,9 +1123,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			bottomNavigationView.setSelectedItemId(initialItemId);
 		});
 
-		if (preferenceService.getShowUnreadBadge()) {
-			new UpdateBottomNavigationBadgeTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		}
+		updateBottomNavigation();
 
 		// restore sync adapter account if necessary
 		if (preferenceService.isSyncContacts()) {

@@ -977,7 +977,7 @@ messaggi ogni 15 minuti.</string>
     <string name="voip_disabled">Le chiamate Threema Safe sono disabilitate</string>
     <string name="hide_chat_enter_message_explain">Questa chat è contrassegnata come privata. Per entrare devi prima impostare la protezione di accesso.</string>
     <string name="unknown">Sconosciuto</string>
-    <string name="miui_notification_title">Avviso importante sulle notifiche in MIUI</string>
+    <string name="miui_notification_title">Avviso importante sulle notifiche in MIUI 10</string>
     <string name="miui_notification_body">Per impostazione predefinita MIUI 10 disattiva i suoni e le luci per tutti i nuovi canali di notifica creati (a eccezione di alcune app che vengono considerate \"importanti\" da Xiaomi). Nel tuo telefono e a partire dalla schermata delle impostazioni di notifica specifica per l\'app dovrai attivarle esplicitamente per ciascun canale. Per maggiori informazioni, contatta il produttore del telefono.</string>
     <string name="miui12_notification_body">Per impostazione predefinita MIUI disattiva i suoni, le luci e le notifiche mobili per tutte le app (a eccezione di alcune app molto popolari che vengono considerate \"importanti\" da Xiaomi). Dovrai attivare manualmente queste impostazioni nella schermata delle impostazioni delle notifiche specifica per l\'app e ripetere la procedura dopo ogni aggiornamento dell\'app. Per maggiori informazioni, contatta Xiaomi.</string>
     <string name="dont_show_again">Non mostrare di nuovo</string>
@@ -1205,5 +1205,4 @@ messaggi ogni 15 minuti.</string>
     <string name="label_continue">Continua</string>
     <string name="select_date">Seleziona una data</string>
     <string name="select_time">Seleziona un\'ora</string>
-    <string name="recipients">Destinatari: %s</string>
 </resources>

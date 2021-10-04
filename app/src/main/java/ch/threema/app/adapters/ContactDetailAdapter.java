@@ -28,10 +28,13 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FingerPrintService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
@@ -50,7 +54,6 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ContactUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -61,6 +64,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private static final int TYPE_ITEM = 1;
 
 	private final Context context;
+	private ContactService contactService;
 	private GroupService groupService;
 	private PreferenceService preferenceService;
 	private FingerPrintService fingerprintService;
@@ -92,6 +96,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		private final ImageView syncSourceIcon;
 		private final TextView publicNickNameView;
 		private final LinearLayout groupMembershipTitle;
+		private final MaterialAutoCompleteTextView readReceiptsSpinner, typingIndicatorsSpinner;
 
 		public HeaderHolder(View view) {
 			super(view);
@@ -107,6 +112,8 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			this.publicNickNameView = itemView.findViewById(R.id.public_nickname);
 			this.groupMembershipTitle = itemView.findViewById(R.id.group_members_title_container);
 			this.syncSourceIcon = itemView.findViewById(R.id.sync_source_icon);
+			this.readReceiptsSpinner = itemView.findViewById(R.id.read_receipts_spinner);
+			this.typingIndicatorsSpinner = itemView.findViewById(R.id.typing_indicators_spinner);
 
 			verificationLevelIconView.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -126,6 +133,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		try {
+			this.contactService = serviceManager.getContactService();
 			this.groupService = serviceManager.getGroupService();
 			this.fingerprintService = serviceManager.getFingerPrintService();
 			this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
@@ -193,7 +201,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			headerHolder.verificationLevelImageView.setContactModel(contactModel);
 			headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
 
-			if (preferenceService.isSyncContacts() && ContactUtil.isSynchronized(contactModel) &&
+			if (preferenceService.isSyncContacts() && contactModel.getAndroidContactLookupKey() != null &&
 				ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)) {
 				headerHolder.synchronizeContainer.setVisibility(View.VISIBLE);
 
@@ -229,6 +237,30 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			} else {
 				headerHolder.groupMembershipTitle.setVisibility(View.GONE);
 			}
+
+			final String[] choices = context.getResources().getStringArray(R.array.receipts_override_choices);
+			choices[0] = context.getString(R.string.receipts_override_choice_default,
+					choices[preferenceService.isReadReceipts() ? 1 : 2]);
+
+			ArrayAdapter<String> readReceiptsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, choices);
+			headerHolder.readReceiptsSpinner.setAdapter(readReceiptsAdapter);
+			headerHolder.readReceiptsSpinner.setText(choices[contactModel.getReadReceipts()], false);
+			headerHolder.readReceiptsSpinner.setOnItemClickListener((parent, view, position1, id) -> {
+				contactModel.setReadReceipts(position1);
+				contactService.save(contactModel);
+			});
+
+			final String[] typingChoices = context.getResources().getStringArray(R.array.receipts_override_choices);
+			typingChoices[0] = context.getString(R.string.receipts_override_choice_default,
+				typingChoices[preferenceService.isTypingIndicator() ? 1 : 2]);
+
+			ArrayAdapter<String> typingIndicatorAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, typingChoices);
+			headerHolder.typingIndicatorsSpinner.setAdapter(typingIndicatorAdapter);
+			headerHolder.typingIndicatorsSpinner.setText(typingChoices[contactModel.getTypingIndicators()], false);
+			headerHolder.typingIndicatorsSpinner.setOnItemClickListener((parent, view, position12, id) -> {
+				contactModel.setTypingIndicators(position12);
+				contactService.save(contactModel);
+			});
 		}
 	}
 

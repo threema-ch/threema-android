@@ -24,6 +24,7 @@ package ch.threema.app.fragments.wizard;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import ch.threema.app.R;
+import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -76,6 +78,22 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
 		this.password1.addTextChangedListener(new PasswordWatcher());
 		this.password2.addTextChangedListener(new PasswordWatcher());
+		this.password2.setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+					if (password1.getText() != null && password2.getText() != null) {
+						if (getPasswordOK(password1.getText().toString(), password2.getText().toString())) {
+							if (getActivity() != null && isAdded()) {
+								((WizardBaseActivity) getActivity()).nextPage();
+							}
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		});
 
 		Button advancedOptions = rootView.findViewById(R.id.advanced_options);
 		advancedOptions.setVisibility(View.VISIBLE);

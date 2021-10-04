@@ -1251,9 +1251,9 @@ public class NotificationServiceImpl implements NotificationService {
 		synchronized (this.conversationNotifications) {
 			if (!conversationNotifications.isEmpty()) {
 				for (ConversationNotification conversationNotification : conversationNotifications) {
-					this.conversationNotifications.remove(conversationNotification);
 					this.cancelAndDestroyConversationNotification(conversationNotification);
 				}
+				conversationNotifications.clear();
 				showDefaultPinLockedNewMessageNotification();
 			}
 		}

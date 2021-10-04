@@ -911,9 +911,13 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		int firstVisible = gridLayoutManager.findFirstVisibleItemPosition();
 		if (firstVisible >= 0){
 			MediaAttachItem item = mediaAttachAdapter.getMediaItems().get(firstVisible);
-			dateView.post(() -> dateTextView.setText(LocaleUtil.formatDateRelative(MediaSelectionBaseActivity.this, item.getDateModified() * 1000)));
+			dateView.post(() -> {
+				dateTextView.setMaxLines(1);
+				dateTextView.setText(LocaleUtil.formatDateRelative(MediaSelectionBaseActivity.this, item.getDateModified() * 1000));
+			});
 		} else {
 			dateView.post(() -> {
+				dateTextView.setMaxLines(2);
 				dateTextView.setText(R.string.no_media_found_global);
 			});
 		}

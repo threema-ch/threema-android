@@ -60,6 +60,7 @@ import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.fragments.wizard.WizardFragment0;
 import ch.threema.app.fragments.wizard.WizardFragment1;
 import ch.threema.app.fragments.wizard.WizardFragment2;
@@ -85,7 +86,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.client.LinkEmailException;
 import ch.threema.client.LinkMobileNoException;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -138,7 +138,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 	private final Handler finishHandler = new Handler();
 	private final Handler dialogHandler = new Handler();
 
-	private Runnable finishTask = new Runnable() {
+	private final Runnable finishTask = new Runnable() {
 		@Override
 		public void run() {
 		 	RuntimeUtil.runOnUiThread(new Runnable() {

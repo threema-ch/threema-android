@@ -24,9 +24,11 @@ package ch.threema.app.voip.services;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -144,21 +146,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private final NotificationManager notificationManager;
 
 	// Threema services
-	private ContactService contactService;
-	private RingtoneService ringtoneService;
-	private PreferenceService preferenceService;
-	private MessageService messageService;
-	private LifetimeService lifetimeService;
+	private final ContactService contactService;
+	private final RingtoneService ringtoneService;
+	private final PreferenceService preferenceService;
+	private final MessageService messageService;
+	private final LifetimeService lifetimeService;
 
 	// Message sending
-	private MessageQueue messageQueue;
+	private final MessageQueue messageQueue;
 
 	// App context
-	private Context appContext;
+	private final Context appContext;
 
 	// State
 	private volatile Boolean initiator = null;
-	private CallState callState = new CallState();
+	private final CallState callState = new CallState();
 	private Long callStartTimestamp = null;
 
 	// Map that stores incoming offers
@@ -190,6 +192,14 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private static final int VOIP_CONNECTION_LINGER = 1000 * 5;
 
 	private final WearableHandler wearableHandler;
+	private ScreenOffReceiver screenOffReceiver;
+
+	private class ScreenOffReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			muteRingtone();
+		}
+	}
 
 	public VoipStateService(ContactService contactService,
 	                        RingtoneService ringtoneService,
@@ -1289,12 +1299,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	}
 
 	/**
+	 * Mute ringtone if call is in ringing state
+	 */
+	public void muteRingtone() {
+		final CallStateSnapshot currentCallState = this.getCallState();
+		final boolean incoming = this.isInitiator() != Boolean.TRUE;
+
+		if (incoming && currentCallState.isRinging()) {
+			this.stopRingtone();
+			logger.info("Muting ringtone as requested by user");
+		}
+	}
+
+	/**
 	 * Cancel a pending call notification for the specified identity.
 	 */
 	void cancelCallNotification(@NonNull String identity) {
 		// Cancel fullscreen activity launched by notification first
 		VoipUtil.sendVoipBroadcast(appContext, CallActivity.ACTION_CANCELLED);
-		ThreemaApplication.getAppContext().stopService(new Intent(ThreemaApplication.getAppContext(), VoipCallService.class));
+		appContext.stopService(new Intent(ThreemaApplication.getAppContext(), VoipCallService.class));
 
 		this.stopRingtone();
 
@@ -1306,7 +1329,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			} else {
 				logger.warn("No call notification found for {}", identity);
 			}
+			if (this.callNotificationTags.size() == 0) {
+				unregisterScreenOffReceiver();
+			}
 		}
+
 		if (PushService.playServicesInstalled(appContext)){
 			WearableHandler.cancelOnWearable(TYPE_NOTIFICATION);
 			WearableHandler.cancelOnWearable(TYPE_ACTIVITY);
@@ -1324,8 +1351,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			}
 			this.callNotificationTags.clear();
 		}
+
 		if (PushService.playServicesInstalled(appContext)){
 			WearableHandler.cancelOnWearable(TYPE_NOTIFICATION);
+		}
+
+		unregisterScreenOffReceiver();
+	}
+
+	private void registerScreenOffReceiver() {
+		if (screenOffReceiver == null) {
+			screenOffReceiver = new ScreenOffReceiver();
+			appContext.registerReceiver(screenOffReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+		}
+	}
+
+	private void unregisterScreenOffReceiver() {
+		if (screenOffReceiver != null) {
+			appContext.unregisterReceiver(screenOffReceiver);
+			screenOffReceiver = null;
 		}
 	}
 
@@ -1447,6 +1491,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		if (PushService.playServicesInstalled(appContext)){
 			wearableHandler.showWearableNotification(contact, callId, avatar);
 		}
+
+		// register screen off receiver
+		registerScreenOffReceiver();
 	}
 
 	private void playRingtone(MessageReceiver messageReceiver, boolean isMuted) {

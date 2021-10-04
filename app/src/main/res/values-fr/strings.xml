@@ -1185,5 +1185,13 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="label_continue">Continuer</string>
     <string name="select_date">Sélectionner une date</string>
     <string name="select_time">Sélectionner une heure</string>
-    <string name="recipients">Destinataires : %s</string>
+    <string name="send_to">Envoyer à %s</string>
+    <string name="receipts_override_choice_send">Envoyer</string>
+    <string name="receipts_override_choice_dont_send">Ne pas envoyer</string>
+    <string name="receipts_override_choice_default">Par défaut (%s)</string>
+    <string name="unable_to_determine_recording_length">Enregistrement vide ou durée indéterminable</string>
+    <string name="prefs_header_receipts">Accusés de réception</string>
+    <string name="prefs_title_reset_receipts">Effacer les paramètres individuels</string>
+    <string name="prefs_sum_reset_receipts">Rétablir les paramètres spécifiques aux contacts pour les accusés de réception de lecture et l\'indicateur de saisie aux valeurs par défaut</string>
+    <string name="reset_successful">Valeurs par défaut bien rétablies</string>
 </resources>

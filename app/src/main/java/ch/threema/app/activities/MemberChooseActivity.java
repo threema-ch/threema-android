@@ -46,6 +46,8 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -79,7 +81,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 	protected ArrayList<String> preselectedIdentities = new ArrayList<>();
 
 	private ViewPager viewPager;
-	private ArrayList<Integer> tabs = new ArrayList<>(NUM_FRAGMENTS);
+	private final ArrayList<Integer> tabs = new ArrayList<>(NUM_FRAGMENTS);
 	private Snackbar snackbar;
 	private View rootView;
 
@@ -247,6 +249,9 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 				RuntimeUtil.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
+						if (searchView != null) {
+							new WindowInsetsControllerCompat(getWindow(), searchView).hide(WindowInsetsCompat.Type.ime());
+						}
 						menuNext(getSelectedContacts());
 					}
 				});

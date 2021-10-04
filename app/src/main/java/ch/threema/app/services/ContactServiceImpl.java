@@ -28,7 +28,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import com.neilalexander.jnacl.NaCl;
@@ -59,6 +58,7 @@ import java.util.TimerTask;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
@@ -123,16 +123,16 @@ public class ContactServiceImpl implements ContactService {
 	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
 	private final PreferenceService preferenceService;
-	private final IdListService excludeFromSyncListService;
 	private final Map<String, ContactModel> contactModelCache;
 	private final IdListService blackListIdentityService, profilePicRecipientsService;
-	private DeadlineListService mutedChatsListService, hiddenChatsListService;
-	private RingtoneService ringtoneService;
+	private final DeadlineListService mutedChatsListService;
+	private final DeadlineListService hiddenChatsListService;
+	private final RingtoneService ringtoneService;
 	private final FileService fileService;
 	private final ApiService apiService;
 	private final WallpaperService wallpaperService;
 	private final LicenseService licenseService;
-	private APIConnector apiConnector;
+	private final APIConnector apiConnector;
 	private final Timer typingTimer;
 	private final Map<String,TimerTask> typingTimerTasks;
 	private final VectorDrawableCompat contactDefaultAvatar;
@@ -158,7 +158,7 @@ public class ContactServiceImpl implements ContactService {
 		}
 	};
 
-	class ContactPhotoUploadResult {
+	static class ContactPhotoUploadResult {
 		public byte[] bitmapArray;
 		public byte[] blobId;
 		public byte[] encryptionKey;
@@ -185,7 +185,6 @@ public class ContactServiceImpl implements ContactService {
 			ApiService apiService,
 			WallpaperService wallpaperService,
 			LicenseService licenseService,
-			IdListService excludeFromSyncListService,
 			APIConnector apiConnector) {
 
 		this.context = context;
@@ -206,7 +205,6 @@ public class ContactServiceImpl implements ContactService {
 		this.apiService = apiService;
 		this.wallpaperService = wallpaperService;
 		this.licenseService = licenseService;
-		this.excludeFromSyncListService = excludeFromSyncListService;
 		this.apiConnector = apiConnector;
 		this.typingTimer = new Timer();
 		this.typingTimerTasks = new HashMap<>();
@@ -272,6 +270,11 @@ public class ContactServiceImpl implements ContactService {
 			public Boolean includeHidden() {
 				return includeHiddenContacts;
 			}
+
+			@Override
+			public Boolean onlyWithReceiptSettings() {
+				return false;
+			}
 		});
 	}
 
@@ -301,6 +304,10 @@ public class ContactServiceImpl implements ContactService {
 			if (!filter.includeMyself() && getMe() != null) {
 				queryBuilder.appendWhere(ContactModel.COLUMN_IDENTITY + "!=?");
 				placeholders.add(getMe().getIdentity());
+			}
+
+			if (filter.onlyWithReceiptSettings()) {
+				queryBuilder.appendWhere(ContactModel.COLUMN_TYPING_INDICATORS + " !=0 OR " + ContactModel.COLUMN_READ_RECEIPTS + " !=0");
 			}
 
 			result = contactModelFactory.convert
@@ -375,23 +382,8 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	private String getSortKey(ContactModel contactModel, boolean sortOrderFirstName) {
-		String key = contactModel.getIdentity();
+		String key = ContactUtil.getSafeNameString(contactModel, sortOrderFirstName);
 
-		if (sortOrderFirstName) {
-			if (!TextUtils.isEmpty(contactModel.getLastName())) {
-				key = contactModel.getLastName() + " " + key;
-			}
-			if (!TextUtils.isEmpty(contactModel.getFirstName())) {
-				key = contactModel.getFirstName() + " " + key;
-			}
-		} else {
-			if (!TextUtils.isEmpty(contactModel.getFirstName())) {
-				key = contactModel.getFirstName() + " " + key;
-			}
-			if (!TextUtils.isEmpty(contactModel.getLastName())) {
-				key = contactModel.getLastName() + " " + key;
-			}
-		}
 		if (contactModel.getIdentity().startsWith("*")) {
 			key = "\uFFFF" + key;
 		}
@@ -533,6 +525,11 @@ public class ContactServiceImpl implements ContactService {
 			public Boolean includeHidden() {
 				return false;
 			}
+
+			@Override
+			public Boolean onlyWithReceiptSettings() {
+				return false;
+			}
 		}), new IPredicateNonNull<ContactModel>() {
 
 			@Override
@@ -547,8 +544,8 @@ public class ContactServiceImpl implements ContactService {
 	public List<String> getSynchronizedIdentities() {
 		Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery("" +
 				"SELECT identity FROM contacts " +
-				"WHERE isSynchronized = ?",
-				new String[]{"1"});
+				"WHERE androidContactId IS NOT NULL AND androidContactId != ?",
+				new String[]{""});
 
 		if(c != null) {
 			List<String> identities = new ArrayList<>();
@@ -1044,19 +1041,18 @@ public class ContactServiceImpl implements ContactService {
 			return false;
 		}
 
-		List<ContactModel> androidContacts = this.getAll(true, true);
-		if(androidContacts != null) {
-			for(ContactModel c: androidContacts) {
-				if(!TestUtil.empty(c.getAndroidContactLookupKey())) {
+		List<ContactModel> contactModels = this.getAll(true, true);
+		if(contactModels != null) {
+			for(ContactModel contactModel: contactModels) {
+				if(!TestUtil.empty(contactModel.getAndroidContactLookupKey())) {
 					try {
-						if (AndroidContactUtil.getInstance().updateNameByAndroidContact(c)) {
-							AndroidContactUtil.getInstance().updateAvatarByAndroidContact(c);
-							this.save(c);
-							this.contactStore.reset(c);
-						}
+						AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel);
+						AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
 					} catch (ThreemaException e) {
-						logger.error("Exception", e);
+						contactModel.setAndroidContactLookupKey(null);
+						logger.error("Unable to update contact name", e);
 					}
+					this.save(contactModel);
 				}
 			}
 		}
@@ -1064,13 +1060,12 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void removeAllThreemaContactIds() {
+	public void removeAllSystemContactLinks() {
 		for(ContactModel c: this.find(null)) {
-			if (c.isSynchronized()) {
+			if (c.getAndroidContactLookupKey() != null) {
 				c.setAndroidContactLookupKey(null);
-				c.setIsSynchronized(false);
+				this.save(c);
 			}
-			this.save(c);
 		}
 	}
 
@@ -1080,9 +1075,9 @@ public class ContactServiceImpl implements ContactService {
 		if(models != null) {
 			int[] colors = ColorUtil.getInstance().generateGoogleColorPalette(models.size());
 			for(int n = 0; n < colors.length; n++) {
-				ContactModel m = models.get(n);
-				m.setColor(colors[n]);
-				this.save(m);
+				ContactModel c = models.get(n);
+				c.setColor(colors[n]);
+				this.save(c);
 			}
 			return true;
 		}
@@ -1301,12 +1296,14 @@ public class ContactServiceImpl implements ContactService {
 				throw new InvalidEntryException(R.string.connection_error);
 			}
 
-			newContact = this.getByIdentity(identity);
 
 		} catch (FileNotFoundException e) {
 			throw new InvalidEntryException(R.string.invalid_threema_id);
+		} catch (ThreemaException e) {
+			// contact already exists - shouldn't happen
 		}
 
+		newContact = this.getByIdentity(identity);
 
 		if (newContact == null) {
 			throw new InvalidEntryException(R.string.invalid_threema_id);
@@ -1439,5 +1436,51 @@ public class ContactServiceImpl implements ContactService {
 				}
 			}
 		}
+	}
+
+	@Override
+	@WorkerThread
+	public boolean resetReceiptsSettings() {
+		List<ContactModel> contactModels = find(new Filter() {
+			@Override
+			public ContactModel.State[] states() {
+				return new ContactModel.State[]{ContactModel.State.ACTIVE, ContactModel.State.INACTIVE};
+			}
+
+			@Override
+			public Integer requiredFeature() {
+				return null;
+			}
+
+			@Override
+			public Boolean fetchMissingFeatureLevel() {
+				return null;
+			}
+
+			@Override
+			public Boolean includeMyself() {
+				return false;
+			}
+
+			@Override
+			public Boolean includeHidden() {
+				return true;
+			}
+
+			@Override
+			public Boolean onlyWithReceiptSettings() {
+				return true;
+			}
+		});
+
+		if (contactModels.size() > 0) {
+			for (ContactModel contactModel : contactModels) {
+				contactModel.setTypingIndicators(ContactModel.DEFAULT);
+				contactModel.setReadReceipts(ContactModel.DEFAULT);
+				save(contactModel);
+			}
+			return true;
+		}
+		return false;
 	}
 }

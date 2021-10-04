@@ -272,6 +272,11 @@ public class Contact extends Converter {
 			public Boolean includeHidden() {
 				return true;
 			}
+
+			@Override
+			public Boolean onlyWithReceiptSettings() {
+				return false;
+			}
 		};
 	}
 

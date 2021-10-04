@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import java.util.Date;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.FileService;
@@ -78,15 +80,6 @@ public class ContactUtil {
 	public static boolean canChangeAvatar(ContactModel contactModel, PreferenceService preferenceService, FileService fileService) {
 		return canHaveCustomAvatar(contactModel)
 				&& !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(contactModel));
-	}
-	/**
-	 * check if this contact was added during a synchronization run.
-	 * note that the contact may no longer be linked to a system contact
-	 * @param contact
-	 * @return
-	 */
-	public static boolean isSynchronized(ContactModel contact) {
-		return contact != null && contact.isSynchronized();
 	}
 
 	/**
@@ -176,32 +169,33 @@ public class ContactUtil {
 	 * returns a representation of the contact's name according to sort settings,
 	 * suitable for comparing
 	 */
-	public static String getSafeNameString(ContactModel c, PreferenceService preferenceService) {
-		if (preferenceService.isContactListSortingFirstName()) {
-			return (c.getFirstName() != null ? c.getFirstName() : "") +
-					(c.getLastName() != null ? c.getLastName() : "") +
-					(c.getPublicNickName() != null ? c.getPublicNickName() : "") +
-					c.getIdentity();
-		}
-		else {
-			return (c.getLastName() != null ? c.getLastName() : "") +
-					(c.getFirstName() != null ? c.getFirstName() : "") +
-					(c.getPublicNickName() != null ? c.getPublicNickName() : "") +
-					c.getIdentity();
-		}
-	}
+	public static String getSafeNameString(ContactModel contactModel, boolean sortOrderFirstName) {
+		String key = contactModel.getIdentity();
+		String firstName = contactModel.getFirstName();
+		String lastName = contactModel.getLastName();
 
-	public static String getSafeNameStringNoNickname(ContactModel c, PreferenceService preferenceService) {
-		if (preferenceService.isContactListSortingFirstName()) {
-			return (c.getFirstName() != null ? c.getFirstName() : "") +
-					(c.getLastName() != null ? c.getLastName() : "") +
-					c.getIdentity();
+		if (TestUtil.empty(firstName) && TestUtil.empty(lastName) && !TestUtil.empty(contactModel.getPublicNickName())) {
+			Pair<String, String> namePair = NameUtil.getFirstLastNameFromDisplayName(contactModel.getPublicNickName().trim());
+			firstName = namePair.first;
+			lastName = namePair.second;
 		}
-		else {
-			return (c.getLastName() != null ? c.getLastName() : "") +
-					(c.getFirstName() != null ? c.getFirstName() : "") +
-					c.getIdentity();
+
+		if (sortOrderFirstName) {
+			if (!TextUtils.isEmpty(lastName)) {
+				key = lastName + key;
+			}
+			if (!TextUtils.isEmpty(firstName)) {
+				key = firstName + key;
+			}
+		} else {
+			if (!TextUtils.isEmpty(firstName)) {
+				key = firstName + key;
+			}
+			if (!TextUtils.isEmpty(lastName)) {
+				key = lastName + key;
+			}
 		}
+		return key;
 	}
 
 	public static @DrawableRes int getVerificationResource(ContactModel contactModel) {

@@ -48,7 +48,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="@dimen/wizard_default_view_height"
 				android:hint="@string/new_wizard_hint_enter_nickname"
-				android:imeOptions="actionDone"
+				android:imeOptions="actionGo"
 				android:inputType="textNoSuggestions"/>
 
 	</LinearLayout>

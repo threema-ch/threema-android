@@ -49,10 +49,10 @@
 				android:contentDescription="@string/share_via"
 				android:focusable="true"
 				android:padding="4dp"
-				android:tint="?attr/textColorSecondary"
 				app:layout_constraintLeft_toRightOf="@+id/identity_label"
 				app:layout_constraintTop_toTopOf="@+id/identity_label"
-				app:srcCompat="@drawable/ic_share_outline" />
+				app:srcCompat="@drawable/ic_share_outline"
+				app:tint="?attr/textColorSecondary" />
 
 			<ImageView
 				android:id="@+id/qr_image"
@@ -125,7 +125,8 @@
 				android:text="@string/webclient"
 				android:textAppearance="@style/Threema.TextAppearance.Body2"
 				app:layout_constraintTop_toBottomOf="@id/qr_image"
-				app:layout_constraintLeft_toRightOf="@+id/web_enable" />
+				app:layout_constraintLeft_toRightOf="@+id/web_enable"
+				app:layout_constraintBottom_toBottomOf="parent" />
 
 			<androidx.constraintlayout.widget.Group
 				android:id="@+id/web_controls"
@@ -146,7 +147,7 @@
 		android:layout_gravity="left|top"
 		android:layout_marginLeft="@dimen/identity_popup_arrow_margin_left"
 		android:scaleType="fitXY"
-		android:tint="?attr/background_identity_popup"
-		app:srcCompat="@drawable/triangle_up" />
+		app:srcCompat="@drawable/triangle_up"
+		app:tint="?attr/background_identity_popup" />
 
 </FrameLayout>

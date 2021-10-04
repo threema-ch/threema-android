@@ -627,6 +627,7 @@
 	</style>
 
 	<style name="Threema.MaterialButton.Fatal" parent="@style/Widget.MaterialComponents.Button">
+		<item name="android:textColor">@android:color/white</item>
 		<item name="android:backgroundTint">@color/material_red</item>
 	</style>
 
@@ -659,6 +660,14 @@
 
 	<style name="Threema.ChipStyle" parent="@style/Widget.MaterialComponents.Chip.Action">
 		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip</item>
+	</style>
+
+	<style name="Threema.Chip.Action" parent="@style/Widget.MaterialComponents.Chip.Action">
+		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip</item>
+		<item name="android:textColor">@android:color/white</item>
+		<item name="chipBackgroundColor">?attr/colorAccent</item>
+		<item name="chipCornerRadius">18dp</item>
+		<item name="chipMinHeight">36dp</item>
 	</style>
 
 	<style name="Threema.Chip.Outline.Action" parent="@style/Widget.MaterialComponents.Chip.Action">

@@ -51,6 +51,7 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Rational;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -294,8 +295,8 @@ public class CallActivity extends ThreemaActivity implements
 	 * The result of a permission request.
 	 */
 	private static class PermissionRequestResult {
-		private boolean _granted;
-		private boolean _wasAlreadyGranted;
+		private final boolean _granted;
+		private final boolean _wasAlreadyGranted;
 
 		public PermissionRequestResult(boolean granted, boolean wasAlreadyGranted) {
 			this._granted = granted;
@@ -624,7 +625,7 @@ public class CallActivity extends ThreemaActivity implements
 	};
 
 	//endregion
-	private VoipAudioManagerListener audioManagerListener = new VoipAudioManagerListener() {
+	private final VoipAudioManagerListener audioManagerListener = new VoipAudioManagerListener() {
 		@Override
 		public void onAudioDeviceChanged(@Nullable VoipAudioManager.AudioDevice selectedAudioDevice, @NonNull HashSet<VoipAudioManager.AudioDevice> availableAudioDevices) {
 			if (selectedAudioDevice != null) {
@@ -1001,6 +1002,18 @@ public class CallActivity extends ThreemaActivity implements
 			logger.info("Unable to restore state");
 			this.abortWithError();
 		}
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
+			// mute notification
+			if (voipStateService != null) {
+				voipStateService.muteRingtone();
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	//endregion
