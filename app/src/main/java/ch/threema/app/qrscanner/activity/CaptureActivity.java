@@ -37,7 +37,6 @@
 package ch.threema.app.qrscanner.activity;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
@@ -63,7 +62,6 @@ import ch.threema.app.qrscanner.assit.AmbientLightManager;
 import ch.threema.app.qrscanner.assit.BeepManager;
 import ch.threema.app.qrscanner.camera.CameraManager;
 import ch.threema.app.qrscanner.view.ViewfinderView;
-import ch.threema.app.utils.ConfigUtils;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -173,7 +171,7 @@ public final class CaptureActivity extends AppCompatActivity implements SurfaceH
 		needExposure = bundle.getBoolean(KEY_NEED_EXPOSURE, VALUE_NO_EXPOSURE);
 		needFullScreen = bundle.getBoolean(KEY_SCAN_AREA_FULL_SCREEN, VALUE_SCAN_AREA_VIEW_FINDER);
 		scanHintText = bundle.getString(KEY_NEED_SCAN_HINT_TEXT, getString(R.string.msg_default_status));
-		switch (orientationMode) {
+/*		switch (orientationMode) {
 			case VALUE_ORIENTATION_LANDSCAPE:
 				ConfigUtils.setRequestedOrientation(this, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 				break;
@@ -184,7 +182,7 @@ public final class CaptureActivity extends AppCompatActivity implements SurfaceH
 				ConfigUtils.setRequestedOrientation(this, ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 				break;
 		}
-		switch (flashlightMode) {
+*/		switch (flashlightMode) {
 			case VALUE_FLASHLIGHT_AUTO:
 				ambientLightManager = new AmbientLightManager(this);
 				break;

@@ -217,14 +217,13 @@ public class BitmapUtil {
 		return null;
 	}
 
-	static public Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean highQuality) {
-		return safeGetBitmapFromUri(context, imageUri, maxSize, highQuality, true, true);
+	static public Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize) {
+		return safeGetBitmapFromUri(context, imageUri, maxSize, true, true);
 	}
 
-	static public Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean highQuality, boolean replaceTransparency) {
-		return safeGetBitmapFromUri(context, imageUri, maxSize, highQuality, replaceTransparency, false);
+	static public Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean replaceTransparency) {
+		return safeGetBitmapFromUri(context, imageUri, maxSize, replaceTransparency, false);
 	}
-
 
 	/**
 	 * Get a scaled bitmap from a JPG image file pointed at by imageUri keeping its aspect ratio
@@ -234,23 +233,23 @@ public class BitmapUtil {
 	 * @param context
 	 * @param imageUri Uri pointing to source image
 	 * @param maxSize max size of the image
-	 * @param highQuality if set to false, a RGB_565 bitmap configuration will be used (uses half the memory of the regular ARGB_8888 configuration)
 	 * @param replaceTransparency if set to true, transparency in the image will be replaced with Color.WHITE
 	 * @param scaleToWidth if set, the image will be scaled so its width does not exceed maxSize while the height may be larger
 	 * @return resulting bitmap or null in case of failure
 	 */
-	static public @Nullable Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean highQuality, boolean replaceTransparency, boolean scaleToWidth) {
+	static public @Nullable
+	Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean replaceTransparency, boolean scaleToWidth) {
 		logger.debug("safeGetBitmapFromUri");
 		InputStream measure = null, data = null;
-		Bitmap unscaledPhoto = null;
 		BitmapFactory.Options options;
-		int imageWidth, imageHeight;
+		int sourceImageWidth, sourceImageHeight;
 
 		final Uri fixedImageUri = FileUtil.getFixedContentUri(context, imageUri);
 		if (fixedImageUri == null) {
 			return null;
 		}
 
+		ThumbnailUtils.Size targetSize;
 		try {
 			try {
 				try {
@@ -277,24 +276,30 @@ public class BitmapUtil {
 					}
 				}
 			}
-			imageWidth = options.outWidth;
-			imageHeight = options.outHeight;
+			sourceImageWidth = options.outWidth;
+			sourceImageHeight = options.outHeight;
 
 			if (scaleToWidth) {
-				ThumbnailUtils.Size size = getSizeFromTargetWidth(options.outWidth, options.outHeight, maxSize);
+				ThumbnailUtils.Size size = getSizeFromTargetWidth(sourceImageWidth, sourceImageHeight, maxSize);
 				maxSize = Math.max(size.height, size.width);
 			}
 
-			SampleResult sampleSize = BitmapUtil.getSampleSize(imageWidth, imageHeight, maxSize, maxSize);
+			targetSize = getTargetImageSize(sourceImageWidth, sourceImageHeight, maxSize);
+			SampleResult sampleSize = BitmapUtil.getSampleSize(sourceImageWidth, sourceImageHeight, targetSize.width, targetSize.height);
 
 			options.inSampleSize = sampleSize.inSampleSize;
+			options.inDensity = sourceImageWidth;
+			options.inTargetDensity = targetSize.width * sampleSize.inSampleSize;
 			options.inJustDecodeBounds = false;
-			if (!highQuality) {
-				options.inPreferredConfig = Bitmap.Config.RGB_565;
-			}
+
 			if (data != null) {
 				try {
-					unscaledPhoto = BitmapFactory.decodeStream(new BufferedInputStream(data), null, options);
+					Bitmap result = BitmapFactory.decodeStream(new BufferedInputStream(data), null, options);
+					if (replaceTransparency && result != null && result.hasAlpha()) {
+						logger.debug("Image has alpha channel, replace transparency with white");
+						result = replaceTransparency(result, Color.WHITE);
+					}
+					return result;
 				} catch (StackOverflowError e) {
 					logger.error("Exception", e);
 					return null;
@@ -309,38 +314,29 @@ public class BitmapUtil {
 				}
 			}
 		}
-
-		if (unscaledPhoto != null) {
-			Bitmap result = unscaledPhoto;
-			if (options.outWidth > maxSize || options.outHeight > maxSize) {
-				final float aspectWidth, aspectHeight;
-
-				if (imageWidth == 0 || imageHeight == 0) {
-					aspectWidth = maxSize;
-					aspectHeight = maxSize;
-				} else if (options.outWidth >= options.outHeight) {
-					aspectWidth = maxSize;
-					aspectHeight = (aspectWidth / options.outWidth) * options.outHeight;
-				} else {
-					aspectHeight = maxSize;
-					aspectWidth = (aspectHeight / options.outHeight) * options.outWidth;
-				}
-
-				if (aspectHeight > 0 && aspectWidth > 0) {
-					Bitmap scaledPhoto = Bitmap.createScaledBitmap(unscaledPhoto, (int) aspectWidth, (int) aspectHeight, true);
-					if (unscaledPhoto != scaledPhoto) {
-						BitmapUtil.recycle(unscaledPhoto);
-					}
-					result = scaledPhoto;
-				}
-			}
-			if (replaceTransparency && result.hasAlpha()) {
-				logger.debug("Image has alpha channel, replace transparency with white");
-				result = replaceTransparency(result, Color.WHITE);
-			}
-			return result;
-		}
 		return null;
+	}
+
+	private static ThumbnailUtils.Size getTargetImageSize(int sourceImageWidth, int sourceImageHeight, int maxSize) {
+		float aspectWidth, aspectHeight;
+
+		if (sourceImageWidth > maxSize || sourceImageHeight > maxSize) {
+			if (sourceImageWidth == 0 || sourceImageHeight == 0) {
+				aspectWidth = maxSize;
+				aspectHeight = maxSize;
+			} else if (sourceImageWidth >= sourceImageHeight) {
+				aspectWidth = maxSize;
+				aspectHeight = (aspectWidth / sourceImageWidth) * sourceImageHeight;
+			} else {
+				aspectHeight = maxSize;
+				aspectWidth = (aspectHeight / sourceImageHeight) * sourceImageWidth;
+			}
+		} else {
+			aspectHeight = sourceImageHeight;
+			aspectWidth = sourceImageWidth;
+		}
+
+		return new ThumbnailUtils.Size(Math.round(aspectWidth), Math.round(aspectHeight));
 	}
 
 	/**

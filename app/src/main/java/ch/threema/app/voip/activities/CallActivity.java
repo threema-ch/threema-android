@@ -1009,8 +1009,9 @@ public class CallActivity extends ThreemaActivity implements
 		if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
 			// mute notification
 			if (voipStateService != null) {
-				voipStateService.muteRingtone();
-				return true;
+				if (voipStateService.muteRingtone()) {
+					return true;
+				}
 			}
 		}
 		return super.onKeyDown(keyCode, event);

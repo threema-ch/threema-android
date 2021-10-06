@@ -23,7 +23,6 @@ package ch.threema.app.utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +58,6 @@ public class QRScannerUtil {
 		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-		// lock orientation before launching scanner
-		ConfigUtils.setRequestedOrientation(activity, activity.getResources().getConfiguration().orientation);
 		activity.startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
 	}
 
@@ -71,7 +68,6 @@ public class QRScannerUtil {
 	public String parseActivityResult(AppCompatActivity activity, int requestCode, int resultCode, Intent intent) {
 		if (requestCode == REQUEST_CODE_QR_SCANNER) {
 			if (activity != null) {
-				ConfigUtils.setRequestedOrientation(activity, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 				if (resultCode == Activity.RESULT_OK) {
 					if (scanAnyCode || intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_QRCODE_TYPE_OK, false)) {
 						return intent.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE);
@@ -85,7 +81,6 @@ public class QRScannerUtil {
 	}
 
 	public QRCodeService.QRCodeContentResult parseActivityResult(AppCompatActivity activity, int requestCode, int resultCode, Intent intent, QRCodeService qrCodeService) {
-		ConfigUtils.setRequestedOrientation(activity, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 		if (qrCodeService != null) {
 			String scanResult = parseActivityResult(activity, requestCode, resultCode, intent);
 			if (scanResult != null) {

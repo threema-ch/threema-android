@@ -118,6 +118,8 @@ import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.transition.Slide;
@@ -252,6 +254,7 @@ import static ch.threema.app.utils.LinkifyUtil.DIALOG_TAG_CONFIRM_LINK;
 
 public class ComposeMessageFragment extends Fragment implements
 	LifecycleOwner,
+	DefaultLifecycleObserver,
 	SwipeRefreshLayout.OnRefreshListener,
 	GenericAlertDialog.DialogClickListener,
 	ChatAdapterDecorator.ActionModeStatus,
@@ -384,7 +387,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private int listInstanceTop = 0;
 	private String listInstanceReceiverId = null;
 	private int unreadCount = 0;
-	private boolean hasFocus = false;
 	private final QuoteInfo quoteInfo = new QuoteInfo();
 	private TextView searchCounter;
 	private ProgressBar searchProgress;
@@ -505,16 +507,18 @@ public class ComposeMessageFragment extends Fragment implements
 		public void onNew(final AbstractMessageModel newMessage) {
 			if (newMessage != null) {
 				RuntimeUtil.runOnUiThread(() -> {
-					if (newMessage.isOutbox()) {
-						if (addMessageToList(newMessage)) {
-							if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
-								playSentSound();
+					if (isAdded() && !isDetached() && !isRemoving()) {
+						if (newMessage.isOutbox()) {
+							if (addMessageToList(newMessage)) {
+								if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
+									playSentSound();
+								}
 							}
-						}
-					} else {
-						if (addMessageToList(newMessage) && !isPaused) {
-							if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
-								playReceivedSound();
+						} else {
+							if (addMessageToList(newMessage) && !isPaused) {
+								if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
+									playReceivedSound();
+								}
 							}
 						}
 					}
@@ -830,7 +834,9 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@Override
 	public void onAttach(@NonNull Activity activity) {
+		((FragmentActivity) activity).getLifecycle().addObserver(this);
 		logger.debug("onAttach");
+
 		super.onAttach(activity);
 
 		setHasOptionsMenu(true);
@@ -1185,34 +1191,9 @@ public class ComposeMessageFragment extends Fragment implements
 		activity.supportStartPostponedEnterTransition();
 	}
 
-	public void onWindowFocusChanged(boolean hasFocus) {
-		logger.debug("onWindowFocusChanged " + hasFocus);
-
-		// workaround for proximity wake lock causing calls to onPause/onResume on Samsung devices:
-		// see: http://stackoverflow.com/questions/35318649/android-proximity-sensor-issue-only-in-samsung-devices
-		if (hasFocus) {
-			if (!this.hasFocus) {
-				reallyOnResume();
-				this.hasFocus = true;
-			}
-		} else {
-			reallyOnPause();
-			this.hasFocus = false;
-		}
-	}
-
 	@Override
-	public void onResume() {
+	public void onResume(@NonNull LifecycleOwner owner) {
 		logger.debug("onResume");
-		super.onResume();
-
-		if (!ConfigUtils.isSamsungDevice() || ConfigUtils.isTabletLayout()) {
-			reallyOnResume();
-		}
-	}
-
-	private void reallyOnResume() {
-		logger.debug("reallyOnResume");
 
 		//set visible receiver
 		if (this.messageReceiver != null) {
@@ -1270,24 +1251,8 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	@Override
-	public void onStart() {
-		logger.debug("onStart");
-
-		super.onStart();
-	}
-
-	@Override
-	public void onPause() {
+	public void onPause(@NonNull LifecycleOwner owner) {
 		logger.debug("onPause");
-		if (!ConfigUtils.isSamsungDevice() || ConfigUtils.isTabletLayout()) {
-			reallyOnPause();
-		}
-
-		super.onPause();
-	}
-
-	private void reallyOnPause() {
-		logger.debug("reallyOnPause");
 		isPaused = true;
 
 		onEmojiPickerClose();
@@ -1310,7 +1275,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 		preserveListInstanceValues();
 	}
-
 
 	@Override
 	public void onStop() {
@@ -1539,6 +1503,10 @@ public class ComposeMessageFragment extends Fragment implements
 
 				@Override
 				public void onSwiped(int position) {
+					if (composeMessageAdapter == null) {
+						return;
+					}
+
 					AbstractMessageModel abstractMessageModel = composeMessageAdapter.getItem(position);
 					if (preferenceService.isInAppVibrate()) {
 						if (isAdded() && !isDetached() && activity != null) {

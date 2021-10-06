@@ -254,10 +254,6 @@ public class ConfigUtils {
 		return new TLSUpgradeSocketFactoryWrapper(TrustKit.getInstance().getSSLSocketFactory(host));
 	}
 
-	public static boolean isSamsungDevice() {
-		return Build.MANUFACTURER.equalsIgnoreCase("Samsung");
-	}
-
 	public static boolean hasNoMapboxSupport() {
 		/* Some broken Samsung devices crash on Mapbox initialization due to a compiler bug, see https://issuetracker.google.com/issues/37013676 */
 		/* Device that do not support OCSP stapling cannot use our maps and POI servers */

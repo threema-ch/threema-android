@@ -209,6 +209,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 			ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
 			for (Map.Entry<String, APIConnector.MatchIdentityResult> id : foundIds.entrySet()) {
+				boolean isNewContact = false;
+
 				if(this.abort) {
 					//abort!
 					for(OnFinished f: this.onFinished) {
@@ -254,7 +256,9 @@ public class SynchronizeContactsRoutine implements Runnable {
 					contact.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
 					contact.setDateCreated(new Date());
 					insertedContacts.add(contact);
-					logger.info("Inserted new Threema contact {}", id.getKey());
+
+					isNewContact = true;
+					logger.info("Inserting new Threema contact {}", id.getKey());
 				}
 
 				contact.setAndroidContactLookupKey(lookupKey + "/" + contactId); // It can optionally also have a "/" and last known contact ID appended after that. This "complete" format is an important optimization and is highly recommended.
@@ -262,7 +266,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 				try {
 					boolean createNewRawContact = false;
 
-					AndroidContactUtil.getInstance().updateNameByAndroidContact(contact);
+					AndroidContactUtil.getInstance().updateNameByAndroidContact(contact); // throws an exception if no name can be determined
 					AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
 
 					contact.setIsHidden(false);
@@ -305,12 +309,19 @@ public class SynchronizeContactsRoutine implements Runnable {
 							contact,
 							supportsVoiceCalls);
 					}
+
+					this.contactService.save(contact);
 				} catch (ThreemaException e) {
+					if (isNewContact) {
+						// probably not a valid contact
+						insertedContacts.remove(contact);
+						logger.info("Ignore Threema contact {} due to missing name", id.getKey());
+					} else {
+						// save the contact only if it was updated
+						this.contactService.save(contact);
+					}
 					logger.error("Contact lookup Exception", e);
 				}
-
-				// save the contact
-				this.contactService.save(contact);
 			}
 
 			if (contentProviderOperations.size() > 0) {

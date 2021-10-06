@@ -1035,7 +1035,8 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public boolean updateAllContactNamesAndAvatarsFromAndroidContacts() {
+	@WorkerThread
+	public boolean updateAllContactNamesFromAndroidContacts() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
 			ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 			return false;
@@ -1047,7 +1048,6 @@ public class ContactServiceImpl implements ContactService {
 				if(!TestUtil.empty(contactModel.getAndroidContactLookupKey())) {
 					try {
 						AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel);
-						AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
 					} catch (ThreemaException e) {
 						contactModel.setAndroidContactLookupKey(null);
 						logger.error("Unable to update contact name", e);

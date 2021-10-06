@@ -506,15 +506,17 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 			dateViewHandler.removeCallbacks(dateViewTask);
 			dateViewHandler.postDelayed(dateViewTask, SCROLLBUTTON_VIEW_TIMEOUT);
 
-			final AbstractMessageModel messageModel = this.mediaGalleryAdapter.getItem(firstVisibleItem);
-			if (messageModel != null) {
-				final Date createdAt = messageModel.getCreatedAt();
-				if (createdAt != null) {
-					dateView.post(() -> {
-						dateTextView.setText(LocaleUtil.formatDateRelative(this, createdAt.getTime()));
-					});
+			try {
+				final AbstractMessageModel messageModel = this.mediaGalleryAdapter.getItem(firstVisibleItem);
+				if (messageModel != null) {
+					final Date createdAt = messageModel.getCreatedAt();
+					if (createdAt != null) {
+						dateView.post(() -> {
+							dateTextView.setText(LocaleUtil.formatDateRelative(this, createdAt.getTime()));
+						});
+					}
 				}
-			}
+			} catch (IndexOutOfBoundsException ignore) {}
 		}
 	}
 

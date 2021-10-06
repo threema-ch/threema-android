@@ -325,7 +325,7 @@ public class IconUtil {
 		if (thumbnailBitmap == null) {
 			// PNGs or GIFs may contain transparency
 			boolean mayContainTransparency = MimeUtil.MIME_TYPE_IMAGE_PNG.equals(mimeType) || MimeUtil.MIME_TYPE_IMAGE_GIF.equals(mimeType);
-			thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, uri, thumbSize, mayContainTransparency, !mayContainTransparency, true);
+			thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, uri, thumbSize, !mayContainTransparency, true);
 		}
 
 		if (thumbnailBitmap == null && MimeUtil.isVideoFile(mimeType)) {

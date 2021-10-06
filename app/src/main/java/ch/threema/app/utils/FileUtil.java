@@ -753,7 +753,13 @@ public class FileUtil {
 		try {
 			Intent startIntent;
 			Intent getContentIntent = new Intent();
-			getContentIntent.setType(includeVideo ? MimeUtil.MIME_TYPE_VIDEO: MimeUtil.MIME_TYPE_IMAGE);
+			if (ConfigUtils.isXiaomiDevice() && includeVideo) {
+				getContentIntent.setType(MimeUtil.MIME_TYPE_IMAGE + ","+ MimeUtil.MIME_TYPE_VIDEO);
+				String[] mimetypes = {MimeUtil.MIME_TYPE_IMAGE, MimeUtil.MIME_TYPE_VIDEO};
+				getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+			} else {
+				getContentIntent.setType(includeVideo ? MimeUtil.MIME_TYPE_VIDEO : MimeUtil.MIME_TYPE_IMAGE);
+			}
 			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
 			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
 			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);

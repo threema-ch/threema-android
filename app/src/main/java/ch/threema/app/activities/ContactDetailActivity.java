@@ -97,6 +97,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -120,6 +121,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
 	private static final String RUN_ON_ACTIVE_RELOAD = "reload";
 	private static final String RUN_ON_ACTIVE_RELOAD_GROUP = "reload_group";
+
+	private static final int REQUEST_CODE_CONTACT_EDITOR = 39255;
 
 	private ContactModel contact;
 	private String identity;
@@ -474,7 +477,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
 	private void openContactEditor() {
 		if (contact != null) {
-			if (!AndroidContactUtil.getInstance().openContactEditor(this, contact)) {
+			if (!AndroidContactUtil.getInstance().openContactEditor(this, contact, REQUEST_CODE_CONTACT_EDITOR)) {
 				editName();
 			}
 		}
@@ -830,6 +833,16 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 							txt = R.string.id_mismatch;
 					}
 					SimpleStringAlertDialog.newInstance(R.string.scan_id, getString(txt)).show(getSupportFragmentManager(), "scanId");
+				}
+				break;
+			case REQUEST_CODE_CONTACT_EDITOR:
+				try {
+					AndroidContactUtil.getInstance().updateNameByAndroidContact(contact);
+					AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
+					reload();
+					this.avatarEditView.setContactModel(contact);
+				} catch (ThreemaException e) {
+					logger.info("Unable to update contact name or avatar after returning from ContactEditor");
 				}
 				break;
 			default:

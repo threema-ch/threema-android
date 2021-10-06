@@ -25,6 +25,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
+import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -743,7 +744,7 @@ public class AndroidContactUtil {
 	 * @param contact Threema contact
 	 * @return true if the contact is linked with a system contact (even if no app is available for an ACTION_EDIT intent in the system), false otherwise
 	 */
-	public boolean openContactEditor(Context context, ContactModel contact) {
+	public boolean openContactEditor(Context context, ContactModel contact, int requestCode) {
 		Uri contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contact);
 
 		if (contactUri != null) {
@@ -754,7 +755,11 @@ public class AndroidContactUtil {
 			// make sure users are coming back to threema and not the external activity
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 			if (intent.resolveActivity(context.getPackageManager()) != null) {
-				context.startActivity(intent);
+				if (context instanceof Activity) {
+					((Activity) context).startActivityForResult(intent, requestCode);
+				} else {
+					context.startActivity(intent);
+				}
 			} else {
 				Toast.makeText(context, "No contact editor found on device.", Toast.LENGTH_SHORT).show();
 			}

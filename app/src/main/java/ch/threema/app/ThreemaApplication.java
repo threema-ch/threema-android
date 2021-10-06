@@ -1411,7 +1411,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		ListenerManager.contactListeners.add(new ContactListener() {
 			@Override
 			public void onModified(ContactModel modifiedContactModel) {
-				//validate contact integration
 				try {
 					serviceManager.getConversationService().refresh(modifiedContactModel);
 					serviceManager.getShortcutService().updateShortcut(modifiedContactModel);
@@ -1421,23 +1420,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			}
 
 			@Override
-			public void onNew(ContactModel createdContactModel) {
-				//validate contact integration
-				try {
-					ContactService contactService = serviceManager.getContactService();
-
-					if (contactService != null) {
-						SynchronizeContactsService synchronizeContactService = serviceManager.getSynchronizeContactsService();
-						boolean inSyncProcess = synchronizeContactService != null && synchronizeContactService.isSynchronizationInProgress();
-						if (!inSyncProcess) {
-// TODO
-//							contactService.validateContactAggregation(createdContactModel);
-						}
-					}
-				} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-					logger.error("Exception", e);
-				}
-			}
+			public void onNew(ContactModel createdContactModel) { }
 
 			@Override
 			public void onRemoved(ContactModel removedContactModel) {
@@ -1653,7 +1636,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								ContactService c = serviceManager.getContactService();
 								if (c != null) {
 									//update contact names if changed!
-									c.updateAllContactNamesAndAvatarsFromAndroidContacts();
+									c.updateAllContactNamesFromAndroidContacts();
 								}
 							} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 								logger.error("Exception", e);

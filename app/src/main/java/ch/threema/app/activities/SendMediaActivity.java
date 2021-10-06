@@ -743,7 +743,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		int oldRotation = SendMediaActivity.this.mediaItems.get(bigImagePos).getRotation();
-		int newRotation = (oldRotation - 90) % 360;
+		int newRotation = ((oldRotation == 0 ? 360 : oldRotation) - 90) % 360;
 
 		int height = bigImageView.getDrawable().getBounds().width();
 		int width = bigImageView.getDrawable().getBounds().height();
@@ -1138,8 +1138,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cropFile));
 			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, mediaItems.get(bigImagePos).getRotation());
 			intent.putExtra(ThreemaApplication.EXTRA_FLIP, mediaItems.get(bigImagePos).getFlip());
-			intent.putExtra(ThreemaApplication.EXTRA_EXIF_ORIENTATION, mediaItems.get(bigImagePos).getExifRotation());
-			intent.putExtra(ThreemaApplication.EXTRA_EXIF_FLIP, mediaItems.get(bigImagePos).getExifFlip());
 			intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
 
 			startActivityForResult(intent, CropImageActivity.REQUEST_CROP);

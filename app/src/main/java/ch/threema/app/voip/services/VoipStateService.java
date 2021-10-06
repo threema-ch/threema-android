@@ -1301,14 +1301,16 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	/**
 	 * Mute ringtone if call is in ringing state
 	 */
-	public void muteRingtone() {
+	public boolean muteRingtone() {
 		final CallStateSnapshot currentCallState = this.getCallState();
 		final boolean incoming = this.isInitiator() != Boolean.TRUE;
 
 		if (incoming && currentCallState.isRinging()) {
 			this.stopRingtone();
 			logger.info("Muting ringtone as requested by user");
+			return true;
 		}
+		return false;
 	}
 
 	/**

@@ -10,7 +10,7 @@
     <string name="voip_toggle_video">Přepnout režim videa</string>
     <string name="voip_call_confirm">Chcete zavolat kontaktu %1$s?</string>
     <string name="voip_error_call">Během Threema volání došlo k chybě</string>
-    <string name="voip_error_init_call">Při inicializaci volání došlo k chybě</string>
+    <string name="voip_error_init_call">Při zahajování volání došlo k chybě</string>
     <string name="voip_notification_title">Příchozí Threema volání</string>
     <string name="voip_notification_text">Kontakt %1$s volá</string>
     <!-- Shown when starting a call, before the peer device is ringing -->
@@ -29,12 +29,12 @@
     <string name="voip_call_status_rejected">Hovor byl odmítnut</string>
     <string name="voip_call_status_busy">Příjemce hovoru je zaneprázdněn</string>
     <string name="voip_call_status_busy_short">Obsazeno</string>
-    <string name="voip_call_status_disabled">Příjemce má zakázané Threema volání</string>
+    <string name="voip_call_status_disabled">Příjemce hovoru má zakázané Threema volání</string>
     <string name="voip_call_status_missed">Zmeškaný hovor</string>
     <string name="voip_call_finished_outbox">Odchozí hovor</string>
     <string name="voip_call_finished_inbox">Příchozí hovor</string>
-    <string name="voip_call_status_aborted">Hovor zrušen</string>
-    <string name="voip_return_call">Zpětné volání</string>
+    <string name="voip_call_status_aborted">Hovor byl zrušen</string>
+    <string name="voip_return_call">Zpětný hovor</string>
     <string name="voip_accept">Přijmout</string>
     <string name="voip_reject">Odmítnout</string>
     <string name="voip_speakerphone">Hlasitý odposlech</string>
@@ -57,16 +57,16 @@
     <string name="prefs_voip_reject_incoming_calls_title">Odmítat mobilní hovory</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Odmítat příchozí mobilní hovory, pokud již probíhá Threema volání.</string>
     <string name="voip_contact_not_found">Pod tímto číslem nebyl nalezen žádný Threema kontakt.</string>
-    <string name="voip_another_pstn_call">Hovor nelze zahájit. Stále probíhá běžný telefonní hovor.</string>
-    <string name="voip_call_status_off_hours">Volání mimo pracovní dobu</string>
+    <string name="voip_another_pstn_call">Volání nelze zahájit. Stále probíhá běžný telefonní hovor.</string>
+    <string name="voip_call_status_off_hours">Hovor mimo pracovní dobu</string>
     <string name="voip_peer_video_disabled">Videohovory jsou u protistrany zakázány.</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnostika WebRTC</string>
-    <string name="voip_prefs_webrtc_debug_summary">Spuštění tohoto nástroje vám umožní hledat zdroj problémů s nastavením spojení hlasového volání</string>
+    <string name="voip_prefs_webrtc_debug_summary">Spuštění tohoto nástroje vám umožní hledat zdroj problémů s nastavením spojení hlasového hovoru</string>
     <string name="voip_webrtc_debug">Diagnostika WebRTC</string>
     <string name="voip_webrtc_debug_intro">Stiskem tlačítka „Spustit“ zahájíte test.</string>
     <string name="voip_webrtc_debug_start">Spustit</string>
-    <string name="voip_webrtc_debug_done">Hotovo. Pokud zaznamenáváte problémy s navázáním spojení hovoru, odešlete prosím tento výstup podpoře Threema.</string>
+    <string name="voip_webrtc_debug_done">Hotovo. Pokud zaznamenáváte problémy s navázáním spojení hovoru, odešlete prosím tento výstup podpoře společnosti Threema.</string>
     <string name="voip_webrtc_debug_copied">Zkopírováno do schránky.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Zkopírovat do schránky</string>
 </resources>

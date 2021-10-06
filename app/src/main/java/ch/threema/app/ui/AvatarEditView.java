@@ -385,12 +385,13 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		}
 	}
 
-	private void doCrop(File srcFile, int orientation) {
+	private void doCrop(File srcFile) {
 		try {
 			avatarData.setCroppedFile(fileService.createTempFile(".avatar", ".jpg"));
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
+
 		Intent intent = new Intent(getActivity(), CropImageActivity.class);
 		intent.setData(Uri.fromFile(srcFile));
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(avatarData.getCroppedFile()));
@@ -399,7 +400,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		intent.putExtra(CropImageActivity.EXTRA_ASPECT_X, 1);
 		intent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, 1);
 		intent.putExtra(CropImageActivity.EXTRA_OVAL, true);
-		intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, orientation);
+
 		if (getFragment() != null) {
 			getFragment().startActivityForResult(intent, REQUEST_CODE_CROP);
 		} else {
@@ -430,14 +431,14 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 						try {
 							avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", !ConfigUtils.useContentUris()));
 							try (InputStream is = getActivity().getContentResolver().openInputStream(intent.getData());
-							     FileOutputStream fos = new FileOutputStream(avatarData.getCameraFile())) {
+							    FileOutputStream fos = new FileOutputStream(avatarData.getCameraFile())) {
 								if (is != null) {
 									IOUtils.copy(is, fos);
 								} else {
 									throw new Exception("Unable to open input stream");
 								}
 							}
-							doCrop(avatarData.getCameraFile(), 0);
+							doCrop(avatarData.getCameraFile());
 						} catch (Exception e) {
 							logger.error("Exception", e);
 						}
@@ -446,7 +447,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 				case REQUEST_CODE_CROP:
 					Bitmap bitmap = null;
 					if (avatarData.getCroppedFile() != null && avatarData.getCroppedFile().exists() && avatarData.getCroppedFile().length() > 0) {
-						bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX, true);
+						bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX);
 						if (bitmap != null) {
 							if (listenerRef.get() != null) {
 								listenerRef.get().onAvatarSet(avatarData.getCroppedFile());
@@ -493,8 +494,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 					}
 					break;
 				case REQUEST_CODE_CAMERA:
-					int cameraRotation = 0;
-					doCrop(avatarData.getCameraFile(), cameraRotation);
+					doCrop(avatarData.getCameraFile());
 					break;
 			}
 		}
@@ -594,7 +594,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	public void setAvatarFile(File avatarFile) {
 		if (avatarFile != null && avatarFile.exists() && avatarFile.length() > 0) {
 			this.avatarData.setCroppedFile(avatarFile);
-			Bitmap bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX, hires);
+			Bitmap bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX);
 			if (bitmap != null) {
 				setAvatarBitmap(bitmap);
 			}

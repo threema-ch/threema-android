@@ -129,7 +129,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	protected CoordinatorLayout rootView, gridContainer, pagerContainer;
 	protected AppBarLayout appBarLayout;
-	protected MaterialToolbar toolbar, previewToolbar;
+	protected MaterialToolbar toolbar;
 	protected EmptyRecyclerView mediaAttachRecyclerView;
 	protected FastScroller fastScroller;
 	protected GridLayoutManager gridLayoutManager;
@@ -490,8 +490,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		MediaAttachItem mediaItem = imagePreviewPagerAdapter.getItem(position);
 		checkBox.setChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().containsKey(mediaItem.getId()));
 
-		previewBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
 		previewFilenameTextView.setText(String.format("%s/%s", mediaItem.getBucketName(), mediaItem.getDisplayName()));
 		long taken = mediaItem.getDateTaken();
 		//multiply because of format takes millis
@@ -506,6 +504,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		} else {
 			previewDateTextView.setText(getString(R.string.media_date_unknown));
 		}
+
+		previewBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 	}
 
 	/**

@@ -502,9 +502,6 @@ public interface PreferenceService {
 
 	@Nullable String getPoiServerHostOverride();
 
-	void setLastSyncadapterRun(long timestampOfLastSync);
-	long getLastSyncAdapterRun();
-
 	void setVoiceRecorderBluetoothDisabled(boolean isEnabled);
 	boolean getVoiceRecorderBluetoothDisabled();
 

@@ -678,21 +678,25 @@
 					android:pathPattern="/.*"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".qrscanner.activity.CaptureActivity"
-		          android:label="@string/capture_name"
-		          android:clearTaskOnLaunch="true"
-		          android:stateNotNeeded="true"
-		          android:configChanges="orientation|keyboardHidden"
-		          android:theme="@style/Theme.Threema.Translucent"
-		          android:windowSoftInputMode="stateAlwaysHidden">
-		</activity>
-		<activity android:name=".camera.CameraActivity"
-		          android:screenOrientation="fullSensor"
-		          android:autoRemoveFromRecents="true"
-		          android:clearTaskOnLaunch="true"
-		          android:theme="@style/Theme.Threema.Camera">
+		<activity
+			android:name=".qrscanner.activity.CaptureActivity"
+			android:label="@string/capture_name"
+			android:clearTaskOnLaunch="true"
+			android:stateNotNeeded="true"
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
+			android:theme="@style/Theme.Threema.Translucent"
+			android:windowSoftInputMode="stateAlwaysHidden"/>
+		<activity
+			android:name=".camera.CameraActivity"
+			android:screenOrientation="fullSensor"
+			android:autoRemoveFromRecents="true"
+			android:clearTaskOnLaunch="true"
+			android:theme="@style/Theme.Threema.Camera">
 			<!-- Declare Huawei notch support -->
-			<meta-data android:name="android.notch_support" android:value="true"/>
+			<meta-data
+				android:name="android.notch_support"
+				android:value="true" />
 		</activity>
 		<activity
 			android:name="ch.threema.app.globalsearch.GlobalSearchActivity"

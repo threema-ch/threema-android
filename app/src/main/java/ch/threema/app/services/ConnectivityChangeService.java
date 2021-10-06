@@ -45,7 +45,11 @@ public class ConnectivityChangeService extends FixedJobIntentService {
 
 	public static void enqueueWork(Context context, Intent work) {
 		if (work != null) {
-			enqueueWork(context, ConnectivityChangeService.class, JOB_ID, work);
+			try {
+				enqueueWork(context, ConnectivityChangeService.class, JOB_ID, work);
+			} catch (IllegalArgumentException e) {
+				logger.error("Unable to enqueue work", e);
+			}
 		}
 	}
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Osada</string>
+    <string name="village">Dedina</string>
+    <string name="town">Mesto</string>
+    <string name="isolated_dwelling">Samota</string>
+    <string name="island">Ostrov</string>
+    <string name="islet">Ostrovček</string>
+    <string name="suburb">Predmestie</string>
+    <string name="city">Veľkomesto</string>
+    <string name="city_block">Mestská štvrť</string>
+    <string name="neighbourhood">Susedstvo</string>
+    <string name="locality">Lokalita</string>
+    <string name="state">Štát</string>
+    <string name="farm">Farma</string>
+    <string name="street">Ulica</string>
+    <string name="country">Krajina</string>
+</resources>

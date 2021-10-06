@@ -38,5 +38,5 @@
     <string name="webclient_diagnostics">Diagnostika funkce Threema Web</string>
     <string name="webclient_diagnostics_start">Spustit</string>
     <string name="webclient_diagnostics_intro">Stiskem tlačítka „Spustit“ zahájíte test.</string>
-    <string name="webclient_diagnostics_done">Hotovo. Pokud zaznamenáváte problémy s navázáním spojení Threema Web, odešlete prosím tento protokol podpoře Threema.</string>
+    <string name="webclient_diagnostics_done">Hotovo. Pokud zaznamenáváte problémy s navázáním spojení Threema Web, odešlete prosím tento záznam podpoře společnosti Threema.</string>
 </resources>

@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -52,7 +53,10 @@ import java.util.Collections;
 import java.util.Locale;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -70,7 +74,7 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MimeUtil;
 
-public class VoiceRecorderActivity extends AppCompatActivity implements View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener, SensorListener {
+public class VoiceRecorderActivity extends AppCompatActivity implements DefaultLifecycleObserver, View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener, SensorListener {
 	private static final Logger logger = LoggerFactory.getLogger(VoiceRecorderActivity.class);
 
 	private static final String DIALOG_TAG_CANCEL_CONFIRM = "cc";
@@ -133,6 +137,8 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		getLifecycle().addObserver(this);
+
 		ConfigUtils.configureActivityTheme(this);
 
 		super.onCreate(savedInstanceState);
@@ -304,32 +310,19 @@ public class VoiceRecorderActivity extends AppCompatActivity implements View.OnC
 	}
 
 	@Override
-	protected void onPause() {
-		logger.debug("onPause");
-		if (!ConfigUtils.isSamsungDevice()) {
-			reallyOnPause();
-		}
-		super.onPause();
-	}
-
-	private void reallyOnPause() {
-		logger.debug("reallyOnPause");
-		pauseMedia();
+	public void addContentView(View view, ViewGroup.LayoutParams params) {
+		super.addContentView(view, params);
 	}
 
 	@Override
-	protected void onResume() {
+	public void onResume(@NonNull LifecycleOwner owner) {
 		logger.debug("onResume");
-		super.onResume();
 	}
 
-	public void onWindowFocusChanged(boolean hasFocus) {
-		logger.debug("onWindowFocusChanged " + hasFocus);
-		// workaround for proximity wake lock causing calls to onPause/onResume on Samsung devices:
-		// see: http://stackoverflow.com/questions/35318649/android-proximity-sensor-issue-only-in-samsung-devices
-		if (!hasFocus) {
-			reallyOnPause();
-		}
+	@Override
+	public void onPause(@NonNull LifecycleOwner owner) {
+		logger.debug("onPause");
+		pauseMedia();
 	}
 
 	private boolean isBluetoothEnabled() {

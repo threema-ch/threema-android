@@ -426,7 +426,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 					if (groupDetailViewModel.getAvatarFile() != null) {
 						bitmap = BitmapUtil.safeGetBitmapFromUri(GroupDetailActivity.this,
-							Uri.fromFile(groupDetailViewModel.getAvatarFile()), CONTACT_AVATAR_HEIGHT_PX, true);
+							Uri.fromFile(groupDetailViewModel.getAvatarFile()), CONTACT_AVATAR_HEIGHT_PX);
 					} else {
 						bitmap = groupService.getAvatar(groupModel, false);
 					}

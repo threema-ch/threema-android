@@ -49,7 +49,7 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 
 	private int aspectX;
 	private int aspectY;
-	private int orientation, exifOrientation, flip, exifFlip;
+	private int orientation, flip;
 
 	// Output image size
 	private int maxX;
@@ -66,7 +66,6 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 
 	@Override
 	public void onCreate(Bundle icicle) {
-
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 
@@ -100,36 +99,45 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 		setupFromIntent();
 
 		imageView = findViewById(R.id.crop_image);
-		if (aspectX != 0 && aspectY != 0) {
-			imageView.setAspectRatio(aspectX, aspectY);
-			imageView.setFixedAspectRatio(true);
-		}
-		if (orientation != 0 || flip != BitmapUtil.FLIP_NONE || exifOrientation != 0 || exifFlip != BitmapUtil.FLIP_NONE) {
-			imageView.setOnSetImageUriCompleteListener(new CropImageView.OnSetImageUriCompleteListener() {
-				@Override
-				public void onSetImageUriComplete(CropImageView view, Uri uri, Exception error) {
+		imageView.setOnSetImageUriCompleteListener(new CropImageView.OnSetImageUriCompleteListener() {
+			@Override
+			public void onSetImageUriComplete(CropImageView view, Uri uri, Exception error) {
+				if (error == null && uri != null) {
+					BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(CropImageActivity.this, uri);
+					int exifFlip = exifOrientation.getFlip();
+					int exifRotation = 0;
+
+					// Bug Workaround: CropImageView accounts for exif rotation but NOT if there's also a flip
 					if ((exifFlip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-						imageView.flipImageHorizontally();
+						view.flipImageHorizontally();
+						exifRotation = (int) exifOrientation.getRotation();
 					}
 					if ((exifFlip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-						imageView.flipImageVertically();
+						view.flipImageVertically();
+						exifRotation = (int) exifOrientation.getRotation();
 					}
-					// Bug Workaround: CropImageView accounts for exif rotation but NOT if there's also a flip
-					if (exifFlip != BitmapUtil.FLIP_NONE) {
-						imageView.rotateImage(exifOrientation);
+					if (exifRotation != 0) {
+						view.rotateImage(exifRotation);
 					}
+
+					// non-exif
 					if ((flip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-						imageView.flipImageHorizontally();
+						view.flipImageHorizontally();
 					}
 					if ((flip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-						imageView.flipImageVertically();
+						view.flipImageVertically();
 					}
 					if (orientation != 0) {
-						imageView.rotateImage(orientation);
+						view.rotateImage(orientation);
+					}
+
+					if (aspectX != 0 && aspectY != 0) {
+						view.setAspectRatio(aspectX, aspectY);
+						view.setFixedAspectRatio(true);
 					}
 				}
-			});
-		}
+			}
+		});
 		imageView.setImageUriAsync(sourceUri);
 		imageView.setCropShape(oval ? CropImageView.CropShape.OVAL : CropImageView.CropShape.RECTANGLE);
 		imageView.setOnCropImageCompleteListener(new CropImageView.OnCropImageCompleteListener() {
@@ -163,8 +171,6 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 			saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
 			orientation = extras.getInt(ThreemaApplication.EXTRA_ORIENTATION, 0);
 			flip = extras.getInt(ThreemaApplication.EXTRA_FLIP, BitmapUtil.FLIP_NONE);
-			exifOrientation = extras.getInt(ThreemaApplication.EXTRA_EXIF_ORIENTATION, 0);
-			exifFlip = extras.getInt(ThreemaApplication.EXTRA_EXIF_FLIP, BitmapUtil.FLIP_NONE);
 		}
 
 		sourceUri = intent.getData();

@@ -495,7 +495,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 					canSendIsTyping = false;
 				}
 			} else {
-				if (contactModel.getReadReceipts() == ContactModel.SEND) {
+				if (contactModel.getTypingIndicators() == ContactModel.SEND) {
 					canSendIsTyping = true;
 				}
 			}

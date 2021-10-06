@@ -108,8 +108,6 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 						syncResult.stats.numDeletes = 0;//deletedAccounts;
 						syncResult.stats.numEntries = 0;//createdAccounts;
 
-						serviceManager.getPreferenceService().setLastSyncadapterRun(System.currentTimeMillis());
-
 						//send a broadcast to let others know that the list has changed
 						LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).sendBroadcast(IntentDataUtil.createActionIntentContactsChanged());
 					}

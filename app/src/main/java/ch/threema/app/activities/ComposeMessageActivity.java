@@ -183,7 +183,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	@Override
 	public void onStop() {
 		logger.debug("onStop");
-
 		super.onStop();
 	}
 
@@ -196,18 +195,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	@Override
 	public void onPause() {
 		logger.debug("onPause");
-
 		super.onPause();
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		logger.debug("onWindowFocusChanged " + hasFocus);
-		super.onWindowFocusChanged(hasFocus);
-
-		if (ConfigUtils.isSamsungDevice() && !ConfigUtils.isTabletLayout() && composeMessageFragment != null) {
-            composeMessageFragment.onWindowFocusChanged(hasFocus);
-        }
 	}
 
 	@Override

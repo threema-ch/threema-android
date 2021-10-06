@@ -23,6 +23,7 @@ package ch.threema.app.services;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.DocumentsContract;
 import android.text.format.DateUtils;
 import android.util.SparseIntArray;
@@ -3126,6 +3128,10 @@ public class MessageServiceImpl implements MessageService {
 			intent.setDataAndType(uri, mimeType);
 			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 				intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_ACTIVITY_NEW_TASK);
+				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+					intent.setClipData(ClipData.newRawUri("", uri));
+					intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+				}
 			} else if (!(context instanceof Activity)) {
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			}
@@ -3708,8 +3714,7 @@ public class MessageServiceImpl implements MessageService {
 				Bitmap bitmap = null;
 				try {
 					boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType());
-
-					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, true, hasNoTransparency);
+					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, false);
 					if (bitmap != null) {
 						bitmap = BitmapUtil.rotateBitmap(bitmap,
 							mediaItem.getExifRotation(),
@@ -3829,7 +3834,6 @@ public class MessageServiceImpl implements MessageService {
 				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
 				break;
 			case MediaItem.TYPE_IMAGE:
-				// images are always sent as JPGs - so use this for thumbnails - except for stickers which may have a format containing transparency
 				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, mediaItem.getUri());
 				mediaItem.setExifRotation((int) exifOrientation.getRotation());
 				mediaItem.setExifFlip(exifOrientation.getFlip());
@@ -3839,7 +3843,7 @@ public class MessageServiceImpl implements MessageService {
 				} else {
 					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
 				}
-				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, true, false, true);
+				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true);
 
 				if (thumbnailBitmap != null) {
 					thumbnailBitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
@@ -3851,7 +3855,7 @@ public class MessageServiceImpl implements MessageService {
 			case MediaItem.TYPE_IMAGE_CAM:
 				// camera images are always sent as JPGs
 				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
-				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, true, false, true);
+				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true);
 				if (thumbnailBitmap != null) {
 					thumbnailBitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
 						thumbnailBitmap,

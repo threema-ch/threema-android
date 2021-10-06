@@ -139,8 +139,20 @@ public class ImageViewFragment extends MediaViewFragment {
 			try {
 				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(getContext(), Uri.fromFile(file));
 				logger.debug("Orientation = " + exifOrientation);
-				if (exifOrientation.getRotation() != 0) {
-					imageViewReference.get().setOrientation((int) exifOrientation.getRotation());
+				int rotation = (int) exifOrientation.getRotation();
+
+				if (exifOrientation.getFlip() != BitmapUtil.FLIP_NONE) {
+					if ((exifOrientation.getFlip() & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
+						imageViewReference.get().setScaleY(-1f);
+					}
+					if ((exifOrientation.getFlip() & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
+						imageViewReference.get().setScaleX(-1f);
+						// invert rotation to compensate for flip
+						rotation = 360 - rotation;
+					}
+				}
+				if (exifOrientation.getRotation() != 0F) {
+					imageViewReference.get().setOrientation(rotation);
 				}
 			} catch (Exception e) {
 				logger.error("Exception", e);

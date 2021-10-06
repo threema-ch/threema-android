@@ -1531,17 +1531,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setLastSyncadapterRun(long timestampOfLastSync) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__last_syncadapter_run), timestampOfLastSync);
-	}
-
-	@Override
-	public long getLastSyncAdapterRun() {
-		Long lastRun = this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_syncadapter_run));
-		return lastRun != null ? lastRun : 0L;
-	}
-
-	@Override
 	public void setVoiceRecorderBluetoothDisabled(boolean disabled) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__voicerecorder_bluetooth_disabled), disabled);
 

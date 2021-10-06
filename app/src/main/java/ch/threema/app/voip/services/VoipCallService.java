@@ -886,6 +886,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				abortCall(R.string.voip_error_init_call, String.format("handleNewCall: Invalid sdpType: {}", offerData.getSdpType()), true);
 				return;
 			}
+			logCallInfo(callId, "Initializing this.offerSessionDescription");
 			this.offerSessionDescription = new SessionDescription(sdpType, offerData.getSdp());
 
 			// If the offerer does not signal video support, disable it
@@ -1092,6 +1093,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		);
 
 		// Initialize peer connection
+		logCallInfo(
+			callId, "Initializing call, voipStateService.callId = {}, voipStateService.isInitiator = {}",
+			this.voipStateService.getCallState().getCallId(), this.voipStateService.isInitiator()
+		);
 		if (this.voipStateService.isInitiator() == Boolean.TRUE) {
 			this.initAsInitiator(callId, launchVideo);
 		} else {

@@ -198,7 +198,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 */
 	void updatePublicNickName(AbstractMessage msg);
 
-	boolean updateAllContactNamesAndAvatarsFromAndroidContacts();
+	boolean updateAllContactNamesFromAndroidContacts();
 
 	void removeAllSystemContactLinks();
 

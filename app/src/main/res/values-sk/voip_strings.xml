@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema hovor</string>
+    <string name="voip_hangup">Ukončiť</string>
+    <string name="voip_toggle_mic">Prepnúť mikrofón</string>
+    <string name="voip_toggle_speaker">Prepnúť reproduktor</string>
+    <string name="voip_switch_cam">Prepnúť fotoaparát</string>
+    <string name="voip_switch_cam_front">Prepnuté na prednú kameru</string>
+    <string name="voip_switch_cam_rear">Prepnuté na zadnú kameru</string>
+    <string name="voip_toggle_video">Prepnúť režim videa</string>
+    <string name="voip_call_confirm">Chcete zavolať kontaktu %1$s?</string>
+    <string name="voip_error_call">Chyba počas Threema hovoru</string>
+    <string name="voip_error_init_call">Chyba počas inicializácie hovoru</string>
+    <string name="voip_notification_title">Prichádzajúci Threema hovor</string>
+    <string name="voip_notification_text">%1$s volá</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Inicializácia</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Pripájanie</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Odpájanie</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Vyzváňanie</string>
+    <string name="voip_mic_enable">Zapnúť mikrofón</string>
+    <string name="voip_mic_disable">Vypnúť mikrofón</string>
+    <string name="voip_checking_compatibility">Overuje sa, či môže tento kontakt prijať Threema hovory</string>
+    <string name="voip_incompatible">Tento kontakt ešte nie je schopný prijímať Threema hovory.</string>
+    <string name="voip_call_status_unavailable">Príjemca hovoru je nedostupný</string>
+    <string name="voip_call_status_rejected">Hovor odmietnutý</string>
+    <string name="voip_call_status_busy">Príjemca hovoru je obsadený</string>
+    <string name="voip_call_status_busy_short">Obsadené</string>
+    <string name="voip_call_status_disabled">Príjemca má vypnuté Threema hovory</string>
+    <string name="voip_call_status_missed">Zmeškaný hovor</string>
+    <string name="voip_call_finished_outbox">Odchádzajúci hovor</string>
+    <string name="voip_call_finished_inbox">Prichádzajúci hovor</string>
+    <string name="voip_call_status_aborted">Hovor zrušený</string>
+    <string name="voip_return_call">Spätné volanie</string>
+    <string name="voip_accept">Prijať</string>
+    <string name="voip_reject">Odmietnuť</string>
+    <string name="voip_speakerphone">Hlasitý hovor</string>
+    <string name="voip_wired_headset">Slúchadlá</string>
+    <string name="voip_earpiece">Telefón</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Nedostupný</string>
+    <string name="voip_call_finished">Threema hovor ukončený</string>
+    <string name="voip_another_call">Nedá sa spojiť. Aktuálne prebieha iný Threema hovor.</string>
+    <string name="voip_prefs_title_aec">Potlačenie ozveny</string>
+    <string name="voip_prefs_aec_sw">Softvérové potlačenie ozveny</string>
+    <string name="voip_prefs_aec_hw">Hardvérové potlačenie ozveny</string>
+    <string name="voip_prefs_title_video_codec">Video kodeky</string>
+    <string name="voip_prefs_video_aec_hw">Hardvérovo akcelerované</string>
+    <string name="voip_prefs_video_codec_no_vp8">Zakázať VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Zakázať H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Softvérové kodeky</string>
+    <string name="voip_connection_failed">Spojenie nebolo nadviazané</string>
+    <string name="voip_connection_lost">Spojenie prerušené</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Odmietať mobilné hovory</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Odmietať prichádzajúce mobilné hovory, pokiaľ prebieha Threema hovor.</string>
+    <string name="voip_contact_not_found">Pre toto číslo nebol nájdený Threema kontakt.</string>
+    <string name="voip_another_pstn_call">Hovor nie je možné uskutočniť. Stále prebieha klasický telefónny hovor.</string>
+    <string name="voip_call_status_off_hours">Hovory mimo pracovnú dobu</string>
+    <string name="voip_peer_video_disabled">Video hovory sú zakázané protistranou.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">Diagnostika WebRTC</string>
+    <string name="voip_prefs_webrtc_debug_summary">Spustením tohoto nástroja vám umožní hľadať zdroj problémov s nastavením spojenia hlasového hovoru</string>
+    <string name="voip_webrtc_debug">Diagnostika WebRTC</string>
+    <string name="voip_webrtc_debug_intro">Stlačením tlačidla \"Štart\" spustíte test.</string>
+    <string name="voip_webrtc_debug_start">Štart</string>
+    <string name="voip_webrtc_debug_done">Hotovo. Pokiaľ zaznamenáte problémy s nadviazaním spojenia hovoru, odošlite tento výstup podpore Threema.</string>
+    <string name="voip_webrtc_debug_copied">Skopírované do schránky</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Skopírovať do schránky</string>
+</resources>
