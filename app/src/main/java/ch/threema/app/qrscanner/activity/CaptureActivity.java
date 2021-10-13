@@ -37,6 +37,7 @@
 package ch.threema.app.qrscanner.activity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
@@ -62,6 +63,7 @@ import ch.threema.app.qrscanner.assit.AmbientLightManager;
 import ch.threema.app.qrscanner.assit.BeepManager;
 import ch.threema.app.qrscanner.camera.CameraManager;
 import ch.threema.app.qrscanner.view.ViewfinderView;
+import ch.threema.app.utils.ConfigUtils;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -138,6 +140,9 @@ public final class CaptureActivity extends AppCompatActivity implements SurfaceH
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		windowSetting();
+
+		ConfigUtils.setRequestedOrientation(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 		setContentView(R.layout.activity_capture);
 
 		Bundle bundle = new Bundle();

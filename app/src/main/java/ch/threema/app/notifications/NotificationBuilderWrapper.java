@@ -175,7 +175,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(ringtone.getScheme())) {
 					// https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
 					ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", ringtone, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-				} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
+				} else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
 					// content://settings/system/notification_sound
 					if (!ringtone.equals(Settings.System.DEFAULT_NOTIFICATION_URI)) {
 						// check if ringtone is still available

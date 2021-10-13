@@ -859,7 +859,7 @@
 	<string name="error_attaching_files">Error adding attachments.</string>
 	<string name="prefs_fix_powermanager_problems">Disable power restrictions</string>
 	<string name="prefs_fix_powermanager_problems_desc">Allow Threema to run in the background so it can receive messages even when it’s not active.</string>
-	<string name="disable_powermanager_explain">In the following screen, make sure, “%s” is protected or excluded from any power management restrictions of your phone.Tap the “back” button when you’re done.</string>
+	<string name="disable_powermanager_explain">In the following screen, make sure, “%s” is protected or excluded from any power management restrictions of your phone. Tap the “back” button when you’re done.</string>
 	<string name="disable_autostart_explain">In the following screen, make sure “%s” is included in the list of apps that can autostart. Tap the “back” button when you’re done.</string>
 	<string name="notification_priority_default">Low</string>
 	<string name="notification_priority_high">High</string>
@@ -1121,7 +1121,7 @@
 	<string name="work_life_dnd_active">Off-hours active</string>
 	<string name="pencil">Pencil</string>
 	<string name="warning">Warning</string>
-	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on severs, we cannot help you out, if you forgot your PIN or password.</string>
+	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on severs, we cannot help you out, if you forget your PIN or password.</string>
 	<string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone’s notification bar.</string>
 	<string name="send_to_support">Send to Threema Support</string>
 	<string name="menu_legal">Legal</string>

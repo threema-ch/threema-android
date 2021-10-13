@@ -683,7 +683,6 @@
 			android:label="@string/capture_name"
 			android:clearTaskOnLaunch="true"
 			android:stateNotNeeded="true"
-			android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden"
 			android:theme="@style/Theme.Threema.Translucent"
 			android:windowSoftInputMode="stateAlwaysHidden"/>

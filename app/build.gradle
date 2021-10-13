@@ -11,7 +11,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.58"
+def app_version = "4.581"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -86,7 +86,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 697
+        versionCode 698
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter
@@ -542,8 +542,8 @@ dependencies {
     implementation 'androidx.activity:activity:1.2.4'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
-    implementation "androidx.camera:camera-camera2:1.0.1"
-    implementation "androidx.camera:camera-lifecycle:1.0.1"
+    implementation "androidx.camera:camera-camera2:1.0.2"
+    implementation "androidx.camera:camera-lifecycle:1.0.2"
     // camera-view >1.0.0-alpha25 requires compileSDK 30
     implementation "androidx.camera:camera-view:1.0.0-alpha25"
     implementation 'androidx.multidex:multidex:2.0.1'
