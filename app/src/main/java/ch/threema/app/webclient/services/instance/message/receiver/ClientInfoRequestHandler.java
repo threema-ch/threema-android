@@ -76,11 +76,14 @@ public class ClientInfoRequestHandler extends MessageReceiver {
 	@Override
 	protected void receive(Map<String, Value> message) throws MessagePackException {
 		logger.info("Received client information request");
-		Map<String, Value> data = this.getData(message, false, new String[] {
-			Protocol.ARGUMENT_USER_AGENT,
-			Protocol.ARGUMENT_BROWSER_NAME,
-			Protocol.ARGUMENT_BROWSER_VERSION,
-		});
+		final Map<String, Value> data = this.getData(
+			message,
+			false,
+			new String[] { Protocol.ARGUMENT_USER_AGENT }
+		);
+
+		// Note: Right now we only use the user agent for browser detection,
+		// not the browserName or browserVersion fields.
 
 		if (this.listener != null) {
 			// TODO: Store detected browser!

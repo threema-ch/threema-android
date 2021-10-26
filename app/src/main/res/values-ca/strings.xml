@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Sincronitzar els usuaris de Threema amb la llibreta d\'adreces del vostre dispositiu</string>
     <string name="prefs_sum_sync_contacts_off">No sincronitzar els usuaris de Threema amb la llibreta d\'adreces del vostre dispositiu</string>
     <string name="prefs_title_sync_contacts">Sincr. contactes</string>
-    <string name="prefs_sum_block_unknown_off">Tothom us pot enviar un missatge. Els contactes nous s\'afegiran automàticament 
+    <string name="prefs_sum_block_unknown_off">Tothom us pot enviar un missatge. Els contactes nous s\'afegiran automàticament
 quan arribi el primer missatge.</string>
     <string name="prefs_sum_block_unknown_on">Només la gent de la vostra llista de contactes us pot enviar un missatge.</string>
     <string name="prefs_title_block_unknown">Bloquejar desconeguts</string>
@@ -129,7 +129,7 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="whoaaa">Notícia de Threema</string>
     <string name="really_delete_message_title">Eliminar missatge</string>
     <string name="really_delete_thread">Eliminar xat</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Realment voleu eliminar %d xat(s)? No podreu recuperar 
+    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Realment voleu eliminar %d xat(s)? No podreu recuperar
 els missatges.</string>
     <string name="really_delete_contact">Realment voleu eliminar aquest contacte i tots els missatges associats?</string>
     <string name="image_placeholder">Imatge</string>
@@ -162,12 +162,12 @@ els missatges.</string>
     <string name="password_hint">Contrasenya</string>
     <string name="generating_backup_data">Generant dades de còpia de seguretat</string>
     <string name="backup_id_title">La vostra exportació d\'ID</string>
-    <string name="backup_id_summary">La cadena de text o el codi QR mostrats a sobre, juntament amb la contrasenya que heu 
-escollit, poden ser utilitzats per restaurar la vostra ID en un altre dispositiu. Hauríeu de copiar-lo en un lloc adient, compartir-lo per 
+    <string name="backup_id_summary">La cadena de text o el codi QR mostrats a sobre, juntament amb la contrasenya que heu
+escollit, poden ser utilitzats per restaurar la vostra ID en un altre dispositiu. Hauríeu de copiar-lo en un lloc adient, compartir-lo per
 correu electrònic o escanejar el codi QR utilitzant un altre dispositiu.</string>
     <string name="support">Ajuda</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">La següent cadena de text es pot utilitzar conjuntament amb la contrasenya escollida per 
+    <string name="backup_share_content">La següent cadena de text es pot utilitzar conjuntament amb la contrasenya escollida per
 restaurar la vostra ID de Threema.</string>
     <string name="backup_share_subject">Exportació d\'ID de Threema per</string>
     <string name="add_attachment">Nou Adjunt</string>
@@ -178,7 +178,7 @@ restaurar la vostra ID de Threema.</string>
     <string name="prefs_title_masterkey_passphrase">Contrasenya</string>
     <string name="setting_masterkey_passphrase">Configurant la contrasenya de la clau mestra</string>
     <string name="masterkey_passphrase_title">Contrasenya de la Clau Mestra</string>
-    <string name="masterkey_passphrase_summary">Definiu una contrasenya per protegir la vostra clau mestra. Tingueu en compte 
+    <string name="masterkey_passphrase_summary">Definiu una contrasenya per protegir la vostra clau mestra. Tingueu en compte
 que l\'haureu d\'entrar cada vegada que Threema es reinicialitzi.</string>
     <string name="masterkey_passphrase_again_summary">Torneu a entrar la contrasenya</string>
     <string name="masterkey_passphrase_hint">Contrasenya</string>
@@ -199,7 +199,7 @@ que l\'haureu d\'entrar cada vegada que Threema es reinicialitzi.</string>
 la clau.</string>
     <string name="masterkey_unlocking">Desbloquejant la clau mestra</string>
     <string name="verify_phonecall_text">Demanar una trucada</string>
-    <string name="prepare_call_message">Si procediu, intentarem trucar-vos immediatament. El vostre codi de verificació 
+    <string name="prepare_call_message">Si procediu, intentarem trucar-vos immediatament. El vostre codi de verificació
 us serà llegit dues vegades. Tingueu en compte que només farem un intent, per tant assegureu-vos que esteu a punt abans
 de continuar.</string>
     <string name="enter_code_hint">Entreu el codi</string>
@@ -234,7 +234,7 @@ de continuar.</string>
     <string name="masterkey_is_unlocked">La clau mestra està desbloquejada</string>
     <string name="file_too_large">El fitxer és més gran que el màxim de 50 MB</string>
     <string name="deleting_thread">Esborrant el xat</string>
-    <string name="enter_serial_body">Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau: 
+    <string name="enter_serial_body">Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
 https://shop.threema.ch/retrieve_keys</string>
     <string name="enter_serial_title">Desbloquejar Threema</string>
     <string name="serial_required_want_exit">La clau de llicència no és vàlida. Voleu intentar-ho de nou o tancar Threema?</string>
@@ -263,15 +263,15 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="new_unprocessed_messages">Nous missatges disponibles</string>
     <string name="new_unprocessed_messages_description">Toqueu per rebre i veure els nous missatges entrants.</string>
     <string name="prefs_title_masterkey_notification_newmsg">Notificacions de missatges nous</string>
-    <string name="prefs_masterkey_notification_newmsg_off">Els missatges nous no disparen una notificació quan la clau 
+    <string name="prefs_masterkey_notification_newmsg_off">Els missatges nous no disparen una notificació quan la clau
 mestra està bloquejada</string>
-    <string name="prefs_masterkey_notification_newmsg_on">Els missatges nous disparen una notificació genèrica quan la clau 
+    <string name="prefs_masterkey_notification_newmsg_on">Els missatges nous disparen una notificació genèrica quan la clau
 mestra està bloquejada</string>
     <string name="chat_history_attached">S\'ha adjuntat el registre de la conversa.</string>
     <string name="new_message">1 nou missatge</string>
     <string name="new_messages">nous missatges</string>
     <string name="backup_data_title">Còpia de les dades</string>
-    <string name="backup_data_password_msg">Les vostres dades es guardaran en un fitxer ZIP en la vostra memòria interna USB i podran ser restaurades en qualsevols dispositiu Android. Entreu una contrasenya per protegir 
+    <string name="backup_data_password_msg">Les vostres dades es guardaran en un fitxer ZIP en la vostra memòria interna USB i podran ser restaurades en qualsevols dispositiu Android. Entreu una contrasenya per protegir
 les dades de la vostra còpia de seguretat.</string>
     <string name="restore_data_password_msg">Entreu la contrasenya que vau utilitzar per crear aquesta còpia de seguretat.</string>
     <string name="backup_data_media">Incloure fitxers multimèdia grans (vídeo, documents, fotos de mida original)</string>
@@ -339,7 +339,7 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="can_not_send_no_group_members">No podeu enviar un missatge a un grup buit</string>
     <string name="you_are_not_a_member_of_this_group">No sou membre d\'aquest grup</string>
     <string name="can_not_delete_not_valid">No es pot eliminar un objecte no vàlid</string>
-    <string name="can_not_delete_contact_until_in_group">El contacte continua essent un membre o creador d\'un grup 
+    <string name="can_not_delete_contact_until_in_group">El contacte continua essent un membre o creador d\'un grup
 de conversa i per això no pot ser eliminat. Sortiu o elimineu tots els grup que incloguin aquest contacte i torneu-ho a
 intentar.</string>
     <string name="can_not_delete_contact">No es pot eliminar el contacte</string>
@@ -352,7 +352,7 @@ intentar.</string>
     <string name="prefs_title_black_list">Llista negra</string>
     <string name="prefs_sum_black_list">Els missatges de les ID llistades aquí s\'ignoraran.</string>
     <string name="verified">Verificat</string>
-    <string name="want_to_add_to_exclude_list">Aquest contacte està enllaçat amb una entrada de la llibreta d\'adreces del vostre telèfon. 
+    <string name="want_to_add_to_exclude_list">Aquest contacte està enllaçat amb una entrada de la llibreta d\'adreces del vostre telèfon.
 Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització de contactes.\nVoleu excloure\'l de la sincronització?</string>
     <string name="no">No</string>
     <string name="yes">Sí</string>
@@ -364,7 +364,7 @@ Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització 
     <string name="prefs_contact_list_title">Llista de contactes</string>
     <string name="prefs_default_contact_picture_colored">Fotos dels contactes</string>
     <string name="prefs_show_inactive_contacts">Mostrar IDs inactives</string>
-    <string name="prefs_sum_default_contact_picture_colored_on">Mostrar contenidors multicolor si no hi ha foto 
+    <string name="prefs_sum_default_contact_picture_colored_on">Mostrar contenidors multicolor si no hi ha foto
 de contacte</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Utilitzar contenidors grisos si no hi ha foto de contacte</string>
     <string name="prefs_sum_show_inactive_contacts_on">Mostrar totes les ID de Threema a la llista de contactes</string>
@@ -648,20 +648,20 @@ de contacte</string>
 el parell de claus associades amb la vostra nova i única ID de Threema. El parell de claus està format per una <b>clau pública</b> que es distribueix als
 vostres amics i una <b>clau privada</b> que s\'emmagatzema de forma segura al vostres telèfon.
 Els vostres amics xifraran els missatges que us enviïn amb la vostra clau pública. Només el propietari de la clau privada i ningú més és capaç de desxifrar aquests missatges.</string>
-    <string name="new_wizard_info_id">També heu creat un parell de claus. La clau pública s\'ha transmès de forma segura als nostres 
+    <string name="new_wizard_info_id">També heu creat un parell de claus. La clau pública s\'ha transmès de forma segura als nostres
 servidors. La clau privada mai surt del vostre dispositiu. Això assegura que ningú més pot llegir els vostres missatges.</string>
-    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, Threema xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon 
-abans d\'enviar-los al servidor per buscar contactes coincidents. Nosaltres no guardem cap 
+    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, Threema xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon
+abans d\'enviar-los al servidor per buscar contactes coincidents. Nosaltres no guardem cap
 dada de la llibreta d\'adreces.</string>
-    <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, Threema pot ajudar els vostres amics 
-a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. Les dades s\'emmagatzemaran d\'una 
-forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema 
+    <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, Threema pot ajudar els vostres amics
+a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. Les dades s\'emmagatzemaran d\'una
+forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema
 de forma completament anònima.</string>
-    <string name="new_wizard_info_link_phone_only">Facilitant el vostre número de telèfon, Threema pot ajudar els vostres amics 
-a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. El número s\'emmagatzemarà d\'una 
-forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema 
+    <string name="new_wizard_info_link_phone_only">Facilitant el vostre número de telèfon, Threema pot ajudar els vostres amics
+a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. El número s\'emmagatzemarà d\'una
+forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema
 de forma completament anònima.</string>
-    <string name="new_wizard_info_nickname">El sobrenom s\'utilitza a les notificacions push en alguns dispositius com una forma addicional per identificar-vos als usuaris que no us tenen encara a la seva llibreta d\'adreces. Recomanem 
+    <string name="new_wizard_info_nickname">El sobrenom s\'utilitza a les notificacions push en alguns dispositius com una forma addicional per identificar-vos als usuaris que no us tenen encara a la seva llibreta d\'adreces. Recomanem
 donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzarem la vostra ID de Threema per defecte.</string>
     <string name="not_linked">sense enllaçar</string>
     <string name="linked">enllaçada</string>
@@ -874,7 +874,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="no_matching_work_contacts">No s\'han trobat contactes de Threema Work verificats per l\'administrador</string>
     <string name="all">Tots</string>
     <string name="webclient_session_stop_all">Tancar tots</string>
-    <string name="webclient_running_sessions">%d sessió(ns) de Threema Web actives</string>
+    <string name="webclient_running_sessions">%d sessió(ns) actives</string>
     <string name="passphrase_service_name">Contrasenya del servei</string>
     <string name="passphrase_service_description">Notificació quan la contrasenya s\'ha desbloquejat</string>
     <string name="webclient_service_description">Notificació quan una sessió de Threema Web està activa</string>

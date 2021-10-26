@@ -819,6 +819,10 @@
 			android:enabled="true"
 			android:exported="false"/>
 		<service
+			android:name=".services.NotificationActionService"
+			android:enabled="true"
+			android:exported="false"/>
+		<service
 			android:name=".jobs.WorkSyncJobService"
 			android:enabled="true"
 			android:exported="false"
@@ -858,22 +862,6 @@
 			<intent-filter>
 				<action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
 			</intent-filter>
-		</receiver>
-		<receiver
-			android:name=".receivers.MarkReadActionBroadcastReceiver"
-			android:exported="false">
-		</receiver>
-		<receiver
-			android:name=".receivers.ReplyActionBroadcastReceiver"
-			android:exported="false">
-		</receiver>
-		<receiver
-			android:name=".receivers.AcknowledgeActionBroadcastReceiver"
-			android:exported="false">
-		</receiver>
-		<receiver
-			android:name=".receivers.DeclineActionBroadcastReceiver"
-			android:exported="false">
 		</receiver>
 		<receiver
 			android:name=".receivers.ReSendMessagesBroadcastReceiver"

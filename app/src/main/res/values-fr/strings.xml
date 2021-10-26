@@ -848,7 +848,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="no_matching_work_contacts">Aucun contact Theema Work vérifié par un administrateur n\'a été trouvé</string>
     <string name="all">Tout</string>
     <string name="webclient_session_stop_all">Tout fermer</string>
-    <string name="webclient_running_sessions">%d session(s) Threema Web active(s)</string>
+    <string name="webclient_running_sessions">%d session(s) active(s)</string>
     <string name="passphrase_service_name">Service de phrase secrète</string>
     <string name="passphrase_service_description">Une notification lorsque la phrase secrète est déverrouillée</string>
     <string name="webclient_service_description">Une notification lorsqu\'une session Threema Web est active</string>

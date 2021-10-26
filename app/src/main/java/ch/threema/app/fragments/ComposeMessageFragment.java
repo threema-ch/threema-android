@@ -386,6 +386,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private int listInstancePosition = AbsListView.INVALID_POSITION;
 	private int listInstanceTop = 0;
 	private String listInstanceReceiverId = null;
+	private String conversationUid = null;
 	private int unreadCount = 0;
 	private final QuoteInfo quoteInfo = new QuoteInfo();
 	private TextView searchCounter;
@@ -1225,6 +1226,11 @@ public class ComposeMessageFragment extends Fragment implements
 			// start media players again
 			this.messagePlayerService.resumeAll(getActivity(), this.messageReceiver, SOURCE_LIFECYCLE);
 
+			// make sure to remark the active chat
+			if (ConfigUtils.isTabletLayout()) {
+				ListenerManager.chatListener.handle(listener -> listener.onChatOpened(this.conversationUid));
+			}
+
 			// restore scroll position after orientation change
 			if (getActivity() != null) {
 				Intent intent = getActivity().getIntent();
@@ -1902,7 +1908,6 @@ public class ComposeMessageFragment extends Fragment implements
 	@UiThread
 	private void handleIntent(Intent intent) {
 		logger.debug("handleIntent");
-		String conversationUid;
 		this.isGroupChat = false;
 		this.isDistributionListChat = false;
 		this.currentPageReferenceId = null;
@@ -1935,7 +1940,7 @@ public class ComposeMessageFragment extends Fragment implements
 			intent.removeExtra(ThreemaApplication.INTENT_DATA_GROUP);
 //			}
 			this.messageReceiver = this.groupService.createReceiver(this.groupModel);
-			conversationUid = ConversationUtil.getGroupConversationUid(this.groupId);
+			this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupId);
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
 			this.isDistributionListChat = true;
 
@@ -1962,7 +1967,7 @@ public class ComposeMessageFragment extends Fragment implements
 				logger.error("Exception", e);
 				return;
 			}
-			conversationUid = ConversationUtil.getDistributionListConversationUid(this.distributionListId);
+			this.conversationUid = ConversationUtil.getDistributionListConversationUid(this.distributionListId);
 		} else {
 			if (TestUtil.empty(this.identity)) {
 				this.identity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
@@ -2001,7 +2006,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 			this.messageReceiver = this.contactService.createReceiver(this.contactModel);
 			this.typingIndicatorTextWatcher = new TypingIndicatorTextWatcher(this.userService, contactModel);
-			conversationUid = ConversationUtil.getIdentityConversationUid(this.identity);
+			this.conversationUid = ConversationUtil.getIdentityConversationUid(this.identity);
 		}
 
 		if (this.messageReceiver == null) {

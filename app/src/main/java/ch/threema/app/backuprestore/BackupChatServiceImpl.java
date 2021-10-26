@@ -26,7 +26,6 @@ import android.text.format.DateUtils;
 
 import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +43,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
@@ -128,6 +128,13 @@ public class BackupChatServiceImpl implements BackupChatService {
 						break;
 					case LOCATION:
 						messageLine += " <" + GeoLocationUtil.getLocationUri(m) + ">";
+						break;
+					case VOIP_STATUS:
+						if (m.getVoipStatusData().getDuration() != null) {
+							messageLine += " <" + StringConversionUtil.secondsToString(
+								m.getVoipStatusData().getDuration(),
+								false) + ">";
+						}
 						break;
 					default:
 				}

@@ -36,7 +36,8 @@ public class Config {
 	@NonNull private final static String[] HW_AEC_EXCLUSION_LIST = new String[] {
 		"Fairphone;FP2",
 		"ZUK;ZUK Z1", // Ticket #286367
-        "bq;Aquaris X" // Ticket #494934
+        "bq;Aquaris X", // Ticket #494934
+		"samsung;SM-G970F", // Roman
 	};
 
 	/**

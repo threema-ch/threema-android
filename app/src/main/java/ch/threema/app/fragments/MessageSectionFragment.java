@@ -695,7 +695,7 @@ public class MessageSectionFragment extends MainFragment
 
 	@SuppressLint("StaticFieldLeak")
 	private void reallyHideChat(ConversationModel conversationModel) {
-		new AsyncTask<Void, Void, Void>() {
+		new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected void onPreExecute() {
 				if (resumePauseHandler != null) {
@@ -704,24 +704,31 @@ public class MessageSectionFragment extends MainFragment
 			}
 
 			@Override
-			protected Void doInBackground(Void... params) {
-				hiddenChatsListService.add(conversationModel.getReceiver().getUniqueIdString(), DeadlineListService.DEADLINE_INDEFINITE);
-				fireReceiverUpdate(conversationModel.getReceiver());
-				return null;
+			protected Boolean doInBackground(Void... params) {
+				if (conversationModel != null && conversationModel.getReceiver() != null) {
+					hiddenChatsListService.add(conversationModel.getReceiver().getUniqueIdString(), DeadlineListService.DEADLINE_INDEFINITE);
+					fireReceiverUpdate(conversationModel.getReceiver());
+					return true;
+				}
+				return false;
 			}
 
 			@Override
-			protected void onPostExecute(Void aVoid) {
-				messageListAdapter.clearSelections();
-				if (getView() != null) {
-					Snackbar.make(getView(), R.string.chat_hidden, Snackbar.LENGTH_SHORT).show();
-				}
-				if (resumePauseHandler != null) {
-					resumePauseHandler.onResume();
-				}
-				updateHiddenMenuVisibility();
-				if (ConfigUtils.hasProtection(preferenceService) && preferenceService.isPrivateChatsHidden()) {
-					updateList(null, null, new Thread(() -> fireSecretReceiverUpdate()));
+			protected void onPostExecute(Boolean success) {
+				if (success) {
+					messageListAdapter.clearSelections();
+					if (getView() != null) {
+						Snackbar.make(getView(), R.string.chat_hidden, Snackbar.LENGTH_SHORT).show();
+					}
+					if (resumePauseHandler != null) {
+						resumePauseHandler.onResume();
+					}
+					updateHiddenMenuVisibility();
+					if (ConfigUtils.hasProtection(preferenceService) && preferenceService.isPrivateChatsHidden()) {
+						updateList(null, null, new Thread(() -> fireSecretReceiverUpdate()));
+					}
+				} else {
+					Toast.makeText(ThreemaApplication.getAppContext(), R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
 				}
 			}
 		}.execute();

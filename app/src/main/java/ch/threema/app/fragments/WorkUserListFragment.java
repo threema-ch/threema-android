@@ -44,6 +44,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class WorkUserListFragment extends RecipientListFragment {
@@ -83,9 +84,10 @@ public class WorkUserListFragment extends RecipientListFragment {
 
 		if (ConfigUtils.isWorkRestricted() && !multiSelect && view != null && ConfigUtils.isWorkDirectoryEnabled()) {
 			ListView listView = view.findViewById(android.R.id.list);
+			String orgaName = preferenceService.getWorkOrganization().getName();
 
 			RelativeLayout header = (RelativeLayout) getLayoutInflater().inflate(R.layout.item_user_list_directory_header, listView, false);
-			((TextView) header.findViewById(R.id.name)).setText(preferenceService.getWorkOrganization().getName());
+			((TextView) header.findViewById(R.id.name)).setText(TestUtil.empty(orgaName) ? getString(R.string.directory_title) : orgaName);
 			((ImageView) header.findViewById(R.id.avatar)).setImageResource(R.drawable.ic_business);
 			header.setOnClickListener(new View.OnClickListener() {
 				@Override

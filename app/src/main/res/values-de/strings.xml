@@ -972,10 +972,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="no_matching_work_contacts">Keine vom Administrator überprüften Threema Work-Kontakte gefunden</string>
 	<string name="all">Alle</string>
 	<string name="webclient_session_stop_all">Alle beenden</string>
-	<string name="webclient_running_sessions">%d laufende Threema Web-Sitzung(en)</string>
+	<string name="webclient_running_sessions">%d laufende Sitzung(en)</string>
 	<string name="passphrase_service_name">Passphrase-Dienst</string>
 	<string name="passphrase_service_description">Benachrichtigung, wenn die Passphrase entsperrt ist</string>
-	<string name="webclient_service_description">Benachrichtigung, wenn eine Threema Web-Sitzung aktiv ist</string>
+	<string name="webclient_service_description">Benachrichtigung, wenn eine Web-/Desktop-Sitzung aktiv ist</string>
 	<string name="prefs_title_accept_privacy_policy">Datenschutzerklärung akzeptieren</string>
 	<string name="privacy_policy_explain">%1$s schützt Ihre Privatsphäre so konsequent wie kein anderer Messenger. In unserer %2$s erfahren Sie mehr.</string>
 	<string name="privacy_policy_check_confirm">Bitte akzeptieren Sie die Datenschutzerklärung, um %s nutzen zu können.\n\n(Anforderung gemäss EU-Verordnung 2016/679)</string>

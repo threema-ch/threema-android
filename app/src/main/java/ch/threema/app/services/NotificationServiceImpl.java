@@ -85,11 +85,7 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
-import ch.threema.app.receivers.AcknowledgeActionBroadcastReceiver;
-import ch.threema.app.receivers.DeclineActionBroadcastReceiver;
-import ch.threema.app.receivers.MarkReadActionBroadcastReceiver;
 import ch.threema.app.receivers.ReSendMessagesBroadcastReceiver;
-import ch.threema.app.receivers.ReplyActionBroadcastReceiver;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -130,6 +126,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private final NotificationManagerCompat notificationManagerCompat;
 	private final NotificationManager notificationManager;
+	private final int pendingIntentFlags;
 
 	private final LinkedList<ConversationNotification> conversationNotifications = new LinkedList<>();
 	private MessageReceiver visibleConversationReceiver;
@@ -198,6 +195,14 @@ public class NotificationServiceImpl implements NotificationService {
 		this.ringtoneService = ringtoneService;
 		this.notificationManagerCompat = NotificationManagerCompat.from(context);
 		this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		// poor design by Google, as usual...
+		if (ThreemaApplication.getAppContext().getApplicationInfo().targetSdkVersion >= 31 &&
+			Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			this.pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT | 0x02000000; // FLAG_MUTABLE
+		} else {
+			this.pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+		}
 
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
@@ -485,50 +490,31 @@ public class NotificationServiceImpl implements NotificationService {
 			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
 			PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 
-			// Create an intent for the ack action
-			// Intent for ack action
-			Intent ackIntent = new Intent(context, AcknowledgeActionBroadcastReceiver.class);
-			newestGroup.getMessageReceiver().prepareIntent(ackIntent);
+			/************* ANDROID AUTO **************/
+
+			int conversationId = newestGroup.getNotificationId() * 10;
+
+			Intent replyIntent = new Intent(context, NotificationActionService.class);
+			replyIntent.setAction(NotificationActionService.ACTION_REPLY);
+			IntentDataUtil.addMessageReceiverToIntent(replyIntent, newestGroup.getMessageReceiver());
+			PendingIntent replyPendingIntent = PendingIntent.getService(context, conversationId, replyIntent, pendingIntentFlags);
+
+			Intent markReadIntent = new Intent(context, NotificationActionService.class);
+			markReadIntent.setAction(NotificationActionService.ACTION_MARK_AS_READ);
+			IntentDataUtil.addMessageReceiverToIntent(markReadIntent, newestGroup.getMessageReceiver());
+			PendingIntent markReadPendingIntent = PendingIntent.getService(context, conversationId + 1, markReadIntent, pendingIntentFlags);
+
+			Intent ackIntent = new Intent(context, NotificationActionService.class);
+			ackIntent.setAction(NotificationActionService.ACTION_ACK);
+			IntentDataUtil.addMessageReceiverToIntent(ackIntent, newestGroup.getMessageReceiver());
 			ackIntent.putExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
+			PendingIntent ackPendingIntent = PendingIntent.getService(context, conversationId + 2, ackIntent, pendingIntentFlags);
 
-			PendingIntent ackPendingIntent = PendingIntent.getBroadcast(
-					context,
-					getRandomRequestCode(), // http://stackoverflow.com/questions/19031861/pendingintent-not-opening-activity-in-android-4-3
-					ackIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Create an intent for the dec action
-			// Intent for dec action
-			Intent decIntent = new Intent(context, DeclineActionBroadcastReceiver.class);
-			newestGroup.getMessageReceiver().prepareIntent(decIntent);
+			Intent decIntent = new Intent(context, NotificationActionService.class);
+			decIntent.setAction(NotificationActionService.ACTION_DEC);
+			IntentDataUtil.addMessageReceiverToIntent(decIntent, newestGroup.getMessageReceiver());
 			decIntent.putExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
-
-			PendingIntent decPendingIntent = PendingIntent.getBroadcast(
-					context,
-					getRandomRequestCode(),
-					decIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Intent for reply action
-			Intent replyIntent = new Intent(context, ReplyActionBroadcastReceiver.class);
-			newestGroup.getMessageReceiver().prepareIntent(replyIntent);
-			replyIntent.putExtra(ThreemaApplication.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
-
-			PendingIntent replyPendingIntent = PendingIntent.getBroadcast(
-					context,
-					getRandomRequestCode(),
-					replyIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Intent for "Mark read" action
-			Intent markReadIntent = new Intent(context, MarkReadActionBroadcastReceiver.class);
-			newestGroup.getMessageReceiver().prepareIntent(markReadIntent);
-
-			PendingIntent markReadPendingIntent = PendingIntent.getBroadcast(
-				context,
-				getRandomRequestCode(),
-				markReadIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent decPendingIntent = PendingIntent.getService(context, conversationId + 3, decIntent, pendingIntentFlags);
 
 			long timestamp = System.currentTimeMillis();
 			boolean onlyAlertOnce = (timestamp - newestGroup.getLastNotificationDate()) < NOTIFY_AGAIN_TIMEOUT;
@@ -691,7 +677,9 @@ public class NotificationServiceImpl implements NotificationService {
 	private NotificationCompat.MessagingStyle getMessagingStyle(ConversationNotificationGroup group, ArrayList<ConversationNotification> notifications) {
 		String chatName = group.getName();
 		boolean isGroupChat = group.getMessageReceiver() instanceof GroupMessageReceiver;
-		Person.Builder builder = new Person.Builder().setName(context.getString(R.string.me_myself_and_i)).setKey(contactService.getUniqueIdString(contactService.getMe()));
+		Person.Builder builder = new Person.Builder()
+			.setName(context.getString(R.string.me_myself_and_i))
+			.setKey(contactService.getUniqueIdString(contactService.getMe()));
 
 		Bitmap avatar = contactService.getAvatar(contactService.getMe(), false);
 		if (avatar != null) {
@@ -702,11 +690,9 @@ public class NotificationServiceImpl implements NotificationService {
 
 		NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(me);
 
-		if (isGroupChat) {
-			// bug: setting a conversation title implies a group chat
-			messagingStyle.setConversationTitle(chatName);
-			messagingStyle.setGroupConversation(isGroupChat);
-		}
+		// bug: setting a conversation title implies a group chat
+		messagingStyle.setConversationTitle(chatName);
+		messagingStyle.setGroupConversation(isGroupChat);
 
 		for(int i = notifications.size() < MAXIMUM_RETAINED_MESSAGES ? notifications.size() - 1 : MAXIMUM_RETAINED_MESSAGES -1 ;
 		    i >= 0; i-- ) {
@@ -719,9 +705,11 @@ public class NotificationServiceImpl implements NotificationService {
 			// hack to show full name in non-group chats
 			if (!isGroupChat) {
 				if (person == null) {
-					person = new Person.Builder().setName(chatName).build();
+					person = new Person.Builder()
+						.setName(chatName).build();
 				} else {
-					person = person.toBuilder().setName(chatName).build();
+					person = person.toBuilder()
+						.setName(chatName).build();
 				}
 			}
 
@@ -764,6 +752,8 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private void addConversationNotificationActions(NotificationCompat.Builder builder, PendingIntent replyPendingIntent, PendingIntent ackPendingIntent, PendingIntent markReadPendingIntent, ConversationNotification conversationNotification, int unreadMessagesCount, int unreadGroupsCount, String uniqueId, ConversationNotificationGroup newestGroup) {
 		// add action buttons
+		boolean showMarkAsReadAction = false;
+
 		if (preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
 			if (ConfigUtils.canDoGroupedNotifications()) {
 				RemoteInput remoteInput = new RemoteInput.Builder(ThreemaApplication.EXTRA_VOICE_REPLY)
@@ -784,12 +774,6 @@ public class NotificationServiceImpl implements NotificationService {
 				builder.addAction(replyAction);
 			}
 
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				builder.addInvisibleAction(new NotificationCompat.Action.Builder(R.drawable.ic_mark_read_bitmap, context.getString(R.string.mark_read), markReadPendingIntent)
-					.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ)
-					.setShowsUserInterface(false).build());
-			}
-
 			if (newestGroup.getMessageReceiver() instanceof GroupMessageReceiver) {
 				builder.addAction(getMarkAsReadAction(markReadPendingIntent));
 			} else if (newestGroup.getMessageReceiver() instanceof ContactMessageReceiver) {
@@ -806,26 +790,41 @@ public class NotificationServiceImpl implements NotificationService {
 							context,
 							getRandomRequestCode(), // http://stackoverflow.com/questions/19031861/pendingintent-not-opening-activity-in-android-4-3
 							callActivityIntent,
-							PendingIntent.FLAG_UPDATE_CURRENT);
+							this.pendingIntentFlags);
 					if (unreadGroupsCount == 1 || ConfigUtils.canDoGroupedNotifications()) {
 						builder.addAction(
 							new NotificationCompat.Action.Builder(R.drawable.ic_call_white_24dp, context.getString(R.string.voip_return_call), callPendingIntent)
-								.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_CALL).build());
+								.setShowsUserInterface(true)
+								.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_CALL)
+								.build());
 					}
 				} else {
 					if (unreadMessagesCount == 1) {
 						builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_thumb_up_white_24dp, context.getString(R.string.acknowledge), ackPendingIntent)
-								.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP).build());
+							.setShowsUserInterface(false)
+							.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP)
+							.build());
 					}
-					builder.addAction(getMarkAsReadAction(markReadPendingIntent));
+
+					showMarkAsReadAction = true;
 				}
+			}
+		}
+
+		if (showMarkAsReadAction) {
+			builder.addAction(getMarkAsReadAction(markReadPendingIntent));
+		} else {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				builder.addInvisibleAction(getMarkAsReadAction(markReadPendingIntent));
 			}
 		}
 	}
 
 	private NotificationCompat.Action getMarkAsReadAction(PendingIntent markReadPendingIntent) {
 		return new NotificationCompat.Action.Builder(R.drawable.ic_mark_read_bitmap, context.getString(R.string.mark_read_short), markReadPendingIntent)
-			.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ).build();
+			.setShowsUserInterface(false)
+			.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ)
+			.build();
 	}
 
 	private void createSingleNotification(ConversationNotificationGroup newestGroup,
@@ -1489,7 +1488,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 				PackageManager packageManager = context.getPackageManager();
 				if (notificationIntent.resolveActivity(packageManager) != null) {
-					PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, this.pendingIntentFlags);
 					createPendingIntentWithTaskStack(notificationIntent);
 					builder.setContentIntent(pendingIntent);
 
@@ -1570,7 +1569,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 		stackBuilder.addNextIntentWithParentStack(intent);
-		return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+		return stackBuilder.getPendingIntent(0, this.pendingIntentFlags);
 	}
 
 	private PendingIntent getPendingIntentForActivity(Class<? extends Activity> activityClass) {
@@ -1591,7 +1590,7 @@ public class NotificationServiceImpl implements NotificationService {
 					context,
 					ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID,
 					sendIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
+					this.pendingIntentFlags);
 
 			NotificationCompat.Action tryAgainAction =
 					new NotificationCompat.Action.Builder(R.drawable.ic_wear_full_retry,
@@ -1739,7 +1738,7 @@ public class NotificationServiceImpl implements NotificationService {
 		//make sure that pending intent is also cancelled to allow to check for active conversation notifications pre SDK 23
 		Intent intent = new Intent(context, ComposeMessageActivity.class);
 		if (id == ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID){
-			PendingIntent pendingConversationIntent = PendingIntent.getActivity(context, ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pendingConversationIntent = PendingIntent.getActivity(context, ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID, intent, this.pendingIntentFlags);
 			if (pendingConversationIntent != null){
 				pendingConversationIntent.cancel();
 			}

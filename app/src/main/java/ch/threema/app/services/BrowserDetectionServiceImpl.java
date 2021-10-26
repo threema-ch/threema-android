@@ -26,7 +26,9 @@ final public class BrowserDetectionServiceImpl implements BrowserDetectionServic
 	public Browser detectBrowser(String userAgent) {
 		if (userAgent != null && userAgent.length() > 0) {
 			final String desc = userAgent.toLowerCase().trim();
-			if (desc.contains("mozilla") && desc.contains("applewebkit")
+			if (desc.contains("threemadesktop")) {
+				return Browser.WEBTOP;
+			} else if (desc.contains("mozilla") && desc.contains("applewebkit")
 					&& desc.contains("chrome") && desc.contains("safari")
 					&& desc.contains("opr")) {
 				return Browser.OPERA;

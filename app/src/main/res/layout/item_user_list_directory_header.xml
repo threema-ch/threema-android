@@ -23,6 +23,8 @@
 			android:layout_height="@dimen/avatar_size_small"
 			android:clickable="false"
 			app:srcCompat="@drawable/ic_business"
+			app:tint="?attr/textColorSecondary"
+			android:importantForAccessibility="no"
 			android:visibility="visible"
 			android:focusable="false"/>
 
@@ -45,8 +47,7 @@
 			android:ellipsize="marquee"
 			android:singleLine="true"
 			android:text="Company"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textColor="?android:textColorPrimary"/>
+			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine.Bold" />
 
 		<TextView
 			android:id="@+id/subject"
@@ -58,7 +59,7 @@
 			android:fontFamily="sans-serif-light"
 			android:singleLine="true"
 			android:text="@string/directory_search"
-			android:textAppearance="?android:attr/textAppearanceSmall"/>
+			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
 
 	</RelativeLayout>
 
@@ -71,9 +72,9 @@
 		android:layout_alignParentRight="true"
 		android:layout_marginLeft="16dp"
 		app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp"
-		android:tint="?attr/textColorSecondary"
 		android:layout_centerVertical="true"
-		android:visibility="visible"/>
+		android:visibility="visible"
+		app:tint="?attr/textColorSecondary" />
 
 </RelativeLayout>
 

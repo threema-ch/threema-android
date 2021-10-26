@@ -853,7 +853,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="no_matching_work_contacts">Nenhum contato do Threema Work verificado por adm. encontrado</string>
     <string name="all">Tudo</string>
     <string name="webclient_session_stop_all">Fechar tudo</string>
-    <string name="webclient_running_sessions">%d sessão(s) do Threema Web em operação</string>
+    <string name="webclient_running_sessions">%d sessão(s) em operação</string>
     <string name="passphrase_service_name">Serviço de frase secreta</string>
     <string name="passphrase_service_description">Notificar quando a frase secreta for desbloqueada</string>
     <string name="webclient_service_description">Notificar quando a sessão do Threema Web estiver ativa</string>

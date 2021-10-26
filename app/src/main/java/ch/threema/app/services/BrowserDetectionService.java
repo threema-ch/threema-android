@@ -31,6 +31,7 @@ public interface BrowserDetectionService {
 		OPERA,
 		EDGE,
 		SAFARI,
+		WEBTOP,
 		UNKNOWN,
 	}
 	Browser detectBrowser(String userAgent);

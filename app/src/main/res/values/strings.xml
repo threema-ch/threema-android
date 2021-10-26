@@ -531,7 +531,7 @@
 	<string name="remove">Remove</string>
 	<string name="image_already_added">This image has already been added.</string>
 	<string name="password_too_short" tools:ignore="PluralsCandidate">%d characters min.</string>
-	<string name="mark_read">Mark read</string>
+	<string name="mark_read">Mark as read</string>
 	<string name="attach_document">File</string>
 	<string name="parent_directory">Parent</string>
 	<string name="file_placeholder">File</string>
@@ -898,10 +898,10 @@
 	<string name="no_matching_work_contacts">No admin-verified Threema Work contacts found</string>
 	<string name="all">All</string>
 	<string name="webclient_session_stop_all">Close all</string>
-	<string name="webclient_running_sessions">%d Threema Web session(s) running</string>
+	<string name="webclient_running_sessions">%d session(s) running</string>
 	<string name="passphrase_service_name">Passphrase Service</string>
 	<string name="passphrase_service_description">Notification when passphrase is unlocked</string>
-	<string name="webclient_service_description">Notification when a Threema Web session is active</string>
+	<string name="webclient_service_description">Notification when Web/Desktop session is active</string>
 	<string name="prefs_title_accept_privacy_policy">Accept Privacy Policy</string>
 	<string name="privacy_policy_explain">%1$s protects your privacy more rigorously than any other messenger. Find out more in our %2$s.</string>
 	<string name="privacy_policy_check_confirm">To use %s, please accept the Privacy Policy.\n\n(Requirement as per EU regulation 2016/679)</string>
@@ -1222,7 +1222,7 @@
 	<string name="status_create_notes_off">*You’re no longer alone in this chat*\nNew messages will be sent to all group members.</string>
 	<string name="note_group_howto">Hint: If you don’t add any group members, messages to this group will stay local. That’s ideal for securely storing notes, media or documents or transferring them to the desktop.</string>
 	<string name="mark_unread">Mark as unread</string>
-	<string name="mark_read_short">Read</string>
+	<string name="mark_read_short">Mark read</string>
 	<string name="unread">Unread</string>
 	<string name="missing_app_licence">The app store was unable to validate your purchase. If you use Google Play, please clear the data of the Google Play Store App and reboot your device.</string>
 	<string name="set_backup_path">Set backup path</string>

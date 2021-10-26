@@ -868,7 +868,7 @@ messaggi ogni 15 minuti.</string>
     <string name="no_matching_work_contacts">Non è stato trovato nessun contatto Threema Work verificato dall\'amministrazione</string>
     <string name="all">Tutto</string>
     <string name="webclient_session_stop_all">Chiudi tutto</string>
-    <string name="webclient_running_sessions">%d sessione/i Threema Web attiva/e</string>
+    <string name="webclient_running_sessions">%d sessione/i attiva/e</string>
     <string name="passphrase_service_name">Servizio passphrase</string>
     <string name="passphrase_service_description">Notifica in caso di sblocco di passphrase</string>
     <string name="webclient_service_description">Notifica quando è attiva una sessione Threema Web</string>

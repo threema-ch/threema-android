@@ -843,7 +843,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="no_matching_work_contacts">Chattà nagins contacts da Threema Work controllads da l\'administratur</string>
     <string name="all">Tuts</string>
     <string name="webclient_session_stop_all">Terminar tuts</string>
-    <string name="webclient_running_sessions">%d sesida(s) da Threema Web activa(s)</string>
+    <string name="webclient_running_sessions">%d sesida(s) activa(s)</string>
     <string name="passphrase_service_name">Servetsch da la frasa secreta</string>
     <string name="passphrase_service_description">Avisar, en cas che la frasa secreta vegn debloccada</string>
     <string name="webclient_service_description">Avisar, sch\'ina sesida da Threema Web è activa</string>
