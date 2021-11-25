@@ -34,8 +34,8 @@
     <string name="prefs_header_chat">トーク</string>
     <string name="prefs_header_reset">リセット</string>
     <string name="prefs_header_keyboard">キーボード</string>
-    <string name="prefs_sum_sync_contacts_on">Threemaと端末の連絡先は同期されます</string>
-    <string name="prefs_sum_sync_contacts_off">Threemaと端末の連絡先は同期されません</string>
+    <string name="prefs_sum_sync_contacts_on">%sと端末の連絡先は同期されます</string>
+    <string name="prefs_sum_sync_contacts_off">%sと端末の連絡先は同期されません</string>
     <string name="prefs_title_sync_contacts">連絡先の同期</string>
     <string name="prefs_sum_block_unknown_off">誰でもメッセージを送ることができます。
 新しいユーザーからメッセージが届くと、自動的に連絡先に追加されます。</string>
@@ -121,7 +121,7 @@
     <string name="linked_mobile">電話番号</string>
     <string name="public_nickname">ユーザー名</string>
     <string name="share_via">共有...</string>
-    <string name="share_subject">Threemaの会話</string>
+    <string name="share_subject">%sの会話</string>
     <string name="message_delete_undo">やめる</string>
     <string name="message_deleted">削除されたメッセージ</string>
     <string name="mobile_already_linked">あなたのThreema IDは既にこの電話番号に紐付けされています</string>
@@ -270,7 +270,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="restore_data_password_msg">このバックアップを作成する際に使用したパスワードを入力してください</string>
     <string name="backup_data_media">大きい容量のメディアを含む (動画・書類・未圧縮の写真)</string>
     <string name="backup_data_new">データのバックアップを作成</string>
-    <string name="pinentry_enter_pin">続けるにはあなたのThreema PINを入力してください</string>
+    <string name="pinentry_enter_pin">続けるにはあなたの%s PINを入力してください</string>
     <string name="pinentry_wrong_pin">PINが正しくありません</string>
     <string name="prefs_sum_security_pin">ThreemaのUIへのアクセスをロックします</string>
     <string name="prefs_title_pin_switch">アプリのロック</string>
@@ -374,7 +374,6 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="touch_to_link">(なし)</string>
     <string name="prefs_validate_contacts">連絡先のリンクを検証</string>
     <string name="prefs_validate_contacts_loading">連絡先のリンクを検証</string>
-    <string name="prefs_sum_validate_contacts">Androidのアドレス帳でThreemaのコンタクトリンクをすべて検証する</string>
     <string name="prefs_title_fullscreen_ime">フルスクリーンキーボード</string>
     <string name="prefs_sum_fullscreen_ime_on">端末を横向きにすると、キーボードがアプリケーションを覆います</string>
     <string name="prefs_sum_fullscreen_ime_off">余裕があればキーボードの上にトークのプレビューを表示する</string>
@@ -969,12 +968,14 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="unknown">不明</string>
     <string name="miui_notification_title">MIUI 10の通知に関する重要なお知らせ</string>
     <string name="miui_notification_body">MIUI 10では、新しく作成されたすべての通知チャンネルに対して、サウンドとライトがデフォルトで無効になっています（Xiaomiが«重要»と判断した一部のアプリを除く）。スマホのアプリ別通知設定画面で、チャンネルごとに明示的に有効にする必要があります。詳しくは、お使いの携帯電話のメーカーにお問い合わせください。</string>
+    <string name="miui12_notification_body">MIUIは、デフォルトですべてのアプリの通知音、通知ライト、フローティング通知を無効にします（Xiaomiが\"重要\"と判断した一部の超人気アプリを除く）。そのため、端末のアプリ別通知設定画面でこれらの設定を手動で有効にし、アプリのアップデートごとにこの手順を行う必要があります。詳細については、Xiaomiにお問い合わせください。</string>
     <string name="dont_show_again">二度と表示させない</string>
     <string name="miui_notification_prefs">MIUI設定</string>
     <string name="threema_safe_upload_successful">Threema Safeのバックアップがアップロードされました</string>
     <string name="time_remaining">残り %s</string>
     <string name="safe_configure_server_credentials_title">認証 (省略可)</string>
     <string name="username_hint">ユーザー名</string>
+    <string name="server_hint">サーバー</string>
     <string name="lock_option_biometric">生体認証</string>
     <string name="biometric_enter_authentication">ロックを解除するために認証してください</string>
     <string name="biometric_authentication_failed">認証に失敗しました</string>
@@ -1023,8 +1024,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="delete">削除</string>
     <string name="num_archived_chats">%d 件のアーカイブされたトーク</string>
     <string name="continue_recording">録音を続ける</string>
-    <string name="whatsnew_title">%s 4.5にようこそ</string>
-    <string name="whatsnew_headline">%1$s 4.5ではメディアに関する新しい変更が加わっています。\n\nメディアドロワーのインターフェイスは刷新され、AIを利用した画像検索もオプションで利用可能です。\n\nまた、すべてのトークから行えるグローバル検索、メッセージ引用の改善など、他にも様々な変更が追加されています。</string>
     <string name="tooltip_identity_popup">ここをタップすると、自分のThreema IDを素早く表示したり、他の人のIDをスキャンすることができます。</string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
@@ -1184,10 +1183,19 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="missing_app_licence">有効なアプリのライセンスが見つからないため、新しい身元作成リクエストが出来ませんでした。</string>
     <string name="set_backup_path">バックアップのパスを設定</string>
     <string name="set_backup_path_intro">バックアップの保存場所を選んでください</string>
+    <string name="group_join_request">グループ参加要求</string>
+    <string name="group_join_request_for">%sに対するグループ参加要求</string>
+    <string name="group_request_incoming_dialog_title">%sからの要求</string>
+    <string name="group_link_none">リンクがまだ生成されていません</string>
+    <string name="group_qr_code_title">グループQRコード</string>
     <string name="tap_here_for_more">詳しい情報はこちら</string>
     <string name="app_store_error_code">App storeエラーコード: %d</string>
     <string name="download_failed">ダウンロードに失敗しました。エラーコード: %d</string>
     <string name="edit_answer">回答を編集</string>
     <string name="share_media">他のアプリで共有</string>
     <string name="forward_captions">キャプションを含む</string>
+    <string name="importing_files_failed">バックアップファイルの読み込みが出来ません。ストレージに十分な空き容量があるか確認してください。</string>
+    <string name="label_continue">続ける</string>
+    <string name="select_date">日付を選択</string>
+    <string name="select_time">時間を選択</string>
 </resources>

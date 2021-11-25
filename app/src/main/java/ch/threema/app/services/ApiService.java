@@ -21,10 +21,17 @@
 
 package ch.threema.app.services;
 
-import ch.threema.client.BlobLoader;
-import ch.threema.client.BlobUploader;
+import java.io.IOException;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import ch.threema.base.ThreemaException;
+import ch.threema.domain.protocol.blob.BlobLoader;
+import ch.threema.domain.protocol.blob.BlobUploader;
 
 public interface ApiService {
-	BlobUploader createUploader(byte[] data);
+	BlobUploader createUploader(byte[] data) throws ThreemaException;
 	BlobLoader createLoader(byte[] blobId);
+	String getAuthToken() throws ThreemaException;
+	HttpsURLConnection createAvatarURLConnection(String identity) throws ThreemaException, IOException;
 }

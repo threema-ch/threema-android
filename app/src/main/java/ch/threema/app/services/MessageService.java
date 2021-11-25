@@ -38,11 +38,11 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.AbstractGroupMessage;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.MessageId;
-import ch.threema.client.MessageTooLongException;
-import ch.threema.client.ProgressListener;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
+import ch.threema.base.ProgressListener;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -120,7 +120,7 @@ public interface MessageService {
 	                                         boolean isOutbox,
 	                                         boolean isRead);
 	AbstractMessageModel sendText(String message, MessageReceiver receiver) throws Exception;
-	AbstractMessageModel sendLocation(Location location, String poiName, MessageReceiver receiver, CompletionHandler completionHandler) throws ThreemaException, IOException;
+	AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, CompletionHandler completionHandler) throws ThreemaException, IOException;
 
 	String getCorrelationId();
 

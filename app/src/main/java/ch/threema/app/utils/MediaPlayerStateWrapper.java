@@ -268,7 +268,6 @@ public class MediaPlayerStateWrapper {
 		}
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public void setAudioAttributes(AudioAttributes attributes) {
 		// Idle, Initialized, Stopped, Prepared, Started, Paused, PlaybackCompleted
 		if (EnumSet.of(State.IDLE, State.INITIALIZED, State.STOPPED, State.PREPARED, State.STARTED, State.PAUSED, State.PLAYBACK_COMPLETE).contains(

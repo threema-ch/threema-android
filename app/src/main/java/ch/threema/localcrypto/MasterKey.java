@@ -3,7 +3,7 @@
  *   | | | ' \| '_/ -_) -_) '  \/ _` |_
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
- * Threema Java Client
+ * Threema for Android
  * Copyright (c) 2013-2020 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,8 @@
 
 package ch.threema.localcrypto;
 
+import com.lambdaworks.crypto.SCrypt;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +34,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
@@ -48,6 +51,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.AtomicFile;
 
 /**
  * This class wraps the master key used to encrypt locally stored application data.
@@ -59,11 +64,18 @@ import androidx.annotation.NonNull;
  * The master key is saved in a file and can be optionally protected with a passphrase.
  *
  * Key file format:
- *
- *      protected flag (1 byte, 1 = protected with passphrase, 0 = unprotected)
- *      key (32 bytes)
- *      salt (8 bytes)
- *      verification (4 bytes = start of SHA1 hash of master key)
+ * <ul>
+ *     <li>protection type (1 byte)
+ *     		<ul>
+ *     			<li>0 = unprotected</li>
+ *          	<li>1 = protected with PBKDF2 passphrase</li>
+ *          	<li>2 = protected with Scrypt passphrase</li>
+ *     		</ul>
+ *     </li>
+ *     <li>key (32 bytes)</li>
+ *     <li>salt (8 bytes)</li>
+ *     <li>verification (4 bytes = start of SHA1 hash of master key)</li>
+ * </ul>
  */
 public class MasterKey {
 	private static final Logger logger = LoggerFactory.getLogger(MasterKey.class);
@@ -73,17 +85,40 @@ public class MasterKey {
 	private static final int SALT_LENGTH = 8;
 	private static final int VERIFICATION_LENGTH = 4;
 	private static final int IV_LENGTH = 16;
-	private static final int ITERATION_COUNT = 10000;
 
-	/* static key used for obfuscating the stored master key */
-	private static final byte[] OBFUSCATION_KEY = new byte[]{(byte) 0x95, (byte) 0x0d, (byte) 0x26, (byte) 0x7a, (byte) 0x88, (byte) 0xea, (byte) 0x77, (byte) 0x10, (byte) 0x9c, (byte) 0x50, (byte) 0xe7, (byte) 0x3f, (byte) 0x47, (byte) 0xe0, (byte) 0x69, (byte) 0x72, (byte) 0xda, (byte) 0xc4, (byte) 0x39, (byte) 0x7c, (byte) 0x99, (byte) 0xea, (byte) 0x7e, (byte) 0x67, (byte) 0xaf, (byte) 0xfd, (byte) 0xdd, (byte) 0x32, (byte) 0xda, (byte) 0x35, (byte) 0xf7, (byte) 0x0c};
+	private static final int PBKDF2_ITERATION_COUNT = 10000;
+
+	// Scrypt parameters as recommended by OWASP:
+	// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt
+	//
+	// These values correspond to a minimum memory requirement
+	// of 64 MiB (128 * 65536 * 8 * 1 bytes).
+	//
+	// Note: Values must be chosen so that the scrypt operation can still be
+	// calculated on an old phone (with little RAM) within a few seconds.
+	// For example, a Nexus S (512 MiB RAM) takes around 4 seconds.
+	private static final int SCRYPT_N = 65536;
+	private static final int SCRYPT_R = 8;
+	private static final int SCRYPT_P = 1;
+
+	// Static key used for obfuscating the stored master key.
+	//
+	// Introduced in really old app versions (long before APIs like the Android keystore system
+	// existed) back when the app was closed source and retained for compatibility; of course pretty
+	// pointless in an open source app, but does no harm either)
+	private static final byte[] DEPRECATED_OBFUSCATION_KEY = new byte[] {
+		(byte) 0x95, (byte) 0x0d, (byte) 0x26, (byte) 0x7a, (byte) 0x88, (byte) 0xea, (byte) 0x77, (byte) 0x10,
+		(byte) 0x9c, (byte) 0x50, (byte) 0xe7, (byte) 0x3f, (byte) 0x47, (byte) 0xe0, (byte) 0x69, (byte) 0x72,
+		(byte) 0xda, (byte) 0xc4, (byte) 0x39, (byte) 0x7c, (byte) 0x99, (byte) 0xea, (byte) 0x7e, (byte) 0x67,
+		(byte) 0xaf, (byte) 0xfd, (byte) 0xdd, (byte) 0x32, (byte) 0xda, (byte) 0x35, (byte) 0xf7, (byte) 0x0c,
+	};
 
 	private final File keyFile;
 
 	private byte[] masterKey;
 	private boolean locked;
 
-	private boolean protectedFlag;
+	private ProtectionType protectionType;
 	private byte[] protectedKey;
 	private byte[] salt;
 	private byte[] verification;
@@ -113,17 +148,19 @@ public class MasterKey {
 		if (keyFile.exists()) {
 			readFile();
 
-			if (locked && newPassphrase != null)
+			if (locked && newPassphrase != null) {
 				unlock(newPassphrase);
+			}
 		} else {
-		    /* no key file - generate new key */
+			/* no key file - generate new key */
 			generateKey();
 
 			try {
-				if (newPassphrase != null || !deferWrite)
+				if (newPassphrase != null || !deferWrite) {
 					setPassphrase(newPassphrase);
+				}
 			} catch (MasterKeyLockedException e) {
-                /* will never happen */
+				/* will never happen */
 			}
 		}
 	}
@@ -144,13 +181,14 @@ public class MasterKey {
 	 * @return true on success, false if no passphrase is set
 	 */
 	public boolean lock() {
-		if (this.protectedFlag) {
+		if (isProtected()) {
 			locked = true;
 
 			/* zeroize master key */
 			if (masterKey != null) {
-				for (int i = 0; i < masterKey.length; i++)
+				for (int i = 0; i < masterKey.length; i++) {
 					masterKey[i] = 0;
+				}
 				masterKey = null;
 			}
 
@@ -166,27 +204,36 @@ public class MasterKey {
 	 * @return true on success, false if the passphrase is wrong or an error occured
 	 */
 	public boolean unlock(char[] passphrase) {
-		if (!locked)
+		if (!locked) {
 			return true;
+		}
 
-        /* derive encryption key from passphrase */
+		/* derive encryption key from passphrase */
 		try {
-			byte[] passphraseKey = derivePassphraseKey(passphrase);
+			byte[] passphraseKey = derivePassphraseKey(passphrase, salt, protectionType);
 
-            /* decrypt master key with passphrase key */
+			/* decrypt master key with passphrase key */
 			masterKey = new byte[KEY_LENGTH];
 			for (int i = 0; i < KEY_LENGTH; i++) {
 				masterKey[i] = (byte) (protectedKey[i] ^ passphraseKey[i]);
 			}
 
-            /* verify key */
+			/* verify key */
 			byte[] myVerification = calcVerification(masterKey);
-			if (!Arrays.equals(myVerification, verification)) {
+			if (!MessageDigest.isEqual(myVerification, verification)) {
 				masterKey = null;
 				return false;
 			}
 
 			locked = false;
+
+			/* Upgrade to Scrypt if necessary */
+			if (protectionType == ProtectionType.PBKDF2) {
+				logger.info("Upgrading passphrase protection from PBKDF2 to Scrypt");
+				setPassphrase(passphrase);
+				logger.info("Upgraded passphrase protection from PBKDF2 to Scrypt");
+			}
+
 			return true;
 		} catch (Exception e) {
 			logger.error("Exception", e);
@@ -200,25 +247,26 @@ public class MasterKey {
 	 * If no passphrase is set, returns true.
 	 *
 	 * @param passphrase passphrase to be checked
-	 * @return true on success, false if the passphrase is wrong or an error occured
+	 * @return true on success, false if the passphrase is wrong or an error occurred
 	 */
 	public boolean checkPassphrase(char[] passphrase) {
-		if (!protectedFlag)
+		if (!isProtected()) {
 			return true;
+		}
 
 		try {
-			byte[] passphraseKey = derivePassphraseKey(passphrase);
+			byte[] passphraseKey = derivePassphraseKey(passphrase, salt, protectionType);
 
-            /* decrypt master key with passphrase key */
+			/* decrypt master key with passphrase key */
 			byte[] myMasterKey = new byte[KEY_LENGTH];
 			for (int i = 0; i < KEY_LENGTH; i++) {
 				myMasterKey[i] = (byte) (protectedKey[i] ^ passphraseKey[i]);
 			}
 
-            /* verify key */
+			/* verify key */
 			byte[] myVerification = calcVerification(myMasterKey);
 
-			return Arrays.equals(myVerification, verification);
+			return MessageDigest.isEqual(myVerification, verification);
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			return false;
@@ -230,46 +278,40 @@ public class MasterKey {
 	 *
 	 * @param passphrase the new passphrase (null to remove the passphrase)
 	 */
-	public void setPassphrase(char[] passphrase) throws MasterKeyLockedException, IOException {
-		if (locked)
+	public void setPassphrase(@Nullable char[] passphrase) throws MasterKeyLockedException, IOException {
+		if (locked) {
 			throw new MasterKeyLockedException("Master key is locked");
+		}
 
 		if (passphrase == null) {
-			if (!protectedFlag && !newKeyNotWrittenYet)
+			if (!isProtected() && !newKeyNotWrittenYet) {
 				return;
+			}
 
-            /* want to remove passphrase */
-			protectedFlag = false;
+			/* remove passphrase */
+			protectionType = ProtectionType.UNPROTECTED;
 			protectedKey = masterKey;
 
-            /* generate some random salt even if we don't protect this key, for additional confusion */
+			/* salt is unused/zero in this case */
+			salt = new byte[SALT_LENGTH];
+		} else {
+			/* encrypt current master key and save file again */
+
+			/* derive encryption key from passphrase */
 			salt = new byte[SALT_LENGTH];
 			random.nextBytes(salt);
 
-			writeFile();
-		} else {
-            /* encrypt current master key and save file again */
-			try {
-                /* derive encryption key from passphrase */
-				salt = new byte[SALT_LENGTH];
-				random.nextBytes(salt);
+			byte[] passphraseKey = derivePassphraseKey(passphrase, salt, ProtectionType.SCRYPT);
 
-				byte[] passphraseKey = derivePassphraseKey(passphrase);
-
-                /* since master key and passphrase key are the same length, we can simply use XOR */
-				protectedKey = new byte[KEY_LENGTH];
-				for (int i = 0; i < KEY_LENGTH; i++) {
-					protectedKey[i] = (byte) (masterKey[i] ^ passphraseKey[i]);
-				}
-
-				protectedFlag = true;
-
-				writeFile();
-			} catch (Exception e) {
-                /* should never happen */
-				throw new RuntimeException(e);
+			/* since master key and passphrase key are the same length, we can simply use XOR */
+			protectedKey = new byte[KEY_LENGTH];
+			for (int i = 0; i < KEY_LENGTH; i++) {
+				protectedKey[i] = (byte) (masterKey[i] ^ passphraseKey[i]);
 			}
+
+			protectionType = ProtectionType.SCRYPT;
 		}
+		writeFile();
 	}
 
 	/**
@@ -280,8 +322,9 @@ public class MasterKey {
 	 * @throws MasterKeyLockedException if the master key is locked
 	 */
 	public byte[] getKey() throws MasterKeyLockedException {
-		if (locked)
+		if (locked) {
 			throw new MasterKeyLockedException("Master key is locked");
+		}
 
 		return masterKey;
 	}
@@ -343,8 +386,9 @@ public class MasterKey {
 	public CipherOutputStream getCipherOutputStream(OutputStream outputStream) throws MasterKeyLockedException, IOException {
 		CipherOutputStream cipherOutputStream = null;
 		try {
-			if (locked)
+			if (locked) {
 				throw new MasterKeyLockedException("Master key is locked");
+			}
 
 			/* generate random IV and write to output stream */
 			byte[] iv = new byte[IV_LENGTH];
@@ -365,8 +409,9 @@ public class MasterKey {
 	}
 
 	public Cipher getDecryptCipher(byte[] iv) throws MasterKeyLockedException {
-		if (locked)
+		if (locked) {
 			throw new MasterKeyLockedException("Master key is locked");
+		}
 
 		try {
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -380,8 +425,9 @@ public class MasterKey {
 	}
 
 	public Cipher getEncryptCipher(byte[] iv) throws MasterKeyLockedException {
-		if (locked)
+		if (locked) {
 			throw new MasterKeyLockedException("Master key is locked");
+		}
 
 		try {
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -395,28 +441,32 @@ public class MasterKey {
 	}
 
 	public boolean isProtected() {
-		return this.protectedFlag;
+		return this.protectionType != ProtectionType.UNPROTECTED;
 	}
 
 	private void generateKey() {
-        /* generate a new random key */
+		/* generate a new random key */
 		masterKey = new byte[KEY_LENGTH];
 		random.nextBytes(masterKey);
 		verification = calcVerification(masterKey);
+		protectionType = ProtectionType.UNPROTECTED;
 		locked = false;
 		newKeyNotWrittenYet = true;
 	}
 
 	private void readFile() throws IOException {
-		try (DataInputStream dis = new DataInputStream(new FileInputStream(keyFile))) {
-			protectedFlag = dis.readBoolean();
+		AtomicFile atomicKeyFile = new AtomicFile(keyFile);
+
+		try (DataInputStream dis = new DataInputStream(atomicKeyFile.openRead())) {
+			protectionType = ProtectionType.forCode(dis.readUnsignedByte());
 
 			protectedKey = new byte[KEY_LENGTH];
 			dis.readFully(protectedKey);
 
 			/* deobfuscation */
-			for (int i = 0; i < KEY_LENGTH; i++)
-				protectedKey[i] ^= OBFUSCATION_KEY[i];
+			for (int i = 0; i < KEY_LENGTH; i++) {
+				protectedKey[i] ^= DEPRECATED_OBFUSCATION_KEY[i];
+			}
 
 			salt = new byte[SALT_LENGTH];
 			dis.readFully(salt);
@@ -424,7 +474,7 @@ public class MasterKey {
 			verification = new byte[VERIFICATION_LENGTH];
 			dis.readFully(verification);
 
-			if (protectedFlag) {
+			if (isProtected()) {
 				locked = true;
 				masterKey = null;
 			} else {
@@ -440,30 +490,46 @@ public class MasterKey {
 	}
 
 	private void writeFile() throws IOException {
-		try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(keyFile))) {
+		AtomicFile atomicKeyFile = new AtomicFile(keyFile);
+		FileOutputStream fos = atomicKeyFile.startWrite();
 
-			dos.writeBoolean(protectedFlag);
+		try {
+			// Note: stream *must not* be closed explicitly (see AtomicFile documentation)
+			DataOutputStream dos = new DataOutputStream(fos);
+			dos.writeByte(protectionType.getCode());
 
 			byte[] protectedKeyObfusc = new byte[KEY_LENGTH];
-			for (int i = 0; i < KEY_LENGTH; i++)
-				protectedKeyObfusc[i] = (byte) (protectedKey[i] ^ OBFUSCATION_KEY[i]);
+			for (int i = 0; i < KEY_LENGTH; i++) {
+				protectedKeyObfusc[i] = (byte) (protectedKey[i] ^ DEPRECATED_OBFUSCATION_KEY[i]);
+			}
 			dos.write(protectedKeyObfusc);
 
 			dos.write(salt);
 			dos.write(verification);
+			dos.flush();
+		} catch (IOException e) {
+			atomicKeyFile.failWrite(fos);
+			throw e;
 		}
+
+		atomicKeyFile.finishWrite(fos);
 
 		newKeyNotWrittenYet = false;
 	}
 
-	private byte[] derivePassphraseKey(char[] passphrase) {
+	private static byte[] derivePassphraseKey(char[] passphrase, byte[] salt, ProtectionType protectionType) {
 		try {
-			KeySpec keySpec = new PBEKeySpec(passphrase, salt, ITERATION_COUNT, KEY_LENGTH * 8);
-			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-			return factory.generateSecret(keySpec).getEncoded();
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		} catch (InvalidKeySpecException e) {
+			switch (protectionType) {
+				case PBKDF2:
+					KeySpec keySpec = new PBEKeySpec(passphrase, salt, PBKDF2_ITERATION_COUNT, KEY_LENGTH * 8);
+					SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+					return factory.generateSecret(keySpec).getEncoded();
+				case SCRYPT:
+					return SCrypt.scrypt(new String(passphrase).getBytes(StandardCharsets.UTF_8), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_LENGTH);
+				default:
+					throw new RuntimeException("Unsupported protection type " + protectionType);
+			}
+		} catch (GeneralSecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -481,5 +547,30 @@ public class MasterKey {
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private enum ProtectionType {
+		UNPROTECTED(0), PBKDF2(1), SCRYPT(2);
+
+		private final int code;
+
+		ProtectionType(int code) {
+			this.code = code;
+		}
+
+		static ProtectionType forCode(int code) {
+			switch (code) {
+				case 0:
+					return UNPROTECTED;
+				case 1:
+					return PBKDF2;
+				case 2:
+					return SCRYPT;
+				default:
+					throw new IllegalArgumentException("Bad protection type " + code);
+			}
+		}
+
+		int getCode() { return code; }
 	}
 }

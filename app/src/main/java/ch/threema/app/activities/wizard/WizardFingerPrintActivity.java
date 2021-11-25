@@ -92,6 +92,8 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 						}
 					}
 				}, PROGRESS_MAX);
+
+		findViewById(R.id.cancel).setOnClickListener(v -> finish());
 	}
 
 	@SuppressLint("StaticFieldLeak")

@@ -1,8 +1,17 @@
 plugins {
-    id "org.sonarqube" version "3.0"
+    id 'org.sonarqube'
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+// rules to allow test running with a real android jar implementation of URI, Uri.Builder for group link encoding
+apply plugin: 'de.mobilej.unmock'
+unMock {
+    keepStartingWith "android.net.Uri"
+    keep "android.net.Uri"
+    keepAndRename "java.nio.charset.Charsets" to "xjava.nio.charset.Charsets"
+    keepStartingWith "libcore."
+}
 
 // only apply the plugin if we are dealing with a AppGallery build
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")) {
@@ -11,7 +20,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.59"
+def app_version = "4.6"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -71,33 +80,37 @@ def keystores = [
     debug: findKeystore("debug"),
     release: findKeystore("threema"),
     hms_release: findKeystore("threema_hms"),
+    onprem_release: findKeystore("onprem"),
+    red_release: findKeystore("red"),
 ]
 
 android {
-    // NOTE: When adjusting compileSdkVersion or buildToolsVersion,
-    //       make sure to adjust them in `scripts/Dockerfile` as well!
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    // NOTE: When adjusting compileSdkVersion, buildToolsVersion or ndkVersion,
+    //       make sure to adjust them in `scripts/Dockerfile` and
+    //       `.gitlab-ci.yml` as well!
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
+    ndkVersion '21.1.6352462'
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         //noinspection OldTargetApi
-        targetSdkVersion 29
+        targetSdkVersion 30
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 699
+        versionCode 705
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter
         resValue "string", "package_name", applicationId
         resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.profile"
         resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.call"
-        resValue "integer", "max_group_size", "256"
-        resValue "string", "shop_download_filename", "Threema-update.apk"
+        buildConfigField "int", "MAX_GROUP_SIZE", "256"
         buildConfigField "String", "CHAT_SERVER_PREFIX", "\"g-\""
-        buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.\""
+        buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.g-\""
         buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.threema.ch\""
+        buildConfigField "int[]", "CHAT_SERVER_PORTS", "{5222, 443}"
         buildConfigField "String", "MEDIA_PATH", "\"Threema\""
         buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
         buildConfigField "boolean", "DISABLE_CERT_PINNING", "false"
@@ -105,18 +118,35 @@ android {
         buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x45, (byte) 0x0b, (byte) 0x97, (byte) 0x57, (byte) 0x35, (byte) 0x27, (byte) 0x9f, (byte) 0xde, (byte) 0xcb, (byte) 0x33, (byte) 0x13, (byte) 0x64, (byte) 0x8f, (byte) 0x5f, (byte) 0xc6, (byte) 0xee, (byte) 0x9f, (byte) 0xf4, (byte) 0x36, (byte) 0x0e, (byte) 0xa9, (byte) 0x2a, (byte) 0x8c, (byte) 0x17, (byte) 0x51, (byte) 0xc6, (byte) 0x61, (byte) 0xe4, (byte) 0xc0, (byte) 0xd8, (byte) 0xc9, (byte) 0x09 }"
         buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0xda, (byte) 0x7c, (byte) 0x73, (byte) 0x79, (byte) 0x8f, (byte) 0x97, (byte) 0xd5, (byte) 0x87, (byte) 0xc3, (byte) 0xa2, (byte) 0x5e, (byte) 0xbe, (byte) 0x0a, (byte) 0x91, (byte) 0x41, (byte) 0x7f, (byte) 0x76, (byte) 0xdb, (byte) 0xcc, (byte) 0xcd, (byte) 0xda, (byte) 0x29, (byte) 0x30, (byte) 0xe6, (byte) 0xa9, (byte) 0x09, (byte) 0x0a, (byte) 0xf6, (byte) 0x2e, (byte) 0xba, (byte) 0x6f, (byte) 0x15 }"
         buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
+        buildConfigField "String", "DIRECTORY_SERVER_URL", "\"https://apip.threema.ch/\""
+        buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "\"https://ds-apip.threema.ch/\""
+        buildConfigField "String", "WORK_SERVER_URL", "null"
+        buildConfigField "String", "WORK_SERVER_IPV6_URL", "null"
+        buildConfigField "String", "BLOB_SERVER_DOWNLOAD_URL", "\"https://blobp-{blobIdPrefix}.threema.ch/{blobId}\""
+        buildConfigField "String", "BLOB_SERVER_DOWNLOAD_IPV6_URL", "\"https://ds-blobp-{blobIdPrefix}.threema.ch/{blobId}\""
+        buildConfigField "String", "BLOB_SERVER_DONE_URL", "\"https://blobp-{blobIdPrefix}.threema.ch/{blobId}/done\""
+        buildConfigField "String", "BLOB_SERVER_DONE_IPV6_URL", "\"https://ds-blobp-{blobIdPrefix}.threema.ch/{blobId}/done\""
+        buildConfigField "String", "BLOB_SERVER_UPLOAD_URL", "\"https://blobp-upload.threema.ch/upload\""
+        buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "\"https://ds-blobp-upload.threema.ch/upload\""
+        buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.threema.ch/\""
+        buildConfigField "String", "SAFE_SERVER_URL", "\"https://safe-%h.threema.ch/\""
+        buildConfigField "String", "ONPREM_ID_PREFIX", "\"O\""
+
+        buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "null"
         buildConfigField "boolean", "SEND_CONSUMED_DELIVERY_RECEIPTS", "false"
 
         // config fields for action URLs / deep links
         buildConfigField "String", "uriScheme", "\"threema\""
         buildConfigField "String", "actionUrl", "\"go.threema.ch\""
         buildConfigField "String", "contactActionUrl", "\"threema.id\""
+        buildConfigField "String", "groupLinkActionUrl", "\"threema.group\""
 
         // duplicated for manifest
         manifestPlaceholders = [
             uriScheme: "threema",
-            actionUrl: "go.threema.ch",
-            contactActionUrl: "threema.id"
+            contactActionUrl: "threema.id",
+            groupLinkActionUrl: "threema.group",
+            actionUrl: "go.threema.ch"
         ]
 
         ndk {
@@ -149,146 +179,170 @@ android {
 
     flavorDimensions "default"
     productFlavors {
-
-
         none { }
-        store_google {
-            resValue "string", "shop_download_filename", ""
+        store_google { }
+        store_threema {
+            resValue "string", "shop_download_filename", "Threema-update.apk"
         }
-        store_threema { }
         store_google_work {
             versionName "${app_version}k${beta_suffix}"
             applicationId "ch.threema.app.work"
             testApplicationId 'ch.threema.app.work.test'
-            resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Work"
+
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
-            resValue "integer", "max_group_size", "256"
-            resValue "string", "shop_download_filename", ""
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
-            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.\""
-            buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.threema.ch\""
+            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWork\""
-            buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
+            buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.threema.ch/\""
+            buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.threema.ch/\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
             buildConfigField "String", "actionUrl", "\"work.threema.ch\""
-            buildConfigField "String", "contactActionUrl", "\"threema.id\""
 
             manifestPlaceholders = [
                 uriScheme: "threemawork",
                 actionUrl: "work.threema.ch",
-                contactActionUrl: "threema.id"
             ]
         }
         sandbox {
             applicationId "ch.threema.app.sandbox"
             testApplicationId 'ch.threema.app.sandbox.test'
-
-            resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Sandbox"
 
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaSandbox\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
+            buildConfigField "String", "DIRECTORY_SERVER_URL", "\"https://apip.test.threema.ch/\""
+            buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "\"https://ds-apip.test.threema.ch/\""
+            buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.test.threema.ch/\""
         }
         sandbox_work {
             versionName "${app_version}k${beta_suffix}"
             applicationId "ch.threema.app.sandbox.work"
             testApplicationId 'ch.threema.app.sandbox.work.test'
-
-            resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Sandbox Work"
+
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
-            resValue "integer", "max_group_size", "256"
-            resValue "string", "shop_download_filename", ""
-
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
-            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.\""
-            buildConfigField "String", "MEDIA_PATH", "\"ThreemaWorkSandbox\""
-            buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
-
+            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
+            buildConfigField "String", "MEDIA_PATH", "\"ThreemaWorkSandbox\""
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
+
+            buildConfigField "String", "DIRECTORY_SERVER_URL", "\"https://apip.test.threema.ch/\""
+            buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "\"https://ds-apip.test.threema.ch/\""
+            buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.test.threema.ch/\""
+            buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.test.threema.ch/\""
+            buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.test.threema.ch/\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
             buildConfigField "String", "actionUrl", "\"work.threema.ch\""
-            buildConfigField "String", "contactActionUrl", "\"threema.id\""
 
             manifestPlaceholders = [
-                uriScheme: "threemawork",
-                actionUrl: "work.threema.ch",
-                contactActionUrl: "threema.id"
+                uriScheme       : "threemawork",
+                actionUrl       : "work.threema.ch",
             ]
         }
+        onprem {
+            versionName "${app_version}o${beta_suffix}"
+            applicationId "ch.threema.app.onprem"
+            testApplicationId 'ch.threema.app.onprem.test'
+            resValue "string", "app_name", "Threema OnPrem"
+
+            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.profile"
+            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call"
+            buildConfigField "int", "MAX_GROUP_SIZE", "256"
+            buildConfigField "String", "CHAT_SERVER_PREFIX", "\"\""
+            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"\""
+            buildConfigField "String", "CHAT_SERVER_SUFFIX", "null"
+            buildConfigField "String", "MEDIA_PATH", "\"ThreemaOnPrem\""
+            buildConfigField "boolean", "CHAT_SERVER_GROUPS", "false"
+
+            buildConfigField "byte[]", "SERVER_PUBKEY", "null"
+            buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "null"
+            buildConfigField "String", "DIRECTORY_SERVER_URL", "null"
+            buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_DOWNLOAD_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_DOWNLOAD_IPV6_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_DONE_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_DONE_IPV6_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_UPLOAD_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "null"
+            buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "new String[] {\"ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=\", \"Hrk8aCjwKkXySubI7CZ3y9Sx+oToEHjNkGw98WSRneU=\", \"5pEn1T/5bhecNWrp9NgUQweRfgVtu/I8gRb3VxGP7k4=\"}"
+
+            // config fields for action URLs / deep links
+            buildConfigField "String", "uriScheme", "\"threemaonprem\""
+            buildConfigField "String", "actionUrl", "\"onprem.threema.ch\""
+
+            manifestPlaceholders = [
+                uriScheme: "threemaonprem",
+                actionUrl: "onprem.threema.ch",
+            ]
+        }
+
         red { // Essentially like sandbox work, but with a different icon and accent color, used for internal testing
             versionName "${app_version}r${beta_suffix}"
             applicationId "ch.threema.app.red"
             testApplicationId 'ch.threema.app.red.test'
-
-            resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Red"
+
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.call"
-            resValue "integer", "max_group_size", "256"
-            resValue "string", "shop_download_filename", ""
 
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
-            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.\""
-            buildConfigField "String", "MEDIA_PATH", "\"ThreemaRed\""
-            buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
-
+            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
+            buildConfigField "String", "MEDIA_PATH", "\"ThreemaRed\""
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
+            buildConfigField "String", "DIRECTORY_SERVER_URL", "\"https://apip.test.threema.ch/\""
+            buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "\"https://ds-apip.test.threema.ch/\""
+            buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.test.threema.ch/\""
+            buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.test.threema.ch/\""
+            buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.test.threema.ch/\""
+
             buildConfigField "boolean", "SEND_CONSUMED_DELIVERY_RECEIPTS", "true"
 
             // config fields for action URLs / deep links
-            buildConfigField "String", "uriScheme", "\"threemawork\""
-            buildConfigField "String", "actionUrl", "\"work.threema.ch\""
-            buildConfigField "String", "contactActionUrl", "\"threema.id\""
+            buildConfigField "String", "uriScheme", "\"threemared\""
+            buildConfigField "String", "actionUrl", "\"red.threema.ch\""
 
             manifestPlaceholders = [
-                uriScheme: "threemawork",
-                actionUrl: "work.threema.ch",
-                contactActionUrl: "threema.id"
+                uriScheme: "threemared",
+                actionUrl: "red.threema.ch",
             ]
         }
         hms {
             applicationId "ch.threema.app.hms"
-            resValue "string", "package_name", applicationId
         }
         hms_work {
             versionName "${app_version}k${beta_suffix}"
             applicationId "ch.threema.app.work.hms"
             testApplicationId 'ch.threema.app.work.test.hms'
-            resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Work"
+
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
-            resValue "integer", "max_group_size", "256"
-            resValue "string", "shop_download_filename", ""
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
-            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.\""
-            buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.threema.ch\""
+            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWork\""
-            buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
+            buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.threema.ch/\""
+            buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.threema.ch/\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
             buildConfigField "String", "actionUrl", "\"work.threema.ch\""
-            buildConfigField "String", "contactActionUrl", "\"threema.id\""
 
             manifestPlaceholders = [
                 uriScheme: "threemawork",
                 actionUrl: "work.threema.ch",
-                contactActionUrl: "threema.id"
             ]
         }
     }
@@ -326,16 +380,39 @@ android {
         } else {
             logger.warn("No hms keystore found. Falling back to locally generated keystore.")
         }
+
+        // Onprem release config
+        if (keystores.onprem_release != null) {
+            onprem_release {
+                storeFile file(keystores.onprem_release.storeFile)
+                storePassword keystores.onprem_release.storePassword
+                keyAlias keystores.onprem_release.keyAlias
+                keyPassword keystores.onprem_release.keyPassword
+            }
+        } else {
+            logger.warn("No onprem keystore found. Falling back to locally generated keystore.")
+        }
+
+        // Red release config
+        if (keystores.red_release != null) {
+            red_release {
+                storeFile file(keystores.red_release.storeFile)
+                storePassword keystores.red_release.storePassword
+                keyAlias keystores.red_release.keyAlias
+                keyPassword keystores.red_release.keyPassword
+            }
+        } else {
+            logger.warn("No red keystore found. Falling back to locally generated keystore.")
+        }
     }
 
     sourceSets {
-        none {
-            java.srcDir 'src/google_services_based/java'
-            manifest.srcFile 'src/store_google/AndroidManifest.xml'
-        }
         main {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
+        }
+        none {
+            java.srcDir 'src/google_services_based/java'
         }
         store_google {
             java.srcDir 'src/google_services_based/java'
@@ -352,6 +429,9 @@ android {
         hms_work {
             java.srcDir 'src/hms_services_based/java'
             res.srcDir 'src/store_google_work/res'
+        }
+        onprem {
+            java.srcDir 'src/google_services_based/java'
         }
         sandbox {
             java.srcDir 'src/google_services_based/java'
@@ -374,6 +454,7 @@ android {
             jniDebuggable false
             multiDexEnabled true
             multiDexKeepProguard file('multidex-keep.pro')
+            testCoverageEnabled false
 
             if (keystores['debug'] != null) {
                 signingConfig signingConfigs.debug
@@ -393,7 +474,6 @@ android {
                 productFlavors.store_google.signingConfig signingConfigs.release
                 productFlavors.store_google_work.signingConfig signingConfigs.release
                 productFlavors.store_threema.signingConfig signingConfigs.release
-                productFlavors.red.signingConfig signingConfigs.release
                 productFlavors.sandbox.signingConfig signingConfigs.release
                 productFlavors.sandbox_work.signingConfig signingConfigs.release
                 productFlavors.none.signingConfig signingConfigs.release
@@ -403,8 +483,30 @@ android {
                 productFlavors.hms.signingConfig signingConfigs.hms_release
                 productFlavors.hms_work.signingConfig signingConfigs.hms_release
             }
+
+            if (keystores['onprem_release'] != null) {
+                productFlavors.onprem.signingConfig signingConfigs.onprem_release
+            }
+
+            if (keystores['red_release'] != null) {
+                productFlavors.red.signingConfig signingConfigs.red_release
+            }
         }
     }
+
+    // Only build relevant buildType / flavor combinations
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+
+        if (
+            variant.buildType.name == "release" && (
+                names.contains("sandbox") || names.contains("sandbox_work")
+            )
+        ) {
+            setIgnore(true)
+        }
+    }
+
 
     externalNativeBuild {
         ndkBuild {
@@ -465,6 +567,7 @@ android {
         exclude 'META-INF/license.txt'
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
+        exclude '**/*.proto'
         // fix https://stackoverflow.com/questions/42739916/aarch64-linux-android-strip-file-missing
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
@@ -512,6 +615,8 @@ dependencies {
         //resolutionStrategy.failOnVersionConflict()
     }
 
+    implementation project(':domain')
+
     implementation 'net.zetetic:android-database-sqlcipher:4.4.3'
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
@@ -521,7 +626,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.1'
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
-    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     implementation 'com.datatheorem.android.trustkit:trustkit:1.1.5'
@@ -535,11 +640,11 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation 'androidx.biometric:biometric:1.1.0'
-    implementation "androidx.work:work-runtime:2.5.0"
+    implementation "androidx.work:work-runtime:2.6.0"
     implementation 'androidx.fragment:fragment:1.3.6'
-    implementation 'androidx.activity:activity:1.2.4'
+    implementation 'androidx.activity:activity:1.3.1'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
     implementation "androidx.camera:camera-camera2:1.0.2"
@@ -548,6 +653,7 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-alpha25"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     implementation "androidx.lifecycle:lifecycle-livedata:2.3.1"
     implementation "androidx.lifecycle:lifecycle-runtime:2.3.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.1"
@@ -558,11 +664,10 @@ dependencies {
     implementation "androidx.paging:paging-runtime:3.0.1"
 
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.13.3'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.3'
-    implementation 'com.google.protobuf:protobuf-javalite:3.9.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.15.1'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.15.1'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on kitkat
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.26'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.37'
 
     // webclient dependencies
     implementation 'org.msgpack:msgpack-core:0.8.22!!'
@@ -572,14 +677,14 @@ dependencies {
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.2'
 
     // Google Assistant Voice Action verification library
-    implementation(name:'libgsaverification-client', ext:'aar')
+    implementation(name: 'libgsaverification-client', ext: 'aar')
 
     implementation('org.saltyrtc:saltyrtc-client:0.14.2') {
         exclude group: 'org.json'
     }
 
     implementation 'org.saltyrtc:chunked-dc:1.0.1'
-    implementation 'ch.threema:webrtc-android:91.0.1'
+    implementation 'ch.threema:webrtc-android:94.0.0'
     implementation('org.saltyrtc:saltyrtc-task-webrtc:0.18.1') {
         exclude module: 'saltyrtc-client'
     }
@@ -588,11 +693,18 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
+    // kotlin
+    implementation "androidx.core:core-ktx:1.3.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
+
+
     // use leak canary in debug builds
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
     // test dependencies
     testImplementation 'junit:junit:4.12'
+    testImplementation(testFixtures(project(":domain")))
 
     // use powermock instead of mockito. it support mocking static classes.
     def mockitoVersion = '2.0.7'
@@ -604,6 +716,9 @@ dependencies {
     // add JSON support to tests without mocking
     testImplementation 'org.json:json:20160212'
 
+    testImplementation 'com.tngtech.archunit:archunit-junit4:0.18.0'
+
+    androidTestImplementation(testFixtures(project(":domain")))
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
@@ -652,6 +767,7 @@ dependencies {
         store_googleImplementation(dependency) { excludes.each { exclude it } }
         store_google_workImplementation(dependency) { excludes.each { exclude it } }
         store_threemaImplementation(dependency) { excludes.each { exclude it } }
+        onpremImplementation(dependency) { excludes.each { exclude it } }
         sandboxImplementation(dependency) { excludes.each { exclude it } }
         sandbox_workImplementation(dependency) { excludes.each { exclude it } }
         redImplementation(dependency) { excludes.each { exclude it } }
@@ -677,16 +793,13 @@ dependencies {
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "android-client"
-        property "sonar.projectName", "Threema for Android"
         property "sonar.sources", "src/main/, ../scripts/, ../scripts-internal/"
-        // Exclusion notes:
-        // - Protobuf code is generated
-        // - Java Client code (including jnacl) is already being checked by SonarQube separately
-        property "sonar.exclusions", "src/main/java/ch/threema/protobuf/**, src/main/java/ch/threema/client/**, src/test/java/ch/threema/client/**, src/main/java/ch/threema/base/**, src/main/java/ch/threema/localcrypto/**, src/test/java/ch/threema/localcrypto/**, src/main/java/com/neilalexander/jnacl/**"
-        property "sonar.tests", "src/test/"
+        property "sonar.exclusions", "src/main/java/ch/threema/localcrypto/**, src/test/java/ch/threema/localcrypto/**"
+        property "sonar.tests", "src/testNoneDebug/"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.verbose", "true"
+        property 'sonar.projectKey', 'android-client'
+        property 'sonar.projectName', 'Threema for Android'
     }
 }
 

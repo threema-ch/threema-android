@@ -23,6 +23,7 @@ package ch.threema.app.services;
 
 import android.content.pm.ShortcutInfo;
 
+import androidx.core.content.pm.ShortcutInfoCompat;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -31,6 +32,12 @@ public interface ShortcutService {
 	public static final int TYPE_NONE = 0;
 	public static final int TYPE_CHAT = 1;
 	public static final int TYPE_CALL = 2;
+	public static final int TYPE_SHARE_SHORTCUT_CONTACT = 3;
+	public static final int TYPE_SHARE_SHORTCUT_GROUP = 4;
+	public static final int TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST = 5;
+
+	void publishRecentChatsAsSharingTargets();
+	void publishPinnedShortcutsAsSharingTargets();
 
 	void updateShortcut(ContactModel contactModel);
 	void updateShortcut(GroupModel groupModel);
@@ -43,4 +50,17 @@ public interface ShortcutService {
 	ShortcutInfo getShortcutInfo(ContactModel contactModel, int type);
 	ShortcutInfo getShortcutInfo(GroupModel groupModel);
 	ShortcutInfo getShortcutInfo(DistributionListModel distributionListModel);
+
+	void createShareTargetShortcut(ContactModel contactModel);
+	void createShareTargetShortcut(GroupModel groupModel);
+	void createShareTargetShortcut(DistributionListModel distributionListModel);
+
+	void deleteShortcut(ContactModel contactModel);
+	void deleteShortcut(GroupModel groupModel);
+	void deleteShortcut(DistributionListModel distributionListModel);
+	void deleteDynamicShortcuts();
+
+	ShortcutInfoCompat getShortcutInfoCompat(ContactModel contactModel, int type);
+	ShortcutInfoCompat getShortcutInfoCompat(GroupModel groupModel);
+	ShortcutInfoCompat getShortcutInfoCompat(DistributionListModel distributionListModel);
 }

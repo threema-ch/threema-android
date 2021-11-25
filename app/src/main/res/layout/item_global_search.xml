@@ -31,7 +31,7 @@
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp">
 
-		<ch.threema.app.ui.TextViewRobotoMedium
+		<TextView
 			android:id="@+id/name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -40,22 +40,20 @@
 			android:layout_toLeftOf="@+id/date"
 			android:ellipsize="end"
 			android:singleLine="true"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textColor="?android:attr/textColorPrimary"
+			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
 			android:text="title"/>
 
 		<TextView
 			android:id="@+id/date"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignBaseline="@id/name"
 			android:layout_alignParentRight="true"
 			android:layout_alignWithParentIfMissing="true"
-			android:layout_alignBaseline="@id/name"
 			android:ellipsize="none"
 			android:singleLine="true"
-			android:fontFamily="sans-serif-light"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:text="date"/>
+			android:text="date"
+			android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
 
 		<ch.threema.app.emojis.EmojiTextView
 			android:id="@+id/snippet"
@@ -66,8 +64,7 @@
 			android:layout_below="@id/name"
 			android:ellipsize="end"
 			android:singleLine="true"
-			android:fontFamily="sans-serif-light"
-			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
 			android:text="excerpt"/>
 
 	</RelativeLayout>

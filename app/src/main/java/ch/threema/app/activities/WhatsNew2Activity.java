@@ -22,12 +22,9 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
@@ -38,15 +35,14 @@ import static ch.threema.app.activities.WhatsNewActivity.EXTRA_NO_ANIMATION;
 public class WhatsNew2Activity extends ThreemaAppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
 		ConfigUtils.configureActivityTheme(this);
 
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_whatsnew2);
-
+/*
 		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew2_body, getString(R.string.app_name))));
-
+*/
 		findViewById(R.id.ok_button).setOnClickListener(v -> {
 			finish();
 			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
@@ -59,11 +55,6 @@ public class WhatsNew2Activity extends ThreemaAppCompatActivity {
 				buttonLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonLayout), 200);
 			}
 		}
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override

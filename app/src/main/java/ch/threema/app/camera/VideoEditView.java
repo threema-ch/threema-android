@@ -61,7 +61,6 @@ import java.io.File;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -143,7 +142,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		this.dimPaint = new Paint();
 
 		this.dimPaint.setStyle(Paint.Style.FILL);
-		this.dimPaint.setColor(context.getResources().getColor(R.color.background_dim_dark));
+		this.dimPaint.setColor(context.getResources().getColor(R.color.dark_background_dim));
 		this.dimPaint.setAntiAlias(false);
 		this.dimPaint.setStrokeWidth(0);
 
@@ -358,7 +357,6 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	}
 
 	@SuppressLint("StaticFieldLeak")
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@UiThread
 	public void setVideo(MediaItem mediaItem) {
 		int numColumns = calculateNumColumns();

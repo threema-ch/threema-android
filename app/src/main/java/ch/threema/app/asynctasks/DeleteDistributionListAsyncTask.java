@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.listeners.ConversationListener;
+import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.utils.DialogUtil;
@@ -69,6 +70,13 @@ public class DeleteDistributionListAsyncTask extends AsyncTask<Void, Void, Void>
 			@Override
 			public void handle(ConversationListener listener) {
 				listener.onModifiedAll();
+			}
+		});
+
+		ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
+			@Override
+			public void handle(DistributionListListener listener) {
+				listener.onRemove(distributionListModel);
 			}
 		});
 

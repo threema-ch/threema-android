@@ -34,8 +34,8 @@
     <string name="prefs_header_chat">Chat</string>
     <string name="prefs_header_reset">Maletg dal fund davos</string>
     <string name="prefs_header_keyboard">Tastatura</string>
-    <string name="prefs_sum_sync_contacts_on">Colliar ils contacts da Threema cun il cudesch d\'adressas da l\'apparat</string>
-    <string name="prefs_sum_sync_contacts_off">Allontanar la colliaziun tranter Threema ed il cudesch d\'adressas</string>
+    <string name="prefs_sum_sync_contacts_on">Colliar ils contacts da %s cun il cudesch d\'adressas da l\'apparat</string>
+    <string name="prefs_sum_sync_contacts_off">Allontanar la colliaziun tranter %s ed il cudesch d\'adressas</string>
     <string name="prefs_title_sync_contacts">Sincronisar ils contacts</string>
     <string name="prefs_sum_block_unknown_off">Mintgin po trametter messadis a tai. Novs contacts vegnan agiuntads automaticamain suenter l\'emprim messadi.</string>
     <string name="prefs_sum_block_unknown_on">Mo persunas sin tia glista da contacts pon tramettar messadis a tai.</string>
@@ -119,7 +119,7 @@
     <string name="linked_mobile">Numer da telefonin</string>
     <string name="public_nickname">Surnum</string>
     <string name="share_via">Parter via ...</string>
-    <string name="share_subject">Chat da Threema</string>
+    <string name="share_subject">Chat da %s</string>
     <string name="message_delete_undo">Enavos</string>
     <string name="message_deleted">Stizzà il(s) messadi(s)</string>
     <string name="mobile_already_linked">Tia ID da Threema è gia colliada cun quest numer da telefonin</string>
@@ -262,7 +262,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="restore_data_password_msg">Endatescha qua il pled-clav che ti has creà per far il backup</string>
     <string name="backup_data_media">Era segirar las datotecas da medias (dovra bler temp e memoria)</string>
     <string name="backup_data_new">Far in backup da datas</string>
-    <string name="pinentry_enter_pin">Endatar il PIN da Threema per cuntinuar</string>
+    <string name="pinentry_enter_pin">Endatar il PIN da %s per cuntinuar</string>
     <string name="pinentry_wrong_pin">PIN fallà</string>
     <string name="prefs_sum_security_pin">Proteger l\'access a l\'app</string>
     <string name="prefs_title_pin_switch">Protecziun da l\'app</string>
@@ -366,7 +366,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="touch_to_link">(Nagin)</string>
     <string name="prefs_validate_contacts">Verifitgar la colliaziun dals contacts</string>
     <string name="prefs_validate_contacts_loading">La colliaziun dals contacts vegn verifitgada</string>
-    <string name="prefs_sum_validate_contacts">Verifitgar la colliaziun tranter ils contacts da Threema ed ils contacts d\'Android e curreger els, sche quai è necessari.</string>
     <string name="prefs_title_fullscreen_ime">Tastatura sur l\'entir monitur</string>
     <string name="prefs_sum_fullscreen_ime_on">La tastatura emplenescha en format traversal l\'entir monitur</string>
     <string name="prefs_sum_fullscreen_ime_off">Sur la tastatura vegn mussà in extract dal chat</string>

@@ -38,8 +38,8 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
-import ch.threema.client.IdentityType;
-import ch.threema.client.ThreemaFeature;
+import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.storage.models.ContactModel;
 
 @AnyThread
@@ -95,7 +95,7 @@ public class Contact extends Converter {
 			builder.put(HIDDEN, contact.isHidden());
 			builder.maybePut(IS_WORK, ConfigUtils.isWorkBuild() && contact.isWork());
 			builder.put(PUBLIC_KEY, contact.getPublicKey());
-			builder.put(IDENTITY_TYPE, contact.getType() == IdentityType.WORK ? 1 : 0);
+			builder.put(IDENTITY_TYPE, contact.getIdentityType() == IdentityType.WORK ? 1 : 0);
 			builder.put(IS_BLOCKED, getBlackListService().has(contact.getIdentity()));
 
 			final int featureMask = contact.getFeatureMask();

@@ -60,6 +60,7 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
@@ -226,7 +227,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		});
 
 		// If the media grid is shown, we don't need the gallery button
-		if (shouldShowMediaGrid()) {
+		if (preferenceService.isShowImageAttachPreviewsEnabled() && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 			this.attachGalleryButton.setVisibility(View.GONE);
 		}
 
@@ -272,7 +273,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				sendPanel.setVisibility(View.VISIBLE);
 				// only slide up when previously hidden otherwise animate switch between panels
 				if (controlPanel.getTranslationY() != 0) {
-					controlPanel.animate().translationY(0).withEndAction(() -> bottomSheetLayout.setPadding(
+					controlPanel.animate().translationY(0).withEndAction(() ->
+						bottomSheetLayout.setPadding(
 						0,
 						0,
 						0,
@@ -325,19 +327,17 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				0,
 				0,
 				0);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				if (attachGalleryButton.getVisibility() == View.VISIBLE) {
-					AnimationUtil.bubbleAnimate(attachGalleryButton, 25);
-				}
-				AnimationUtil.bubbleAnimate(attachFileButton, 25);
-				AnimationUtil.bubbleAnimate(attachLocationButton, 50);
-				if (attachBallotButton.getVisibility() == View.VISIBLE) {
-					AnimationUtil.bubbleAnimate(attachBallotButton, 50);
-				}
-				AnimationUtil.bubbleAnimate(attachContactButton, 75);
-				AnimationUtil.bubbleAnimate(attachQRButton, 75);
-				AnimationUtil.bubbleAnimate(attachFromExternalCameraButton, 100);
+			if (attachGalleryButton.getVisibility() == View.VISIBLE) {
+				AnimationUtil.bubbleAnimate(attachGalleryButton, 25);
 			}
+			AnimationUtil.bubbleAnimate(attachFileButton, 25);
+			AnimationUtil.bubbleAnimate(attachLocationButton, 50);
+			if (attachBallotButton.getVisibility() == View.VISIBLE) {
+				AnimationUtil.bubbleAnimate(attachBallotButton, 50);
+			}
+			AnimationUtil.bubbleAnimate(attachContactButton, 75);
+			AnimationUtil.bubbleAnimate(attachQRButton, 75);
+			AnimationUtil.bubbleAnimate(attachFromExternalCameraButton, 100);
 		}
 	}
 
@@ -357,7 +357,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				}
 				break;
 			case R.id.attach_file:
-				if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FILE)) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FILE)) {
 					attachFile();
 				}
 				break;
@@ -394,9 +394,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				}
 				break;
 			case R.id.attach_gallery:
-				if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_GALLERY)) {
-					attachImageFromGallery();
-				}
+				attachImageFromGallery();
 				break;
 			case R.id.attach_system_camera:
 				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA)) {
@@ -438,6 +436,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				case PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA:
 					attachFromExternalCamera();
 					break;
+				case PERMISSION_REQUEST_ATTACH_STORAGE:
+					finish();
+					startActivity(getIntent());
+					break;
 			}
 		} else {
 			switch (requestCode) {
@@ -466,6 +468,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					if (!ActivityCompat.shouldShowRequestPermissionRationale(MediaAttachActivity.this, Manifest.permission.CAMERA)) {
 						showPermissionRationale(R.string.permission_camera_photo_required);
 					}
+					break;
+				case PERMISSION_REQUEST_ATTACH_STORAGE:
+					showPermissionRationale(R.string.permission_storage_required);
+					break;
 			}
 		}
 	}
@@ -711,8 +717,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			return;
 		}
 
-		Cursor cursor = this.getContentResolver()
-			.query(contactUri, null, null, null, null);
+		Cursor cursor = this.getContentResolver().query(contactUri, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 			cursor.close();

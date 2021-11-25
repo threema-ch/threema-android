@@ -29,6 +29,8 @@ import java.util.List;
 
 public class DatabaseUtil {
 
+	private DatabaseUtil() { }
+
 	public static Long getDateTimeContentValue(Date date) {
 		return date != null ? date.getTime() : null;
 	}

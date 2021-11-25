@@ -23,7 +23,7 @@ package ch.threema.app.services;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.client.ProgressListener;
+import ch.threema.base.ProgressListener;
 
 public interface DownloadService{
 	@WorkerThread @Nullable

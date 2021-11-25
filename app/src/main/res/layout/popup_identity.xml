@@ -33,9 +33,8 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="16dp"
 				android:contentDescription="@string/my_id"
-				android:text="ABCDEFGH"
 				android:textColor="?attr/textColorPrimary"
-				android:textSize="24dp"
+				android:textSize="24sp"
 				app:layout_constraintBottom_toTopOf="@+id/scan_button"
 				app:layout_constraintLeft_toLeftOf="@+id/qr_image" />
 
@@ -74,28 +73,24 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginLeft="16dp"
-				android:gravity="center_vertical"
 				android:text="@string/scan_id"
 				app:chipIcon="@drawable/ic_qr_code_scan"
 				app:ensureMinTouchTargetSize="false"
-				app:layout_constraintVertical_chainStyle="packed"
 				app:layout_constraintLeft_toRightOf="@+id/qr_image"
 				app:layout_constraintTop_toTopOf="@+id/qr_image"
-				app:layout_constraintBottom_toTopOf="@+id/profile_button" />
+				 />
 
 			<com.google.android.material.chip.Chip
 				android:id="@+id/profile_button"
 				style="@style/Threema.Chip.Outline.Action.WithIcon"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:gravity="center_vertical"
+				android:layout_marginTop="8dp"
 				android:text="@string/my_profile"
 				app:chipIcon="@drawable/ic_profile"
 				app:ensureMinTouchTargetSize="false"
 				app:layout_constraintTop_toBottomOf="@+id/scan_button"
-				app:layout_constraintLeft_toLeftOf="@+id/scan_button"
-				app:layout_constraintBottom_toBottomOf="@+id/qr_image" />
+				app:layout_constraintLeft_toLeftOf="@+id/scan_button" />
 
 			<!-- material switch currently has themeing problems -->
 

@@ -181,8 +181,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		getToolbar().setTitleTextAppearance(this, R.style.TextAppearance_MediaViewer_Title);
 		getToolbar().setSubtitleTextAppearance(this, R.style.TextAppearance_MediaViewer_SubTitle);
 
-		adjustStatusBar();
-
 		this.caption = findViewById(R.id.caption);
 
 		this.captionContainer = findViewById(R.id.caption_container);
@@ -193,8 +191,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 			return insets;
 		});
-
-		setCaptionPosition();
 
 		this.currentMessageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService);
 		try {
@@ -408,7 +404,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 			finish();
 			return true;
 		} else if (itemId == R.id.menu_save) {
-			if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_SAVE_MESSAGE)) {
+			if (ConfigUtils.requestWriteStoragePermissions(this, null, PERMISSION_REQUEST_SAVE_MESSAGE)) {
 				saveMedia();
 			}
 			return true;
@@ -816,36 +812,10 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		}
 	}
 
-	private void setCaptionPosition() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			try {
-				ConfigUtils.NavigationBarDimensions dimensions = new ConfigUtils.NavigationBarDimensions();
-				dimensions = ConfigUtils.getNavigationBarDimensions(getWindowManager(), dimensions);
-				if (this.captionContainer != null) {
-					FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) this.captionContainer.getLayoutParams();
-					params.setMargins(dimensions.width, 0, dimensions.width, dimensions.height + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_bottom));
-					this.captionContainer.setLayoutParams(params);
-				}
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
-
-	private void adjustStatusBar() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getToolbar().getLayoutParams();
-			lp.topMargin = ConfigUtils.getStatusBarHeight(this);
-			getToolbar().setLayoutParams(lp);
-		}
-	}
-
 	@Override
 	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
 		ConfigUtils.adjustToolbar(this, getToolbar());
-		adjustStatusBar();
-		setCaptionPosition();
 	}
 }

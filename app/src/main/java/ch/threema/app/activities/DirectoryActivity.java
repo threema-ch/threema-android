@@ -69,9 +69,9 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.work.WorkDirectoryCategory;
-import ch.threema.client.work.WorkDirectoryContact;
-import ch.threema.client.work.WorkOrganization;
+import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
+import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
+import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public class DirectoryActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener, MultiChoiceSelectorDialog.SelectorDialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(DirectoryActivity.class);
@@ -90,15 +90,15 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	private ChipGroup chipGroup;
 
 	private List<WorkDirectoryCategory> categoryList = new ArrayList<>();
-	private List<WorkDirectoryCategory> checkedCategories = new ArrayList<>();
+	private final List<WorkDirectoryCategory> checkedCategories = new ArrayList<>();
 
 	private String queryText;
 
 	@ColorInt int categorySpanColor;
 	@ColorInt int categorySpanTextColor;
 
-	private Handler queryHandler = new Handler();
-	private Runnable queryTask = new Runnable() {
+	private final Handler queryHandler = new Handler();
+	private final Runnable queryTask = new Runnable() {
 		@Override
 		public void run() {
 			directoryDataSourceFactory.postLiveData.getValue().setQueryText(queryText);
@@ -161,13 +161,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
 		categoryList = preferenceService.getWorkDirectoryCategories();
 
-		if (categoryList.size() > 0) {
-			if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-				ConfigUtils.themeImageView(this, findViewById(R.id.category_selector_button));
-			}
-		} else {
-			findViewById(R.id.category_selector_button).setVisibility(View.GONE);
-		}
+		findViewById(R.id.category_selector_button).setVisibility(categoryList.size() > 0 ? View.VISIBLE : View.GONE);
 
 		WorkOrganization workOrganization = preferenceService.getWorkOrganization();
 		if (workOrganization != null && !TestUtil.empty(workOrganization.getName())) {
@@ -335,7 +329,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
 				Chip chip = new Chip(this);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-					chip.setTextAppearance(R.style.TextAppearance_Chip_Ballot);
+					chip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
 				} else {
 					chip.setTextSize(14);
 				}

@@ -33,7 +33,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import ch.threema.app.R;
 import ch.threema.app.utils.MessageUtil;
-import ch.threema.client.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;

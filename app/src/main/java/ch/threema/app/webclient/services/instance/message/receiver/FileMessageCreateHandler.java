@@ -50,7 +50,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
-import ch.threema.client.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;

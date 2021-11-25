@@ -20,7 +20,7 @@
 		android:paddingTop="@dimen/chat_bubble_border_padding"
 		android:paddingBottom="@dimen/chat_bubble_border_padding"
 		android:paddingLeft="@dimen/chat_bubble_border_padding"
-		android:background="?chat_bubble_send"
+		android:background="@drawable/bubble_send_selector"
 		android:orientation="vertical">
 
 		<include layout="@layout/conversation_bubble_header"/>

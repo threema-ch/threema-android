@@ -35,7 +35,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.Base32;
+import ch.threema.base.utils.Base32;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 

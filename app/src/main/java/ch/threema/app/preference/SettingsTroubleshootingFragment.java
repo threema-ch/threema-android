@@ -211,11 +211,6 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean newCheckedValue = newValue.equals(true);
 
-				if (newCheckedValue) {
-					if (!ConfigUtils.requestStoragePermissions(getActivity(), SettingsTroubleshootingFragment.this, PERMISSION_REQUEST_MESSAGE_LOG)) {
-						return false;
-					}
-				}
 				DebugLogFileBackend.setEnabled(newCheckedValue);
 
 				return true;
@@ -226,9 +221,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		sendLogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				if (ConfigUtils.requestStoragePermissions(getActivity(), SettingsTroubleshootingFragment.this, PERMISSION_REQUEST_SEND_LOG)) {
-					prepareSendLogfile();
-				}
+				prepareSendLogfile();
 				return true;
 			}
 		});
@@ -278,32 +271,27 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 		ipv6Preferences = (TwoStatePreference) findPreference(getResources().getString(R.string.preferences__ipv6_preferred));
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			// disable IPv6 support on Android <5.0 due to some know incompatibilities
-			ipv6Preferences.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-				public boolean onPreferenceChange(Preference preference, Object newValue) {
+		// disable IPv6 support on Android <5.0 due to some know incompatibilities
+		ipv6Preferences.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-					boolean newCheckedValue = newValue.equals(true);
-					boolean oldCheckedValue = ((TwoStatePreference) preference).isChecked();
-					if (oldCheckedValue != newCheckedValue) {
-						// value has changed
-						GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.prefs_title_ipv6_preferred,
-								R.string.ipv6_requires_restart,
-								R.string.ipv6_restart_now,
-								R.string.cancel);
+				boolean newCheckedValue = newValue.equals(true);
+				boolean oldCheckedValue = ((TwoStatePreference) preference).isChecked();
+				if (oldCheckedValue != newCheckedValue) {
+					// value has changed
+					GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.prefs_title_ipv6_preferred,
+							R.string.ipv6_requires_restart,
+							R.string.ipv6_restart_now,
+							R.string.cancel);
 
-						dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
-						dialog.setData(oldCheckedValue);
-						dialog.show(getParentFragmentManager(), DIALOG_TAG_IPV6_APP_RESTART);
-						return false;
-					}
-					return true;
+					dialog.setTargetFragment(SettingsTroubleshootingFragment.this, 0);
+					dialog.setData(oldCheckedValue);
+					dialog.show(getParentFragmentManager(), DIALOG_TAG_IPV6_APP_RESTART);
+					return false;
 				}
-			});
-		} else {
-			PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference("pref_key_network");
-			preferenceScreen.removePreference(preferenceCategory);
-		}
+				return true;
+			}
+		});
 
 		Preference powerManagerPrefs = findPreference(getResources().getString(R.string.preferences__powermanager_workarounds));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -127,7 +127,7 @@ public class PinLockActivity extends ThreemaActivity {
 		errorTextView = findViewById(R.id.errorText);
 
 		headerTextView.setText(R.string.confirm_your_pin);
-		detailsTextView.setText(R.string.pinentry_enter_pin);
+		detailsTextView.setText(getString(R.string.pinentry_enter_pin, getString(R.string.app_name)));
 		passwordEntry.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
 		Button cancelButton = findViewById(R.id.cancelButton);

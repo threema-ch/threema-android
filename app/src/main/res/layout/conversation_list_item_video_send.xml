@@ -20,7 +20,7 @@
 		android:paddingTop="@dimen/chat_bubble_border_padding"
 		android:paddingBottom="@dimen/chat_bubble_border_padding"
 		android:paddingLeft="@dimen/chat_bubble_border_padding"
-		android:background="?chat_bubble_send"
+		android:background="@drawable/bubble_send_selector"
 		android:orientation="vertical">
 
 		<include layout="@layout/conversation_bubble_header"/>
@@ -29,7 +29,7 @@
 			android:id="@+id/content_block"
 			android:layout_width="@dimen/media_thumbnail_min_width"
 			android:layout_height="wrap_content"
-			android:foreground="?attr/bubble_selector_overlay"
+			android:foreground="@drawable/bubble_overlay_selector"
 			android:minHeight="@dimen/media_thumbnail_min_height">
 
 			<ImageView

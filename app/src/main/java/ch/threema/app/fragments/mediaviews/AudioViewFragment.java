@@ -30,17 +30,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -61,7 +55,7 @@ import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
 
-public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.EventListener, PreviewFragmentInterface {
+public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener, PreviewFragmentInterface {
 	private static final Logger logger = LoggerFactory.getLogger(AudioViewFragment.class);
 
 	private WeakReference<ProgressBar> progressBarRef;
@@ -78,7 +72,7 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
 
 		try {
-			this.audioPlayer = ExoPlayerFactory.newSimpleInstance(getContext());
+			this.audioPlayer = new SimpleExoPlayer.Builder(getContext()).build();
 			this.audioPlayer.addListener(this);
 		} catch (OutOfMemoryError e) {
 			logger.error("Exception", e);
@@ -196,12 +190,6 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {}
-
-	@Override
-	public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
-
-	@Override
 	public void onLoadingChanged(boolean isLoading) {
 		if (isLoading) {
 			this.progressBarRef.get().setVisibility(View.VISIBLE);
@@ -247,24 +235,6 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 
 		super.onDestroyView();
 	}
-
-	@Override
-	public void onRepeatModeChanged(int repeatMode) {}
-
-	@Override
-	public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {}
-
-	@Override
-	public void onPlayerError(ExoPlaybackException error) {}
-
-	@Override
-	public void onPositionDiscontinuity(int reason) {}
-
-	@Override
-	public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {}
-
-	@Override
-	public void onSeekProcessed() {}
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {

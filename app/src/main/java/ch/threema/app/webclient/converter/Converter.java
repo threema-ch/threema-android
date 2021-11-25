@@ -83,7 +83,7 @@ public abstract class Converter {
 	protected static GroupService getGroupService() throws ConversionException {
 		try {
 			return getServiceManager().getGroupService();
-		} catch (NullPointerException | MasterKeyLockedException | NoIdentityException | FileSystemNotPresentException e) {
+		} catch (NullPointerException | MasterKeyLockedException | FileSystemNotPresentException e) {
 			throw new ConversionException(e.toString());
 		}
 	}

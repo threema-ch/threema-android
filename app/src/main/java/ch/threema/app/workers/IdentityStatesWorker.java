@@ -39,8 +39,8 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.client.APIConnector;
-import ch.threema.client.IdentityState;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.storage.models.ContactModel;
 
 public class IdentityStatesWorker extends Worker {
@@ -148,9 +148,9 @@ public class IdentityStatesWorker extends Worker {
 							}
 
 							boolean save = false;
-							if (contactModel.getType() != res.types[n]) {
+							if (contactModel.getIdentityType() != res.types[n]) {
 								// Set new type
-								contactModel.setType(res.types[n]);
+								contactModel.setIdentityType(res.types[n]);
 								save = true;
 							}
 							if (featureMask != null) {

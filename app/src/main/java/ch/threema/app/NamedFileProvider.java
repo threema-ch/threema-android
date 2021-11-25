@@ -28,9 +28,7 @@ import android.content.pm.ProviderInfo;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
@@ -317,8 +315,7 @@ public class NamedFileProvider extends FileProvider {
 					if (externalCacheDirs.length > 0) {
 						target = externalCacheDirs[0];
 					}
-				} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-					&& TAG_EXTERNAL_MEDIA.equals(tag)) {
+				} else if (TAG_EXTERNAL_MEDIA.equals(tag)) {
 					File[] externalMediaDirs = context.getExternalMediaDirs();
 					if (externalMediaDirs.length > 0) {
 						target = externalMediaDirs[0];

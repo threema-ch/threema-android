@@ -32,9 +32,10 @@ import androidx.core.app.FixedJobIntentService;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -84,7 +85,7 @@ public class CallRejectService extends FixedJobIntentService {
 		}
 
 		// Cancel current notification
-		this.voipStateService.cancelCallNotification(contactIdentity);
+		this.voipStateService.cancelCallNotification(contactIdentity, CallActivity.ACTION_CANCELLED);
 
 		// Get contact
 		final ContactModel contact = this.contactService.getByIdentity(contactIdentity);

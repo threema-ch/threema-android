@@ -707,21 +707,45 @@ public class ContactsSectionFragment
 				}
 			}
 			if (ConfigUtils.isWorkBuild() && counts != null) {
-				if (workTabLayout != null) {
-					FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
-					if (counts.workCount > 0) {
-						workTabLayout.setVisibility(View.VISIBLE);
-						layoutParams.topMargin = getResources().getDimensionPixelSize(R.dimen.header_contact_section_work_height);
-					} else {
-						if (workTabLayout.getSelectedTabPosition() != 0) {
-							workTabLayout.selectTab(workTabLayout.getTabAt(0));
-						}
-						workTabLayout.setVisibility(View.GONE);
-						layoutParams.topMargin = 0;
-					}
-					listView.setLayoutParams(layoutParams);
+				if (counts.workCount > 0) {
+					showWorkTabs();
+				} else {
+					hideWorkTabs();
 				}
 			}
+		}
+	}
+
+	private void showWorkTabs() {
+		if (workTabLayout != null && listView != null) {
+			FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
+			((ViewGroup) workTabLayout.getParent()).setVisibility(View.VISIBLE);
+			layoutParams.topMargin = getResources().getDimensionPixelSize(R.dimen.header_contact_section_work_height);
+			listView.setLayoutParams(layoutParams);
+
+			setStickyInitialLayoutTopMargin(layoutParams.topMargin);
+		}
+	}
+
+	private void hideWorkTabs() {
+		if (workTabLayout != null && listView != null) {
+			FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
+			if (workTabLayout.getSelectedTabPosition() != 0) {
+				workTabLayout.selectTab(workTabLayout.getTabAt(0));
+			}
+			((ViewGroup) workTabLayout.getParent()).setVisibility(View.GONE);
+			layoutParams.topMargin = 0;
+			listView.setLayoutParams(layoutParams);
+
+			setStickyInitialLayoutTopMargin(layoutParams.topMargin);
+		}
+	}
+
+	private void setStickyInitialLayoutTopMargin(int margin) {
+		if (stickyInitialLayout != null){
+			ViewGroup.MarginLayoutParams stickyInitialLayoutLayoutParams = (ViewGroup.MarginLayoutParams) stickyInitialLayout.getLayoutParams();
+			stickyInitialLayoutLayoutParams.topMargin = margin;
+			stickyInitialLayout.setLayoutParams(stickyInitialLayoutLayoutParams);
 		}
 	}
 
@@ -836,6 +860,10 @@ public class ContactsSectionFragment
 				}
 			});
 
+			this.stickyInitialView = fragmentView.findViewById(R.id.initial_sticky);
+			this.stickyInitialLayout = fragmentView.findViewById(R.id.initial_sticky_layout);
+			this.stickyInitialLayout.setVisibility(View.GONE);
+
 			if (!ConfigUtils.isWorkBuild()) {
 				headerView = View.inflate(getActivity(), R.layout.header_contact_section, null);
 				listView.addHeaderView(headerView, null, false);
@@ -853,6 +881,7 @@ public class ContactsSectionFragment
 			} else {
 				workTabLayout = fragmentView.findViewById(R.id.work_contacts_tab_layout);
 				workTabLayout.addOnTabSelectedListener(onTabSelectedListener);
+				showWorkTabs();
 			}
 
 			this.swipeRefreshLayout = fragmentView.findViewById(R.id.swipe_container);
@@ -868,10 +897,6 @@ public class ContactsSectionFragment
 					onFABClicked(v);
 				}
 			});
-
-			this.stickyInitialView = fragmentView.findViewById(R.id.initial_sticky);
-			this.stickyInitialLayout = fragmentView.findViewById(R.id.initial_sticky_layout);
-			this.stickyInitialLayout.setVisibility(View.GONE);
 		}
 		return fragmentView;
 	}
@@ -937,16 +962,21 @@ public class ContactsSectionFragment
 									String currentInitial = contactListAdapter.getInitial(firstVisibleItem);
 									String previousInitial = contactListAdapter.getInitial(previousFirstVisibleItem);
 									String nextInitial = "";
-									if (direction == 1 && firstVisibleItem < contactListAdapter.getCount()) {
-										nextInitial = contactListAdapter.getInitial(firstVisibleItem + 1);
-									} else if (direction == -1 && firstVisibleItem > 0) {
-										nextInitial = contactListAdapter.getInitial(firstVisibleItem - 1);
-									}
 
-									if (direction == 1) {
-										stickyInitialLayout.setVisibility(nextInitial.equals(currentInitial) ? View.VISIBLE : View.GONE);
+									if (ContactListAdapter.RECENTLY_ADDED_SIGN.equals(currentInitial)) {
+										stickyInitialLayout.setVisibility(View.GONE);
 									} else {
-										stickyInitialLayout.setVisibility(previousInitial.equals(currentInitial) ? View.VISIBLE : View.GONE);
+										if (direction == 1 && firstVisibleItem < contactListAdapter.getCount()) {
+											nextInitial = contactListAdapter.getInitial(firstVisibleItem + 1);
+										} else if (direction == -1 && firstVisibleItem > 0) {
+											nextInitial = contactListAdapter.getInitial(firstVisibleItem - 1);
+										}
+
+										if (direction == 1) {
+											stickyInitialLayout.setVisibility(nextInitial.equals(currentInitial) ? View.VISIBLE : View.GONE);
+										} else {
+											stickyInitialLayout.setVisibility(previousInitial.equals(currentInitial) ? View.VISIBLE : View.GONE);
+										}
 									}
 								} else {
 									stickyInitialLayout.setVisibility(View.GONE);
@@ -1096,12 +1126,6 @@ public class ContactsSectionFragment
 
 	@Override
 	public boolean onAvatarLongClick(View view, int position) {
-		/*
-		if (contactListAdapter != null && contactListAdapter.getCheckedItemCount() == 0) {
-			position += listView.getHeaderViewsCount();
-			listView.setItemChecked(position, true);
-		}
-		*/
 		return true;
 	}
 

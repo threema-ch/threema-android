@@ -38,7 +38,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 
 public class UpdateFeatureLevelRoutine implements Runnable {

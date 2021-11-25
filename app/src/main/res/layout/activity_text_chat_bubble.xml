@@ -15,7 +15,7 @@
 
 		<com.google.android.material.appbar.MaterialToolbar
 			android:id="@+id/toolbar"
-			style="?attr/materialToolbarStyle"
+			style="@style/Threema.ToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			app:navigationIcon="?attr/homeAsUpIndicator"
@@ -37,7 +37,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_margin="16dp"
-			app:cardBackgroundColor="@color/light_bubble_send"
+			app:cardBackgroundColor="?attr/bubble_send"
 			app:cardCornerRadius="16dp"
 			app:cardElevation="0dp"
 			app:contentPadding="4dp"

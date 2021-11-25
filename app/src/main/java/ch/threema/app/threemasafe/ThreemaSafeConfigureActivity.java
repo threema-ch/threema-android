@@ -203,7 +203,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 							if (AppRestrictionUtil.isSafePasswordPatternSet(context)) {
 								GenericAlertDialog.newInstance(R.string.password_bad, AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again, 0, false).show(getSupportFragmentManager(), "");
 							} else {
-								GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.password_bad, R.string.password_bad_explain, R.string.try_again, R.string.continue_anyway, false);
+								GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.password_bad, R.string.password_bad_explain, R.string.continue_anyway, R.string.try_again, false);
 								dialog.setData(masterkey);
 								dialog.show(getSupportFragmentManager(), "");
 							}
@@ -299,14 +299,9 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 	@Override
 	public void onNo(String tag) {}
 
-	@Override
-	public void onYes(String tag, Object data) {
-		// stay put
-	}
-
 	@SuppressLint("StaticFieldLeak")
 	@Override
-	public void onNo(String tag, Object data) {
+	public void onYes(String tag, Object data) {
 		if (updatePasswordOnly) {
 			new AsyncTask<Void, Void, Boolean>() {
 				@Override
@@ -322,6 +317,11 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 		} else {
 			storeKeyAndFinish((byte[]) data);
 		}
+	}
+
+	@Override
+	public void onNo(String tag, Object data) {
+		// stay put
 	}
 
 	@Override

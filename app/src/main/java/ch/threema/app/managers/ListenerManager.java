@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.threema.app.grouplinks.GroupJoinResponseListener;
+import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
 import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -188,5 +190,7 @@ public class ListenerManager {
 	public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<QRCodeScanListener> qrCodeScanListener = new TypedListenerManager<>();
+	public static final TypedListenerManager<GroupJoinResponseListener> groupJoinResponseListener = new TypedListenerManager<>();
+	public static final TypedListenerManager<IncomingGroupJoinRequestListener> incomingGroupJoinRequestListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<ContactCountListener> contactCountListener = new TypedListenerManager<>();
 }

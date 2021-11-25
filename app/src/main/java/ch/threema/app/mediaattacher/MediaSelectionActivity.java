@@ -44,11 +44,15 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import ch.threema.app.R;
 import ch.threema.app.activities.SendMediaActivity;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
+
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
 
 public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 
@@ -73,15 +77,54 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		super.setInitialMediaGrid();
 		// hide media items dependent views until we have data loaded and set to grid
 		dateView.setVisibility(View.GONE);
-		controlPanel.setVisibility(View.GONE);
-		controlPanel.animate().translationY(getResources().getDimensionPixelSize(R.dimen.control_panel_height));
+
+		// check for previous filter selection to be reset
+		Intent intent = getIntent();
+		int queryType = 0;
+		String query = null;
+		if (intent.hasExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY)) {
+			MediaFilterQuery lastFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
+			queryType = lastFilter.getType();
+			query = lastFilter.getQuery();
+		}
+
+		int finalPreviousQueryType = queryType;
+		String finalPreviousQuery = query;
+
+		// because the MediaSelectionActivity subclass is initialized with expanded bottom sheet,
+		// we start fetching all data right away and listen for it be be available
+		mediaAttachViewModel.fetchAllMediaFromRepository(false);
+		registerOnAllDataFetchedListener(new Observer<List<MediaAttachItem>>() {
+			@Override
+			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
+				// ignore the first onChanged trigger, when there are not items yet
+				if (!mediaAttachItems.isEmpty()) {
+					// if we previously searched media, we reset the filter, otherwise we post all media to grid view
+					if (finalPreviousQuery != null) {
+						switch (finalPreviousQueryType) {
+							case FILTER_MEDIA_TYPE:
+								MediaSelectionActivity.this.filterMediaByMimeType(finalPreviousQuery);
+								break;
+							case FILTER_MEDIA_BUCKET:
+								MediaSelectionActivity.this.filterMediaByBucket(finalPreviousQuery);
+								break;
+							default:
+								break;
+						}
+					} else {
+						mediaAttachViewModel.setAllMedia();
+					}
+					// remove listener after receiving full list as we listen to current selected media afterwards to update the grid view
+					mediaAttachViewModel.getAllMedia().removeObserver(this);
+				}
+			}
+		});
 
 		mediaAttachViewModel.getCurrentMedia().observe(this, new Observer<List<MediaAttachItem>>() {
 			@Override
 			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
 				if (mediaAttachItems.size() != 0) {
 					dateView.setVisibility(View.VISIBLE);
-					controlPanel.setVisibility(View.VISIBLE);
 					mediaAttachViewModel.getCurrentMedia().removeObserver(this);
 				}
 			}
@@ -93,14 +136,15 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		if (count > 0) {
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
 			selectCounterButton.setVisibility(View.VISIBLE);
+			controlPanel.setVisibility(View.VISIBLE);
 			controlPanel.animate().translationY(0);
+			// align last grid element on top of control panel
 			controlPanel.postDelayed(() -> bottomSheetLayout.setPadding(
 				0,
 				0,
 				0,
 				0), 300);
 		} else {
-			selectCounterButton.setVisibility(View.GONE);
 			controlPanel.animate().translationY(controlPanel.getHeight());
 			ValueAnimator animator = ValueAnimator.ofInt(bottomSheetLayout.getPaddingBottom(), 0);
 			animator.addUpdateListener(valueAnimator -> bottomSheetLayout.setPadding(
@@ -119,6 +163,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		stub.inflate();
 
 		this.controlPanel = findViewById(R.id.control_panel);
+		controlPanel.setVisibility(View.GONE);
 		controlPanel.setTranslationY(controlPanel.getHeight());
 		ConstraintLayout selectPanel = findViewById(R.id.select_panel);
 		this.cancelButton = selectPanel.findViewById(R.id.cancel);

@@ -97,7 +97,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 	private MessageReceiver messageReceiver;
 	private int numOpenBallots;
 
-	private BallotVoteListener ballotVoteListener = new BallotVoteListener() {
+	private final BallotVoteListener ballotVoteListener = new BallotVoteListener() {
 		@Override
 		public void onSelfVote(BallotModel ballotModel) {
 			RuntimeUtil.runOnUiThread(() -> updateBallotDisplay());
@@ -126,7 +126,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		}
 	};
 
-	private BallotListener ballotListener = new BallotListener() {
+	private final BallotListener ballotListener = new BallotListener() {
 		@Override
 		public void onClosed(BallotModel ballotModel) {
 			RuntimeUtil.runOnUiThread(() -> updateBallotDisplay());
@@ -278,15 +278,15 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 					ChipDrawable firstChipDrawable = ChipDrawable.createFromAttributes(getContext(),
 						null,
 						0,
-						R.style.Chip_Ballot_Overview_Intro);
+						R.style.Chip_ChatNotice_Overview_Intro);
 					firstChip.setChipDrawable(firstChipDrawable);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-						firstChip.setTextAppearance(R.style.TextAppearance_Chip_Ballot);
+						firstChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
 					} else {
 						firstChip.setTextSize(14);
 					}
-					firstChip.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.text_color_openballots));
-					firstChip.setChipBackgroundColor(ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.background_openballots)));
+					firstChip.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.text_color_openNotice));
+					firstChip.setChipBackgroundColor(ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.background_openNotice)));
 					firstChip.setText(R.string.ballot_open);
 					firstChip.setClickable(false);
 					chipGroup.addView(firstChip);
@@ -319,10 +319,10 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 						ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
 							null,
 							0,
-							R.style.Chip_Ballot_Overview);
+							R.style.Chip_ChatNotice_Overview);
 						chip.setChipDrawable(chipDrawable);
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-							chip.setTextAppearance(R.style.TextAppearance_Chip_Ballot);
+							chip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
 						} else {
 							chip.setTextSize(14);
 						}

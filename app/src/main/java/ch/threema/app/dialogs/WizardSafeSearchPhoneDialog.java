@@ -24,7 +24,6 @@ package ch.threema.app.dialogs;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.View;
@@ -43,6 +42,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.threemasafe.ThreemaSafeService;
+import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.DialogUtil;
 
 public class WizardSafeSearchPhoneDialog extends DialogFragment implements SelectorDialog.SelectorDialogClickListener {
@@ -57,7 +57,7 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 
 	private EditText emailEditText, phoneEditText;
 
-	private ArrayList<String> matchingIDs;
+	private ArrayList<SelectorDialogItem> matchingIDs;
 
 	public static WizardSafeSearchPhoneDialog newInstance() {
 		return new WizardSafeSearchPhoneDialog();
@@ -141,11 +141,7 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 			}
 		});
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
-		} else {
-			phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-		}
+		phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
 
 		setCancelable(false);
 
@@ -186,15 +182,20 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 			final WizardSafeSearchPhoneDialog dialog = contextReference.get();
 			if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
 
-			dialog.matchingIDs = ids;
-
 			DialogUtil.dismissDialog(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS, true);
 			if (ids != null) {
+				ArrayList<SelectorDialogItem> selectorItems = new ArrayList<>();
+				for (String id : ids) {
+					selectorItems.add(new SelectorDialogItem(id, R.drawable.ic_person_outline));
+				}
+
+				dialog.matchingIDs = selectorItems;
+
 				if (ids.size() == 1) {
 					dialog.callback.onYes(dialog.getTag(), ids.get(0));
 					dialog.dismiss();
 				} else {
-					SelectorDialog selectorDialog = SelectorDialog.newInstance(dialog.getString(R.string.safe_select_id), ids, null);
+					SelectorDialog selectorDialog = SelectorDialog.newInstance(dialog.getString(R.string.safe_select_id), selectorItems, null);
 					selectorDialog.setTargetFragment(dialog, 0);
 					selectorDialog.show(dialog.getFragmentManager(), DIALOG_TAG_SELECT_ID);
 				}
@@ -210,7 +211,7 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 
 	@Override
 	public void onClick(String tag, int which, Object data) {
-		callback.onYes(getTag(), matchingIDs.get(which));
+		callback.onYes(getTag(), matchingIDs.get(which).getText());
 		dismiss();
 	}
 

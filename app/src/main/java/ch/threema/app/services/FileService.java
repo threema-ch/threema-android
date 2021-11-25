@@ -35,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.crypto.CipherInputStream;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
@@ -200,7 +201,7 @@ public interface FileService {
 	boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws Exception;
 
 	/**
-	 * get the gropu avatar as InputStream
+	 * get the group avatar as InputStream
 	 */
 	InputStream getGroupAvatarStream(GroupModel groupModel) throws Exception;
 
@@ -346,6 +347,9 @@ public interface FileService {
 
 	void saveAppLogo(File logo, @AppTheme int theme);
 	File getAppLogo(@AppTheme int theme);
+
+	@NonNull
+	Uri getTempShareFileUri(@NonNull Bitmap bitmap) throws IOException;
 
 	interface OnDecryptedFileComplete {
 		void complete(File decryptedFile);

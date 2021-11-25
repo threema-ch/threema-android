@@ -22,7 +22,7 @@
 package ch.threema.app.services.license;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 
 abstract public class  LicenseServiceThreema<T extends LicenseService.Credentials>  implements LicenseService<T> {
 	protected final APIConnector apiConnector;

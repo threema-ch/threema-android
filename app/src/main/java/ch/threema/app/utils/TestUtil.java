@@ -50,6 +50,15 @@ public class TestUtil {
 		return false;
 	}
 
+	public static boolean requireAll(Object[] o) {
+		for(Object x: o) {
+			if (x == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static boolean compare(Object[] a, Object[] b) {
 		if(a == null) {
 			return b == null;

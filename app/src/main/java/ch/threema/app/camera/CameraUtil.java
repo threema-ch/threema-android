@@ -35,7 +35,6 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageProxy;
 
@@ -54,7 +53,6 @@ public class CameraUtil {
 	private static final HashSet<String> BLACKLISTED_CAMERAS = new HashSet<String>() {{
 	}};
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private static byte[] transformByteArray(@NonNull byte[] data, Rect cropRect, int rotation, boolean flip) throws IOException {
 		Bitmap in = null;
 
@@ -95,7 +93,6 @@ public class CameraUtil {
 		return null;
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	static byte[] getJpegBytes(@NonNull ImageProxy image, int rotation, boolean flip) throws IOException {
 		ImageProxy.PlaneProxy[] planes = image.getPlanes();
 		ByteBuffer buffer = planes[0].getBuffer();
@@ -121,7 +118,6 @@ public class CameraUtil {
 		return out.toByteArray();
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private static boolean shouldCropImage(@NonNull ImageProxy image) {
 		Size sourceSize = new Size(image.getWidth(), image.getHeight());
 		Size targetSize = new Size(image.getCropRect().width(), image.getCropRect().height());
@@ -138,6 +134,6 @@ public class CameraUtil {
 	 * @return
 	 */
 	public static boolean isInternalCameraSupported() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !BLACKLISTED_CAMERAS.contains(Build.MODEL);
+		return !BLACKLISTED_CAMERAS.contains(Build.MODEL);
 	}
 }

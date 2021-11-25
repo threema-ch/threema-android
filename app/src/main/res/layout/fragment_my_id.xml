@@ -524,28 +524,14 @@
 
 				</RelativeLayout>
 
-				<!--
-								<include layout="@layout/list_divider"/>
-					-->
-
-				<TextView
-					android:id="@+id/keyfingerprinttitle"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:paddingTop="16dp"
-					android:text="@string/title_keyfingerprint"
-					android:textAppearance="@style/Threema.Text.Overline"
-					android:textColor="@null" />
-
-				<TextView
-					android:id="@+id/keyfingerprint"
+				<com.google.android.material.chip.Chip
+					android:id="@+id/public_key_button"
+					style="@style/Threema.Chip.Action"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_gravity="left"
-					android:paddingTop="10dp"
-					android:singleLine="false"
-					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-					android:textColor="@null" />
+					android:layout_marginTop="16dp"
+					android:layout_gravity="center_horizontal"
+					android:text="@string/show_public_key" />
 
 			</LinearLayout>
 

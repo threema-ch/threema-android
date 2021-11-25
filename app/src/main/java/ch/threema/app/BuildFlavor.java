@@ -28,19 +28,17 @@ public class BuildFlavor {
 	private final static String FLAVOR_STORE_GOOGLE_WORK = "store_google_work";
 	private final static String FLAVOR_SANDBOX = "sandbox";
 	private final static String FLAVOR_SANDBOX_WORK = "sandbox_work";
+	private final static String FLAVOR_ONPREM = "onprem";
 	private final static String FLAVOR_RED = "red";
 	private final static String FLAVOR_HMS = "hms";
 	private final static String FLAVOR_HMS_WORK = "hms_work";
 
 	public enum LicenseType {
-		NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK
+		NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK, ONPREM
 	}
 
 	private static boolean initialized = false;
 	private static LicenseType licenseType = null;
-	private static int serverPort = 5222;
-	private static int serverPortAlt = 443;
-	private static boolean sandbox = false;
 	private static String name = null;
 
 	/**
@@ -52,31 +50,9 @@ public class BuildFlavor {
 		return licenseType;
 	}
 
-	/**
-	 * Server Port
-	 * @return
-	 */
-	public static int getServerPort() {
-		init();
-		return serverPort;
-	}
-	/**
-	 * Server Port
-	 * @return
-	 */
-	public static int getServerPortAlt() {
-		init();
-		return serverPortAlt;
-	}
-
 	public static String getName() {
 		init();
 		return name;
-	}
-
-	public static boolean isSandbox() {
-		init();
-		return sandbox;
 	}
 
 	private static void init() {
@@ -100,17 +76,18 @@ public class BuildFlavor {
 					name = "Work";
 					break;
 				case FLAVOR_SANDBOX:
-					sandbox = true;
 					name = "Sandbox";
 					licenseType = LicenseType.NONE;
 					break;
 				case FLAVOR_SANDBOX_WORK:
-					sandbox = true;
 					name = "Sandbox Work";
 					licenseType = LicenseType.GOOGLE_WORK;
 					break;
+				case FLAVOR_ONPREM:
+					name = "OnPrem";
+					licenseType = LicenseType.ONPREM;
+					break;
 				case FLAVOR_RED:
-					sandbox = true;
 					name = "Red";
 					licenseType = LicenseType.GOOGLE_WORK;
 					break;

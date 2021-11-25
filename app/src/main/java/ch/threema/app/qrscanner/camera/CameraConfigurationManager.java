@@ -39,7 +39,6 @@ package ch.threema.app.qrscanner.camera;
 import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Surface;
@@ -131,14 +130,10 @@ public final class CameraConfigurationManager {
 		//Log.i(TAG, "Clockwise rotation from display to camera: " + cwNeededRotation);
 
 		Point theScreenResolution = new Point();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			DisplayMetrics displayMetrics = new DisplayMetrics();
-			display.getRealMetrics(displayMetrics);
-			theScreenResolution.x = displayMetrics.widthPixels;
-			theScreenResolution.y = displayMetrics.heightPixels;
-		} else {
-			display.getSize(theScreenResolution);
-		}
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		display.getRealMetrics(displayMetrics);
+		theScreenResolution.x = displayMetrics.widthPixels;
+		theScreenResolution.y = displayMetrics.heightPixels;
 		screenResolution = theScreenResolution;
 		logger.info("Screen resolution in current orientation: " + screenResolution);
 		cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);

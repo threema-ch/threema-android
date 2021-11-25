@@ -117,7 +117,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="1dp"
 							android:layout_marginTop="16dp"
-							android:background="?attr/bubble_divider_color"
+							android:background="?attr/cardview_divider_color"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_3_work_txt" />
 
 						<TextView
@@ -220,7 +220,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="1dp"
 							android:layout_marginTop="16dp"
-							android:background="?attr/bubble_divider_color"
+							android:background="?attr/cardview_divider_color"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_3_txt" />
 
 						<TextView
@@ -241,7 +241,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="1dp"
 							android:layout_marginTop="16dp"
-							android:background="?attr/bubble_divider_color"
+							android:background="?attr/cardview_divider_color"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_2_txt" />
 
 						<TextView

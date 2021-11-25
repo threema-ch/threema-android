@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.SpannableString;
@@ -48,6 +49,7 @@ import androidx.appcompat.app.AppCompatDialog;
 import androidx.core.text.util.LinkifyCompat;
 import ch.threema.app.R;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.LocaleUtil;
 
 public class PasswordEntryDialog extends ThreemaDialogFragment implements GenericAlertDialog.DialogClickListener {
 	private static final String DIALOG_TAG_CONFIRM_CHECKBOX = "dtcc";
@@ -59,12 +61,18 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	protected boolean isLengthCheck = true;
 	protected int minLength, maxLength;
 	protected MaterialCheckBox checkBox;
+	public enum ForgotHintType {
+		NONE,
+		SAFE,
+		PIN_PASSPHRASE
+	}
 
 	public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
 	                                              @StringRes int hint,
 	                                              @StringRes int positive, @StringRes int negative,
 	                                              int minLength, int maxLength,
-	                                              int confirmHint, int inputType, int checkboxText) {
+	                                              int confirmHint, int inputType, int checkboxText,
+	                                              ForgotHintType showForgotPwHint ) {
 		PasswordEntryDialog dialog = new PasswordEntryDialog();
 		Bundle args = new Bundle();
 		args.putInt("title", title);
@@ -77,6 +85,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 		args.putInt("confirmHint", confirmHint);
 		args.putInt("inputType", inputType);
 		args.putInt("checkboxText", checkboxText);
+		args.putSerializable("showForgotPwHint", showForgotPwHint);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -106,8 +115,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	}
 
 	@Override
-	public void onYes(String tag, Object data) {
-	}
+	public void onYes(String tag, Object data) { }
 
 	@Override
 	public void onNo(String tag, Object data) {
@@ -152,7 +160,6 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 			return alertDialog;
 		}
 
-
 		final int title = getArguments().getInt("title");
 		int message = getArguments().getInt("message");
 		int hint = getArguments().getInt("hint");
@@ -164,6 +171,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 		final int confirmHint = getArguments().getInt("confirmHint", 0);
 		final int checkboxText = getArguments().getInt("checkboxText", 0);
 		final int checkboxConfirmText = getArguments().getInt("checkboxConfirmText", 0);
+		final ForgotHintType showForgotPwHint = (ForgotHintType) getArguments().getSerializable("showForgotPwHint");
 
 		final String tag = this.getTag();
 
@@ -172,6 +180,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_password_entry, null);
 		final TextView messageTextView = dialogView.findViewById(R.id.message_text);
+		final TextView forgotPwTextView = dialogView.findViewById(R.id.forgot_password);
 		final TextInputEditText editText1 = dialogView.findViewById(R.id.password1);
 		final TextInputEditText editText2 = dialogView.findViewById(R.id.password2);
 		final TextInputLayout editText1Layout = dialogView.findViewById(R.id.password1layout);
@@ -241,6 +250,25 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 			editText2Layout.setHint(getString(confirmHint));
 			editText1Layout.setHelperTextEnabled(true);
 			editText1Layout.setHelperText(String.format(activity.getString(R.string.password_too_short), minLength));
+		}
+
+		if (showForgotPwHint != null) {
+			switch (showForgotPwHint) {
+				case SAFE:
+					String safeFaqUrl = String.format(getString(R.string.threema_safe_password_faq), LocaleUtil.getAppLanguage());
+					forgotPwTextView.setText(Html.fromHtml(String.format(getString(R.string.forgot_your_password), safeFaqUrl)));
+					forgotPwTextView.setMovementMethod(LinkMovementMethod.getInstance());
+					forgotPwTextView.setVisibility(View.VISIBLE);
+					break;
+				case PIN_PASSPHRASE:
+					String pinFaqUrl = String.format(getString(R.string.threema_passwords_faq), LocaleUtil.getAppLanguage());
+					forgotPwTextView.setText(Html.fromHtml(String.format(getString(R.string.forgot_your_password), pinFaqUrl)));
+					forgotPwTextView.setMovementMethod(LinkMovementMethod.getInstance());
+					forgotPwTextView.setVisibility(View.VISIBLE);
+					break;
+				case NONE:
+					break;
+			}
 		}
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());

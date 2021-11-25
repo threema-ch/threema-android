@@ -124,15 +124,11 @@ public class ContactUtil {
 			ContactModel.State oldState = contactModel.getState();
 
 			switch (newState) {
-				//never change to temporary
-				case TEMPORARY:
-					return false;
 				//change to active is always allowed
 				case ACTIVE:
 					return true;
 				case INACTIVE:
-					return oldState == ContactModel.State.TEMPORARY
-							|| oldState == ContactModel.State.ACTIVE;
+					return oldState == ContactModel.State.ACTIVE;
 				case INVALID:
 					return true;
 			}

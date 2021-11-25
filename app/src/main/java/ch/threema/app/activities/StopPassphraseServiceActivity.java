@@ -35,7 +35,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
 
 /**

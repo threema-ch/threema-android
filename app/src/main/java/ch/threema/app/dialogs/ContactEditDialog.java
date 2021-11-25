@@ -52,7 +52,7 @@ import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
-import ch.threema.base.Contact;
+import ch.threema.domain.models.Contact;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
@@ -239,7 +239,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		try {
 			contactService = ThreemaApplication.getServiceManager().getContactService();
 			groupService = ThreemaApplication.getServiceManager().getGroupService();
-		} catch (MasterKeyLockedException | FileSystemNotPresentException | NoIdentityException e) {
+		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 			logger.error("Exception", e);
 		}
 

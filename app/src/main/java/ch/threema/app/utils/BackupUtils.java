@@ -44,7 +44,7 @@ public class BackupUtils {
 	}
 
 	public static String buildGroupUid(GroupModel groupModel) {
-		return buildGroupUid(groupModel.getApiGroupId(), groupModel.getCreatorIdentity());
+		return buildGroupUid(groupModel.getApiGroupId().toString(), groupModel.getCreatorIdentity());
 	}
 
 	public static String buildBallotUid(BallotModel ballotModel) {

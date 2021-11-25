@@ -25,7 +25,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,7 +111,7 @@ public class ImagePopup extends DimmingPopupWindow {
 		}
 		setBackgroundDrawable(new BitmapDrawable());
 		setAnimationStyle(0);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !(this.topLayout instanceof MaterialCardView)) {
+		if (!(this.topLayout instanceof MaterialCardView)) {
 			setElevation(10);
 		}
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);

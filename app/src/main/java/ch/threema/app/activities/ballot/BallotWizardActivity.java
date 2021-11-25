@@ -57,7 +57,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 

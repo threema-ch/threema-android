@@ -28,7 +28,6 @@ import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -190,7 +189,7 @@ public class AnimationUtil {
 
 	public static void setupTransitions(Context context, Window window) {
 		// requestFeature() must be called before adding content
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null && context != null) {
+		if (window != null && context != null) {
 			android.transition.Transition fade = new android.transition.Fade();
 			fade.excludeTarget(android.R.id.navigationBarBackground, true);
 
@@ -224,7 +223,7 @@ public class AnimationUtil {
 	}
 
 	private static void circularReveal(View theLayout, int cx, int cy, int duration, boolean fromBottom) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !(cx == 0 && cy == 0)) {
+		if (!(cx == 0 && cy == 0)) {
 			theLayout.setVisibility(View.INVISIBLE);
 
 			theLayout.post(new Runnable() {
@@ -263,7 +262,7 @@ public class AnimationUtil {
 	}
 
 	public static void circularObscure(final View theLayout, int cx, int cy, boolean toBottom, final Runnable onFinishRunnable) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !(cx == 0 && cy == 0)) {
+		if (!(cx == 0 && cy == 0)) {
 			int initialRadius = theLayout.getWidth();
 
 			if (theLayout.isAttachedToWindow()) {

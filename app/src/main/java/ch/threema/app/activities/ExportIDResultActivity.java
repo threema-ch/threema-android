@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
@@ -176,11 +175,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 				.getSystemService(Context.PRINT_SERVICE);
 
 		PrintDocumentAdapter printAdapter;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			printAdapter = webView.createPrintDocumentAdapter("Threema_ID_" + identity);
-		} else {
-			printAdapter = webView.createPrintDocumentAdapter();
-		}
+		printAdapter = webView.createPrintDocumentAdapter("Threema_ID_" + identity);
 		String jobName = getString(R.string.app_name) + " " + getString(R.string.backup_id_title);
 
 		printManager.print(jobName, printAdapter,

@@ -47,11 +47,11 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ProgressListener;
+import ch.threema.base.ProgressListener;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
-import static ch.threema.client.file.FileData.RENDERING_MEDIA;
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
 
 public abstract class MessagePlayer {
 	private static final Logger logger = LoggerFactory.getLogger(MessagePlayer.class);

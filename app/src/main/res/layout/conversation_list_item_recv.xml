@@ -24,7 +24,7 @@
 			android:paddingBottom="@dimen/chat_bubble_border_padding"
 			android:paddingRight="@dimen/chat_bubble_border_padding"
 			android:layout_toRightOf="@id/avatar_view"
-			android:background="?attr/chat_bubble_recv"
+			android:background="@drawable/bubble_recv_selector"
 			android:orientation="vertical">
 
 		<include layout="@layout/conversation_bubble_header"/>
@@ -50,7 +50,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:paddingTop="36dp"
-				android:background="?attr/chat_bubble_fade_recv"
+				android:background="@drawable/bubble_fade_recv_selector"
 				android:layout_gravity="bottom"
 				android:visibility="gone">
 

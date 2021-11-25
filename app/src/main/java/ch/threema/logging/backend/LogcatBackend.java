@@ -40,7 +40,7 @@ public class LogcatBackend implements LogBackend {
 	// For tags starting with these prefixes, the package path is stripped
 	private final static String[] STRIP_PREFIXES = {
 		"ch.threema.app.",
-		"ch.threema.client.",
+		"ch.threema.domain.",
 		"ch.threema.storage.",
 	};
 

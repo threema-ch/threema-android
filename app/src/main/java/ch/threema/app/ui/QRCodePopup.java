@@ -24,7 +24,6 @@ package ch.threema.app.ui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,9 +94,7 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 		}
 		setBackgroundDrawable(new BitmapDrawable());
 		setAnimationStyle(0);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			setElevation(10);
-		}
+		setElevation(10);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 	}
 

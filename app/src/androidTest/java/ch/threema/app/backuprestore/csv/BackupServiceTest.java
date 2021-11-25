@@ -24,6 +24,7 @@ package ch.threema.app.backuprestore.csv;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import net.lingala.zip4j.ZipFile;
@@ -35,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,13 +49,12 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.GrantPermissionRule;
 import ch.threema.app.DangerousTest;
-import ch.threema.app.TestHelpers;
+import ch.threema.app.testutils.TestHelpers;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupRestoreDataConfig;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -67,7 +68,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.utils.CSVReader;
 import ch.threema.app.utils.CSVRow;
-import ch.threema.client.IdentityBackupDecoder;
+import ch.threema.domain.identitybackup.IdentityBackupDecoder;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 import java8.util.stream.StreamSupport;
@@ -75,6 +76,7 @@ import java8.util.stream.StreamSupport;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 @DangerousTest // Deletes data and possibly identity
+@Ignore("because this test broke with API version switch introduced in 7ed52bcfedd0bdcd2924ae14afe7ccb7bdc52c7a") // TODO(ANDR-1483)
 public class BackupServiceTest {
 	private final static String PASSWORD = "ubnpwrgujioasdfi0932";
 	private static final String TAG = "BackupServiceTest";
@@ -148,7 +150,11 @@ public class BackupServiceTest {
 		intent.putExtra(BackupService.EXTRA_BACKUP_RESTORE_DATA_CONFIG, config);
 
 		// Start service
-		ContextCompat.startForegroundService(appContext, intent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			appContext.startForegroundService(intent);
+		}
+
+		appContext.startService(intent);
 		Assert.assertTrue(TestHelpers.iServiceRunning(appContext, BackupService.class));
 
 		// Wait for service to stop

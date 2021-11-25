@@ -284,7 +284,9 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 						"`" + DistributionListMessageModel.COLUMN_IS_STATUS_MESSAGE +"` SMALLINT ," +
 						"`" + DistributionListMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID +"` VARCHAR ," +
 						"`" + DistributionListMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
-						"`" + DistributionListMessageModel.COLUMN_MESSAGE_FLAGS +"` INT );",
+						"`" + DistributionListMessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
+						"`" + DistributionListMessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
+						"`" + DistributionListMessageModel.COLUMN_READ_AT +"` DATETIME );",
 
 			//indices
 				"CREATE INDEX `distributionListDistributionListIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `"+ DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID +"` )",

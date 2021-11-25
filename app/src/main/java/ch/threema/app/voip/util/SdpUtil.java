@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ch.threema.client.voip.VoipCallAnswerData;
-import ch.threema.client.voip.VoipCallOfferData;
-import ch.threema.client.voip.VoipICECandidatesData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 
 public class SdpUtil {
 	private static final Pattern SDP_LOOPBACK_RE =

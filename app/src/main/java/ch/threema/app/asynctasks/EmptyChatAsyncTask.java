@@ -23,31 +23,48 @@ package ch.threema.app.asynctasks;
 
 import android.os.AsyncTask;
 
+import net.sqlcipher.database.SQLiteException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
-import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
+import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
-public class EmptyChatAsyncTask extends AsyncTask<Void, Void, Integer> {
+public class EmptyChatAsyncTask extends AsyncTask<Void, Integer, Integer> {
+	private static final Logger logger = LoggerFactory.getLogger(EmptyChatAsyncTask.class);
+
 	private static final String DIALOG_TAG_EMPTYING_CHAT = "ec";
 
-	private final MessageReceiver[] messageReceivers;
+	private final MessageReceiver messageReceiver;
 	private final MessageService messageService;
+	private final ConversationService conversationService;
 	private final FragmentManager fragmentManager;
 	private final boolean quiet;
 	private final Runnable runOnCompletion;
+	private int progress;
+	private boolean isCancelled;
 
-	public EmptyChatAsyncTask(MessageReceiver[] messageReceivers,
+	public EmptyChatAsyncTask(MessageReceiver messageReceiver,
 	                          MessageService messageService,
+	                          ConversationService conversationService,
 	                          FragmentManager fragmentManager,
 	                          boolean quiet,
 	                          Runnable runOnCompletion) {
 
-		this.messageReceivers = messageReceivers;
+		this.messageReceiver = messageReceiver;
 		this.messageService = messageService;
+		this.conversationService = conversationService;
 		this.fragmentManager = fragmentManager;
 		this.quiet = quiet;
 		this.runOnCompletion = runOnCompletion;
@@ -56,20 +73,47 @@ public class EmptyChatAsyncTask extends AsyncTask<Void, Void, Integer> {
 	@Override
 	protected void onPreExecute() {
 		if (!quiet) {
-			GenericProgressDialog.newInstance(R.string.emptying_chat, R.string.please_wait).show(fragmentManager, DIALOG_TAG_EMPTYING_CHAT);
+			isCancelled = false;
+			CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.emptying_chat, 0, R.string.cancel, 100);
+			dialog.setOnCancelListener((dialog1, which) -> isCancelled = true);
+			dialog.show(fragmentManager, DIALOG_TAG_EMPTYING_CHAT);
+		}
+	}
+
+	@Override
+	protected void onProgressUpdate(Integer... values) {
+		if (quiet) {
+			return;
+		}
+		if (values[0] > progress) {
+			DialogUtil.updateProgress(fragmentManager, DIALOG_TAG_EMPTYING_CHAT, values[0]);
+			progress = values[0];
 		}
 	}
 
 	@Override
 	protected Integer doInBackground(Void... voids) {
-		int i = 0;
-		for (MessageReceiver messageReceiver: messageReceivers) {
-			for (AbstractMessageModel m : messageService.getMessagesForReceiver(messageReceiver)) {
-				messageService.remove(m, true);
-				i++;
+		List<AbstractMessageModel> messageModelsToDelete = new ArrayList<>(messageService.getMessagesForReceiver(messageReceiver));
+		int i = 0, size = messageModelsToDelete.size();
+		if (size > 0) {
+			for (AbstractMessageModel abstractMessageModel : messageModelsToDelete) {
+				if (isCancelled) {
+					break;
+				}
+
+				publishProgress(i++ * 100 / size);
+				try {
+					messageService.remove(abstractMessageModel, true);
+				} catch (SQLiteException e) {
+					logger.error("Unable to remove message", e);
+				}
 			}
+
+			ListenerManager.messageListeners.handle(listener -> listener.onRemoved(messageModelsToDelete));
+
+			conversationService.refresh(messageReceiver);
 		}
-		return i;
+		return size;
 	}
 
 	@Override

@@ -43,7 +43,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocationUtil;
-import ch.threema.client.ProtocolStrings;
+import ch.threema.domain.protocol.ProtocolStrings;
 
 import static ch.threema.app.locationpicker.LocationPickerActivity.POI_RADIUS;
 

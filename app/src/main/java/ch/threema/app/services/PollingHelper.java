@@ -41,8 +41,8 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.FetchMessagesBroadcastReceiver;
-import ch.threema.client.ConnectionState;
-import ch.threema.client.QueueSendCompleteListener;
+import ch.threema.domain.protocol.csp.connection.ConnectionState;
+import ch.threema.domain.protocol.csp.connection.QueueSendCompleteListener;
 
 /**
  * Helper class to simplify polling (both time-based and GCM based) by handling all the gory details

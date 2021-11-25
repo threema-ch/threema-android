@@ -23,7 +23,7 @@
 			android:paddingTop="@dimen/chat_bubble_border_padding"
 			android:paddingBottom="@dimen/chat_bubble_border_padding"
 			android:paddingLeft="@dimen/chat_bubble_border_padding"
-			android:background="?attr/chat_bubble_send"
+			android:background="@drawable/bubble_send_selector"
 			android:orientation="vertical">
 
 		<include layout="@layout/conversation_bubble_header"/>
@@ -49,7 +49,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:paddingTop="36dp"
-				android:background="?attr/chat_bubble_fade_send"
+				android:background="@drawable/bubble_fade_send_selector"
 				android:layout_gravity="bottom"
 				android:visibility="gone">
 

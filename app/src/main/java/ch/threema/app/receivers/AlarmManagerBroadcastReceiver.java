@@ -39,8 +39,8 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PollingHelper;
-import ch.threema.client.ConnectionState;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.csp.connection.ConnectionState;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 

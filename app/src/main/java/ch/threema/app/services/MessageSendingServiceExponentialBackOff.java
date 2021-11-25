@@ -34,6 +34,7 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 	public MessageSendingServiceExponentialBackOff(MessageSendingServiceState messageSendingServiceState) {
 		this.messageSendingServiceState = messageSendingServiceState;
 	}
+
 	@Override
 	public void addToQueue(final MessageSendingProcess process) {
 		ExponentialBackOffUtil.getInstance().run(new ExponentialBackOffUtil.BackOffRunnable() {
@@ -41,9 +42,8 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 			public void run(int currentRetry) throws Exception {
 				try {
 					process.send();
-				}
-				catch (Exception x) {
-					logger.error("MessageSendingServiceExponentialBackOff", x);
+				} catch (Exception x) {
+					logger.error("Sending message failed", x);
 					messageSendingServiceState.exception(x, 0);
 					throw x;
 				}

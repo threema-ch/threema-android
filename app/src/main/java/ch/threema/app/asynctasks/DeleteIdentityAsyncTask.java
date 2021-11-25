@@ -41,7 +41,7 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.NonceDatabaseBlobService;
 

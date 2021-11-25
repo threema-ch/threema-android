@@ -1,15 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
+	<!--   branding color for the app bar -->
+	<color name="material_primary">#ffffff</color>
+	<!--   darker variant for the status bar and contextual app bars -->
+	<color name="material_primary_dark">#757575</color>
+
 	<!-- accent colors -->
 	<color name="accent_regular">#11a65d</color>
 	<color name="accent_work">#0096ff</color>
-
 	<color name="accent_light">@color/accent_regular</color>
-	<color name="accent_dark">#4caf50</color>
-	<color name="accent_secondary_light">#caffe5</color>
-	<color name="accent_secondary_dark">#d5ffd7</color>
-	<color name="accent_light_alpha">#7011a65d</color>
-	<color name="accent_dark_alpha">#504caf50</color>
+	<color name="accent_secondary">#caffe5</color>
+	<color name="accent_alpha">#7011a65d</color>
+
+	<color name="text_color_primary">#ff202124</color>
+	<color name="text_color_secondary">#ff5f6368</color>
+	<color name="text_color_tertiary">#ffa5a5a5</color>
+	<color name="text_color_first_line">#ff3c4043</color>
+	<color name="text_color_second_line">@color/text_color_secondary</color>
+	<color name="text_color_first_line_bold">#ff202124</color>
+	<color name="text_color_second_line_bold">#ff202124</color>
+	<color name="text_color_third_line">@color/text_color_tertiary</color>
 
 	<color name="chat_sender_text">#ff888888</color>
 	<color name="activity_background">#ffeeeeee</color>
@@ -17,74 +28,175 @@
 	<color name="preference_background_color">@color/activity_background_secondary</color>
 	<color name="detail_highlight_bg_color">#ffcccccc</color>
 	<color name="directory_header_color">#ffd9d9d9</color>
-	<color name="cardview_background_light">#ffffffff</color>;
-	<color name="backup_logos_background">#fff0f0f0</color>;
-
-	<!-- message list -->
-	<color name="text_color_first_line">#ff3c4043</color>
-	<color name="text_color_second_line">@color/text_color_secondary</color>
-	<color name="text_color_first_line_bold">#ff202124</color>
-	<color name="text_color_second_line_bold">#ff202124</color>
-	<color name="text_color_third_line">@color/text_color_tertiary</color>
-
-	<!-- message list dark -->
-	<color name="text_color_first_line_dark">#fff1f3f4</color>
-	<color name="text_color_second_line_dark">#ff9aa0a6</color>
-	<color name="text_color_first_line_bold_dark">#ffffffff</color>
-	<color name="text_color_second_line_bold_dark">#ffffffff</color>
-	<color name="text_color_third_line_dark">#ff8a9096</color>
+	<color name="cardview_background">#ffffffff</color>
+	<color name="cardview_divider">@color/bubble_status</color>
+	<color name="backup_logos_background">#fff0f0f0</color>
 
 	<!-- chat bubbles -->
-	<!-- light -->
-	<color name="light_bubble_recv">#F1F3F4</color>
-	<color name="light_bubble_send">#EFFDE4</color>
-	<color name="bubble_status_light">#fff9d9</color>
-	<color name="unread_messages_text_color">#88000000</color>
-	<color name="unread_messages_bg_color">#fff7f8f9</color>
-	<color name="date_separator_bg_color">#ffbababa</color>
-
-	<!-- selectors -->
-	<color name="bubble_selected">#41d68d</color>
-	<color name="bubble_selected_overlay">#4441d68d</color> <!-- color overlay on top of media thumbnails -->
-	<color name="bubble_pressed">@color/material_grey_300</color>
+	<color name="bubble_status">#fff9d9</color>
+	<color name="bubble_receive">#F1F3F4</color>
+	<color name="bubble_send">#EFFDE4</color>
+	<color name="bubble_selected_overlay">#4441d68d</color>
 	<color name="bubble_pressed_overlay">@color/material_grey_300_alpha</color>
 
-	<!-- dark -->
-	<color name="dark_bubble_recv">#666666</color>
-	<color name="dark_bubble_send">#303030</color>
-	<color name="bubble_status_dark">#ede7ca</color>
-	<color name="dark_unread_messages_text_color">#FFFFFFFF</color>
-	<color name="dark_unread_messages_bg_color">#ff7090B0</color>
-	<color name="dark_date_separator_bg_color">#ff404040</color>
+	<!-- emoji picker color -->
+	<color name="emoji_picker_background_top">#e4e7e9</color>
+	<color name="emoji_picker_background_main">#f3f4f8</color>
+	<color name="emoji_picker_divider">#f6f7f8</color>
+	<color name="emoji_picker_top_divider">#eff1f2</color>
+	<color name="emoji_picker_hint">#d3d3d3</color>
 
-	<!-- selectors -->
-	<color name="bubble_selected_dark">#419645</color>
-	<color name="bubble_selected_overlay_dark">#44419645</color> <!-- color overlay on top of media thumbnails -->
-	<color name="bubble_pressed_overlay_dark">@color/material_grey_300_alpha</color>
-	<color name="bubble_pressed_dark">@color/material_grey_600</color>
+	<!-- solid colors of selected list item background -->
+	<color name="list_item_background_checked_light">#ffd9d9d9</color>
+	<color name="list_item_background_checked">#40999999</color>
 
-	<!-- compose bubble -->
-	<color name="compose_bubble_light">#15000000</color>
-	<color name="compose_bubble_dark">#33000000</color>
+	<!-- Media attacher -->
+	<color name="transparent_activity_overlay">#4C000000</color>
+	<color name="control_panel_divider">#3E666666</color>
+	<color name="mime_type_marker_background">#55000000</color>
+	<color name="attach_status_bar_expanded">@android:color/white</color>
+	<color name="attach_status_bar_collapsed">#FFB3B3B3</color>
+	<color name="attach_button_background">#FFF1F1F1</color>
+	<color name="preview_navigation_area_bg">#44000000</color>
+	<color name="bottomsheet_grapple_color">#c8c8c8</color>
 
-	<!-- agnostic -->
+	<!-- preference headers -->
+	<color name="settings_second_line_text_color">#757575</color>
+	<color name="settings_multipane_selection_bg">#1a000000</color>
+
+	<!-- mentions -->
+	<color name="mention_background">@color/material_grey_300</color>
+	<color name="mention_background_inverted">@color/material_grey_500</color>
+
+	<!-- others -->
+	<color name="text_color_open_ballots">#656565</color>
+	<color name="background_identity_popup">@color/activity_background_secondary</color>
+	<color name="markup_marker_color">#FFD3D3D3</color>
+	<color name="background_dim">#77ffffff</color>
 	<color name="date_separator_text_color">#FFffffff</color>
-
-	<!-- wizard step pager display -->
-    <color name="step_pager_previous_tab_color">#4433b5e5</color>
-    <color name="step_pager_selected_tab_color">@color/material_blue</color>
-    <color name="step_pager_next_tab_color">#10000000</color>
-
-	<color name="gallery_background">#ff1a1a1a</color>
-	<color name="status_bar_detail">#3000</color>
-
-	<color name="text_color_primary">#ff202124</color>
-	<color name="text_color_secondary">#ff5f6368</color>
-	<color name="text_color_tertiary">#ffa5a5a5</color>
+	<color name="circle_button_stroke">#77B0B0B0</color>
+	<color name="divider_color">#1f000000</color>
+	<color name="compose_bubble">#15000000</color>
+	<color name="messagelist_highlight_color">@color/material_red</color>
 	<color name="ballot_list_footer_background">#ffe3e3e3</color>
 	<color name="image_tint_default">@color/material_grey_600</color>
 
-	<!-- material -->
+	<!--**********************************************************************************************************-->
+	<!-- values for dark application theme -->
+
+	<color name="dark_accent">#4caf50</color>
+	<color name="dark_accent_secondary">#d5ffd7</color>
+	<color name="dark_accent_alpha">#504caf50</color>
+	<color name="dark_material_level0">#121212</color>
+	<color name="dark_material_level1">#1F1F1F</color>
+	<color name="dark_material_level2">#272727</color>
+	<color name="dark_material_level3">#323232</color>
+	<color name="dark_toolbar_color">@color/dark_material_level2</color>
+	<color name="dark_material_primary">@color/dark_material_level0</color>
+	<color name="dark_material_secondary">@color/dark_material_level1</color>
+	<color name="dark_activity_background">@color/dark_material_level0</color>
+	<color name="dark_activity_background_secondary">@color/dark_material_level1</color>
+	<color name="dark_image_tint_default">@android:color/white</color>
+	<color name="dark_text_color_primary">#ffffff</color>
+	<color name="dark_text_color_secondary">#d0d0d0</color>
+	<color name="dark_text_color_tertiary">#a5a5a5</color>
+	<color name="dark_text_color_first_line">#fff1f3f4</color>
+	<color name="dark_text_color_second_line">#ff9aa0a6</color>
+	<color name="dark_text_color_first_line_bold">#ffffffff</color>
+	<color name="dark_text_color_second_line_bold">#ffffffff</color>
+	<color name="dark_text_color_third_line">#ff8a9096</color>
+	<color name="dark_divider_color">#1fffffff</color>
+	<color name="dark_emoji_picker_background_top">@color/dark_material_level3</color>
+	<color name="dark_emoji_picker_background_main">@color/dark_material_level1</color>
+	<color name="dark_emoji_picker_divider">#303030</color>
+	<color name="dark_emoji_picker_top_divider">#404040</color>
+	<color name="dark_emoji_picker_hint">#707070</color>
+	<color name="dark_preference_background_color">@color/dark_material_level0</color>
+	<color name="dark_cardview_background">@color/dark_material_level1</color>
+	<color name="dark_cardview_divider">#7F666666</color>
+	<color name="dark_background_identity_popup">@color/dark_material_level2</color>
+	<color name="dark_text_color_open_ballots">#C5C5C5</color>
+	<color name="dark_list_item_background_checked">#ff4a4a4a</color>
+	<color name="dark_attach_status_bar_expanded">@color/dark_material_level2</color>
+	<color name="dark_attach_status_bar_collapsed">#FF131313</color>
+	<color name="dark_attach_button_background">@color/dark_material_level3</color>
+	<color name="dark_bottomsheet_grapple_color">#e5e5e5</color>
+	<color name="dark_markup_marker_color">#FF888888</color>
+	<color name="dark_settings_second_line_text_color">#b8b8b8</color>
+	<color name="dark_settings_multipane_selection_bg">#39ffffff</color>
+	<color name="dark_background_dim">#77000000</color>
+	<color name="dark_mention_background">@color/material_grey_550</color>
+	<color name="dark_mention_background_inverted">@color/material_grey_400</color>
+	<color name="dark_circle_button_stroke">#80B0B0B0</color>
+	<color name="dark_compose_bubble">#33000000</color>
+	<color name="dark_bubble_status">#ede7ca</color>
+	<color name="dark_bubble_receive">#666666</color>
+	<color name="dark_bubble_send">#303030</color>
+	<color name="dark_bubble_selected_overlay">#44419645</color>
+	<color name="dark_bubble_pressed_overlay">@color/material_grey_300_alpha</color>
+
+	<!--**********************************************************************************************************-->
+	<!-- agnostic colors -->
+
+	<!-- wizard -->
+	<color name="wizard_color_primary">@android:color/white</color>
+	<color name="wizard_alpha_background">#33ffffff</color>
+	<color name="wizard_color_accent">@color/dark_accent</color>
+	<color name="wizard_color_accent_dark">#323232</color>
+	<color name="wizard_color_button_disabled">#664caf50</color>
+
+	<!-- wizard step pager display -->
+	<color name="step_pager_previous_tab_color">#4433b5e5</color>
+	<color name="step_pager_selected_tab_color">@color/material_blue</color>
+	<color name="step_pager_next_tab_color">#10000000</color>
+
+	<!-- color for splash screen upon app startup -->
+	<color name="splash_background">#FF303030</color>
+
+	<!-- voip -->
+	<color name="voip_accept_call_tint">@color/accent_regular</color>
+	<color name="voip_end_call_tint">#ff1744</color>
+	<color name="voip_dialer_theme_color">#c4002a7e</color>
+	<color name="voip_dialer_theme_color_blurry">#55002a7e</color>
+	<color name="voip_bottom_sheet_highlight_color">#2a56c6</color>
+	<color name="messagelist_pinned_color">@color/material_amber</color>
+	<color name="messagelist_archive_color">@color/material_blue</color>
+
+	<!-- whatsnew -->
+	<color name="whatsnew_background">@color/material_blue</color>
+
+	<!-- compose edittext -->
+	<color name="compose_shadow_light">#0A000000</color>
+	<color name="compose_stroke">#20000000</color>
+
+	<!-- tooltips -->
+	<color name="tooltip_text_color">@android:color/white</color>
+	<color name="tooltip_background_color">@color/material_indigo</color>
+	<color name="tooltip_shadow_color">#40555555</color>
+
+	<!-- qr scanner -->
+	<color name="possible_result_points">#c0FF0000</color>
+	<color name="result_view">#b0000000</color>
+	<color name="viewfinder_laser">@color/accent_regular</color>
+	<color name="viewfinder_mask">#60000000</color>
+
+	<!-- Location Picker -->
+	<color name="lp_primary">#ff607d8b</color>
+	<color name="lp_marker_icon">#ffffffff</color>
+
+	<!-- Ballot overview view -->
+	<color name="material_red__chip_bg">#D08886</color>
+	<color name="match_highlight_color">@color/material_blue</color>
+
+	<!-- others -->
+	<color name="fab_label_background">#555555</color>
+	<color name="item_controller_color">#FFAAAAAA</color>
+	<color name="imagepaint_overlay_select_color">#FFFFFFFF</color>
+	<color name="gallery_background">#ff1a1a1a</color>
+	<color name="status_bar_detail">#3000</color>
+
+	<!--**********************************************************************************************************-->
+	<!-- material colors for reference -->
 	<color name="material_green">#4caf50</color>
 	<color name="material_cyan">#00bcd4</color>
 	<color name="material_indigo">#3f51b5</color>
@@ -112,134 +224,7 @@
 	<color name="material_indigo_a400">#3d5afe</color>
 	<color name="material_indigo_a700">#304ffe</color>
 	<color name="material_indigo_a200">#536dfe</color>
-	<color name="divider_color">#1f000000</color>
 	<color name="material_teal_secondary">#00ebd5</color>
 	<color name="material_grey_300_alpha">#44e0e0e0</color>
-
-	<!--   your app branding color for the app bar -->
-	<color name="material_primary">#ffffff</color>
-	<!--   darker variant for the status bar and contextual app bars -->
-	<color name="material_primary_dark">#757575</color>
-	<color name="messagelist_highlight_color">@color/material_red</color>
-
-	<!-- emoji picker color -->
-	<color name="emoji_picker_background_top">#e4e7e9</color>
-	<color name="emoji_picker_background_main">#f3f4f8</color>
-	<color name="emoji_picker_divider">#f6f7f8</color>
-	<color name="emoji_picker_top_divider">#eff1f2</color>
-	<color name="emoji_picker_hint">#d3d3d3</color>
-
-	<!-- values for dark application theme -->
-	<color name="dark_material_level0">#121212</color>
-	<color name="dark_material_level1">#1F1F1F</color>
-	<color name="dark_material_level2">#272727</color>
-	<color name="dark_material_level3">#323232</color>
-
-	<color name="dark_toolbar_color">@color/dark_material_level2</color>
-
-	<color name="dark_material_primary">@color/dark_material_level0</color>
-	<color name="dark_material_secondary">@color/dark_material_level1</color>
-	<color name="dark_activity_background">@color/dark_material_level0</color>
-	<color name="dark_activity_background_secondary">@color/dark_material_level1</color>
-	<color name="dark_image_tint_default">@android:color/white</color>
-	<color name="dark_text_color_primary">#ffffff</color>
-	<color name="dark_text_color_secondary">#d0d0d0</color>
-	<color name="dark_text_color_tertiary">#a5a5a5</color>
-	<color name="dark_divider_color">#1fffffff</color>
-	<color name="dark_emoji_picker_background_top">@color/dark_material_level3</color>
-	<color name="dark_emoji_picker_background_main">@color/dark_material_level1</color>
-	<color name="dark_emoji_picker_divider">#303030</color>
-	<color name="dark_emoji_picker_top_divider">#404040</color>
-	<color name="dark_emoji_picker_hint">#707070</color>
-	<color name="dark_preference_background_color">@color/dark_material_level0</color>
-	<color name="cardview_background_dark">@color/dark_material_level1</color>;
-	<color name="splash_background">#FF303030</color>
-	<color name="background_identity_popup">@color/activity_background_secondary</color>
-	<color name="background_identity_popup_dark">@color/dark_material_level2</color>
-	<color name="text_color_open_ballots">#656565</color>
-	<color name="text_color_open_ballots_dark">#C5C5C5</color>
-
-	<!-- wizard -->
-	<color name="new_wizard_color_primary">@android:color/white</color>
-	<color name="new_wizard_alpha_background">#33ffffff</color>
-	<color name="new_wizard_color_accent">@color/accent_dark</color>
-	<color name="new_wizard_color_accent_dark">#323232</color>
-	<color name="new_wizard_color_button_disabled">#664caf50</color>
-
-	<color name="fab_label_background">#555555</color>
-	<color name="background_dim_light">#77ffffff</color>
-	<color name="background_dim_dark">#77000000</color>
-	<color name="item_controller_color">#FFAAAAAA</color>
-	<color name="imagepaint_overlay_select_color">#FFFFFFFF</color>
-
-	<color name="list_item_background_checked">#40999999</color>
-	<!-- solid colors of selected list item background -->
-	<color name="list_item_background_checked_light">#ffd9d9d9</color>
-	<color name="list_item_background_checked_dark">#ff4a4a4a</color>
-
-	<!-- voip -->
-	<color name="voip_accept_call_tint">@color/accent_regular</color>
-	<color name="voip_end_call_tint">#ff1744</color>
-	<color name="voip_dialer_theme_color">#c4002a7e</color>
-	<color name="voip_dialer_theme_color_blurry">#55002a7e</color>
-	<color name="voip_bottom_sheet_highlight_color">#2a56c6</color>
-	<color name="messagelist_pinned_color">@color/material_amber</color>
-	<color name="messagelist_archive_color">@color/material_blue</color>
-
-	<!-- whatsnew -->
-	<color name="whatsnew_background">@color/material_blue</color>
-
-	<!-- compose edittext -->
-	<color name="compose_shadow_light">#0A000000</color>
-	<color name="compose_stroke">#20000000</color>
-
-	<!-- mentions -->
-	<color name="mention_background_dark">@color/material_grey_550</color>
-	<color name="mention_background">@color/material_grey_300</color>
-	<color name="mention_background_dark_inverted">@color/material_grey_400</color>
-	<color name="mention_background_inverted">@color/material_grey_500</color>
-
-	<!-- tooltips -->
-	<color name="tooltip_text_color">@android:color/white</color>
-	<color name="tooltip_background_color">@color/material_indigo</color>
-	<color name="tooltip_shadow_color">#40555555</color>
-
-	<!-- markup -->
-	<color name="markup_marker_color">#FFD3D3D3</color>
-	<color name="markup_marker_color_dark">#FF888888</color>
-
-	<!-- qr scanner -->
-	<color name="possible_result_points">#c0FF0000</color>
-	<color name="result_view">#b0000000</color>
-	<color name="viewfinder_laser">@color/accent_regular</color>
-	<color name="viewfinder_mask">#60000000</color>
-
-	<!-- Location Picker -->
-	<color name="lp_primary">#ff607d8b</color>
-	<color name="lp_marker_icon">#ffffffff</color>
-
-    <!-- Media Attacher	-->
-	<color name="transparent_activity_overlay">#4C000000</color>
-	<color name="control_panel_divider">#3E666666</color>
-	<color name="mime_type_marker_background">#55000000</color>
-
-	<!-- preference headers -->
-	<color name="settings_second_line_text_color">#757575</color>
-	<color name="settings_second_line_text_color_dark">#b8b8b8</color>
-	<color name="settings_multipane_selection_bg_light">#1a000000</color>
-	<color name="settings_multipane_selection_bg_dark">#39ffffff</color>
-
-	<!-- Ballot overview view -->
-	<color name="material_red__chip_bg">#D08886</color>
-	<color name="match_highlight_color">@color/material_blue</color>
-
-	<!-- Media attacher -->
-	<color name="attach_status_bar_expanded_light">@android:color/white</color>
-	<color name="attach_status_bar_expanded_dark">@color/dark_material_level2</color>
-	<color name="attach_status_bar_collapsed_light">#FFB3B3B3</color>
-	<color name="attach_status_bar_collapsed_dark">#FF131313</color>
-	<color name="attach_button_background_light">#FFF1F1F1</color>
-	<color name="attach_button_background_dark">@color/dark_material_level3</color>
-	<color name="preview_navigation_area_bg">#44000000</color>
-
+	<color name="recently_added_background">#2241d68d</color>
 </resources>

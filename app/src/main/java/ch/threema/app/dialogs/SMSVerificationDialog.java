@@ -32,6 +32,7 @@ import android.widget.EditText;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
@@ -80,12 +81,13 @@ public class SMSVerificationDialog extends ThreemaDialogFragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(@NonNull Activity activity) {
 		super.onAttach(activity);
 
 		this.activity = activity;
 	}
 
+	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		String phone = getArguments().getString(ARG_PHONE_NUMBER);
@@ -126,7 +128,7 @@ public class SMSVerificationDialog extends ThreemaDialogFragment {
 	}
 
 	@Override
-	public void onCancel(DialogInterface dialogInterface) {
+	public void onCancel(@NonNull DialogInterface dialogInterface) {
 		callback.onNo(tag);
 	}
 

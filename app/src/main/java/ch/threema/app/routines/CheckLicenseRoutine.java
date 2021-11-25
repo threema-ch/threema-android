@@ -42,8 +42,8 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceThreema;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.client.APIConnector;
-import ch.threema.client.IdentityStoreInterface;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.stores.IdentityStoreInterface;
 
 /**
  * Checking the License of current Threema and send a not allowed broadcast
@@ -93,6 +93,7 @@ public class CheckLicenseRoutine implements Runnable {
 			case SERIAL:
 			case GOOGLE_WORK:
 			case HMS_WORK:
+			case ONPREM:
 				this.checkSerial();
 				break;
 			case HMS:

@@ -28,9 +28,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.view.View;
 
@@ -397,18 +395,12 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	public void onYes(String tag, Object data) {
 		Intent intent = new Intent();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-			// for Android 5-7
-			intent.putExtra("app_package", getActivity().getPackageName());
-			intent.putExtra("app_uid", getActivity().getApplicationInfo().uid);
-			// for Android O
-			intent.putExtra("android.provider.extra.APP_PACKAGE", getActivity().getPackageName());
-		} else {
-			intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-			intent.addCategory(Intent.CATEGORY_DEFAULT);
-			intent.setData(Uri.parse("package:" + getActivity().getPackageName()));
-		}
+		intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+		// for Android 5-7
+		intent.putExtra("app_package", getActivity().getPackageName());
+		intent.putExtra("app_uid", getActivity().getApplicationInfo().uid);
+		// for Android O
+		intent.putExtra("android.provider.extra.APP_PACKAGE", getActivity().getPackageName());
 		startActivityForResult(intent, INTENT_SYSTEM_NOTIFICATION_SETTINGS);
 	}
 

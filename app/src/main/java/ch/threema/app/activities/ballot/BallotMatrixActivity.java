@@ -30,8 +30,13 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.card.MaterialCardView;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
@@ -68,8 +73,9 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 	private ContactService contactService;
 	private GroupService groupService;
 	private String identity;
+	private View scrollParent, noVotesView;
 
-	private BallotVoteListener ballotVoteListener = new BallotVoteListener() {
+	private final BallotVoteListener ballotVoteListener = new BallotVoteListener() {
 		@Override
 		public void onSelfVote(BallotModel ballotModel) {
 			ballotListener.onModified(ballotModel);
@@ -91,7 +97,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 		}
 	};
 
-	private BallotListener ballotListener = new BallotListener() {
+	private final BallotListener ballotListener = new BallotListener() {
 		@Override
 		public void onClosed(BallotModel ballotModel) {
 			this.onModified(ballotModel);
@@ -165,6 +171,9 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 			textView.setText(this.getBallotModel().getName());
 		}
 
+		noVotesView = findViewById(R.id.no_votes_yet);
+		scrollParent = findViewById(R.id.scroll_parent);
+
 		ListenerManager.ballotListeners.add(this.ballotListener);
 		ListenerManager.ballotVoteListeners.add(this.ballotVoteListener);
 		this.updateView();
@@ -175,8 +184,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 		return R.layout.activity_ballot_matrix;
 	}
 
-
-	private void refreshList() {
+	private void updateView() {
 		TableLayout dataTableLayout = findViewById(R.id.matrix_data);
 
 		if(dataTableLayout != null) {
@@ -192,6 +200,28 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 			return;
 		}
 
+		List<BallotMatrixService.Participant> allParticipants = matrixData.getParticipants();
+		List<BallotMatrixService.Participant> votedParticipants = new ArrayList<>();
+		List<BallotMatrixService.Participant> notVotedParticipants = new ArrayList<>();
+
+		for (BallotMatrixService.Participant participant: allParticipants) {
+			if (participant.hasVoted()) {
+				votedParticipants.add(participant);
+			} else {
+				notVotedParticipants.add(participant);
+			}
+		}
+
+		if (votedParticipants.size() == 0) {
+			// no votes
+			noVotesView.setVisibility(View.VISIBLE);
+			scrollParent.setVisibility(View.GONE);
+			return;
+		}
+
+		noVotesView.setVisibility(View.GONE);
+		scrollParent.setVisibility(View.VISIBLE);
+
 		// add header row containing names/avatars of participants
 		TableRow nameHeaderRow = new TableRow(this);
 
@@ -201,7 +231,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 		View emptyCell2 = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_empty, null);
 		nameHeaderRow.addView(emptyCell2);
 
-		for(BallotMatrixService.Participant p: matrixData.getParticipants()) {
+		for(BallotMatrixService.Participant p: votedParticipants) {
 			final ContactModel contactModel = this.contactService.getByIdentity(p.getIdentity());
 
 			View nameCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_name, null);
@@ -243,7 +273,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
 			row.addView(sumCell);
 
-			for (BallotMatrixService.Participant p: matrixData.getParticipants()) {
+			for (BallotMatrixService.Participant p: votedParticipants) {
 				View choiceVoteView;
 
 				if (c.isWinner()) {
@@ -271,10 +301,24 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
 			dataTableLayout.addView(row);
 		}
-	}
 
-	private void updateView() {
-		this.refreshList();
+		TextView notVotedTextView = findViewById(R.id.not_voted);
+		MaterialCardView notVotedContainer = findViewById(R.id.not_voted_container);
+
+		if (contactService != null && notVotedParticipants.size() > 0) {
+			notVotedContainer.setVisibility(View.VISIBLE);
+			String userList = "";
+
+			for (BallotMatrixService.Participant p: notVotedParticipants) {
+				if (!"".equals(userList)) {
+					userList += ", ";
+				}
+				userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), contactService);
+			}
+			notVotedTextView.setText(getString(R.string.not_voted_user_list, userList));
+ 		} else {
+			notVotedContainer.setVisibility(View.GONE);
+		}
 	}
 
 	@Override

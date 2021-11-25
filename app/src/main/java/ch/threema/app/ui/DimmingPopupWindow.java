@@ -27,16 +27,16 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
-abstract class DimmingPopupWindow extends PopupWindow {
-	private Context context;
+public abstract class DimmingPopupWindow extends PopupWindow {
+	private final Context context;
 
-	DimmingPopupWindow(Context context) {
+	protected DimmingPopupWindow(Context context) {
 		super(context);
 
 		this.context = context;
 	}
 
-	void dimBackground() {
+	protected void dimBackground() {
 		View container;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			container = (View) getContentView().getParent().getParent();

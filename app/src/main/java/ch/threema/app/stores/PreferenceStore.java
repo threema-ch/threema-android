@@ -62,7 +62,7 @@ import ch.threema.app.listeners.PreferenceListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.StringConversionUtil;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 

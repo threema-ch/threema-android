@@ -28,8 +28,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
@@ -44,7 +44,7 @@ import ch.threema.app.R;
 import ch.threema.app.ui.ZoomableExoPlayerView;
 import ch.threema.app.utils.RuntimeUtil;
 
-public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.EventListener, PreviewFragmentInterface {
+public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
 	private static final Logger logger = LoggerFactory.getLogger(VideoPreviewFragment.class);
 
 	private ZoomableExoPlayerView videoView;
@@ -119,18 +119,11 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 	}
 
 	@Override
-	public void onPlayerError(ExoPlaybackException error) {
-		if (error.type == ExoPlaybackException.TYPE_UNEXPECTED) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), "Exoplayer error: " + error.getUnexpectedException(), Toast.LENGTH_LONG).show();
-				}
-			});
+	public void onPlayerError(PlaybackException error) {
+		RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Exoplayer error: " + error.getErrorCodeName(), Toast.LENGTH_LONG).show());
 
-			releasePlayer();
-			initializePlayer(false);
-		}
+		releasePlayer();
+		initializePlayer(false);
 	}
 
 	public void initializePlayer(boolean playWhenReady) {

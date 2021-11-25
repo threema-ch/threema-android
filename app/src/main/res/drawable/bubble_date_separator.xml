@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019 Threema GmbH
+  ~ All rights reserved.
+  -->
+
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:bottom="@dimen/chat_bubble_offset_pos"
 	      android:right="@dimen/chat_bubble_offset_pos">
@@ -9,7 +14,7 @@
 				android:left="@dimen/chat_bubble_border_padding"
 				android:right="@dimen/chat_bubble_border_padding"
 				android:top="@dimen/chat_bubble_border_padding"/>
-			<solid android:color="@color/date_separator_bg_color"/>
+			<solid android:color="?attr/date_separator_bg_color"/>
 		</shape>
 	</item>
 </layer-list>

@@ -21,21 +21,17 @@
 
 package ch.threema.app.services;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.PowerManager;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,18 +42,12 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 	private static final Logger logger = LoggerFactory.getLogger(SensorServiceImpl.class);
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":SensorService";
 
-	// On Android API <21, the PROXIMITY_SCREEN_OFF_WAKE_LOCK and
-	// RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY are not part of the public API.
-	private static int PROXIMITY_SCREEN_OFF_WAKE_LOCK_PRE_21 = 32;
-	private static int RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY_PRE_21 = 1;
-
 	private PowerManager.WakeLock proximityWakelock;
-	private SensorManager sensorManager;
+	private final SensorManager sensorManager;
 	private Sensor proximitySensor, accelerometerSensor;
 	private static boolean isFlatOnTable = true;
-	private Map<String, Object> instanceMap = new HashMap<>();
+	private final Map<String, Object> instanceMap = new HashMap<>();
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public SensorServiceImpl(Context context) {
 		PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
 		this.sensorManager = (SensorManager) context.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
@@ -66,21 +56,10 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 			this.proximitySensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 			this.accelerometerSensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 			if (hasSensors()) {
-				// New API (21+)
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					if (powerManager.isWakeLockLevelSupported(android.os.PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
-						this.proximityWakelock = powerManager.newWakeLock(android.os.PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, WAKELOCK_TAG);
-					} else {
-						logger.debug("Proximity wakelock not supported");
-					}
-
-				// Older Android versions, rely on undocumented code
+				if (powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
+					this.proximityWakelock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, WAKELOCK_TAG);
 				} else {
-					try {
-						this.proximityWakelock = powerManager.newWakeLock(PROXIMITY_SCREEN_OFF_WAKE_LOCK_PRE_21, WAKELOCK_TAG);
-					} catch (Exception e) {
-						logger.error("Proximity wakelock not supported", e);
-					}
+					logger.debug("Proximity wakelock not supported");
 				}
 			}
 		} catch (Exception e) {
@@ -100,39 +79,7 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 
 	private void releaseWakelock() {
 		if (this.proximityWakelock != null && this.proximityWakelock.isHeld()) {
-			// Properly releasing the proximity wakelock is a bit tricky. Newer API versions
-			// have a version of .release() that accepts flags. We want the
-			// RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY flag. On older versions, that method may exist
-			// but is not part of the public API. Therefore we try to invoke the method
-			// through reflection.
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				this.proximityWakelock.release(PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
-			} else {
-				boolean released = false;
-				Method releaseWithFlag = null;
-				try {
-					releaseWithFlag = PowerManager.WakeLock.class.getDeclaredMethod("release", Integer.TYPE);
-				} catch (NoSuchMethodException e) {
-					logger.error("Device does not support parametrizable wakelock release", e);
-				}
-				if (releaseWithFlag != null) {
-					//noinspection TryWithIdenticalCatches
-					try {
-						// Release with flag
-						releaseWithFlag.invoke(this.proximityWakelock, RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY_PRE_21);
-						released = true;
-					} catch (IllegalAccessException e) {
-						logger.error("Could not release wakelock with flags", e);
-					} catch (InvocationTargetException e) {
-						logger.error("Could not release wakelock with flags", e);
-					}
-				}
-				if (!released) {
-					// Release without a flag
-					this.proximityWakelock.release();
-				}
-				logger.info("Released proximity wakelock");
-			}
+			this.proximityWakelock.release(PowerManager.RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY);
 		}
 	}
 
@@ -144,24 +91,32 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 	@Override
 	public void registerSensors(String tag, SensorListener sensorListener, boolean useAccelerometer) {
 		if (hasSensors()) {
-			instanceMap.put(tag, sensorListener);
-			sensorManager.registerListener(this, this.proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
-			if (useAccelerometer) {
-				sensorManager.registerListener(this, this.accelerometerSensor, 30000);
-			} else {
-				isFlatOnTable = false;
+			synchronized (instanceMap) {
+				if (!instanceMap.containsKey(tag)) {
+					instanceMap.put(tag, sensorListener);
+					sensorManager.registerListener(this, this.proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+					if (useAccelerometer) {
+						sensorManager.registerListener(this, this.accelerometerSensor, 30000);
+					} else {
+						isFlatOnTable = false;
+					}
+				} else {
+					logger.debug("Sensor {} already registered.", tag);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void unregisterSensors(String tag) {
-		if (instanceMap.size() > 0) {
-			instanceMap.remove(tag);
-			if (instanceMap.size() < 1) {
-				releaseWakelock();
-				if (hasSensors()) {
-					sensorManager.unregisterListener(this);
+		synchronized (instanceMap) {
+			if (instanceMap.size() > 0) {
+				instanceMap.remove(tag);
+				if (instanceMap.size() < 1) {
+					releaseWakelock();
+					if (hasSensors()) {
+						sensorManager.unregisterListener(this);
+					}
 				}
 			}
 		}
@@ -169,10 +124,12 @@ public class SensorServiceImpl implements SensorService, SensorEventListener {
 
 	@Override
 	public void unregisterAllSensors() {
-		instanceMap.clear();
-		releaseWakelock();
-		if (hasSensors()) {
-			sensorManager.unregisterListener(this);
+		synchronized (instanceMap) {
+			instanceMap.clear();
+			releaseWakelock();
+			if (hasSensors()) {
+				sensorManager.unregisterListener(this);
+			}
 		}
 	}
 

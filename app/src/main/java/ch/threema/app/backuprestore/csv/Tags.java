@@ -80,6 +80,9 @@ public abstract class Tags {
 	public static final String TAG_MESSAGE_IS_SAVED = "issaved";
 	public static final String TAG_MESSAGE_CREATED_AT = "created_at";
 	public static final String TAG_MESSAGE_MODIFIED_AT = "modified_at";
+	public static final String TAG_MESSAGE_DELIVERED_AT = "delivered_at";
+	public static final String TAG_MESSAGE_READ_AT = "read_at";
+
 	public static final String TAG_MESSAGE_MESSAGE_STATE = "messagestae";
 	public static final String TAG_MESSAGE_IS_STATUS_MESSAGE = "isstatusmessage";
 	public static final String TAG_MESSAGE_IS_QUEUED = "isqueued";

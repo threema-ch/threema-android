@@ -25,7 +25,6 @@ import android.content.Context;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
-import net.sqlcipher.DatabaseErrorHandler;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteException;
@@ -96,6 +95,9 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion63;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion64;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion65;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion66;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion67;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion68;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion69;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion7;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion8;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
@@ -111,14 +113,17 @@ import ch.threema.storage.factories.DistributionListMemberModelFactory;
 import ch.threema.storage.factories.DistributionListMessageModelFactory;
 import ch.threema.storage.factories.DistributionListModelFactory;
 import ch.threema.storage.factories.GroupBallotModelFactory;
+import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMemberModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.GroupMessagePendingMessageIdModelFactory;
 import ch.threema.storage.factories.GroupModelFactory;
 import ch.threema.storage.factories.GroupRequestSyncLogModelFactory;
 import ch.threema.storage.factories.IdentityBallotModelFactory;
+import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.MessageModelFactory;
 import ch.threema.storage.factories.ModelFactory;
+import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.WebClientSessionModelFactory;
 
 public class DatabaseServiceNew extends SQLiteOpenHelper {
@@ -127,7 +132,8 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "threema.db";
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = 66;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion69.VERSION;
+
 	private final Context context;
 	private final String key;
 	private final UpdateSystemService updateSystemService;
@@ -149,6 +155,9 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private GroupMessagePendingMessageIdModelFactory groupMessagePendingMessageIdModelFactory;
 	private WebClientSessionModelFactory webClientSessionModelFactory;
 	private ConversationTagFactory conversationTagFactory;
+	private GroupInviteModelFactory groupInviteModelFactory;
+	private OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
+	private IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory;
 
 	public DatabaseServiceNew(final Context context,
 	                          final String databaseKey,
@@ -189,30 +198,24 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 					}
 				}
 				,
-				new DatabaseErrorHandler() {
-					@Override
-					public void onCorruption(SQLiteDatabase sqLiteDatabase) {
-						logger.error("Database corrupted");
-						RuntimeUtil.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								if (context != null) {
-									Toast.makeText(context, "Database corrupted. Please save all data!", Toast.LENGTH_LONG).show();
-								}
-							}
-						});
+			sqLiteDatabase -> {
+				logger.error("Database corrupted");
+				RuntimeUtil.runOnUiThread(() -> {
+					if (context != null) {
+						Toast.makeText(context, "Database corrupted. Please save all data!", Toast.LENGTH_LONG).show();
+					}
+				});
 
-						// close database
-						if (sqLiteDatabase.isOpen()) {
-							try {
-								sqLiteDatabase.close();
-							} catch (Exception e) {
-								//
-							}
-						}
-						System.exit(2);
+				// close database
+				if (sqLiteDatabase.isOpen()) {
+					try {
+						sqLiteDatabase.close();
+					} catch (Exception e) {
+						//
 					}
 				}
+				System.exit(2);
+			}
 		);
 
 		logger.info("instantiated");
@@ -250,7 +253,10 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		this.getGroupBallotModelFactory(),
 		this.getGroupMessagePendingMessageIdModelFactory(),
 		this.getWebClientSessionModelFactory(),
-		this.getConversationTagFactory()})
+		this.getConversationTagFactory(),
+		this.getGroupInviteModelFactory(),
+		this.getIncomingGroupJoinRequestModelFactory(),
+		this.getOutgoingGroupJoinRequestModelFactory()})
 		{
 			String[] createTableStatement = f.getStatements();
 			if(createTableStatement != null) {
@@ -382,6 +388,27 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.conversationTagFactory = new ConversationTagFactory(this);
 		}
 		return this.conversationTagFactory;
+	}
+
+	public GroupInviteModelFactory getGroupInviteModelFactory() {
+		if(this.groupInviteModelFactory == null) {
+			this.groupInviteModelFactory = new GroupInviteModelFactory(this);
+		}
+		return this.groupInviteModelFactory;
+	}
+
+	public IncomingGroupJoinRequestModelFactory getIncomingGroupJoinRequestModelFactory() {
+		if (this.incomingGroupJoinRequestModelFactory == null) {
+			this.incomingGroupJoinRequestModelFactory = new IncomingGroupJoinRequestModelFactory(this);
+		}
+		return this.incomingGroupJoinRequestModelFactory;
+	}
+
+	public OutgoingGroupJoinRequestModelFactory getOutgoingGroupJoinRequestModelFactory() {
+		if (this.outgoingGroupJoinRequestModelFactory == null) {
+			this.outgoingGroupJoinRequestModelFactory = new OutgoingGroupJoinRequestModelFactory(this);
+		}
+		return this.outgoingGroupJoinRequestModelFactory;
 	}
 
 	// Note: Enable this to allow database downgrades.
@@ -585,11 +612,20 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		if (oldVersion < 64) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion64(this.context));
 		}
-		if (oldVersion < 65) {
-			this.updateSystemService.addUpdate(new SystemUpdateToVersion65(this.context));
+		if (oldVersion < SystemUpdateToVersion65.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion65(this, sqLiteDatabase));
 		}
-		if (oldVersion < 66) {
-			this.updateSystemService.addUpdate(new SystemUpdateToVersion66(sqLiteDatabase));
+		if (oldVersion < SystemUpdateToVersion66.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion66(this.context));
+		}
+		if (oldVersion < SystemUpdateToVersion67.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion67(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion68.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion68(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion69.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion69(this, sqLiteDatabase));
 		}
 	}
 

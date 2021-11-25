@@ -22,15 +22,15 @@
 package ch.threema.app.utils;
 
 import ch.threema.app.ThreemaApplication;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.BoxAudioMessage;
-import ch.threema.client.BoxImageMessage;
-import ch.threema.client.BoxVideoMessage;
-import ch.threema.client.GroupAudioMessage;
-import ch.threema.client.GroupImageMessage;
-import ch.threema.client.GroupVideoMessage;
-import ch.threema.client.file.FileMessage;
-import ch.threema.client.file.GroupFileMessage;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.BoxAudioMessage;
+import ch.threema.domain.protocol.csp.messages.BoxImageMessage;
+import ch.threema.domain.protocol.csp.messages.BoxVideoMessage;
+import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
+import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
+import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileMessage;
+import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
 
 public class MessageDiskSizeUtil {
 	private static final long  MEGABYTE = 1024L * 1024L;

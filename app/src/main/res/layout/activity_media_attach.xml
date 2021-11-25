@@ -8,6 +8,53 @@
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true">
 
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/permission_container"
+		android:visibility="gone"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		app:layout_constraintBottom_toBottomOf="@id/media_grid_recycler"
+		app:layout_constraintLeft_toLeftOf="@id/media_grid_recycler"
+		app:layout_constraintRight_toRightOf="@id/media_grid_recycler"
+		app:layout_constraintTop_toTopOf="@id/media_grid_recycler">
+
+		<TextView
+			android:id="@+id/permission_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:gravity="center_horizontal"
+			android:textAlignment="center"
+			android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+			android:textColor="@android:color/white"
+			android:text="@string/enable_storage_access_for_media"
+			android:shadowColor="@android:color/black"
+			android:shadowDx="2"
+			android:shadowDy="2"
+			android:shadowRadius="3"
+			app:layout_constraintBottom_toTopOf="@+id/permission_button"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintVertical_chainStyle="packed"
+			/>
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/permission_button"
+			style="@style/Threema.Chip.Action"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:text="@string/take_me_there"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/permission_text" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:id="@+id/grid_container"
 		android:layout_width="match_parent"
@@ -37,7 +84,7 @@
 				android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
 				android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
 				android:importantForAccessibility="no"
-				android:src="?attr/bottomsheet_grapple"
+				android:src="@drawable/bottomsheet_grapple"
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintRight_toRightOf="parent"
 				app:layout_constraintTop_toTopOf="parent"
@@ -67,7 +114,7 @@
 
 		<com.google.android.material.appbar.MaterialToolbar
 			android:id="@+id/toolbar"
-			style="?attr/materialToolbarStyle"
+			style="@style/Threema.ToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			android:visibility="invisible"
@@ -98,6 +145,7 @@
 					android:layout_height="match_parent"
 					app:srcCompat="@drawable/ic_arrow_down_filled"
 					app:tint="?attr/image_tint_default"
+					android:visibility="invisible"
 					android:contentDescription="@string/filter_by_album"/>
 
 			</LinearLayout>
@@ -151,7 +199,7 @@
 
 			<com.google.android.material.appbar.MaterialToolbar
 				android:id="@+id/preview_toolbar"
-				style="?attr/materialToolbarStyle"
+				style="@style/Threema.ToolbarStyle"
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
 				android:background="@android:color/transparent"

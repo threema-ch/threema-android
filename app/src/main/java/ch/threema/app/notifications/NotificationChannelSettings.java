@@ -33,7 +33,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
-import ch.threema.client.Base32;
+import ch.threema.base.utils.Base32;
 
 public class NotificationChannelSettings {
 	private String prefix;

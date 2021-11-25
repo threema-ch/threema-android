@@ -30,8 +30,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
+
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -48,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiTextView;
@@ -75,13 +80,14 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 	private final IdListService blackListIdentityService;
 
 	public static final int VIEW_TYPE_NORMAL = 0;
+	public static final int VIEW_TYPE_RECENTLY_ADDED = 1;
 	public static final int VIEW_TYPE_COUNT = 2;
 
 	private static final String PLACEHOLDER_BLANK_HEADER = " ";
 	private static final String PLACEHOLDER_CHANNELS = "\uffff";
 	private static final String PLACEHOLDER_RECENTLY_ADDED = "\u0001";
 	private static final String CHANNEL_SIGN = "\u002a";
-	private static final String RECENTLY_ADDED_SIGN = "+";
+	public static final String RECENTLY_ADDED_SIGN = "+";
 
 	private List<ContactModel> values, ovalues, recentlyAdded = new ArrayList<>();
 	private ContactListFilter contactListFilter;
@@ -240,7 +246,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		} else {
 			if (ContactUtil.isChannelContact(c)) {
 				firstLetter = afterSorting ? CHANNEL_SIGN : PLACEHOLDER_CHANNELS;
-			} else if (recentlyAdded != null && recentlyAdded.size() > 0 && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
+			} else if (getItemViewType(position) == VIEW_TYPE_RECENTLY_ADDED) {
 				if (contactListFilter != null && contactListFilter.getFilterString() != null) {
 					if (position > 0) {
 						for (int i = Math.min(position - 1, MAX_RECENTLY_ADDED_CONTACTS - 1) ; i >= 0; i--) {
@@ -272,14 +278,19 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 	@NonNull
 	@Override
 	public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
-		CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
+		final int viewType = getItemViewType(position);
+		ConstraintLayout itemView = (ConstraintLayout) convertView;
 
 		ContactListHolder holder;
 
 		if (convertView == null) {
 			// This a new view we inflate the new layout
 			holder = new ContactListHolder();
-			itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_contact_list, parent, false);
+
+			itemView = (ConstraintLayout) inflater.inflate(
+						viewType == VIEW_TYPE_RECENTLY_ADDED ?
+						R.layout.item_contact_list_recently_added :
+						R.layout.item_contact_list, parent, false);
 
 			holder.nameTextView = itemView.findViewById(R.id.name);
 			holder.idTextView = itemView.findViewById(R.id.subject);
@@ -291,16 +302,29 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			holder.initialImageView = itemView.findViewById(R.id.initial_image);
 
 			itemView.setTag(holder);
-			itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
+
+			if (viewType == VIEW_TYPE_NORMAL) {
+				((CheckableConstraintLayout) itemView).setOnCheckedChangeListener((checkableView, isChecked) -> {
 					if (isChecked) {
 						checkedItems.add(((ContactListHolder) checkableView.getTag()).originalPosition);
 					} else {
 						checkedItems.remove(((ContactListHolder) checkableView.getTag()).originalPosition);
 					}
-				}
-			});
+				});
+			} else if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
+				int cornerSize = getContext().getResources().getDimensionPixelSize(R.dimen.recently_added_background_corner_size);
+				int recentlyAddedLastPosition = recentlyAdded.size() - 1;
+
+				ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel.Builder()
+					.setTopLeftCornerSize(position == 0 ? cornerSize : 0)
+					.setTopRightCornerSize(position == 0 ? cornerSize : 0)
+					.setBottomLeftCornerSize(position == recentlyAddedLastPosition ? cornerSize : 0)
+					.setBottomRightCornerSize(position == recentlyAddedLastPosition ? cornerSize : 0)
+					.build();
+
+				MaterialCardView cardView = itemView.findViewById(R.id.recently_added_background);
+				cardView.setShapeAppearanceModel(shapeAppearanceModel);
+			}
 		} else {
 			holder = (ContactListHolder) itemView.getTag();
 		}
@@ -386,11 +410,30 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 		holder.avatarView.setBadgeVisible(contactService.showBadge(contactModel));
 
+		//itemView.setEnabled(viewType == VIEW_TYPE_NORMAL);
+		if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
+			itemView.setOnLongClickListener(v -> true);
+			itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ListView listView = (ListView) parent;
+					if (listView.getCheckedItemCount() == 0) {
+						listView.getOnItemClickListener().onItemClick(null, v, position, 0L);
+					}
+				}
+			});
+		}
+
 		return itemView;
 	}
 
 	@Override
 	public int getItemViewType(int position) {
+		ContactModel c = values.get(position);
+
+		if (recentlyAdded != null && recentlyAdded.size() > 0 && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
+			return VIEW_TYPE_RECENTLY_ADDED;
+		}
 		return VIEW_TYPE_NORMAL;
 	}
 

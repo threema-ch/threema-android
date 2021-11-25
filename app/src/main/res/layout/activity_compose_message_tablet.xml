@@ -23,7 +23,7 @@
 					android:layout_width="6dp"
 					android:layout_height="fill_parent"
 					android:layout_gravity="right"
-					android:background="?attr/multipane_shadow"/>
+					android:background="@drawable/multipane_divider"/>
 
 		</FrameLayout>
 

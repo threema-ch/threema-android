@@ -37,6 +37,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -119,6 +121,7 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ResumePauseHandler;
+import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -262,7 +265,7 @@ public class MessageSectionFragment extends MainFragment
 
 		@Override
 		public void onModified(final ConversationModel modifiedConversationModel, final Integer oldPosition) {
-			logger.debug("on modified conversation");
+			logger.debug("on modified conversation. old position = {}", oldPosition);
 			if(messageListAdapter != null && recyclerView != null) {
 				//scroll if position changed (to top)
 				List<ConversationModel> l = new ArrayList<>();
@@ -277,12 +280,8 @@ public class MessageSectionFragment extends MainFragment
 
 		@Override
 		public void onRemoved(final ConversationModel conversationModel) {
-			if (isMultiPaneEnabled(activity)) {
-				activity.finish();
-			} else {
-				if(messageListAdapter != null) {
-					updateList();
-				}
+			if(messageListAdapter != null) {
+				updateList();
 			}
 		}
 
@@ -750,7 +749,7 @@ public class MessageSectionFragment extends MainFragment
 					if (tempMessagesFile != null && tempMessagesFile.exists() && tempMessagesFile.length() > 0) {
 						final Intent intent = new Intent(Intent.ACTION_SEND);
 						intent.setType(MimeUtil.MIME_TYPE_ZIP);
-						intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject));
+						intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject, getString(R.string.app_name)));
 						intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.chat_history_attached) + "\n\n" + getString(R.string.share_conversation_body));
 						intent.putExtra(Intent.EXTRA_STREAM, fileService.getShareFileUri(tempMessagesFile, null));
 						intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -782,7 +781,8 @@ public class MessageSectionFragment extends MainFragment
 				MAX_PW_LENGTH_BACKUP,
 				R.string.backup_password_again_summary,
 				0,
-				R.string.backup_data_media);
+				R.string.backup_data_media,
+				PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.setTargetFragment(this, 0);
 		dialogFragment.setData(model);
 		dialogFragment.show(getFragmentManager(), DIALOG_TAG_SHARE_CHAT);
@@ -876,7 +876,8 @@ public class MessageSectionFragment extends MainFragment
 						});
 					} else if (direction == ItemTouchHelper.LEFT) {
 						archiveCount++;
-						conversationService.archive(holder.getConversationModel());
+						ConversationModel archiveableConversation = holder.getConversationModel();
+						conversationService.archive(archiveableConversation);
 
 						String snackText = String.format(getString(R.string.message_archived), archiveCount);
 
@@ -885,7 +886,8 @@ public class MessageSectionFragment extends MainFragment
 						}
 
 						if (getView() != null) {
-							archiveSnackbar = Snackbar.make(getView(), snackText, Snackbar.LENGTH_LONG);
+							archiveSnackbar = Snackbar.make(getView(), snackText, 7 * (int) DateUtils.SECOND_IN_MILLIS);
+							archiveSnackbar.setAction(R.string.undo, v -> conversationService.unarchive(Collections.singletonList(archiveableConversation)));
 							archiveSnackbar.addCallback(new Snackbar.Callback() {
 								@Override
 								public void onDismissed(Snackbar snackbar, int event) {
@@ -1189,7 +1191,7 @@ public class MessageSectionFragment extends MainFragment
 	}
 
 	private void showSelector() {
-		ArrayList<String> labels = new ArrayList<>();
+		ArrayList<SelectorDialogItem> labels = new ArrayList<>();
 		ArrayList<Integer> tags = new ArrayList<>();
 
 		if (messageListAdapter.getCheckedItemCount() != 1) {
@@ -1216,47 +1218,47 @@ public class MessageSectionFragment extends MainFragment
 		boolean isPrivate = hiddenChatsListService.has(receiver.getUniqueIdString());
 
 		if (conversationModel.hasUnreadMessage() || conversationTagService.isTaggedWith(conversationModel, unreadTagModel)) {
-			labels.add(getString(R.string.mark_read));
+			labels.add(new SelectorDialogItem(getString(R.string.mark_read), R.drawable.ic_outline_visibility));
 			tags.add(TAG_MARK_READ);
 		} else {
-			labels.add(getString(R.string.mark_unread));
+			labels.add(new SelectorDialogItem(getString(R.string.mark_unread), R.drawable.ic_outline_visibility_off ));
 			tags.add(TAG_MARK_UNREAD);
 		}
 
 		if (isPrivate) {
-			labels.add(getString(R.string.unset_private));
+			labels.add(new SelectorDialogItem(getString(R.string.unset_private), R.drawable.ic_outline_shield_24));
 			tags.add(TAG_UNSET_PRIVATE);
 		} else {
-			labels.add(getString(R.string.set_private));
+			labels.add(new SelectorDialogItem(getString(R.string.set_private), R.drawable.ic_privacy_outline));
 			tags.add(TAG_SET_PRIVATE);
 		}
 
 		if (!isPrivate && !AppRestrictionUtil.isExportDisabled(getActivity())) {
-			labels.add(getString(R.string.share_chat));
+			labels.add(new SelectorDialogItem(getString(R.string.share_chat), R.drawable.ic_share_outline));
 			tags.add(TAG_SHARE);
 		}
 
 		if (conversationModel.getMessageCount() > 0) {
-			labels.add(getString(R.string.empty_chat_title));
+			labels.add(new SelectorDialogItem(getString(R.string.empty_chat_title), R.drawable.ic_outline_delete_sweep));
 			tags.add(TAG_EMPTY_CHAT);
 		}
 
 		if (conversationModel.isDistributionListConversation()) {
 			// distribution lists
-			labels.add(getString(R.string.really_delete_distribution_list));
+			labels.add(new SelectorDialogItem(getString(R.string.really_delete_distribution_list), R.drawable.ic_delete_outline));
 			tags.add(TAG_DELETE_DISTRIBUTION_LIST);
 		} else if (conversationModel.isGroupConversation()) {
 			// group chats
 			if (groupService.isGroupOwner(conversationModel.getGroup()) &&
 				groupService.isGroupMember(conversationModel.getGroup())) {
-				labels.add(getString(R.string.group_edit_title));
+				labels.add(new SelectorDialogItem(getString(R.string.group_edit_title), R.drawable.ic_pencil_outline));
 				tags.add(TAG_EDIT_GROUP);
 			}
 			if (groupService.isGroupMember(conversationModel.getGroup())) {
-				labels.add(getString(R.string.action_leave_group));
+				labels.add(new SelectorDialogItem(getString(R.string.action_leave_group), R.drawable.ic_outline_directions_run));
 				tags.add(TAG_LEAVE_GROUP);
 			}
-			labels.add(getString(R.string.action_delete_group));
+			labels.add(new SelectorDialogItem(getString(R.string.action_delete_group), R.drawable.ic_delete_outline));
 			if (groupService.isGroupMember(conversationModel.getGroup())) {
 				if (groupService.isGroupOwner(conversationModel.getGroup())) {
 					tags.add(TAG_DELETE_MY_GROUP);
@@ -1351,7 +1353,7 @@ public class MessageSectionFragment extends MainFragment
 				hideChat(conversationModel);
 				break;
 			case TAG_SHARE:
-				if (ConfigUtils.requestStoragePermissions(activity, this, PERMISSION_REQUEST_SHARE_THREAD)) {
+				if (ConfigUtils.requestWriteStoragePermissions(activity, this, PERMISSION_REQUEST_SHARE_THREAD)) {
 					prepareShareChat(conversationModel);
 				}
 				break;
@@ -1409,12 +1411,19 @@ public class MessageSectionFragment extends MainFragment
 				break;
 			case DIALOG_TAG_REALLY_EMPTY_CHAT:
 				final ConversationModel conversationModel = (ConversationModel) data;
-				new EmptyChatAsyncTask(new MessageReceiver[]{conversationModel.getReceiver()}, messageService, getFragmentManager(), false, new Runnable() {
+				final int fromPosition = conversationModel.getPosition();
+
+				new EmptyChatAsyncTask(conversationModel.getReceiver(), messageService, conversationService, getFragmentManager(), false, new Runnable() {
 					@Override
 					public void run() {
-						conversationListeners.handle(listener -> {
-							conversationService.clear(conversationModel);
-							listener.onModified(conversationModel, null);
+						conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
+							@Override
+							public void handle(ConversationListener listener) {
+								if (!conversationModel.isGroupConversation()) {
+									conversationService.clear(conversationModel);
+								}
+								listener.onModified(conversationModel, fromPosition);
+							}
 						});
 					}
 				}).execute();

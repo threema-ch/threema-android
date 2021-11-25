@@ -59,7 +59,6 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -70,12 +69,14 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.ui.EmptyRecyclerView;
+import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SilentSwitchCompat;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
@@ -92,7 +93,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.Base64;
+import ch.threema.base.utils.Base64;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -489,20 +490,20 @@ public class SessionsActivity extends ThreemaToolbarActivity
 	 */
 	private void onSessionItemClicked(WebClientSessionModel model) {
 		if (model != null) {
-			ArrayList<String> items = new ArrayList<>();
+			ArrayList<SelectorDialogItem> items = new ArrayList<>();
 			ArrayList<Integer> values = new ArrayList<>();
 
-			items.add(this.getString(R.string.webclient_session_rename));
+			items.add(new SelectorDialogItem(this.getString(R.string.webclient_session_rename), R.drawable.ic_pencil_outline));
 			values.add(MENU_POS_RENAME);
 
 			if (model.getState() != WebClientSessionModel.State.INITIALIZING) {
-				items.add(this.getString(!this.sessionService.isRunning(model)
-						? R.string.webclient_session_start
-						: R.string.webclient_session_stop));
+				items.add(!this.sessionService.isRunning(model)
+						? new SelectorDialogItem(getString(R.string.webclient_session_start), R.drawable.ic_play)
+						: new SelectorDialogItem(getString(R.string.webclient_session_stop), R.drawable.ic_stop));
 				values.add(MENU_POS_START_STOP);
 			}
 
-			items.add(this.getString(R.string.webclient_session_remove));
+			items.add(new SelectorDialogItem(this.getString(R.string.webclient_session_remove), R.drawable.ic_delete_outline));
 			values.add(MENU_POS_REMOVE);
 
 			SelectorDialog selectorDialog = SelectorDialog.newInstance(null, items, values, null);
@@ -966,6 +967,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
 	@TargetApi(Build.VERSION_CODES.M)
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				this.scanQR();

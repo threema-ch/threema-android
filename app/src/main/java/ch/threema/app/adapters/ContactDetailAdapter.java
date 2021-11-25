@@ -42,12 +42,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.dialogs.PublicKeyDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.FingerPrintService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
@@ -67,7 +68,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private ContactService contactService;
 	private GroupService groupService;
 	private PreferenceService preferenceService;
-	private FingerPrintService fingerprintService;
 	private IdListService excludeFromSyncListService;
 	private IdListService blackListIdentityService;
 	private final ContactModel contactModel;
@@ -90,7 +90,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	public class HeaderHolder extends RecyclerView.ViewHolder {
 		private final VerificationLevelImageView verificationLevelImageView;
-		private final TextView threemaIdView, fingerprintView;
+		private final TextView threemaIdView;
 		private final CheckBox synchronize;
 		private final View nicknameContainer, synchronizeContainer;
 		private final ImageView syncSourceIcon;
@@ -101,9 +101,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		public HeaderHolder(View view) {
 			super(view);
 
-			// items in object
 			this.threemaIdView = itemView.findViewById(R.id.threema_id);
-			this.fingerprintView = itemView.findViewById(R.id.key_fingerprint);
 			this.verificationLevelImageView = itemView.findViewById(R.id.verification_level_image);
 			ImageView verificationLevelIconView = itemView.findViewById(R.id.verification_information_icon);
 			this.synchronize = itemView.findViewById(R.id.synchronize_contact);
@@ -123,6 +121,13 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 					}
 				}
 			});
+
+			itemView.findViewById(R.id.public_key_button).setOnClickListener(v -> {
+				if (context instanceof AppCompatActivity) {
+					PublicKeyDialog.newInstance(context.getString(R.string.public_key_for, contactModel.getIdentity()), contactModel.getPublicKey())
+						.show(((AppCompatActivity) context).getSupportFragmentManager(), "pk");
+				}
+			});
 		}
 	}
 
@@ -135,7 +140,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		try {
 			this.contactService = serviceManager.getContactService();
 			this.groupService = serviceManager.getGroupService();
-			this.fingerprintService = serviceManager.getFingerPrintService();
 			this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
 			this.preferenceService = serviceManager.getPreferenceService();
@@ -182,7 +186,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			String identityAdditional = null;
 			if(this.contactModel.getState() != null) {
 				switch (this.contactModel.getState()) {
-					case TEMPORARY:
 					case ACTIVE:
 						if (blackListIdentityService.has(contactModel.getIdentity())) {
 							identityAdditional = context.getString(R.string.blocked);
@@ -197,7 +200,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				}
 			}
 			headerHolder.threemaIdView.setText(contactModel.getIdentity() + (identityAdditional != null ? " (" + identityAdditional + ")" : ""));
-			headerHolder.fingerprintView.setText(this.fingerprintService.getFingerPrint(contactModel.getIdentity()));
 			headerHolder.verificationLevelImageView.setContactModel(contactModel);
 			headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
 
@@ -271,9 +273,9 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	@Override
 	public int getItemViewType(int position) {
-		if (isPositionHeader(position))
+		if (isPositionHeader(position)) {
 			return TYPE_HEADER;
-
+		}
 		return TYPE_ITEM;
 	}
 

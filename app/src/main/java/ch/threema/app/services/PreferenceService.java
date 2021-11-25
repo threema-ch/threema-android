@@ -37,8 +37,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils.AppTheme;
-import ch.threema.client.work.WorkDirectoryCategory;
-import ch.threema.client.work.WorkOrganization;
+import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
+import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public interface PreferenceService {
 
@@ -154,6 +154,10 @@ public interface PreferenceService {
 	String getLicensePassword();
 
 	void setLicensePassword(String password);
+
+	String getOnPremServer();
+
+	void setOnPremServer(String server);
 
 	LinkedList<Integer> getRecentEmojis();
 
@@ -491,6 +495,9 @@ public interface PreferenceService {
 
 	void setBallotOverviewHidden(boolean hidden);
 	boolean getBallotOverviewHidden();
+
+	void setGroupRequestsOverviewHidden(boolean hidden);
+	boolean getGroupRequestsOverviewHidden();
 
 	int getVideoCallToggleTooltipCount();
 	void incremenetVideoCallToggleTooltipCount();

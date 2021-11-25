@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -106,7 +107,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.Base32;
+import ch.threema.base.utils.Base32;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -1536,6 +1537,19 @@ public class FileServiceImpl implements FileService {
 			key = "dark";
 		}
 		return new File(getAppDataPathAbsolute(),"appicon_" + key + ".png");
+	}
+
+	@NonNull
+	@Override
+	public Uri getTempShareFileUri(Bitmap bitmap) throws IOException {
+		File tempQrCodeFile = createTempFile(FileUtil.getMediaFilenamePrefix(), ".png");
+		try (FileOutputStream fos = new FileOutputStream(tempQrCodeFile)) {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+			byte[] bitmapdata = bos.toByteArray();
+			fos.write(bitmapdata);
+		}
+		return getShareFileUri(tempQrCodeFile, null);
 	}
 
 }

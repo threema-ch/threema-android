@@ -21,11 +21,10 @@
 
 package ch.threema.app.activities;
 
-import android.content.res.Configuration;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
@@ -42,13 +41,13 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_whatsnew);
-
+/*
 		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, getString(R.string.app_name)));
 		((TextView) findViewById(R.id.whatsnew_body)).setText(getString(R.string.whatsnew_headline, getString(R.string.app_name)));
-
+*/
 		findViewById(R.id.next_text).setOnClickListener(v -> {
-//			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
-//			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
+			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
+			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
 			finish();
 		});
 
@@ -59,10 +58,5 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 				buttonLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonLayout), 200);
 			}
 		}
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
 	}
 }

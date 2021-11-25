@@ -62,6 +62,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
@@ -71,20 +72,24 @@ import ch.threema.app.asynctasks.LeaveGroupAsyncTask;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SelectorDialog;
+import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.grouplinks.GroupLinkOverviewActivity;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.IdListService;
+import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
+import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -96,14 +101,20 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.ThreemaException;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
 
-public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener, GenericAlertDialog.DialogClickListener, TextEntryDialog.TextEntryDialogClickListener {
+public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
+	GenericAlertDialog.DialogClickListener,
+	TextEntryDialog.TextEntryDialogClickListener,
+	GroupDetailAdapter.OnGroupDetailsClickListener
+	{
 	private static final Logger logger = LoggerFactory.getLogger(GroupDetailActivity.class);
-
+	// static values
 	private final int MODE_EDIT = 1;
 	private final int MODE_READONLY = 2;
 
@@ -116,6 +127,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private static final String DIALOG_TAG_CLONE_GROUP = "cg";
 	private static final String DIALOG_TAG_CLONE_GROUP_CONFIRM = "cgc";
 	private static final String DIALOG_TAG_CLONING_GROUP = "cgi";
+	public static final String DIALOG_SHOW_ONCE_RESET_LINK_INFO = "resetGroupLink";
 	private static final String RUN_ON_ACTIVE_RELOAD = "reload";
 
 	private static final int SELECTOR_OPTION_CONTACT_DETAIL = 0;
@@ -123,23 +135,26 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private static final int SELECTOR_OPTION_CALL = 2;
 	private static final int SELECTOR_OPTION_REMOVE = 3;
 
-	private int operationMode;
-	private int groupId;
-	private EmojiEditText groupNameEditText;
-	private boolean hasChanges = false;
-
-	private String myIdentity;
-
-	private GroupModel groupModel;
-	private GroupDetailAdapter groupDetailAdapter;
-	private CollapsingToolbarLayout collapsingToolbar;
-	private ResumePauseHandler resumePauseHandler;
+	// services
+	private LicenseService licenseService;
+	private GroupInviteService groupInviteService;
 	private DeviceService deviceService;
 	private IdListService blackListIdentityService;
-	private LicenseService licenseService;
-	private AvatarEditView avatarEditView;
+
+	private GroupModel groupModel;
 	private GroupDetailViewModel groupDetailViewModel;
+	private GroupDetailAdapter groupDetailAdapter;
+
+	private EmojiEditText groupNameEditText;
+	private CollapsingToolbarLayout collapsingToolbar;
+	private ResumePauseHandler resumePauseHandler;
+	private AvatarEditView avatarEditView;
 	private ExtendedFloatingActionButton floatingActionButton;
+
+	private String myIdentity;
+	private int operationMode;
+	private int groupId;
+	private boolean hasChanges = false;
 
 	private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
 		@Override
@@ -298,8 +313,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			this.deviceService = serviceManager.getDeviceService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
 			this.licenseService = serviceManager.getLicenseService();
-		} catch (FileSystemNotPresentException e) {
-			logger.error("Exception", e);
+			this.groupInviteService = serviceManager.getGroupInviteService();
+		} catch (FileSystemNotPresentException | MasterKeyLockedException e) {
+			logger.error("Exception, could not get required services", e);
 			finishUp();
 			return;
 		}
@@ -336,16 +352,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		((AppBarLayout) findViewById(R.id.appbar)).addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
 			@Override
 			public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-				logger.debug("Vertical offset: " + verticalOffset);
 				if (verticalOffset == 0) {
 					if (!floatingActionButton.isExtended()) {
 						floatingActionButton.extend();
 					}
 				}
-				else {
-					if (floatingActionButton.isExtended()) {
-						floatingActionButton.shrink();
-					}
+				else if (floatingActionButton.isExtended()) {
+					floatingActionButton.shrink();
 				}
 			}
 		});
@@ -355,22 +368,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 		if (this.groupService.isGroupOwner(this.groupModel)) {
 			operationMode = MODE_EDIT;
-			doneButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					saveGroupSettings();
-				}
-			});
-			floatingActionButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (groupService != null && groupService.isGroupOwner(groupModel)) {
-						Intent intent = new Intent(GroupDetailActivity.this, GroupAddActivity.class);
-						IntentDataUtil.append(groupModel, intent);
-						IntentDataUtil.append(groupDetailViewModel.getGroupContacts(), intent);
-						startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
-					}
-				}
+			doneButton.setOnClickListener(v -> saveGroupSettings());
+			floatingActionButton.setOnClickListener(v -> {
+				Intent intent = new Intent(GroupDetailActivity.this, GroupAddActivity.class);
+				IntentDataUtil.append(groupModel, intent);
+				IntentDataUtil.append(groupDetailViewModel.getGroupContacts(), intent);
+				startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
 			});
 			groupNameEditText.setMaxByteSize(GroupModel.GROUP_NAME_MAX_LENGTH_BYTES);
 		} else {
@@ -458,51 +461,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				updateFloatingActionButton();
 			}
 		});
-		this.groupDetailAdapter.setOnClickListener(new GroupDetailAdapter.OnClickListener() {
-			@Override
-			public void onItemClick(View v, ContactModel contactModel) {
-				if (contactModel != null) {
-					String identity = contactModel.getIdentity();
-					String shortName = NameUtil.getShortName(contactModel);
-
-					ArrayList<String> items = new ArrayList<>();
-					ArrayList<Integer> optionsMap = new ArrayList<>();
-
-					items.add(getString(R.string.show_contact));
-					optionsMap.add(SELECTOR_OPTION_CONTACT_DETAIL);
-
-					if (!TestUtil.compare(myIdentity, identity)) {
-						items.add(String.format(getString(R.string.chat_with), shortName));
-						optionsMap.add(SELECTOR_OPTION_CHAT);
-
-						if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
-								&& ConfigUtils.isCallsEnabled(GroupDetailActivity.this, preferenceService, licenseService)
-						) {
-							items.add(String.format(getString(R.string.call_with), shortName));
-							optionsMap.add(SELECTOR_OPTION_CALL);
-						}
-
-						if (operationMode == MODE_EDIT) {
-							if (groupModel != null && !TestUtil.compare(groupModel.getCreatorIdentity(), identity)) {
-								items.add(String.format(getString(R.string.kick_user_from_group), shortName));
-								optionsMap.add(SELECTOR_OPTION_REMOVE);
-							}
-						}
-						SelectorDialog selectorDialog = SelectorDialog.newInstance(null, items, null);
-						SelectorInfo selectorInfo = new SelectorInfo();
-						selectorInfo.contactModel = contactModel;
-						selectorInfo.view = v;
-						selectorInfo.optionsMap = optionsMap;
-						selectorDialog.setData(selectorInfo);
-						try {
-							selectorDialog.show(getSupportFragmentManager(), DIALOG_TAG_CHOOSE_ACTION);
-						} catch (IllegalStateException e) {
-							logger.error("Exception", e);
-						}
-					}
-				}
-			}
-		});
+		this.groupDetailAdapter.setOnClickListener(this);
 	}
 
 	@Override
@@ -565,8 +524,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		MenuItem groupSyncMenu = menu.findItem(R.id.menu_resync);
 		MenuItem leaveGroupMenu = menu.findItem(R.id.menu_leave_group);
 		MenuItem deleteGroupMenu = menu.findItem(R.id.menu_delete_group);
-		MenuItem mediaGalleryMenu = menu.findItem(R.id.menu_gallery);
 		MenuItem cloneMenu = menu.findItem(R.id.menu_clone_group);
+		MenuItem mediaGalleryMenu = menu.findItem(R.id.menu_gallery);
+		MenuItem groupLinkMenu = menu.findItem(R.id.menu_group_links_manage);
 
 		if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
 			cloneMenu.setVisible(false);
@@ -575,22 +535,21 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		if (groupModel != null) {
 			leaveGroupMenu.setVisible(true);
 			deleteGroupMenu.setVisible(true);
-
 			if (groupService.isGroupOwner(this.groupModel)) {
 				// MODE_EDIT
 				groupSyncMenu.setVisible(true);
+				if (ConfigUtils.supportsGroupLinks()) {
+					groupLinkMenu.setVisible(true);
+				}
 			}
-		}
 
-		if (groupModel != null && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
-			mediaGalleryMenu.setVisible(true);
-		} else {
-			mediaGalleryMenu.setVisible(false);
+			mediaGalleryMenu.setVisible(!hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel)));
 		}
 
 		if (operationMode != MODE_READONLY) {
 			menu.findItem(R.id.action_send_message).setVisible(false);
 		}
+
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -615,7 +574,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		if (itemId == android.R.id.home) {
 			finishUp();
 			return true;
-		} else if (itemId == R.id.action_send_message) {
+		}
+		else if (itemId == R.id.menu_group_links_manage) {
+			Intent groupLinkOverviewIntent = new Intent(this, GroupLinkOverviewActivity.class);
+			groupLinkOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+			startActivityForResult(groupLinkOverviewIntent, ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS);
+
+		}
+		else if (itemId == R.id.action_send_message) {
 			if (groupModel != null) {
 				Intent intent = new Intent(this, ComposeMessageActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -624,9 +590,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				startActivity(intent);
 				finish();
 			}
-		} else if (itemId == R.id.menu_resync) {
+		}
+		else if (itemId == R.id.menu_resync) {
 			this.syncGroup();
-		} else if (itemId == R.id.menu_leave_group) {
+		}
+		else if (itemId == R.id.menu_leave_group) {
 			int leaveMessageRes = operationMode == MODE_READONLY ? R.string.really_leave_group_message : R.string.really_leave_group_admin_message;
 
 			GenericAlertDialog.newInstance(
@@ -635,26 +603,29 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				R.string.ok,
 				R.string.cancel)
 				.show(getSupportFragmentManager(), DIALOG_TAG_LEAVE_GROUP);
-		} else if (itemId == R.id.menu_delete_group) {
+		}
+		else if (itemId == R.id.menu_delete_group) {
 			GenericAlertDialog.newInstance(
 				R.string.action_delete_group,
 				groupService.isGroupOwner(groupModel) ? R.string.delete_my_group_message : R.string.delete_group_message,
 				R.string.ok,
 				R.string.cancel)
 				.show(getSupportFragmentManager(), DIALOG_TAG_DELETE_GROUP);
-		} else if (itemId == R.id.menu_gallery) {
-			if (groupId > 0 && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
-				Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
-				mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
-				startActivity(mediaGalleryIntent);
-			}
-		} else if (itemId == R.id.menu_clone_group) {
+		}
+		else if (itemId == R.id.menu_clone_group) {
 			GenericAlertDialog.newInstance(
 				R.string.action_clone_group,
 				R.string.clone_group_message,
 				R.string.yes,
 				R.string.no)
 				.show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP_CONFIRM);
+		}
+		else if (itemId == R.id.menu_gallery) {
+			if (groupId > 0 && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
+				Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
+				mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
+				startActivity(mediaGalleryIntent);
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -691,7 +662,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 							groupService.getGroupIdentities(groupModel),
 							avatar);
 				} catch (Exception e) {
-					logger.error("Exception", e);
+					logger.error("Exception, cloning group failed", e);
 					return null;
 				}
 
@@ -807,7 +778,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				groupDetailViewModel.addGroupContacts(IntentDataUtil.getContactIdentities(data));
 				sortGroupMembers();
 				this.hasChanges = true;
-			} else {
+			}
+			else if (this.groupService.isGroupOwner(this.groupModel) && requestCode == ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS) {
+				// make sure we reset the default link switch if the default link was deleted
+				groupDetailAdapter.notifyDataSetChanged();
+			}
+			else {
 				if (this.avatarEditView != null) {
 					this.avatarEditView.onActivityResult(requestCode, resultCode, data);
 				}
@@ -889,6 +865,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				break;
 			case DIALOG_TAG_DELETE_GROUP:
 				deleteGroupAndQuit();
+				try {
+					serviceManager.getShortcutService().deleteShortcut((groupModel));
+				} catch (ThreemaException e) {
+					logger.debug("Exception, failed to delete direct group shortcut", e);
+				}
 				break;
 			case DIALOG_TAG_QUIT:
 				saveGroupSettings();
@@ -936,15 +917,18 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private void updateFloatingActionButton() {
-		if (this.floatingActionButton != null &&
-			this.groupService != null &&
-			this.groupDetailAdapter != null) {
-			if (this.groupService.isGroupOwner(this.groupModel)) {
-				if (this.groupDetailAdapter.getItemCount() > getResources().getInteger(R.integer.max_group_size)) {
-					this.floatingActionButton.hide();
-				} else {
-					this.floatingActionButton.show();
-				}
+		if (this.floatingActionButton == null ||
+			this.groupService == null ||
+			this.groupDetailAdapter == null) {
+			logger.error("Exception, could not update floating actions button, required instances not available");
+			return;
+		}
+
+		if (this.groupService.isGroupOwner(this.groupModel)) {
+			if (this.groupDetailAdapter.getItemCount() > BuildConfig.MAX_GROUP_SIZE) {
+				this.floatingActionButton.hide();
+			} else {
+				this.floatingActionButton.show();
 			}
 		}
 	}
@@ -968,5 +952,67 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		if (this.avatarEditView != null) {
 			this.avatarEditView.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
+	}
+
+	@Override
+	public void onGroupOwnerClick(View v, String identity) {
+		Intent intent = new Intent(this, ContactDetailActivity.class);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, groupModel.getCreatorIdentity());
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+		ActivityCompat.startActivityForResult((Activity) this, intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL, options.toBundle());
+	}
+
+	@Override
+	public void onGroupMemberClick(View v, @NonNull ContactModel contactModel) {
+		String identity = contactModel.getIdentity();
+		String shortName = NameUtil.getShortName(contactModel);
+
+		ArrayList<SelectorDialogItem> items = new ArrayList<>();
+		ArrayList<Integer> optionsMap = new ArrayList<>();
+
+		items.add(new SelectorDialogItem(getString(R.string.show_contact), R.drawable.ic_outline_visibility));
+		optionsMap.add(SELECTOR_OPTION_CONTACT_DETAIL);
+
+		if (!TestUtil.compare(myIdentity, identity)) {
+			items.add(new SelectorDialogItem(String.format(getString(R.string.chat_with), shortName), R.drawable.ic_chat_bubble));
+			optionsMap.add(SELECTOR_OPTION_CHAT);
+
+			if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
+				&& ConfigUtils.isCallsEnabled(GroupDetailActivity.this, preferenceService, licenseService)
+			) {
+				items.add(new SelectorDialogItem(String.format(getString(R.string.call_with), shortName), R.drawable.ic_phone_locked_outline));
+				optionsMap.add(SELECTOR_OPTION_CALL);
+			}
+
+			if (operationMode == MODE_EDIT) {
+				if (groupModel != null && !TestUtil.compare(groupModel.getCreatorIdentity(), identity)) {
+					items.add(new SelectorDialogItem(String.format(getString(R.string.kick_user_from_group), shortName), R.drawable.ic_person_remove_outline));
+					optionsMap.add(SELECTOR_OPTION_REMOVE);
+				}
+			}
+			SelectorDialog selectorDialog = SelectorDialog.newInstance(null, items, null);
+			SelectorInfo selectorInfo = new SelectorInfo();
+			selectorInfo.contactModel = contactModel;
+			selectorInfo.view = v;
+			selectorInfo.optionsMap = optionsMap;
+			selectorDialog.setData(selectorInfo);
+			try {
+				selectorDialog.show(getSupportFragmentManager(), DIALOG_TAG_CHOOSE_ACTION);
+			} catch (IllegalStateException e) {
+				logger.error("Exception", e);
+			}
+		}
+	}
+
+	@Override
+	public void onResetLinkClick() {
+		RuntimeUtil.runOnUiThread(() -> ShowOnceDialog.newInstance(R.string.reset_default_group_link_title, R.string.reset_default_group_link_desc).show(getSupportFragmentManager(), DIALOG_SHOW_ONCE_RESET_LINK_INFO));
+	}
+
+		@Override
+	public void onShareLinkClick() {
+		// option only enabled if there is a default link
+		groupInviteService.shareGroupLink(this, groupInviteService.getDefaultGroupInvite(groupModel).get());
 	}
 }

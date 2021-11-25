@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import ch.threema.base.ThreemaException;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 @AnyThread
 public interface QRCodeParser {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="about_title">Threema Work für Android</string>
-	<string name="enter_serial_body">Geben Sie die Zugangsdaten ein, die Sie von Ihrem Unternehmen bzw. Ihrer Organisation erhalten haben</string>
+	<string name="enter_serial_body">Threema Work ist der Messenger für Unternehmen. Geben Sie Ihre Zugangsdaten ein, die Sie von Ihrem Unternehmen erhalten haben.</string>
 	<string name="serial_required_want_exit">Die Lizenz ist ungültig. Möchten Sie es nochmals versuchen oder Threema verlassen?</string>
 	<string name="checking_serial">Zugangsberechtigung wird überprüft</string>
 	<string name="username_hint">Benutzername</string>
@@ -11,7 +11,7 @@
 	<string name="new_wizard_find_friends">Finden Sie Ihre Kontakte auf Threema</string>
 	<string name="new_wizard_sync_contacts_explain">Einschalten, um zu sehen, welche Ihrer Kontakte Threema oder Threema Work nutzen.</string>
 	<string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in Kontaktlisten aufgeführt. Möchten Sie Threema Work wirklich komplett anonym nutzen?</string>
-	<string name="new_wizard_setup_threema">Threema Work einrichten</string>
+	<string name="new_wizard_setup_threema">Jetzt einrichten</string>
 	<string name="new_wizard_welcome">Willkommen bei Threema Work</string>
 	<string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie),
 		die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen Threema-ID verbunden. Es besteht aus einem
@@ -27,7 +27,7 @@
 	<string name="menu_about">Über Threema Work</string>
 	<string name="list_theme_light">Hell</string>
 	<string name="list_theme_dark">Dunkel (standard)</string>
-	<string name="private_threema_download"><![CDATA[Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href=%s>hier</a> herunter.]]></string>
+	<string name="private_threema_download"><![CDATA[ <a href=%1$s>Erfahren Sie mehr über Threema Work</a> <br/><br/> Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href=%2$s>hier</a> herunter.]]></string>
 	<string name="directory_search">Im Verzeichnis suchen</string>
 	<string name="directory_title">Firmenverzeichnis</string>
 	<string name="directory_empty_view_text">Keine Einträge gefunden\n\nBitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Verzeichnis der Threema-Nutzer Ihres Unternehmens zu suchen.</string>

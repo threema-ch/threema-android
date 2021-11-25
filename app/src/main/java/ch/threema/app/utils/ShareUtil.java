@@ -31,6 +31,8 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.UserService;
 import ch.threema.storage.models.ContactModel;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 public class ShareUtil {
 	public static void shareContact(Context context, ContactModel contact) {
 		UserService userService = null;
@@ -50,4 +52,10 @@ public class ShareUtil {
 		}
 	}
 
+	public static void shareTextString(Context context, String text) {
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+		startActivity(context, Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
+	}
 }

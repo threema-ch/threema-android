@@ -502,9 +502,9 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				// handle selection in multi-pane mode
 				if (highlightUid != null && highlightUid.equals(conversationModel.getUid()) && context instanceof ComposeMessageActivity) {
 					if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
-						holder.listItemFG.setBackgroundResource(R.color.settings_multipane_selection_bg_dark);
+						holder.listItemFG.setBackgroundResource(R.color.dark_settings_multipane_selection_bg);
 					} else {
-						holder.listItemFG.setBackgroundResource(R.color.settings_multipane_selection_bg_light);
+						holder.listItemFG.setBackgroundResource(R.color.settings_multipane_selection_bg);
 					}
 				} else {
 					holder.listItemFG.setBackgroundColor(this.backgroundColor);

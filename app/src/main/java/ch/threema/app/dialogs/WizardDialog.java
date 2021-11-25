@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.appcompat.app.AppCompatDialog;
+import androidx.core.content.res.ResourcesCompat;
 import ch.threema.app.R;
 
 public class WizardDialog extends ThreemaDialogFragment {
@@ -38,16 +39,24 @@ public class WizardDialog extends ThreemaDialogFragment {
 	private static final String ARG_TITLE_STRING = "titleString";
 	private static final String ARG_POSITIVE = "positive";
 	private static final String ARG_NEGATIVE = "negative";
+	private static final String ARG_HIGHLIGHT = "highlight";
 
 	private WizardDialogCallback callback;
 	private Activity activity;
+	public enum Highlight {
+		POSITIVE,
+		NEGATIVE,
+		EQUAL,
+		NONE
+	}
 
-	public static WizardDialog newInstance(int title, int positive, int negative) {
+	public static WizardDialog newInstance(int title, int positive, int negative, Highlight highlight) {
 		WizardDialog dialog = new WizardDialog();
 		Bundle args = new Bundle();
 		args.putInt(ARG_TITLE, title);
 		args.putInt(ARG_POSITIVE, positive);
 		args.putInt(ARG_NEGATIVE, negative);
+		args.putSerializable(ARG_HIGHLIGHT, highlight);
 		dialog.setArguments(args);
 		return dialog;
 	}
@@ -107,6 +116,7 @@ public class WizardDialog extends ThreemaDialogFragment {
 		String titleString = getArguments().getString(ARG_TITLE_STRING);
 		int positive = getArguments().getInt(ARG_POSITIVE);
 		int negative = getArguments().getInt(ARG_NEGATIVE, 0);
+		Highlight highlight = (Highlight) getArguments().getSerializable(ARG_HIGHLIGHT);
 		final String tag = this.getTag();
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_wizard, null);
@@ -142,9 +152,41 @@ public class WizardDialog extends ThreemaDialogFragment {
 			negativeButton.setVisibility(View.GONE);
 		}
 
+		if (highlight != null) {
+			switch (highlight) {
+				case NONE:
+					hightlightButton(negativeButton, false);
+					hightlightButton(positiveButton, false);
+				case EQUAL:
+					hightlightButton(negativeButton, true);
+					hightlightButton(positiveButton, true);
+					break;
+				case NEGATIVE:
+					hightlightButton(negativeButton, true);
+					hightlightButton(positiveButton, false);
+					break;
+				case POSITIVE:
+				default:
+					positiveButton.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_button_green, null));
+					positiveButton.setTextColor(getResources().getColor(R.color.wizard_button_text_inverse));
+					break;
+			}
+		}
+
 		setCancelable(false);
 
 		return builder.create();
+	}
+
+	private void hightlightButton(Button button, boolean hightlight) {
+		if (hightlight) {
+			button.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_button_green, null));
+			button.setTextColor(getResources().getColor(R.color.wizard_button_text_inverse));
+		}
+		else {
+			button.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.selector_button_green_inverse, null));
+			button.setTextColor(getResources().getColor(R.color.wizard_button_text));
+		}
 	}
 
 	@Override

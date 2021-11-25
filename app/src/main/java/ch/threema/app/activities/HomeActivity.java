@@ -56,7 +56,6 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -90,6 +89,7 @@ import ch.threema.app.fragments.ContactsSectionFragment;
 import ch.threema.app.fragments.MessageSectionFragment;
 import ch.threema.app.fragments.MyIDFragment;
 import ch.threema.app.globalsearch.GlobalSearchActivity;
+import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.ContactCountListener;
 import ch.threema.app.listeners.ConversationListener;
@@ -102,6 +102,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.push.PushService;
+import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -134,10 +135,10 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
-import ch.threema.client.ConnectionState;
-import ch.threema.client.ConnectionStateListener;
-import ch.threema.client.LinkMobileNoException;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.api.LinkMobileNoException;
+import ch.threema.domain.protocol.csp.connection.ConnectionState;
+import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -208,9 +209,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				@Override
 				public void run() {
 					if (intent.getAction().equals(IntentDataUtil.ACTION_LICENSE_NOT_ALLOWED)) {
-						if (Arrays.asList(BuildFlavor.LicenseType.SERIAL,
-								BuildFlavor.LicenseType.GOOGLE_WORK,
-								BuildFlavor.LicenseType.HMS_WORK).contains(BuildFlavor.getLicenseType())) {
+						if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.SERIAL ||
+							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
+							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK ||
+							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
 							//show enter serial stuff
 							startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
 						} else {
@@ -438,6 +440,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		@Override
 		public void onRemoved(AbstractMessageModel removedMessageModel) {
 			updateUnsentMessagesList(removedMessageModel, false);
+		}
+
+		@Override
+		public void onRemoved(List<AbstractMessageModel> removedMessageModels) {
+			for (AbstractMessageModel removedMessageModel: removedMessageModels) {
+				updateUnsentMessagesList(removedMessageModel, false);
+			}
 		}
 
 		@Override
@@ -806,7 +815,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void showErrorTextAndExit(String text) {
-		GenericAlertDialog.newInstance(R.string.error, text, R.string.finish, 0).show(getSupportFragmentManager(), DIALOG_TAG_FINISH_UP);
+		GenericAlertDialog.newInstance(R.string.error, text, R.string.finish, 0)
+			.show(getSupportFragmentManager(), DIALOG_TAG_FINISH_UP);
 	}
 
 	private void runUpdates(final UpdateSystemService updateSystemService) {
@@ -1234,11 +1244,17 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			case R.id.menu_new_distribution_list:
 				intent = new Intent(this, DistributionListAddActivity.class);
 				break;
+			case R.id.group_requests:
+				intent = new Intent(this, OutgoingGroupRequestActivity.class);
+				break;
 			case R.id.my_backups:
 				intent = new Intent(HomeActivity.this, BackupAdminActivity.class);
 				break;
 			case R.id.webclient:
 				intent = new Intent(HomeActivity.this, SessionsActivity.class);
+				break;
+			case R.id.scanner:
+				intent = new Intent(HomeActivity.this, BaseQrScannerActivity.class);
 				break;
 			case R.id.help:
 				intent = new Intent(HomeActivity.this, SupportActivity.class);
@@ -1359,6 +1375,19 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			} else if (addDisabled != null && addDisabled) {
 				MenuItem menuItem = menu.findItem(R.id.threema_channel);
 				menuItem.setVisible(false);
+			}
+
+			if (ConfigUtils.supportsGroupLinks()) {
+				MenuItem menuItem = menu.findItem(R.id.scanner);
+				if (menuItem != null) {
+					menuItem.setVisible(true);
+				}
+
+				menuItem = menu.findItem(R.id.group_requests);
+				if (menuItem != null) {
+					menuItem.setVisible(true);
+					menu.setGroupVisible(menuItem.getGroupId(), true);
+				}
 			}
 
 			MenuItem webclientMenuItem = menu.findItem(R.id.webclient);

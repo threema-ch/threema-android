@@ -25,7 +25,9 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AppOpsManager;
+import android.app.KeyguardManager;
 import android.app.PictureInPictureParams;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -138,12 +140,12 @@ import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.wearable.WearableHandler;
-import ch.threema.client.APIConnector;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.Utils;
-import ch.threema.client.voip.VoipCallAnswerData;
-import ch.threema.client.voip.VoipCallOfferData;
-import ch.threema.client.voip.features.VideoFeature;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
+import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
@@ -163,8 +165,8 @@ public class CallActivity extends ThreemaActivity implements
 		SensorListener,
 		GenericAlertDialog.DialogClickListener,
 		LifecycleOwner {
-	private static final Logger logger = LoggerFactory.getLogger(CallActivity.class);
-	private static final String TAG = "CallActivity";
+	private static final Logger logger = LoggerFactory.getLogger("CallActivity");
+	private static final String LIFETIME_SERVICE_TAG = "CallActivity";
 	private static final String SENSOR_TAG_CALL = "voipcall";
 	public static final String EXTRA_CALL_FROM_SHORTCUT = "shortcut";
 	private static final String DIALOG_TAG_OK = "ok";
@@ -634,7 +636,7 @@ public class CallActivity extends ThreemaActivity implements
 				if (sensorService != null) {
 					if (selectedAudioDevice == VoipAudioManager.AudioDevice.EARPIECE) {
 						if (!sensorService.isSensorRegistered(SENSOR_TAG_CALL)) {
-							sensorService.registerSensors(SENSOR_TAG_CALL, CallActivity.this, true);
+							sensorService.registerSensors(SENSOR_TAG_CALL, CallActivity.this, false);
 						}
 						sensorEnabled = true;
 					} else {
@@ -761,7 +763,7 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		// Acquire a Threema server connection
-		this.lifetimeService.acquireConnection(TAG);
+		this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
 
 		// Register broadcast receiver
 		IntentFilter filter = new IntentFilter();
@@ -951,7 +953,7 @@ public class CallActivity extends ThreemaActivity implements
 
 		// Release connection
 		if (this.lifetimeService != null) {
-			this.lifetimeService.releaseConnection(TAG);
+			this.lifetimeService.releaseConnection(LIFETIME_SERVICE_TAG);
 		}
 
 		// Unregister receivers
@@ -1346,7 +1348,7 @@ public class CallActivity extends ThreemaActivity implements
 		});
 		this.commonViews.toggleOutgoingVideoButton.setOnClickListener(v -> {
 			synchronized (this.videoToggleLock) {
-				logger.warn("Toggle outgoing video");
+				logger.info("Toggle outgoing video");
 
 				if (!isEnabled(v)) {
 					if (navigationShown) {
@@ -1472,7 +1474,7 @@ public class CallActivity extends ThreemaActivity implements
 						try {
 							TapTargetView.showFor(CallActivity.this,
 								TapTarget.forView(commonViews.toggleOutgoingVideoButton, getString(R.string.video_calls), getString(R.string.tooltip_voip_turn_on_camera))
-									.outerCircleColor(ConfigUtils.getAppTheme(CallActivity.this) == ConfigUtils.THEME_DARK ? R.color.accent_dark : R.color.accent_light)      // Specify a color for the outer circle
+									.outerCircleColor(ConfigUtils.getAppTheme(CallActivity.this) == ConfigUtils.THEME_DARK ? R.color.dark_accent : R.color.accent_light)      // Specify a color for the outer circle
 									.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
 									.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
 									.titleTextSize(24)                  // Specify the size (in sp) of the title text
@@ -1809,9 +1811,9 @@ public class CallActivity extends ThreemaActivity implements
 
 		getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility(getWindow()));
 
-		if (sensorEnabled) {
+		if (sensorEnabled && sensorService != null) {
 			if (hasFocus) {
-				sensorService.registerSensors(SENSOR_TAG_CALL, this, true);
+				sensorService.registerSensors(SENSOR_TAG_CALL, this, false);
 			} else {
 				sensorService.unregisterSensors(SENSOR_TAG_CALL);
 			}
@@ -2312,4 +2314,17 @@ public class CallActivity extends ThreemaActivity implements
 	}
 
 	//endregion
+
+
+	@Override
+	public void finish() {
+		KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+		if (keyguardManager.inKeyguardRestrictedInputMode()) {
+			// finish activity stack in case phone is locked to avoid coming back to a conversation if one was left open by user
+			setResult(Activity.RESULT_CANCELED);
+			finishAffinity();
+		} else {
+			super.finish();
+		}
+	}
 }

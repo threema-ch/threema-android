@@ -22,6 +22,7 @@
 package ch.threema.app.webclient.services;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.PowerManager;
 import android.text.format.DateUtils;
 
@@ -31,90 +32,120 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.services.LifetimeService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.storage.models.WebClientSessionModel;
 
+/**
+ * Acquire both a CPU wakelock and a network connection to the Threema server
+ * while Threema Web is running.
+ */
+@AnyThread
 public class WakeLockServiceImpl implements WakeLockService {
-	private static final Logger logger = LoggerFactory.getLogger(WakeLockServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger("WakeLockService");
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":webClientWakeLock";
-	private final Context context;
+	private static final String LIFETIME_SERVICE_TAG = "WakeLockService";
+	private final Context appContext;
+	private final LifetimeService lifetimeService;
+	private boolean lifetimeServiceConnectionAcquired = false;
+
 	/**
-	 * all acquired webclient session
+	 * All acquired webclient session
 	 */
 	private final List<Integer> acquiredSessionIds = new ArrayList<>();
 
 	/**
-	 * the webclient wakelock
+	 * The webclient wakelock.
 	 */
 	private PowerManager.WakeLock wakeLock;
 
-	public WakeLockServiceImpl(Context context) {
-		this.context = context;
+	public WakeLockServiceImpl(@NonNull Context appContext, @NonNull LifetimeService lifetimeService) {
+		this.appContext = appContext;
+		this.lifetimeService = lifetimeService;
 	}
 
 	@Override
-	public boolean acquire(WebClientSessionModel session) {
-		logger.debug("acquire webclient wakelock for session " + session.getId());
+	public synchronized boolean acquire(WebClientSessionModel session) {
+		logger.debug("acquire webclient wakelock for session {}", session.getId());
 		if (!this.acquiredSessionIds.contains(session.getId())) {
 			this.acquiredSessionIds.add(session.getId());
 		}
-
 		return this.execute();
 	}
 
 	@Override
-	public boolean release(WebClientSessionModel session) {
-		logger.debug("release webclient wakelock for session " + session.getId());
+	public synchronized boolean release(WebClientSessionModel session) {
+		logger.debug("release webclient wakelock for session {}", session.getId());
 		if (this.acquiredSessionIds.contains(session.getId())) {
 			this.acquiredSessionIds.remove((Integer)session.getId());
 		}
-
 		return this.execute();
 	}
 
 	@Override
-	public boolean releaseAll() {
+	public synchronized boolean releaseAll() {
 		this.acquiredSessionIds.clear();
 		return this.execute();
 	}
 
 	@Override
-	public boolean isHeld() {
+	public synchronized boolean isHeld() {
 		return this.wakeLock != null
 				&& this.wakeLock.isHeld();
 	}
 
-	private boolean execute() {
+	private synchronized boolean execute() {
 		if (this.acquiredSessionIds.size() > 0) {
+			// Create wakelock if it wasn't instantiated yet
 			if (this.wakeLock == null) {
 				logger.debug("create new wakelock");
-				PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+				PowerManager pm = (PowerManager) appContext.getSystemService(Context.POWER_SERVICE);
 				this.wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
 			}
 
-			if(!this.wakeLock.isHeld()) {
-				if (ConfigUtils.isNokiaDevice()) {
-					// do not hold wake lock for longer than 15 minutes to prevent evenwell power "saver" from killing the app
+			// Acquire wakelock if not already held
+			if (!this.wakeLock.isHeld()) {
+				if (ConfigUtils.isNokiaDevice() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+					// Do not hold wake lock for longer than 15 minutes to prevent evenwell power "saver" from killing the app
+					logger.warn("Limiting wake lock to 15 minutes, to avoid being killed by Evenwell");
 					this.wakeLock.acquire(15 * DateUtils.MINUTE_IN_MILLIS);
 				} else {
 					this.wakeLock.acquire();
 				}
-				logger.debug("acquired");
+				logger.debug("acquired wakelock");
 			} else {
-				logger.debug("already acquired");
+				logger.debug("already acquired wakelock");
 			}
+
+			// Acquire network connection if necessary
+			if (!this.lifetimeServiceConnectionAcquired) {
+				this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+				this.lifetimeServiceConnectionAcquired = true;
+				logger.debug("acquired network connection");
+			}
+
 			return true;
-		}
-		else {
+		} else {
+			// Release wakelock if held
 			if (this.wakeLock != null && this.wakeLock.isHeld()) {
 				this.wakeLock.release();
 				// to be sure, remove the wakelock
 				this.wakeLock = null;
-				logger.debug("released");
+				logger.debug("released wakelock");
 			} else {
-				logger.debug("already released");
+				logger.debug("already released wakelock");
 			}
+
+			// Release network connection if acquired
+			if (this.lifetimeServiceConnectionAcquired) {
+				this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, 5000);
+				this.lifetimeServiceConnectionAcquired = false;
+				logger.debug("released network connection");
+			}
+
 			return false;
 		}
 	}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingLeft="24dp"
+	android:paddingRight="24dp"
+	android:paddingTop="16dp"
+	android:paddingBottom="16dp">
+
+	<TextView
+		android:id="@+id/message"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+		android:textIsSelectable="false"
+		android:textAlignment="center"
+		android:gravity="center_horizontal"
+		android:ellipsize="none"
+		android:textAppearance="@style/Threema.TextAppearance.PublicKey"
+		/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

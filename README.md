@@ -103,7 +103,7 @@ Threema employee.
 
 ## <a name="build-variants"></a>Build Variants
 
-There are currently six product flavors:
+There are currently nine product flavors:
 
 | Flavor              | Description                                   | License Checks |
 | ------------------- | --------------------------------------------- | -------------- |
@@ -194,10 +194,10 @@ to understand the design concepts.
 
 Code related to the core functionality (e.g., connecting to the chat server,
 encrypting messages, etc.) can be found in the
-`app/src/main/java/ch/threema/client/` directory.
+`domain/src/main/java/ch/threema/` directory.
 
-The code of the actual Android app is mainly located in the
-`app/src/main/java/ch/threema/app/` directory.
+The code of the actual Android app is located in the
+`app/src/main/java/ch/threema/` directory.
 
 
 ## <a name="contributions"></a>Contributions

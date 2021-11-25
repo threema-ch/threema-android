@@ -95,6 +95,13 @@ public class EmptyRecyclerView extends RecyclerView {
 		checkIfEmpty();
 	}
 
+	public void clearEmptyView() {
+		if (this.emptyViewReference != null && this.emptyViewReference.get() != null) {
+			emptyViewReference.get().setVisibility(GONE);
+		}
+		setVisibility(INVISIBLE);
+	}
+
 	/**
 	 * Specify how many header or footer views this recyclerview has. This number will be considered when determining the "empty" status of the list
 	 * @param numHeadersAndFooters Number of headers and / or footers

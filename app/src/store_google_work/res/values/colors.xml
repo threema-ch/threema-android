@@ -2,30 +2,34 @@
 <resources>
 	<!-- accent colors -->
 	<color name="accent_light">#0073c4</color>
-	<color name="accent_dark">@color/accent_work</color>
-	<color name="accent_secondary_light">#afdeff</color>
-	<color name="accent_secondary_dark">#acddff</color>
-	<color name="accent_light_alpha">#500073c4</color>
-	<color name="accent_dark_alpha">#500096ff</color>
+	<color name="dark_accent">@color/accent_work</color>
+	<color name="accent_secondary">#afdeff</color>
+	<color name="dark_accent_secondary">#acddff</color>
+	<color name="accent_alpha">#500073c4</color>
+	<color name="dark_accent_alpha">#500096ff</color>
 
 	<!-- wizard -->
-	<color name="new_wizard_color_primary">@android:color/white</color>
-	<color name="new_wizard_alpha_background">#33ffffff</color>
-	<color name="new_wizard_color_accent">#0096ff</color>
-	<color name="new_wizard_color_accent_dark">#323232</color>
-	<color name="new_wizard_color_button_disabled">#660096ff</color>
+	<color name="wizard_color_primary">@android:color/white</color>
+	<color name="wizard_alpha_background">#33ffffff</color>
+	<color name="wizard_color_accent">#0096ff</color>
+	<color name="wizard_color_accent_dark">#323232</color>
+	<color name="wizard_color_button_disabled">#660096ff</color>
 
 	<!-- chat items light -->
 	<color name="light_bubble_recv">#F2F2F2</color>
 	<color name="light_bubble_send">#e0f0ff</color>
-	<color name="bubble_status_light">#e9e9e9</color>
+	<color name="bubble_status">#e9e9e9</color>
 	<color name="bubble_selected">#76bbff</color>
 	<color name="bubble_selected_overlay">#4476bbff</color>
+	<color name="unread_messages_text_color">#88000000</color>
+	<color name="unread_messages_bg_color">#fff7f8f9</color>
 
 	<!-- chat items dark -->
 	<color name="dark_bubble_recv">#666666</color>
 	<color name="dark_bubble_send">#303030</color>
-	<color name="bubble_status_dark">#d4d4d4</color>
+	<color name="dark_bubble_status">#d4d4d4</color>
 	<color name="bubble_selected_dark">#63b2eb</color>
-	<color name="bubble_selected_overlay_dark">#4463b2eb</color>
+	<color name="dark_bubble_selected_overlay">#4463b2eb</color>
+	<color name="dark_unread_messages_text_color">#FF000000</color>
+	<color name="dark_unread_messages_bg_color">#FFBADEFF</color>
 </resources>

@@ -38,7 +38,6 @@ import android.location.Location;
 import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
-import android.util.Log;
 import android.util.Pair;
 
 import org.slf4j.Logger;
@@ -85,7 +84,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
-import static ch.threema.client.Utils.byteArrayToHexString;
+import static ch.threema.base.utils.Utils.byteArrayToHexString;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**

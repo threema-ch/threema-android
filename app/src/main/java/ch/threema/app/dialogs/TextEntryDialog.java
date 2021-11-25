@@ -24,7 +24,6 @@ package ch.threema.app.dialogs;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
-import android.os.Build;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
@@ -45,7 +44,7 @@ import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class TextEntryDialog extends ThreemaDialogFragment {
 	private TextEntryDialogClickListener callback;
@@ -260,11 +259,7 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 		if (inputFilterType == INPUT_FILTER_TYPE_IDENTITY) {
 			editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
 		} else if (inputFilterType == INPUT_FILTER_TYPE_PHONE && localeService != null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
-			} else {
-				editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-			}
+			editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
 			editText.addTextChangedListener(new TextWatcher() {
 				@Override
 				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}

@@ -33,6 +33,8 @@ import ch.threema.storage.DatabaseServiceNew;
 public abstract class ModelFactory {
 	private static final Logger logger = LoggerFactory.getLogger(ModelFactory.class);
 
+	protected static final String NO_RECORD_MSG = "Update of model failed, no records matched for id=";
+
 	final DatabaseServiceNew databaseService;
 	private final String tableName;
 	protected final ColumnIndexCache columnIndexCache = new ColumnIndexCache();
@@ -43,7 +45,16 @@ public abstract class ModelFactory {
 		logger.debug("instantiate " + getClass().toString());
 	}
 
+	/**
+	 * Returns the table and index creation statements for a model.
+	 *
+	 * @return list of SQL statements
+	 */
 	public abstract String[] getStatements();
+
+	public void dropTable() {
+		this.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + this.getTableName());
+	}
 
 	public final void deleteAll() {
 		this.getWritableDatabase().execSQL("DELETE FROM " + this.getTableName());
@@ -53,7 +64,7 @@ public abstract class ModelFactory {
 		return DatabaseUtils.queryNumEntries(this.getReadableDatabase(), this.getTableName());
 	}
 
-	protected String getTableName() {
+	public String getTableName() {
 		return this.tableName;
 	}
 

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -145,7 +146,7 @@ public class ClientInfo extends Converter {
 
 		// Capabilities
 		final MsgpackObjectBuilder capabilities = new MsgpackObjectBuilder();
-		capabilities.put(MAX_GROUP_SIZE, appContext.getResources().getInteger(R.integer.max_group_size));
+		capabilities.put(MAX_GROUP_SIZE, BuildConfig.MAX_GROUP_SIZE);
 		capabilities.put(MAX_FILE_SIZE, ThreemaApplication.MAX_BLOB_SIZE);
 		capabilities.put(DISTRIBUTION_LISTS, true);
 

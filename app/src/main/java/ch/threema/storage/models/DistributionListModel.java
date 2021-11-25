@@ -23,7 +23,7 @@ package ch.threema.storage.models;
 
 import java.util.Date;
 
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 public class DistributionListModel implements ReceiverModel {
 	public static final int DISTRIBUTIONLIST_NAME_MAX_LENGTH_BYTES = 256;

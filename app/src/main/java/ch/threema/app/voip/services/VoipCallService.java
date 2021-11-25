@@ -118,15 +118,15 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.voip.VoipCallAnswerData;
-import ch.threema.client.voip.VoipCallHangupData;
-import ch.threema.client.voip.VoipCallOfferData;
-import ch.threema.client.voip.VoipCallRingingData;
-import ch.threema.client.voip.VoipICECandidatesData;
-import ch.threema.client.voip.features.FeatureList;
-import ch.threema.client.voip.features.VideoFeature;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
+import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
+import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import ch.threema.storage.models.ContactModel;
@@ -143,7 +143,7 @@ import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NO
  * The service keeping track of VoIP call state and the corresponding WebRTC peer connection.
  */
 public class VoipCallService extends LifecycleService implements PeerConnectionClient.Events {
-	private static final Logger logger = LoggerFactory.getLogger(VoipCallService.class);
+	private static final Logger logger = LoggerFactory.getLogger("VoipCallService");
 
 	// Intent extras
 	public static final String EXTRA_CALL_ID = "CALL_ID";

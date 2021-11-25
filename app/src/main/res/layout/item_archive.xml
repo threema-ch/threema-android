@@ -34,7 +34,7 @@
 			android:layout_width="@dimen/avatar_size_small"
 			android:layout_height="@dimen/avatar_size_small"
 			android:layout_gravity="center_vertical"
-			android:background="?selector_list_checkbox"
+			android:background="@drawable/selector_list_checkbox"
 			android:stateListAnimator="@animator/selector_list_checkbox_fg"
 			android:duplicateParentState="true"/>
 

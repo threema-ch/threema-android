@@ -45,9 +45,9 @@ import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.APIConnector;
-import ch.threema.client.IdentityStoreInterface;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 
 public class SynchronizeContactsServiceImpl implements SynchronizeContactsService {
@@ -68,6 +68,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	private final FileService fileService;
 	private final IdListService blackListIdentityService;
 	private final LicenseService licenseService;
+	private final ApiService apiService;
 
 	private Date latestFullSync;
 
@@ -81,7 +82,8 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 										  FileService fileService,
 	                                      IdentityStoreInterface identityStore,
 	                                      IdListService blackListIdentityService,
-	                                      LicenseService licenseService) {
+	                                      LicenseService<LicenseService.Credentials> licenseService,
+	                                      ApiService apiService) {
 		this.excludedIdentityListService = excludedIdentityListService;
 		this.preferenceService = preferenceService;
 		this.deviceService = deviceService;
@@ -95,6 +97,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		this.identityStore = identityStore;
 		this.licenseService = licenseService;
 		this.blackListIdentityService = blackListIdentityService;
+		this.apiService = apiService;
 	}
 
 	@Override
@@ -131,7 +134,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
 							for (ContactModel contactModel : contactService.getAll(true, true)) {
 								if (ContactUtil.isChannelContact(contactModel)) {
-									UpdateBusinessAvatarRoutine.start(contactModel, fileService, contactService, true);
+									UpdateBusinessAvatarRoutine.start(contactModel, fileService, contactService, apiService, true);
 								}
 							}
 							//fore update business account avatars

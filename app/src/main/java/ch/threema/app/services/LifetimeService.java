@@ -34,6 +34,10 @@ public interface LifetimeService {
      * and kept active until releaseConnection() is called. A call to acquireConnection() must always
      * be balanced with a call to releaseConnection().
      *
+     * Note: The source is used purely for diagnostic purposes and not for deduplication.
+     * If you call this method twice with the same source string, then two connection counters
+     * will be acquired.
+     *
      * @param source identifier of the calling object (for debugging)
      */
     void acquireConnection(String source);

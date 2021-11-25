@@ -44,9 +44,9 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.InitialAvatarView;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.work.WorkDirectoryCategory;
-import ch.threema.client.work.WorkDirectoryContact;
-import ch.threema.client.work.WorkOrganization;
+import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
+import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
+import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, RecyclerView.ViewHolder> {
 	private final Context context;
@@ -56,7 +56,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 	private final WorkOrganization workOrganization;
 	private final HashMap<String, String> categoryMap = new HashMap<>();
 	private DirectoryAdapter.OnClickItemListener onClickItemListener;
-	@DrawableRes private int backgroundRes;
+	@DrawableRes private final int backgroundRes;
 
 	private static class DirectoryHolder extends RecyclerView.ViewHolder {
 		private final TextView nameView;
@@ -113,14 +113,14 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 
 	@NonNull
 	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 		View itemView = inflater.inflate(R.layout.item_directory, viewGroup, false);
 		itemView.setBackgroundResource(R.drawable.listitem_background_selector);
 		return new DirectoryHolder(itemView);
 	}
 
 	@Override
-	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
 		boolean isMe = false;
 		final DirectoryHolder holder = (DirectoryHolder) viewHolder;
 

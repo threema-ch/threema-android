@@ -59,8 +59,8 @@
 					android:layout_height="wrap_content"
 					app:srcCompat="@drawable/ic_about_outline"
 					android:textSize="14sp"
-					android:textColor="@color/new_wizard_color_accent"
-					app:tint="@color/new_wizard_color_primary" />
+					android:textColor="@color/wizard_color_accent"
+					app:tint="@color/wizard_color_primary" />
 
 				<TextView
 						android:id="@+id/wizard_id_info"
@@ -70,7 +70,7 @@
 						android:text="@string/new_wizard_more_information"
 						android:fontFamily="sans-serif-light"
 						android:textSize="@dimen/wizard_small_text_size"
-						android:textColor="@color/new_wizard_color_accent"/>
+						android:textColor="@color/wizard_color_accent"/>
 
 			</LinearLayout>
 

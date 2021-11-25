@@ -45,7 +45,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.ShortcutService;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;

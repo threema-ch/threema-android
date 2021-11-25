@@ -59,7 +59,7 @@ import java8.util.concurrent.CompletableFuture;
  * VoipAudioManager manages all audio related parts of the Threema VoIP calls.
  */
 public class VoipAudioManager {
-	private static final Logger logger = LoggerFactory.getLogger(VoipAudioManager.class);
+	private static final Logger logger = LoggerFactory.getLogger("VoipAudioManager");
 	private static final String TAG = "VoipAudioManager";
 
 	/**
@@ -109,12 +109,6 @@ public class VoipAudioManager {
 	// selection scheme.
 	private AudioDevice userSelectedAudioDevice;
 
-	// Proximity sensor object. It measures the proximity of an object in cm
-	// relative to the view screen of a device and can therefore be used to
-	// assist device switching (close to ear <=> use headset earpiece if
-	// available, far from ear <=> use speaker phone).
-	private VoipProximitySensor proximitySensor = null;
-
 	// Handles all tasks related to Bluetooth headset devices.
 	private final VoipBluetoothManager bluetoothManager;
 
@@ -127,27 +121,6 @@ public class VoipAudioManager {
 
 	// Callback method for changes in audio focus.
 	private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
-
-	/**
-	 * This method is called when the proximity sensor reports a state change,
-	 * e.g. from "NEAR to FAR" or from "FAR to NEAR".
-	 */
-	private void onProximitySensorChangedState() {
-		// The proximity sensor should only be activated when there are exactly two
-		// available audio devices.
-		if (audioDevices.size() == 2 && audioDevices.contains(VoipAudioManager.AudioDevice.EARPIECE)
-				&& audioDevices.contains(VoipAudioManager.AudioDevice.SPEAKER_PHONE)) {
-			if (proximitySensor.sensorReportsNearState()) {
-				// Sensor reports that a "handset is being held up to a person's ear",
-				// or "something is covering the light sensor".
-				setAudioDeviceInternal(VoipAudioManager.AudioDevice.EARPIECE);
-			} else {
-				// Sensor reports that a "handset is removed from a person's ear", or
-				// "the light sensor is no longer covered".
-				setAudioDeviceInternal(VoipAudioManager.AudioDevice.SPEAKER_PHONE);
-			}
-		}
-	}
 
 	/* Receiver which handles changes in wired headset availability. */
 	private class WiredHeadsetReceiver extends BroadcastReceiver {
@@ -193,18 +166,6 @@ public class VoipAudioManager {
 		} else {
 			this.defaultAudioDevice = AudioDevice.SPEAKER_PHONE;
 		}
-
-		// Create and initialize the proximity sensor.
-		// Tablet devices (e.g. Nexus 7) does not support proximity sensors.
-		// Note that, the sensor will not be active until start() has been called.
-		this.proximitySensor = VoipProximitySensor.create(context, new Runnable() {
-			// This method will be called each time a state change is detected.
-			// Example: user holds his hand over the device (closer than ~5 cm),
-			// or removes his hand from the device.
-			public void run() {
-				onProximitySensorChangedState();
-			}
-		});
 
 		logger.info("defaultAudioDevice: {}", defaultAudioDevice);
 		AppRTCUtils.logDeviceInfo(TAG);
@@ -388,12 +349,6 @@ public class VoipAudioManager {
 		this.audioManager.abandonAudioFocus(this.audioFocusChangeListener);
 		this.audioFocusChangeListener = null;
 		logger.info("Abandoned audio focus for VOICE_CALL streams");
-
-		if (this.proximitySensor != null) {
-			this.proximitySensor.stop();
-			this.proximitySensor = null;
-		}
-
 		logger.info("Stopped");
 	}
 

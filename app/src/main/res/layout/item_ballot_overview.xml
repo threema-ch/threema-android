@@ -98,7 +98,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignBaseline="@+id/ballot_creator"
 			android:layout_alignParentRight="true"
-			custom:backgroundOverride="?attr/count_box_background_accent"/>
+			custom:backgroundOverride="@drawable/count_box_background_accent"/>
 
 	</RelativeLayout>
 </RelativeLayout>

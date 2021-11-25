@@ -39,9 +39,9 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.APIConnector;
-import ch.threema.client.work.WorkData;
-import ch.threema.client.work.WorkMDMSettings;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.api.work.WorkData;
+import ch.threema.domain.protocol.api.work.WorkMDMSettings;
 
 /**
  * Hold all Work App Restrictions
@@ -51,7 +51,7 @@ public class AppRestrictionService {
 
 	private Bundle appRestrictions;
 	private volatile WorkMDMSettings workMDMSettings;
-	private static String PREFERENCE_KEY = "wrk_app_restriction";
+	private static final String PREFERENCE_KEY = "wrk_app_restriction";
 
 	/**
 	 * Save the given WorkMDMSettings and reload the AppRestrictions

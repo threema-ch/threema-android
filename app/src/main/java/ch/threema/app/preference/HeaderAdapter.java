@@ -88,12 +88,8 @@ class HeaderAdapter extends ArrayAdapter<Header> {
             @NonNull final List<Header> objects) {
         super(context, 0, objects);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
-            mColorAccent = getThemeAttrColor(context, R.attr.settings_multipane_selection_bg);
-/*        } else {
-            mColorAccent = 0;
-        }
-*/  }
+        mColorAccent = getThemeAttrColor(context, R.attr.settings_multipane_selection_bg);
+  }
 
     @NonNull
     @Override

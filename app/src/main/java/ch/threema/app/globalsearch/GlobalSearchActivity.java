@@ -23,7 +23,6 @@ package ch.threema.app.globalsearch;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -156,17 +155,13 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 						break;
 					case STATE_EXPANDED:
 						findViewById(R.id.drag_handle).setVisibility(View.INVISIBLE);
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-							getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_expanded));
-						}
+						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_expanded));
 						break;
 					case STATE_SETTLING:
 						findViewById(R.id.drag_handle).setVisibility(View.VISIBLE);
 						break;
 					case STATE_DRAGGING:
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-							getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
-						}
+						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
 					default:
 						break;
 				}
@@ -185,9 +180,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 			}
 		});
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
-		}
+		getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
 
 		ThreemaSearchView searchView = findViewById(R.id.search);
 		searchView.setOnQueryTextListener(this);

@@ -35,7 +35,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.client.ThreemaFeature;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.storage.models.ContactModel;
 
 public class WorkUserMemberListFragment extends MemberListFragment {

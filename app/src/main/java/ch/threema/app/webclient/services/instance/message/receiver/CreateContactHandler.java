@@ -44,7 +44,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.app.exceptions.PolicyViolationException;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
 
 @WorkerThread

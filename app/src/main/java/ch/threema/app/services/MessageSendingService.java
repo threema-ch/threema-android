@@ -21,6 +21,7 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.storage.models.AbstractMessageModel;
 
@@ -29,13 +30,13 @@ import ch.threema.storage.models.AbstractMessageModel;
  */
 public interface MessageSendingService {
 	interface MessageSendingServiceState{
-		void processingFinished(AbstractMessageModel messageModel, MessageReceiver receiver);
-		void processingFailed(AbstractMessageModel messageModel, MessageReceiver receiver);
+		void processingFinished(@NonNull AbstractMessageModel messageModel, @NonNull MessageReceiver<AbstractMessageModel> receiver);
+		void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver);
 		void exception(Exception x, int tries);
 	}
 
 	interface MessageSendingProcess {
-		MessageReceiver getReceiver();
+		MessageReceiver<AbstractMessageModel> getReceiver();
 		AbstractMessageModel getMessageModel();
 		boolean send() throws Exception;
 	}

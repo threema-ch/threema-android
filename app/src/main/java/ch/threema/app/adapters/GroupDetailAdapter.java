@@ -21,9 +21,7 @@
 
 package ch.threema.app.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,24 +32,33 @@ import android.widget.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.ContactDetailActivity;
-import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.activities.GroupDetailActivity;
+import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.SectionHeaderView;
 import ch.threema.app.utils.AdapterUtil;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupInviteModel;
+import java8.util.Optional;
 
 public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final Logger logger = LoggerFactory.getLogger(GroupDetailAdapter.class);
@@ -61,9 +68,13 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 	private Context context;
 	private ContactService contactService;
+	private GroupInviteService groupInviteService;
 	private GroupModel groupModel;
+	private GroupInviteModel defaultGroupInviteModel;
 	private List<ContactModel> contactModels; // Cached copy of group members
-	private OnClickListener onClickListener;
+	private OnGroupDetailsClickListener onClickListener;
+	HeaderHolder headerHolder;
+	private boolean warningShown = false;
 
 	public static class ItemHolder extends RecyclerView.ViewHolder {
 		public final View view;
@@ -86,6 +97,12 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		private final TextView ownerName;
 		private final TextView ownerThreemaId;
 		private final SectionHeaderView ownerNameTitle;
+		private final ConstraintLayout linkContainerView;
+		private final SectionHeaderView groupLinkTitle;
+		private final SwitchCompat linkEnableSwitch;
+		private final TextView linkString;
+		private final AppCompatImageButton linkResetButton;
+		private final AppCompatImageButton linkShareButton;
 
 		public HeaderHolder(View view) {
 			super(view);
@@ -97,6 +114,12 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			this.ownerName = itemView.findViewById(R.id.group_name);
 			this.ownerThreemaId = itemView.findViewById(R.id.threemaid);
 			this.ownerNameTitle = itemView.findViewById(R.id.group_owner_title);
+			this.linkContainerView = itemView.findViewById(R.id.group_link_container);
+			this.groupLinkTitle = itemView.findViewById(R.id.group_link_header);
+			this.linkEnableSwitch = itemView.findViewById(R.id.group_link_switch);
+			this.linkString = itemView.findViewById(R.id.group_link_string);
+			this.linkResetButton = itemView.findViewById(R.id.reset_button);
+			this.linkShareButton = itemView.findViewById(R.id.share_button);
 		}
 	}
 
@@ -107,8 +130,9 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 		try {
 			this.contactService = serviceManager.getContactService();
+			this.groupInviteService = serviceManager.getGroupInviteService();
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Exception, failed to get required services", e);
 		}
 	}
 
@@ -148,19 +172,15 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			itemHolder.view.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					onClickListener.onItemClick(v, contactModel);
+					onClickListener.onGroupMemberClick(v, contactModel);
 				}
 			});
 		} else {
-			HeaderHolder headerHolder = (HeaderHolder) holder;
+			this.headerHolder = (HeaderHolder) holder;
 			headerHolder.groupOwnerContainerView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent(context, ContactDetailActivity.class);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, groupModel.getCreatorIdentity());
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
-					ActivityCompat.startActivityForResult((Activity) context, intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL, options.toBundle());
+					onClickListener.onGroupOwnerClick(v, groupModel.getCreatorIdentity());
 				}
 			});
 
@@ -171,6 +191,13 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 				headerHolder.ownerAvatarView.setImageBitmap(bitmap);
 				headerHolder.ownerThreemaId.setText(ownerContactModel.getIdentity());
 				headerHolder.ownerName.setText(NameUtil.getDisplayNameOrNickname(ownerContactModel, true));
+
+				if (!ConfigUtils.supportsGroupLinks() || ownerContactModel != contactService.getMe()) {
+					headerHolder.linkContainerView.setVisibility(View.GONE);
+				}
+				else {
+					initGroupLinkSection();
+				}
 			} else {
 				// creator is no longer around / has been revoked
 				headerHolder.ownerAvatarView.setImageBitmap(contactService.getDefaultAvatar(null, false));
@@ -183,9 +210,80 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 			if (contactModels != null) {
 				headerHolder.groupMembersTitleView.setText(context.getString(R.string.add_group_members_list) +
-					" (" + contactModels.size() + "/" + context.getResources().getInteger(R.integer.max_group_size) +
-					")");
+					" (" + contactModels.size() + "/" + BuildConfig.MAX_GROUP_SIZE + ")");
 			}
+		}
+	}
+
+	private void initGroupLinkSection() {
+		Optional<GroupInviteModel> groupInviteModelOptional = groupInviteService.getDefaultGroupInvite(groupModel);
+		if (groupInviteModelOptional.isPresent()) {
+			this.defaultGroupInviteModel = groupInviteModelOptional.get();
+		}
+		boolean enableGroupLinkSwitch = defaultGroupInviteModel != null && !defaultGroupInviteModel.isInvalidated();
+		headerHolder.linkEnableSwitch.setChecked(enableGroupLinkSwitch);
+		setGroupLinkViewsEnabled(enableGroupLinkSwitch);
+		if (defaultGroupInviteModel != null) {
+			encodeAndDisplayDefaultLink();
+		}
+		else {
+			headerHolder.linkString.setText(R.string.group_link_none);
+		}
+
+		headerHolder.linkEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			GroupDetailAdapter.this.setGroupLinkViewsEnabled(isChecked);
+			if (isChecked) {
+				try {
+					GroupDetailAdapter.this.defaultGroupInviteModel = groupInviteService.createOrEnableDefaultLink(groupModel);
+					encodeAndDisplayDefaultLink();
+				} catch (GroupInviteToken.InvalidGroupInviteTokenException | IOException | GroupInviteModel.MissingRequiredArgumentsException e) {
+					logger.error("Exception, failed to create or get default group link", e);
+				}
+			}
+			else {
+				groupInviteService.deleteDefaultLink(groupModel);
+				GroupDetailAdapter.this.defaultGroupInviteModel = null;
+			}
+		});
+		headerHolder.linkShareButton.setOnClickListener(v -> onClickListener.onShareLinkClick());
+		headerHolder.linkResetButton.setOnClickListener(v -> {
+			if (!warningShown && !ShowOnceDialog.shouldNotShowAnymore(GroupDetailActivity.DIALOG_SHOW_ONCE_RESET_LINK_INFO)) {
+				// show only once dialog
+				onClickListener.onResetLinkClick();
+				warningShown = true;
+				return;
+			}
+			try {
+				this.defaultGroupInviteModel = groupInviteService.resetDefaultGroupInvite(groupModel);
+				encodeAndDisplayDefaultLink();
+			} catch (IOException | GroupInviteToken.InvalidGroupInviteTokenException | GroupInviteModel.MissingRequiredArgumentsException e) {
+				logger.error("Exception, failed to reset default group link", e);
+			}
+		});
+
+		headerHolder.groupLinkTitle.setText(context.getString(R.string.default_group_link) +
+			" (" + groupInviteService.getCustomLinksCount() + " " + context.getString(R.string.other_group_links) + ")" );
+	}
+
+	private void encodeAndDisplayDefaultLink() {
+		headerHolder.linkString.setText(
+			groupInviteService.encodeGroupInviteLink(GroupDetailAdapter.this.defaultGroupInviteModel).toString()
+		);
+	}
+
+	private void setGroupLinkViewsEnabled(boolean enabled) {
+		headerHolder.linkContainerView.setEnabled(enabled);
+		headerHolder.linkResetButton.setEnabled(enabled);
+		headerHolder.linkShareButton.setEnabled(enabled);
+		if (enabled) {
+			headerHolder.linkString.setAlpha(1F);
+			headerHolder.linkResetButton.setAlpha(1F);
+			headerHolder.linkShareButton.setAlpha(1F);
+		}
+		else {
+			headerHolder.linkString.setAlpha(0.5F);
+			headerHolder.linkResetButton.setAlpha(0.5F);
+			headerHolder.linkShareButton.setAlpha(0.5F);
 		}
 	}
 
@@ -216,11 +314,14 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		return contactModels.get(position - 1);
 	}
 
-	public void setOnClickListener(OnClickListener listener) {
+	public void setOnClickListener(OnGroupDetailsClickListener listener) {
 		onClickListener = listener;
 	}
 
-	public interface OnClickListener {
-		void onItemClick(View v, ContactModel contactModel);
+	public interface OnGroupDetailsClickListener {
+		void onGroupOwnerClick(View v, String identity);
+		void onGroupMemberClick(View v, @NonNull ContactModel contactModel);
+		void onResetLinkClick();
+		void onShareLinkClick();
 	}
 }

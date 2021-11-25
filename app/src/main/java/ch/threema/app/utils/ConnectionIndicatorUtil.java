@@ -26,7 +26,7 @@ import android.view.View;
 
 import androidx.annotation.UiThread;
 import ch.threema.app.R;
-import ch.threema.client.ConnectionState;
+import ch.threema.domain.protocol.csp.connection.ConnectionState;
 
 public class ConnectionIndicatorUtil {
 	private static ConnectionIndicatorUtil ourInstance;

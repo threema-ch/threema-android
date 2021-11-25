@@ -17,7 +17,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:background="?chat_bubble_status"
+		android:background="@drawable/bubble_status_selector"
 		android:orientation="vertical"
 		android:paddingBottom="@dimen/message_status_padding_bottom"
 		android:paddingLeft="@dimen/chat_bubble_margin_end"

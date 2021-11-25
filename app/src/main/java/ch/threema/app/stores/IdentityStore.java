@@ -31,10 +31,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.IdentityStoreInterface;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class IdentityStore implements IdentityStoreInterface {
 	private static final Logger logger = LoggerFactory.getLogger(IdentityStore.class);
@@ -93,6 +94,11 @@ public class IdentityStore implements IdentityStoreInterface {
 			return nacl.decrypt(boxData, nonce);
 		}
 		return null;
+	}
+
+	@Override
+	public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
+		return getCachedNaCl(privateKey, publicKey).getPrecomputed();
 	}
 
 	public String getIdentity() {

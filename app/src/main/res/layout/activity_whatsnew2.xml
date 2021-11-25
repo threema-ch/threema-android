@@ -35,9 +35,9 @@
 				android:paddingRight="18dp"
 				android:paddingTop="16dp">
 
-				<ch.threema.app.ui.TextViewRobotoMedium
-					android:id="@+id/whatsnew_title"
+				<TextView
 					style="@style/WizardTitleText"
+					android:id="@+id/whatsnew_title"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"

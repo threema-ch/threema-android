@@ -19,7 +19,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_toRightOf="@id/avatar_view"
-		android:background="?chat_bubble_recv"
+		android:background="@drawable/bubble_recv_selector"
 		android:orientation="vertical"
 		android:paddingBottom="@dimen/chat_bubble_border_padding"
 		android:paddingLeft="@dimen/chat_bubble_border_padding_arrow"

@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.listeners.ConversationListener;
+import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.DialogUtil;
@@ -73,6 +74,13 @@ public class LeaveGroupAsyncTask extends AsyncTask<Void, Void, Void> {
 			@Override
 			public void handle(ConversationListener listener) {
 				listener.onModifiedAll();
+			}
+		});
+
+		ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
+			@Override
+			public void handle(GroupListener listener) {
+				listener.onLeave(groupModel);
 			}
 		});
 

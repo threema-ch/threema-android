@@ -29,7 +29,6 @@ import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public class BallotMatrixDataImpl implements BallotMatrixData {
 
-	private final BallotModel ballotModel;
 	private final List<BallotMatrixService.Participant> participants;
 	private final List<BallotMatrixService.Choice> choices;
 	private final Map<String, BallotVoteModel> data;
@@ -40,7 +39,6 @@ public class BallotMatrixDataImpl implements BallotMatrixData {
 								List<BallotMatrixService.Choice> choices,
 								Map<String, BallotVoteModel> data,
 								BallotMatrixService.DataKeyBuilder keyBuilder) {
-		this.ballotModel = ballotModel;
 		this.participants = participants;
 		this.choices = choices;
 		this.data = data;

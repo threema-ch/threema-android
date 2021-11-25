@@ -42,9 +42,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.client.BlobLoader;
-import ch.threema.client.ProgressListener;
-import ch.threema.client.Utils;
+import ch.threema.domain.protocol.blob.BlobLoader;
+import ch.threema.base.ProgressListener;
+import ch.threema.base.utils.Utils;
 
 public class DownloadServiceImpl implements DownloadService {
 	private static final Logger logger = LoggerFactory.getLogger(DownloadServiceImpl.class);

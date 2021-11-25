@@ -11,4 +11,5 @@
 	<string name="directory_search" tools:ignore="MissingTranslation"/>
 	<string name="private_download_url_hms" tools:ignore="MissingTranslation"/>
 	<string name="private_download_url" tools:ignore="MissingTranslation"/>
+	<string name="threema_work_url" tools:ignore="MissingTranslation"/>
 </resources>

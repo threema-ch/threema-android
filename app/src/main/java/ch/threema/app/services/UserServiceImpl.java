@@ -39,7 +39,6 @@ import java.util.HashSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
@@ -60,15 +59,15 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.APIConnector;
-import ch.threema.client.CreateIdentityRequestDataInterface;
-import ch.threema.client.IdentityBackupDecoder;
-import ch.threema.client.IdentityStoreInterface;
-import ch.threema.client.MessageQueue;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.TypingIndicatorMessage;
-import ch.threema.client.Utils;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.api.CreateIdentityRequestDataInterface;
+import ch.threema.domain.identitybackup.IdentityBackupDecoder;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
+import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
@@ -117,9 +116,11 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			throw new ThreemaException("please remove your existing identity " + this.getIdentity());
 		}
 
-		// no need to send a request if we have no licence.
+		// no need to send a request if we have no licence
 		// note that CheckLicenseRoutine may not have received an upstream response yet.
-		if (policySignature == null && policyResponseData == null && credentials == null && !BuildConfig.DEBUG) {
+		if (policySignature == null && policyResponseData == null && credentials == null
+			&& !(BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.NONE))
+		) {
 			throw new ThreemaException(context.getString(R.string.missing_app_licence) + "\n" + context.getString(R.string.app_store_error_code, policyErrorCode));    /* Create identity phase 1 unsuccessful:*/
 		}
 		else {

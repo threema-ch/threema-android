@@ -42,30 +42,30 @@ import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupApiService;
+import ch.threema.app.services.GroupMessagingService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.AbstractGroupMessage;
-import ch.threema.client.BlobUploader;
-import ch.threema.client.GroupLocationMessage;
-import ch.threema.client.GroupTextMessage;
-import ch.threema.client.MessageId;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.Utils;
-import ch.threema.client.ballot.BallotData;
-import ch.threema.client.ballot.BallotId;
-import ch.threema.client.ballot.BallotVote;
-import ch.threema.client.ballot.GroupBallotCreateMessage;
-import ch.threema.client.ballot.GroupBallotVoteMessage;
-import ch.threema.client.file.FileData;
-import ch.threema.client.file.GroupFileMessage;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.blob.BlobUploader;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
+import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
+import ch.threema.domain.protocol.csp.messages.ballot.GroupBallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.GroupBallotVoteMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -87,24 +87,22 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	private final GroupService groupService;
 	private Bitmap avatar = null;
 	private final DatabaseServiceNew databaseServiceNew;
-	private final GroupApiService groupApiService;
+	private final GroupMessagingService groupMessagingService;
 	private ContactService contactService;
+	private ApiService apiService;
 
 	public GroupMessageReceiver(GroupModel group,
 								GroupService groupService,
 								DatabaseServiceNew databaseServiceNew,
-								GroupApiService groupApiService,
-	                            ContactService contactService){
+								GroupMessagingService groupMessagingService,
+	                            ContactService contactService,
+	                            ApiService apiService) {
 		this.group = group;
 		this.groupService = groupService;
 		this.databaseServiceNew = databaseServiceNew;
-		this.groupApiService = groupApiService;
+		this.groupMessagingService = groupMessagingService;
 		this.contactService = contactService;
-	}
-
-	@Override
-	public List<MessageReceiver> getAffectedMessageReceivers() {
-		return null;
+		this.apiService = apiService;
 	}
 
 	@Override
@@ -144,40 +142,34 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	@Override
 	public boolean createBoxedTextMessage(final String text, final GroupMessageModel messageModel) throws ThreemaException {
-		return this.sendMessage(new GroupApiService.CreateApiMessage() {
-			@Override
-			public AbstractGroupMessage create(MessageId messageId) {
-				GroupTextMessage boxedTextMessage = new GroupTextMessage();
-				boxedTextMessage.setMessageId(messageId);
-				boxedTextMessage.setText(text);
+		return this.sendMessage(messageId -> {
+			GroupTextMessage boxedTextMessage = new GroupTextMessage();
+			boxedTextMessage.setMessageId(messageId);
+			boxedTextMessage.setText(text);
 
-				if (messageId != null) {
-					messageModel.setApiMessageId(messageId.toString());
-				}
-
-				return boxedTextMessage;
+			if (messageId != null) {
+				messageModel.setApiMessageId(messageId.toString());
 			}
+
+			return boxedTextMessage;
 		}, messageModel);
 	}
 
 	@Override
 	public boolean createBoxedLocationMessage(final double lat, final double lng, final float acc, final String poiName, GroupMessageModel messageModel) throws ThreemaException {
-		return this.sendMessage(new GroupApiService.CreateApiMessage() {
-			@Override
-			public AbstractGroupMessage create(MessageId messageId) {
-				GroupLocationMessage msg = new GroupLocationMessage();
-				msg.setMessageId(messageId);
-				msg.setLatitude(lat);
-				msg.setLongitude(lng);
-				msg.setAccuracy(acc);
-				msg.setPoiName(poiName);
+		return this.sendMessage(messageId -> {
+			final GroupLocationMessage msg = new GroupLocationMessage();
+			msg.setMessageId(messageId);
+			msg.setLatitude(lat);
+			msg.setLongitude(lng);
+			msg.setAccuracy(acc);
+			msg.setPoiName(poiName);
 
-				if (messageId != null) {
-					messageModel.setApiMessageId(messageId.toString());
-				}
-
-				return msg;
+			if (messageId != null) {
+				messageModel.setApiMessageId(messageId.toString());
 			}
+
+			return msg;
 		}, messageModel);
 	}
 
@@ -185,14 +177,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	public boolean createBoxedFileMessage(final byte[] thumbnailBlobId,
 										  final byte[] fileBlobId, final EncryptResult fileResult,
 										  final GroupMessageModel messageModel) throws ThreemaException {
-		//special, only send filemessages to identity with feature level FILE
-		List<ContactModel> supportedContacts = Functional.filter(
-				contactService.getByIdentities(this.groupService.getGroupIdentities(group)), new IPredicateNonNull<ContactModel>() {
-			@Override
-			public boolean apply(@NonNull ContactModel contactModel) {
-					return ThreemaFeature.canFile(contactModel.getFeatureMask());
-			}
-		});
+		List<ContactModel> supportedContacts = contactService.getByIdentities(this.groupService.getGroupIdentities(group));
 
 		String[] identities = new String[supportedContacts.size()];
 		for(int n = 0; n < supportedContacts.size(); n++) {
@@ -201,33 +186,36 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 		final FileDataModel modelFileData = messageModel.getFileData();
 
-		return this.sendMessage(new GroupApiService.CreateApiMessage() {
-			@Override
-			public AbstractGroupMessage create(MessageId messageId) {
-				GroupFileMessage fileMessage = new GroupFileMessage();
-				fileMessage.setMessageId(messageId);
-				FileData fileData = new FileData();
-				fileData
-						.setFileBlobId(fileBlobId)
-						.setThumbnailBlobId(thumbnailBlobId)
-						.setEncryptionKey(fileResult.getKey())
-						.setMimeType(modelFileData.getMimeType())
-						.setThumbnailMimeType(modelFileData.getThumbnailMimeType())
-						.setFileSize(modelFileData.getFileSize())
-						.setFileName(modelFileData.getFileName())
-						.setRenderingType(modelFileData.getRenderingType())
-						.setDescription(modelFileData.getCaption())
-						.setCorrelationId(messageModel.getCorrelationId())
-						.setMetaData(modelFileData.getMetaData());
+		return this.sendMessage(messageId -> {
+			final GroupFileMessage fileMessage = new GroupFileMessage();
+			fileMessage.setMessageId(messageId);
+			final FileData fileData = new FileData();
+			fileData
+					.setFileBlobId(fileBlobId)
+					.setThumbnailBlobId(thumbnailBlobId)
+					.setEncryptionKey(fileResult.getKey())
+					.setMimeType(modelFileData.getMimeType())
+					.setThumbnailMimeType(modelFileData.getThumbnailMimeType())
+					.setFileSize(modelFileData.getFileSize())
+					.setFileName(modelFileData.getFileName())
+					.setRenderingType(modelFileData.getRenderingType())
+					.setDescription(modelFileData.getCaption())
+					.setCorrelationId(messageModel.getCorrelationId())
+					.setMetaData(modelFileData.getMetaData());
 
-				fileMessage.setData(fileData);
+			fileMessage.setData(fileData);
 
-				if (messageId != null) {
-					messageModel.setApiMessageId(messageId.toString());
-				}
-
-				return fileMessage;
+			if (messageId != null) {
+				messageModel.setApiMessageId(messageId.toString());
 			}
+
+			logger.info(
+				"Enqueue group file message ID {} to {}",
+				fileMessage.getMessageId(),
+				fileMessage.getToIdentity()
+			);
+
+			return fileMessage;
 		}, messageModel, identities);
 	}
 
@@ -239,23 +227,20 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
-		return this.sendMessage(new GroupApiService.CreateApiMessage() {
-			@Override
-			public AbstractGroupMessage create(MessageId messageId) {
-				GroupBallotCreateMessage msg = new GroupBallotCreateMessage();
-				msg.setMessageId(messageId);
-				msg.setBallotCreator(ballotModel.getCreatorIdentity());
-				msg.setBallotId(ballotId);
-				msg.setData(ballotData);
+		return this.sendMessage(messageId -> {
+			final GroupBallotCreateMessage msg = new GroupBallotCreateMessage();
+			msg.setMessageId(messageId);
+			msg.setBallotCreator(ballotModel.getCreatorIdentity());
+			msg.setBallotId(ballotId);
+			msg.setData(ballotData);
 
-				if (abstractMessageModel != null && messageId != null) {
-					abstractMessageModel.setApiMessageId(messageId.toString());
-				}
-
-				logger.info("Enqueue ballot message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-
-				return msg;
+			if (abstractMessageModel != null && messageId != null) {
+				abstractMessageModel.setApiMessageId(messageId.toString());
 			}
+
+			logger.info("Enqueue ballot message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
+
+			return msg;
 		}, null, filteredIdentities);
 	}
 
@@ -282,20 +267,17 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 				//only to the creator
 				break;
 		}
-		return this.sendMessage(new GroupApiService.CreateApiMessage() {
-			@Override
-			public AbstractGroupMessage create(MessageId messageId) {
-				GroupBallotVoteMessage msg = new GroupBallotVoteMessage();
-				msg.setMessageId(messageId);
-				msg.setBallotCreator(ballotModel.getCreatorIdentity());
-				msg.setBallotId(ballotId);
-				for(BallotVote v: votes) {
-					msg.getBallotVotes().add(v);
-				}
-				logger.info("Enqueue ballot vote message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-
-				return msg;
+		return this.sendMessage(messageId -> {
+			final GroupBallotVoteMessage msg = new GroupBallotVoteMessage();
+			msg.setMessageId(messageId);
+			msg.setBallotCreator(ballotModel.getCreatorIdentity());
+			msg.setBallotId(ballotId);
+			for (BallotVote v : votes) {
+				msg.getBallotVotes().add(v);
 			}
+			logger.info("Enqueue ballot vote message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
+
+			return msg;
 		}, null, toIdentities);
 	}
 
@@ -375,16 +357,15 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 	@Override
-	public EncryptResult encryptFileData(final byte[] fileData) {
+	public EncryptResult encryptFileData(final byte[] fileData) throws ThreemaException {
 		//generate random symmetric key for file encryption
 		SecureRandom rnd = new SecureRandom();
 		final byte[] encryptionKey = new byte[NaCl.SYMMKEYBYTES];
 		rnd.nextBytes(encryptionKey);
 
 		NaCl.symmetricEncryptDataInplace(fileData, encryptionKey, ProtocolDefines.FILE_NONCE);
-		BlobUploader blobUploaderThumbnail = new BlobUploader(ConfigUtils::getSSLSocketFactory, fileData);
+		BlobUploader blobUploaderThumbnail = apiService.createUploader(fileData);
 		blobUploaderThumbnail.setVersion(ThreemaApplication.getAppVersion());
-		blobUploaderThumbnail.setServerUrls(ThreemaApplication.getIPv6());
 
 		return new EncryptResult() {
 			@Override
@@ -410,11 +391,10 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 	@Override
-	public EncryptResult encryptFileThumbnailData(byte[] fileThumbnailData, final byte[] encryptionKey) {
+	public EncryptResult encryptFileThumbnailData(byte[] fileThumbnailData, final byte[] encryptionKey) throws ThreemaException {
 		final byte[] thumbnailBoxed = NaCl.symmetricEncryptData(fileThumbnailData, encryptionKey, ProtocolDefines.FILE_THUMBNAIL_NONCE);
-		BlobUploader blobUploaderThumbnail = new BlobUploader(ConfigUtils::getSSLSocketFactory, thumbnailBoxed);
+		BlobUploader blobUploaderThumbnail = apiService.createUploader(thumbnailBoxed);
 		blobUploaderThumbnail.setVersion(ThreemaApplication.getAppVersion());
-		blobUploaderThumbnail.setServerUrls(ThreemaApplication.getIPv6());
 
 		return new EncryptResult() {
 			@Override
@@ -505,12 +485,24 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 
-	private boolean sendMessage(GroupApiService.CreateApiMessage createApiMessage, AbstractMessageModel messageModel) throws ThreemaException {
+	private boolean sendMessage(GroupMessagingService.CreateApiMessage createApiMessage, AbstractMessageModel messageModel) throws ThreemaException {
 		return this.sendMessage(createApiMessage, messageModel, null);
 	}
 
-
-	private boolean sendMessage(GroupApiService.CreateApiMessage createApiMessage, final AbstractMessageModel messageModel, String[] groupIdentities) throws ThreemaException {
+	/**
+	 * Send a message to a group.
+	 *
+	 * @param createApiMessage A callback that creates the {@link AbstractGroupMessage} that will be sent.
+	 * @param messageModel The model representing this message. It will be updated with status updates.
+	 * @param groupIdentities List of group identities that will receive this group message. If set to null, the identities belonging to the current group will be used.
+	 * @return
+	 * @throws ThreemaException
+	 */
+	private boolean sendMessage(
+		@NonNull GroupMessagingService.CreateApiMessage createApiMessage,
+		final AbstractMessageModel messageModel,
+		@Nullable String[] groupIdentities
+	) throws ThreemaException {
 		if(groupIdentities == null) {
 			groupIdentities = this.groupService.getGroupIdentities(this.group);
 		}
@@ -538,30 +530,26 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 			}
 		}
 
-		this.groupApiService.sendMessage(this.group, groupIdentities, createApiMessage, new GroupApiService.GroupMessageQueued() {
-			@Override
-			public void onQueued(AbstractGroupMessage queuedGroupMessage) {
-				//set as queued (first)
-				groupService.setIsArchived(group, false);
+		this.groupMessagingService.sendMessage(this.group, groupIdentities, createApiMessage, queuedGroupMessage -> {
+			// Set as queued (first)
+			groupService.setIsArchived(group, false);
 
-				if(messageModel == null) {
-					//its not a message model
-					return;
-				}
-				if(!messageModel.isQueued()) {
-					messageModel.setIsQueued(true);
-				}
-				//save identity message model
-				databaseServiceNew.getGroupMessagePendingMessageIdModelFactory()
-						.create(
-								new GroupMessagePendingMessageIdModel(messageModel.getId(), queuedGroupMessage.getMessageId().toString()));
+			if(messageModel == null) {
+				return;
 			}
+			if(!messageModel.isQueued()) {
+				messageModel.setIsQueued(true);
+			}
+			//save identity message model
+			databaseServiceNew.getGroupMessagePendingMessageIdModelFactory()
+					.create(
+							new GroupMessagePendingMessageIdModel(messageModel.getId(), queuedGroupMessage.getMessageId().toString()));
 		});
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "GroupMessageReceiver (GroupId = " + String.valueOf(this.group.getId()) + ")";
+		return "GroupMessageReceiver (GroupId = " + this.group.getId() + ")";
 	}
 }

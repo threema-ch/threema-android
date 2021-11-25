@@ -22,7 +22,7 @@
 		android:paddingBottom="@dimen/chat_bubble_border_padding"
 		android:paddingRight="@dimen/chat_bubble_border_padding"
 		android:layout_toRightOf="@id/avatar_view"
-		android:background="?chat_bubble_recv"
+		android:background="@drawable/bubble_recv_selector"
 		android:orientation="vertical">
 
 		<include layout="@layout/conversation_bubble_header"/>

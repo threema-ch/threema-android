@@ -41,7 +41,7 @@ import ch.threema.app.webclient.SendMode;
 import ch.threema.app.webclient.converter.MsgpackBuilder;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.DispatchException;
-import ch.threema.client.MessageQueue;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
 
 /**
  * Dispatch incoming messages to the receivers or send outgoing messages to the webclient.

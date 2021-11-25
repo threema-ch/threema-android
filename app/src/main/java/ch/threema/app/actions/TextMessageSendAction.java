@@ -21,7 +21,9 @@
 
 package ch.threema.app.actions;
 
-import java.io.UnsupportedEncodingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -30,9 +32,11 @@ import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class TextMessageSendAction extends SendAction {
+	private static final Logger logger = LoggerFactory.getLogger(TextMessageSendAction.class);
+
 	protected static volatile TextMessageSendAction instance;
 	private static final Object instanceLock = new Object();
 
@@ -51,9 +55,11 @@ public class TextMessageSendAction extends SendAction {
 		return instance;
 	}
 
-	public boolean sendTextMessage(final MessageReceiver[] allReceivers,
-	                               String text,
-	                               final ActionHandler actionHandler) {
+	public boolean sendTextMessage(
+		final MessageReceiver[] allReceivers,
+		String text,
+		final ActionHandler actionHandler
+	) {
 
 		if (actionHandler == null) {
 			return false;
@@ -93,6 +99,7 @@ public class TextMessageSendAction extends SendAction {
 						messageService.sendText(messageText, receiver);
 					}
 				} catch (final Exception e) {
+					logger.error("Could not send text message", e);
 					actionHandler.onError(e.getMessage());
 					return false;
 				}

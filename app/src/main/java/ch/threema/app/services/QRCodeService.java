@@ -26,7 +26,8 @@ import android.graphics.Bitmap;
 import java.util.Date;
 
 public interface QRCodeService {
-	public interface QRCodeContentResult {
+
+	interface QRCodeContentResult {
 		String getIdentity();
 		byte[] getPublicKey();
 		Date getExpirationDate();

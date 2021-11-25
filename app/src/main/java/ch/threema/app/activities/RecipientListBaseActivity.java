@@ -113,7 +113,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -400,17 +400,31 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			}
 
 			String identity = IntentDataUtil.getIdentity(intent);
-			if (!TestUtil.empty(identity)) {
-				hideUi = true;
+			int groupId = -1;
+			int distributionListID = -1;
+			//check for receiver information either through intent extras or sharing shortcut id which looses its intent extras
+			// (workaround to pass identity extras in shortcut id https://medium.com/@styrc.adam/android-dynamic-shortcuts-passing-extras-64db534621c1)
+			if (TestUtil.empty(identity)) {
+				identity = IntentDataUtil.getIdentityFromSharingShortcut(intent);
+				if (TestUtil.empty(identity)) {
+					groupId = IntentDataUtil.getGroupId(intent);
+
+					if (groupId == -1) {
+						groupId = IntentDataUtil.getGroupIdFromSharingShortcut(intent);
+
+						if (groupId == -1) {
+							// distribution list is only passed as id to recipient activity, no check for intent extras
+							distributionListID = IntentDataUtil.getDistributionListIdFromSharingShortcut(intent);
+						}
+					}
+				}
 			}
 
-			int groupId = IntentDataUtil.getGroupId(intent);
-			if (groupId > 0) {
+			if (groupId > 0 || distributionListID > 0 || !TestUtil.empty(identity)) {
 				hideUi = true;
 			}
 
 			String action = intent.getAction();
-
 			if (action != null) {
 				// called from other app via regular send intent
 				if (action.equals(Intent.ACTION_SEND)) {
@@ -425,7 +439,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						uri = (Uri) parcelable;
 					}
 
-					if (type != null && (uri != null || MimeUtil.isTextFile(type))) {
+					if (type != null && (uri != null || MimeUtil.isText(type))) {
 						if (type.equals("message/rfc822")) {
 							// email attachments
 							//  extract file type from uri path
@@ -506,9 +520,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					if (!TestUtil.empty(identity)) {
 						prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(contactService.getByIdentity(identity))));
 					}
-
-					if (groupId > 0) {
+					else if (groupId > 0) {
 						prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(groupService.getById(groupId))));
+					}
+					else if (distributionListID > 0) {
+						prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(distributionListService.getById(distributionListID))));
 					}
 				} else if (action.equals(Intent.ACTION_SENDTO)) {
 					// called from contact app or quickcontactbadge
@@ -900,8 +916,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		if (mediaItems.size() > 0 || originalMessageModels.size() > 0) {
 			String recipientName = "";
 
-			if (!((mediaItems.size() == 1 && MimeUtil.isTextFile(mediaItems.get(0).getMimeType()))
-				|| (originalMessageModels.size() == 1 && originalMessageModels.get(0).getType() == MessageType.TEXT))) {
+			if (!(
+				(mediaItems.size() == 1 && MimeUtil.isText(mediaItems.get(0).getMimeType()) && !MimeUtil.isFileType(mediaItems.get(0).getType())) // not a single plain text item (.txt file should == true bc. mimetype text/plain but type file)
+				||
+				(originalMessageModels.size() == 1 && originalMessageModels.get(0).getType() == MessageType.TEXT)) // not a single threema text message
+			) {
 				for (Object model : recipients) {
 					if (recipientName.length() > 0) {
 						recipientName += ", ";

@@ -38,7 +38,7 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.Base32;
+import ch.threema.base.utils.Base32;
 
 /**
  * add profile pic field to normal, group and distribution list message models

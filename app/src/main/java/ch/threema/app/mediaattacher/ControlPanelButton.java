@@ -25,11 +25,9 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -102,11 +100,7 @@ public class ControlPanelButton extends FrameLayout {
 
 			gradientDrawable.setColor(fillColor);
 			if (fillColorAlpha >= 0) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					gradientDrawable.setAlpha(fillColorAlpha);
-				} else {
-					gradientDrawable.setColor(fillColor + (fillColorAlpha * 0x1000000));
-				}
+				gradientDrawable.setAlpha(fillColorAlpha);
 			}
 			gradientDrawable.setStroke(getResources().getDimensionPixelSize(R.dimen.media_attach_button_stroke_width), strokeColor);
 

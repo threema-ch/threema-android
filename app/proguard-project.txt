@@ -252,4 +252,4 @@ public static <fields>;
 # Adding this line fixes the problem. It's most probably a bug in the R8 optimizer
 # that's triggered by this file, the NonceFactory wasn't modified since 2017...
 # Maybe we can remove this again with a future build toolchain.
--keep class ch.threema.client.NonceFactory { *; }
+-keep class ch.threema.base.crypto.NonceFactory { *; }

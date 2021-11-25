@@ -27,14 +27,16 @@ import java.util.Random;
 import ch.threema.app.voip.util.UnsignedHelper;
 
 public class RandomUtil {
+	private final static Random insecureRandom = new Random();
+	private final static SecureRandom secureRandom = new SecureRandom();
+
 	/**
 	 * Generate between `minBytes` (inclusive) and `maxBytes` (inclusive) random bytes.
 	 */
 	public static byte[] generateRandomPadding(int minBytes, int maxBytes) {
-		final SecureRandom random = new SecureRandom();
-		int count = random.nextInt(maxBytes + 1 - minBytes) + minBytes;
+		int count = secureRandom.nextInt(maxBytes + 1 - minBytes) + minBytes;
 		final byte[] bytes = new byte[count];
-		random.nextBytes(bytes);
+		secureRandom.nextBytes(bytes);
 		return bytes;
 	}
 
@@ -42,8 +44,7 @@ public class RandomUtil {
 	 * Generate a random unsigned 32 integer (packed into a non-negative long, because Java)
 	 */
 	public static long generateRandomU32() {
-		final SecureRandom random = new SecureRandom();
-		return UnsignedHelper.getUnsignedInt(random.nextInt());
+		return UnsignedHelper.getUnsignedInt(secureRandom.nextInt());
 	}
 
 	/**
@@ -53,10 +54,9 @@ public class RandomUtil {
 		final int leftLimit = 97; // letter 'a'
 		final int rightLimit = 122; // letter 'z'
 		final int targetStringLength = 10;
-		final Random random = new Random();
 		StringBuilder buffer = new StringBuilder(targetStringLength);
 		for (int i = 0; i < length; i++) {
-			int randomLimitedInt = leftLimit + random.nextInt(rightLimit - leftLimit + 1);
+			int randomLimitedInt = leftLimit + insecureRandom.nextInt(rightLimit - leftLimit + 1);
 			buffer.append((char) randomLimitedInt);
 		}
 		return buffer.toString();

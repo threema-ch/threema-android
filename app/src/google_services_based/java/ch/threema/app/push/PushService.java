@@ -41,7 +41,7 @@ import androidx.annotation.NonNull;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushService extends FirebaseMessagingService {
 	private static final Logger logger = LoggerFactory.getLogger(PushService.class);

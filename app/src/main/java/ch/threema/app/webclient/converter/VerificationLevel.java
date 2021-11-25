@@ -31,7 +31,7 @@ public class VerificationLevel extends Converter {
 	public final static int SERVER_VERIFIED = 2;
 	public final static int FULLY_VERIFIED = 3;
 
-	public static int convert(ch.threema.base.VerificationLevel verificationLevel) throws ConversionException {
+	public static int convert(ch.threema.domain.models.VerificationLevel verificationLevel) throws ConversionException {
 		try {
 			switch (verificationLevel) {
 				case UNVERIFIED:

@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -133,18 +132,14 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
 		setContentView(R.layout.activity_map);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-			getWindow().setStatusBarColor(Color.TRANSPARENT);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				// we want dark icons, i.e. a light status bar
-				getWindow().getDecorView().setSystemUiVisibility(
-						getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-			}
-		} else {
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+		getWindow().setStatusBarColor(Color.TRANSPARENT);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			// we want dark icons, i.e. a light status bar
+			getWindow().getDecorView().setSystemUiVisibility(
+					getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 		}
 
 		try {
@@ -240,12 +235,10 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 						}
 						mapboxMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
 
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-							int marginTop = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_top) + insetTop;
-							int marginRight = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_right);
+						int marginTop = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_top) + insetTop;
+						int marginRight = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_right);
 
-							mapboxMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
-						}
+						mapboxMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
 
 						moveCamera(markerPosition, false, -1);
 						mapView.postDelayed(new Runnable() {

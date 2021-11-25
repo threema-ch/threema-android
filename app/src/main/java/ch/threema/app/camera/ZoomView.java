@@ -25,16 +25,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import ch.threema.app.R;
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class ZoomView extends FrameLayout {
 
 	private Paint linePaint, circlePaint, semiPaint, labelPaint;
@@ -71,7 +68,7 @@ public class ZoomView extends FrameLayout {
 
 		this.semiPaint = new Paint();
 		this.semiPaint.setStyle(Paint.Style.STROKE);
-		this.semiPaint.setColor(getResources().getColor(R.color.background_dim_light));
+		this.semiPaint.setColor(getResources().getColor(R.color.background_dim));
 		this.semiPaint.setAntiAlias(true);
 		this.semiPaint.setStrokeWidth(this.strokeWidth);
 

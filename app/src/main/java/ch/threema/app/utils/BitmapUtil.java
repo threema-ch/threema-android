@@ -36,6 +36,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.View;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -612,5 +613,23 @@ public class BitmapUtil {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Create bitmap from a view
+	 *
+	 * @param view source view
+	 * @return generated bitmap object
+	 */
+	public static Bitmap getBitmapFromView(View view) {
+		Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight() , Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		Drawable bgDrawable = view.getBackground();
+		if (bgDrawable != null)
+			bgDrawable.draw(canvas);
+		else
+			canvas.drawColor(Color.WHITE);
+		view.draw(canvas);
+		return bitmap;
 	}
 }

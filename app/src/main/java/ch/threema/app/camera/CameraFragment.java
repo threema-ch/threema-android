@@ -31,7 +31,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
@@ -56,7 +55,6 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
@@ -86,7 +84,6 @@ import static ch.threema.app.camera.CameraActivity.KEY_EVENT_ACTION;
 import static ch.threema.app.camera.CameraActivity.KEY_EVENT_EXTRA;
 
 @SuppressWarnings("deprecation")
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraFragment extends Fragment {
 	private static final Logger logger = LoggerFactory.getLogger(CameraFragment.class);
 	private static final int PERMISSION_REQUEST_CODE_AUDIO = 869;

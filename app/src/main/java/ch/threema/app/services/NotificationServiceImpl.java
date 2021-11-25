@@ -80,6 +80,8 @@ import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.ServerMessageActivity;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.grouplinks.IncomingGroupRequestActivity;
+import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -95,11 +97,15 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.app.utils.WidgetUtil;
 import ch.threema.app.voip.activities.CallActivity;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
+import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
+import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
@@ -349,6 +355,34 @@ public class NotificationServiceImpl implements NotificationService {
 		notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
 		notificationChannel.setSound(null,null);
 		notificationManager.createNotificationChannel(notificationChannel);
+
+		// group join response notification channel
+		if (ConfigUtils.supportsGroupLinks()) {
+			notificationChannel = new NotificationChannel(
+			NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE,
+			context.getString(R.string.group_response),
+			NotificationManager.IMPORTANCE_DEFAULT);
+			notificationChannel.setDescription(context.getString(R.string.notification_channel_group_join_response));
+			notificationChannel.enableLights(true);
+			notificationChannel.enableVibration(true);
+			notificationChannel.setShowBadge(false);
+			notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+			notificationChannel.setSound(null,null);
+			notificationManager.createNotificationChannel(notificationChannel);
+
+			// group join request notification channel
+			notificationChannel = new NotificationChannel(
+				NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST,
+				context.getString(R.string.group_join_request),
+				NotificationManager.IMPORTANCE_DEFAULT);
+			notificationChannel.setDescription(context.getString(R.string.notification_channel_group_join_request));
+			notificationChannel.enableLights(true);
+			notificationChannel.enableVibration(true);
+			notificationChannel.setShowBadge(false);
+			notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+			notificationChannel.setSound(null,null);
+			notificationManager.createNotificationChannel(notificationChannel);
+		}
 	}
 
 	@Override
@@ -690,8 +724,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 		NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(me);
 
-		// bug: setting a conversation title implies a group chat
-		messagingStyle.setConversationTitle(chatName);
+		messagingStyle.setConversationTitle(isGroupChat ? chatName : null);
 		messagingStyle.setGroupConversation(isGroupChat);
 
 		for(int i = notifications.size() < MAXIMUM_RETAINED_MESSAGES ? notifications.size() - 1 : MAXIMUM_RETAINED_MESSAGES -1 ;
@@ -814,10 +847,34 @@ public class NotificationServiceImpl implements NotificationService {
 		if (showMarkAsReadAction) {
 			builder.addAction(getMarkAsReadAction(markReadPendingIntent));
 		} else {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				builder.addInvisibleAction(getMarkAsReadAction(markReadPendingIntent));
-			}
+			builder.addInvisibleAction(getMarkAsReadAction(markReadPendingIntent));
 		}
+	}
+
+	private void addGroupLinkActions(NotificationCompat.Builder builder, PendingIntent acceptIntent, PendingIntent rejectIntent) {
+		NotificationCompat.Action.Builder acceptActionBuilder = new NotificationCompat.Action.Builder(
+			R.drawable.ic_check, context.getString(R.string.accept), acceptIntent)
+			.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
+			.setShowsUserInterface(false);
+
+		if (Build.VERSION.SDK_INT >= 29) {
+			acceptActionBuilder.setAllowGeneratedReplies(!preferenceService.getDisableSmartReplies());
+		}
+
+		NotificationCompat.Action.Builder rejectActionBuilder = new NotificationCompat.Action.Builder(
+			R.drawable.ic_close, context.getString(R.string.reject), rejectIntent)
+			.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
+			.setShowsUserInterface(false);
+
+		if (Build.VERSION.SDK_INT >= 29) {
+			rejectActionBuilder.setAllowGeneratedReplies(!preferenceService.getDisableSmartReplies());
+		}
+
+		NotificationCompat.Action acceptAction = acceptActionBuilder.build();
+		NotificationCompat.Action rejectAction = rejectActionBuilder.build();
+
+		builder.addAction(acceptAction);
+		builder.addAction(rejectAction);
 	}
 
 	private NotificationCompat.Action getMarkAsReadAction(PendingIntent markReadPendingIntent) {
@@ -1289,11 +1346,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private Bitmap getConversationNotificationAvatar() {
 		/* notification is for more than one chat */
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_multi_color);
-		} else {
-			return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_multi);
-		}
+		return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_multi_color);
 	}
 
 	private int getSmallIconResource(int unreadConversationsCount) {
@@ -1852,4 +1905,123 @@ public class NotificationServiceImpl implements NotificationService {
 	public void resetConversationNotifications(){
 		conversationNotifications.clear();
 	}
+
+	@Override
+	public void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
+	                                              @NonNull OutgoingGroupJoinRequestModel.Status status,
+	                                              @NonNull DatabaseServiceNew databaseService) {
+		logger.info("handle join response, showGroupJoinResponseNotification with status {}", status);
+
+		Intent notificationIntent;
+		String message;
+
+		switch (status) {
+			case ACCEPTED:
+				message = String.format(context.getString(R.string.group_response_accepted), outgoingGroupJoinRequestModel.getGroupName());
+				break;
+			case GROUP_FULL:
+				message = String.format(context.getString(R.string.group_response_full), outgoingGroupJoinRequestModel.getGroupName());
+				break;
+			case REJECTED:
+				message = String.format(context.getString(R.string.group_response_rejected), outgoingGroupJoinRequestModel.getGroupName());
+				break;
+			case UNKNOWN:
+			default:
+				logger.info("Unknown response state don't show notification");
+				return;
+		}
+		if (outgoingGroupJoinRequestModel.getGroupApiId() != null) {
+			GroupModel groupModel = databaseService
+				.getGroupModelFactory()
+				.getByApiGroupIdAndCreator(outgoingGroupJoinRequestModel.getGroupApiId().toString(), outgoingGroupJoinRequestModel.getAdminIdentity());
+			notificationIntent = new Intent(context, ComposeMessageActivity.class);
+			notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+		} else {
+			notificationIntent = new Intent(context, OutgoingGroupRequestActivity.class);
+		}
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+		PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
+
+		NotificationSchemaImpl notificationSchema = new NotificationSchemaImpl(this.context);
+		notificationSchema
+			.setVibrate(this.preferenceService.isVibrate())
+			.setColor(this.getColorValue(preferenceService.getNotificationLight()));
+
+		NotificationCompat.Builder builder =
+			new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE, notificationSchema)
+				.setSmallIcon(R.drawable.ic_notification_small)
+				.setContentTitle(context.getString(R.string.group_response))
+				.setContentText(message)
+				.setContentIntent(openPendingIntent)
+				.setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setAutoCancel(true);
+
+		this.notify(ThreemaApplication.GROUP_RESPONSE_NOTIFICATION_ID, builder);
+	}
+
+	@Override
+	public void showGroupJoinRequestNotification(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel) {
+
+		Intent notificationIntent = new Intent(context, IncomingGroupRequestActivity.class);
+		notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
+
+		ContactModel senderContact = this.contactService.getByIdentity(incomingGroupJoinRequestModel.getRequestingIdentity());
+		Person.Builder builder = new Person.Builder()
+			.setName(NameUtil.getDisplayName(senderContact));
+
+		Bitmap avatar = contactService.getAvatar(senderContact, false);
+		if (avatar != null) {
+			IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
+			builder.setIcon(iconCompat);
+		}
+		Person senderPerson = builder.build();
+
+		NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(senderPerson);
+
+		// bug: setting a conversation title implies a group chat
+		messagingStyle.setConversationTitle(String.format(context.getString(R.string.group_join_request_for), groupModel.getName()));
+		messagingStyle.setGroupConversation(false);
+
+		messagingStyle.addMessage(
+			incomingGroupJoinRequestModel.getMessage(),
+			incomingGroupJoinRequestModel.getRequestTime().getTime(),
+			senderPerson);
+
+		int requestIdNonce = ThreemaApplication.GROUP_REQUEST_NOTIFICATION_ID + (int) SystemClock.elapsedRealtime();
+
+		Intent acceptIntent = new Intent(context, NotificationActionService.class);
+		acceptIntent.setAction(NotificationActionService.ACTION_GROUP_REQUEST_ACCEPT);
+		acceptIntent.putExtra(ThreemaApplication.INTENT_DATA_INCOMING_GROUP_REQUEST, incomingGroupJoinRequestModel);
+		acceptIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, requestIdNonce);
+		PendingIntent acceptPendingIntent = PendingIntent.getService(context, requestIdNonce + 1, acceptIntent, pendingIntentFlags);
+
+		Intent rejectIntent = new Intent(context, NotificationActionService.class);
+		rejectIntent.setAction(NotificationActionService.ACTION_GROUP_REQUEST_REJECT);
+		rejectIntent.putExtra(ThreemaApplication.INTENT_DATA_INCOMING_GROUP_REQUEST, incomingGroupJoinRequestModel);
+		rejectIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, requestIdNonce);
+		PendingIntent rejectPendingIntent = PendingIntent.getService(context, requestIdNonce + 2 , rejectIntent, pendingIntentFlags);
+
+		NotificationSchemaImpl notificationSchema = new NotificationSchemaImpl(this.context);
+		notificationSchema
+			.setVibrate(this.preferenceService.isVibrate())
+			.setColor(this.getColorValue(preferenceService.getNotificationLight()));
+
+		NotificationCompat.Builder notifBuilder =
+			new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST, notificationSchema)
+				.setSmallIcon(R.drawable.ic_notification_small)
+				.setContentTitle(context.getString(R.string.group_join_request))
+				.setContentText(incomingGroupJoinRequestModel.getMessage())
+				.setContentIntent(openPendingIntent)
+				.setStyle(messagingStyle)
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setAutoCancel(true);
+
+		addGroupLinkActions(notifBuilder, acceptPendingIntent, rejectPendingIntent);
+
+		this.notify(requestIdNonce, notifBuilder);
+	}
+
 }

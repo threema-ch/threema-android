@@ -34,8 +34,8 @@
 	<string name="prefs_header_chat">Chat</string>
 	<string name="prefs_header_reset">Zurücksetzen</string>
 	<string name="prefs_header_keyboard">Tastatur</string>
-	<string name="prefs_sum_sync_contacts_on">Threema-Kontakte mit dem Adressbuch des Systems verbinden</string>
-	<string name="prefs_sum_sync_contacts_off">Verbindung zwischen Threema und Adressbuch entfernt</string>
+	<string name="prefs_sum_sync_contacts_on">%s-Kontakte mit dem Adressbuch des Systems verbinden</string>
+	<string name="prefs_sum_sync_contacts_off">Verbindung zwischen %s und Adressbuch entfernt</string>
 	<string name="prefs_title_sync_contacts">Kontakte synchronisieren</string>
 	<string name="prefs_sum_block_unknown_off">Jeder kann Ihnen Nachrichten senden. Neue Kontakte werden bei der ersten
 		Nachricht automatisch hinzugefügt.
@@ -126,7 +126,7 @@
 	<string name="linked_mobile">Handynummer</string>
 	<string name="public_nickname">Nickname</string>
 	<string name="share_via">Teilen mittels…</string>
-	<string name="share_subject">Threema-Chat</string>
+	<string name="share_subject">%s-Chat</string>
 	<string name="message_delete_undo">Rückgängig</string>
 	<string name="message_deleted">Nachricht(en) gelöscht</string>
 	<string name="mobile_already_linked">Ihre Threema-ID ist bereits mit dieser Handynummer verknüpft</string>
@@ -195,8 +195,7 @@
 	<string name="prefs_title_masterkey_passphrase">Passphrase</string>
 	<string name="setting_masterkey_passphrase">Passphrase für Hauptschlüssel festlegen</string>
 	<string name="masterkey_passphrase_title">Passphrase für Hauptschlüssel</string>
-	<string name="masterkey_passphrase_summary">Ihr Hauptschlüssel kann durch eine von Ihnen gewählte Passphrase
-		geschützt werden. Wenn Threema beendet wurde, müssen Sie diese erneut eingeben.
+	<string name="masterkey_passphrase_summary">Ihr Hauptschlüssel kann durch eine von Ihnen gewählte Passphrase geschützt werden. Wenn die App beendet wurde, müssen Sie diese erneut eingeben.
 	</string>
 	<string name="masterkey_passphrase_again_summary">Passphrase wiederholen</string>
 	<string name="masterkey_passphrase_hint">Passphrase</string>
@@ -309,7 +308,7 @@
 	</string>
 	<string name="backup_data_media" tools:ignore="Typos">Grosse Medien (Videos, Dateien, Bilder) mitsichern</string>
 	<string name="backup_data_new">Daten-Backup erstellen</string>
-	<string name="pinentry_enter_pin">Threema-PIN eingeben um fortzufahren</string>
+	<string name="pinentry_enter_pin">%s-PIN eingeben um fortzufahren</string>
 	<string name="pinentry_wrong_pin">Falsche PIN</string>
 	<string name="prefs_sum_security_pin">Zugriff auf App schützen</string>
 	<string name="prefs_title_pin_switch">App-Sperre</string>
@@ -318,7 +317,7 @@
 	<string name="prefs_sum_pin_grace">Zeitspanne wählen</string>
 	<string name="click_here_to_change_pin">PIN gesetzt. Hier tippen zum Ändern</string>
 	<string name="set_pin_menu_title">Neue PIN setzen</string>
-	<string name="set_pin_summary_intro">Schützen Sie Ihre Privatsphäre, indem Sie Threema mit einer PIN-Sperre
+	<string name="set_pin_summary_intro">Schützen Sie Ihre Privatsphäre, indem Sie die App mit einer PIN-Sperre
 		versehen. Die Sperre wird nach einer festgelegten Wartezeit automatisch aktiviert (Nur Ziffern erlaubt)
 	</string>
 	<string name="set_pin_again_summary">PIN wiederholen</string>
@@ -426,9 +425,6 @@
 	<string name="touch_to_link">(keiner)</string>
 	<string name="prefs_validate_contacts">Kontaktverbindung überprüfen</string>
 	<string name="prefs_validate_contacts_loading">Kontaktverbindung in Überprüfung</string>
-	<string name="prefs_sum_validate_contacts">Überprüft die Verbindungen zwischen Threema Kontakten und Android
-		Kontakten und korrigiert sie gegebenenfalls.
-	</string>
 	<string name="prefs_title_fullscreen_ime">Bildschirmfüllende Tastatur</string>
 	<string name="prefs_sum_fullscreen_ime_on">Die Tastatur füllt im Querformat den ganzen Bildschirm</string>
 	<string name="prefs_sum_fullscreen_ime_off">Oberhalb der Tastatur wird ein Ausschnitt des Chats angezeigt</string>
@@ -709,10 +705,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="off">aus</string>
 	<string name="new_wizard_select_country">Land auswählen</string>
 	<string name="new_wizard_lets_get_started">Los geht\'s!</string>
-	<string name="new_wizard_setup_threema">Threema einrichten</string>
+	<string name="new_wizard_setup_threema">Jetzt einrichten</string>
 	<string name="new_wizard_restore_id_backup">Exportierte ID wiederherstellen</string>
 	<string name="new_wizard_welcome">Willkommen bei Threema</string>
-	<string name="new_wizard_move_finger">Bewegen Sie Ihren Finger im Feld</string>
+	<string name="new_wizard_move_finger">Bewegen Sie Ihren Finger im Feld, um eine neue Threema-ID zu generieren.</string>
 	<string name="new_wizard_this_is_your_id">Das ist Ihre Threema-ID:</string>
 	<string name="new_wizard_works_like_phone_number">Ihre Threema-ID funktioniert wie eine Telefonnummer. Ihre Freunde können Sie über diese ID erreichen.
 	</string>
@@ -853,7 +849,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="palette">Palette</string>
 	<string name="stickers">Stickers</string>
 	<string name="text">Text</string>
-	<string name="undo">Undo</string>
+	<string name="undo">Rückgängig</string>
 	<string name="android_backup_date">Letztes Backup</string>
 	<string name="check_now">Jetzt prüfen</string>
 	<string name="discard">Verwerfen</string>
@@ -996,11 +992,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="preparing_threema_safe">Threema Safe wird vorbereitet</string>
 	<string name="safe_learn_more_button">Mehr erfahren</string>
 	<string name="safe_enable_explain">Bei Threema haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\nThreema Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
-	<string name="safe_disable_confirm">Möchten Sie wirklich fortfahren, ohne Threema Safe zu aktivieren?</string>
+	<string name="safe_disable_confirm">Wollen Sie fortfahren, ohne Threema Safe zu aktivieren? Threema Safe erlaubt, Ihre Threema-ID, Kontakte und Gruppen wiederherzustellen, falls Sie Ihr Gerät verlieren.</string>
 	<string name="safe_configure_choose_password">Wählen Sie ein sicheres Passwort. Sie benötigen dieses Passwort, um Ihr Threema Safe-Backup wiederherzustellen.</string>
 	<string name="safe_configure_choose_server">Server auswählen</string>
 	<string name="safe_configure_server_explain">Speichern Sie Ihr Threema Safe-Backup bei Threema oder auf einem beliebigen Server Ihrer Wahl.</string>
-	<string name="safe_use_default_server">Standardserver (Threema)</string>
+	<string name="safe_use_default_server">Standardserver</string>
 	<string name="safe_test_server">Server testen</string>
 	<string name="safe_advanced_options">Experten-Einstellungen</string>
 	<string name="safe_enter_password">Bitte geben Sie Ihr Threema Safe-Passwort ein</string>
@@ -1139,8 +1135,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="delete">Löschen</string>
 	<string name="num_archived_chats">%d archivierte Chats</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="whatsnew_title">Was ist neu bei %s 4.56?</string>
-	<string name="whatsnew_headline">Die Kontaktsynchronisation wurde komplett neu geschrieben, um die Leistung und Stabilität zu erhöhen. Infolgedessen musste die manuelle Verknüpfung von Systemkontakten entfernt werden und eine separate Validierungsoption in den Einstellungen ist nun nicht mehr erforderlich.\n\nWenn Sie Probleme mit Namen oder Bildern von synchronisierten Kontakten oder ein anderes unerwartetes Verhalten feststellen, kontaktieren Sie uns bitte über die üblichen Bug-Reporting-Kanäle.\n\nVielen Dank fürs Testen von %s!</string>
 	<string name="tooltip_identity_popup">Tippen Sie hier, um schnell Ihre Threema-ID anzuzeigen oder die IDs von anderen Personen zu scannen</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
 	<string name="two_years">2 Jahre</string>
@@ -1296,11 +1290,89 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="missing_app_licence">Der App Store konnte Ihre App-Lizenz nicht überprüfen. Falls Sie Google Play verwenden, löschen Sie die Daten der Google Play Store-App und starten Sie Ihr Handy neu.</string>
 	<string name="set_backup_path">Backup-Pfad festlegen</string>
 	<string name="set_backup_path_intro">Bitte wählen Sie im folgenden Bildschirm den Ordner aus, in dem Daten-Backups gesichert werden sollen.</string>
+	<string name="discard_changes_title">Änderungen verwerfen</string>
+	<string name="group_join_request_message_info"><![CDATA[Schreiben Sie eine kurze Nachricht and den Admin <b>%1$s</b> warum Sie <b>%2$s</b> beitreten möchten.]]></string>
+	<string name="group_join_request">Gruppenanfrage</string>
+	<string name="group_join_request_for">Gruppenanfrage für %s</string>
+	<string name="group_link_default_name">Unbenannter Link</string>
+	<string name="group_link_share">Gruppen-Link teilen</string>
+	<string name="group_request_incoming_dialog_title">Anfrage von %s</string>
+	<string name="accept">Akzeptieren</string>
+	<string name="reject">Ablehnen</string>
+	<string name="group_request_already_sent"><![CDATA[Sie haben bereits eine offene Anfrage für <b>%s</b> und es wird auf eine Antwort des Gruppen Administrators gewartet. Klicken Sie auf die Anfrage in der Liste, falls Sie die Anfrage erneut senden möchten.]]></string>
+	<string name="group_link_none">Noch keinen Link generiert</string>
+	<string name="group_request_confirm_send"><![CDATA[Sie sind dabei eine Gruppenanfrage für <b>%1$s</b> an Admin <b>%2$s</b> zu senden. Falls dieser Link in der Zwischenzeit nicht invalidiert wurde, werden Sie zur Gruppe hinzugefügt, sobald das Gerät des Admin erreichbar ist.]]></string>
+	<string name="really_delete_outgoing_request">Möchten Sie wirklich %d Gruppenanfragen(n) löschen? Seien Sie sich bewusst, dass die offene Anfrage nicht zurückgezogen wird und Sie später trotzdem noch in die Gruppe aufgenommen werden können.</string>
+	<string name="really_delete_group_request_title">Gruppenanfrage wirklich löschen?</string>
+	<string name="sent_to">Gesendet an: %s</string>
+	<string name="sent_on">Gesendet am: %s</string>
+	<string name="group_response">Antwort auf Gruppenanfrage</string>
+	<string name="group_response_accepted">Ihre Gruppenanfrage für %s wurde akzeptiert.</string>
+	<string name="group_response_full">Ihre Gruppenanfrage für %s wurde abgelehnt weil die Gruppe bereits voll ist.</string>
+	<string name="group_response_rejected">Ihre Gruppenanfrage für %s wurde abgelehnt.</string>
+	<string name="group_link_expiration_none">Unbeschränkt</string>
+	<string name="group_request_hint">Hallo! Ich bins…</string>
+	<string name="group_request_send_title">Gruppenanfrage Senden</string>
+	<string name="group_request_message_empty">Nachricht an den Admin kann nicht leer sein!</string>
+	<string name="group_requests_all_title">Alle Gruppenanfragen</string>
+	<string name="group_requests_none_outgoing">Keine versendeten Gruppenanfragen. Anfragen können über Gruppen-Links versendet werden.</string>
+	<string name="notification_channel_group_join_response">Benachrichtigung über Antworten auf Gruppenanfragen</string>
+	<string name="group_qr_code_title">Gruppen QR-Code</string>
+	<string name="group_link_qr_desc"><![CDATA[Teilen Sie diesen Link mit Kontakten welche Sie in die Gruppe <b>%s</b> einladen möchten.]]></string>
+	<string name="new_group_link_success">Neuer Link hinzugefügt</string>
+	<string name="link_administration_off_explain">Dieser Link wurde bereits geteilt und ist öffentlich. Die Administration kann nicht nachträglich verändert werden. Generieren Sie einfach einen neuen Link mit der gwünschten Option.</string>
+	<string name="group_link_update_success">Link update erfolgreich</string>
+	<string name="no_group_links">Keine Gruppen-Links. Um einen Gruppen-Link zu kreieren, klicken Sie auf den "Link erstellen"-Knopf oder aktivieren Sie den default Link in der Gruppenübersicht.</string>
+	<string name="really_delete_group_link">Möchten Sie wirklich %d Gruppen-Link(s) löschen? Einmal gelöscht, können Nutzer keine gültigen Anfragen mehr schicken. Bereits erhaltene Anfragen können jedoch noch angenommen oder abgelehnt werden.</string>
+	<string name="group_links_overview_title">Gruppen-Links für %s</string>
+	<string name="group_link_invalid">Abgelaufen</string>
+	<string name="group_link_valid">Gültig</string>
+	<string name="open_group_requests_chips_title">Offene Gruppenanfragen</string>
+	<string name="all_open_group_requests">Alle Gruppenanfragen</string>
+	<string name="no_incoming_group_requests">Noch keine eingehenden Gruppenanfragen. Diese können Ihnen über Gruppen-Links gesendet werden, welche Sie in der Gruppendetail-Ansicht administrieren können falls Sie der Admin sind.  </string>
+	<string name="received_on">Empfangen am %s</string>
+	<string name="group_request_state_full">Gruppe voll</string>
+	<string name="group_request_state_rejected">Abgelehnt</string>
+	<string name="group_request_state_expired">Abgelaufen</string>
+	<string name="group_request_state_pending">Ausstehend</string>
+	<string name="group_request_state_accepted">Angenommen</string>
+	<string name="open_group_requests_show">Gruppenanfragen anzeigen</string>
+	<string name="open_group_requests_hide">Gruppenanfragen verbergen</string>
+	<string name="group_request_link_already_deleted">Gruppen-Link bereits gelöscht</string>
+	<string name="really_delete_incoming_request">Möchten Sie wirklich %d Gruppenanfragen löschen? Einmal gelöscht, können Sie nicht mehr auf diese Anfragen antworten. </string>
+	<string name="incoming_group_request_no_message">Über einen offenen Link gesendet… Keine Nachricht</string>
+	<string name="group_request_received_through">Durch Link: %s</string>
+	<string name="reaccept">Nochmal annehmen</string>
+	<string name="group_link_edit_expiration_date">Ablaufdatum anpassen</string>
+	<string name="group_link_show_qr">QR-code anzeigen</string>
+	<string name="group_link_rename">Link umbenennen</string>
+	<string name="group_link_rename_tag">Neuer Name</string>
 	<string name="tap_here_for_more">Hier tippen für mehr Informationen</string>
 	<string name="another_connection_instructions">Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.\n\nEs ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.\n\nFalls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.</string>
 	<string name="app_store_error_code">App Store Fehlercode: %d</string>
+	<string name="backup_restore_type"><![CDATA[Welche Art von Backup möchten Sie wiederherstellen? <br/><br/> <a href=%s>Mehr über Backups in Threema erfahren</a>]]></string>
+	<string name="data_backup_info">Alles wiederherstellen inkl. Chats</string>
+	<string name="new_to_threema">Neu bei %s?</string>
+	<string name="back_to_threema">Zurück bei %s?</string>
+	<string name="id_backup_info">Nur Ihre ID wiederherstellen</string>
+	<string name="restore_your_id_contacts_and_groups">Ihre ID, Kontakte und Gruppen wiederherstellen</string>
+	<string name="threema_safe_backup">Threema Safe Backup</string>
+	<string name="forgot_your_password"><![CDATA[<a href=%s>Passwort vergessen?</a>]]></string>
 	<string name="download_failed">Download fehlgeschlagen. Fehlercode: %d</string>
 	<string name="share_media">Mit anderer App teilen…</string>
+	<string name="group_link_administered">Administriert</string>
+	<string name="group_link_open">Offen</string>
+	<string name="group_link_share_message">Trete meiner Threema Gruppe über folgenden Link bei: %s</string>
+	<string name="group_link_bottom_sheet_title">Gruppen-Link</string>
+	<string name="group_link_bottom_sheet_desc">Teilen Sie diesen Link mit Kontakten, welche Sie gerne einladen möchten. Erwägen Sie die untenstehenden Optionen.</string>
+	<string name="group_link_bottom_sheet_link_title">Link</string>
+	<string name="group_link_properties_title">Link Eigenschaften</string>
+	<string name="group_link_property_administration_title">Manuell bestätigen</string>
+	<string name="group_link_property_administration_desc">Falls aktiviert, erhalten Sie Anfragen im dazugehörigen Gruppenchat und können diese individuell bestätigen.</string>
+	<string name="group_link_property_expiration_title">Ablaufdatum</string>
+	<string name="group_link_property_expiration_desc">Der Link wird nach dem gesetzten Datum ungültig.</string>
+	<string name="group_image">Gruppenbild</string>
+	<string name="add_group_link">Mitglieder mit Gruppen-Link hinzufügen</string>
 	<string name="miui_battery_optimization">Bitte deaktivieren Sie die «Akkuoptimierung» für %s, um diese Funktion zu ermöglichen. Da es Xiaomi nicht als notwendig erachtet, sich an die Android-Standards zu halten, müssen Sie dies manuell in den Einstellungen Ihres Handys vornehmen. Für Unterstützung bei der Deaktivierung der Akkuoptimierung kontaktieren Sie bitte den Xiaomi-Support.</string>
 	<string name="forward_captions">Beschriftungen mitsenden</string>
 	<string name="importing_files_failed">Importieren der Backup-Datei fehlgeschlagen. Stellen Sie sicher, dass genügend freier Platz im internen Speicher vorhanden ist.</string>
@@ -1316,4 +1388,32 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_title_reset_receipts">Individuelle Einstellungen zurücksetzen</string>
 	<string name="prefs_sum_reset_receipts">Kontaktspezifische Einstellungen für Lesebestätigungen und «Melden wenn ich tippe» auf Standard zurücksetzen</string>
 	<string name="reset_successful">Erfolgreich auf Standardeinstellungen zurückgesetzt</string>
+	<string name="group_link_add">Link erstellen</string>
+	<string name="group_requests_show_menu_title">Offene Gruppenanfragen anzeigen</string>
+	<string name="group_request_show_all">Alle Gruppenanfragen anzeigen</string>
+	<string name="group_links_manage_menu">Gruppen-Links managen</string>
+	<string name="group_request_sent_menu">Gesendete Gruppenanfrage</string>
+	<string name="really_delete_group_link_title">Gruppen-Links löschen</string>
+	<string name="qr_scan_result_dialog_title">QR Scan Resultat</string>
+	<string name="scan_failure_dialog_title">Scan fehlgeschlagen</string>
+	<string name="no_threema_qr_info">Dies ist kein Threema QR-Code, der decodierte Inhalt ist:</string>
+	<string name="default_group_link">Default Gruppen-Link</string>
+	<string name="default_link_name">Default Link</string>
+	<string name="reset_default_group_link">Gruppen-Link zurücksetzen</string>
+	<string name="resend">Nochmal senden</string>
+	<string name="group_request_already_sent_title">Gruppenanfrage bereits gesendet</string>
+	<string name="qr_scanner_id_hint">Scannen Sie den QR-Code eines anderen Kontakts, um ihn zu verifizieren. Der QR-Code kann durch Tippen auf das Profilbild oben links im Threema-Hauptbildschirm angezeigt werden.</string>
+	<string name="enable_storage_access_for_media">Aktivieren Sie den Speicherzugriff, um Bilder und Videos auf Ihrem Gerät zu sehen</string>
+	<string name="take_me_there">Jetzt aktivieren…</string>
+	<string name="notification_channel_group_join_request">Benachrichtigung für Gruppenanfragen</string>
+	<string name="reset_default_group_link_title">Zurücksetzen Info</string>
+	<string name="reset_default_group_link_desc">Der zuvor geteilte Link wird somit ungültig und Anfragen über den alten Link werden automatisch abgelehnt.</string>
+	<string name="other_group_links">weitere</string>
+	<string name="show_public_key">Öffentlichen Schlüssel anzeigen</string>
+	<string name="public_key_for">Offentlicher Schlüssel von %s</string>
+	<string name="copied">Kopiert</string>
+	<string name="no_votes_yet">Bisher wurden noch keine Stimmen abgegeben.</string>
+	<string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
+	<string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
+	<string name="invalid_onprem_id">Keine gültige Threema OnPrem-ID</string>
 </resources>

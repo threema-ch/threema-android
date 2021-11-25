@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import ch.threema.app.utils.LogUtil;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 public class AudioDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggerFactory.getLogger(AudioDataModel.class);

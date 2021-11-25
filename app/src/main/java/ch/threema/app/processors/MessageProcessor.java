@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
@@ -39,40 +41,45 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotVoteResult;
+import ch.threema.app.services.group.GroupJoinResponseService;
+import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageDiskSizeUtil;
 import ch.threema.app.voip.services.VoipStateService;
-import ch.threema.client.AbstractGroupMessage;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.BadMessageException;
-import ch.threema.client.BoxTextMessage;
-import ch.threema.client.BoxedMessage;
-import ch.threema.client.ContactDeletePhotoMessage;
-import ch.threema.client.ContactRequestPhotoMessage;
-import ch.threema.client.ContactSetPhotoMessage;
-import ch.threema.client.ContactStoreInterface;
-import ch.threema.client.DeliveryReceiptMessage;
-import ch.threema.client.GroupCreateMessage;
-import ch.threema.client.GroupDeletePhotoMessage;
-import ch.threema.client.GroupLeaveMessage;
-import ch.threema.client.GroupRenameMessage;
-import ch.threema.client.GroupRequestSyncMessage;
-import ch.threema.client.GroupSetPhotoMessage;
-import ch.threema.client.GroupTextMessage;
-import ch.threema.client.IdentityStoreInterface;
-import ch.threema.client.MessageId;
-import ch.threema.client.MessageProcessorInterface;
-import ch.threema.client.MissingPublicKeyException;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.TypingIndicatorMessage;
-import ch.threema.client.Utils;
-import ch.threema.client.ballot.BallotVoteInterface;
-import ch.threema.client.voip.VoipCallAnswerMessage;
-import ch.threema.client.voip.VoipCallHangupMessage;
-import ch.threema.client.voip.VoipCallOfferMessage;
-import ch.threema.client.voip.VoipCallRingingMessage;
-import ch.threema.client.voip.VoipICECandidatesMessage;
-import ch.threema.client.voip.VoipMessage;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.coders.MessageCoder;
+import ch.threema.domain.protocol.csp.connection.MessageProcessorInterface;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
+import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
+import ch.threema.domain.protocol.csp.messages.GroupRenameMessage;
+import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
+import ch.threema.domain.protocol.csp.messages.GroupSetPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
+import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
+import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
+import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
+import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
+import ch.threema.domain.stores.ContactStore;
+import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.ServerMessageModel;
@@ -84,24 +91,28 @@ public class MessageProcessor implements MessageProcessorInterface {
 	private final MessageService messageService;
 	private final ContactService contactService;
 	private final IdentityStoreInterface identityStore;
-	private final ContactStoreInterface contactStore;
+	private final ContactStore contactStore;
 	private final PreferenceService preferenceService;
 	private final GroupService groupService;
+	private final GroupJoinResponseService groupJoinResponseService;
+	private final IncomingGroupJoinRequestService incomingGroupJoinRequestService;
 	private final IdListService blackListService;
 	private final BallotService ballotService;
 	private final VoipStateService voipStateService;
-	private FileService fileService;
-	private NotificationService notificationService;
+	private final FileService fileService;
+	private final NotificationService notificationService;
 
-	private final List<AbstractMessage> pendingMessages = new ArrayList<AbstractMessage>();
+	private final List<AbstractMessage> pendingMessages = new ArrayList<>();
 
 	public MessageProcessor(
 			MessageService messageService,
 			ContactService contactService,
 			IdentityStoreInterface identityStore,
-			ContactStoreInterface contactStore,
+			ContactStore contactStore,
 			PreferenceService preferenceService,
 			GroupService groupService,
+			GroupJoinResponseService groupJoinResponseService,
+			IncomingGroupJoinRequestService incomingGroupJoinRequestService,
 			IdListService blackListService,
 			BallotService ballotService,
 			FileService fileService,
@@ -114,6 +125,8 @@ public class MessageProcessor implements MessageProcessorInterface {
 		this.contactStore = contactStore;
 		this.preferenceService = preferenceService;
 		this.groupService = groupService;
+		this.groupJoinResponseService = groupJoinResponseService;
+		this.incomingGroupJoinRequestService = incomingGroupJoinRequestService;
 		this.blackListService = blackListService;
 		this.ballotService = ballotService;
 		this.fileService = fileService;
@@ -123,20 +136,18 @@ public class MessageProcessor implements MessageProcessorInterface {
 
 	@Override
 	@WorkerThread
-	public ProcessIncomingResult processIncomingMessage(BoxedMessage boxmsg) {
-
+	public ProcessIncomingResult processIncomingMessage(MessageBox boxmsg) {
 		AbstractMessage msg;
 		try {
 			if (ConfigUtils.isWorkBuild() && preferenceService.isBlockUnknown()) {
 				contactService.createWorkContact(boxmsg.getFromIdentity());
 			}
 
-			// try to fetch the key - throws MissingPublicKeyException if contact is blocked or fetching failed
-			msg = AbstractMessage.decodeFromBox(
-					boxmsg,
-					this.contactStore,
-					this.identityStore,
-					true);
+			// Check first, if contact of incoming message is a already known.
+			// This will throw MissingPublicKeyException if contact is blocked or fetching failed.
+			final boolean fetchKeyIfMissing = true;
+			MessageCoder messageCoder = new MessageCoder( this.contactStore, this.identityStore);
+			msg = messageCoder.decode(boxmsg, fetchKeyIfMissing);
 
 			if (msg == null) {
 				logger.warn("Message {} from {} error: decodeFromBox failed",
@@ -144,13 +155,15 @@ public class MessageProcessor implements MessageProcessorInterface {
 				return ProcessIncomingResult.failed();
 			}
 
-			logger.info(
-				"Incoming message {} from {} to {} (type {})",
-				boxmsg.getMessageId(),
-				boxmsg.getFromIdentity(),
-				boxmsg.getToIdentity(),
-				Utils.byteToHex((byte) msg.getType(), true, true)
-			);
+			if (logger.isInfoEnabled()) {
+				logger.info(
+					"Incoming message {} from {} to {} (type {})",
+					boxmsg.getMessageId(),
+					boxmsg.getFromIdentity(),
+					boxmsg.getToIdentity(),
+					Utils.byteToHex((byte) msg.getType(), true, true)
+				);
+			}
 
 			/* validation logging (for text messages only) */
 			if (msg instanceof BoxTextMessage || msg instanceof GroupTextMessage) {
@@ -183,8 +196,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 			}
 
 			if (msg instanceof DeliveryReceiptMessage) {
-				//this.messageService.
-				MessageState state = null;
+				final @Nullable MessageState state;
 				switch (((DeliveryReceiptMessage) msg).getReceiptType()) {
 					case ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED:
 						state = MessageState.DELIVERED;
@@ -201,11 +213,13 @@ public class MessageProcessor implements MessageProcessorInterface {
 					case ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED:
 						state = MessageState.CONSUMED;
 						break;
-
+					default:
+						state = null;
+						break;
 				}
 				if (state != null) {
 					for (MessageId msgId : ((DeliveryReceiptMessage) msg).getReceiptMessageIds()) {
-						logger.info("Message " + boxmsg.getMessageId() + ": delivery receipt for " + msgId + " (state = " + state + ")");
+						logger.info("Message {}: delivery receipt for {} (state = {})", boxmsg.getMessageId(), msgId, state);
 						this.messageService.updateMessageState(msgId, msg.getFromIdentity(), state, msg.getDate());
 					}
 					return ProcessIncomingResult.ok(msg);
@@ -218,44 +232,56 @@ public class MessageProcessor implements MessageProcessorInterface {
 			/* send delivery receipt (but not for immediate messages or delivery receipts) */
 			if (!msg.isImmediate()) {
 				/* throw away messages from hidden contacts if block unknown is enabled - except for group messages */
-				if (this.preferenceService.isBlockUnknown() && this.contactService.getIsHidden(msg.getFromIdentity()) && !(msg instanceof AbstractGroupMessage)) {
+				if (
+					this.preferenceService.isBlockUnknown()
+					&& this.contactService.getIsHidden(msg.getFromIdentity())
+					&& !(
+						msg instanceof AbstractGroupMessage
+						|| msg instanceof GroupJoinRequestMessage
+						|| msg instanceof GroupJoinResponseMessage
+					)
+				) {
 					logger.info("Message {} discarded - from hidden contact with block unknown enabled", boxmsg.getMessageId());
 					return ProcessIncomingResult.ignore();
 				}
 
-				if(!this.processAbstractMessage(msg)) {
-					//only if failed, return false
-					return ProcessIncomingResult.failed();
+				switch(this.processAbstractMessage(msg)) {
+					case SUCCESS:
+						// default behaviour: return ok.
+						break;
+					case FAILED:
+						return ProcessIncomingResult.failed();
+					case IGNORED:
+						return ProcessIncomingResult.ignore();
 				}
 			}
 
 			return ProcessIncomingResult.ok(msg);
 
-		}
-		catch (MissingPublicKeyException e) {
+		} catch (MissingPublicKeyException e) {
 			if(this.preferenceService.isBlockUnknown()) {
-				//its ok, return true and save nothing;
+				//its ok, return true and save nothing
 				return ProcessIncomingResult.ignore();
 			}
 
-			if(this.blackListService != null && boxmsg != null && this.blackListService.has(boxmsg.getFromIdentity())) {
+			if(this.blackListService != null && this.blackListService.has(boxmsg.getFromIdentity())) {
 				//its ok, a black listed identity, save NOTHING
 				return ProcessIncomingResult.ignore();
 			}
 
 			logger.error("Missing public key", e);
 			return ProcessIncomingResult.failed();
-		}
-		catch (BadMessageException e) {
+
+		} catch (BadMessageException e) {
 			logger.error("Bad message", e);
 			if (e.shouldDrop()) {
 				logger.warn("Message {} error: invalid - dropping msg.", boxmsg.getMessageId());
 				return ProcessIncomingResult.ignore();
 			}
 			return ProcessIncomingResult.failed();
-		}
-		catch (Exception e) {
-			logger.error("Unknown exception", e);
+
+		} catch (Exception e) {
+			logger.error("Unknown exception while processing BoxedMessage", e);
 			return ProcessIncomingResult.failed();
 		}
 	}
@@ -266,10 +292,9 @@ public class MessageProcessor implements MessageProcessorInterface {
 	 * @return true if message has been properly processed, false if unsuccessful (e.g. network error) and processing/download should be attempted again later
 	 */
 	@WorkerThread
-	private boolean processAbstractMessage(AbstractMessage msg) {
+	private @NonNull ProcessingResult processAbstractMessage(AbstractMessage msg) {
 		try {
 			logger.trace("processAbstractMessage {}", msg.getMessageId());
-
 			//try to update public nickname
 			this.contactService.updatePublicNickName(msg);
 
@@ -282,12 +307,14 @@ public class MessageProcessor implements MessageProcessorInterface {
 				this.notificationService.showNotEnoughDiskSpace(useableSpace, requiredSpace);
 				logger.error("Abstract Message {}: error - out of disk space {}/{}",
 					msg.getMessageId(), requiredSpace, useableSpace);
-				return false;
+				return ProcessingResult.FAILED;
 			}
+
+			boolean processingSuccessful = false;
 
 			if(msg instanceof BallotVoteInterface) {
 				BallotVoteResult r = this.ballotService.vote((BallotVoteInterface) msg);
-				return r != null && r.isSuccess();
+				return (r != null && r.isSuccess()) ? ProcessingResult.SUCCESS : ProcessingResult.FAILED;
 			}
 
 			if(msg instanceof AbstractGroupMessage) {
@@ -302,9 +329,8 @@ public class MessageProcessor implements MessageProcessorInterface {
 							Iterator<AbstractMessage> i = this.pendingMessages.iterator();
 							while (i.hasNext()) {
 								AbstractMessage s = i.next();
-								if(s != null
-										&& s instanceof AbstractGroupMessage
-										&& !(s instanceof GroupCreateMessage)) {
+								if(s instanceof AbstractGroupMessage
+									&& !(s instanceof GroupCreateMessage)) {
 
 									AbstractGroupMessage as = (AbstractGroupMessage)s;
 									if(
@@ -319,22 +345,22 @@ public class MessageProcessor implements MessageProcessorInterface {
 						}
 					}
 
-					return result.success();
+					processingSuccessful = result.success();
 				}
 				else if(msg instanceof GroupRenameMessage) {
-					return this.groupService.renameGroup((GroupRenameMessage)msg);
+					processingSuccessful = this.groupService.renameGroup((GroupRenameMessage)msg);
 				}
 				else if(msg instanceof GroupSetPhotoMessage) {
-					return this.groupService.updateGroupPhoto((GroupSetPhotoMessage) msg);
+					processingSuccessful = this.groupService.updateGroupPhoto((GroupSetPhotoMessage) msg);
 				}
 				else if(msg instanceof GroupDeletePhotoMessage) {
-					return this.groupService.deleteGroupPhoto((GroupDeletePhotoMessage) msg);
+					processingSuccessful = this.groupService.deleteGroupPhoto((GroupDeletePhotoMessage) msg);
 				}
 				else if(msg instanceof GroupLeaveMessage) {
-					return this.groupService.removeMemberFromGroup((GroupLeaveMessage) msg);
+					processingSuccessful = this.groupService.removeMemberFromGroup((GroupLeaveMessage) msg);
 				}
 				else if(msg instanceof GroupRequestSyncMessage) {
-					return this.groupService.processRequestSync((GroupRequestSyncMessage) msg);
+					processingSuccessful = this.groupService.processRequestSync((GroupRequestSyncMessage) msg);
 				}
 				else {
 					GroupModel groupModel = this.groupService.getGroup((AbstractGroupMessage)msg);
@@ -350,68 +376,77 @@ public class MessageProcessor implements MessageProcessorInterface {
 								this.pendingMessages.add(msg);
 							}
 
-							return true;
+							return ProcessingResult.SUCCESS;
 						}
-						return false;
+						return ProcessingResult.FAILED;
 					}
 					else if(groupModel.isDeleted()) {
 						//send leave message
 						this.groupService.sendLeave((AbstractGroupMessage)msg);
 
 						//ack every time!
-						return true;
+						return ProcessingResult.SUCCESS;
 					}
 					else {
-						return this.messageService.processIncomingGroupMessage((AbstractGroupMessage) msg);
+						processingSuccessful = this.messageService.processIncomingGroupMessage((AbstractGroupMessage) msg);
 					}
 				}
 			}
+			else if (msg instanceof GroupJoinRequestMessage) {
+				return this.incomingGroupJoinRequestService.process((GroupJoinRequestMessage) msg);
+			}
+			else if (msg instanceof GroupJoinResponseMessage) {
+				return this.groupJoinResponseService.process((GroupJoinResponseMessage) msg);
+			}
 			else if (msg instanceof ContactSetPhotoMessage) {
-				return this.contactService.updateContactPhoto((ContactSetPhotoMessage) msg);
+				processingSuccessful = this.contactService.updateContactPhoto((ContactSetPhotoMessage) msg);
 			}
 			else if (msg instanceof ContactDeletePhotoMessage) {
-				return this.contactService.deleteContactPhoto((ContactDeletePhotoMessage) msg);
+				processingSuccessful = this.contactService.deleteContactPhoto((ContactDeletePhotoMessage) msg);
 			}
 			else if (msg instanceof ContactRequestPhotoMessage) {
-				return this.contactService.requestContactPhoto((ContactRequestPhotoMessage) msg);
+				processingSuccessful = this.contactService.requestContactPhoto((ContactRequestPhotoMessage) msg);
 			} else if (msg instanceof VoipMessage) {
-				if (preferenceService.isVoipEnabled()) {
+				if (this.preferenceService.isVoipEnabled()) {
 					/* as soon as we get a voip message, unhide the contact */
 					this.contactService.setIsHidden(msg.getFromIdentity(), false);
 					if (msg instanceof VoipCallOfferMessage) {
-						return this.voipStateService.handleCallOffer((VoipCallOfferMessage) msg);
+						processingSuccessful = this.voipStateService.handleCallOffer((VoipCallOfferMessage) msg);
 					} else if (msg instanceof VoipCallAnswerMessage) {
-						return this.voipStateService.handleCallAnswer((VoipCallAnswerMessage) msg);
+						processingSuccessful = this.voipStateService.handleCallAnswer((VoipCallAnswerMessage) msg);
 					} else if (msg instanceof VoipICECandidatesMessage) {
-						return this.voipStateService.handleICECandidates((VoipICECandidatesMessage) msg);
+						processingSuccessful = this.voipStateService.handleICECandidates((VoipICECandidatesMessage) msg);
 					} else if (msg instanceof VoipCallRingingMessage) {
-						return this.voipStateService.handleCallRinging((VoipCallRingingMessage) msg);
+						processingSuccessful = this.voipStateService.handleCallRinging((VoipCallRingingMessage) msg);
 					} else if (msg instanceof VoipCallHangupMessage) {
-						return this.voipStateService.handleRemoteCallHangup((VoipCallHangupMessage) msg);
+						processingSuccessful = this.voipStateService.handleRemoteCallHangup((VoipCallHangupMessage) msg);
 					}
 				} else if (msg instanceof VoipCallOfferMessage) {
 					// If calls are disabled, only react to offers.
-					return this.voipStateService.handleCallOffer((VoipCallOfferMessage) msg);
+					processingSuccessful = this.voipStateService.handleCallOffer((VoipCallOfferMessage) msg);
+				} else {
+					// ignore other VoIP related messages
+					logger.debug("Ignoring VoIP related message, since calls are disabled");
+					return ProcessingResult.SUCCESS;
 				}
-				// ignore other VoIP related messages
-				logger.debug("Ignoring VoIP related message, since calls are disabled");
-				return true;
 			} else {
-				return this.messageService.processIncomingContactMessage(msg);
+				processingSuccessful = this.messageService.processIncomingContactMessage(msg);
 			}
+
+			return processingSuccessful ? ProcessingResult.SUCCESS : ProcessingResult.FAILED;
 		}
 		catch (FileNotFoundException f) {
 			//do nothing
 			logger.error("File not found", f);
-			return true;
+			return ProcessingResult.SUCCESS;
 		}
 		catch (BadMessageException e) {
 			logger.warn("Bad message exception", e);
-			return e.shouldDrop();
+			return e.shouldDrop() ? ProcessingResult.IGNORED : ProcessingResult.FAILED;
 		}
 		catch (Exception e) {
 			logger.error("Unknown exception", e);
-			return false;
+			return ProcessingResult.FAILED;
 		}
 	}
 
@@ -425,5 +460,26 @@ public class MessageProcessor implements MessageProcessorInterface {
 	public void processServerError(String s, boolean b) {
 		ServerMessageModel msg = new ServerMessageModel(s, ServerMessageModel.Type.ERROR);
 		this.messageService.saveIncomingServerMessage(msg);
+	}
+
+
+	/**
+	 * Result of a message processing
+	 */
+	public enum ProcessingResult {
+		/**
+		 * Message has successfully been processed.
+		 */
+		SUCCESS,
+
+		/**
+		 * Message processing failed (e.g. due to network error) and should be retried later
+		 */
+		FAILED,
+
+		/**
+		 * Message has been ignored due to being blocked or invalid.
+		 */
+		IGNORED;
 	}
 }

@@ -58,7 +58,7 @@
 			android:layout_centerVertical="true"
 			android:layout_marginLeft="8dp"
 			android:layout_marginRight="8dp"
-			custom:backgroundOverride="?attr/count_box_background_accent" />
+			custom:backgroundOverride="@drawable/count_box_background_accent" />
 
 	</RelativeLayout>
 </ch.threema.app.ui.CheckableRelativeLayout>

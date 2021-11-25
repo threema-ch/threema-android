@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
-import ch.threema.client.MessageId;
+import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
@@ -412,7 +412,9 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						"`" + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE +"` SMALLINT ," +
 						"`" + GroupMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID +"` VARCHAR ," +
 						"`" + GroupMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
-						"`" + GroupMessageModel.COLUMN_MESSAGE_FLAGS +"` INT );",
+						"`" + GroupMessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
+						"`" + GroupMessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
+						"`" + GroupMessageModel.COLUMN_READ_AT +"` DATETIME );",
 
 				//indices
 				"CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",

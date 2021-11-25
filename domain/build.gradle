@@ -1,0 +1,120 @@
+plugins {
+    id 'org.sonarqube'
+    id 'java-library'
+    id 'java-test-fixtures'
+    id 'maven-publish'
+    id 'jacoco'
+    id 'com.google.protobuf'
+}
+
+/**
+ * Return the latest available domain version from git, if git is installed.
+ */
+def getGitVersion = { ->
+    def domainTagPrefix = 'domain-v'
+    def stdout = new ByteArrayOutputStream()
+    def stderr = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'describe', '--tags', '--match', domainTagPrefix + '*'
+            standardOutput = stdout
+            errorOutput = stderr
+            ignoreExitValue true
+        }
+
+        def string = stdout.toString().trim()
+        def versionMatches = (string =~ /^${domainTagPrefix}([0-9.]+).*$/)[0][1]
+
+        if(versionMatches.isEmpty()) return null
+        return versionMatches
+    } catch (ignored) { return null }
+}
+
+dependencies {
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    api 'com.googlecode.libphonenumber:libphonenumber:8.12.22'
+    api 'androidx.annotation:annotation:1.1.0'
+    api 'net.sourceforge.streamsupport:streamsupport-flow:1.7.0'
+
+    api 'com.google.protobuf:protobuf-javalite:3.9.1'
+
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
+    implementation 'commons-io:commons-io:2.4'
+    implementation 'net.i2p.crypto:eddsa:0.3.0'
+
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.mockito:mockito-core:3.3.3'
+    testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
+}
+
+sourceSets {
+    def isProtobufSubrepositoryInitialized = file("./src/main/proto/common.proto").exists()
+    assert isProtobufSubrepositoryInitialized : "Error: Git protobuf submodule missing. Please run `git submodule update --init`.\n"
+
+    main {
+        java.srcDirs += "${protobuf.generatedFilesBaseDir}/main/java"
+    }
+}
+
+sourceCompatibility = '1.8'
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.16.0'
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
+}
+
+test {
+    useJUnit()
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = false
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'android-client'
+        property 'sonar.projectName', 'Threema for Android'
+        property "sonar.sources", "src/main/"
+        property "sonar.exclusions", "src/main/java/ove/crypto/**"
+        property "sonar.tests", "src/test/"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.verbose", "true"
+        property 'sonar.coverage.jacoco.xmlReportPaths', "$projectDir.parentFile.path/build/reports/jacoco/codeCoverageReport/codeCoverageReport.xml"
+    }
+}
+
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+            version getGitVersion()
+        }
+    }
+    repositories {
+        maven {
+            url System.getenv("CI_API_V4_URL") + "/projects/" + System.getenv("CI_PROJECT_ID") + "/packages/maven"
+            name "Gitlab"
+            credentials(HttpHeaderCredentials) {
+                name = 'Job-Token'
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+    }
+}

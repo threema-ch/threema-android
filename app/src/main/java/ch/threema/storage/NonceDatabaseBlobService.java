@@ -43,9 +43,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.client.IdentityStoreInterface;
-import ch.threema.client.NonceStoreInterface;
-import ch.threema.client.Utils;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.base.crypto.NonceStoreInterface;
+import ch.threema.base.utils.Utils;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 

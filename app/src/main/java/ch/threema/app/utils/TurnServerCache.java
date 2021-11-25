@@ -28,7 +28,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.ThreemaLogger;
 
 public class TurnServerCache {

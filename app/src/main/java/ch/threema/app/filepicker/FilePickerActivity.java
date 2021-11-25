@@ -155,11 +155,8 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 		}
 
 		listView.setOnItemClickListener(this);
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			listView.setDivider(getResources().getDrawable(R.drawable.divider_listview_dark));
-		} else {
-			listView.setDivider(getResources().getDrawable(R.drawable.divider_listview));
-		}
+		listView.setDivider(getResources().getDrawable(R.drawable.divider_listview));
+
 		if (isDirectoriesOnly) {
 			listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 				@Override

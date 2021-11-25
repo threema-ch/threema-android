@@ -173,7 +173,7 @@ public class FileUtil {
 		try {
 			Intent cameraIntent;
 
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && preferInternal) {
+			if (preferInternal) {
 				cameraIntent = new Intent(fragment != null ? fragment.getActivity() : activity, CameraActivity.class);
 				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFile.getCanonicalPath());
 				cameraIntent.putExtra(CameraActivity.EXTRA_NO_VIDEO, true);
@@ -753,7 +753,9 @@ public class FileUtil {
 		try {
 			Intent startIntent;
 			Intent getContentIntent = new Intent();
-			if (ConfigUtils.isXiaomiDevice() && includeVideo) {
+			if (includeVideo && (
+				ConfigUtils.isXiaomiDevice() ||
+					Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
 				getContentIntent.setType(MimeUtil.MIME_TYPE_IMAGE + ","+ MimeUtil.MIME_TYPE_VIDEO);
 				String[] mimetypes = {MimeUtil.MIME_TYPE_IMAGE, MimeUtil.MIME_TYPE_VIDEO};
 				getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);

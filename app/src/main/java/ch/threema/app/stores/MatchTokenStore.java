@@ -22,9 +22,9 @@
 package ch.threema.app.stores;
 
 import ch.threema.app.services.PreferenceService;
-import ch.threema.client.MatchTokenStoreInterface;
+import ch.threema.domain.stores.TokenStoreInterface;
 
-public class MatchTokenStore implements MatchTokenStoreInterface {
+public class MatchTokenStore implements TokenStoreInterface {
 
 	private final PreferenceService preferenceService;
 
@@ -33,12 +33,12 @@ public class MatchTokenStore implements MatchTokenStoreInterface {
 	}
 
 	@Override
-	public String getMatchToken() {
+	public String getToken() {
 		return preferenceService.getMatchToken();
 	}
 
 	@Override
-	public void storeMatchToken(String matchToken) {
+	public void storeToken(String matchToken) {
 		preferenceService.setMatchToken(matchToken);
 	}
 }

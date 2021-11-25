@@ -8,9 +8,9 @@
                 android:paddingRight="@dimen/wizard_contents_padding_horizontal"
                 android:paddingTop="@dimen/wizard_contents_padding">
 
-	<ch.threema.app.ui.TextViewRobotoMedium
-		android:id="@+id/wizard_welcome"
+	<TextView
 		style="@style/WizardTitleText"
+		android:id="@+id/wizard_welcome"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true"
@@ -46,7 +46,7 @@
 		<View
 			android:layout_width="1dp"
 			android:layout_height="24dp"
-			android:background="@color/new_wizard_alpha_background"/>
+			android:background="@color/wizard_alpha_background"/>
 
 		<TextView
 			android:id="@+id/wizard_nickname_preset"
@@ -63,7 +63,7 @@
 		android:layout_height="1dp"
 		android:layout_below="@id/wizard_nickname_layout"
 		android:layout_marginTop="12dp"
-		android:background="@color/new_wizard_alpha_background"/>
+		android:background="@color/wizard_alpha_background"/>
 
 	<TextView
 		android:id="@+id/linked_to"
@@ -93,7 +93,7 @@
 		<View
 			android:layout_width="1dp"
 			android:layout_height="24dp"
-			android:background="@color/new_wizard_alpha_background"/>
+			android:background="@color/wizard_alpha_background"/>
 
 		<FrameLayout
 			android:layout_width="match_parent"
@@ -169,7 +169,7 @@
 		<View
 			android:layout_width="1dp"
 			android:layout_height="24dp"
-			android:background="@color/new_wizard_alpha_background"/>
+			android:background="@color/wizard_alpha_background"/>
 
 		<FrameLayout
 			android:layout_width="match_parent"
@@ -232,7 +232,7 @@
 		android:layout_height="1dp"
 		android:layout_below="@id/wizard_email_error_layout"
 		android:layout_marginTop="12dp"
-		android:background="@color/new_wizard_alpha_background"/>
+		android:background="@color/wizard_alpha_background"/>
 
 	<TextView
 		android:id="@+id/sync_contacts"
@@ -276,7 +276,7 @@
 		android:layout_height="1dp"
 		android:layout_below="@id/sync_layout"
 		android:layout_marginTop="12dp"
-		android:background="@color/new_wizard_alpha_background"/>
+		android:background="@color/wizard_alpha_background"/>
 
 	<TextView
 		android:id="@+id/threema_safe"

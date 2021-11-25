@@ -32,14 +32,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -58,7 +55,7 @@ import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.ui.ZoomableExoPlayerView;
 import ch.threema.app.utils.TestUtil;
 
-public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.EventListener {
+public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener {
 	private static final Logger logger = LoggerFactory.getLogger(VideoViewFragment.class);
 
 	private WeakReference<ImageView> previewImageViewRef;
@@ -237,16 +234,6 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-		logger.debug("onTracksChanged");
-	}
-
-	@Override
-	public void onLoadingChanged(boolean isLoading) {
-		logger.debug("onLoadingChanged = " + isLoading);
-	}
-
-	@Override
 	public void onIsPlayingChanged(boolean isPlaying) {
 		if (isPlaying) {
 			requestFocus();
@@ -276,34 +263,13 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public void onRepeatModeChanged(int repeatMode) {
-		logger.debug("onRepeatModeChanged");
-	}
-
-	@Override
-	public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {}
-
-	@Override
-	public void onPlayerError(ExoPlaybackException error) {
+	public void onPlayerError(PlaybackException error) {
 		logger.info("ExoPlaybackException = " + error.getMessage());
 
 		this.progressBarRef.get().setVisibility(View.GONE);
 
 		Toast.makeText(getContext(), R.string.unable_to_play_video, Toast.LENGTH_SHORT).show();
 	}
-
-	@Override
-	public void onPositionDiscontinuity(int reason) {
-		logger.debug("onPositionDiscontinuity");
-	}
-
-	@Override
-	public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-		logger.debug("onPlaybackParametersChanged");
-	}
-
-	@Override
-	public void onSeekProcessed() {}
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {

@@ -38,13 +38,11 @@ import android.graphics.PorterDuff;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -188,41 +186,21 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-				findViewById(R.id.activity_parent).getRootView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						DisplayMetrics metrics = new DisplayMetrics();
-						// get dimensions of usable display space with decorations (status bar / navigation bar) subtracted
-						getWindowManager().getDefaultDisplay().getMetrics(metrics);
-						int usableHeight = metrics.heightPixels;
-						int statusBarHeight = ConfigUtils.getStatusBarHeight(SendMediaActivity.this);
-						int rootViewHeight = findViewById(R.id.activity_parent).getHeight();
+			ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_parent).getRootView(), new OnApplyWindowInsetsListener() {
+				@Override
+				public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
 
-						if (rootViewHeight + statusBarHeight == usableHeight) {
-							onSoftKeyboardClosed();
-						} else {
-							onSoftKeyboardOpened(usableHeight - statusBarHeight - rootViewHeight);
-						}
+					logger.debug("system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
+					logger.debug("stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
+
+					if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
+						onSoftKeyboardClosed();
+					} else {
+						onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
 					}
-				});
-			} else {
-				ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_parent).getRootView(), new OnApplyWindowInsetsListener() {
-					@Override
-					public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-
-						logger.debug("system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
-						logger.debug("stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
-
-						if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
-							onSoftKeyboardClosed();
-						} else {
-							onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
-						}
-						return insets;
-					}
-				});
-			}
+					return insets;
+				}
+			});
 			addOnSoftKeyboardChangedListener(this);
 		}
 
@@ -1201,13 +1179,11 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void showBigVideo(MediaItem item) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			this.bigImageView.setVisibility(View.GONE);
-			this.bigGifImageView.setVisibility(View.GONE);
-			this.videoEditView.setVisibility(View.VISIBLE);
-			this.videoEditView.setVideo(item);
-			logger.debug("show video " + item.getDurationMs());
-		}
+		this.bigImageView.setVisibility(View.GONE);
+		this.bigGifImageView.setVisibility(View.GONE);
+		this.videoEditView.setVisibility(View.VISIBLE);
+		this.videoEditView.setVideo(item);
+		logger.debug("show video " + item.getDurationMs());
 	}
 
 	private void showBigImage(final int position) {
@@ -1303,7 +1279,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private void confirmQuit() {
 		if (hasChanges) {
 			GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
-					R.string.send_media,
+					R.string.discard_changes_title,
 					R.string.discard_changes,
 					R.string.yes,
 					R.string.no);

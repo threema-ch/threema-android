@@ -35,8 +35,9 @@ public class RestoreSettings {
 	 * 12: voip status messages (not implemented)
 	 * 13: add hidden flag to contacts
 	 * 15: add quoted message id to messages
+	 * 16: added read and delivered date
 	 */
-	public static final int CURRENT_VERSION = 15;
+	public static final int CURRENT_VERSION = 16;
 	private int version = 1;
 
 	public RestoreSettings(int version) {

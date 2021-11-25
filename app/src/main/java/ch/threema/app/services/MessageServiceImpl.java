@@ -119,39 +119,39 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.transcoder.VideoConfig;
 import ch.threema.app.video.transcoder.VideoTranscoder;
+import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.AbstractGroupMessage;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.BadMessageException;
-import ch.threema.client.BlobUploader;
-import ch.threema.client.BoxAudioMessage;
-import ch.threema.client.BoxImageMessage;
-import ch.threema.client.BoxLocationMessage;
-import ch.threema.client.BoxTextMessage;
-import ch.threema.client.BoxVideoMessage;
-import ch.threema.client.BoxedMessage;
-import ch.threema.client.ContactDeletePhotoMessage;
-import ch.threema.client.ContactRequestPhotoMessage;
-import ch.threema.client.ContactSetPhotoMessage;
-import ch.threema.client.DeliveryReceiptMessage;
-import ch.threema.client.GroupAudioMessage;
-import ch.threema.client.GroupImageMessage;
-import ch.threema.client.GroupLocationMessage;
-import ch.threema.client.GroupTextMessage;
-import ch.threema.client.GroupVideoMessage;
-import ch.threema.client.MessageId;
-import ch.threema.client.MessageQueue;
-import ch.threema.client.MessageTooLongException;
-import ch.threema.client.ProgressListener;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.Utils;
-import ch.threema.client.ballot.BallotCreateInterface;
-import ch.threema.client.ballot.BallotCreateMessage;
-import ch.threema.client.ballot.GroupBallotCreateMessage;
-import ch.threema.client.file.FileData;
-import ch.threema.client.file.FileMessage;
-import ch.threema.client.file.FileMessageInterface;
-import ch.threema.client.file.GroupFileMessage;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.blob.BlobUploader;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.domain.protocol.csp.messages.BoxAudioMessage;
+import ch.threema.domain.protocol.csp.messages.BoxImageMessage;
+import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
+import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.domain.protocol.csp.messages.BoxVideoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
+import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
+import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
+import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
+import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.GroupBallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileMessageInterface;
+import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupMessageModelFactory;
@@ -192,7 +192,7 @@ import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
 import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
-import static ch.threema.client.file.FileData.RENDERING_STICKER;
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_STICKER;
 
 public class MessageServiceImpl implements MessageService {
 	private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
@@ -269,8 +269,13 @@ public class MessageServiceImpl implements MessageService {
 		//init queue
 		this.messageSendingService = new MessageSendingServiceExponentialBackOff(new MessageSendingService.MessageSendingServiceState() {
 			@Override
-			public void processingFinished(AbstractMessageModel messageModel, MessageReceiver receiver) {
+			public void processingFinished(
+				@NonNull AbstractMessageModel messageModel,
+				@NonNull MessageReceiver<AbstractMessageModel> receiver
+			) {
 				boolean setSent = false;
+
+				// Save message model in database
 				messageModel.setSaved(true);
 				receiver.saveLocalModel(messageModel);
 
@@ -281,7 +286,7 @@ public class MessageServiceImpl implements MessageService {
 						   whether the ACK has already been received before we update the state.
 						 */
 						MessageId messageId = new MessageId(Utils.hexStringToByteArray(messageModel.getApiMessageId()));
-						setSent = MessageServiceImpl.this.messageAckProcessor.isMessageIdAcked(messageId);
+						setSent = MessageServiceImpl.this.messageAckProcessor.wasRecentlyAcked(messageId);
 					} catch (ThreemaException e) {
 						//do nothing an dont set as sent
 						logger.error("Exception", e);
@@ -297,7 +302,7 @@ public class MessageServiceImpl implements MessageService {
 			}
 
 			@Override
-			public void processingFailed(AbstractMessageModel messageModel, MessageReceiver receiver) {
+			public void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver) {
 				//remove send machine
 				removeSendMachine(messageModel);
 				updateMessageState(messageModel, MessageState.SENDFAILED, null);
@@ -378,28 +383,43 @@ public class MessageServiceImpl implements MessageService {
 		return model;
 	}
 
+	/**
+	 * Send a text message to the specified receiver.
+	 *
+	 * @param message The message text. May not be longer than {@link ProtocolDefines#MAX_TEXT_MESSAGE_LEN} UTF-8 bytes.
+	 * @param messageReceiver The receiver for this message.
+	 * @return
+	 * @throws MessageTooLongException if the message is too long.
+	 * @throws ThreemaException if the message text is empty after trimming.
+	 */
 	@Override
-	public AbstractMessageModel sendText(String message, MessageReceiver messageReceiver) throws Exception {
+	public AbstractMessageModel sendText(
+		@NonNull String message,
+		@NonNull MessageReceiver messageReceiver
+	) throws ThreemaException {
 		final String tag = "sendTextMessage";
 
 		logger.info(tag + ": start");
 
-		/* strip leading/trailing whitespace and ignore if nothing is left */
+		// Strip leading/trailing whitespace and throw if nothing is left
 		String trimmedMessage = message.trim();
-		if (trimmedMessage.length() == 0)
-			return null;
+		if (trimmedMessage.length() == 0) {
+			throw new ThreemaException("Tried to send empty message");
+		}
 
-		/* check maximum length in bytes (can be reached quickly with Unicode emojis etc.) */
-		if (message.getBytes(StandardCharsets.UTF_8).length > ProtocolDefines.MAX_TEXT_MESSAGE_LEN)
+		// Check maximum length in UTF-8 bytes (can be reached quickly with Unicode emojis etc.)
+		if (message.getBytes(StandardCharsets.UTF_8).length > ProtocolDefines.MAX_TEXT_MESSAGE_LEN) {
 			throw new MessageTooLongException();
+		}
 
 		logger.debug(tag + ": create model instance");
-		AbstractMessageModel messageModel = messageReceiver.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, new Date());
+		final AbstractMessageModel messageModel = messageReceiver.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, new Date());
 		logger.debug(tag + ": cache");
 		this.cache(messageModel);
 
 		messageModel.setOutbox(true);
 		messageModel.setBodyAndQuotedMessageId(trimmedMessage);
+		// TODO(db): PENDING statt SENDING?
 		messageModel.setState(messageReceiver.sendMediaData() ? MessageState.SENDING : MessageState.SENT);
 		messageModel.setSaved(true);
 
@@ -429,7 +449,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public AbstractMessageModel sendLocation(Location location, String poiName, MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException, IOException {
+	public AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException, IOException {
 		final String tag = "sendLocationMessage";
 		logger.info(tag + ": start");
 
@@ -558,14 +578,14 @@ public class MessageServiceImpl implements MessageService {
 					msg.setToIdentity(contactModel.getIdentity());
 
 					logger.info("Enqueue request profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-					BoxedMessage boxedMessage = null;
+					MessageBox messageBox = null;
 					try {
-						boxedMessage = this.messageQueue.enqueue(msg);
+						messageBox = this.messageQueue.enqueue(msg);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
 
-					if (boxedMessage != null) {
+					if (messageBox != null) {
 						contactModel.setIsRestored(false);
 						contactService.save(contactModel);
 					}
@@ -592,9 +612,9 @@ public class MessageServiceImpl implements MessageService {
 								msg.setToIdentity(contactModel.getIdentity());
 
 								logger.info("Enqueue profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-								BoxedMessage boxedMessage = this.messageQueue.enqueue(msg);
+								MessageBox messageBox = this.messageQueue.enqueue(msg);
 
-								if (boxedMessage != null) {
+								if (messageBox != null) {
 									contactModel.setProfilePicSentDate(new Date());
 									contactService.save(contactModel);
 								}
@@ -610,8 +630,8 @@ public class MessageServiceImpl implements MessageService {
 
 							logger.info("Enqueue remove profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
 							try {
-								BoxedMessage boxedMessage = this.messageQueue.enqueue(msg);
-								if (boxedMessage != null) {
+								MessageBox messageBox = this.messageQueue.enqueue(msg);
+								if (messageBox != null) {
 									contactModel.setProfilePicSentDate(new Date());
 									contactService.save(contactModel);
 								}
@@ -640,9 +660,11 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@WorkerThread
-	private void resendFileMessage(final AbstractMessageModel messageModel,
-	                               final MessageReceiver receiver,
-	                               final CompletionHandler completionHandler) throws Exception {
+	private void resendFileMessage(
+		final @NonNull AbstractMessageModel messageModel,
+	    final MessageReceiver<AbstractMessageModel> receiver,
+	    final CompletionHandler completionHandler
+	) throws Exception {
 
 		// check if a message file exists that could be resent or abort immediately
 		File file = fileService.getMessageFile(messageModel);
@@ -664,7 +686,7 @@ public class MessageServiceImpl implements MessageService {
 			public boolean success = false;
 
 			@Override
-			public MessageReceiver getReceiver() {
+			public MessageReceiver<AbstractMessageModel> getReceiver() {
 				return receiver;
 			}
 
@@ -1007,13 +1029,15 @@ public class MessageServiceImpl implements MessageService {
 
 	public void updateMessageState(final MessageId apiMessageId, String identity, MessageState state, Date stateDate) {
 		AbstractMessageModel messageModel = this.getAbstractMessageModelByApiIdAndIdentity(apiMessageId, identity);
-		if(messageModel == null) {
+		if (messageModel == null) {
 			//try to select a group message
 			GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel = this.databaseServiceNew
 					.getGroupMessagePendingMessageIdModelFactory().get(apiMessageId.toString());
 
-			if(groupMessagePendingMessageIdModel != null) {
+			if (groupMessagePendingMessageIdModel != null) {
 				this.updateMessageState(groupMessagePendingMessageIdModel, state, stateDate);
+			} else {
+				logger.warn("Updated message state ({}) for unknown message with id {}", state, apiMessageId);
 			}
 		}
 		else {
@@ -1022,9 +1046,13 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public void updateMessageStateAtOutboxed(MessageId apiMessageId, MessageState state, Date stateDate) {
-		AbstractMessageModel messageModel = this.getAbstractMessageModelByApiIdAndOutbox(apiMessageId);
-		if(messageModel == null) {
+	public void updateMessageStateAtOutboxed(
+		@NonNull MessageId apiMessageId,
+		@NonNull MessageState state,
+		@Nullable Date stateDate
+	) {
+		final AbstractMessageModel messageModel = this.getAbstractMessageModelByApiIdAndOutbox(apiMessageId);
+		if (messageModel == null) {
 			//try to select a group message
 			GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel = this.databaseServiceNew
 					.getGroupMessagePendingMessageIdModelFactory().get(apiMessageId.toString());
@@ -1032,27 +1060,37 @@ public class MessageServiceImpl implements MessageService {
 			if(groupMessagePendingMessageIdModel != null) {
 				this.updateMessageState(groupMessagePendingMessageIdModel, state, stateDate);
 			}
-		}
-		else {
+		} else {
 			this.updateMessageState(messageModel, state, stateDate);
 		}
 	}
 
-	private void updateMessageState(AbstractMessageModel messageModel, MessageState state, Date stateDate) {
+	private void updateMessageState(
+		@NonNull AbstractMessageModel messageModel,
+		@NonNull MessageState newState,
+		@Nullable Date stateDate
+	) {
 		synchronized (this) {
-			if(MessageUtil.canChangeToState(messageModel.getState(), state, messageModel.isOutbox())) {
-				messageModel.setState(state);
+			logger.debug("Updating message state from {} to {} (outbox={})", messageModel.getState(), newState, messageModel.isOutbox());
+			if(MessageUtil.canChangeToState(messageModel.getState(), newState, messageModel.isOutbox())) {
+				messageModel.setState(newState);
 				if (stateDate != null) {
 					messageModel.setModifiedAt(stateDate);
 				}
 				this.save(messageModel);
 				this.fireOnModifiedMessage(messageModel);
+			} else {
+				logger.error("Illegal state transition from {} to {} (outbox={}), ignoring", messageModel.getState(), newState, messageModel.isOutbox());
 			}
 		}
 	}
 
-	private void updateMessageState(GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel, MessageState state, Date stateDate) {
-		logger.debug("update pending group message id to " + state);
+	private void updateMessageState(
+		@NonNull GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel,
+		@NonNull MessageState state,
+		@Nullable Date stateDate
+	) {
+		logger.debug("Update pending group message id to {}", state);
 		GroupMessageModel groupMessageModel = this.getGroupMessageModel(groupMessagePendingMessageIdModel.getGroupMessageId(), true);
 		if(groupMessageModel != null) {
 			if(state == MessageState.SENT) {
@@ -1071,9 +1109,8 @@ public class MessageServiceImpl implements MessageService {
 					this.updateMessageState(groupMessageModel, MessageState.SENT, stateDate);
 				}
 			}
-		}
-		else {
-			logger.debug("no group message found! groupMessagePendingMessageIdModel.id = " + groupMessagePendingMessageIdModel.getGroupMessageId());
+		} else {
+			logger.debug("No group message found! groupMessagePendingMessageIdModel.id = {}", groupMessagePendingMessageIdModel.getGroupMessageId());
 		}
 	}
 
@@ -1100,6 +1137,7 @@ public class MessageServiceImpl implements MessageService {
 
 			//save is read
 			message.setRead(true);
+			message.setReadAt(new Date());
 			message.setModifiedAt(new Date());
 
 			this.save(message);
@@ -1185,11 +1223,12 @@ public class MessageServiceImpl implements MessageService {
 		//remove from sdcard
 		this.fileService.removeMessageFiles(messageModel, true);
 
-		// remove message from messageQueue
+		// Remove all matching messages from message queue
 		if (messageModel.isOutbox() && messageModel.getApiMessageId() != null) {
 			try {
-				MessageId messageId = new MessageId(Utils.hexStringToByteArray(messageModel.getApiMessageId()));
-				this.messageQueue.dequeue(messageId);
+				final MessageId messageId = new MessageId(Utils.hexStringToByteArray(messageModel.getApiMessageId()));
+				int dequeuedCount = this.messageQueue.dequeueAll(messageId);
+				logger.debug("Dequeued {} messages from queue", dequeuedCount);
 			} catch (ThreemaException e) {
 				logger.error("Exception", e);
 			}
@@ -3290,7 +3329,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param data
 	 * @return
 	 */
-	private BlobUploader initUploader(AbstractMessageModel messageModel, byte[] data) {
+	private BlobUploader initUploader(AbstractMessageModel messageModel, byte[] data) throws ThreemaException {
 		synchronized (this.uploaders) {
 			String key = this.cancelUploader(messageModel);
 			BlobUploader up = apiService.createUploader(data);
@@ -3448,14 +3487,14 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		public SendMachine abort() {
-			logger.debug("SendMachine", "aborted");
+			logger.debug("SendMachine: Aborted");
 			this.aborted = true;
 			return this;
 		}
 
 		public SendMachine next(SendMachineProcess process) throws Exception {
 			if(this.aborted) {
-				logger.debug("SendMachine", "ignore step, aborted");
+				logger.debug("SendMachine: Ignore step, aborted");
 				//do nothing
 				return this;
 			}
@@ -3469,7 +3508,7 @@ public class MessageServiceImpl implements MessageService {
 					this.nextStep++;
 				}
 				catch (Exception x) {
-					logger.error("Error in send machine", x);
+					logger.error("SendMachine: Exception", x);
 					throw x;
 				}
 			}
@@ -3646,7 +3685,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		if (failedCounter == 0) {
-			logger.info("sendMedia: Send successful.");
+			logger.info("sendMedia: Successfully queued.");
 			sendProfilePicture(resolvedReceivers);
 			if (sendResultListener != null) {
 				sendResultListener.onCompleted();
@@ -3910,11 +3949,12 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@WorkerThread
 	private boolean encryptAndSend(
-	                       @NonNull MessageReceiver[] resolvedReceivers,
-	                       @NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
-	                       @NonNull FileDataModel fileDataModel,
-	                       @Nullable byte[] thumbnailData,
-	                       @NonNull byte[] contentData) {
+		@NonNull MessageReceiver<AbstractMessageModel>[] resolvedReceivers,
+		@NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
+		@NonNull FileDataModel fileDataModel,
+		@Nullable byte[] thumbnailData,
+		@NonNull byte[] contentData
+	) {
 		final MessageReceiver.EncryptResult[] thumbnailEncryptResult = new MessageReceiver.EncryptResult[1];
 		final MessageReceiver.EncryptResult[] contentEncryptResult = new MessageReceiver.EncryptResult[1];
 
@@ -3941,7 +3981,7 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 
-		for (MessageReceiver messageReceiver : resolvedReceivers) {
+		for (MessageReceiver<AbstractMessageModel> messageReceiver : resolvedReceivers) {
 			//enqueue processing and uploading stuff...
 			AbstractMessageModel messageModel = messageModels.get(messageReceiver);
 			if (messageModel == null) {
@@ -3957,7 +3997,7 @@ public class MessageServiceImpl implements MessageService {
 				public boolean success = false;
 
 				@Override
-				public MessageReceiver getReceiver() {
+				public MessageReceiver<AbstractMessageModel> getReceiver() {
 					return messageReceiver;
 				}
 
@@ -4414,7 +4454,10 @@ public class MessageServiceImpl implements MessageService {
 	 * @param resolvedReceivers
 	 * @param messageModels
 	 */
-	private void markAsTerminallyFailed(MessageReceiver[] resolvedReceivers, Map<MessageReceiver, AbstractMessageModel> messageModels) {
+	private void markAsTerminallyFailed(
+		MessageReceiver<AbstractMessageModel>[] resolvedReceivers,
+		Map<MessageReceiver, AbstractMessageModel> messageModels
+	) {
 		for (MessageReceiver messageReceiver : resolvedReceivers) {
 			remove(messageModels.get(messageReceiver));
 		}

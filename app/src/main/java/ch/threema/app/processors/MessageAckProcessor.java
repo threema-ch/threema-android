@@ -29,41 +29,68 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
-import ch.threema.client.MessageAck;
-import ch.threema.client.MessageAckListener;
-import ch.threema.client.MessageId;
+import ch.threema.domain.protocol.csp.connection.MessageAckListener;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.models.QueueMessageId;
 import ch.threema.storage.models.MessageState;
 
+/**
+ * Process incoming server acks. These acks are sent when the server has stored
+ * the outgoing message in the message queue.
+ */
 public class MessageAckProcessor implements MessageAckListener {
-	private MessageService messageService;
-	private final List<MessageId> ackedMessageIds = new LinkedList<>();
-
 	private static final Logger logger = LoggerFactory.getLogger(MessageAckProcessor.class);
+
+	// Services
+	private MessageService messageService;
+
+	// Bounded list of recently acked message IDs
+	private final List<MessageId> recentlyAckedMessageIds = new LinkedList<>();
+
 	private static final int ACK_LIST_MAX_ENTRIES = 20;
 
 	@Override
-	public void processAck(@NonNull MessageAck ack) {
-		logger.info("Processing server ack for message ID {} from {}", ack.getMessageId(), ack.getRecipientId());
+	public void processAck(@NonNull QueueMessageId queueMessageId) {
+		logger.info(
+			"Processing server ack for message ID {} from {}",
+			queueMessageId.getMessageId(),
+			queueMessageId.getRecipientId()
+		);
 
-		synchronized (ackedMessageIds) {
-			while (ackedMessageIds.size() >= ACK_LIST_MAX_ENTRIES) {
-				ackedMessageIds.remove(0);
+		synchronized (recentlyAckedMessageIds) {
+			while (recentlyAckedMessageIds.size() >= ACK_LIST_MAX_ENTRIES) {
+				recentlyAckedMessageIds.remove(0);
 			}
-			ackedMessageIds.add(ack.getMessageId());
+			recentlyAckedMessageIds.add(queueMessageId.getMessageId());
 		}
 
 		if (this.messageService != null) {
-			this.messageService.updateMessageStateAtOutboxed(ack.getMessageId(), MessageState.SENT, null);
+			this.messageService.updateMessageStateAtOutboxed(
+				queueMessageId.getMessageId(),
+				MessageState.SENT,
+				null
+			);
 		}
 	}
 
+	/**
+	 * Set the message service instance.
+	 *
+	 * This is required because there is a circular dependency between the
+	 * {@link MessageService} and the {@link MessageAckProcessor}.
+	 */
 	public void setMessageService(MessageService messageService) {
 		this.messageService = messageService;
 	}
 
-	public boolean isMessageIdAcked(MessageId messageId) {
-		synchronized (ackedMessageIds) {
-			return ackedMessageIds.contains(messageId);
+	/**
+	 * Return true if the specified messageId was recently acked.
+	 *
+	 * Note: Only the last {@link #ACK_LIST_MAX_ENTRIES} message IDs are considered!
+	 */
+	public boolean wasRecentlyAcked(MessageId messageId) {
+		synchronized (recentlyAckedMessageIds) {
+			return recentlyAckedMessageIds.contains(messageId);
 		}
 	}
 }

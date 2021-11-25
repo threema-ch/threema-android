@@ -35,6 +35,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -135,26 +136,26 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 
 	private void showChooser(final BallotModel ballotModel) {
 
-		final ArrayList<String> items = new ArrayList<>();
+		ArrayList<SelectorDialogItem> items = new ArrayList<>();
 		final ArrayList<Integer> action = new ArrayList<>();
 		String title = null;
 
 		if (BallotUtil.canVote(ballotModel, helper.getMyIdentity())) {
-			items.add(getContext().getString(R.string.ballot_vote));
+			items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_vote), R.drawable.ic_vote_outline));
 			action.add(ACTION_VOTE);
 		}
 
 		if (BallotUtil.canViewMatrix(ballotModel, helper.getMyIdentity())) {
 			if (ballotModel.getState() == BallotModel.State.CLOSED) {
-				items.add(getContext().getString(R.string.ballot_result_final));
+				items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_result_final), R.drawable.ic_ballot_outline));
 			} else {
-				items.add(getContext().getString(R.string.ballot_result_intermediate));
+				items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_result_intermediate), R.drawable.ic_ballot_outline));
 			}
 			action.add(ACTION_RESULTS);
 		}
 
 		if (BallotUtil.canClose(ballotModel, helper.getMyIdentity())) {
-			items.add(getContext().getString(R.string.ballot_close));
+			items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_close), R.drawable.ic_check));
 			action.add(ACTION_CLOSE);
 		}
 

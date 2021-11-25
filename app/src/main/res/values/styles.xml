@@ -16,7 +16,7 @@
 	</style>
 
 	<style name="ActionMode.TitleText.Dark" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title.Inverse">
-		<item name="android:textColor">@color/accent_dark</item>
+		<item name="android:textColor">@color/dark_accent</item>
 	</style>
 
 	<style name="ActionMode.CloseButton.Style.Light" parent="Widget.AppCompat.Light.ActionButton.CloseMode">
@@ -24,7 +24,7 @@
 	</style>
 
 	<style name="ActionMode.CloseButton.Style.Dark" parent="Widget.AppCompat.Light.ActionButton.CloseMode">
-		<item name="android:tint">@color/accent_dark</item>
+		<item name="android:tint">@color/dark_accent</item>
 	</style>
 
 	<style name="Animation.Threema.None" parent="@android:style/Animation.Dialog">
@@ -89,14 +89,14 @@
 		<item name="android:textSize">12sp</item>
 	</style>
 
-	<style name="TextAppearance.Chip.Ballot" parent="android:TextAppearance">
+	<style name="TextAppearance.Chip.ChatNotice" parent="android:TextAppearance">
 		<item name="android:fontFamily">sans-serif-condensed</item>
 		<item name="android:letterSpacing">0</item>
-		<item name="android:textSize">@dimen/chip_ballot_text_size</item>
+		<item name="android:textSize">@dimen/chip_text_size</item>
 	</style>
 
-	<style name="Chip.Ballot.Overview" parent="Widget.MaterialComponents.Chip.Action">
-		<item name="android:textAppearance">@style/TextAppearance.Chip.Ballot</item>
+	<style name="Chip.ChatNotice.Overview" parent="Widget.MaterialComponents.Chip.Action">
+		<item name="android:textAppearance">@style/TextAppearance.Chip.ChatNotice</item>
 		<item name="chipBackgroundColor">@android:color/transparent</item>
 		<item name="ensureMinTouchTargetSize">false</item>
 		<item name="chipIconSize">26dp</item>
@@ -110,8 +110,8 @@
 		<item name="textEndPadding">0dp</item>
 	</style>
 
-	<style name="Chip.Ballot.Overview.Intro" parent="Widget.MaterialComponents.Chip.Action">
-		<item name="android:textAppearance">@style/TextAppearance.Chip.Ballot</item>
+	<style name="Chip.ChatNotice.Overview.Intro" parent="Widget.MaterialComponents.Chip.Action">
+		<item name="android:textAppearance">@style/TextAppearance.Chip.ChatNotice</item>
 		<item name="chipBackgroundColor">@android:color/transparent</item>
 		<item name="ensureMinTouchTargetSize">false</item>
 		<item name="chipStartPadding">0dp</item>
@@ -208,7 +208,7 @@
 	</style>
 
 	<style name="Threema.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
-		<item name="android:background">@color/material_primary</item>
+		<item name="android:background">?attr/material_toolbar_color</item>
 		<item name="titleTextAppearance">@style/TextAppearance.Toolbar.Title</item>
 		<item name="subtitleTextAppearance">@style/TextAppearance.Toolbar.SubTitle</item>
 	</style>
@@ -218,12 +218,6 @@
 		<item name="subtitleTextAppearance">@style/TextAppearance.Toolbar.SubTitle</item>
 		<item name="titleTextColor">@color/dark_text_color_primary</item>
 		<item name="subtitleTextColor">@color/dark_text_color_primary</item>
-	</style>
-
-	<style name="Threema.ToolbarStyle.Dark" parent="Widget.MaterialComponents.Toolbar">
-		<item name="android:background">@color/dark_toolbar_color</item>
-		<item name="titleTextAppearance">@style/TextAppearance.Toolbar.Title</item>
-		<item name="subtitleTextAppearance">@style/TextAppearance.Toolbar.SubTitle</item>
 	</style>
 
 	<style name="Threema.Material.Header.Text" parent="TextAppearance.MaterialComponents.Button">
@@ -303,8 +297,14 @@
 		<item name="android:textColor">?android:attr/textColorPrimary</item>
 	</style>
 
+	<style name="Threema.TextAppearance.PublicKey" parent="@android:style/TextAppearance.Large">
+		<item name="android:fontFamily">monospace</item>
+		<item name="android:textSize">24sp</item>
+		<item name="android:letterSpacing">0.2</item>"
+	</style>
+
 	<style name="Threema.Dialog.Wizard" parent="Theme.MaterialComponents.Dialog">
-		<item name="colorAccent">@color/new_wizard_color_accent</item>
+		<item name="colorAccent">@color/wizard_color_accent</item>
 	</style>
 
 	<style name="Threema.ExtendedFloatingActionButtonStyle.Light" parent="@style/Widget.MaterialComponents.ExtendedFloatingActionButton">
@@ -547,6 +547,11 @@
 		<item name="android:textSize">22sp</item>
 	</style>
 
+	<style name="WizardHintTextAppearance" parent="@android:style/TextAppearance">
+		<item name="android:fontFamily">sans-serif-light</item>
+		<item name="android:textSize">@dimen/wizard_edittext_text_size</item>
+	</style>
+
 	<style name="NoHintTextAppearance" parent="@android:style/TextAppearance">
 		<item name="android:textColor">@android:color/transparent</item>
 		<item name="android:textSize">0sp</item>
@@ -611,8 +616,10 @@
 	</style>
 
 	<style name="ShapeAppearanceOverlay.Threema.BottomSheetDialog" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">16dp</item>
+		<item name="cornerSize">0dp</item>
+		<item name="cornerFamilyTopLeft">rounded</item>
+		<item name="cornerSizeTopLeft">16dp</item>
+		<item name="cornerSizeTopRight">16dp</item>
 	</style>
 
 	<style name="Threema.MaterialButton.Borderless.Flush" parent="@style/Widget.MaterialComponents.Button.TextButton">
@@ -623,7 +630,7 @@
 	</style>
 
 	<style name="Threema.MaterialButton.Wizard" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
-		<item name="android:textColor">@color/new_wizard_color_accent</item>
+		<item name="android:textColor">@color/wizard_color_accent</item>
 	</style>
 
 	<style name="Threema.MaterialButton.Fatal" parent="@style/Widget.MaterialComponents.Button">
@@ -643,8 +650,6 @@
 
 	<style name="Threema.PopupTheme.TransparentStatusbar" parent="ThemeOverlay.MaterialComponents">
 		<item name="android:textColor">?attr/textColorPrimary</item>
-		<!-- fix for color bug in android 4 - do not set on lollipop or higher -->
-		<item name="android:background">?attr/popup_menu_background</item>
 	</style>
 
 	<style name="Threema.SpinnerItemStyle" parent="Threema.TextAppearance.Body1">
@@ -768,12 +773,8 @@
 	</style>
 
 	<style name="Threema.MediaGallery.FastScroll" parent="">
-		<item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_media</item>
+		<item name="android:fastScrollThumbDrawable">@drawable/ic_thumbscroller</item>
 		<item name="android:fastScrollTrackDrawable">@null</item>
-	</style>
-
-	<style name="Threema.MediaGallery.FastScroll.Dark" parent="Threema.MediaGallery.FastScroll">
-		<item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_media_dark</item>
 	</style>
 
 	<style name="Threema.Preview.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
@@ -795,5 +796,4 @@
 		<item name="android:textAppearance">@style/Threema.Text.Overline</item>
 		<item name="autoSizeTextType">none</item>
 	</style>
-
 </resources>

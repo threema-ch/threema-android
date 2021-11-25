@@ -15,14 +15,15 @@
 			android:layout_gravity="center_vertical|right"
 			android:gravity="center_vertical|right">
 
-		<ch.threema.app.ui.TextViewRobotoMedium
+		<TextView
 				android:id="@+id/voting_sum"
 				android:text="20"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:singleLine="true"
-				android:ellipsize="end"/>
+				android:ellipsize="end"
+				android:fontFamily="sans-serif-medium"/>
 
 	</LinearLayout>
 </LinearLayout>

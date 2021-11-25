@@ -42,7 +42,6 @@
 				android:layout_marginBottom="32dp"
 				android:textAppearance="@style/Threema.TextAppearance.DetailTitle"
 				android:background="@drawable/bubble_compose_dark_outline"
-				android:editable="true"
 				app:layout_anchor="@id/appbar"
 				app:layout_anchorGravity="bottom|left"
 				android:maxLines="1"
@@ -54,7 +53,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="16dp"
 				android:layout_gravity="bottom"
-				android:background="?attr/shape_detail"/>
+				android:background="@drawable/shape_detail"/>
 
 			<androidx.appcompat.widget.Toolbar
 					android:id="@+id/toolbar"
@@ -103,14 +102,13 @@
 	</com.google.android.material.appbar.AppBarLayout>
 
 	<androidx.recyclerview.widget.RecyclerView
-			android:id="@+id/group_members_list"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp"
-			android:importantForAccessibility="no"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior">
-	</androidx.recyclerview.widget.RecyclerView>
+		android:id="@+id/group_members_list"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:importantForAccessibility="no"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 		android:id="@+id/floating"

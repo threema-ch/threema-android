@@ -86,8 +86,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
-import ch.threema.client.LinkEmailException;
-import ch.threema.client.LinkMobileNoException;
+import ch.threema.domain.protocol.api.LinkEmailException;
+import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
@@ -159,14 +159,14 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 					if (safeConfig.isBackupForced()) {
 						setPage(WizardFragment1.PAGE_ID);
 					} else if (!isReadOnlyProfile()) {
-						WizardDialog wizardDialog = WizardDialog.newInstance(R.string.safe_disable_confirm, R.string.yes, R.string.no);
+						WizardDialog wizardDialog = WizardDialog.newInstance(R.string.safe_disable_confirm, R.string.yes, R.string.no, WizardDialog.Highlight.NEGATIVE);
 						wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_THREEMA_SAFE);
 					}
 				}
 
 				if (current == WizardFragment3.PAGE_ID && previous == WizardFragment2.PAGE_ID && TestUtil.empty(nickname)) {
 					if (!isReadOnlyProfile()) {
-						WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_use_id_as_nickname, R.string.yes, R.string.no);
+						WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_use_id_as_nickname, R.string.yes, R.string.no, WizardDialog.Highlight.POSITIVE);
 						wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_USE_ID_AS_NICKNAME);
 					}
 				}
@@ -197,7 +197,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 									ConfigUtils.isWorkBuild() ?
 											R.string.new_wizard_anonymous_confirm :
 											R.string.new_wizard_anonymous_confirm_phone_only,
-									R.string.yes, R.string.no);
+									R.string.yes, R.string.no, WizardDialog.Highlight.NEGATIVE);
 							wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_USE_ANONYMOUSLY);
 						}
 					}
@@ -396,7 +396,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 								WizardDialog wizardDialog = WizardDialog.newInstance(AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again);
 								wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_BAD);
 							} else {
-								WizardDialog wizardDialog = WizardDialog.newInstance(R.string.password_bad_explain, R.string.try_again, R.string.continue_anyway);
+								WizardDialog wizardDialog = WizardDialog.newInstance(R.string.password_bad_explain, R.string.continue_anyway, R.string.try_again, WizardDialog.Highlight.NEGATIVE);
 								wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_BAD);
 							}
 						}
@@ -592,7 +592,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 				prevPage();
 				break;
 			case DIALOG_TAG_PASSWORD_BAD:
-				setPage(WizardFragment1.PAGE_ID);
 				break;
 			case DIALOG_TAG_THREEMA_SAFE:
 				break;
@@ -612,6 +611,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 				prevPage();
 				break;
 			case DIALOG_TAG_PASSWORD_BAD:
+				setPage(WizardFragment1.PAGE_ID);
 				break;
 		}
 	}

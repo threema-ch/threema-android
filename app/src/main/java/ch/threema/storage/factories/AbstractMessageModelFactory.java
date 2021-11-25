@@ -75,6 +75,8 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						.setQuotedMessageId(cursorFactory.getString(AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID))
 						.setMessageContentsType(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE))
 						.setMessageFlags(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_FLAGS))
+						.setDeliveredAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELIVERED_AT))
+						.setReadAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_READ_AT))
 				;
 				String stateString = cursorFactory.getString(AbstractMessageModel.COLUMN_STATE);
 				if (!TestUtil.empty(stateString)) {
@@ -117,6 +119,8 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		contentValues.put(AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID, messageModel.getQuotedMessageId());
 		contentValues.put(AbstractMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE, messageModel.getMessageContentsType());
 		contentValues.put(AbstractMessageModel.COLUMN_MESSAGE_FLAGS, messageModel.getMessageFlags());
+		contentValues.put(AbstractMessageModel.COLUMN_DELIVERED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getDeliveredAt()));
+		contentValues.put(AbstractMessageModel.COLUMN_READ_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getReadAt()));
 
 		return contentValues;
 	}

@@ -29,15 +29,20 @@ import android.os.SystemClock;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
@@ -50,6 +55,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.ShortcutService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -60,8 +66,10 @@ import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.WebClientSessionModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.group.GroupInviteModel;
 
 public class IntentDataUtil {
+	private static final Logger logger = LoggerFactory.getLogger(RecipientListBaseActivity.class);
 
 	public static final String ACTION_LICENSE_NOT_ALLOWED = BuildConfig.APPLICATION_ID + "license_not_allowed";
 	public static final String ACTION_CONTACTS_CHANGED = BuildConfig.APPLICATION_ID + "contacts_changed";
@@ -84,6 +92,9 @@ public class IntentDataUtil {
 	private static final String INTENT_DATA_URL = "url";
 	private static final String INTENT_DATA_CONTACTS = "contacts";
 	public static final String INTENT_DATA_GROUP_ID = "group_id";
+	public static final String INTENT_DATA_GROUP_LINK_ID = "group_link";
+	public static final String INTENT_DATA_GROUP_LINK = "group_url";
+	public static final String INTENT_DATA_GROUP_NAME = "group_group";
 	private static final String INTENT_DATA_ABSTRACT_MESSAGE_ID = "abstract_message_id";
 	private static final String INTENT_DATA_ABSTRACT_MESSAGE_IDS = "abstract_message_ids";
 	private static final String INTENT_DATA_ABSTRACT_MESSAGE_TYPE = "abstract_message_type";
@@ -116,6 +127,15 @@ public class IntentDataUtil {
 
 	public static void append(GroupModel groupModel, Intent intent) {
 		intent.putExtra(INTENT_DATA_GROUP_ID, groupModel.getId());
+	}
+
+	public static void append(GroupInviteModel groupInviteModel, Intent intent) {
+		intent.putExtra(INTENT_DATA_GROUP_LINK_ID, groupInviteModel.getId());
+	}
+
+	public static void append(Uri link, String groupName, Intent intent) {
+		intent.putExtra(INTENT_DATA_GROUP_LINK, link.toString());
+		intent.putExtra(INTENT_DATA_GROUP_NAME, groupName);
 	}
 
 	public static void append(LatLng latLng, String provider, String name, String address, Intent intent) {
@@ -533,6 +553,33 @@ public class IntentDataUtil {
 		intent.putExtra(ThreemaApplication.INTENT_DATA_TIMESTAMP, SystemClock.elapsedRealtime());
 
 		return intent;
+	}
+
+	public static String getIdentityFromSharingShortcut(Intent intent) {
+		String identity = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
+		//Only chat shortcuts can receive direct share intents
+		if (identity != null && identity.startsWith(String.valueOf(ShortcutService.TYPE_SHARE_SHORTCUT_CONTACT))) {
+			return identity.substring(1);
+		}
+		return null;
+	}
+
+	public static int getGroupIdFromSharingShortcut(Intent intent) {
+		String id = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
+		//Only chat shortcuts can receive direct share intents
+		if (id != null && id.startsWith(String.valueOf(ShortcutService.TYPE_SHARE_SHORTCUT_GROUP))) {
+			return Integer.parseInt(id.substring(1));
+		}
+		return -1;
+	}
+
+	public static int getDistributionListIdFromSharingShortcut(Intent intent) {
+		String id = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
+		//Only chat shortcuts can receive direct share intents
+		if (id != null && id.startsWith(String.valueOf(ShortcutService.TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST))) {
+			return Integer.parseInt(id.substring(1));
+		}
+		return -1;
 	}
 
 	public static Intent getJumpToMessageIntent(Context context, AbstractMessageModel messageModel) {

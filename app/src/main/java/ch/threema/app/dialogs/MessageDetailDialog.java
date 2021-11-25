@@ -90,8 +90,10 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 			final TextView createdDate = dialogView.findViewById(R.id.created_date);
 			final TextView postedText = dialogView.findViewById(R.id.posted_text);
 			final TextView postedDate = dialogView.findViewById(R.id.posted_date);
-			final TextView modifiedText = dialogView.findViewById(R.id.modified_text);
-			final TextView modifiedDate = dialogView.findViewById(R.id.modified_date);
+			final TextView deliveredText = dialogView.findViewById(R.id.delivered_text);
+			final TextView deliveredDate = dialogView.findViewById(R.id.delivered_date);
+			final TextView readText = dialogView.findViewById(R.id.read_text);
+			final TextView readDate = dialogView.findViewById(R.id.read_date);
 			final TextView messageIdText = dialogView.findViewById(R.id.messageid_text);
 			final TextView messageIdDate = dialogView.findViewById(R.id.messageid_date);
 			final TextView mimeTypeText = dialogView.findViewById(R.id.filetype_text);
@@ -136,13 +138,28 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 					}
 
 					if (messageState != MessageState.SENT && !(messageModel.getType() == MessageType.BALLOT && messageModel instanceof GroupMessageModel)) {
+						Date deliveredAt = messageModel.getDeliveredAt();
+						Date readAt = messageModel.getReadAt();
 						Date modifiedAt = messageModel.getModifiedAt();
-						modifiedText.setText(TextUtil.capitalize(getString(stateResource)));
-						modifiedDate.setText(modifiedAt != null ?
-							LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()) :
-							(messageModel.getPostedAt(true) != null ? LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getPostedAt(true).getTime()) : ""));
-						modifiedText.setVisibility(View.VISIBLE);
-						modifiedDate.setVisibility(View.VISIBLE);
+
+						if (readAt != null && deliveredAt != null) {
+							deliveredText.setText(TextUtil.capitalize(getString(R.string.state_delivered)));
+							deliveredDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), deliveredAt.getTime()));
+							deliveredText.setVisibility(View.VISIBLE);
+							deliveredDate.setVisibility(View.VISIBLE);
+
+							readText.setText(TextUtil.capitalize(getString(R.string.state_read)));
+							readDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), readAt.getTime()));
+							readText.setVisibility(View.VISIBLE);
+							readDate.setVisibility(View.VISIBLE);
+						} else {
+							deliveredText.setText(TextUtil.capitalize(getString(stateResource)));
+							deliveredDate.setText(modifiedAt != null ?
+								LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()) :
+								(messageModel.getPostedAt(true) != null ? LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getPostedAt(true).getTime()) : ""));
+							deliveredText.setVisibility(View.VISIBLE);
+							deliveredDate.setVisibility(View.VISIBLE);
+						}
 					}
 				} else {
 					// incoming msgs
@@ -160,10 +177,10 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 						postedDate.setVisibility(View.VISIBLE);
 					}
 					if (messageModel.getModifiedAt() != null && messageState != MessageState.READ) {
-						modifiedText.setText(TextUtil.capitalize(getString(R.string.state_read)));
-						modifiedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()));
-						modifiedText.setVisibility(View.VISIBLE);
-						modifiedDate.setVisibility(View.VISIBLE);
+						deliveredText.setText(TextUtil.capitalize(getString(R.string.state_read)));
+						deliveredDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()));
+						deliveredText.setVisibility(View.VISIBLE);
+						deliveredDate.setVisibility(View.VISIBLE);
 					}
 				}
 

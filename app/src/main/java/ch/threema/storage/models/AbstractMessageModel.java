@@ -80,6 +80,10 @@ public abstract class AbstractMessageModel {
 	public static final String COLUMN_MESSAGE_CONTENTS_TYPE = "messageContentsType";
 	/** message flags that affect delivery receipt behavior etc. - carried over from AbstractMessage */
 	public static final String COLUMN_MESSAGE_FLAGS = "messageFlags";
+	/** When the message was delivered. */
+	public static final String COLUMN_DELIVERED_AT = "deliveredAtUtc";
+	/** When the message was read. */
+	public static final String COLUMN_READ_AT = "readAtUtc";
 
 	private int id;
 	private String uid;
@@ -94,6 +98,8 @@ public abstract class AbstractMessageModel {
 	private MessageState state;
 	private Date postedAt;
 	private Date createdAt;
+	private Date deliveredAt;
+	private Date readAt;
 	private Date modifiedAt;
 	private boolean isStatusMessage;
 	private boolean isQueued;
@@ -142,6 +148,10 @@ public abstract class AbstractMessageModel {
 		return this;
 	}
 
+	/**
+	 * Return the associated identity: Either the recipient
+	 * (for outgoing messages) or the sender (for incoming messages).
+	 */
 	public String getIdentity() {
 		return identity;
 	}
@@ -244,6 +254,11 @@ public abstract class AbstractMessageModel {
 
 	public AbstractMessageModel setModifiedAt(Date modifiedAt) {
 		this.modifiedAt = modifiedAt;
+		if (getState() == MessageState.DELIVERED) {
+			this.deliveredAt = modifiedAt;
+		} else if (getState() == MessageState.READ) {
+			this.readAt = modifiedAt;
+		}
 		return this;
 	}
 
@@ -264,6 +279,22 @@ public abstract class AbstractMessageModel {
 
 	public AbstractMessageModel setPostedAt(Date postedAt) {
 		this.postedAt = postedAt;
+		return this;
+	}
+
+	@Nullable
+	public Date getDeliveredAt() { return this.deliveredAt; }
+
+	public AbstractMessageModel setDeliveredAt(Date deliveredAt) {
+		this.deliveredAt = deliveredAt;
+		return this;
+	}
+
+	@Nullable
+	public Date getReadAt() { return this.readAt; }
+
+	public AbstractMessageModel setReadAt(Date readAt) {
+		this.readAt = readAt;
 		return this;
 	}
 
@@ -465,6 +496,8 @@ public abstract class AbstractMessageModel {
 				.setIsQueued(sourceModel.isQueued())
 				.setState(sourceModel.getState())
 				.setModifiedAt(sourceModel.getModifiedAt())
+				.setDeliveredAt(sourceModel.getDeliveredAt())
+				.setReadAt(sourceModel.getReadAt())
 				.setBody(sourceModel.getBody())
 				.setCaption(sourceModel.getCaption())
 				.setQuotedMessageId(sourceModel.getQuotedMessageId())

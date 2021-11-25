@@ -28,7 +28,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.storage.DatabaseServiceNew;
 
 public class Helper {

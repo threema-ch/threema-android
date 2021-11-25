@@ -163,20 +163,12 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 
 		if (messageModel.isOutbox()) {
 			// send
-			if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-				color = getResources().getColor(R.color.dark_bubble_send);
-			} else {
-				color = getResources().getColor(R.color.light_bubble_send);
-			}
+			color = ConfigUtils.getColorFromAttribute(this, R.attr.bubble_send);
 			title = getString(R.string.threema_message_to, messageReceiver.getDisplayName());
 			footerLayout = R.layout.conversation_bubble_footer_send;
 		} else {
 			// recv
-			if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-				color = getResources().getColor(R.color.dark_bubble_recv);
-			} else {
-				color = getResources().getColor(R.color.light_bubble_recv);
-			}
+			color = ConfigUtils.getColorFromAttribute(this, R.attr.bubble_recv);
 			title = getString(R.string.threema_message_from, messageReceiver.getDisplayName());
 			footerLayout = R.layout.conversation_bubble_footer_recv;
 		}

@@ -34,8 +34,8 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.Utils;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.base.utils.Utils;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.QueryBuilder;
@@ -134,7 +134,7 @@ public class ContactModelFactory extends ModelFactory {
 					.setThreemaAndroidContactId(cursorFactory.getString(ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID))
 					.setIsSynchronized(cursorFactory.getInt(ContactModel.COLUMN_IS_SYNCHRONIZED) == 1)
 					.setIsWork(cursorFactory.getInt(ContactModel.COLUMN_IS_WORK) == 1)
-					.setType(cursorFactory.getInt(ContactModel.COLUMN_TYPE))
+					.setIdentityType(cursorFactory.getInt(ContactModel.COLUMN_TYPE))
 					.setFeatureMask(cursorFactory.getInt(ContactModel.COLUMN_FEATURE_LEVEL))
 					.setColor(cursorFactory.getInt(ContactModel.COLUMN_COLOR))
 					.setIsHidden(cursorFactory.getInt(ContactModel.COLUMN_IS_HIDDEN) == 1)
@@ -146,8 +146,22 @@ public class ContactModelFactory extends ModelFactory {
 					.setReadReceipts(cursorFactory.getInt(ContactModel.COLUMN_READ_RECEIPTS))
 					.setTypingIndicators(cursorFactory.getInt(ContactModel.COLUMN_TYPING_INDICATORS));
 
-				switch (cursorFactory.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL))
-				{
+				// Convert state to enum
+				switch (cursorFactory.getString(ContactModel.COLUMN_STATE)) {
+					case "INACTIVE":
+						c.setState(ContactModel.State.INACTIVE);
+						break;
+					case "INVALID":
+						c.setState(ContactModel.State.INVALID);
+						break;
+					case "ACTIVE":
+					case "TEMPORARY": // Legacy state, see !276
+					default:
+						c.setState(ContactModel.State.ACTIVE);
+						break;
+				}
+
+				switch (cursorFactory.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL)) {
 					case 1:
 						c.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
 						break;
@@ -210,7 +224,7 @@ public class ContactModelFactory extends ModelFactory {
 				contactModel.getAvatarExpires().getTime()
 				: null);
 		contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
-		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getType());
+		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType());
 		contentValues.put(ContactModel.COLUMN_PROFILE_PIC_SENT_DATE, contactModel.getProfilePicSentDate() != null ?
 				contactModel.getProfilePicSentDate().getTime()
 				: null);

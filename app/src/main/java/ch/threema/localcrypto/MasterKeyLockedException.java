@@ -3,7 +3,7 @@
  *   | | | ' \| '_/ -_) -_) '  \/ _` |_
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
- * Threema Java Client
+ * Threema for Android
  * Copyright (c) 2013-2020 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify

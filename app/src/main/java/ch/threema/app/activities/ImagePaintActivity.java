@@ -34,7 +34,6 @@ import android.graphics.Typeface;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -133,7 +132,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	public void onBackPressed() {
 		if (hasChanges()) {
 			GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
-					R.string.draw,
+					R.string.discard_changes_title,
 					R.string.discard_changes,
 					R.string.discard,
 					R.string.cancel);
@@ -219,9 +218,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-		}
+		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 
 		Intent intent = getIntent();
 		MediaItem mediaItem = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -672,7 +669,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 					try {
 						TapTargetView.showFor(this,
 							TapTarget.forView(v, getString(R.string.face_blur_tooltip_title), getString(R.string.face_blur_tooltip_text))
-								.outerCircleColor(R.color.accent_dark)      // Specify a color for the outer circle
+								.outerCircleColor(R.color.dark_accent)      // Specify a color for the outer circle
 								.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
 								.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
 								.titleTextSize(24)                  // Specify the size (in sp) of the title text

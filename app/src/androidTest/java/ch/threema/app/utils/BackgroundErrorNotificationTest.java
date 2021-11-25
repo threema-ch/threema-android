@@ -48,7 +48,7 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import ch.threema.app.R;
 import ch.threema.app.ScreenshotTakingRule;
-import ch.threema.app.TestHelpers;
+import ch.threema.app.testutils.TestHelpers;
 import ch.threema.app.notifications.BackgroundErrorNotification;
 
 import static org.junit.Assert.assertEquals;
@@ -106,7 +106,7 @@ public class BackgroundErrorNotificationTest {
 		TestHelpers.openNotificationArea(mDevice);
 
 		// Verify notification contents
-		final BySelector titleSelector = By.res("android:id/title").text("Error: T1tl3");
+		final BySelector titleSelector = By.res("android:id/title").text(context.getString(R.string.error) + ": T1tl3");
 		final BySelector bodySelector = By.text("The body of the notification");
 		assertNotNull("Notification title not found", mDevice.wait(Until.findObject(titleSelector), 1000));
 		assertNotNull("Notification text not found", mDevice.wait(Until.findObject(bodySelector), 1000));

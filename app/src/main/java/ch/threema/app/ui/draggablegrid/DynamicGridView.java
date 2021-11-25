@@ -33,7 +33,6 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -501,17 +500,6 @@ public class DynamicGridView extends GridView {
         setEnabled(!mHoverAnimation && !mReorderAnimation);
     }
 
-
-    /**
-     * The GridView from Android Lollipoop requires some different
-     * setVisibility() logic when switching cells.
-     *
-     * @return true if OS version is less than Lollipop, false if not
-     */
-    public static boolean isPreLollipop() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
-    }
-
     private void touchEventsCancelled() {
         View mobileView = getViewForId(mMobileItemId);
         if (mCellIsMobile) {
@@ -577,12 +565,7 @@ public class DynamicGridView extends GridView {
             mDownY = mLastEventY;
             mDownX = mLastEventX;
 
-            SwitchCellAnimator switchCellAnimator;
-
-            if (isPreLollipop())   //Between Android 3.0 and Android L
-                switchCellAnimator = new KitKatSwitchCellAnimator(deltaX, deltaY);
-            else                   //Android L
-                switchCellAnimator = new LSwitchCellAnimator(deltaX, deltaY);
+            SwitchCellAnimator switchCellAnimator = new LSwitchCellAnimator(deltaX, deltaY);
 
             updateNeighborViewsForId(mMobileItemId);
 
@@ -592,54 +575,6 @@ public class DynamicGridView extends GridView {
 
     private interface SwitchCellAnimator {
         void animateSwitchCell(final int originalPosition, final int targetPosition);
-    }
-
-    private class KitKatSwitchCellAnimator implements SwitchCellAnimator {
-
-        private int mDeltaY;
-        private int mDeltaX;
-
-        public KitKatSwitchCellAnimator(int deltaX, int deltaY) {
-            mDeltaX = deltaX;
-            mDeltaY = deltaY;
-        }
-
-        @Override
-        public void animateSwitchCell(final int originalPosition, final int targetPosition) {
-            assert mMobileView != null;
-            getViewTreeObserver().addOnPreDrawListener(new AnimateSwitchViewOnPreDrawListener(mMobileView, originalPosition, targetPosition));
-            mMobileView = getViewForId(mMobileItemId);
-        }
-
-        private class AnimateSwitchViewOnPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
-
-            private final View mPreviousMobileView;
-            private final int mOriginalPosition;
-            private final int mTargetPosition;
-
-            AnimateSwitchViewOnPreDrawListener(final View previousMobileView, final int originalPosition, final int targetPosition) {
-                mPreviousMobileView = previousMobileView;
-                mOriginalPosition = originalPosition;
-                mTargetPosition = targetPosition;
-            }
-
-            @Override
-            public boolean onPreDraw() {
-                getViewTreeObserver().removeOnPreDrawListener(this);
-
-                mTotalOffsetY += mDeltaY;
-                mTotalOffsetX += mDeltaX;
-
-                animateReorder(mOriginalPosition, mTargetPosition);
-
-                mPreviousMobileView.setVisibility(View.VISIBLE);
-
-                if (mMobileView != null) {
-                    mMobileView.setVisibility(View.INVISIBLE);
-                }
-                return true;
-            }
-        }
     }
 
     private class LSwitchCellAnimator implements SwitchCellAnimator {

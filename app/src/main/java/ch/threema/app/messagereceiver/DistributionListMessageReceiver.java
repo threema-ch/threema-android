@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -39,9 +40,9 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.ballot.BallotData;
-import ch.threema.client.ballot.BallotVote;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -53,7 +54,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
 
 public class DistributionListMessageReceiver implements MessageReceiver<DistributionListMessageModel> {
-	private final List<MessageReceiver> affectedMessageReceivers = new ArrayList<MessageReceiver>();
+	private final List<ContactMessageReceiver> affectedMessageReceivers = new ArrayList<>();
 
 	private final DatabaseServiceNew databaseServiceNew;
 	private final ContactService contactService;
@@ -80,8 +81,11 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 		return this.distributionListModel;
 	}
 
+	/**
+	 * Return the {@link ContactMessageReceiver} instances that receive messages sent to this distribution list.
+	 */
 	@Override
-	public List<MessageReceiver> getAffectedMessageReceivers() {
+	public @Nullable List<ContactMessageReceiver> getAffectedMessageReceivers() {
 		return this.affectedMessageReceivers;
 	}
 

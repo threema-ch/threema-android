@@ -85,7 +85,7 @@ public class NameUtil {
 			return name.toString();
 		}
 
-		return groupModel.getApiGroupId();
+		return groupModel.getApiGroupId().toString();
 	}
 
 	/**
@@ -254,12 +254,12 @@ public class NameUtil {
 		}
 	}
 
+	@NonNull
 	public static String getDisplayNameOrNickname(String identity, ContactService contactService) {
-		String displayName = null;
-
-		if (contactService != null) {
-			displayName = NameUtil.getDisplayNameOrNickname(contactService.getByIdentity(identity), true);
+		if (contactService == null) {
+			return "";
 		}
+		String displayName = NameUtil.getDisplayNameOrNickname(contactService.getByIdentity(identity), true);
 		return TextUtils.isEmpty(displayName) ? identity : displayName.substring(0, Math.min(displayName.length(), 24));
 	}
 

@@ -38,31 +38,31 @@ import java.util.UUID;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.BlobUploader;
-import ch.threema.client.BoxLocationMessage;
-import ch.threema.client.BoxTextMessage;
-import ch.threema.client.BoxedMessage;
-import ch.threema.client.MessageId;
-import ch.threema.client.MessageQueue;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.Utils;
-import ch.threema.client.ballot.BallotCreateMessage;
-import ch.threema.client.ballot.BallotData;
-import ch.threema.client.ballot.BallotId;
-import ch.threema.client.ballot.BallotVote;
-import ch.threema.client.ballot.BallotVoteMessage;
-import ch.threema.client.file.FileData;
-import ch.threema.client.file.FileMessage;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.blob.BlobUploader;
+import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
+import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileMessage;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -83,24 +83,22 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
 	private IdListService blackListIdentityService;
+	private ApiService apiService;
 
 	public ContactMessageReceiver(ContactModel contactModel,
 								  ContactService contactService,
 								  DatabaseServiceNew databaseServiceNew,
 								  MessageQueue messageQueue,
 								  IdentityStore identityStore,
-								  IdListService blackListIdentityService) {
+								  IdListService blackListIdentityService,
+	                              ApiService apiService) {
 		this.contactModel = contactModel;
 		this.contactService = contactService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.messageQueue = messageQueue;
 		this.identityStore = identityStore;
 		this.blackListIdentityService = blackListIdentityService;
-	}
-
-	@Override
-	public List<MessageReceiver> getAffectedMessageReceivers() {
-		return null;
+		this.apiService = apiService;
 	}
 
 	@Override
@@ -152,7 +150,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		this.initNewAbstractMessage(messageModel, msg);
 
 		logger.info("Enqueue text message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		BoxedMessage boxmsg = this.messageQueue.enqueue(msg);
+		MessageBox boxmsg = this.messageQueue.enqueue(msg);
 		if (boxmsg != null) {
 			messageModel.setIsQueued(true);
 			MessageId id = boxmsg.getMessageId();
@@ -196,7 +194,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		this.initNewAbstractMessage(messageModel, msg);
 
 		logger.info("Enqueue location message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		BoxedMessage boxmsg = this.messageQueue.enqueue(msg);
+		MessageBox boxmsg = this.messageQueue.enqueue(msg);
 
 		if (boxmsg != null) {
 			messageModel.setIsQueued(true);
@@ -240,10 +238,10 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 		logger.info("Enqueue file message ID {} to {}",
 			fileMessage.getMessageId(), fileMessage.getToIdentity());
-		BoxedMessage boxedMessage = this.messageQueue.enqueue(fileMessage);
-		if(boxedMessage != null) {
+		MessageBox messageBox = this.messageQueue.enqueue(fileMessage);
+		if(messageBox != null) {
 			messageModel.setIsQueued(true);
-			MessageId id = boxedMessage.getMessageId();
+			MessageId id = messageBox.getMessageId();
 			if (id!= null) {
 				messageModel.setApiMessageId(id.toString());
 				contactService.setIsHidden(fileMessage.getToIdentity(), false);
@@ -274,10 +272,10 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		this.initNewAbstractMessage(messageModel, msg);
 
 		logger.info("Enqueue ballot message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		BoxedMessage boxedMessage = this.messageQueue.enqueue(msg);
-		if(boxedMessage != null) {
+		MessageBox messageBox = this.messageQueue.enqueue(msg);
+		if(messageBox != null) {
 			messageModel.setIsQueued(true);
-			messageModel.setApiMessageId(boxedMessage.getMessageId().toString());
+			messageModel.setApiMessageId(messageBox.getMessageId().toString());
 			contactService.setIsHidden(msg.getToIdentity(), false);
 			contactService.setIsArchived(msg.getToIdentity(), false);
 			return true;
@@ -309,8 +307,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		}
 
 		logger.info("Enqueue ballot vote message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		BoxedMessage boxedMessage = this.messageQueue.enqueue(msg);
-		if (boxedMessage != null) {
+		MessageBox messageBox = this.messageQueue.enqueue(msg);
+		if (messageBox != null) {
 			contactService.setIsHidden(msg.getToIdentity(), false);
 			contactService.setIsArchived(msg.getToIdentity(), false);
 			return true;
@@ -394,11 +392,10 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public EncryptResult encryptFileThumbnailData(byte[] fileThumbnailData, final byte[] encryptionKey) {
+	public EncryptResult encryptFileThumbnailData(byte[] fileThumbnailData, final byte[] encryptionKey) throws ThreemaException {
 		final byte[] thumbnailBoxed = NaCl.symmetricEncryptData(fileThumbnailData, encryptionKey, ProtocolDefines.FILE_THUMBNAIL_NONCE);
-		BlobUploader blobUploaderThumbnail = new BlobUploader(ConfigUtils::getSSLSocketFactory, thumbnailBoxed);
+		BlobUploader blobUploaderThumbnail = apiService.createUploader(thumbnailBoxed);
 		blobUploaderThumbnail.setVersion(ThreemaApplication.getAppVersion());
-		blobUploaderThumbnail.setServerUrls(ThreemaApplication.getIPv6());
 
 		return new EncryptResult() {
 			@Override
@@ -424,16 +421,15 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public EncryptResult encryptFileData(final byte[] fileData) {
+	public EncryptResult encryptFileData(final byte[] fileData) throws ThreemaException {
 		//generate random symmetric key for file encryption
 		SecureRandom rnd = new SecureRandom();
 		final byte[] encryptionKey = new byte[NaCl.SYMMKEYBYTES];
 		rnd.nextBytes(encryptionKey);
 
 		NaCl.symmetricEncryptDataInplace(fileData, encryptionKey, ProtocolDefines.FILE_NONCE);
-		BlobUploader blobUploaderThumbnail = new BlobUploader(ConfigUtils::getSSLSocketFactory, fileData);
+		BlobUploader blobUploaderThumbnail = apiService.createUploader(fileData);
 		blobUploaderThumbnail.setVersion(ThreemaApplication.getAppVersion());
-		blobUploaderThumbnail.setServerUrls(ThreemaApplication.getIPv6());
 
 		return new EncryptResult() {
 			@Override

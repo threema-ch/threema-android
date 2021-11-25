@@ -30,12 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
@@ -56,7 +54,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
-import ch.threema.client.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;

@@ -25,6 +25,11 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -33,6 +38,8 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
+import ch.threema.app.R;
+import ch.threema.app.ui.SelectorDialogItem;
 
 public class SelectorDialog extends ThreemaDialogFragment {
 	private SelectorDialogClickListener callback;
@@ -40,51 +47,42 @@ public class SelectorDialog extends ThreemaDialogFragment {
 	private Activity activity;
 	private AlertDialog alertDialog;
 
-	public static SelectorDialog newInstance(String title, ArrayList<String> items, String negative, SelectorDialogInlineClickListener listener) {
-		// do not use inline callbacks in activities that don't have android:configChanges="orientation|screenSize|keyboardHidden" set
-		// or fragments without setRetainInstance(true)
+	private static final String BUNDLE_TITLE_EXTRA = "title";
+	private static final String BUNDLE_ITEMS_EXTRA = "items";
+	private static final String BUNDLE_VALUES_EXTRA = "values";
+	private static final String BUNDLE_NEGATIVE_EXTRA = "negative";
+	private static final String BUNDLE_LISTENER_EXTRA = "listener";
+
+	public static SelectorDialog newInstance(String title, ArrayList<SelectorDialogItem> items, String negative) {
 		SelectorDialog dialog = new SelectorDialog();
 		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putStringArrayList("items", items);
-		args.putString("negative", negative);
-		args.putParcelable("listener", listener);
+		args.putString(BUNDLE_TITLE_EXTRA, title);
+		args.putSerializable(BUNDLE_ITEMS_EXTRA, items);
+		args.putString(BUNDLE_NEGATIVE_EXTRA, negative);
 
 		dialog.setArguments(args);
 		return dialog;
 	}
 
-	public static SelectorDialog newInstance(String title, ArrayList<String> items, String negative) {
+	public static SelectorDialog newInstance(String title, ArrayList<SelectorDialogItem> items, ArrayList<Integer> values, String negative) {
 		SelectorDialog dialog = new SelectorDialog();
 		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putStringArrayList("items", items);
-		args.putString("negative", negative);
+		args.putString(BUNDLE_TITLE_EXTRA, title);
+		args.putIntegerArrayList(BUNDLE_VALUES_EXTRA, values);
+		args.putSerializable(BUNDLE_ITEMS_EXTRA, items);
+		args.putString(BUNDLE_NEGATIVE_EXTRA, negative);
 
 		dialog.setArguments(args);
 		return dialog;
 	}
 
-	public static SelectorDialog newInstance(String title, ArrayList<String> items, ArrayList<Integer> values, String negative) {
+	public static SelectorDialog newInstance(String title, ArrayList<SelectorDialogItem> items, String negative, SelectorDialogInlineClickListener listener) {
 		SelectorDialog dialog = new SelectorDialog();
 		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putIntegerArrayList("values", values);
-		args.putStringArrayList("items", items);
-		args.putString("negative", negative);
-
-		dialog.setArguments(args);
-		return dialog;
-	}
-
-	public static SelectorDialog newInstance(String title, ArrayList<String> items, ArrayList<Integer> values, String negative, SelectorDialogInlineClickListener listener) {
-		SelectorDialog dialog = new SelectorDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putIntegerArrayList("values", values);
-		args.putStringArrayList("items", items);
-		args.putString("negative", negative);
-		args.putParcelable("listener", listener);
+		args.putString(BUNDLE_TITLE_EXTRA, title);
+		args.putSerializable(BUNDLE_ITEMS_EXTRA, items);
+		args.putString(BUNDLE_NEGATIVE_EXTRA, negative);
+		args.putParcelable(BUNDLE_LISTENER_EXTRA, listener);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -123,11 +121,12 @@ public class SelectorDialog extends ThreemaDialogFragment {
 	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String title = getArguments().getString("title");
-		final ArrayList<String> items = getArguments().getStringArrayList("items");
-		final ArrayList<Integer> values = getArguments().getIntegerArrayList("values");
-		String negative = getArguments().getString("negative");
-		SelectorDialogInlineClickListener listener = getArguments().getParcelable("listener");
+		Bundle arguments = getArguments();
+		String title = arguments.getString("title");
+		final ArrayList<SelectorDialogItem> items = (ArrayList<SelectorDialogItem>) arguments.getSerializable("items");
+		final ArrayList<Integer> values = arguments.getIntegerArrayList("values");
+		String negative = arguments.getString("negative");
+		SelectorDialogInlineClickListener listener = arguments.getParcelable("listener");
 
 		if (listener != null) {
 			inlineCallback = listener;
@@ -139,36 +138,54 @@ public class SelectorDialog extends ThreemaDialogFragment {
 		if (title != null) {
 			builder.setTitle(title);
 		}
-		builder.setItems(items.toArray(new String[0]), new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
 
-				if (values != null && values.size() > 0) {
-					if (inlineCallback != null) {
-						inlineCallback.onClick(tag, values.get(which), object);
-					} else {
-						callback.onClick(tag, values.get(which), object);
-					}
+
+		ListAdapter adapter = new ArrayAdapter<SelectorDialogItem> (
+			activity,
+			R.layout.item_selector_dialog,
+			R.id.text1,
+			items){
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				//Use super class to create the View
+				View v = super.getView(position, convertView, parent);
+				TextView selectorOptionDesc = v.findViewById(R.id.text1);
+
+				//Put the image on the TextView
+				selectorOptionDesc.setCompoundDrawablesWithIntrinsicBounds(items.get(position).getIcon(), 0, 0, 0);
+
+				//Add margin between image and text (support various screen densities)
+				selectorOptionDesc.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.listitem_standard_margin_left_right));
+
+				return v;
+			}
+		};
+
+		builder.setAdapter(adapter, (dialog, which) -> {
+			dialog.dismiss();
+
+			if (values != null && values.size() > 0) {
+				if (inlineCallback != null) {
+					inlineCallback.onClick(tag, values.get(which), object);
 				} else {
-					if (inlineCallback != null) {
-						inlineCallback.onClick(tag, which, object);
-					} else {
-						callback.onClick(tag, which, object);
-					}
+					callback.onClick(tag, values.get(which), object);
+				}
+			} else {
+				if (inlineCallback != null) {
+					inlineCallback.onClick(tag, which, object);
+				} else {
+					callback.onClick(tag, which, object);
 				}
 			}
 		});
+
 		if (negative != null) {
-			builder.setNegativeButton(negative, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-					if (inlineCallback != null) {
-						inlineCallback.onNo(tag);
-					} else {
-						callback.onNo(tag);
-					}
+			builder.setNegativeButton(negative, (dialog, which) -> {
+				dialog.dismiss();
+				if (inlineCallback != null) {
+					inlineCallback.onNo(tag);
+				} else {
+					callback.onNo(tag);
 				}
 			});
 		}

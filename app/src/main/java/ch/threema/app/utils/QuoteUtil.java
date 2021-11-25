@@ -41,7 +41,7 @@ import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;

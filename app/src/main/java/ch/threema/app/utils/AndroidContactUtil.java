@@ -650,7 +650,7 @@ public class AndroidContactUtil {
 			cursor = ThreemaApplication.getAppContext().getContentResolver().query(
 				lookupUri,
 				new String[]{
-					Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? ContactsContract.Contacts.NAME_RAW_CONTACT_ID : "name_raw_contact_id"
+					ContactsContract.Contacts.NAME_RAW_CONTACT_ID
 				},
 				null,
 				null,

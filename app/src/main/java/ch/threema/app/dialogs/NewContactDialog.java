@@ -38,7 +38,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiEditText;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class NewContactDialog extends ThreemaDialogFragment {
 	private NewContactDialogClickListener callback;

@@ -21,7 +21,7 @@
 		android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
 		android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
 		android:importantForAccessibility="no"
-		android:src="@drawable/bottomsheet_grapple_dark"
+		android:src="@drawable/bottomsheet_grapple"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintRight_toRightOf="parent"
 		app:layout_constraintTop_toTopOf="parent"

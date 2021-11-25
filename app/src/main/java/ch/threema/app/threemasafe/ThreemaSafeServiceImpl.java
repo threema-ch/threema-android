@@ -22,16 +22,12 @@
 package ch.threema.app.threemasafe;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.Toast;
@@ -94,14 +90,13 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.APIConnector;
-import ch.threema.client.Base64;
-import ch.threema.client.GroupId;
-import ch.threema.client.IdentityState;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.ProtocolStrings;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Base64;
+import ch.threema.domain.models.GroupId;
+import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.ProtocolStrings;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.factories.DistributionListMemberModelFactory;
@@ -124,9 +119,19 @@ import static ch.threema.app.threemasafe.ThreemaSafeUploadService.EXTRA_FORCE_UP
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeServiceImpl.class);
 
+	// Scrypt parameters as recommended by OWASP:
+	// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt
+	//
+	// These values correspond to a minimum memory requirement
+	// of 64 MiB (128 * 65536 * 8 * 1 bytes).
+	//
+	// Note: Values must be chosen so that the scrypt operation can still be
+	// calculated on an old phone (with little RAM) within a few seconds.
+	// For example, a Nexus S (512 MiB RAM) takes around 4 seconds.
 	private static final int SCRYPT_N = 65536;
 	private static final int SCRYPT_R = 8;
 	private static final int SCRYPT_P = 1;
+
 	private static final int MASTERKEY_LENGTH = 64;
 	private static final int PROFILEPIC_MAX_WIDTH = 400;
 	private static final int PROFILEPIC_QUALITY = 60;
@@ -354,29 +359,18 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			logger.info("Scheduling Threema Safe upload");
 
 			// schedule the start of the service every 24 hours
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-				if (jobScheduler != null) {
-					ComponentName serviceComponent = new ComponentName(context, ThreemaSafeUploadJobService.class);
-					JobInfo.Builder builder = new JobInfo.Builder(UPLOAD_JOB_ID, serviceComponent)
-						.setPeriodic(SCHEDULE_PERIOD)
-						.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-					try {
-						jobScheduler.schedule(builder.build());
-					} catch (IllegalArgumentException e) {
-						logger.error("Exception", e);
-					}
-					return true;
+			JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+			if (jobScheduler != null) {
+				ComponentName serviceComponent = new ComponentName(context, ThreemaSafeUploadJobService.class);
+				JobInfo.Builder builder = new JobInfo.Builder(UPLOAD_JOB_ID, serviceComponent)
+					.setPeriodic(SCHEDULE_PERIOD)
+					.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+				try {
+					jobScheduler.schedule(builder.build());
+				} catch (IllegalArgumentException e) {
+					logger.error("Exception", e);
 				}
-			} else {
-				AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-				if (alarmMgr != null) {
-					Intent intent = new Intent(context, ThreemaSafeUploadService.class);
-					PendingIntent pendingIntent = PendingIntent.getService(context, UPLOAD_JOB_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
-							SCHEDULE_PERIOD, pendingIntent);
-					return true;
-				}
+				return true;
 			}
 		} else {
 			logger.info("Threema Safe disabled");
@@ -388,18 +382,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	public void unscheduleUpload() {
 		logger.info("Unscheduling Threema Safe upload");
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-			if (jobScheduler != null) {
-				jobScheduler.cancel(UPLOAD_JOB_ID);
-			}
-		} else {
-			AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			if (alarmMgr != null) {
-				Intent intent = new Intent(context, ThreemaSafeUploadService.class);
-				PendingIntent pendingIntent = PendingIntent.getService(context, UPLOAD_JOB_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-				alarmMgr.cancel(pendingIntent);
-			}
+		JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+		if (jobScheduler != null) {
+			jobScheduler.cancel(UPLOAD_JOB_ID);
 		}
 	}
 
@@ -879,7 +864,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 							contactModel.setVerificationLevel(VerificationLevel.UNVERIFIED);
 						}
 						contactModel.setFeatureMask(result.featureMask);
-						contactModel.setType(result.type);
+						contactModel.setIdentityType(result.type);
 						switch (result.state) {
 							case IdentityState.ACTIVE:
 								contactModel.setState(ContactModel.State.ACTIVE);
@@ -939,7 +924,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 					long createdAt = group.optLong(TAG_SAFE_GROUP_CREATED_AT, 0L);
 
-					groupModel.setApiGroupId(group.getString(TAG_SAFE_GROUP_ID).toLowerCase());
+					groupModel.setApiGroupId(new GroupId(group.getString(TAG_SAFE_GROUP_ID).toLowerCase()));
 					groupModel.setCreatorIdentity(creatorIdentity);
 					groupModel.setName(group.optString(TAG_SAFE_GROUP_NAME, ""));
 					groupModel.setCreatedAt(new Date(createdAt));
@@ -978,7 +963,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 							if (groupService.isGroupOwner(groupModel)) {
 								groupService.sendSync(groupModel);
 							} else {
-								groupService.requestSync(creatorIdentity, new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId())));
+								groupService.requestSync(creatorIdentity, groupModel.getApiGroupId());
 							}
 						}
 					}
@@ -1086,6 +1071,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	 * @return ArrayList of matching Threema IDs, null if none was found
 	 */
 	@Override
+	@Nullable
 	public ArrayList<String> searchID(String phone, String email) {
 		if (phone != null  || email != null) {
 			Map<String, Object> phoneMap = new HashMap<String, Object>() {{

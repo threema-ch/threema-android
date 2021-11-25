@@ -39,6 +39,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.MessageDigest;
 import java.util.Arrays;
 
 import androidx.annotation.NonNull;
@@ -230,8 +231,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		masterkeyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				if (preference.getKey().equals(getResources().getString(R.string.preferences__masterkey_passphrase))) {
-
+				if (MessageDigest.isEqual(preference.getKey().getBytes(),getResources().getString(R.string.preferences__masterkey_passphrase).getBytes())) {
 					Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_PASSPHRASE_CHECK, true);
 					startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK);
@@ -241,7 +241,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 			}
 		});
 
-		masterkeySwitchPreference = (TwoStatePreference) findPreference(getResources().getString(R.string.preferences__masterkey_switch));
+		masterkeySwitchPreference = findPreference(getResources().getString(R.string.preferences__masterkey_switch));
 
 		//fix wrong state
 		if (masterkeySwitchPreference.isChecked() != ThreemaApplication.getMasterKey().isProtected()) {
@@ -426,7 +426,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 				ThreemaApplication.MAX_PIN_LENGTH,
 				R.string.set_pin_again_summary,
 				InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD,
-				0);
+				0, PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.setTargetFragment(this, 0);
 		dialogFragment.show(getFragmentManager(), ID_DIALOG_PIN);
 	}
@@ -520,11 +520,9 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 				R.string.masterkey_passphrase_hint,
 				R.string.ok,
 				R.string.cancel,
-				8,
-				0,
+				8, 0,
 				R.string.masterkey_passphrase_again_summary,
-				0,
-				0);
+				0, 0, PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.setTargetFragment(this, 0);
 		dialogFragment.show(getFragmentManager(), ID_DIALOG_PASSPHRASE);
 	}

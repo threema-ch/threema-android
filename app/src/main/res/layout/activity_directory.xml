@@ -11,7 +11,7 @@
 
 	<include layout="@layout/toolbar_view" />
 
-	<FrameLayout
+	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/directory_search_bar_height"
 		android:layout_gravity="top"
@@ -24,14 +24,20 @@
 
 		<ch.threema.app.ui.ThreemaSearchView
 			android:id="@+id/search"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
+			android:layout_marginRight="8dp"
 			android:layout_gravity="center_vertical"
-			android:layout_marginRight="48dp"
 			android:background="?compose_edittext_bubble"
 			android:textColor="?android:textColorPrimary"
 			app:iconifiedByDefault="false"
-			app:defaultQueryHint="@string/directory_search" />
+			app:defaultQueryHint="@string/directory_search"
+			app:layout_constraintHorizontal_chainStyle="spread_inside"
+			app:layout_constraintHorizontal_weight="1"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintRight_toLeftOf="@+id/category_selector_button"/>
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			style="?android:attr/borderlessButtonStyle"
@@ -40,11 +46,17 @@
 			android:layout_height="48dp"
 			android:layout_gravity="center_vertical|right"
 			android:background="?android:selectableItemBackground"
-			android:tint="@color/text_color_secondary"
+			android:tint="?attr/textColorSecondary"
 			app:srcCompat="@drawable/ic_filter_list_black_24dp"
-			android:contentDescription="@string/work_select_categories" />
+			android:contentDescription="@string/work_select_categories"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintLeft_toRightOf="@id/search"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_goneMarginLeft="0dp"
+			app:layout_goneMarginRight="0dp"/>
 
-	</FrameLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<LinearLayout
 		android:layout_width="match_parent"

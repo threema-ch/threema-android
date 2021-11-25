@@ -547,7 +547,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	}
 
 	private void saveMessages() {
-		if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_SAVE_MESSAGE)) {
+		if (ConfigUtils.requestWriteStoragePermissions(this, null, PERMISSION_REQUEST_SAVE_MESSAGE)) {
 			fileService.saveMedia(this, gridView, new CopyOnWriteArrayList<>(getSelectedMessages()), true);
 			actionMode.finish();
 		}

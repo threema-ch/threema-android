@@ -33,7 +33,7 @@ function print_usage() {
     echo "Usage: $0 -v <variants> -n <version-name> [-b] [-k <dir>] [-o <dir>] [--no-image-export] --i-accept-the-android-sdk-license"
     echo ""
     echo "Options:"
-    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, work, hms, hmswork"
+    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, work, hms, hmswork, onprem"
     echo "  -n <version-name>    The version name. Example: '4.53'"
     echo "  -b,--build           (Re)build the Docker image"
     echo "  --no-cache           Clear Docker build cache"
@@ -108,7 +108,7 @@ releasedir=$(realpath $releasedir)
 IFS=', ' read -r -a variant_array <<< "$variants"
 for variant in "${variant_array[@]}"; do
     case $variant in
-        googleplay | threemashop | work | hms | hmswork)
+        googleplay | threemashop | work | hms | hmswork | onprem)
             # Valid
             ;;
         *)
@@ -175,6 +175,10 @@ for variant in "${variant_array[@]}"; do
         hmswork)
             target=assembleHms_workRelease
             variant_dir="hms_work"
+            ;;
+        onprem)
+            target=assembleOnpremRelease
+            variant_dir="onprem"
             ;;
         *)
             fail "Invalid build variant: $variant"

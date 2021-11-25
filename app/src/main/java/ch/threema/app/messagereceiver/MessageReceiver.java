@@ -31,16 +31,17 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ballot.BallotData;
-import ch.threema.client.ballot.BallotVote;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
 
-public interface MessageReceiver<T extends AbstractMessageModel> {
+public interface MessageReceiver<M extends AbstractMessageModel> {
 	int Type_CONTACT = 0;
 	int Type_GROUP = 1;
 	int Type_DISTRIBUTION_LIST = 2;
@@ -84,16 +85,18 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	}
 
 	/**
-	 * all affected message receivers
-	 * only useds in a distribution list
+	 * Return all affected contact message receivers.
+	 *
+	 * Note: Only useds in a distribution list, other subtypes should return null.
 	 *
 	 * TODO: refactor
-	 * @return
 	 */
-	List<MessageReceiver> getAffectedMessageReceivers();
+	default @Nullable List<ContactMessageReceiver> getAffectedMessageReceivers() {
+		return null;
+	}
 
 	/**
-	 * create a (unsaved) db model for the given message type
+	 * create a local (unsaved) db model for the given message type
 	 * @param type
 	 * @param postedAt
 	 * @return
@@ -111,7 +114,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 * save a message model to the database
 	 * @param save
 	 */
-	void saveLocalModel(T save);
+	void saveLocalModel(M save);
 
 	/**
 	 * send a text message
@@ -121,7 +124,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 * @return
 	 * @throws ThreemaException
 	 */
-	boolean createBoxedTextMessage(String text, T messageModel) throws ThreemaException;
+	boolean createBoxedTextMessage(String text, M messageModel) throws ThreemaException;
 
 	/**
 	 * send a location message
@@ -134,7 +137,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 * @return
 	 * @throws ThreemaException
 	 */
-	boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, T messageModel) throws ThreemaException;
+	boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, M messageModel) throws ThreemaException;
 
 	/**
 	 * send a file message
@@ -147,7 +150,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 */
 	boolean createBoxedFileMessage(byte[] thumbnailBlobId,
 	                               byte[] fileBlobId, EncryptResult fileResult,
-	                               T messageModel) throws ThreemaException;
+	                               M messageModel) throws ThreemaException;
 
 	/**
 	 * send a ballot (create) message
@@ -162,7 +165,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 			final BallotData ballotData,
 			final BallotModel ballotModel,
 			final String[] filteredIdentities,
-			T abstractMessageModel) throws ThreemaException;
+			M abstractMessageModel) throws ThreemaException;
 
 	/**
 	 * send a ballot vote message
@@ -179,7 +182,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 * @return
 	 * @throws SQLException
 	 */
-	List<T> loadMessages(MessageService.MessageFilter filter) throws SQLException;
+	List<M> loadMessages(MessageService.MessageFilter filter) throws SQLException;
 
 	/**
 	 * Count messages for this receiver
@@ -198,7 +201,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 * @return a list of unread messages
 	 * @throws SQLException
 	 */
-	List<T> getUnreadMessages() throws SQLException;
+	List<M> getUnreadMessages() throws SQLException;
 
 	/**
 	 * compare
@@ -245,7 +248,7 @@ public interface MessageReceiver<T extends AbstractMessageModel> {
 	 * @param fileData Content data to encrypt. WILL BE MODIFIED!
 	 * @return Encrypted data and meta data
 	 */
-	EncryptResult encryptFileData(byte[] fileData);
+	EncryptResult encryptFileData(byte[] fileData) throws ThreemaException;
 
 	/**
 	 * encrypt a thumbnail file

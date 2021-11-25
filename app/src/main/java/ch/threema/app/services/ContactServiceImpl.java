@@ -61,6 +61,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
@@ -76,7 +77,7 @@ import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.UserCredentials;
-import ch.threema.app.stores.ContactStore;
+import ch.threema.app.stores.DatabaseContactStore;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -87,20 +88,20 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.APIConnector;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.Base32;
-import ch.threema.client.BlobLoader;
-import ch.threema.client.BlobUploader;
-import ch.threema.client.ContactDeletePhotoMessage;
-import ch.threema.client.ContactRequestPhotoMessage;
-import ch.threema.client.ContactSetPhotoMessage;
-import ch.threema.client.IdentityType;
-import ch.threema.client.MessageQueue;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.ThreemaFeature;
-import ch.threema.client.work.WorkContact;
+import ch.threema.base.utils.Base32;
+import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.api.work.WorkContact;
+import ch.threema.domain.protocol.blob.BlobLoader;
+import ch.threema.domain.protocol.blob.BlobUploader;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
@@ -116,7 +117,7 @@ public class ContactServiceImpl implements ContactService {
 
 	private final Context context;
 	private final AvatarCacheService avatarCacheService;
-	private final ContactStore contactStore;
+	private final DatabaseContactStore contactStore;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final DeviceService deviceService;
 	private final UserService userService;
@@ -167,7 +168,7 @@ public class ContactServiceImpl implements ContactService {
 
 	public ContactServiceImpl(
 			Context context,
-			ContactStore contactStore,
+			DatabaseContactStore contactStore,
 			AvatarCacheService avatarCacheService,
 			DatabaseServiceNew databaseServiceNew,
 			DeviceService deviceService,
@@ -892,7 +893,7 @@ public class ContactServiceImpl implements ContactService {
 			//check if a business avatar update is necessary
 			if (ContactUtil.isChannelContact(contact) && ContactUtil.isAvatarExpired(contact)) {
 				//simple start
-				UpdateBusinessAvatarRoutine.startUpdate(contact, this.fileService, this);
+				UpdateBusinessAvatarRoutine.startUpdate(contact, this.fileService, this, apiService);
 			}
 		}
 
@@ -930,14 +931,12 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	@NonNull
-	public ContactModel createContactByIdentity(String identity, boolean force) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
+	public @NonNull ContactModel createContactByIdentity(String identity, boolean force) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
 		return createContactByIdentity(identity, force, false);
 	}
 
 	@Override
-	@NonNull
-	public ContactModel createContactByIdentity(String identity, boolean force, boolean hideContactByDefault) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
+	public @NonNull ContactModel createContactByIdentity(String identity, boolean force, boolean hideContactByDefault) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
 		if (!force && AppRestrictionUtil.isAddContactDisabled(ThreemaApplication.getAppContext())) {
 			throw new PolicyViolationException();
 		}
@@ -1009,7 +1008,8 @@ public class ContactServiceImpl implements ContactService {
 				this.databaseServiceNew,
 				this.messageQueue,
 				this.identityStore,
-				this.blackListIdentityService);
+				this.blackListIdentityService,
+				this.apiService);
 	}
 
 	private ContactModel getContact(AbstractMessage msg) {
@@ -1295,10 +1295,10 @@ public class ContactServiceImpl implements ContactService {
 			if (publicKey == null) {
 				throw new InvalidEntryException(R.string.connection_error);
 			}
-
-
 		} catch (FileNotFoundException e) {
-			throw new InvalidEntryException(R.string.invalid_threema_id);
+			throw new InvalidEntryException(
+				ConfigUtils.isOnPremBuild() && !identity.startsWith(BuildConfig.ONPREM_ID_PREFIX) ?
+				R.string.invalid_onprem_id : R.string.invalid_threema_id);
 		} catch (ThreemaException e) {
 			// contact already exists - shouldn't happen
 		}
@@ -1318,9 +1318,9 @@ public class ContactServiceImpl implements ContactService {
 				if (userService.isMe(contactModel.getIdentity())) {
 					return false;
 				}
-				return contactModel.getType() == IdentityType.NORMAL && ContactUtil.canReceiveProfilePics(contactModel);
+				return contactModel.getIdentityType() == IdentityType.NORMAL && ContactUtil.canReceiveProfilePics(contactModel);
 			} else {
-				return contactModel.getType() == IdentityType.WORK;
+				return contactModel.getIdentityType() == IdentityType.WORK;
 			}
 		}
 		return false;

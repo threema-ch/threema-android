@@ -23,10 +23,7 @@ package ch.threema.app.voip;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -96,23 +93,6 @@ public class AudioSelectorButton extends AppCompatImageView implements View.OnCl
 		this.availableAudioDevices = availableAudioDevices;
 
 		final LayerDrawable layers = (LayerDrawable) getBackground();
-
-		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-			layers.findDrawableByLayerId(R.id.moreIndicatorItem)
-				.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-
-			layers.findDrawableByLayerId(R.id.bluetoothItem)
-				.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-
-			layers.findDrawableByLayerId(R.id.handsetItem)
-				.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-
-			layers.findDrawableByLayerId(R.id.headsetItem)
-				.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-
-			layers.findDrawableByLayerId(R.id.speakerphoneItem)
-				.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-		}
 
 		layers.findDrawableByLayerId(R.id.moreIndicatorItem)
 				.setAlpha(availableAudioDevices.size() > 2 ? VISIBLE : HIDDEN);

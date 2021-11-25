@@ -34,8 +34,8 @@
     <string name="prefs_header_chat">会话</string>
     <string name="prefs_header_reset">重置</string>
     <string name="prefs_header_keyboard">键盘</string>
-    <string name="prefs_sum_sync_contacts_on">使用设备通讯录同步Threema用户</string>
-    <string name="prefs_sum_sync_contacts_off">不要将 Threema 用户与设备通讯录同步</string>
+    <string name="prefs_sum_sync_contacts_on">使用设备通讯录同步%s用户</string>
+    <string name="prefs_sum_sync_contacts_off">不要将 %s 用户与设备通讯录同步</string>
     <string name="prefs_title_sync_contacts">联系人同步</string>
     <string name="prefs_sum_block_unknown_off">任何人都可以向您发送信息。
 当第一条信息到达时，新的联系人将被自动添加。</string>
@@ -120,7 +120,7 @@
     <string name="linked_mobile">手机号码</string>
     <string name="public_nickname">昵称</string>
     <string name="share_via">分享到...</string>
-    <string name="share_subject">Threema 对话</string>
+    <string name="share_subject">%s 对话</string>
     <string name="message_delete_undo">撤消</string>
     <string name="message_deleted">信息已删除</string>
     <string name="mobile_already_linked">您的 Threema ID 已链接到此手机号码</string>
@@ -163,12 +163,12 @@
     <string name="generating_backup_data">正在生成备份数据</string>
     <string name="backup_id_title">您的ID导出</string>
     <string name="backup_id_summary">上面显示的文本字符串或二维码以及您
-选择的密码，可用于另一台设备上还原您的ID。您应将其复制到合适的位置，通过
-电子邮件共享或使用其他设备扫描二维码。</string>
+选择的密码，可用于另一台设备上恢复您的ID。您应将其复制到合适的位置，通过
+电子邮件分享或使用其他设备扫描二维码。</string>
     <string name="support">帮助</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">以下文本字符串可以与所选密码一起使用，以
-还原您的 Threema ID。</string>
+恢复您的 Threema ID。</string>
     <string name="backup_share_subject">Threema ID导出为</string>
     <string name="add_attachment">新附件</string>
     <string name="invalid_passphrase">密码无效</string>
@@ -178,25 +178,23 @@
     <string name="prefs_title_masterkey_passphrase">密码</string>
     <string name="setting_masterkey_passphrase">设置主密钥密码</string>
     <string name="masterkey_passphrase_title">主密钥密码口令</string>
-    <string name="masterkey_passphrase_summary">设置密码来保护您的主密钥。请注意，
-每次 Threema 重新启动时，您都必须输入密码。</string>
+    <string name="masterkey_passphrase_summary">设置密码来保护您的主密钥。请注意，每次重启应用后，您都必须输入密码。</string>
     <string name="masterkey_passphrase_again_summary">再次输入密码</string>
     <string name="masterkey_passphrase_hint">密码</string>
     <string name="master_key_locked_want_exit">主密钥仍处于锁定状态。您想再试一次吗？</string>
     <string name="click_here_to_change_passphrase">点击这里更改密码</string>
     <string name="attach_camera">系统相机</string>
-    <string name="menu_restore">从备份还原</string>
-    <string name="restore_id_hint">输入或粘贴ID导出的文本字符串以还原</string>
+    <string name="menu_restore">从备份恢复</string>
+    <string name="restore_id_hint">输入或粘贴ID导出的文本字符串以恢复</string>
     <string name="location_placeholder">位置</string>
     <string name="video_placeholder">视频</string>
     <string name="audio_placeholder">音频</string>
-    <string name="restoring_backup">正在还原备份</string>
+    <string name="restoring_backup">正在恢复备份</string>
     <string name="server_message_title">来自 Threema 服务器的消息</string>
     <string name="error">错误</string>
     <string name="no_contacts"><![CDATA[您还没有任何联系人。打开同步（“设置”>“隐私”）或手动添加联系人。]]></string>
     <string name="masterkey_title">输入密码</string>
-    <string name="masterkey_body">您的Threema主密钥受密码保护。输入密码以解锁
-密钥。</string>
+    <string name="masterkey_body">您的主密钥受密码保护，请输入密码以解锁密钥。</string>
     <string name="masterkey_unlocking">正在解锁主密钥</string>
     <string name="verify_phonecall_text">请求通话</string>
     <string name="prepare_call_message">如果您选择继续，我们将尝试立即致电给您。您的验证码将
@@ -225,7 +223,7 @@
     <string name="connection_error">连接错误，请稍后再试。</string>
     <string name="me_myself_and_i">我自己</string>
     <string name="really_forward">转发到 %1$s？</string>
-    <string name="really_send">发送到 %1$s？</string>
+    <string name="really_send">发送到%1$s？</string>
     <string name="ringtone_none">静音</string>
     <string name="no_camera_installed">没有可用的摄像头</string>
     <string name="save_message_action">保存</string>
@@ -272,20 +270,20 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="new_messages">新消息</string>
     <string name="backup_data_title">数据备份</string>
     <string name="backup_data_password_msg">您的数据将保存在内部 USB 存储设备上的 ZIP 文件中，并且可以
-在任何 Android 设备上还原。请输入密码以保护您的数据备份。</string>
+在任何 Android 设备上恢复。请输入密码以保护您的数据备份。</string>
     <string name="restore_data_password_msg">输入用于创建此备份的密码。</string>
     <string name="backup_data_media">包括大型媒体文件（视频，文档，原始图片）</string>
     <string name="backup_data_new">创建数据备份</string>
-    <string name="pinentry_enter_pin">输入您的 Threema PIN 码以继续</string>
+    <string name="pinentry_enter_pin">输入您的 %s PIN 码以继续</string>
     <string name="pinentry_wrong_pin">PIN 码错误</string>
-    <string name="prefs_sum_security_pin">锁定访问 Threema 的用户界面</string>
+    <string name="prefs_sum_security_pin">锁定访问用户界面</string>
     <string name="prefs_title_pin_switch">应用锁定</string>
     <string name="prefs_title_pin_code">设置密码</string>
     <string name="prefs_pin_grace">锁定时间</string>
     <string name="prefs_sum_pin_grace">直到屏幕锁定被激活的时间</string>
     <string name="click_here_to_change_pin">PIN 码已设置。点击这里即可更改。</string>
     <string name="set_pin_menu_title">设置新 PIN 码</string>
-    <string name="set_pin_summary_intro">通过设置 PIN 码（仅数字）来保护您的隐私。此 PIN 码可用于在限制时间后锁定 Threema，或保护私人会话</string>
+    <string name="set_pin_summary_intro">通过设置 PIN 码（仅数字）来保护您的隐私。此 PIN 码可用于在限制时间后锁定应用，或保护私人会话</string>
     <string name="set_pin_again_summary">再次输入 PIN 码</string>
     <string name="set_pin_hint">PIN 码</string>
     <string name="title_addgroup">新建群组</string>
@@ -305,10 +303,10 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no_matching_groups">找不到群组</string>
     <string name="action_leave_group">退出群组</string>
     <string name="group_edit_title">编辑群组</string>
-    <string name="really_leave_group_message">您真的要退出这个群组吗？</string>
+    <string name="really_leave_group_message">您确定要退出这个群组吗？</string>
     <string name="search_no_matches">找不到匹配项</string>
     <string name="search_no_more_matches">没有更多的匹配项</string>
-    <string name="backup_share">共享备份</string>
+    <string name="backup_share">分享备份</string>
     <string name="my_backups_title">备份</string>
     <string name="backup_delete_confirm">备份文件已删除</string>
     <string name="message_log_title">消息详情</string>
@@ -317,7 +315,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="state_dec">不同意</string>
     <string name="state_delivered">已送达</string>
     <string name="state_sending">发送中</string>
-    <string name="state_pending">待定中</string>
+    <string name="state_pending">待定</string>
     <string name="state_failed">失败</string>
     <string name="state_sent">已发送</string>
     <string name="state_dialog_created">已创建</string>
@@ -384,7 +382,6 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="touch_to_link">（没有）</string>
     <string name="prefs_validate_contacts">验证联系人链接</string>
     <string name="prefs_validate_contacts_loading">正在验证联系人链接</string>
-    <string name="prefs_sum_validate_contacts">使用 Android 地址目录验证所有 Threema 联系人链接</string>
     <string name="prefs_title_fullscreen_ime">全屏键盘</string>
     <string name="prefs_sum_fullscreen_ime_on">如果您的设备处于横向模式，键盘将覆盖应用程序</string>
     <string name="prefs_sum_fullscreen_ime_off">如果有空间，则在键盘上方显示会话的预览</string>
@@ -511,7 +508,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="kick_user_from_group">将 %1$s 踢出群组</string>
     <string name="show_as_qrcode">显示为二维码</string>
     <string name="qr_code">二维码</string>
-    <string name="really_leave_id_export">如果您尚未这样做，请将ID导出文本字符串或相应的二维码保存到安全的地方或打印出来。如果没有备份，则无法还原 Threema ID。</string>
+    <string name="really_leave_id_export">如果您尚未这样做，请将ID导出文本字符串或相应的二维码保存到安全的地方或打印出来。如果没有备份，则无法恢复 Threema ID。</string>
     <string name="revocation_key_title">ID吊销</string>
     <string name="revocation_key_not_set">未设置吊销密码</string>
     <string name="revocation_key_set_at">吊销密码设置为%1$s</string>
@@ -519,7 +516,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="prefs_title_remove_wallpapers">删除所有壁纸</string>
     <string name="really_remove_wallpapers">您确定要删除所有壁纸吗？</string>
     <string name="wallpapers_removed">壁纸已删除</string>
-    <string name="invalid_backup">无效的备份数据。无法还原。</string>
+    <string name="invalid_backup">无效的备份数据。无法恢复。</string>
     <string name="revocation_explain">您在这里输入的密码，可让您通过 https://myid.threema.ch/revoke 吊销您的ID，以防丢失或被盗</string>
     <string name="no_unread_messages">没有未读消息或 PIN 锁已激活</string>
     <string name="send_media">发送媒体</string>
@@ -575,7 +572,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="everything">所有</string>
     <string name="delete_media_files_time">删除早于以下时间的媒体和文件：</string>
     <string name="storage_explain">如果可用空间不足，您可以删除较旧的加密媒体文件腾出空间。
-缩略图仍将保留。请注意，这不是自动过程。除非您点击下面的按钮其中之一，否则不会删除任何内容。</string>
+缩略图仍将保留。请注意，这不是自动运行的过程。除非您点击下面的按钮其中之一，否则不会删除任何内容。</string>
     <string name="delete_data">立即删除数据</string>
     <string name="delete_date_confirm_message">如果继续，这些文件将被删除，并且仅
 保留缩略图。</string>
@@ -635,10 +632,10 @@ Threema 支持的所有表情符号。</string>
     <string name="off">关闭</string>
     <string name="new_wizard_select_country">选择您的国家</string>
     <string name="new_wizard_lets_get_started">让我们开始吧！</string>
-    <string name="new_wizard_setup_threema">设置 Threema</string>
-    <string name="new_wizard_restore_id_backup">还原已导出的 ID</string>
+    <string name="new_wizard_setup_threema">立即设置</string>
+    <string name="new_wizard_restore_id_backup">恢复已导出的 ID</string>
     <string name="new_wizard_welcome">欢迎使用 Threema！</string>
-    <string name="new_wizard_move_finger">在屏幕上移动手指</string>
+    <string name="new_wizard_move_finger">在屏幕上移动手指以生成新的 Threema ID。</string>
     <string name="new_wizard_this_is_your_id">这是您的 Threema ID：</string>
     <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像电话号码一样。\n您的朋友可以通过此 ID 与您联系。</string>
     <string name="new_wizard_choose_nickname">选择昵称</string>
@@ -684,7 +681,7 @@ Threema 支持的所有表情符号。</string>
     <string name="status_ballot_user_first_vote">%1$s 已对 %2$s 投了一票</string>
     <string name="status_ballot_user_modified_vote">%1$s 更改了 %2$s 的投票</string>
     <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
-    <string name="restore">还原</string>
+    <string name="restore">恢复</string>
     <string name="new_wizard_anonymous_confirm">您没有输入手机号码或电子邮件地址链接到
 Threema ID。您将不会出现在朋友的联系人列表中。您确定要
 匿名使用 Threema 吗？</string>
@@ -752,8 +749,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_title_image_attach_previews">图片快速选择</string>
     <string name="prefs_sum_image_attach_previews">在附件弹出窗口中显示最近添加的图片的列表</string>
     <string name="prefs_title_direct_share">直接分享</string>
-    <string name="prefs_sum_direct_share">与其他应用共享时显示最近的聊天记录</string>
-    <string name="restore_disable_energy_saving">请将设备连接至充电器，并禁用所有省电选项，以防设备中断备份或还原过程。</string>
+    <string name="prefs_sum_direct_share">与其他应用分享时显示最近的聊天记录</string>
+    <string name="restore_disable_energy_saving">请将设备连接至充电器，并禁用所有省电选项，以防设备中断备份或恢复过程。</string>
     <string name="draft">草稿</string>
     <string name="prefs_bigger_single_emojis">更大的单个表情符号</string>
     <string name="wizard1_sync_work">正在同步 Threema Work 数据…</string>
@@ -890,13 +887,13 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="no_matching_work_contacts">找不到经过管理员验证的 Threema Work 联系人</string>
     <string name="all">所有</string>
     <string name="webclient_session_stop_all">关闭所有</string>
-    <string name="webclient_running_sessions">%d 个Threema 网页版会话正在运行</string>
+    <string name="webclient_running_sessions">%d 个会话正在运行</string>
     <string name="passphrase_service_name">密码服务</string>
     <string name="passphrase_service_description">密码解锁时的通知</string>
-    <string name="webclient_service_description">Threema 网页版会话运行时的通知</string>
+    <string name="webclient_service_description">Threema 桌面版/网页版会话运行时的通知</string>
     <string name="prefs_title_accept_privacy_policy">接受隐私权政策</string>
     <string name="privacy_policy_explain">%1$s比任何其他即时通讯工具都更加严格地保护您的隐私。在我们的%2$s中了解更多。</string>
-    <string name="privacy_policy_check_confirm">使用%s前，请接受隐私政策。\n\n（根据欧盟法规 2016/679《通用数据保护条例》的要求）</string>
+    <string name="privacy_policy_check_confirm">使用 %s 前，请接受隐私政策。\n\n（根据欧盟法规 2016/679《通用数据保护条例》的要求）</string>
     <string name="prefs_title_incognito_keyboard">请求隐身键盘</string>
     <string name="prefs_sum_incognito_keyboard">禁用数据收集以获取个性化建议（如果键盘支持）</string>
     <string name="tooltip_mentions">在键盘上输入 “@” 字符，以直接称呼或提及此群组成员。</string>
@@ -914,8 +911,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="unchanged">不变</string>
     <string name="safe_learn_more_button">了解更多</string>
     <string name="safe_enable_explain">您会话关连的所有数据只存储在您的设备上。因为我们没有保存您的帐户，所以如果您丢失了手机或意外删除了数据，我们将无法为您提供帮助。\n\nThreema Safe 在您选择的安全服务器上，以匿名方式创建所有重要数据的自动备份，包括您的密钥，联系人列表和群组成员身份（但不包含消息内容）。</string>
-    <string name="safe_disable_confirm">您真的要在不启用 Threema Safe 的情况下继续吗？</string>
-    <string name="safe_configure_choose_password">请选择一个强密码。您将需要此密码来还原 Threema Safe 备份。</string>
+    <string name="safe_disable_confirm">您真的要在不启用 Threema Safe 的情况下继续吗？当使用 Threema Safe 时，您可以恢复您的 Threema ID、联系人和群组，以防您失去设备的访问权。</string>
+    <string name="safe_configure_choose_password">请选择一个强密码。您将需要此密码来恢复 Threema Safe 备份。</string>
     <string name="safe_configure_choose_server">选择 Threema Safe 服务器</string>
     <string name="safe_configure_server_explain">您可以使用 Threema 官方的服务器，也可以选择使用的第三方备份服务器。</string>
     <string name="safe_use_default_server">使用默认服务器</string>
@@ -954,14 +951,14 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="safe_retention">备份保留</string>
     <string name="safe_result">备份结果</string>
     <string name="number_of_days">%d天</string>
-    <string name="backup_other_restore_options">其他还原选项</string>
+    <string name="backup_other_restore_options">其他恢复选项</string>
     <string name="safe_size">备份大小</string>
     <string name="safe_version_mismatch">此备份的版本高于支持的版本。请更新到最新版本的应用。</string>
-    <string name="safe_restore_failed">还原失败</string>
+    <string name="safe_restore_failed">恢复失败</string>
     <string name="safe_failed_notification">Threema Safe 备份连续%d天失败。点击这里检查。</string>
-    <string name="safe_restore">还原 Threema Safe</string>
-    <string name="backup_restore_in_progress">正在进行备份或还原。检查通知以获取状态消息。</string>
-    <string name="restore_error_body">还原未成功完成</string>
+    <string name="safe_restore">恢复 Threema Safe</string>
+    <string name="backup_restore_in_progress">正在进行备份或恢复。检查通知以获取状态消息。</string>
+    <string name="restore_error_body">恢复未成功完成</string>
     <string name="forgot_your_id">忘记您的ID？</string>
     <string name="restore_success_body">恢复成功完成</string>
     <string name="work_data_sync">数据同步</string>
@@ -981,11 +978,11 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="notification_channel_alerts">警告和错误</string>
     <string name="notification_channel_notices">告示</string>
     <string name="chat_updates">会话更新</string>
-    <string name="backup_or_restore_progress">备份和还原进度</string>
+    <string name="backup_or_restore_progress">备份和恢复进度</string>
     <string name="tooltip_export_id">点击这里立即分享或打印您的加密 Threema ID</string>
     <string name="downloading">下载中</string>
     <string name="today">今天</string>
-    <string name="restore_data_cancelled">还原已取消</string>
+    <string name="restore_data_cancelled">恢复已取消</string>
     <string name="safe_change_password">更改密码</string>
     <string name="safe_configure_choose_password_title">选择密码</string>
     <string name="password_bad_explain">Threema Safe 所选的密码不安全，容易被攻击者猜中，请选择其他密码。提示：使用由多个单词组成的密码。</string>
@@ -1008,6 +1005,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="time_remaining">还剩%s</string>
     <string name="safe_configure_server_credentials_title">验证（可选）</string>
     <string name="username_hint">用户名</string>
+    <string name="server_hint">服务器</string>
     <string name="lock_option_biometric">生物识别</string>
     <string name="biometric_enter_authentication">请认证以解锁</string>
     <string name="biometric_authentication_failed">认证失败</string>
@@ -1089,7 +1087,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="mime_type">MIME类型</string>
     <string name="password_does_not_comply">密码不符合管理员设置的准则。</string>
     <string name="audio_mute_due_to_focus_loss">由于其他应用正在播放音频，目前音频已暂时静音</string>
-    <string name="restore_data_backup_explain">请首先在 “个人资料” 界面中删除您的 Threema ID 以还原数据备份。\n\n当应用程序重启后，请选择 “从备份还原” &gt; “其他还原选项” &gt; “数据备份”，然后选择要还原的数据备份文件。</string>
+    <string name="restore_data_backup_explain">请首先在 “个人资料” 界面中删除您的 Threema ID 以恢复数据备份。\n\n当应用程序重启后，请选择 “从备份恢复” &gt; “其他恢复选项” &gt; “数据备份”，然后选择要恢复的数据备份文件。</string>
     <string name="audio_focus_loss_complete">由于完全失去音频焦点，通话已断开。</string>
     <string name="tap_for_picture_hold_for_video">点击拍摄图片，长按拍摄视频</string>
     <string name="sending_media">正在发送媒体</string>
@@ -1216,19 +1214,97 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="missing_app_licence">应用商店无法验证您的购买凭证。如果你使用 Google Play，请清除 Google Play 商店的应用程序数据并重启您的设备。</string>
     <string name="set_backup_path">设置备份路径</string>
     <string name="set_backup_path_intro">在下一个屏幕中，请选择保存数据备份的文件夹。</string>
+    <string name="discard_changes_title">放弃更改</string>
+    <string name="group_join_request_message_info"><![CDATA[向群组管理员 <b>%1$s</b> 写一句话，说明您想加入 <b>%2$s</b> 的原因。]]></string>
+    <string name="group_join_request">群组加入请求</string>
+    <string name="group_join_request_for">%s 群组加入请求</string>
+    <string name="group_link_default_name">未命名链接</string>
+    <string name="group_link_share">分享群组链接</string>
+    <string name="group_request_incoming_dialog_title">来自%s的请求</string>
+    <string name="accept">接受</string>
+    <string name="reject">拒绝</string>
+    <string name="group_request_already_sent"><![CDATA[您已经通过这个链接发送了 <b>%s</b> 公开群组加入请求，正在等待群组管理员的回复。如果您想重新发送请求，请再次点击列表中的链接。]]></string>
+    <string name="group_link_none">尚未生成链接</string>
+    <string name="group_request_confirm_send"><![CDATA[您即将向管理员 <b>%2$s</b> 发送 <b>%1$s</b> 群组加入请求。如果此链接没有失效，管理员一收到您的请求，您就会自动添加到群组。]]></string>
+    <string name="really_delete_outgoing_request">您确定要删除 %d 群组加入的请求吗？请注意，删除请求井不会撤销请求，如果群组管理员尚未回复，您仍然可能被批准或拒绝加入群组。</string>
+    <string name="really_delete_group_request_title">您确定要删除群组加入请求吗？</string>
+    <string name="sent_to">发送到：%s</string>
+    <string name="sent_on">发送日期：%s</string>
+    <string name="group_response">群组加入回应</string>
+    <string name="group_response_accepted">您的 %s 群组加入请求已被批准</string>
+    <string name="group_response_full">您的 %s 群组加入请求被拒绝，因为群组已满。</string>
+    <string name="group_response_rejected">您的 %s 群组加入请求被拒绝</string>
+    <string name="group_link_expiration_none">无限制</string>
+    <string name="group_request_hint">嗨！大家好。</string>
+    <string name="group_request_send_title">发送群组加入请求</string>
+    <string name="group_request_message_empty">群组加入请求不能为空</string>
+    <string name="group_requests_all_title">所有群组加入请求</string>
+    <string name="group_requests_none_outgoing">尚未发送群组加入请求。您可以通过群组管理员创建的链接以发送请求。</string>
+    <string name="notification_channel_group_join_response">群组加入回应的通知</string>
+    <string name="group_qr_code_title">群组二维码</string>
+    <string name="group_link_qr_desc"><![CDATA[与想加入群组的人分享此群组链接：<b>%s</b>]]></string>
+    <string name="new_group_link_success">已添加新链接</string>
+    <string name="link_administration_off_explain">由于这个链接之前已被配置和分享，因此现在无法更改此属性，您需要生成新链接。</string>
+    <string name="group_link_update_success">链接已成功更新</string>
+    <string name="no_group_links">没有群组链接。如要创建一个群组链接，请点击右下角的添加按钮或群组详细信息视图中的默认链接。</string>
+    <string name="really_delete_group_link">你确定要删除 %d 群组的链接吗？其他人将不能再通过链接发送请求。但以前收到的请求仍然可以选择批准或拒绝加入群组。</string>
+    <string name="group_links_overview_title">%s 群组的链接</string>
+    <string name="group_link_invalid">已过期</string>
+    <string name="group_link_valid">有效</string>
+    <string name="open_group_requests_chips_title">公开群组加入请求</string>
+    <string name="all_open_group_requests">所有群组加入请求</string>
+    <string name="no_incoming_group_requests">没有收到群组加入请求。这些请求可以通过群组链接发送给您，如果您是管理员，您可以在群组详细信息视图中管理这些链接。</string>
+    <string name="received_on">在 %s 收到</string>
+    <string name="group_request_state_full">群组已满</string>
+    <string name="group_request_state_rejected">被拒绝</string>
+    <string name="group_request_state_expired">已过期</string>
+    <string name="group_request_state_pending">待定</string>
+    <string name="group_request_state_accepted">已批准</string>
+    <string name="open_group_requests_show">显示加入请求</string>
+    <string name="open_group_requests_hide">隐藏加入请求</string>
+    <string name="group_request_link_already_deleted">同时删除群组链接</string>
+    <string name="really_delete_incoming_request">您确定要删除%d个群组加入请求吗？一旦删除，你就不能回应这些请求。</string>
+    <string name="incoming_group_request_no_message">通过公开链接发送…没有消息</string>
+    <string name="group_request_received_through">通过链接加入群组：%s</string>
+    <string name="reaccept">重新接受</string>
+    <string name="group_link_edit_expiration_date">编辑到期日期</string>
+    <string name="group_link_show_qr">显示二维码</string>
+    <string name="group_link_rename">重命名</string>
+    <string name="group_link_rename_tag">新名称</string>
     <string name="tap_here_for_more">点击这里查看更多信息</string>
     <string name="another_connection_instructions">服务器检测到相同的 Threema ID 在两个或更多的设备上同时连接。\n\n相同的 Threema ID 不可以在多个设备上同时使用。新的消息只会发送到最新登录的设备上。\n\n如果您要切换到新设备，请先在旧设备上卸载或禁用 %s，然后重启新设备。</string>
     <string name="app_store_error_code">应用商店错误代码：%d</string>
+    <string name="backup_restore_type"><![CDATA[您想恢复哪些备份数据？<br/><br/> <a href=%s>了解更多有关 Threema 备份的消息</a>。]]></string>
+    <string name="data_backup_info">恢复所有内容，包括会话记录</string>
+    <string name="new_to_threema">第一次使用 %s？</string>
+    <string name="back_to_threema">返回到 %s？</string>
+    <string name="id_backup_info">仅恢复您的ID</string>
+    <string name="restore_your_id_contacts_and_groups">恢复您的ID、联系人和群组</string>
+    <string name="threema_safe_backup">Threema Safe 备份</string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>忘记密码？</a>]]></string>
     <string name="download_failed">下载失败。错误代码：%d</string>
     <string name="edit_answer">编辑答案</string>
     <string name="share_media">与其他应用分享...</string>
+    <string name="group_link_administered">管理</string>
+    <string name="group_link_open">公开</string>
+    <string name="group_link_share_message">通过以下链接加入我的 Threema 群组！：%s</string>
+    <string name="group_link_bottom_sheet_title">群组链接</string>
+    <string name="group_link_bottom_sheet_desc">与想加入群组的人分享这个链接，请选择以下的选项。</string>
+    <string name="group_link_bottom_sheet_link_title">链接</string>
+    <string name="group_link_properties_title">链接属性</string>
+    <string name="group_link_property_administration_title">手动确认</string>
+    <string name="group_link_property_administration_desc">如果启用的话，您会在群组会话中收到请求，您可以接受或拒绝。</string>
+    <string name="group_link_property_expiration_title">到期日期</string>
+    <string name="group_link_property_expiration_desc">该链接在已设置的日期后过期。</string>
+    <string name="group_image">群组图标</string>
+    <string name="add_group_link">通过群组链接添加成员</string>
     <string name="miui_battery_optimization">请为 %s 禁用 “电池优化” 以便 %s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
     <string name="forward_captions">包含描述</string>
     <string name="importing_files_failed">无法导入备份文件，请确保内部存储有足够的可用空间。</string>
     <string name="label_continue">继续</string>
     <string name="select_date">选择日期</string>
     <string name="select_time">选择时间</string>
-    <string name="send_to">发送到 %s</string>
+    <string name="send_to">发送到%s</string>
     <string name="receipts_override_choice_send">发送</string>
     <string name="receipts_override_choice_dont_send">不要发送</string>
     <string name="receipts_override_choice_default">默认（%s）</string>
@@ -1237,4 +1313,32 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_title_reset_receipts">清除个别设置</string>
     <string name="prefs_sum_reset_receipts">将特定联系人的已读回执和输入状态设置重置为默认值</string>
     <string name="reset_successful">成功重置为默认值</string>
+    <string name="group_link_add">添加群组链接</string>
+    <string name="group_requests_show_menu_title">显示公开加入请求</string>
+    <string name="group_request_show_all">显示所有群组加入请求</string>
+    <string name="group_links_manage_menu">管理群组链接</string>
+    <string name="group_request_sent_menu">发送群组加入请求</string>
+    <string name="really_delete_group_link_title">删除群组链接</string>
+    <string name="qr_scan_result_dialog_title">二维码扫描结果</string>
+    <string name="scan_failure_dialog_title">扫描失败</string>
+    <string name="no_threema_qr_info">这不是 Threema 特定的二维码。 解码后的内容为：</string>
+    <string name="default_group_link">默认群组链接</string>
+    <string name="default_link_name">默认链接</string>
+    <string name="reset_default_group_link">重置默认群组链接</string>
+    <string name="resend">重新发送</string>
+    <string name="group_request_already_sent_title">请求已发送</string>
+    <string name="qr_scanner_id_hint">扫描其他联系人的二维码。您可以通过点击 Threema 主屏幕左上角的头像，查看二维码。</string>
+    <string name="enable_storage_access_for_media">启用存储访问权限以查看设备上的图片和视频</string>
+    <string name="take_me_there">带我到…</string>
+    <string name="notification_channel_group_join_request">收到群组加入请求的通知频道</string>
+    <string name="reset_default_group_link_title">重置默认链接信息</string>
+    <string name="reset_default_group_link_desc">之前分享的链接将失效，通过旧链接提出的请求将自动被拒绝，并给出过期的回应。</string>
+    <string name="other_group_links">其他</string>
+    <string name="show_public_key">显示公钥</string>
+    <string name="public_key_for">%s 的公钥</string>
+    <string name="copied">已复制</string>
+    <string name="no_votes_yet">到目前为止，还没有人投票。</string>
+    <string name="permission_contacts_sync_required">请允许系统访问您的联系人，以便同步联系人列表。</string>
+    <string name="not_voted_user_list">这些参与者没有投票：%s</string>
+    <string name="invalid_onprem_id">不是有效的 Threema OnPrem-ID</string>
 </resources>

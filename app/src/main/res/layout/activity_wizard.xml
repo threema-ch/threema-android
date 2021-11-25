@@ -64,7 +64,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/wizard_footer_height"
 		android:layout_gravity="bottom"
-		android:background="@color/new_wizard_alpha_background">
+		android:background="@color/wizard_alpha_background">
 
 		<FrameLayout
 			android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
 				android:scaleX="-1"
 				android:src="@drawable/ic_next_alpha"
 				android:visibility="visible"
-				custom:tint="@color/new_wizard_color_accent" />
+				custom:tint="@color/wizard_color_accent" />
 
 			<Button
 				android:id="@+id/prev_text"
@@ -133,7 +133,7 @@
 				android:paddingBottom="10dp"
 				android:paddingTop="10dp"
 				android:src="@drawable/ic_next_alpha"
-				custom:tint="@color/new_wizard_color_accent" />
+				custom:tint="@color/wizard_color_accent" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/next_text"

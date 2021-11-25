@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.client.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
 import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;

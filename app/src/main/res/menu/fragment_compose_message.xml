@@ -82,13 +82,35 @@
 	</group>
 
 	<group
+		android:id="@+id/group_links"
+		android:checkableBehavior="none">
+
+		<item
+			android:id="@+id/menu_group_requests_show"
+			android:icon="@drawable/ic_outline_visibility"
+			android:orderInCategory="90"
+			android:visible="false"
+			android:title="@string/group_requests_show_menu_title"
+			app:showAsAction="never" />
+
+		<item
+			android:id="@+id/menu_group_request_show_all"
+			android:icon="@drawable/ic_hand_up_outline"
+			android:orderInCategory="90"
+			android:visible="false"
+			android:title="@string/group_request_show_all"
+			app:showAsAction="never" />
+
+	</group>
+
+	<group
 		android:id="@+id/group_delete"
 		android:checkableBehavior="none">
 
 		<item
 			android:id="@+id/menu_block_contact"
 			android:icon="@drawable/ic_block"
-			android:orderInCategory="90"
+			android:orderInCategory="100"
 			android:title="@string/block_contact"
 			android:visible="false"
 			app:showAsAction="never" />
@@ -96,7 +118,7 @@
 		<item
 			android:id="@+id/menu_empty_chat"
 			android:icon="@drawable/ic_outline_delete_sweep"
-			android:orderInCategory="94"
+			android:orderInCategory="104"
 			android:title="@string/empty_chat_title"
 			android:visible="true"
 			app:showAsAction="never" />
@@ -104,7 +126,7 @@
 		<item
 			android:id="@+id/menu_delete_distribution_list"
 			android:icon="@drawable/ic_delete_outline"
-			android:orderInCategory="97"
+			android:orderInCategory="107"
 			android:title="@string/really_delete_distribution_list"
 			android:visible="false"
 			app:showAsAction="never" />

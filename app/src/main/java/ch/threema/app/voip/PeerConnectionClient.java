@@ -115,7 +115,7 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.stream.StreamSupport;
@@ -176,7 +176,7 @@ public class PeerConnectionClient {
 	private LinkedList<IceCandidate> queuedRemoteCandidates = null;
 
 	// Video
-	private final boolean renderVideo = true; // Always render remote video, to avoid masking bugs
+	private static final boolean renderVideo = true; // Always render remote video, to avoid masking bugs
 	private final @Nullable EglBase.Context eglBaseContext;
 	private @Nullable VideoSink localVideoSink;
 	private @Nullable VideoSink remoteVideoSink;
@@ -191,7 +191,6 @@ public class PeerConnectionClient {
 	private final Object capturingLock = new Object();
 
 	// Audio
-	private boolean enableAudio = true;
 	private @Nullable AudioTrack localAudioTrack;
 	private @Nullable AudioSource audioSource;
 
@@ -460,8 +459,8 @@ public class PeerConnectionClient {
 			this.factoryInitializing.acquire();
 			this.factoryInitializing.release();
 		} catch (InterruptedException e) {
-			logger.error("Exception", e);
-			Thread.currentThread().interrupt();
+			logger.error("Interrupted while waiting for factoryInitializing", e);
+			Thread.currentThread().interrupt(); // Restore interrupted state
 		}
 		if (this.factory == null) {
 			logger.error("Cannot create peer connection without initializing factory first");
@@ -506,6 +505,7 @@ public class PeerConnectionClient {
 		} catch (InterruptedException e) {
 			logger.error("Interrupted while acquiring semaphore", e);
 			future.complete(false);
+			Thread.currentThread().interrupt(); // Restore interrupted state
 			return;
 		}
 
@@ -728,7 +728,7 @@ public class PeerConnectionClient {
 			// answer to get the remote track.
 			this.remoteVideoTrack = this.getRemoteVideoTrack();
 			if (this.remoteVideoTrack != null) {
-				this.remoteVideoTrack.setEnabled(this.renderVideo);
+				this.remoteVideoTrack.setEnabled(renderVideo);
 				if (this.remoteVideoSink != null) {
 					this.remoteVideoTrack.addSink(this.remoteVideoSink);
 				} else {
@@ -807,7 +807,7 @@ public class PeerConnectionClient {
 			return;
 		}
 
-		logger.info("setOutgoingVideoBandwidthLimit: " + maxBitrate);
+		logger.info("setOutgoingVideoBandwidthLimit: {}", maxBitrate);
 		final RtpSender sender = this.localVideoSender;
 		if (sender == null) {
 			logger.error("setOutgoingVideoBandwidthLimit: Could not find local video sender");
@@ -877,8 +877,9 @@ public class PeerConnectionClient {
 		boolean acquired = false;
 		try {
 			acquired = this.statsLock.tryAcquire(5, TimeUnit.SECONDS);
-		} catch (InterruptedException ignored) {
-			logger.error("Spurious wakeup!");
+		} catch (InterruptedException e) {
+			logger.error("Interrupted while waiting for statsLock", e);
+			Thread.currentThread().interrupt(); // Restore interrupted state
 		}
 
 		try {
@@ -909,7 +910,8 @@ public class PeerConnectionClient {
 					try {
 						this.videoCapturer.stopCapture();
 					} catch (InterruptedException e) {
-						logger.error("Spurious wakeup!");
+						logger.error("Interrupted while waiting for stopCapture()", e);
+						Thread.currentThread().interrupt(); // Restore interrupted state
 					}
 					this.videoCapturer.dispose();
 					this.videoCapturer = null;
@@ -959,8 +961,9 @@ public class PeerConnectionClient {
 			if (this.statsCounter == 0) {
 				try {
 					this.statsLock.acquire();
-				} catch (InterruptedException ignored) {
-					logger.warn("Spurious wakeup!");
+				} catch (InterruptedException e) {
+					logger.error("Interrupted while waiting for statsLock", e);
+					Thread.currentThread().interrupt(); // Restore interrupted state
 					return;
 				}
 			}
@@ -993,7 +996,7 @@ public class PeerConnectionClient {
 
 	@AnyThread
 	public void registerPeriodicStats(@NonNull RTCStatsCollectorCallback callback, long periodMs) {
-		logger.debug("Registering stats every " + periodMs + "ms for callback " + callback);
+		logger.debug("Registering stats every {}ms for callback {}", periodMs, callback);
 		Timer timer;
 		try {
 			timer = new Timer();
@@ -1020,7 +1023,7 @@ public class PeerConnectionClient {
 		final Timer timer = this.periodicStatsTimers.remove(callback);
 		if (timer != null) {
 			timer.cancel();
-			logger.debug("Unregistered stats for callback " + callback);
+			logger.debug("Unregistered stats for callback {}", callback);
 		}
 	}
 
@@ -1181,7 +1184,7 @@ public class PeerConnectionClient {
 		if (t != null) {
 			logger.error("Error: " + errorMessage, t);
 		} else {
-			logger.error("Error: " + errorMessage);
+			logger.error("Error: {}", errorMessage);
 		}
 		executor.execute(() -> {
 			if (events != null) {
@@ -1257,7 +1260,7 @@ public class PeerConnectionClient {
 			logger.error("Could not create local video track");
 			return null;
 		}
-		this.localVideoTrack.setEnabled(this.renderVideo);
+		this.localVideoTrack.setEnabled(renderVideo);
 		logger.trace("Adding sink to local video track: {}", this.localVideoSink);
 		this.localVideoTrack.addSink(this.localVideoSink);
 		return this.localVideoTrack;
@@ -1652,7 +1655,7 @@ public class PeerConnectionClient {
 		public void onSetFailure(final String error) {
 			// Note: I assume the "called in wrong state" error happens if an offer/answer is set
 			// while a call is already established. This should get resolved by SE-49.
-			logger.warn("onSetFailure: " + error);
+			logger.warn("onSetFailure: {}", error);
 			if (error != null && error.contains("Called in wrong state: kStable")) {
 				reportError("SDP onSetFailure: " + error, false);
 			}

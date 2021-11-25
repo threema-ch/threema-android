@@ -35,12 +35,12 @@ import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.AbstractMessage;
-import ch.threema.client.ContactDeletePhotoMessage;
-import ch.threema.client.ContactRequestPhotoMessage;
-import ch.threema.client.ContactSetPhotoMessage;
-import ch.threema.client.work.WorkContact;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 
@@ -182,8 +182,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 * @param force Force the creation of the contact, even if adding new contacts has been disabled
 	 * @param hiddenDefault Set this to true to hide the contact by default
 	 */
-	@NonNull
-	ContactModel createContactByIdentity(String identity, boolean force, boolean hiddenDefault)	throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
+	@NonNull ContactModel createContactByIdentity(String identity, boolean force, boolean hiddenDefault) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
 
 	VerificationLevel getInitialVerificationLevel(ContactModel contactModel);
 

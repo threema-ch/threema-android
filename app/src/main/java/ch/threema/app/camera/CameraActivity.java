@@ -44,7 +44,6 @@ import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -58,8 +57,6 @@ import ch.threema.app.utils.ConfigUtils;
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
 
-
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class CameraActivity extends ThreemaAppCompatActivity implements CameraFragment.CameraCallback, CameraFragment.CameraConfiguration {
 	private static final Logger logger = LoggerFactory.getLogger(CameraActivity.class);
 
@@ -80,18 +77,14 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 
 		setContentView(R.layout.camerax_activity_camera);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-			getWindow().setStatusBarColor(Color.TRANSPARENT);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				// we want dark icons, i.e. a light status bar
-				getWindow().getDecorView().setSystemUiVisibility(
-						getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-			}
-		} else {
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+		getWindow().setStatusBarColor(Color.TRANSPARENT);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			// we want dark icons, i.e. a light status bar
+			getWindow().getDecorView().setSystemUiVisibility(
+					getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 		}
 
 		if (getIntent() != null) {

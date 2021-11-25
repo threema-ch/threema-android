@@ -26,7 +26,6 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Build;
 import android.provider.ContactsContract;
 
 import com.google.common.collect.ListMultimap;
@@ -54,9 +53,9 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.APIConnector;
-import ch.threema.client.IdentityStoreInterface;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 
 public class SynchronizeContactsRoutine implements Runnable {
@@ -391,11 +390,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		Map<String, ContactMatchKeyPhone> phoneNumbers = new HashMap<>();
 		String selection;
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0 AND " + ContactsContract.CommonDataKinds.Phone.IN_DEFAULT_DIRECTORY + " = 1";
-		} else {
-			selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0";
-		}
+		selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0 AND " + ContactsContract.CommonDataKinds.Phone.IN_DEFAULT_DIRECTORY + " = 1";
 
 		try (Cursor phonesCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -440,9 +435,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		Map<String, ContactMatchKeyEmail> emails = new HashMap<>();
 		String selection = null;
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			selection = ContactsContract.CommonDataKinds.Email.IN_DEFAULT_DIRECTORY + " = 1";
-		}
+		selection = ContactsContract.CommonDataKinds.Email.IN_DEFAULT_DIRECTORY + " = 1";
 
 		try (Cursor emailsCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Email.CONTENT_URI,

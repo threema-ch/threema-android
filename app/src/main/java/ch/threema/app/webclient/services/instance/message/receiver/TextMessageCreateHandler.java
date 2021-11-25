@@ -43,7 +43,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ServerMessageModel;
 

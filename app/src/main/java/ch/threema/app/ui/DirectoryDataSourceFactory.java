@@ -23,8 +23,8 @@ package ch.threema.app.ui;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
-import ch.threema.client.work.WorkDirectory;
-import ch.threema.client.work.WorkDirectoryContact;
+import ch.threema.domain.protocol.api.work.WorkDirectory;
+import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 
 public class DirectoryDataSourceFactory extends DataSource.Factory<WorkDirectory, WorkDirectoryContact> {
 	private boolean init = false;

@@ -39,7 +39,6 @@ package ch.threema.app.ui;
 
 import android.media.AudioAttributes;
 import android.media.SoundPool;
-import android.os.Build;
 import android.util.Log;
 
 /***
@@ -149,19 +148,17 @@ public class LessObnoxiousMediaActionSound {
 	 * separate instance for each sound type.
 	 */
 	public LessObnoxiousMediaActionSound() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			mSoundPool = new SoundPool.Builder()
-				.setMaxStreams(NUM_MEDIA_SOUND_STREAMS)
-				.setAudioAttributes(new AudioAttributes.Builder()
-					.setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-					.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-					.build())
-				.build();
-			mSoundPool.setOnLoadCompleteListener(mLoadCompleteListener);
-			mSounds = new SoundState[SOUND_FILES.length];
-			for (int i = 0; i < mSounds.length; i++) {
-				mSounds[i] = new SoundState(i);
-			}
+		mSoundPool = new SoundPool.Builder()
+			.setMaxStreams(NUM_MEDIA_SOUND_STREAMS)
+			.setAudioAttributes(new AudioAttributes.Builder()
+				.setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+				.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+				.build())
+			.build();
+		mSoundPool.setOnLoadCompleteListener(mLoadCompleteListener);
+		mSounds = new SoundState[SOUND_FILES.length];
+		for (int i = 0; i < mSounds.length; i++) {
+			mSounds[i] = new SoundState(i);
 		}
 	}
 
@@ -191,22 +188,20 @@ public class LessObnoxiousMediaActionSound {
 	 * @see #STOP_VIDEO_RECORDING
 	 */
 	public void load(int soundName) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			if (soundName < 0 || soundName >= SOUND_FILES.length) {
-				throw new RuntimeException("Unknown sound requested: " + soundName);
-			}
-			SoundState sound = mSounds[soundName];
-			synchronized (sound) {
-				switch (sound.state) {
-					case STATE_NOT_LOADED:
-						if (loadSound(sound) <= 0) {
-							Log.e(TAG, "load() error loading sound: " + soundName);
-						}
-						break;
-					default:
-						Log.e(TAG, "load() called in wrong state: " + sound + " for sound: " + soundName);
-						break;
-				}
+		if (soundName < 0 || soundName >= SOUND_FILES.length) {
+			throw new RuntimeException("Unknown sound requested: " + soundName);
+		}
+		SoundState sound = mSounds[soundName];
+		synchronized (sound) {
+			switch (sound.state) {
+				case STATE_NOT_LOADED:
+					if (loadSound(sound) <= 0) {
+						Log.e(TAG, "load() error loading sound: " + soundName);
+					}
+					break;
+				default:
+					Log.e(TAG, "load() called in wrong state: " + sound + " for sound: " + soundName);
+					break;
 			}
 		}
 	}
@@ -243,31 +238,29 @@ public class LessObnoxiousMediaActionSound {
 	 * @see #STOP_VIDEO_RECORDING
 	 */
 	public void play(int soundName) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			if (soundName < 0 || soundName >= SOUND_FILES.length) {
-				throw new RuntimeException("Unknown sound requested: " + soundName);
-			}
-			SoundState sound = mSounds[soundName];
-			synchronized (sound) {
-				switch (sound.state) {
-					case STATE_NOT_LOADED:
-						loadSound(sound);
-						if (loadSound(sound) <= 0) {
-							Log.e(TAG, "play() error loading sound: " + soundName);
-							break;
-						}
-						// FALL THROUGH
+		if (soundName < 0 || soundName >= SOUND_FILES.length) {
+			throw new RuntimeException("Unknown sound requested: " + soundName);
+		}
+		SoundState sound = mSounds[soundName];
+		synchronized (sound) {
+			switch (sound.state) {
+				case STATE_NOT_LOADED:
+					loadSound(sound);
+					if (loadSound(sound) <= 0) {
+						Log.e(TAG, "play() error loading sound: " + soundName);
+						break;
+					}
+					// FALL THROUGH
 
-					case STATE_LOADING:
-						sound.state = STATE_LOADING_PLAY_REQUESTED;
-						break;
-					case STATE_LOADED:
-						mSoundPool.play(sound.id, volume, volume, 0, 0, 1.0f);
-						break;
-					default:
-						Log.e(TAG, "play() called in wrong state: " + sound.state + " for sound: " + soundName);
-						break;
-				}
+				case STATE_LOADING:
+					sound.state = STATE_LOADING_PLAY_REQUESTED;
+					break;
+				case STATE_LOADED:
+					mSoundPool.play(sound.id, volume, volume, 0, 0, 1.0f);
+					break;
+				default:
+					Log.e(TAG, "play() called in wrong state: " + sound.state + " for sound: " + soundName);
+					break;
 			}
 		}
 	}
@@ -317,17 +310,15 @@ public class LessObnoxiousMediaActionSound {
 	 * release().
 	 */
 	public void release() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			if (mSoundPool != null) {
-				for (SoundState sound : mSounds) {
-					synchronized (sound) {
-						sound.state = STATE_NOT_LOADED;
-						sound.id = 0;
-					}
+		if (mSoundPool != null) {
+			for (SoundState sound : mSounds) {
+				synchronized (sound) {
+					sound.state = STATE_NOT_LOADED;
+					sound.id = 0;
 				}
-				mSoundPool.release();
-				mSoundPool = null;
 			}
+			mSoundPool.release();
+			mSoundPool = null;
 		}
 	}
 }

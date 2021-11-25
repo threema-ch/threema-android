@@ -51,7 +51,7 @@ import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ThreemaFeature;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 

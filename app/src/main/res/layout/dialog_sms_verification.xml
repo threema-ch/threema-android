@@ -38,7 +38,7 @@
 				android:layout_height="wrap_content"
 				android:singleLine="true"
 				android:inputType="numberDecimal"
-				android:maxLength="6"
+				android:maxLength="8"
 				android:textIsSelectable="false">
 			<requestFocus />
 		</ch.threema.app.emojis.EmojiEditText>

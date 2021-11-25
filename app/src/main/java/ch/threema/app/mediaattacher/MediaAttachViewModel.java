@@ -22,12 +22,8 @@
 package ch.threema.app.mediaattacher;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,9 +37,9 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.RuntimeUtil;
 import java8.util.concurrent.CompletableFuture;
@@ -56,13 +52,7 @@ import java8.util.concurrent.CompletableFuture;
  * which holds a list of all media that were found, and the {@link #currentMedia} list,
  * which holds the media filtered by the current filter. Both are LiveData and thus observable.
  */
-public class MediaAttachViewModel extends AndroidViewModel {
-	// Logger
-	private static final Logger logger = LoggerFactory.getLogger(MediaAttachViewModel.class);
-
-	// Application context object
-	private final Application application;
-
+public class MediaAttachViewModel extends ViewModel {
 	// Media
 	private final @NonNull MutableLiveData<List<MediaAttachItem>> allMedia = new MutableLiveData<>(Collections.emptyList());
 	private final @NonNull MutableLiveData<List<MediaAttachItem>> currentMedia = new MutableLiveData<>(Collections.emptyList());
@@ -74,17 +64,15 @@ public class MediaAttachViewModel extends AndroidViewModel {
 	// This future resolves once the initial media load is done
 	private final CompletableFuture<Void> initialLoadDone = new CompletableFuture<>();
 
-	private final String KEY_SELECTED_MEDIA = "suggestion_labels";
-	private final String KEY_TOOLBAR_TITLE = "toolbar_title";
-	private final String KEY_RECENT_QUERY = "recent_query_string";
-	private final String KEY_RECENT_QUERY_TYPE = "recent_query_type";
+	private static final String KEY_SELECTED_MEDIA = "selected_media";
+	private static final String KEY_TOOLBAR_TITLE = "toolbar_title";
+	private static final String KEY_RECENT_QUERY = "recent_query_string";
+	private static final String KEY_RECENT_QUERY_TYPE = "recent_query_type";
 
 
-	public MediaAttachViewModel(@NonNull Application application, @NonNull SavedStateHandle savedState) {
-		super(application);
+	public MediaAttachViewModel(@NonNull SavedStateHandle savedState) {
 		this.savedState = savedState;
-		this.application = application;
-		this.repository = new MediaRepository(application.getApplicationContext());
+		this.repository = new MediaRepository(ThreemaApplication.getAppContext());
 		final HashMap<Integer, MediaAttachItem> savedItems = savedState.get(KEY_SELECTED_MEDIA);
 		if (savedItems == null || savedItems.isEmpty()) {
 			this.selectedItems = new LinkedHashMap<>();
@@ -95,7 +83,7 @@ public class MediaAttachViewModel extends AndroidViewModel {
 
 		// Fetch initial data
 		if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-			this.fetchAllMediaFromRepository();
+			this.fetchSmallMostRecentMediaBatch();
 			this.initialLoadDone.thenRunAsync(() -> {
 				Integer savedQuery = getLastQueryType();
 				// if no query has been set previously post all media to the ui grid live data directly, else we trigger the filter corresponding filter in MediaSelectionBaseActivity
@@ -114,17 +102,24 @@ public class MediaAttachViewModel extends AndroidViewModel {
 		return allMedia;
 	}
 
+	public void fetchSmallMostRecentMediaBatch() {
+		new Thread(() -> {
+			final List<MediaAttachItem> mediaAttachItems = repository.getMediaFromMediaStore(30);
+			RuntimeUtil.runOnUiThread(() -> currentMedia.setValue(mediaAttachItems));
+		}, "fetchSmallMostRecentMediaBatch").start();
+	}
+
 	/**
 	 * Asynchronously fetch all media from the {@link MediaRepository}.
 	 * Once this is done, the `allMedia` LiveData object will be updated.
 	 */
 	@AnyThread
-	public void fetchAllMediaFromRepository() {
+	public void fetchAllMediaFromRepository(boolean setGridOnComplete) {
 		new Thread(() -> {
-			final List<MediaAttachItem> mediaAttachItems = repository.getMediaFromMediaStore();
+			final List<MediaAttachItem> mediaAttachItems = repository.getMediaFromMediaStore(0);
 			RuntimeUtil.runOnUiThread(() -> {
 				allMedia.setValue(mediaAttachItems);
-				initialLoadDone.complete(null);
+				if (setGridOnComplete) initialLoadDone.complete(null);
 			});
 		}, "fetchAllMediaFromRepository").start();
 	}

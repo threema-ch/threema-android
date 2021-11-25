@@ -23,6 +23,10 @@ package ch.threema.app.actions;
 
 import android.location.Location;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -32,6 +36,8 @@ import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class LocationMessageSendAction extends SendAction {
+	private static final Logger logger = LoggerFactory.getLogger(LocationMessageSendAction.class);
+
 	protected static volatile LocationMessageSendAction instance;
 	private static final Object instanceLock = new Object();
 
@@ -52,11 +58,12 @@ public class LocationMessageSendAction extends SendAction {
 		return instance;
 	}
 
-	public boolean sendLocationMessage(final MessageReceiver[] allReceivers,
-									   final Location location,
-									   final String poiName,
-									   final ActionHandler actionHandler) {
-
+	public boolean sendLocationMessage(
+		final MessageReceiver[] allReceivers,
+		final Location location,
+		final String poiName,
+		final ActionHandler actionHandler
+	) {
 		if (actionHandler == null) {
 			return false;
 		}
@@ -114,7 +121,12 @@ public class LocationMessageSendAction extends SendAction {
 		return true;
 	}
 
-	private void sendSingleMessage(final MessageReceiver messageReceiver, final Location location, final String poiName, final ActionHandler actionHandler) {
+	private void sendSingleMessage(
+		final MessageReceiver messageReceiver,
+		final @NonNull Location location,
+		final String poiName,
+		final @NonNull ActionHandler actionHandler
+	) {
 		if (messageReceiver == null) {
 			actionHandler.onError("No receiver");
 			return;
@@ -140,6 +152,7 @@ public class LocationMessageSendAction extends SendAction {
 						}
 					});
 		} catch (final Exception e) {
+			logger.error("Could not send location message", e);
 			actionHandler.onError(e.getMessage());
 		}
 	}

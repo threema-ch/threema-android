@@ -2,14 +2,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 	<item>
 		<shape android:shape="oval">
-			<solid android:color="@color/compose_bubble_light"/>
+			<solid android:color="@color/compose_bubble"/>
 		</shape>
 	</item>
 	<item android:bottom="1dp"
 	      android:right="1dp"
 	      android:left="0dp"
 	      android:top="0dp">
-		<shape xmlns:android="http://schemas.android.com/apk/res/android"
+		<shape
 		       android:shape="oval"
 		       android:useLevel="false">
 			<solid android:color="#FFBBBBBB"/>

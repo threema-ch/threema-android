@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 
 import org.slf4j.Logger;
@@ -35,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.FixedJobIntentService;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.threemasafe.ThreemaSafeService;
 
 public class ConnectivityChangeService extends FixedJobIntentService {
 	private static final Logger logger = LoggerFactory.getLogger(ConnectivityChangeService.class);
@@ -111,12 +109,6 @@ public class ConnectivityChangeService extends FixedJobIntentService {
 					}
 
 					/* if no backup was created in due time, do it now. The JobScheduler will handle connectivity changes in Lollipop+  */
-					if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-						ThreemaSafeService threemaSafeService = serviceManager.getThreemaSafeService();
-						if (threemaSafeService.isUploadDue()) {
-							threemaSafeService.uploadNow(getApplicationContext(), false);
-						}
-					}
 				} catch (Exception e) {
 					logger.error("Error", e);
 				}

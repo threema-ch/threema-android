@@ -55,7 +55,7 @@
     <string name="voip_connection_failed">Impossibile stabilire la connessione.</string>
     <string name="voip_connection_lost">Connessione persa</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rifiuta chiamate mobili</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">Rifiuta chiamate cellulari in arrivo mentre è attiva una chiamata Threema.</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Rifiuta chiamate cellulari in arrivo mentre è attiva una Chiamata Threema.</string>
     <string name="voip_contact_not_found">Non è stato trovato nessun contatto Threema per questo numero.</string>
     <string name="voip_another_pstn_call">Impossibile avviare la chiamata. È ancora in corso una telefonata normale.</string>
     <string name="voip_call_status_off_hours">Chiamate fuori orario</string>

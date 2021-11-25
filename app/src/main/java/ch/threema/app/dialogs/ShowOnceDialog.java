@@ -24,7 +24,6 @@ package ch.threema.app.dialogs;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,6 +35,7 @@ import androidx.appcompat.app.AppCompatDialog;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 
@@ -47,7 +47,7 @@ import ch.threema.app.ThreemaApplication;
 public class ShowOnceDialog extends ThreemaDialogFragment {
 	private AlertDialog alertDialog;
 	private Activity activity;
-	private static String PREF_PREFIX = "dialog_";
+	public static final String PREF_PREFIX = "dialog_";
 
 	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message) {
 		ShowOnceDialog dialog = new ShowOnceDialog();
@@ -76,6 +76,12 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 			ft.add(this, tag);
 			ft.commitAllowingStateLoss();
 		}
+	}
+
+	// generally allow state loss for simple string alerts
+	public static boolean shouldNotShowAnymore(String tag) {
+		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+		return sharedPreferences.getBoolean(PREF_PREFIX + tag, false);
 	}
 
 	@Override

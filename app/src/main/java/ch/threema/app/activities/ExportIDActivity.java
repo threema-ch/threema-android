@@ -42,7 +42,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.IdentityBackupGenerator;
+import ch.threema.domain.identitybackup.IdentityBackupGenerator;
 
 public class ExportIDActivity extends AppCompatActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener {
 	private static final Logger logger = LoggerFactory.getLogger(AppCompatActivity.class);
@@ -79,7 +79,7 @@ public class ExportIDActivity extends AppCompatActivity implements PasswordEntry
 				ThreemaApplication.MIN_PW_LENGTH_BACKUP,
 				ThreemaApplication.MAX_PW_LENGTH_BACKUP,
 				R.string.backup_password_again_summary,
-				0, 0);
+				0, 0, PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_SET_ID_BACKUP_PW);
 	}
 

@@ -30,73 +30,42 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Date;
-
-import androidx.appcompat.widget.AppCompatCheckBox;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.PrivacyPolicyActivity;
-import ch.threema.app.dialogs.WizardDialog;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 
-public class WizardIntroActivity extends WizardBackgroundActivity implements WizardDialog.WizardDialogCallback {
-
-	private static final String DIALOG_TAG_CHECK_PP = "pp";
+public class WizardIntroActivity extends WizardBackgroundActivity {
 	private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
 
 	private AnimationDrawable frameAnimation;
-	private AppCompatCheckBox privacyPolicyCheckBox;
-	private LinearLayout buttonLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wizard_intro);
 
-		privacyPolicyCheckBox = findViewById(R.id.wizard_switch_accept_privacy_policy);
-		privacyPolicyCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (!isChecked) {
-					if (preferenceService.getPrivacyPolicyAccepted() != null) {
-						preferenceService.clearPrivacyPolicyAccepted();
-					}
-				} else {
-					privacyPolicyCheckBox.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_switch));
-				}
-			}
-		});
-		TextView privacyPolicyExplainText = findViewById(R.id.wizard_privacy_policy_explain);
-		buttonLayout = findViewById(R.id.button_layout);
-
 		if (ConfigUtils.isWorkRestricted()) {
 			// Skip privacy policy check if admin pre-set a backup to restore - either Safe or ID
 			if (ThreemaSafeMDMConfig.getInstance().isRestoreForced()) {
-				checkPrivacyPolicy(true);
-				restoreBackup(null);
+				startActivity(new Intent(this, WizardSafeRestoreActivity.class));
 				finish();
 				return;
 			} else {
 				String backupString = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup));
 				String backupPassword = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup_password));
 				if (!TestUtil.empty(backupString) && !TestUtil.empty(backupPassword)) {
-					checkPrivacyPolicy(true);
-					Intent intent = new Intent(this, WizardRestoreMainActivity.class);
-
-					if (!TestUtil.empty(backupString) && !TestUtil.empty(backupPassword)) {
-						intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
-						intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
-					}
+					Intent intent = new Intent(this, WizardBackupRestoreActivity.class);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
 					startActivity(intent);
 					overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 					finish();
@@ -105,6 +74,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity implements Wiz
 			}
 		}
 
+		LinearLayout buttonLayout = findViewById(R.id.button_layout);
 		if (savedInstanceState == null) {
 			buttonLayout.setVisibility(View.GONE);
 			buttonLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonLayout), 200);
@@ -116,8 +86,8 @@ public class WizardIntroActivity extends WizardBackgroundActivity implements Wiz
 		frameAnimation.setOneShot(false);
 		frameAnimation.start();
 
-		if (preferenceService.getPrivacyPolicyAccepted() != null) {
-			privacyPolicyCheckBox.setVisibility(View.GONE);
+		TextView privacyPolicyExplainText = findViewById(R.id.wizard_privacy_policy_explain);
+		if (TestUtil.empty(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url))) {
 			privacyPolicyExplainText.setVisibility(View.GONE);
 		} else {
 			String privacyPolicy = getString(R.string.privacy_policy);
@@ -135,19 +105,20 @@ public class WizardIntroActivity extends WizardBackgroundActivity implements Wiz
 			privacyPolicyExplainText.setMovementMethod(LinkMovementMethod.getInstance());
 		}
 
+		((TextView) findViewById(R.id.new_to_threema_title)).setText(getString(R.string.new_to_threema, getString(R.string.app_name)));
+		((TextView) findViewById(R.id.back_to_threema_title)).setText(getString(R.string.back_to_threema, getString(R.string.app_name)));
+
 		findViewById(R.id.restore_backup).setOnClickListener(this::restoreBackup);
 		findViewById(R.id.setup_threema).setOnClickListener(this::setupThreema);
 	}
 
 	public void setupThreema(View view) {
-		if (checkPrivacyPolicy(false)) {
-			if (!userService.hasIdentity()) {
-				startActivity(new Intent(this, WizardFingerPrintActivity.class));
-			} else {
-				startActivity(new Intent(this, WizardBaseActivity.class));
-			}
-			overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+		if (!userService.hasIdentity()) {
+			startActivity(new Intent(this, WizardFingerPrintActivity.class));
+		} else {
+			startActivity(new Intent(this, WizardBaseActivity.class));
 		}
+		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
 
 	/**
@@ -155,24 +126,8 @@ public class WizardIntroActivity extends WizardBackgroundActivity implements Wiz
 	 * @param view
 	 */
 	public void restoreBackup(View view) {
-		if (checkPrivacyPolicy(false)) {
-			startActivity(new Intent(this, WizardRestoreMainActivity.class));
-			overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-		}
-	}
-
-	private boolean checkPrivacyPolicy(boolean force) {
-		if (preferenceService.getPrivacyPolicyAccepted() != null) {
-			return true;
-		}
-
-		if (!privacyPolicyCheckBox.isChecked() && !force) {
-			WizardDialog.newInstance(String.format(getString(R.string.privacy_policy_check_confirm), getString(R.string.app_name)), R.string.ok).show(getSupportFragmentManager(), DIALOG_TAG_CHECK_PP);
-			return false;
-		}
-
-		preferenceService.setPrivacyPolicyAccepted(new Date(), force ? PreferenceService.PRIVACY_POLICY_ACCEPT_IMPLICIT : PreferenceService.PRIVACY_POLICY_ACCEPT_EXCPLICIT);
-		return true;
+		startActivity(new Intent(this, WizardBackupRestoreActivity.class));
+		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
 
 	@Override
@@ -184,26 +139,6 @@ public class WizardIntroActivity extends WizardBackgroundActivity implements Wiz
 				frameAnimation.stop();
 			}
 		}
-	}
-
-	@Override
-	public void onYes(String tag, Object data) {
-		privacyPolicyCheckBox.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_switch_alert));
-		privacyPolicyCheckBox.postDelayed(() -> {
-			if (!isFinishing()) {
-				privacyPolicyCheckBox.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_switch));
-			}
-		}, 400);
-		privacyPolicyCheckBox.postDelayed(() -> {
-			if (!isFinishing()) {
-				privacyPolicyCheckBox.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_switch_alert));
-			}
-		}, 600);
-	}
-
-	@Override
-	public void onNo(String tag) {
-
 	}
 
 	@Override

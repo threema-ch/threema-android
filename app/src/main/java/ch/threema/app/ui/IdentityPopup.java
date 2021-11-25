@@ -47,13 +47,13 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.webclient.activities.SessionsActivity;
@@ -63,8 +63,6 @@ import ch.threema.app.webclient.services.SessionService;
 import ch.threema.base.ThreemaException;
 
 public class IdentityPopup extends DimmingPopupWindow {
-
-	private static final Logger logger = LoggerFactory.getLogger(IdentityPopup.class);
 
 	private Context context;
 	private WeakReference<Activity> activityRef = new WeakReference<>(null);
@@ -143,17 +141,13 @@ public class IdentityPopup extends DimmingPopupWindow {
 		popupLayout.setOnClickListener(v -> dismiss());
 
 		Chip scanButton = popupLayout.findViewById(R.id.scan_button);
-		if (scanButton != null) {
-			scanButton.setOnClickListener(v -> scanQR());
-		}
+		scanButton.setOnClickListener(v -> scanQR());
 
 		Chip profileButton = popupLayout.findViewById(R.id.profile_button);
-		if (profileButton != null) {
-			profileButton.setOnClickListener(v -> {
-				dismiss();
-				this.profileButtonListener.onClicked();
-			});
-		}
+		profileButton.setOnClickListener(v -> {
+			dismiss();
+			this.profileButtonListener.onClicked();
+		});
 
 		if (qrCodeView != null) {
 			qrCodeView.setOnClickListener(v -> zoomQR(v));
@@ -172,12 +166,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 	}
 
 	private void scanQR() {
-		Intent intent = new Intent(context, AddContactActivity.class);
-		intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
-		if (activityRef.get() != null) {
-			activityRef.get().startActivity(intent);
-			activityRef.get().overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-		}
+		QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(activityRef.get(), context.getString(R.string.qr_scanner_id_hint));
 	}
 
 	private void zoomQR(View v) {

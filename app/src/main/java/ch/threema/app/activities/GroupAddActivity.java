@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -120,8 +121,8 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 		final int previousContacts = this.appendMembers ? excludedIdentities.size() : 1; // user counts as one contact
 
 		if (selectedContacts.size() >= ThreemaApplication.MIN_GROUP_MEMBERS_COUNT) {
-			if ((previousContacts + selectedContacts.size()) > getResources().getInteger(R.integer.max_group_size)) {
-				Toast.makeText(this, String.format(getString(R.string.group_select_max), getResources().getInteger(R.integer.max_group_size) - previousContacts), Toast.LENGTH_LONG).show();
+			if ((previousContacts + selectedContacts.size()) > BuildConfig.MAX_GROUP_SIZE) {
+				Toast.makeText(this, String.format(getString(R.string.group_select_max), BuildConfig.MAX_GROUP_SIZE - previousContacts), Toast.LENGTH_LONG).show();
 			} else {
 				createOrUpdateGroup(selectedContacts);
 			}

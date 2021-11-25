@@ -85,11 +85,11 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.GroupId;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.ThreemaConnection;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.GroupId;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -887,7 +887,7 @@ public class RestoreService extends Service {
 							if (groupService.isGroupOwner(groupModel)) {
 								groupService.sendSync(groupModel);
 							} else {
-								groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId())));
+								groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId().toString())));
 							}
 						}
 					}
@@ -1020,7 +1020,7 @@ public class RestoreService extends Service {
 
 	private GroupModel createGroupModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
 		GroupModel groupModel = new GroupModel();
-		groupModel.setApiGroupId(row.getString(Tags.TAG_GROUP_ID));
+		groupModel.setApiGroupId(new GroupId(row.getString(Tags.TAG_GROUP_ID)));
 		groupModel.setCreatorIdentity(row.getString(Tags.TAG_GROUP_CREATOR));
 		groupModel.setName(row.getString(Tags.TAG_GROUP_NAME));
 		groupModel.setCreatedAt(row.getDate(Tags.TAG_GROUP_CREATED_AT));
@@ -1501,7 +1501,10 @@ public class RestoreService extends Service {
 		else {
 			messageModel.setIsQueued(true);
 		}
-
+		if (restoreSettings.getVersion() >= 16) {
+			messageModel.setDeliveredAt(row.getDate(Tags.TAG_MESSAGE_DELIVERED_AT));
+			messageModel.setReadAt(row.getDate(Tags.TAG_MESSAGE_READ_AT));
+		}
 		return messageModel;
 	}
 
@@ -1522,7 +1525,10 @@ public class RestoreService extends Service {
 			messageModel.setIsQueued(true);
 		}
 		messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
-
+		if (restoreSettings.getVersion() >= 16) {
+			messageModel.setDeliveredAt(row.getDate(Tags.TAG_MESSAGE_DELIVERED_AT));
+			messageModel.setReadAt(row.getDate(Tags.TAG_MESSAGE_READ_AT));
+		}
 		return messageModel;
 	}
 
@@ -1543,6 +1549,10 @@ public class RestoreService extends Service {
 			messageModel.setIsQueued(true);
 		}
 		messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
+		if (restoreSettings.getVersion() >= 16) {
+			messageModel.setDeliveredAt(row.getDate(Tags.TAG_MESSAGE_DELIVERED_AT));
+			messageModel.setReadAt(row.getDate(Tags.TAG_MESSAGE_READ_AT));
+		}
 		return messageModel;
 	}
 

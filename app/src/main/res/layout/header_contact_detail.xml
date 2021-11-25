@@ -53,20 +53,6 @@
 
 		</LinearLayout>
 
-		<ch.threema.app.ui.SectionHeaderView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="12dp"
-				android:text="@string/title_keyfingerprint"/>
-
-		<TextView
-				android:id="@+id/key_fingerprint"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-				android:layout_marginTop="10dp"
-				android:singleLine="false"/>
-
 		<LinearLayout
 				android:id="@+id/nickname_container"
 				android:orientation="vertical"
@@ -171,6 +157,15 @@
 				android:inputType="none" />
 
 		</com.google.android.material.textfield.TextInputLayout>
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/public_key_button"
+			style="@style/Threema.Chip.Action"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="12dp"
+			android:layout_gravity="center_horizontal"
+			android:text="@string/show_public_key" />
 
 		<LinearLayout
 				android:id="@+id/group_members_title_container"

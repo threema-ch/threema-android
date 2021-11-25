@@ -31,7 +31,7 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.QueryBuilder;

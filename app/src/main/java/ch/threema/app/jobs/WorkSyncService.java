@@ -50,10 +50,10 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.VerificationLevel;
-import ch.threema.client.APIConnector;
-import ch.threema.client.work.WorkContact;
-import ch.threema.client.work.WorkData;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.api.work.WorkContact;
+import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.storage.models.ContactModel;
 
 public class WorkSyncService extends FixedJobIntentService {
@@ -65,7 +65,6 @@ public class WorkSyncService extends FixedJobIntentService {
 	private static boolean isRunning;
 	private static boolean forceUpdate = false;
 
-	private ServiceManager serviceManager;
 	private ContactService contactService;
 	private PreferenceService preferenceService;
 	private FileService fileService;
@@ -82,7 +81,7 @@ public class WorkSyncService extends FixedJobIntentService {
 		isRunning = true;
 
 		try {
-			serviceManager = ThreemaApplication.getServiceManager();
+			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 			contactService = serviceManager.getContactService();
 			preferenceService = serviceManager.getPreferenceService();
 			licenseService = serviceManager.getLicenseService();

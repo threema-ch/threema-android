@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="about_title">Threema Work for Android</string>
-	<string name="enter_serial_body">Please enter the credentials provided by your company or organization</string>
-	<string name="serial_required_want_exit">License is invalid. Would you like to try again or quit Threema?</string>
+	<string name="enter_serial_body">Threema Work is the messenger for companies. Please enter the credentials provided by your company.</string>
+	<string name="serial_required_want_exit">License is invalid. Would you like to try again or quit Threema Work?</string>
 	<string name="checking_serial">Checking credentials</string>
 	<string name="username_hint">Username</string>
 	<string name="new_wizard_works_like_phone_number">Your Threema ID works just like a phone number.\nYour contacts can reach you through this ID.</string>
@@ -11,7 +11,7 @@
 	<string name="new_wizard_find_friends">Find your contacts on Threema Work</string>
 	<string name="new_wizard_sync_contacts_explain">Switch on to see which of your contacts is already using Threema or Threema Work.</string>
 	<string name="new_wizard_anonymous_confirm">You have entered neither a mobile number nor an email address to link to your Threema ID. You will not appear on contact lists. Do you really want to use Threema Work anonymously?</string>
-	<string name="new_wizard_setup_threema">Set up Threema Work</string>
+	<string name="new_wizard_setup_threema">Set up now</string>
 	<string name="new_wizard_welcome">Welcome to Threema Work!</string>
 	<string name="new_wizard_info_fingerprint">By moving your finger, you create random data (called entropy) that is used to generate
 		the keypair associated with your new unique Threema ID. The keypair consists of a <b>public key</b> that is distributed to
@@ -27,10 +27,11 @@
 	<string name="menu_about">About Threema Work</string>
 	<string name="list_theme_light">Light</string>
 	<string name="list_theme_dark">Dark (default)</string>
-	<string name="private_threema_download"><![CDATA[If you are a private user, please <a href=%s>tap here</a> to download Threema.]]></string>
+	<string name="private_threema_download"><![CDATA[ <a href=%1$s>Learn more about Threema Work</a> <br/><br/> If you are a private user, please <a href=%2$s>tap here</a> to download Threema.]]></string>
 	<string name="private_download_url" translatable="false">https://play.google.com/store/apps/details?id=ch.threema.app</string>
 	<string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>
 	<string name="directory_empty_view_text">No entries found\n\nPlease enter at least 3 characters of a name to begin searching in your company\'s directory of Threema users</string>
+	<string name="threema_work_url" translatable="false">https://threema.ch/%s/work</string>
 </resources>

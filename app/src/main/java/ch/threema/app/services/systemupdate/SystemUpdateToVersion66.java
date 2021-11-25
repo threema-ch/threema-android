@@ -21,43 +21,78 @@
 
 package ch.threema.app.services.systemupdate;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import android.Manifest;
+import android.content.Context;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
+import androidx.annotation.RequiresPermission;
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UpdateSystemService;
+import ch.threema.app.utils.AndroidContactUtil;
+import ch.threema.app.utils.ConfigUtils;
+import ch.threema.localcrypto.MasterKeyLockedException;
 
-/**
- * Add a messageFlags field
- */
 public class SystemUpdateToVersion66 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+	public static final int VERSION = 66;
+	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion66.class);
+	private Context context;
 
-	private final SQLiteDatabase sqLiteDatabase;
-
-
-	public SystemUpdateToVersion66(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
+	public SystemUpdateToVersion66(Context context) {
+		this.context = context;
 	}
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "readReceipts")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN readReceipts TINYINT DEFAULT 0");
-		}
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "typingIndicators")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN typingIndicators TINYINT DEFAULT 0");
-		}
 		return true;
 	}
 
-
 	@Override
 	public boolean runASync() {
+		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
+			return true; // best effort
+		}
+
+		forceContactResync();
+
 		return true;
+	}
+
+	@RequiresPermission(Manifest.permission.WRITE_CONTACTS)
+	private void forceContactResync() {
+		logger.info("Force a contacts resync");
+
+		AndroidContactUtil androidContactUtil = AndroidContactUtil.getInstance();
+		androidContactUtil.deleteAllThreemaRawContacts();
+
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			PreferenceService preferenceService = serviceManager.getPreferenceService();
+			if (preferenceService != null) {
+				if (preferenceService.isSyncContacts()) {
+					final SynchronizeContactsService synchronizeContactService;
+					try {
+						synchronizeContactService = serviceManager.getSynchronizeContactsService();
+						if(synchronizeContactService != null) {
+							synchronizeContactService.instantiateSynchronizationAndRun();
+						}
+					} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+						logger.error("Exception", e);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
 	public String getText() {
-		return "version 66 (add readReceipts and typingIndicators)";
+		return "force a contacts resync";
 	}
 }

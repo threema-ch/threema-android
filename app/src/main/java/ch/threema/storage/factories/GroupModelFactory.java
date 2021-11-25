@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.services.GroupService;
+import ch.threema.domain.models.GroupId;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
@@ -105,7 +106,7 @@ public class GroupModelFactory extends ModelFactory {
 				public boolean next(CursorHelper cursorHelper) {
 					c
 							.setId(cursorHelper.getInt(GroupModel.COLUMN_ID))
-							.setApiGroupId(cursorHelper.getString(GroupModel.COLUMN_API_GROUP_ID))
+							.setApiGroupId(new GroupId(cursorHelper.getString(GroupModel.COLUMN_API_GROUP_ID)))
 							.setName(cursorHelper.getString(GroupModel.COLUMN_NAME))
 							.setCreatorIdentity(cursorHelper.getString(GroupModel.COLUMN_CREATOR_IDENTITY))
 							.setSynchronizedAt(cursorHelper.getDate(GroupModel.COLUMN_SYNCHRONIZED_AT))
@@ -158,7 +159,7 @@ public class GroupModelFactory extends ModelFactory {
 
 	private ContentValues buildContentValues(GroupModel groupModel) {
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(GroupModel.COLUMN_API_GROUP_ID, groupModel.getApiGroupId());
+		contentValues.put(GroupModel.COLUMN_API_GROUP_ID, groupModel.getApiGroupId().toString());
 		contentValues.put(GroupModel.COLUMN_CREATOR_IDENTITY, groupModel.getCreatorIdentity());
 		contentValues.put(GroupModel.COLUMN_NAME, groupModel.getName());
 		contentValues.put(GroupModel.COLUMN_CREATED_AT, groupModel.getCreatedAt() != null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getCreatedAt()) : null);
@@ -186,7 +187,6 @@ public class GroupModelFactory extends ModelFactory {
 	}
 
 	public boolean update(GroupModel groupModel) {
-		logger.debug("update group " + groupModel.getApiGroupId());
 		ContentValues contentValues = buildContentValues(groupModel);
 		int rowAffected = this.databaseService.getWritableDatabase().update(this.getTableName(),
 				contentValues,

@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,9 +35,9 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
@@ -55,14 +54,15 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 	private final ContactService contactService;
 	private FileService fileService;
 	private ContactModel contactModel;
+	private final ApiService apiService;
 	private boolean running = false;
 	private boolean forceUpdate = false;
 
-
-	protected UpdateBusinessAvatarRoutine(ContactService contactService, FileService fileService, ContactModel contactModel) {
+	protected UpdateBusinessAvatarRoutine(ContactService contactService, FileService fileService, ContactModel contactModel, ApiService apiService) {
 		this.contactService = contactService;
 		this.fileService = fileService;
 		this.contactModel = contactModel;
+		this.apiService = apiService;
 	}
 
 	protected UpdateBusinessAvatarRoutine forceUpdate() {
@@ -104,9 +104,7 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 		try {
 			logger.debug("Download Avatar");
 
-			URL url = new URL("https://avatar.threema.ch/" + contactModel.getIdentity());
-			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-			connection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(url.getHost()));
+			HttpsURLConnection connection = apiService.createAvatarURLConnection(contactModel.getIdentity());
 
 			try {
 				// Warning: This may implicitly open an error stream in the 4xx/5xx case!
@@ -211,8 +209,9 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 	 */
 	public static final boolean startUpdate(ContactModel contactModel,
 											FileService fileService,
-											ContactService contactService) {
-		return startUpdate(contactModel, fileService, contactService, false);
+											ContactService contactService,
+											ApiService apiService) {
+		return startUpdate(contactModel, fileService, contactService, apiService, false);
 	}
 
 	/**
@@ -227,8 +226,9 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 	public static final boolean startUpdate(final ContactModel contactModel,
 											FileService fileService,
 											ContactService contactService,
+											ApiService apiService,
 											boolean forceUpdate) {
-		UpdateBusinessAvatarRoutine instance = createInstance(contactModel, fileService, contactService, forceUpdate);
+		UpdateBusinessAvatarRoutine instance = createInstance(contactModel, fileService, contactService, apiService, forceUpdate);
 		if(instance != null) {
 			//simple start thread!
 			Thread thread = new Thread(instance);
@@ -264,8 +264,9 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 	public static final boolean start(ContactModel contactModel,
 											FileService fileService,
 											ContactService contactService,
+											ApiService apiService,
 											boolean forceUpdate) {
-		UpdateBusinessAvatarRoutine instance = createInstance(contactModel, fileService, contactService, forceUpdate);
+		UpdateBusinessAvatarRoutine instance = createInstance(contactModel, fileService, contactService, apiService, forceUpdate);
 		if(instance != null) {
 			instance.run();
 			return true;
@@ -276,6 +277,7 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 	private static UpdateBusinessAvatarRoutine createInstance(ContactModel contactModel,
 															  FileService fileService,
 															  ContactService contactService,
+															  ApiService apiService,
 															  boolean forceUpdate) {
 		synchronized (runningUpdates) {
 			final String key = contactModel.getIdentity();
@@ -295,7 +297,8 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 				UpdateBusinessAvatarRoutine newRoutine = new UpdateBusinessAvatarRoutine(
 						contactService,
 						fileService,
-						contactModel);
+						contactModel,
+						apiService);
 
 				if (forceUpdate) {
 					//set force update

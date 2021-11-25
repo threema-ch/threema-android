@@ -24,20 +24,17 @@ package ch.threema.app.services.systemupdate;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.os.Build;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.preference.PreferenceManager;
-
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.stores.PreferenceStore;
-import ch.threema.app.utils.LogUtil;
 
 /**
  *  rename account manager accounts
@@ -71,7 +68,7 @@ public class SystemUpdateToVersion48 extends UpdateToVersion implements UpdateSy
 				}
 
 				// rename old-style ID-based account to generic name
-				if (accountToRename != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				if (accountToRename != null) {
 					accountManager.renameAccount(accountToRename,context.getString(R.string.title_mythreemaid), null, null);
 				}
 				return true;

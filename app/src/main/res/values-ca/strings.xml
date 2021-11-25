@@ -34,8 +34,8 @@
     <string name="prefs_header_chat">Xat</string>
     <string name="prefs_header_reset">Restablir</string>
     <string name="prefs_header_keyboard">Teclat</string>
-    <string name="prefs_sum_sync_contacts_on">Sincronitzar els usuaris de Threema amb la llibreta d\'adreces del vostre dispositiu</string>
-    <string name="prefs_sum_sync_contacts_off">No sincronitzar els usuaris de Threema amb la llibreta d\'adreces del vostre dispositiu</string>
+    <string name="prefs_sum_sync_contacts_on">Sincronitzar els usuaris de %s amb la llibreta d\'adreces del vostre dispositiu</string>
+    <string name="prefs_sum_sync_contacts_off">No sincronitzar els usuaris de %s amb la llibreta d\'adreces del vostre dispositiu</string>
     <string name="prefs_title_sync_contacts">Sincr. contactes</string>
     <string name="prefs_sum_block_unknown_off">Tothom us pot enviar un missatge. Els contactes nous s\'afegiran automàticament
 quan arribi el primer missatge.</string>
@@ -121,7 +121,7 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="linked_mobile">Número de mòbil</string>
     <string name="public_nickname">Sobrenom</string>
     <string name="share_via">Compartir per...</string>
-    <string name="share_subject">Conversa de Threema</string>
+    <string name="share_subject">Conversa de %s</string>
     <string name="message_delete_undo">Desfer</string>
     <string name="message_deleted">Missatge(s) esborrat(s)</string>
     <string name="mobile_already_linked">La vostra ID de Threema ja està enllaçada amb aquest número de mòbil</string>
@@ -276,7 +276,7 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="restore_data_password_msg">Entreu la contrasenya que vau utilitzar per crear aquesta còpia de seguretat.</string>
     <string name="backup_data_media">Incloure fitxers multimèdia grans (vídeo, documents, fotos de mida original)</string>
     <string name="backup_data_new">Crear còpia de les dades</string>
-    <string name="pinentry_enter_pin">Entreu el vostre PIN de Threema per continuar</string>
+    <string name="pinentry_enter_pin">Entreu el vostre PIN de %s per continuar</string>
     <string name="pinentry_wrong_pin">PIN incorrecte</string>
     <string name="prefs_sum_security_pin">Bloquejar l\'accés a la IU de Threema</string>
     <string name="prefs_title_pin_switch">Bloqueig d\'aplicació</string>
@@ -384,7 +384,6 @@ de contacte</string>
     <string name="touch_to_link">(cap)</string>
     <string name="prefs_validate_contacts">Enllaç de validació de contactes</string>
     <string name="prefs_validate_contacts_loading">Enllaços de Validació de Contactes</string>
-    <string name="prefs_sum_validate_contacts">Valideu tots els contactes de Threema amb la llibreta d\'adreces d\'Android</string>
     <string name="prefs_title_fullscreen_ime">Teclat a pantalla completa</string>
     <string name="prefs_sum_fullscreen_ime_on">El teclat cobreix l\'aplicació si el dispositiu està en mode apaïsat</string>
     <string name="prefs_sum_fullscreen_ime_off">Mostra una previsualització del xat sobre el teclat si hi ha espai suficient</string>
@@ -992,6 +991,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="time_remaining">%s restants</string>
     <string name="safe_configure_server_credentials_title">Autenticació (opcional)</string>
     <string name="username_hint">Nom d\'usuari</string>
+    <string name="server_hint">Servidor</string>
     <string name="lock_option_biometric">Biomètric</string>
     <string name="biometric_enter_authentication">Cal autenticar-vos per desbloquejar</string>
     <string name="biometric_authentication_failed">Error en l\'autenticació</string>
@@ -1040,9 +1040,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="delete">Eliminar</string>
     <string name="num_archived_chats">%d xats arxivats</string>
     <string name="continue_recording">Continuar gravant</string>
-    <string name="whatsnew_title">What\'s new in %s 4.56?</string>
-    <string name="whatsnew_headline">The contact synchronization has been completely rewritten for increased performance and stability. As a consequence, manual linking of system contacts had to be removed and a separate validation option in settings is now longer necessary.\n\nIf you notice any problems with names or avatars of synchronized contacts or other unexpected behavior, please contact us through the usual bug reporting channels.\n\nThanks for testing %s!</string>
-    <string name="whatsnew2_title">Què hi ha de nou?</string>
     <string name="tooltip_identity_popup">Toqueu aquí per mostrar ràpidament la vostra ID de Threema o per escanejar la ID d\'altra gent</string>
     <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
@@ -1202,6 +1199,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="missing_app_licence">La botiga d\'aplicacions no ha pogut validar la vostra compra. Si useu Google Play, netegeu les dades de l\'aplicació Google Play i reinicieu el vostre dispositiu.</string>
     <string name="set_backup_path">Definir camí de còpia</string>
     <string name="set_backup_path_intro">A la pantalla següent seleccioneu la carpeta on s\'emmagatzemaran les còpies.</string>
+    <string name="discard_changes_title">Descartar els canvis</string>
     <string name="tap_here_for_more">Toqueu aquí per a més informació</string>
     <string name="another_connection_instructions">El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.\n\nNo es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.\n\nSi esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.</string>
     <string name="app_store_error_code">Codi d\'error de la botiga d\'Apps: %d</string>

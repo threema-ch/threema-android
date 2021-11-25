@@ -32,7 +32,7 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.Base32;
+import ch.threema.base.utils.Base32;
 
 public class ThreemaSafeMDMConfig {
 	private static final int BACKUP_DISABLE = 0; // disabled threema safe backup

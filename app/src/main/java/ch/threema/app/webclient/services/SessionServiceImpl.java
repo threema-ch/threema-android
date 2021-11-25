@@ -52,7 +52,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.services.instance.SessionInstanceServiceImpl;
 import ch.threema.app.webclient.state.WebClientSessionState;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.WebClientSessionModel;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Supplier;

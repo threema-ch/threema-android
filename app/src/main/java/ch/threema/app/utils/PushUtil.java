@@ -30,7 +30,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class PushUtil {
 	private static final Logger logger = LoggerFactory.getLogger(PushUtil.class);
@@ -187,20 +186,18 @@ public class PushUtil {
 			logger.warn("Network blocked (background data disabled?)");
 			// The same message may arrive twice (due to a network change). so we simply ignore messages that we were unable to fetch due to a blocked network
 			// Simply schedule a poll when the device is back online
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				JobScheduler js = (JobScheduler) appContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+			JobScheduler js = (JobScheduler) appContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-				js.cancel(RECONNECT_JOB);
+			js.cancel(RECONNECT_JOB);
 
-				JobInfo job = new JobInfo.Builder(RECONNECT_JOB,
-					new ComponentName(appContext, ReConnectJobService.class))
-					.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-					.setRequiresCharging(false)
-					.build();
+			JobInfo job = new JobInfo.Builder(RECONNECT_JOB,
+				new ComponentName(appContext, ReConnectJobService.class))
+				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+				.setRequiresCharging(false)
+				.build();
 
-				if (js.schedule(job) != JobScheduler.RESULT_SUCCESS) {
-					logger.error("Job scheduling failed");
-				}
+			if (js.schedule(job) != JobScheduler.RESULT_SUCCESS) {
+				logger.error("Job scheduling failed");
 			}
 			return;
 		}

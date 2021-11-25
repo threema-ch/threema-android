@@ -60,6 +60,7 @@ import ch.threema.app.asynctasks.LinkWithEmailAsyncTask;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
+import ch.threema.app.dialogs.PublicKeyDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.emojis.EmojiTextView;
@@ -70,7 +71,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.CheckIdentityRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.FingerPrintService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
@@ -88,8 +88,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.LinkMobileNoException;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.api.LinkMobileNoException;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 import static ch.threema.app.ThreemaApplication.EMAIL_LINKED_PLACEHOLDER;
@@ -111,7 +111,6 @@ public class MyIDFragment extends MainFragment
 	private ServiceManager serviceManager;
 	private UserService userService;
 	private PreferenceService preferenceService;
-	private FingerPrintService fingerPrintService;
 	private LocaleService localeService;
 	private ContactService contactService;
 	private FileService fileService;
@@ -224,9 +223,6 @@ public class MyIDFragment extends MainFragment
 				}
 			}
 
-			TextView textView = fragmentView.findViewById(R.id.keyfingerprint);
-			textView.setText(fingerPrintService.getFingerPrint(getIdentity()));
-
 			fragmentView.findViewById(R.id.policy_explain).setVisibility(isReadonlyProfile || AppRestrictionUtil.isBackupsDisabled(ThreemaApplication.getAppContext()) || AppRestrictionUtil.isIdBackupsDisabled(ThreemaApplication.getAppContext()) ? View.VISIBLE : View.GONE);
 
 			final ImageView picReleaseConfImageView = fragmentView.findViewById(R.id.picrelease_config);
@@ -245,6 +241,10 @@ public class MyIDFragment extends MainFragment
 				((TextView) fragmentView.findViewById(R.id.my_id)).setText(userService.getIdentity());
 				fragmentView.findViewById(R.id.my_id_share).setOnClickListener(this);
 				fragmentView.findViewById(R.id.my_id_qr).setOnClickListener(this);
+
+				fragmentView.findViewById(R.id.public_key_button).setOnClickListener(
+					v -> PublicKeyDialog.newInstance(getString(R.string.public_key_for, userService.getIdentity()), userService.getPublicKey()).show(getParentFragmentManager(), "pk")
+				);
 			}
 
 			this.avatarView = fragmentView.findViewById(R.id.avatar_edit_view);
@@ -505,7 +505,7 @@ public class MyIDFragment extends MainFragment
 				8,
 				MAX_REVOCATION_PASSWORD_LENGTH,
 				R.string.backup_password_again_summary,
-				0,0);
+				0,0, PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.setTargetFragment(this, 0);
 		dialogFragment.show(getFragmentManager(), DIALOG_TAG_SET_REVOCATION_KEY);
 	}
@@ -801,8 +801,7 @@ public class MyIDFragment extends MainFragment
 				this.fileService,
 				this.userService,
 				this.preferenceService,
-				this.localeService,
-				this.fingerPrintService);
+				this.localeService);
 	}
 
 	protected void instantiate() {
@@ -815,7 +814,6 @@ public class MyIDFragment extends MainFragment
 				this.fileService = this.serviceManager.getFileService();
 				this.preferenceService = this.serviceManager.getPreferenceService();
 				this.localeService = this.serviceManager.getLocaleService();
-				this.fingerPrintService = this.serviceManager.getFingerPrintService();
 			} catch (MasterKeyLockedException e) {
 				logger.debug("Master Key locked!");
 			} catch (ThreemaException e) {

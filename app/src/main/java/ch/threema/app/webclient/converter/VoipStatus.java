@@ -23,7 +23,7 @@ package ch.threema.app.webclient.converter;
 
 import androidx.annotation.AnyThread;
 
-import ch.threema.client.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 
 @AnyThread
 public class VoipStatus {

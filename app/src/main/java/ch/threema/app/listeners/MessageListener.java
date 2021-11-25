@@ -33,5 +33,6 @@ public interface MessageListener {
 	@AnyThread void onNew(AbstractMessageModel newMessage);
 	@AnyThread void onModified(List<AbstractMessageModel> modifiedMessageModel);
 	@AnyThread void onRemoved(AbstractMessageModel removedMessageModel);
+	@AnyThread void onRemoved(List<AbstractMessageModel> removedMessageModels);
 	@AnyThread void onProgressChanged(AbstractMessageModel messageModel, int newProgress);
 }

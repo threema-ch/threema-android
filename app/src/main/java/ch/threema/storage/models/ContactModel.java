@@ -28,9 +28,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.Contact;
-import ch.threema.base.VerificationLevel;
+import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.VerificationLevel;
 
 public class ContactModel extends Contact implements ReceiverModel {
 
@@ -59,13 +61,6 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_TYPING_INDICATORS = "typingIndicators"; /* whether typing indicators should be sent to this contact */
 
 	public enum State {
-		/**
-		 * Deprecated.
-		 *
-		 * Can probably be removed, but a DB migration must be created to ensure
-		 * that there are no more contacts with TEMPORARY state in the database.
-		 * */
-		TEMPORARY,
 		/**
 		 * Contact is active.
 		 */
@@ -103,11 +98,18 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private int color;
 	private boolean isWork, isHidden, isRestored, isArchived;
 	private Date avatarExpires, profilePicSent, dateCreated;
-	private int type;
+	private @IdentityType.Type int type;
 	private @OverridePolicy int readReceipts, typingIndicators;
 
 	public ContactModel(String identity, byte[] publicKey) {
 		super(identity, publicKey);
+	}
+
+	public ContactModel(@NonNull Contact contact) {
+		super(contact.getIdentity(), contact.getPublicKey());
+		this.setFirstName(contact.getFirstName());
+		this.setLastName(contact.getLastName());
+		this.setVerificationLevel(contact.getVerificationLevel());
 	}
 
 	/**
@@ -223,11 +225,21 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
+	/**
+	 * Set this flag, if the contact is "work verified", i.e. has been added to the contact list in the management cockpit
+	 * "work verified" contacts are symbolized by a blue verification level
+	 * @param isWork true if the contact is "work verified", false otherwise
+	 * @return ContactModel for chaining calls
+	 */
 	public ContactModel setIsWork(boolean isWork) {
 		this.isWork = isWork;
 		return this;
 	}
 
+	/**
+	 * Check whether the contact is "work verified", i.e. has been added to the contact list in the management cockpit
+	 * @return true if the contact is "work verified", false otherwise
+	 */
 	public boolean isWork() {
 		return this.isWork;
 	}
@@ -268,12 +280,18 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
-	public ContactModel setType(int type) {
+	/**
+	 * Set the {@link IdentityType} (regular or work).
+	 */
+	public ContactModel setIdentityType(@IdentityType.Type int type) {
 		this.type = type;
 		return this;
 	}
 
-	public int getType() {
+	/**
+	 * Return the {@link IdentityType} (regular or work).
+	 */
+	public @IdentityType.Type int getIdentityType() {
 		return this.type;
 	}
 

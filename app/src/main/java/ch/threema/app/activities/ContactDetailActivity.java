@@ -98,7 +98,7 @@ import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.VerificationLevel;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -883,6 +883,11 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		switch (tag) {
 			case DIALOG_TAG_DELETE_CONTACT:
 				deleteContact((ContactModel) data);
+				try {
+					serviceManager.getShortcutService().deleteShortcut((ContactModel) data);
+				} catch (ThreemaException e) {
+					logger.error("Exception, failed to delete direct share shortcut", e);
+				}
 				break;
 			case DIALOG_TAG_EXCLUDE_CONTACT:
 				removeContactConfirmed(true, (ContactModel) data);

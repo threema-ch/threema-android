@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+				xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/topLayout"
+                android:layout_width="match_parent"
+				android:layout_height="@dimen/listitem_contact_height"
+				android:paddingRight="@dimen/listitem_contacts_margin_left_right"
+				android:orientation="vertical">
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/recently_added_background"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginLeft="8dp"
+		app:cardBackgroundColor="@color/recently_added_background"
+		app:cardCornerRadius="@dimen/recently_added_background_corner_size"
+		app:cardElevation="0dp"
+		app:cardPreventCornerOverlap="false"
+		app:cardUseCompatPadding="false"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintRight_toRightOf="parent"/>
+
+	<ch.threema.app.emojis.EmojiTextView
+		android:id="@+id/initial"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/listitem_contacts_margin_left_right"
+		android:text="A"
+		android:importantForAccessibility="no"
+		android:textColor="@null"
+		android:textAppearance="@style/Threema.Material.Header.Big.Text"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+		<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
+	<ImageView
+		android:id="@+id/initial_image"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_marginLeft="@dimen/listitem_contacts_margin_left_right"
+		app:srcCompat="@drawable/ic_new_badge_filled"
+		android:importantForAccessibility="no"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		android:visibility="gone" />
+
+	<!-- avatar -->
+
+	<ch.threema.app.ui.AvatarView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:layout_marginLeft="50dp"
+		android:duplicateParentState="true"
+		android:stateListAnimator="@animator/selector_list_checkbox_bg"
+		android:visibility="visible"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<ch.threema.app.ui.CheckableView
+		android:id="@+id/check_box"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:background="@drawable/selector_list_checkbox"
+		android:duplicateParentState="true"
+		android:stateListAnimator="@animator/selector_list_checkbox_fg"
+		app:layout_constraintBottom_toBottomOf="@id/avatar_view"
+		app:layout_constraintLeft_toLeftOf="@id/avatar_view"
+		app:layout_constraintRight_toRightOf="@id/avatar_view"
+		app:layout_constraintTop_toTopOf="@id/avatar_view" />
+
+	<!-- first line -->
+
+	<ch.threema.app.emojis.EmojiTextView
+		android:id="@+id/name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="16dp"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:textColor="@null"
+		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/avatar_view"
+		app:layout_constraintRight_toLeftOf="@+id/nick"
+		app:layout_constraintBottom_toTopOf="@+id/subject"
+		app:layout_constraintVertical_chainStyle="packed"
+		app:layout_constraintHorizontal_chainStyle="packed"
+		app:layout_constraintHorizontal_bias="0"
+		app:layout_constrainedWidth="false"/>
+	<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
+	<ch.threema.app.emojis.EmojiTextView
+		android:id="@+id/nick"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="3dp"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:textColor="@null"
+		android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"
+		app:layout_constraintLeft_toRightOf="@id/name"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintBaseline_toBaselineOf="@id/name"
+		app:layout_constrainedWidth="true" />
+	<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
+	<!-- second line -->
+
+	<ch.threema.app.ui.VerificationLevelImageView
+		android:id="@+id/verification_level"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="16dp"
+		android:layout_marginBottom="2dp"
+		android:baselineAlignBottom="true"
+		android:visibility="visible"
+		app:layout_constraintBottom_toBottomOf="@+id/subject"
+		app:layout_constraintLeft_toRightOf="@id/avatar_view"
+		app:layout_constraintRight_toLeftOf="@+id/subject"
+		app:layout_constraintHorizontal_chainStyle="spread_inside"
+		app:srcCompat="@drawable/ic_verification_none" />
+
+	<TextView
+		android:id="@+id/subject"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="3dp"
+		android:layout_marginRight="16dp"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"
+		android:textColor="@null"
+		android:gravity="right"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/verification_level"
+		app:layout_constraintTop_toBottomOf="@id/name"
+		app:layout_constraintVertical_chainStyle="packed"
+		app:layout_constrainedWidth="true"/>
+	<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

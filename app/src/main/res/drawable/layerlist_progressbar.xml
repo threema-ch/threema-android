@@ -4,18 +4,18 @@
 		<clip>
 			<shape>
 				<corners android:radius="2dip"/>
-				<solid android:color="@color/new_wizard_color_accent"/>
+				<solid android:color="@color/wizard_color_accent"/>
 			</shape>
 		</clip>
-		<color android:color="@color/new_wizard_color_accent"/>
+		<color android:color="@color/wizard_color_accent"/>
 	</item>
 	<item android:id="@android:id/progress">
 		<clip>
 			<shape>
 				<corners android:radius="2dip"/>
-				<solid android:color="@color/new_wizard_color_accent"/>
+				<solid android:color="@color/wizard_color_accent"/>
 			</shape>
 		</clip>
-		<color android:color="@color/new_wizard_color_accent"/>
+		<color android:color="@color/wizard_color_accent"/>
 	</item>
 </layer-list>

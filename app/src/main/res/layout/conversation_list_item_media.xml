@@ -3,7 +3,7 @@
 			 android:id="@+id/content_block"
 			 android:layout_width="@dimen/media_thumbnail_min_width"
 			 android:layout_height="wrap_content"
-			 android:foreground="?attr/bubble_selector_overlay"
+			 android:foreground="@drawable/bubble_overlay_selector"
              android:minHeight="@dimen/media_thumbnail_min_height">
 
 	<ImageView

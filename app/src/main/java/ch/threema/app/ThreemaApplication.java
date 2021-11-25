@@ -24,9 +24,7 @@ package ch.threema.app;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -42,7 +40,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.os.StrictMode;
-import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 import android.widget.Toast;
@@ -93,6 +90,7 @@ import androidx.work.WorkManager;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
 import ch.threema.app.jobs.WorkSyncJobService;
 import ch.threema.app.jobs.WorkSyncService;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -127,6 +125,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.UpdateSystemServiceImpl;
@@ -158,12 +157,12 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.app.workers.IdentityStatesWorker;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.AppVersion;
-import ch.threema.client.ConnectionState;
-import ch.threema.client.ConnectionStateListener;
-import ch.threema.client.NonceFactory;
-import ch.threema.client.ThreemaConnection;
-import ch.threema.client.Utils;
+import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.AppVersion;
+import ch.threema.domain.protocol.csp.connection.ConnectionState;
+import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.logging.backend.DebugLogFileBackend;
@@ -182,11 +181,14 @@ import ch.threema.storage.models.ballot.GroupBallotModel;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
+import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 import static android.app.NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED;
 import static android.app.NotificationManager.ACTION_NOTIFICATION_POLICY_CHANGED;
 import static android.app.NotificationManager.EXTRA_BLOCKED_STATE;
 import static android.app.NotificationManager.EXTRA_NOTIFICATION_CHANNEL_GROUP_ID;
+import static ch.threema.app.services.PreferenceService.Theme_DARK;
+import static ch.threema.app.services.PreferenceService.Theme_LIGHT;
 
 public class ThreemaApplication extends MultiDexApplication implements DefaultLifecycleObserver {
 
@@ -202,11 +204,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_TIMESTAMP = "timestamp";
 	public static final String INTENT_DATA_EDITFOCUS = "editfocus";
 	public static final String INTENT_DATA_GROUP = "group";
+	public static final String INTENT_DATA_GROUP_LINK = "group_link";
 	public static final String INTENT_DATA_DISTRIBUTION_LIST = "distribution_list";
 	public static final String INTENT_DATA_ARCHIVE_FILTER = "archiveFilter";
 	public static final String INTENT_DATA_QRCODE = "qrcodestring";
 	public static final String INTENT_DATA_QRCODE_TYPE_OK = "qrcodetypeok";
 	public static final String INTENT_DATA_MESSAGE_ID = "messageid";
+	public static final String INTENT_DATA_INCOMING_GROUP_REQUEST = "groupRequest";
+	public static final String INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID = "groupRequestNotificationId";
 	public static final String EXTRA_VOICE_REPLY = "voicereply";
 	public static final String EXTRA_OUTPUT_FILE = "output";
 	public static final String EXTRA_ORIENTATION = "rotate";
@@ -238,6 +243,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int WEB_RESUME_FAILED_NOTIFICATION_ID = 737;
 	public static final int PASSPHRASE_SERVICE_NOTIFICATION_ID = 587;
 	public static final int INCOMING_CALL_NOTIFICATION_ID = 800;
+	public static final int GROUP_RESPONSE_NOTIFICATION_ID = 801;
+	public static final int GROUP_REQUEST_NOTIFICATION_ID = 802;
 
 	private static final String THREEMA_APPLICATION_LISTENER_TAG = "al";
 	public static final String AES_KEY_FILE = "key.dat";
@@ -246,7 +253,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String EMAIL_LINKED_PLACEHOLDER = "***@***";
 
 	public static final long ACTIVITY_CONNECTION_LIFETIME = 60000;
-	public static final int MAX_BLOB_SIZE_MB = 50;
+	public static final int MAX_BLOB_SIZE_MB = 100;
 	public static final int MAX_BLOB_SIZE = MAX_BLOB_SIZE_MB * 1024 * 1024;
 	public static final int MIN_PIN_LENGTH = 4;
 	public static final int MAX_PIN_LENGTH = 8;
@@ -537,7 +544,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				LocalBroadcastManager.getInstance(context).registerReceiver(receiver, new IntentFilter(BackgroundReporter.REPORT_VALIDATION_EVENT));
 
 				// register a broadcast receiver for changes in app restrictions
-				if (ConfigUtils.isWorkRestricted() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				if (ConfigUtils.isWorkRestricted()) {
 					getAppContext().registerReceiver(new BroadcastReceiver() {
 						@Override
 						public void onReceive(Context context, Intent intent) {
@@ -548,18 +555,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						}
 					}, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
 				}
-
-				// setup locale override
-				try {
-					if (getServiceManager() != null) {
-						ConfigUtils.setLocaleOverride(this, getServiceManager().getPreferenceService());
-					}
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
 			}
 		}
-
 	}
 
 	@Override
@@ -747,6 +744,17 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
+
+		// set default theme depending on app type
+		if (prefs != null) {
+			if (TestUtil.empty(prefs.getString(getAppContext().getString(R.string.preferences__theme), null))) {
+				prefs.edit().putString(getAppContext().getString(R.string.preferences__theme), String.valueOf(
+					ConfigUtils.isWorkBuild() ?
+						Theme_DARK:
+						Theme_LIGHT)
+				).apply();
+			}
+		}
 	}
 
 	private static void setupLogging(PreferenceStore preferenceStore) {
@@ -771,7 +779,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 	}
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static synchronized void reset() {
 
 		//set default preferences
@@ -843,15 +850,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			final ThreemaConnection connection = new ThreemaConnection(
 					identityStore,
 					new NonceFactory(nonceDatabaseBlobService),
-					BuildConfig.CHAT_SERVER_PREFIX,
-					BuildConfig.CHAT_SERVER_IPV6_PREFIX,
-					BuildConfig.CHAT_SERVER_SUFFIX,
-					BuildFlavor.getServerPort(),
-					BuildFlavor.getServerPortAlt(),
-					getIPv6(),
-					BuildConfig.SERVER_PUBKEY,
-					BuildConfig.SERVER_PUBKEY_ALT,
-					BuildConfig.CHAT_SERVER_GROUPS);
+					null,
+					getIPv6());
 
 			connection.setVersion(appVersion);
 
@@ -880,6 +880,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					masterKey,
 					updateSystemService
 			);
+
+			connection.setServerAddressProvider(serviceManager.getServerAddressProviderService().getServerAddressProvider());
 
 			// get application restrictions
 			if (ConfigUtils.isWorkBuild()) {
@@ -951,6 +953,25 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			}).start();
 
 			initMapbox();
+
+			// publish most recent chats or pinned shortcuts as sharing targets
+			ShortcutService shortcutService;
+			try {
+				shortcutService = serviceManager.getShortcutService();
+
+				if (shortcutService != null) {
+					if (serviceManager.getPreferenceService().isDirectShare()) {
+						shortcutService.publishRecentChatsAsSharingTargets();
+					} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+						shortcutService.publishPinnedShortcutsAsSharingTargets();
+					}
+				}
+			} catch (ThreemaException e) {
+				logger.error("Exception, failed to publish sharing shortcut targets", e);
+			}
+
+			// setup locale override
+			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
 		} catch (MasterKeyLockedException e) {
 			logger.error("Exception", e);
 		} catch (SQLiteException e) {
@@ -1051,25 +1072,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		logger.info("Scheduling Work Sync. Schedule period: {}", schedulePeriod);
 
 		// schedule the start of the service according to schedule period
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-			if (jobScheduler != null) {
-				ComponentName serviceComponent = new ComponentName(context, WorkSyncJobService.class);
-				JobInfo.Builder builder = new JobInfo.Builder(WORK_SYNC_JOB_ID, serviceComponent)
-					.setPeriodic(schedulePeriod)
-					.setRequiredNetworkType(android.app.job.JobInfo.NETWORK_TYPE_ANY);
-				jobScheduler.schedule(builder.build());
-				return true;
-			}
-		} else {
-			AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			if (alarmMgr != null) {
-				Intent intent = new Intent(context, WorkSyncService.class);
-				PendingIntent pendingIntent = PendingIntent.getService(context, WORK_SYNC_JOB_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-				alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),
-					schedulePeriod, pendingIntent);
-				return true;
-			}
+		JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+		if (jobScheduler != null) {
+			ComponentName serviceComponent = new ComponentName(context, WorkSyncJobService.class);
+			JobInfo.Builder builder = new JobInfo.Builder(WORK_SYNC_JOB_ID, serviceComponent)
+				.setPeriodic(schedulePeriod)
+				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+			jobScheduler.schedule(builder.build());
+			return true;
 		}
 		logger.debug("unable to schedule work sync");
 		return false;
@@ -1118,8 +1128,11 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			@Override
 			public void onRemove(GroupModel groupModel) {
 				try {
+					final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(groupModel);
+					serviceManager.getBallotService().remove(receiver);
 					serviceManager.getConversationService().removed(groupModel);
-					serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, null, null));
+					serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, null, null, serviceManager.getApiService()));
+					serviceManager.getShortcutService().deleteShortcut(groupModel);
 				} catch (ThreemaException e) {
 					logger.error("Exception", e);
 				}
@@ -1264,6 +1277,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onLeave(GroupModel groupModel) {
 				try {
 					serviceManager.getConversationService().refresh(groupModel);
+					serviceManager.getShortcutService().deleteShortcut(groupModel);
 				} catch (ThreemaException e) {
 					logger.error("Exception", e);
 				}
@@ -1302,7 +1316,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onRemove(DistributionListModel distributionListModel) {
 				try {
 					serviceManager.getConversationService().removed(distributionListModel);
-
+					serviceManager.getShortcutService().deleteShortcut(distributionListModel);
 				} catch (ThreemaException e) {
 					logger.error("Exception", e);
 				}
@@ -1351,6 +1365,20 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			}
 
 			@Override
+			public void onRemoved(List<AbstractMessageModel> removedMessageModels) {
+				logger.debug("MessageListener.onRemoved multi");
+				for (final AbstractMessageModel removedMessageModel : removedMessageModels) {
+					if (!removedMessageModel.isStatusMessage()) {
+						try {
+							serviceManager.getConversationService().refreshWithDeletedMessage(removedMessageModel);
+						} catch (ThreemaException e) {
+							logger.error("Exception", e);
+						}
+					}
+				}
+			}
+
+			@Override
 			public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
 				//ingore
 			}
@@ -1390,6 +1418,29 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			}
 		}, THREEMA_APPLICATION_LISTENER_TAG);
 
+		ListenerManager.groupJoinResponseListener.add((outgoingGroupJoinRequestModel, status) -> {
+			NotificationService n = serviceManager.getNotificationService();
+			if (n != null) {
+				n.showGroupJoinResponseNotification(outgoingGroupJoinRequestModel, status, serviceManager.getDatabaseServiceNew());
+			}
+		});
+
+
+		ListenerManager.incomingGroupJoinRequestListener.add(new IncomingGroupJoinRequestListener() {
+			@Override
+			public void onReceived(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel) {
+				NotificationService n = serviceManager.getNotificationService();
+				if (n != null) {
+					n.showGroupJoinRequestNotification(incomingGroupJoinRequestModel, groupModel);
+				}
+			}
+
+			@Override
+			public void onRespond() {
+				// don't bother here
+			}
+		});
+
 		ListenerManager.serverMessageListeners.add(new ServerMessageListener() {
 			@Override
 			public void onAlert(ServerMessageModel serverMessage) {
@@ -1426,6 +1477,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onRemoved(ContactModel removedContactModel) {
 				try {
 					serviceManager.getConversationService().removed(removedContactModel);
+					serviceManager.getShortcutService().deleteShortcut(removedContactModel);
 
 					//remove notification from this contact
 
@@ -1434,7 +1486,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							(
 									removedContactModel,
 									serviceManager.getContactService(),
-									null, null, null, null));
+									null, null, null, null, serviceManager.getApiService()));
 
 					//remove custom avatar (ANDR-353)
 					FileService f = serviceManager.getFileService();

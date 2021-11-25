@@ -54,9 +54,9 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.client.ConnectionState;
-import ch.threema.client.ConnectionStateListener;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.domain.protocol.csp.connection.ConnectionState;
+import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
 
 /**
@@ -134,7 +134,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 		}
 	}
 
-	private void initServices() {
+	protected void initServices() {
 		if (serviceManager == null) {
 			serviceManager = ThreemaApplication.getServiceManager();
 			if (serviceManager == null) {

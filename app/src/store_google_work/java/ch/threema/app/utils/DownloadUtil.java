@@ -21,6 +21,10 @@
 
 package ch.threema.app.utils;
 
+/**
+ * Empty placeholder (real DownloadUtil only exists in shop version).
+ * Do not remove.
+ */
 public class DownloadUtil  {
 	//stub
 }

@@ -29,18 +29,18 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import ch.threema.app.utils.LogUtil;
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.Base64;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.Utils;
 
 import static ch.threema.app.threemasafe.ThreemaSafeService.BACKUP_ID_LENGTH;
 
 public class ThreemaSafeServerInfo {
 	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeServerInfo.class);
 
-	private static final String DEFAULT_THREEMA_SAFE_SERVER_NAME = "safe-%h.threema.ch";
 	private static final String SAFE_URL_PREFIX = "https://";
 	private static final String BACKUP_DIRECTORY_NAME = "backups/";
 
@@ -48,9 +48,7 @@ public class ThreemaSafeServerInfo {
 	private String serverUsername;
 	private String serverPassword;
 
-	public ThreemaSafeServerInfo() {
-		this.serverName = DEFAULT_THREEMA_SAFE_SERVER_NAME;
-	}
+	public ThreemaSafeServerInfo() {}
 
 	public ThreemaSafeServerInfo(String serverName, String serverUsername, String serverPassword) {
 		this.serverUsername = serverUsername;
@@ -64,15 +62,10 @@ public class ThreemaSafeServerInfo {
 
 	public void setServerName(String serverName) {
 		if (!TestUtil.empty(serverName)) {
-			serverName = serverName.trim();
-			// strip https prefix
-			if (serverName.startsWith(SAFE_URL_PREFIX)) {
-				serverName = serverName.substring(SAFE_URL_PREFIX.length());
-			}
+			this.serverName = serverName.trim().replace(SAFE_URL_PREFIX, "");
 		} else {
-			serverName = DEFAULT_THREEMA_SAFE_SERVER_NAME;
+			this.serverName = null;
 		}
-		this.serverName = serverName;
 	}
 
 	public String getServerUsername() {
@@ -92,7 +85,7 @@ public class ThreemaSafeServerInfo {
 	}
 
 	public boolean isDefaultServer() {
-		return this.serverName == null || this.serverName.equals(DEFAULT_THREEMA_SAFE_SERVER_NAME);
+		return TestUtil.empty(serverName);
 	}
 
 	URL getBackupUrl(byte[] backupId) throws ThreemaException {
@@ -117,10 +110,10 @@ public class ThreemaSafeServerInfo {
 		return serverUrl;
 	}
 
-	void addAuthorization(HttpsURLConnection urlConnection) {
+	void addAuthorization(HttpsURLConnection urlConnection) throws ThreemaException {
 		String username = serverUsername, password = serverPassword;
 
-		if (TestUtil.empty(serverUsername) || TestUtil.empty(serverPassword)) {
+		if ((TestUtil.empty(serverUsername) || TestUtil.empty(serverPassword)) && !TestUtil.empty(serverName)) {
 			int atPos = serverName.indexOf("@");
 			if (atPos > 0) {
 				String userInfo = serverName.substring(0, atPos);
@@ -136,18 +129,28 @@ public class ThreemaSafeServerInfo {
 		if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
 			String basicAuth = "Basic " + Base64.encodeBytes((username + ":" + password).getBytes());
 			urlConnection.setRequestProperty("Authorization", basicAuth);
+		} else if (ConfigUtils.isOnPremBuild()) {
+			urlConnection.setRequestProperty("Authorization", "Token " + ThreemaApplication.getServiceManager().getApiService().getAuthToken());
+		}
+	}
+
+	private String getServerNameOrDefault() throws ThreemaException {
+		if (!TestUtil.empty(serverName)) {
+			return serverName;
+		} else {
+			return ThreemaApplication.getServiceManager().getServerAddressProviderService().getServerAddressProvider().getSafeServerUrl(false).replace(SAFE_URL_PREFIX, "");
 		}
 	}
 
 	private URL getServerUrl(byte[] backupId, String filePart) {
 		try {
-			String serverUrl = "https://" + (isDefaultServer() ? serverName.replaceAll("%h", getShardHash(backupId)) : serverName);
+			String serverUrl = SAFE_URL_PREFIX + getServerNameOrDefault().replace("%h", getShardHash(backupId));
 			if (!serverUrl.endsWith("/")) {
 				serverUrl += "/";
 			}
 			serverUrl += filePart;
 			return new URL(serverUrl);
-		} catch (MalformedURLException e) {
+		} catch (MalformedURLException | ThreemaException e) {
 			return null;
 		}
 	}
@@ -161,8 +164,8 @@ public class ThreemaSafeServerInfo {
 
 	public String getHostName() {
 		try {
-			return new URL("https://" + serverName).getHost();
-		} catch (MalformedURLException e) {
+			return new URL(SAFE_URL_PREFIX + getServerNameOrDefault()).getHost();
+		} catch (MalformedURLException | ThreemaException e) {
 			logger.error("Exception", e);
 		}
 		return "";

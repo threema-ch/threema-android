@@ -36,8 +36,8 @@ import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.client.APIConnector;
-import ch.threema.client.IdentityStoreInterface;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.stores.IdentityStoreInterface;
 
 /***
  * Send (only in work build) the infos to the work info resource

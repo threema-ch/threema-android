@@ -32,7 +32,7 @@ import java.io.StringWriter;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.utils.StringConversionUtil;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 public class VideoDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggerFactory.getLogger(VideoDataModel.class);

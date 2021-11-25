@@ -74,7 +74,7 @@ public interface ThreemaSafeService {
 
 	void restoreBackup(String identity, String password, ThreemaSafeServerInfo serverInfo) throws ThreemaException, IOException;
 
-	ArrayList<String> searchID(String phone, String email);
+	@Nullable ArrayList<String> searchID(String phone, String email);
 
 	void launchForcedPasswordDialog(Activity activity);
 }

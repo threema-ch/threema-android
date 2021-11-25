@@ -23,16 +23,13 @@ package ch.threema.app.jobs;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.os.Build;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.annotation.RequiresApi;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PollingHelper;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ReConnectJobService extends JobService {
 	private static final Logger logger = LoggerFactory.getLogger(ReConnectJobService.class);
 

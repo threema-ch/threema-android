@@ -14,19 +14,19 @@
 		android:layout_height="@dimen/avatar_size_small"/>
 
 	<ch.threema.app.emojis.EmojiTextView
-			android:id="@+id/group_name"
-			android:text="Name"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-			android:singleLine="true"
-			android:layout_marginRight="5dip"
-			android:layout_marginLeft="16dip"
-			android:layout_toRightOf="@id/avatar_view"
-			android:layout_toLeftOf="@id/threemaid"
-			android:layout_alignWithParentIfMissing="true"
-			android:layout_centerVertical="true"
-			android:ellipsize="marquee"/>
+		android:id="@+id/group_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignWithParentIfMissing="true"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="16dip"
+		android:layout_marginRight="5dip"
+		android:layout_toLeftOf="@id/threemaid"
+		android:layout_toRightOf="@id/avatar_view"
+		android:ellipsize="marquee"
+		android:singleLine="true"
+		android:text="Name"
+		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
 
 	<TextView
 			android:id="@+id/threemaid"

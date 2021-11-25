@@ -68,7 +68,7 @@ public class ConversationServiceImpl implements ConversationService {
 	private final MessageService messageService;
 	private final DeadlineListService hiddenChatsListService;
 	private boolean initAllLoaded = false;
-	private final TagModel starTag, unreadTag;
+	private final TagModel starTag;
 
 	static class ConversationResult {
 		public final int messageId;
@@ -102,7 +102,6 @@ public class ConversationServiceImpl implements ConversationService {
 		this.conversationTagService = conversationTagService;
 
 		this.starTag = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
-		this.unreadTag = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
 	}
 
 	@Override

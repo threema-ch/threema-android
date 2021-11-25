@@ -55,6 +55,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.EmptyView;
+import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -273,19 +274,19 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 			BallotModel ballotModel = listAdapter.getItem(position);
 
 			if (ballotModel != null) {
-				ArrayList<String> items = new ArrayList<>(3);
+				ArrayList<SelectorDialogItem> items = new ArrayList<>(3);
 				ArrayList<Integer> values = new ArrayList<>(3);
 
 				if (BallotUtil.canVote(ballotModel, myIdentity)) {
-					items.add(getString(R.string.ballot_vote));
+					items.add(new SelectorDialogItem(getString(R.string.ballot_vote), R.drawable.ic_vote_outline));
 					values.add(SELECTOR_ID_VOTE);
 				}
 				if (BallotUtil.canViewMatrix(ballotModel, myIdentity)) {
-					items.add(getString(ballotModel.getState() == BallotModel.State.CLOSED ? R.string.ballot_result_final : R.string.ballot_result_intermediate));
+					items.add(new SelectorDialogItem(getString(ballotModel.getState() == BallotModel.State.CLOSED ? R.string.ballot_result_final : R.string.ballot_result_intermediate), R.drawable.ic_ballot_outline));
 					values.add(SELECTOR_ID_RESULTS);
 				}
 				if (BallotUtil.canClose(ballotModel, myIdentity)) {
-					items.add(getString(R.string.ballot_close));
+					items.add(new SelectorDialogItem(getString(R.string.ballot_close), R.drawable.ic_check));
 					values.add(SELECTOR_ID_CLOSE);
 				}
 

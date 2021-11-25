@@ -23,12 +23,14 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 
+import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
@@ -63,10 +65,8 @@ import ch.threema.app.services.DownloadService;
 import ch.threema.app.services.DownloadServiceImpl;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.FileServiceImpl;
-import ch.threema.app.services.FingerPrintService;
-import ch.threema.app.services.FingerPrintServiceImpl;
-import ch.threema.app.services.GroupApiService;
-import ch.threema.app.services.GroupApiServiceImpl;
+import ch.threema.app.services.GroupMessagingService;
+import ch.threema.app.services.GroupMessagingServiceImpl;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.GroupServiceImpl;
 import ch.threema.app.services.IdListService;
@@ -89,6 +89,8 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.RingtoneServiceImpl;
 import ch.threema.app.services.SensorService;
 import ch.threema.app.services.SensorServiceImpl;
+import ch.threema.app.services.ServerAddressProviderService;
+import ch.threema.app.services.ServerAddressProviderServiceImpl;
 import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.ShortcutServiceImpl;
 import ch.threema.app.services.SynchronizeContactsService;
@@ -102,12 +104,21 @@ import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.WallpaperServiceImpl;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotServiceImpl;
+import ch.threema.app.services.group.GroupInviteService;
+import ch.threema.app.services.group.GroupInviteServiceImpl;
+import ch.threema.app.services.group.GroupJoinResponseService;
+import ch.threema.app.services.group.GroupJoinResponseServiceImpl;
+import ch.threema.app.services.group.IncomingGroupJoinRequestService;
+import ch.threema.app.services.group.IncomingGroupJoinRequestServiceImpl;
+import ch.threema.app.services.group.OutgoingGroupJoinRequestService;
+import ch.threema.app.services.group.OutgoingGroupJoinRequestServiceImpl;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceSerial;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.services.messageplayer.MessagePlayerServiceImpl;
-import ch.threema.app.stores.ContactStore;
+import ch.threema.app.stores.AuthTokenStore;
+import ch.threema.app.stores.DatabaseContactStore;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.threemasafe.ThreemaSafeService;
@@ -118,9 +129,10 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.APIConnector;
-import ch.threema.client.MessageQueue;
-import ch.threema.client.ThreemaConnection;
+import ch.threema.base.utils.Base64;
+import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
@@ -136,7 +148,7 @@ public class ServiceManager {
 
 	private final CacheService cacheService;
 
-	private ContactStore contactStore;
+	private DatabaseContactStore contactStore;
 	private APIConnector apiConnector;
 	private MessageQueue messageQueue;
 	private ContactService contactService;
@@ -145,7 +157,6 @@ public class ServiceManager {
 	private MessageService messageService;
 
 	private QRCodeService qrCodeService;
-	private FingerPrintService fingerPrintService;
 	private FileService fileService;
 	private PreferenceService preferencesService;
 	private LocaleService localeService;
@@ -155,7 +166,12 @@ public class ServiceManager {
 	private LicenseService licenseService;
 	private BackupRestoreDataService backupRestoreDataService;
 	private GroupService groupService;
-	private GroupApiService groupApiService;
+	private @Nullable GroupInviteService groupInviteService;
+	private @Nullable
+	GroupJoinResponseService groupJoinResponseService;
+	IncomingGroupJoinRequestService incomingGroupJoinRequestService;
+	OutgoingGroupJoinRequestService outgoingGroupJoinRequestService;
+	private GroupMessagingService groupMessagingService;
 
 	private MessageAckProcessor messageAckProcessor;
 	private LockAppService lockAppService;
@@ -183,6 +199,7 @@ public class ServiceManager {
 	private VoipStateService voipStateService;
 	private BrowserDetectionService browserDetectionService;
 	private ConversationTagServiceImpl conversationTagService;
+	private ServerAddressProviderService serverAddressProviderService;
 
 	private WebClientServiceManager webClientServiceManager;
 
@@ -203,9 +220,9 @@ public class ServiceManager {
 		this.updateSystemService = updateSystemService;
 	}
 
-	private ContactStore getContactStore() throws MasterKeyLockedException {
+	private DatabaseContactStore getContactStore() {
 		if (this.contactStore == null) {
-			this.contactStore = new ContactStore(
+			this.contactStore = new DatabaseContactStore(
 					this.getAPIConnector(),
 					this.getPreferenceService(),
 					this.databaseServiceNew,
@@ -222,13 +239,23 @@ public class ServiceManager {
 			try {
 				this.apiConnector = new APIConnector(
 					ThreemaApplication.getIPv6(),
-					null,
+					this.getServerAddressProviderService().getServerAddressProvider(),
 					ConfigUtils.isWorkBuild(),
-					BuildFlavor.isSandbox(),
 					ConfigUtils::getSSLSocketFactory
 				);
 				this.apiConnector.setVersion(this.getConnection().getVersion());
 				this.apiConnector.setLanguage(Locale.getDefault().getLanguage());
+
+				if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
+					// On Premise always requires Basic authentication
+					PreferenceService preferenceService = this.getPreferenceService();
+					this.apiConnector.setAuthenticator(urlConnection -> {
+						if (preferenceService.getLicenseUsername() != null) {
+							String auth = preferenceService.getLicenseUsername() + ":" + preferenceService.getLicensePassword();
+							urlConnection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(auth.getBytes(Charsets.UTF_8)));
+						}
+					});
+				}
 			} catch (Exception e) {
 				logger.error("Exception", e);
 			}
@@ -282,6 +309,8 @@ public class ServiceManager {
 					this.getContactStore(),
 					this.getPreferenceService(),
 					this.getGroupService(),
+					this.getGroupJoinResponseService(),
+					this.getIncomingGroupJoinRequestService(),
 					this.getBlackListService(),
 					this.getBallotService(),
 					this.getFileService(),
@@ -432,16 +461,6 @@ public class ServiceManager {
 		return this.qrCodeService;
 	}
 
-	public FingerPrintService getFingerPrintService() throws MasterKeyLockedException, FileSystemNotPresentException {
-		if (this.fingerPrintService == null) {
-			this.fingerPrintService = new FingerPrintServiceImpl(
-					this.getContactService(),
-					this.getIdentityStore()
-			);
-		}
-		return this.fingerPrintService;
-	}
-
 	public FileService getFileService() throws FileSystemNotPresentException {
 		if (this.fileService == null) {
 			this.fileService = new FileServiceImpl(
@@ -525,6 +544,7 @@ public class ServiceManager {
 					break;
 				case GOOGLE_WORK:
 				case HMS_WORK:
+				case ONPREM:
 					this.licenseService = new LicenseServiceUser(
 						this.getAPIConnector(),
 						this.getPreferenceService(),
@@ -591,12 +611,12 @@ public class ServiceManager {
 		return this.activityService;
 	}
 
-	public GroupService getGroupService() throws MasterKeyLockedException, NoIdentityException, FileSystemNotPresentException {
+	public @NonNull GroupService getGroupService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if(null == this.groupService) {
 			this.groupService = new GroupServiceImpl(
 					this.cacheService,
 					this.getApiService(),
-					this.getGroupApiService(),
+					this.getGroupMessagingService(),
 					this.getUserService(),
 					this.getContactService(),
 					this.databaseServiceNew,
@@ -613,19 +633,66 @@ public class ServiceManager {
 		return this.groupService;
 	}
 
-	public GroupApiService getGroupApiService() throws MasterKeyLockedException, FileSystemNotPresentException {
-		if(null == this.groupApiService) {
-			this.groupApiService = new GroupApiServiceImpl(
+	public @NonNull GroupInviteService getGroupInviteService() throws FileSystemNotPresentException, MasterKeyLockedException {
+		if (this.groupInviteService == null) {
+			this.groupInviteService = new GroupInviteServiceImpl(
+				this.getUserService(),
+				this.getGroupService(),
+				this.getDatabaseServiceNew()
+			);
+		}
+		return this.groupInviteService;
+	}
+
+	public @NonNull
+	GroupJoinResponseService getGroupJoinResponseService() throws MasterKeyLockedException {
+		if (this.groupJoinResponseService == null) {
+			this.groupJoinResponseService = new GroupJoinResponseServiceImpl(
+				this.getDatabaseServiceNew(),
+				this.getMessageQueue()
+			);
+		}
+		return this.groupJoinResponseService;
+	}
+
+
+	public @NonNull
+	IncomingGroupJoinRequestService getIncomingGroupJoinRequestService() throws FileSystemNotPresentException, MasterKeyLockedException {
+		if (this.incomingGroupJoinRequestService == null) {
+			this.incomingGroupJoinRequestService = new IncomingGroupJoinRequestServiceImpl(
+				this.getGroupJoinResponseService(),
+				this.getGroupService(),
+				this.databaseServiceNew
+			);
+		}
+		return this.incomingGroupJoinRequestService;
+	}
+
+
+	public @NonNull
+	OutgoingGroupJoinRequestService getOutgoingGroupJoinRequestService() throws MasterKeyLockedException {
+		if (this.outgoingGroupJoinRequestService == null) {
+			this.outgoingGroupJoinRequestService = new OutgoingGroupJoinRequestServiceImpl(
+				this.getDatabaseServiceNew(),
+				this.getMessageQueue()
+			);
+		}
+		return this.outgoingGroupJoinRequestService;
+	}
+
+	public GroupMessagingService getGroupMessagingService() throws MasterKeyLockedException, FileSystemNotPresentException {
+		if(null == this.groupMessagingService) {
+			this.groupMessagingService = new GroupMessagingServiceImpl(
 					this.getUserService(),
 					this.getContactService(),
 					this.getMessageQueue());
 		}
-		return this.groupApiService;
+		return this.groupMessagingService;
 	}
 
 	public ApiService getApiService() {
 		if(null == this.apiService) {
-			this.apiService = new ApiServiceImpl(ThreemaApplication.getAppVersion(), ThreemaApplication.getIPv6());
+			this.apiService = new ApiServiceImpl(ThreemaApplication.getAppVersion(), ThreemaApplication.getIPv6(), this.getAPIConnector(), new AuthTokenStore(), this.getServerAddressProviderService().getServerAddressProvider());
 		}
 		return this.apiService;
 	}
@@ -669,6 +736,14 @@ public class ServiceManager {
 		return this.conversationService;
 	}
 
+	public ServerAddressProviderService getServerAddressProviderService() {
+		if(null == this.serverAddressProviderService) {
+			this.serverAddressProviderService = new ServerAddressProviderServiceImpl(this.getPreferenceService());
+		}
+
+		return this.serverAddressProviderService;
+	}
+
 	public NotificationService getNotificationService() {
 		if(this.notificationService == null) {
 			this.notificationService = new NotificationServiceImpl(
@@ -696,7 +771,8 @@ public class ServiceManager {
 					this.getFileService(),
 					this.getIdentityStore(),
 					this.getBlackListService(),
-					this.getLicenseService()
+					this.getLicenseService(),
+					this.getApiService()
 			);
 		}
 

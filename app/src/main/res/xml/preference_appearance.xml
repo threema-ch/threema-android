@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PLEASE ALSO CHANGE ALTERNATE RESOURCE IN WORK TREE!!! -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
 				  android:key="pref_key_appearance"
 				  android:title="@string/prefs_header_appearance"
@@ -15,7 +14,7 @@
 				android:icon="@drawable/ic_palette_outline"
 				android:entries="@array/list_theme"
 				android:entryValues="@array/list_theme_values"
-				android:defaultValue="0"/>
+				android:defaultValue=""/>
 
 		<DropDownPreference
 			android:key="@string/preferences__language_override"

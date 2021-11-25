@@ -68,12 +68,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Locale;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import androidx.annotation.AnyRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -208,7 +206,7 @@ public class ConfigUtils {
 	}
 
 	public static boolean supportsVideoCapture() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isInternalCameraSupported();
+		return isInternalCameraSupported();
 	}
 
 	public static boolean supportsPictureInPicture(Context context) {
@@ -259,7 +257,7 @@ public class ConfigUtils {
 		/* Device that do not support OCSP stapling cannot use our maps and POI servers */
 		if (hasNoMapboxSupport == null) {
 			hasNoMapboxSupport =
-				Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.MANUFACTURER.equalsIgnoreCase("marshall");
+				Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.MANUFACTURER.equalsIgnoreCase("marshall");
 		}
 		return hasNoMapboxSupport;
 	}
@@ -335,12 +333,6 @@ public class ConfigUtils {
 		typedArray.recycle();
 
 		return color;
-	}
-
-	public static @AnyRes int getResourceFromAttribute(Context context, @AttrRes final int attr) {
-		final TypedValue typedValue = new TypedValue();
-		context.getTheme().resolveAttribute(attr, typedValue, true);
-		return typedValue.resourceId;
 	}
 
 	public static @ColorInt int getPrimaryColor() {
@@ -505,7 +497,6 @@ public class ConfigUtils {
 		String version = ConfigUtils.getAppVersion(context);
 		String theme = ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK ? "dark" : "light";
 
-
 		return String.format(context.getString(R.string.privacy_policy_url), lang, version, theme);
 	}
 
@@ -583,9 +574,23 @@ public class ConfigUtils {
 	}
 
 	public static boolean isWorkBuild() {
-		return (Arrays.asList(BuildFlavor.LicenseType.GOOGLE_WORK,
-					BuildFlavor.LicenseType.HMS_WORK)
-					.contains(BuildFlavor.getLicenseType()));
+		return BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.GOOGLE_WORK)
+			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.HMS_WORK)
+			|| isOnPremBuild();
+	}
+
+	public static boolean isOnPremBuild() {
+		return BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
+	}
+
+	public static boolean isTestBuild() {
+		return BuildFlavor.getName().contains("DEBUG") ||
+			BuildFlavor.getName().equals("Red") || BuildFlavor.getName().equals("DEV") ||
+			BuildFlavor.getName().equals("Sandbox");
+	}
+
+	public static boolean supportsGroupLinks() {
+		return isTestBuild();
 	}
 
 	/**
@@ -606,6 +611,13 @@ public class ConfigUtils {
 	public static boolean isSerialLicenseValid() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
+			if (isOnPremBuild()) {
+				// OnPrem needs server info in addition to license
+				if (serviceManager.getPreferenceService().getOnPremServer() == null) {
+					return false;
+				}
+			}
+
 			try {
 				LicenseService licenseService = serviceManager.getLicenseService();
 				if (licenseService != null) {
@@ -620,12 +632,12 @@ public class ConfigUtils {
 	}
 
 	public static boolean isSerialLicensed() {
-		return (
-			Arrays.asList(BuildFlavor.LicenseType.GOOGLE_WORK,
-				BuildFlavor.LicenseType.HMS_WORK,
-				BuildFlavor.LicenseType.SERIAL)
-				.contains(BuildFlavor.getLicenseType()));
+		return BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.GOOGLE_WORK)
+			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.HMS_WORK)
+			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.SERIAL)
+			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
 	}
+
 
 	/**
 	 * Returns true if privacy settings imply that screenshots and app switcher thumbnails should be disabled
@@ -661,8 +673,9 @@ public class ConfigUtils {
 		a.recycle();
 	}
 
+	@Deprecated
 	public static boolean useContentUris() {
-		return (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT);
+		return true;
 	}
 
 	public static boolean hasProtection(PreferenceService preferenceService) {
@@ -892,6 +905,27 @@ public class ConfigUtils {
 	}
 
 	/**
+	 * Request storage write permission
+	 * @param activity Activity context for onRequestPermissionsResult callback
+	 * @param requestCode request code for onRequestPermissionsResult callback
+	 * @return true if permissions are already granted, false otherwise
+	 */
+	public static boolean requestWriteStoragePermissions(@NonNull Activity activity, Fragment fragment, int requestCode) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			// scoped storage
+			return true;
+		}
+
+		String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+		if (checkIfNeedsPermissionRequest(activity, permissions)) {
+			requestPermissions(activity, fragment, permissions, requestCode);
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Request all possibly required permissions of Location group
 	 * @param activity Activity context for onRequestPermissionsResult callback
 	 * @param requestCode request code for onRequestPermissionsResult callback
@@ -1096,8 +1130,7 @@ public class ConfigUtils {
 				activity.setTheme(newTheme);
 			}
 
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-				orgTheme != R.style.Theme_Threema_TransparentStatusbar) {
+			if (orgTheme != R.style.Theme_Threema_TransparentStatusbar) {
 				activity.getWindow().addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 				activity.getWindow().setStatusBarColor(Color.BLACK);
 				if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
@@ -1106,20 +1139,18 @@ public class ConfigUtils {
 				}
 			}
 		} else {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-					activity.getWindow().setNavigationBarColor(Color.BLACK);
-					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-						activity.getWindow().setStatusBarColor(Color.BLACK);
-					} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-						View decorView = activity.getWindow().getDecorView();
-						decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-					}
-				} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && (orgTheme != R.style.Theme_Threema_MediaViewer && orgTheme != R.style.Theme_Threema_Transparent_Background)) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+				activity.getWindow().setNavigationBarColor(Color.BLACK);
+				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+					activity.getWindow().setStatusBarColor(Color.BLACK);
+				} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
 					View decorView = activity.getWindow().getDecorView();
-					decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
-							SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+					decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 				}
+			} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && (orgTheme != R.style.Theme_Threema_MediaViewer && orgTheme != R.style.Theme_Threema_Transparent_Background)) {
+				View decorView = activity.getWindow().getDecorView();
+				decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
+						SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 			}
 		}
 
@@ -1130,12 +1161,10 @@ public class ConfigUtils {
 	}
 
 	public static void configureTransparentStatusBar(AppCompatActivity activity) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			activity.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.status_bar_detail));
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				activity.getWindow().getDecorView().setSystemUiVisibility(
-					activity.getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-			}
+		activity.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.status_bar_detail));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			activity.getWindow().getDecorView().setSystemUiVisibility(
+				activity.getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 		}
 	}
 

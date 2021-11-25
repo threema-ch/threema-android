@@ -49,7 +49,7 @@ import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.file.FileData;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 

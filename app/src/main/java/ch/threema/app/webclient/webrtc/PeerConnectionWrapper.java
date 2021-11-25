@@ -59,10 +59,9 @@ import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.Config;
 import ch.threema.app.webclient.listeners.PeerConnectionListener;
 import ch.threema.app.webclient.state.PeerConnectionState;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
-import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 
 /**

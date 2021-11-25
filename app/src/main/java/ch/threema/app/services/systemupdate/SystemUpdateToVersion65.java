@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2021 Threema GmbH
+ * Copyright (c) 2021 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,77 +21,48 @@
 
 package ch.threema.app.services.systemupdate;
 
-import android.Manifest;
-import android.content.Context;
+import net.sqlcipher.database.SQLiteDatabase;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
-
-import androidx.annotation.RequiresPermission;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.utils.AndroidContactUtil;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.factories.ModelFactory;
 
-public class SystemUpdateToVersion65 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion65.class);
-	private Context context;
+public class SystemUpdateToVersion65 implements UpdateSystemService.SystemUpdate {
+	public static final int VERSION = 65;
+	public static final String VERSION_STRING = "version " + VERSION;
 
-	public SystemUpdateToVersion65(Context context) {
-		this.context = context;
-	}
+	private final DatabaseServiceNew databaseService;
+	private final SQLiteDatabase sqLiteDatabase;
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		return true;
+	public SystemUpdateToVersion65(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+		this.databaseService = databaseService;
+		this.sqLiteDatabase = sqLiteDatabase;
 	}
 
 	@Override
 	public boolean runASync() {
-		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
-			return true; // best effort
-		}
+		return true;
+	}
 
-		forceContactResync();
+	@Override
+	public boolean runDirectly() {
+		final ModelFactory[] modelFactories = new ModelFactory[] {
+			this.databaseService.getGroupInviteModelFactory(),
+			this.databaseService.getOutgoingGroupJoinRequestModelFactory(),
+			this.databaseService.getIncomingGroupJoinRequestModelFactory()
+		};
+
+		for(ModelFactory factory: modelFactories) {
+			for(String statement: factory.getStatements()) {
+				this.sqLiteDatabase.execSQL(statement);
+			}
+		}
 
 		return true;
 	}
 
-	@RequiresPermission(Manifest.permission.WRITE_CONTACTS)
-	private void forceContactResync() {
-		logger.info("Force a contacts resync");
-
-		AndroidContactUtil androidContactUtil = AndroidContactUtil.getInstance();
-		androidContactUtil.deleteAllThreemaRawContacts();
-
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			PreferenceService preferenceService = serviceManager.getPreferenceService();
-			if (preferenceService != null) {
-				if (preferenceService.isSyncContacts()) {
-					final SynchronizeContactsService synchronizeContactService;
-					try {
-						synchronizeContactService = serviceManager.getSynchronizeContactsService();
-						if(synchronizeContactService != null) {
-							synchronizeContactService.instantiateSynchronizationAndRun();
-						}
-					} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-						logger.error("Exception", e);
-					}
-				}
-			}
-		}
-	}
-
 	@Override
 	public String getText() {
-		return "force a contacts resync";
+		return VERSION_STRING;
 	}
 }

@@ -22,7 +22,6 @@
 package ch.threema.app.ui;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,9 +63,7 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 		setAnimationStyle(0);
 		setOutsideTouchable(false);
 		setFocusable(true);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			setElevation(10);
-		}
+		setElevation(10);
 	}
 
 	public void show(int x, int y, boolean allowReordering) {

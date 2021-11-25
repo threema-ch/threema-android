@@ -29,7 +29,7 @@
 			android:paddingRight="@dimen/wizard_contents_padding_horizontal"
 			android:paddingTop="@dimen/wizard_contents_padding">
 
-		<ch.threema.app.ui.TextViewRobotoMedium
+		<TextView
 				style="@style/WizardTitleText"
 				android:id="@+id/enter_serial_welcome_title"
 				android:layout_width="wrap_content"
@@ -44,14 +44,14 @@
 		<TextView
 				android:id="@+id/layout_top"
 				android:layout_below="@id/enter_serial_welcome_title"
-				android:textAppearance="?android:textAppearanceMedium"
+				style="@style/WizardMediumText"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:gravity="center_horizontal"
 				android:layout_centerHorizontal="true"
 				android:linksClickable="true"
 				android:autoLink="web"
-				android:textColorLink="@color/new_wizard_color_accent"
+				android:textColorLink="@color/wizard_color_accent"
 				android:text="@string/enter_serial_body"
 				android:textColor="?attr/textColorPrimary"
 				android:layout_marginTop="@dimen/wizard_paragraph_height"
@@ -88,7 +88,7 @@
 					style="@style/WizardEditText"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:id="@+id/passphrase"
+					android:id="@+id/license_key"
 					android:hint="@string/enter_serial_hint"
 					android:inputType="textCapCharacters|textNoSuggestions"
 					android:imeOptions="actionGo"
@@ -105,10 +105,10 @@
 				android:contentDescription="@string/send"
 				android:rotation="180"
 				android:scaleType="center"
-				android:tint="@color/new_wizard_color_accent"
 				app:srcCompat="@drawable/ic_arrow_left"
 				android:enabled="false"
-				android:clickable="false"/>
+				android:clickable="false"
+				app:tint="@color/wizard_color_accent" />
 
 		</LinearLayout>
 
@@ -121,21 +121,6 @@
 				android:textSize="@dimen/wizard_text_medium"
 				android:textColor="@color/material_red"
 				android:id="@+id/unlock_state"/>
-
-		<!-- dummy -->
-		<EditText
-				android:id="@+id/password"
-				android:layout_width="0dp"
-				android:layout_height="0dp"
-				android:visibility="gone"/>
-
-		<Button
-				android:id="@+id/unlock_button_work"
-				android:layout_width="0dp"
-				android:layout_height="0dp"
-				android:visibility="gone"
-				android:enabled="false"
-				android:clickable="false"/>
 
 		<TextView
 			android:id="@+id/private_explain"

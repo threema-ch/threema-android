@@ -401,6 +401,9 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 		public void onRemoved(AbstractMessageModel removedMessageModel) {}
 
 		@Override
+		public void onRemoved(List<AbstractMessageModel> removedMessageModels) {}
+
+		@Override
 		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {}
 	};
 

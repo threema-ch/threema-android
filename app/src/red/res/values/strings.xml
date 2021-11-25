@@ -27,7 +27,7 @@
 	<string name="menu_about">About Threema Red</string>
 	<string name="list_theme_light">Light</string>
 	<string name="list_theme_dark">Dark (default)</string>
-	<string name="private_threema_download"><![CDATA[If you are a private user, please <a href="https://play.google.com/store/apps/details?id=ch.threema.app">tap here</a> to download Threema.]]></string>
+	<string name="private_threema_download"><![CDATA[If you are a private user, please <a href=%s>tap here</a> to download Threema.]]></string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>
 	<string name="directory_empty_view_text">No entries found\n\nPlease enter at least 3 characters of a name to begin searching in your company\'s directory of Threema users</string>

@@ -30,8 +30,15 @@ import android.text.format.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
+
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.utils.FileUtil;
 import ch.threema.base.ThreemaException;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
@@ -129,7 +136,8 @@ public class VideoConfig {
 	 * @throws ThreemaException
 	 */
 	public static int getTargetVideoBitrate(Context context, MediaItem mediaItem, int videoSize) throws ThreemaException {
-		int originalBitrate, targetBitrate;
+		int originalBitrate;
+		int targetBitrate = 0;
 		int preferredBitrate = getPreferredVideoBitrate(videoSize);
 
 		// do not use automatic resource management on MediaMetadataRetriever
@@ -144,59 +152,71 @@ public class VideoConfig {
 			metaRetriever.release();
 		}
 
-		int calculatedAudioSize = 0;
-		MediaExtractor extractor = null;
-
+		MediaExtractor extractor = new MediaExtractor();
 		try {
-			extractor = new MediaExtractor();
 			extractor.setDataSource(context, mediaItem.getUri(), null);
-			int srcAudioTrack = findTrack(extractor, MIME_AUDIO);
-			if (srcAudioTrack >= 0) {
-				MediaFormat srcAudioFormat = extractor.getTrackFormat(srcAudioTrack);
+		} catch (IOException e) {
+			logger.error("Exception setting MediaExtractor data source with uri... try with FileDescriptor next");
 
-				float durationS = 0, bitrate = 0;
-				if (srcAudioFormat.containsKey(MediaFormat.KEY_DURATION)) {
-					durationS = (float) srcAudioFormat.getLong(MediaFormat.KEY_DURATION) / 1000000;
-				}
-
-				if (srcAudioFormat.containsKey(MediaFormat.KEY_BIT_RATE)) {
-					bitrate = srcAudioFormat.getInteger(MediaFormat.KEY_BIT_RATE);
-				}
-
-				calculatedAudioSize = (int) (durationS * bitrate / 8);
-				logger.info("Estimated audio size (bytes): " + calculatedAudioSize);
+			String realMediaPatch = FileUtil.getRealPathFromURI(context, mediaItem.getUri());
+			if (realMediaPatch == null) {
+				logger.error("Exception setting MediaExtractor data source with FileDescriptor, real media patch is null", e);
+				throw new ThreemaException(e.getMessage());
 			}
 
-			int srcVideoTrack = findTrack(extractor, MIME_VIDEO);
-			if (srcVideoTrack >= 0) {
-				float durationS = (float) mediaItem.getDurationMs() / (float) DateUtils.SECOND_IN_MILLIS;
-				int calculatedFileSize = ((int) (durationS * originalBitrate / 8)) + calculatedAudioSize + FILE_OVERHEAD;
-				if (calculatedFileSize > MAX_BLOB_SIZE) {
-					calculatedFileSize = ((int) (durationS * BITRATE_MEDIUM / 8)) + calculatedAudioSize + FILE_OVERHEAD;
-					if (calculatedFileSize > MAX_BLOB_SIZE) {
-						calculatedFileSize = ((int) (durationS * BITRATE_LOW / 8)) + calculatedAudioSize + FILE_OVERHEAD;
-						if (calculatedFileSize > MAX_BLOB_SIZE) {
-							return -1;
-						} else {
-							targetBitrate = BITRATE_LOW;
-						}
-					} else {
-						targetBitrate = BITRATE_MEDIUM;
-					}
-				} else {
-					targetBitrate = originalBitrate;
-				}
-			} else {
-				throw new ThreemaException("No video track found in this file");
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			throw new ThreemaException(e.getMessage());
-		} finally {
-			if (extractor != null) {
+			File file = new File(Objects.requireNonNull(FileUtil.getRealPathFromURI(context, mediaItem.getUri())));
+			try (FileInputStream fis = new FileInputStream(file)) {
+				FileDescriptor fd = fis.getFD();
+				extractor.setDataSource(fd);
+			} catch (Exception e2) {
+				logger.error("Exception setting MediaExtractor data source with FileDescriptor", e);
 				extractor.release();
+				throw new ThreemaException(e.getMessage());
 			}
 		}
+
+		int calculatedAudioSize = 0;
+		int srcAudioTrack = findTrack(extractor, MIME_AUDIO);
+		if (srcAudioTrack >= 0) {
+			MediaFormat srcAudioFormat = extractor.getTrackFormat(srcAudioTrack);
+
+			float durationS = 0, bitrate = 0;
+			if (srcAudioFormat.containsKey(MediaFormat.KEY_DURATION)) {
+				durationS = (float) srcAudioFormat.getLong(MediaFormat.KEY_DURATION) / 1000000;
+			}
+
+			if (srcAudioFormat.containsKey(MediaFormat.KEY_BIT_RATE)) {
+				bitrate = srcAudioFormat.getInteger(MediaFormat.KEY_BIT_RATE);
+			}
+
+			calculatedAudioSize = (int) (durationS * bitrate / 8);
+			logger.info("Estimated audio size (bytes): " + calculatedAudioSize);
+		}
+
+		int srcVideoTrack = findTrack(extractor, MIME_VIDEO);
+		if (srcVideoTrack >= 0) {
+			float durationS = (float) mediaItem.getDurationMs() / (float) DateUtils.SECOND_IN_MILLIS;
+			int calculatedFileSize = ((int) (durationS * originalBitrate / 8)) + calculatedAudioSize + FILE_OVERHEAD;
+			if (calculatedFileSize > MAX_BLOB_SIZE) {
+				calculatedFileSize = ((int) (durationS * BITRATE_MEDIUM / 8)) + calculatedAudioSize + FILE_OVERHEAD;
+				if (calculatedFileSize > MAX_BLOB_SIZE) {
+					calculatedFileSize = ((int) (durationS * BITRATE_LOW / 8)) + calculatedAudioSize + FILE_OVERHEAD;
+					if (calculatedFileSize > MAX_BLOB_SIZE) {
+						return -1;
+					} else {
+						targetBitrate = BITRATE_LOW;
+					}
+				} else {
+					targetBitrate = BITRATE_MEDIUM;
+				}
+			} else {
+				targetBitrate = originalBitrate;
+			}
+		} else {
+			throw new ThreemaException("No video track found in this file");
+		}
+
+		extractor.release();
 
 		if (targetBitrate < preferredBitrate) {
 			logger.info("Preferred bit rate is {}. Falling back to bit rate {} due to size", preferredBitrate, targetBitrate);

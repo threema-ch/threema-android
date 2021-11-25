@@ -49,8 +49,10 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.AppRestrictionService;
+import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.SerialCredentials;
@@ -59,6 +61,7 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
+import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 
 // this should NOT extend ThreemaToolbarActivity
@@ -67,14 +70,15 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private static final String BUNDLE_PASSWORD = "bupw";
 	private static final String BUNDLE_LICENSE_KEY = "bulk";
+	private static final String BUNDLE_SERVER = "busv";
 	private static final String DIALOG_TAG_CHECKING = "check";
 	private TextView stateTextView, privateExplainText = null;
-	private EditText licenseKeyText, passwordText;
+	private EditText licenseKeyOrUsernameText, passwordText, serverText;
 	private ImageView unlockButton;
 	private Button loginButton;
 	private LicenseService licenseService;
+	private PreferenceService preferenceService;
 
-	@SuppressLint("StringFormatInvalid")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -85,8 +89,18 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 		setContentView(R.layout.activity_enter_serial);
 
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+
+		if (serviceManager == null) {
+			// hide keyboard to make error message visible on low resolution displays
+			EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
+			Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
+			return;
+		}
+
 		try {
-			licenseService = ThreemaApplication.getServiceManager().getLicenseService();
+			licenseService = serviceManager.getLicenseService();
+			preferenceService = serviceManager.getPreferenceService();
 		} catch (NullPointerException|FileSystemNotPresentException e) {
 			logger.error("Exception", e);
 			Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
@@ -100,60 +114,88 @@ public class EnterSerialActivity extends ThreemaActivity {
 		}
 
 		stateTextView = findViewById(R.id.unlock_state);
-		licenseKeyText = findViewById(R.id.passphrase);
-		passwordText = findViewById(R.id.password);
+		licenseKeyOrUsernameText = findViewById(R.id.license_key);
+		passwordText = findViewById(getResources().getIdentifier("password", "id", getPackageName()));
+		serverText = findViewById(getResources().getIdentifier("server", "id", getPackageName()));
 
-		if (!ConfigUtils.isWorkBuild()) {
-			licenseKeyText.addTextChangedListener(new PasswordWatcher());
-			licenseKeyText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-			licenseKeyText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(11)});
-			licenseKeyText.setOnKeyListener(new View.OnKeyListener() {
-				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-						if (licenseKeyText.getText().length() == 11) {
-							doUnlock();
-						}
-						return true;
-					}
-					return false;
-				}
-			});
-			unlockButton = findViewById(R.id.unlock_button);
-			unlockButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					doUnlock();
-				}
-			});
-
-			this.enableLogin(false);
+		if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
+			setupForShopBuild();
 		} else {
-			privateExplainText = findViewById(R.id.private_explain);
-			if (privateExplainText != null) {
-				if (PushService.hmsServicesInstalled(this)) {
-					privateExplainText.setText(Html.fromHtml(String.format(getString(R.string.private_threema_download), getString(R.string.private_download_url_hms))));
-				}
-				else {
-					privateExplainText.setText(Html.fromHtml(String.format(getString(R.string.private_threema_download), getString(R.string.private_download_url))));
-				}
-				privateExplainText.setClickable(true);
-				privateExplainText.setMovementMethod (LinkMovementMethod.getInstance());
-			}
-			licenseKeyText.addTextChangedListener(new TextChangeWatcher());
-			passwordText.addTextChangedListener(new TextChangeWatcher());
-			loginButton = findViewById(R.id.unlock_button_work);
-			loginButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					doUnlock();
-				}
-			});
-
-			//always enable login button
-			this.enableLogin(true);
+			setupForWorkBuild();
 		}
 
+		handleUrlIntent();
+	}
+
+	private void setupForShopBuild() {
+		licenseKeyOrUsernameText.addTextChangedListener(new PasswordWatcher());
+		licenseKeyOrUsernameText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		licenseKeyOrUsernameText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(11)});
+		licenseKeyOrUsernameText.setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+					if (licenseKeyOrUsernameText.getText().length() == 11) {
+						doUnlock();
+					}
+					return true;
+				}
+				return false;
+			}
+		});
+		unlockButton = findViewById(R.id.unlock_button);
+		unlockButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				doUnlock();
+			}
+		});
+
+		this.enableLogin(false);
+	}
+
+	@SuppressLint("StringFormatInvalid")
+	private void setupForWorkBuild() {
+		privateExplainText = findViewById(R.id.private_explain);
+
+		if (privateExplainText != null) {
+			String workInfoUrl = String.format(getString(R.string.threema_work_url), LocaleUtil.getAppLanguage());
+
+			if (PushService.hmsServicesInstalled(this)) {
+				privateExplainText.setText(Html.fromHtml(
+					String.format(getString(R.string.private_threema_download),
+						workInfoUrl,
+						getString(R.string.private_download_url)
+						)
+					)
+				);
+			}
+			else {
+				privateExplainText.setText(Html.fromHtml
+					(String.format(getString(R.string.private_threema_download),
+						workInfoUrl,
+						getString(R.string.private_download_url))
+					)
+				);
+			}
+			privateExplainText.setClickable(true);
+			privateExplainText.setMovementMethod(LinkMovementMethod.getInstance());
+		}
+		licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
+		passwordText.addTextChangedListener(new TextChangeWatcher());
+		loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
+		loginButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				doUnlock();
+			}
+		});
+
+		//always enable login button
+		this.enableLogin(true);
+	}
+
+	private void handleUrlIntent() {
 		String scheme = null;
 		Uri data = null;
 		Intent intent = getIntent();
@@ -183,8 +225,10 @@ public class EnterSerialActivity extends ThreemaActivity {
 			if (ConfigUtils.isWorkRestricted()) {
 				String username = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
 				String password = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
+				String server = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
+
 				if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
-					check(new UserCredentials(username, password));
+					check(new UserCredentials(username, password), server);
 				}
 			}
 		} else {
@@ -197,7 +241,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	}
 
 	private void enableLogin(boolean enable) {
-		if (!ConfigUtils.isWorkBuild()) {
+		if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
 			if (this.unlockButton != null) {
 				unlockButton.setClickable(enable);
 				unlockButton.setEnabled(enable);
@@ -217,14 +261,15 @@ public class EnterSerialActivity extends ThreemaActivity {
 			if (licenseService instanceof LicenseServiceUser) {
 				final String username = data.getQueryParameter("username");
 				final String password = data.getQueryParameter("password");
+				final String server = data.getQueryParameter("server");
 				if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
-					check(new UserCredentials(username, password));
+					check(new UserCredentials(username, password), server);
 					return;
 				}
 			} else {
 				final String key = data.getQueryParameter("key");
 				if (!TestUtil.empty(key)) {
-					check(new SerialCredentials(key));
+					check(new SerialCredentials(key), null);
 					return;
 				}
 			}
@@ -234,19 +279,26 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private void doUnlock() {
 		// hide keyboard to make error message visible on low resolution displays
-		EditTextUtil.hideSoftKeyboard(this.licenseKeyText);
+		EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
 
 		this.enableLogin(false);
 
-		if (ConfigUtils.isWorkBuild()) {
-			if (!TestUtil.empty(this.licenseKeyText.getText().toString()) && !TestUtil.empty(this.passwordText.getText().toString())) {
-				this.check(new UserCredentials(this.licenseKeyText.getText().toString(), this.passwordText.getText().toString()));
+		if (ConfigUtils.isOnPremBuild()) {
+			if (!TestUtil.empty(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.empty(this.passwordText.getText().toString()) && !TestUtil.empty(this.serverText.getText().toString())) {
+				this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), this.serverText.getText().toString());
+			} else {
+				this.enableLogin(true);
+				this.stateTextView.setText(getString(R.string.invalid_input));
+			}
+		} else if (ConfigUtils.isWorkBuild()) {
+			if (!TestUtil.empty(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.empty(this.passwordText.getText().toString())) {
+				this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), null);
 			} else {
 				this.enableLogin(true);
 				this.stateTextView.setText(getString(R.string.invalid_input));
 			}
 		} else {
-			this.check(new SerialCredentials(this.licenseKeyText.getText().toString()));
+			this.check(new SerialCredentials(this.licenseKeyOrUsernameText.getText().toString()), null);
 		}
 	}
 
@@ -298,17 +350,37 @@ public class EnterSerialActivity extends ThreemaActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (!TestUtil.empty(licenseKeyText.getText())) {
-			outState.putString(BUNDLE_LICENSE_KEY, licenseKeyText.getText().toString());
+		if (!TestUtil.empty(licenseKeyOrUsernameText.getText())) {
+			outState.putString(BUNDLE_LICENSE_KEY, licenseKeyOrUsernameText.getText().toString());
 		}
 
-		if (!TestUtil.empty(passwordText.getText())) {
+		if (passwordText != null && !TestUtil.empty(passwordText.getText())) {
 			outState.putString(BUNDLE_PASSWORD, passwordText.getText().toString());
+		}
+
+		if (serverText != null && !TestUtil.empty(serverText.getText())) {
+			outState.putString(BUNDLE_SERVER, serverText.getText().toString());
 		}
 	}
 
 	@SuppressLint("StaticFieldLeak")
-	private void check(final LicenseService.Credentials credentials) {
+	private void check(final LicenseService.Credentials credentials, String onPremServer) {
+		if (ConfigUtils.isOnPremBuild()) {
+			if (onPremServer != null) {
+				if (!onPremServer.startsWith("https://")) {
+					onPremServer = "https://" + onPremServer;
+				}
+
+				if (!onPremServer.endsWith(".oppf")) {
+					// Automatically expand hostnames to default provisioning URL
+					onPremServer += "/prov/config.oppf";
+				}
+			}
+			preferenceService.setOnPremServer(onPremServer);
+			preferenceService.setLicenseUsername(((UserCredentials)credentials).username);
+			preferenceService.setLicensePassword(((UserCredentials)credentials).password);
+		}
+
 		new AsyncTask<Void, Void, String>() {
 			@Override
 			protected void onPreExecute() {

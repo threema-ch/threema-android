@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.qrscanner.activity.CaptureActivity;
 import ch.threema.app.services.QRCodeService;
 
@@ -61,11 +62,22 @@ public class QRScannerUtil {
 		scanAnyCode = anyCode;
 		Intent intent = new Intent(activity, CaptureActivity.class);
 		if (!TestUtil.empty(hint)) {
-			intent.putExtra("PROMPT_MESSAGE", hint);
+			intent.putExtra(CaptureActivity.KEY_NEED_SCAN_HINT_TEXT, hint);
 		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		activity.startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
+	}
+
+	public void initiateGeneralThreemaQrScanner(Activity activity, String hint) {
+		Intent intent = new Intent(activity, BaseQrScannerActivity.class);
+		if (!TestUtil.empty(hint)) {
+			intent.putExtra(CaptureActivity.KEY_NEED_SCAN_HINT_TEXT, hint);
+		}
+		if (activity != null) {
+			activity.startActivity(intent);
+			activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+		}
 	}
 
 	private void invalidCodeDialog(AppCompatActivity activity) {

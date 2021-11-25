@@ -38,7 +38,7 @@ import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.client.Base32;
+import ch.threema.base.utils.Base32;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;

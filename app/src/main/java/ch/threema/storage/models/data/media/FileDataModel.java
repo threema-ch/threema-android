@@ -38,8 +38,8 @@ import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.Utils;
-import ch.threema.client.file.FileData;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 public class FileDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggerFactory.getLogger(FileDataModel.class);

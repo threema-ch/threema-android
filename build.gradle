@@ -1,4 +1,7 @@
 buildscript {
+    ext.kotlin_version = '1.5.31'
+    ext.kotlin_coroutines_version = '1.5.1'
+    ext.slf4j_version = '1.7.31'
     repositories {
         google()
         mavenCentral()
@@ -7,16 +10,27 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
         classpath 'org.owasp:dependency-check-gradle:6.1.6'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
 
         // Huawei agconnect plugin
         classpath 'com.huawei.agconnect:agcp-1.4.2.300'
         classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.4.2.300'
         classpath 'com.huawei.agconnect:agconnect-core-1.4.0.300@aar'
 
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        classpath 'com.github.bjoernq:unmockplugin:0.7.9'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+
+plugins {
+    id 'jacoco'
+    id 'org.sonarqube' version '3.0'
+}
+
 
 allprojects {
     repositories {
@@ -47,8 +61,52 @@ allprojects {
         // Fail dependency check if any dependency has a CVE with a score of 3+
         failBuildOnCVSS 3
     }
+
+    group = 'ch.threema'
 }
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
+}
+
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'android-client'
+        property 'sonar.projectName', 'Threema for Android'
+    }
+}
+
+jacoco {
+    toolVersion = '0.8.7'
+}
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.7"
+                }
+            }
+        }
+    }
+}
+
+
+// task to gather code coverage from multiple subprojects
+// NOTE: the `JacocoReport` tasks do *not* depend on the `test` task by default. Meaning you have to ensure
+// that `test` (or other tasks generating code coverage) run before generating the report.
+tasks.register("codeCoverageReport", JacocoReport) {
+    // If a subproject applies the 'jacoco' plugin, add the result it to the report
+    subprojects { subproject ->
+        subproject.plugins.withType(JacocoPlugin).configureEach {
+            subproject.tasks.matching({ t -> t.extensions.findByType(JacocoTaskExtension) }).configureEach { testTask ->
+                sourceSets subproject.sourceSets.main
+                executionData(testTask)
+            }
+        }
+    }
+    reports {
+        xml.enabled true
+    }
 }

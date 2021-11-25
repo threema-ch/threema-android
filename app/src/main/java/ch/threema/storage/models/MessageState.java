@@ -21,15 +21,57 @@
 
 package ch.threema.storage.models;
 
+/**
+ * Internal message sending state.
+ */
 public enum MessageState {
-	DELIVERED,
-	READ,
-	SENDFAILED,
-	SENT,
-	USERACK,
-	USERDEC,
-	TRANSCODING,
+	/**
+	 * Message was created, but not yet sent.
+	 */
 	PENDING,
+
+	/**
+	 * Media is being transcoded.
+	 */
+	TRANSCODING,
+
+	/**
+	 * Message is being sent, but was not yet ACKed by the server.
+	 */
 	SENDING,
-	CONSUMED
+
+	/**
+	 * Sending the message failed.
+	 */
+	SENDFAILED,
+
+	/**
+	 * Message was sent and ACKed by the server (but not yet delivered).
+	 */
+	SENT,
+
+	/**
+	 * Message was delivered to the recipient.
+	 */
+	DELIVERED,
+
+	/**
+	 * Message was read by the recipient.
+	 */
+	READ,
+
+	/**
+	 * Media mssage (e.g. audio message) was consumed by the recipient.
+	 */
+	CONSUMED,
+
+	/**
+	 * A "thumbs up" reaction was sent by the recipient.
+	 */
+	USERACK,
+
+	/**
+	 * A "thumbs down" reaction was sent by the recipient.
+	 */
+	USERDEC,
 }

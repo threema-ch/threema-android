@@ -22,15 +22,15 @@
 package ch.threema.app.mediaattacher;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +47,6 @@ import ch.threema.app.utils.MimeUtil;
  * Query the system media store and return images and videos found on the system.
  */
 public class MediaRepository {
-	private static final Logger logger = LoggerFactory.getLogger(MediaRepository.class);
 	private final Context appContext;
 
 	public MediaRepository(Context appContext) {
@@ -58,36 +57,70 @@ public class MediaRepository {
 	 * Query the Android media store via content resolver.
 	 * Return images and videos, sorted by modification date.
 	 * This method is synchronous.
+	 * @param limit how many items should be max fetched from the video and image sections, 0 if all should be fetched
 	 */
 	@WorkerThread
-	public List<MediaAttachItem> getMediaFromMediaStore() {
+	public List<MediaAttachItem> getMediaFromMediaStore(int limit) {
 		final String[] imageProjection = this.getImageProjection();
 		final String[] videoProjection = this.getVideoProjection();
 
 		final List<MediaAttachItem> mediaList = new ArrayList<>();
 
-		// Process images
-		try (Cursor imageCursor = appContext.getContentResolver().query(
-			MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-			imageProjection,
-			null,
-			null,
-			MediaStore.Images.Media.DATE_MODIFIED + " DESC"
-		)) {
-			addToMediaResults(imageCursor, mediaList, false);
-		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			Bundle queryBundle = new Bundle();
+			queryBundle.putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, new String[]{MediaStore.Images.Media.DATE_MODIFIED});
+			queryBundle.putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, ContentResolver.QUERY_SORT_DIRECTION_DESCENDING);
+			if (limit != 0) {
+				queryBundle.putInt(ContentResolver.QUERY_ARG_LIMIT, limit);
+			}
+			// Process images
+			try (Cursor imageCursor = appContext.getContentResolver().query(
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				imageProjection,
+				queryBundle,
+				null
+			)) {
+				addToMediaResults(imageCursor, mediaList, false);
+			}
 
-		// Process videos
-		try (Cursor videoCursor = appContext.getContentResolver().query(
-			MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-			videoProjection,
-			null,
-			null,
-			MediaStore.Video.Media.DATE_MODIFIED + " DESC"
-		)) {
-			addToMediaResults(videoCursor, mediaList, true);
+			// Process videos
+			try (Cursor videoCursor = appContext.getContentResolver().query(
+				MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+				videoProjection,
+				queryBundle,
+				null
+			)) {
+				addToMediaResults(videoCursor, mediaList, true);
+			}
 		}
+		else {
+			String addLimitQuery = "";
+			if (limit != 0) {
+				addLimitQuery = "LIMIT " + limit;
+			}
 
+			// Process images
+			try (Cursor imageCursor = appContext.getContentResolver().query(
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				imageProjection,
+				null,
+				null,
+				MediaStore.Images.Media.DATE_MODIFIED + " DESC " + addLimitQuery
+			)) {
+				addToMediaResults(imageCursor, mediaList, false);
+			}
+
+			// Process videos
+			try (Cursor videoCursor = appContext.getContentResolver().query(
+				MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+				videoProjection,
+				null,
+				null,
+				MediaStore.Video.Media.DATE_MODIFIED + " DESC " + addLimitQuery
+			)) {
+				addToMediaResults(videoCursor, mediaList, true);
+			}
+		}
 		// Sort media list from most recent descending
 		Collections.sort(mediaList, (o1, o2) -> Double.compare(o2.getDateModified(), o1.getDateModified()));
 

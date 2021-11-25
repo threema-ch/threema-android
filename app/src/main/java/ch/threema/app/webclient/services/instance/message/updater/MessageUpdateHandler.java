@@ -208,6 +208,11 @@ public class MessageUpdateHandler extends MessageUpdater {
 		}
 
 		@Override
+		public void onRemoved(List<AbstractMessageModel> removedMessageModels) {
+			this.dispatch(removedMessageModels, Protocol.ARGUMENT_MODE_REMOVED);
+		}
+
+		@Override
 		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
 			// Ignore
 		}

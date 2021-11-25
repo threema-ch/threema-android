@@ -36,7 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 /**
  * Send ratings to the threema server

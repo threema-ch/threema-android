@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.ui.ThreemaEditText;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 public class EmojiEditText extends ThreemaEditText {
 

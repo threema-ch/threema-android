@@ -85,8 +85,8 @@ import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.IdentityBackupGenerator;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.identitybackup.IdentityBackupGenerator;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -538,7 +538,9 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_IS_STATUS_MESSAGE,
 			Tags.TAG_MESSAGE_IS_QUEUED,
 			Tags.TAG_MESSAGE_CAPTION,
-			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID
+			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
+			Tags.TAG_MESSAGE_DELIVERED_AT,
+			Tags.TAG_MESSAGE_READ_AT
 		};
 
 		// Iterate over all contacts. Then backup every contact with the corresponding messages.
@@ -624,6 +626,8 @@ public class BackupService extends Service {
 										.write(Tags.TAG_MESSAGE_IS_QUEUED, messageModel.isQueued())
 										.write(Tags.TAG_MESSAGE_CAPTION, messageModel.getCaption())
 										.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, messageModel.getQuotedMessageId())
+										.write(Tags.TAG_MESSAGE_DELIVERED_AT, messageModel.getDeliveredAt())
+										.write(Tags.TAG_MESSAGE_READ_AT, messageModel.getReadAt())
 										.write();
 								}
 
@@ -689,7 +693,9 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_IS_STATUS_MESSAGE,
 			Tags.TAG_MESSAGE_IS_QUEUED,
 			Tags.TAG_MESSAGE_CAPTION,
-			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID
+			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
+			Tags.TAG_MESSAGE_DELIVERED_AT,
+			Tags.TAG_MESSAGE_READ_AT
 		};
 
 		final GroupService.GroupFilter groupFilter = new GroupService.GroupFilter() {
@@ -778,6 +784,8 @@ public class BackupService extends Service {
 									.write(Tags.TAG_MESSAGE_IS_QUEUED, groupMessageModel.isQueued())
 									.write(Tags.TAG_MESSAGE_CAPTION, groupMessageModel.getCaption())
 									.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, groupMessageModel.getQuotedMessageId())
+									.write(Tags.TAG_MESSAGE_DELIVERED_AT, groupMessageModel.getDeliveredAt())
+									.write(Tags.TAG_MESSAGE_READ_AT, groupMessageModel.getReadAt())
 									.write();
 
 								if (MessageUtil.hasDataFile(groupMessageModel)) {
@@ -1032,7 +1040,9 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_IS_STATUS_MESSAGE,
 			Tags.TAG_MESSAGE_IS_QUEUED,
 			Tags.TAG_MESSAGE_CAPTION,
-			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID
+			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
+			Tags.TAG_MESSAGE_DELIVERED_AT,
+			Tags.TAG_MESSAGE_READ_AT
 		};
 
 		try (final ByteArrayOutputStream distributionListBuffer = new ByteArrayOutputStream()) {
@@ -1080,6 +1090,8 @@ public class BackupService extends Service {
 										.write(Tags.TAG_MESSAGE_IS_QUEUED, distributionListMessageModel.isQueued())
 										.write(Tags.TAG_MESSAGE_CAPTION, distributionListMessageModel.getCaption())
 										.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, distributionListMessageModel.getQuotedMessageId())
+										.write(Tags.TAG_MESSAGE_DELIVERED_AT, distributionListMessageModel.getDeliveredAt())
+										.write(Tags.TAG_MESSAGE_READ_AT, distributionListMessageModel.getReadAt())
 										.write();
 								}
 

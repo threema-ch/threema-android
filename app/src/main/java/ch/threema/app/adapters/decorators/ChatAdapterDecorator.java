@@ -22,7 +22,6 @@
 package ch.threema.app.adapters.decorators;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
@@ -39,8 +38,9 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.AttrRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.cache.ThumbnailCache;
@@ -504,23 +504,16 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 	void setDefaultBackground(ComposeMessageHolder holder) {
 		if (holder.messageBlockView.getBackground() == null) {
-			@AttrRes int attr;
+			@DrawableRes int drawableRes;
 
 			if (this.getMessageModel().isOutbox() && !(this.getMessageModel() instanceof DistributionListMessageModel)) {
 				// outgoing
-				attr = R.attr.chat_bubble_send;
+				drawableRes = R.drawable.bubble_send_selector;
 			} else {
 				// incoming
-				attr = R.attr.chat_bubble_recv;
+				drawableRes = R.drawable.bubble_recv_selector;
 			}
-
-			TypedArray typedArray;
-			typedArray = getContext().getTheme().obtainStyledAttributes(new int[] { attr });
-
-			Drawable drawable = typedArray.getDrawable(0);
-
-			typedArray.recycle();
-			holder.messageBlockView.setBackground(drawable);
+			holder.messageBlockView.setBackground(AppCompatResources.getDrawable(getContext(), drawableRes));
 
 			logger.debug("*** setDefaultBackground");
 		}

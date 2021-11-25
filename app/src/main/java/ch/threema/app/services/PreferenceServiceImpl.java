@@ -58,8 +58,8 @@ import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.work.WorkDirectoryCategory;
-import ch.threema.client.work.WorkOrganization;
+import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
+import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public class PreferenceServiceImpl implements PreferenceService {
 	private static final Logger logger = LoggerFactory.getLogger(PreferenceServiceImpl.class);
@@ -296,6 +296,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setLicensePassword(String password) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__license_password), password);
+	}
+
+	@Override
+	public String getOnPremServer() {
+		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__onprem_server));
+	}
+
+	@Override
+	public void setOnPremServer(String server) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__onprem_server), server);
 	}
 
 	@Override
@@ -1492,6 +1502,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean getBallotOverviewHidden() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__ballot_overview_hidden));
+	}
+
+	@Override
+	public void setGroupRequestsOverviewHidden(boolean hidden) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__group_request_overview_hidden), hidden);
+	}
+
+	@Override
+	public boolean getGroupRequestsOverviewHidden() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_request_overview_hidden));
 	}
 
 	@Override

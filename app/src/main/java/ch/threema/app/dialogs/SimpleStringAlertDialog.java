@@ -27,7 +27,6 @@ import android.os.Bundle;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,8 +34,7 @@ import ch.threema.app.R;
 import ch.threema.app.utils.TestUtil;
 
 public class SimpleStringAlertDialog extends ThreemaDialogFragment {
-	private AlertDialog alertDialog;
-	private Activity activity;
+	protected Activity activity;
 
 	public static SimpleStringAlertDialog newInstance(int title, CharSequence message) {
 		SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
@@ -111,7 +109,6 @@ public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 			builder.setMessage(message);
 		}
 
-		alertDialog = builder.create();
-		return alertDialog;
+		return builder.create();
 	}
 }

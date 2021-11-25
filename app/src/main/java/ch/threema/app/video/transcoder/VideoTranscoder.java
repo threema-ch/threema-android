@@ -33,7 +33,6 @@ import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.view.Surface;
@@ -144,10 +143,6 @@ public class VideoTranscoder {
 
 	private Stats mStats;
 	private int mRetryCount;
-
-	// Buffers
-	private ByteBuffer[] mVideoDecoderInputBuffers;
-	private ByteBuffer[] mVideoEncoderOutputBuffers;
 
 	// Media Formats from codecs
 	private MediaFormat mDecoderOutputVideoFormat;
@@ -326,11 +321,6 @@ public class VideoTranscoder {
 
 		boolean muxing = false;
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			mVideoDecoderInputBuffers = mVideoDecoder.getInputBuffers();
-			mVideoEncoderOutputBuffers = mVideoEncoder.getOutputBuffers();
-		}
-
 		MediaCodec.BufferInfo videoDecoderOutputBufferInfo = new MediaCodec.BufferInfo();
 		MediaCodec.BufferInfo videoEncoderOutputBufferInfo = new MediaCodec.BufferInfo();
 
@@ -343,7 +333,7 @@ public class VideoTranscoder {
 			// Do not extract video if we have determined the output format but we are not yet
 			// ready to mux the frames.
 			if (!videoExtractorDone && (mEncoderOutputVideoFormat == null || muxing)) {
-				videoExtractorDone = extractAndFeedDecoder(mVideoDecoder, mVideoDecoderInputBuffers, mInputVideoComponent);
+				videoExtractorDone = extractAndFeedDecoder(mVideoDecoder, mInputVideoComponent);
 			}
 
 
@@ -595,7 +585,7 @@ public class VideoTranscoder {
 	 *
 	 * @return Finished. True when it extracts the last frame.
 	 */
-	private boolean extractAndFeedDecoder(MediaCodec decoder, ByteBuffer[] buffers, MediaComponent component) {
+	private boolean extractAndFeedDecoder(MediaCodec decoder, MediaComponent component) {
 		String type = component.getType() == MediaComponent.COMPONENT_TYPE_VIDEO ? "video" : "audio";
 
 		int decoderInputBufferIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC);
@@ -608,9 +598,7 @@ public class VideoTranscoder {
 
 		MediaExtractor extractor = component.getMediaExtractor();
 		int chunkSize = extractor.readSampleData(
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-				buffers[decoderInputBufferIndex] :
-				decoder.getInputBuffer(decoderInputBufferIndex), 0);
+			decoder.getInputBuffer(decoderInputBufferIndex), 0);
 
 		long sampleTime = extractor.getSampleTime();
 
@@ -653,7 +641,7 @@ public class VideoTranscoder {
 				// BUFFER_FLAG_END_OF_STREAM is set on non-empty buffers.
 				mRetryCount++;
 				if (mRetryCount < 5) {
-					return this.extractAndFeedDecoder(decoder, buffers, component);
+					return this.extractAndFeedDecoder(decoder, component);
 				} else {
 					mRetryCount = 0;
 					throw e;
@@ -749,9 +737,6 @@ public class VideoTranscoder {
 
 		if (encoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
 			logger.debug("video encoder: output buffers changed");
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-				mVideoEncoderOutputBuffers = mVideoEncoder.getOutputBuffers();
-			}
 			return false;
 		}
 
@@ -776,9 +761,7 @@ public class VideoTranscoder {
 		logger.trace("video encoder: returned buffer for time {}", videoEncoderOutputBufferInfo.presentationTimeUs);
 
 		ByteBuffer encoderOutputBuffer =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-				mVideoEncoderOutputBuffers[encoderOutputBufferIndex] :
-				mVideoEncoder.getOutputBuffer(encoderOutputBufferIndex);
+			mVideoEncoder.getOutputBuffer(encoderOutputBufferIndex);
 
 		if (videoEncoderOutputBufferInfo.size != 0) {
 			mMuxer.writeSampleData(mOutputVideoTrack, encoderOutputBuffer, videoEncoderOutputBufferInfo);

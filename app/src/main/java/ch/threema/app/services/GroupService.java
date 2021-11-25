@@ -34,17 +34,18 @@ import java.util.Map;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.AbstractGroupMessage;
-import ch.threema.client.GroupCreateMessage;
-import ch.threema.client.GroupDeletePhotoMessage;
-import ch.threema.client.GroupId;
-import ch.threema.client.GroupLeaveMessage;
-import ch.threema.client.GroupRenameMessage;
-import ch.threema.client.GroupRequestSyncMessage;
-import ch.threema.client.GroupSetPhotoMessage;
+import ch.threema.domain.models.GroupId;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
+import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
+import ch.threema.domain.protocol.csp.messages.GroupRenameMessage;
+import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
+import ch.threema.domain.protocol.csp.messages.GroupSetPhotoMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupModel;
@@ -90,7 +91,8 @@ public interface GroupService extends AvatarService<GroupModel> {
 		}
 	}
 
-	GroupModel getById(int intExtra);
+	@Nullable GroupModel getById(int intExtra);
+
 	GroupModel getGroup(AbstractGroupMessage message) throws SQLException;
 
 	boolean requestSync(AbstractGroupMessage msg, boolean leaveIfMine);
@@ -111,7 +113,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @return return true if a new member added, false a existing group member updated or null if a error occurred
 	 * @throws InvalidEntryException
 	 */
-	Boolean addMemberToGroup(GroupModel groupModel, String identity) throws InvalidEntryException;
+	@Nullable Boolean addMemberToGroup(GroupModel groupModel, String identity);
 	Boolean addMembersToGroup(final GroupModel groupModel, final String[] identities);
 
 	boolean remove(GroupModel groupModel);
@@ -170,6 +172,8 @@ public interface GroupService extends AvatarService<GroupModel> {
 	String getUniqueIdString(int groupId);
 
 	void setIsArchived(GroupModel groupModel, boolean archived);
+
+	boolean isFull(GroupModel groupModel);
 
 	Intent getGroupEditIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
 	void save(GroupModel model);

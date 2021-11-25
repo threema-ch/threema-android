@@ -80,10 +80,10 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				if (messageText != null && messageText.length() > helper.getMaxBubbleTextLength()) {
 					holder.readOnContainer.setVisibility(View.VISIBLE);
 					if (quoteType != QuoteUtil.QUOTE_TYPE_NONE) {
-						holder.readOnContainer.setBackgroundResource(ConfigUtils.getResourceFromAttribute(getContext(),
+						holder.readOnContainer.setBackgroundResource(
 							this.getMessageModel().isOutbox() ?
-								R.attr.chat_bubble_fade_send :
-								R.attr.chat_bubble_fade_recv));
+								R.drawable.bubble_fade_send_selector :
+								R.drawable.bubble_fade_recv_selector);
 					}
 					holder.readOnButton.setOnClickListener(view -> {
 						Intent intent = new Intent(helper.getFragment().getContext(), TextChatBubbleActivity.class);

@@ -162,7 +162,7 @@
 	<dimen name="wizard_contents_padding">16dp</dimen>
 	<dimen name="wizard_button_height">32dp</dimen>
 	<dimen name="wizard_default_view_height">32dp</dimen>
-	<dimen name="wizard_edittext_text_size">14dp</dimen>
+	<dimen name="wizard_edittext_text_size">14sp</dimen>
 	<dimen name="wizard_edittext_padding">8dp</dimen>
 	<dimen name="wizard_edittext_hint_padding">4dp</dimen>
 	<!-- wizard_default_view_height + wizard_edittext_hint_padding -->
@@ -173,16 +173,16 @@
 	<!-- reduced dimensions for screens with less than 640dp -->
 	<dimen name="wizard_paragraph_height">16dp</dimen>
 	<dimen name="wizard_small_paragraph_height">8dp</dimen>
-	<dimen name="wizard_title_text_size">20dp</dimen>
-	<dimen name="wizard_subtitle_text_size">16dp</dimen>
-	<dimen name="wizard_medium_text_size">15dp</dimen>
-	<dimen name="wizard_small_text_size">14dp</dimen>
+	<dimen name="wizard_title_text_size">20sp</dimen>
+	<dimen name="wizard_subtitle_text_size">16sp</dimen>
+	<dimen name="wizard_medium_text_size">15sp</dimen>
+	<dimen name="wizard_small_text_size">14sp</dimen>
 	<dimen name="wizard_summary_spacing">12dp</dimen>
-	<dimen name="wizard_summary_title_text_size">13dp</dimen>
-	<dimen name="wizard_summary_body_text_size">15dp</dimen>
+	<dimen name="wizard_summary_title_text_size">13sp</dimen>
+	<dimen name="wizard_summary_body_text_size">15sp</dimen>
 
 	<!-- use dp for button fonts to prevent people from using large text destroying the layout -->
-	<dimen name="wizard_button_text_size">14dp</dimen>
+	<dimen name="wizard_button_text_size">14sp</dimen>
 	<dimen name="wizard_backup_code_edittext_minheight">60dp</dimen>
 	<dimen name="wizard_contents_padding_horizontal">16dp</dimen>
 
@@ -303,7 +303,7 @@
 	<dimen name="chip_min_padding">0dp</dimen>
 	<dimen name="chip_end_padding_text_only">4dp</dimen>
 	<dimen name="chip_start_padding_text_only">9dp</dimen>
-	<dimen name="chip_ballot_text_size">14sp</dimen>
+	<dimen name="chip_text_size">14sp</dimen>
 
 	<!-- reduced size of scrollbars -->
 	<dimen name="scrollbar_size">2dp</dimen>
@@ -311,5 +311,8 @@
 	<!-- vertical offset for badges in home nav bar -->
 	<dimen name="bottom_nav_badge_offset_vertical">2dp</dimen>
 	<dimen name="header_contact_section_work_height">40dp</dimen>
+	<dimen name="recently_added_background_corner_size">12dp</dimen>
 
+	<!-- override touch target size for me.zhanghai.android.fastscroll -->
+	<dimen name="afs_min_touch_target_size">24dp</dimen>
 </resources>

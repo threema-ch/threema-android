@@ -22,7 +22,6 @@
 package ch.threema.app.fragments;
 
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -39,7 +38,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
@@ -59,7 +57,6 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
-import ch.threema.app.filepicker.FilePickerActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.PreferenceService;
@@ -68,8 +65,6 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 
 import static android.app.Activity.RESULT_OK;
-import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_PATH;
-import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_SELECT_DIRECTORY;
 
 public class BackupDataFragment extends Fragment implements
 		GenericAlertDialog.DialogClickListener,
@@ -77,7 +72,6 @@ public class BackupDataFragment extends Fragment implements
 	private static final Logger logger = LoggerFactory.getLogger(BackupDataFragment.class);
 
 	public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 441;
-	private static final int REQUEST_CODE_FILE_PICKER = 7221;
 	private static final int REQUEST_CODE_DOCUMENT_TREE = 7222;
 
 	private static final int PERMISSION_REQUEST_STORAGE_DOBACKUP = 2;
@@ -224,25 +218,16 @@ public class BackupDataFragment extends Fragment implements
 
 	@UiThread
 	private void launchDocumentTree() {
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-			try {
-				Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-				// undocumented APIs according to https://issuetracker.google.com/issues/72053350
-				i.putExtra("android.content.extra.SHOW_ADVANCED", true);
-				i.putExtra("android.content.extra.FANCY", true);
-				i.putExtra("android.content.extra.SHOW_FILESIZE", true);
-				startActivityForResult(i, REQUEST_CODE_DOCUMENT_TREE);
-			} catch (Exception e) {
-				Toast.makeText(getContext(), "Your device is missing an activity for Intent.ACTION_OPEN_DOCUMENT_TREE. Contact the manufacturer of the device.", Toast.LENGTH_SHORT).show();
-				logger.error("Broken device. No Activity for Intent.ACTION_OPEN_DOCUMENT_TREE", e);
-			}
-		} else {
-			Intent intent = new Intent(getContext(), FilePickerActivity.class);
-			if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(backupUri.getScheme())) {
-				intent.putExtra(INTENT_DATA_DEFAULT_PATH, backupUri.getPath());
-			}
-			intent.putExtra(INTENT_DATA_SELECT_DIRECTORY, true);
-			startActivityForResult(intent, REQUEST_CODE_FILE_PICKER);
+		try {
+			Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+			// undocumented APIs according to https://issuetracker.google.com/issues/72053350
+			i.putExtra("android.content.extra.SHOW_ADVANCED", true);
+			i.putExtra("android.content.extra.FANCY", true);
+			i.putExtra("android.content.extra.SHOW_FILESIZE", true);
+			startActivityForResult(i, REQUEST_CODE_DOCUMENT_TREE);
+		} catch (Exception e) {
+			Toast.makeText(getContext(), "Your device is missing an activity for Intent.ACTION_OPEN_DOCUMENT_TREE. Contact the manufacturer of the device.", Toast.LENGTH_SHORT).show();
+			logger.error("Broken device. No Activity for Intent.ACTION_OPEN_DOCUMENT_TREE", e);
 		}
 	}
 
@@ -260,7 +245,7 @@ public class BackupDataFragment extends Fragment implements
 	}
 
 	private void checkBatteryOptimizations() {
-		if (ConfigUtils.requestStoragePermissions(getActivity(), this, PERMISSION_REQUEST_STORAGE_DOBACKUP)) {
+		if (ConfigUtils.requestWriteStoragePermissions(getActivity(), this, PERMISSION_REQUEST_STORAGE_DOBACKUP)) {
 			Intent intent = new Intent(getActivity(), DisableBatteryOptimizationsActivity.class);
 			intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.backup_data));
 			startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
@@ -377,22 +362,6 @@ public class BackupDataFragment extends Fragment implements
 				dialog = GenericAlertDialog.newInstance(R.string.backup_data_title, R.string.restore_disable_energy_saving, R.string.ok, R.string.cancel);
 				dialog.setTargetFragment(this, 0);
 				dialog.show(getFragmentManager(), DIALOG_TAG_ENERGY_SAVING_REMINDER);
-				break;
-			case REQUEST_CODE_FILE_PICKER:
-				if (resultCode == RESULT_OK) {
-					String path = data.getStringExtra(FilePickerActivity.EXTRA_DIRECTORY);
-					if (!TestUtil.empty(path)) {
-						File file = new File(path);
-						DocumentFile documentFile = DocumentFile.fromFile(file);
-						if (documentFile.exists() && documentFile.isDirectory() && documentFile.canWrite()) {
-							backupUri = documentFile.getUri();
-							preferenceService.setDataBackupUri(backupUri);
-							pathTextView.setText(path);
-							return;
-						}
-					}
-					Toast.makeText(getContext(), R.string.invalid_backup_path, Toast.LENGTH_LONG).show();
-				}
 				break;
 			case REQUEST_CODE_DOCUMENT_TREE:
 				if (resultCode == RESULT_OK) {

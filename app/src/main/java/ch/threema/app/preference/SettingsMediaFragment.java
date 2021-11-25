@@ -93,7 +93,7 @@ public class SettingsMediaFragment extends ThreemaPreferenceFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				if ((boolean) newValue) {
-					return ConfigUtils.requestStoragePermissions(getActivity(), SettingsMediaFragment.this,  PERMISSION_REQUEST_SAVE_MEDIA);
+					return ConfigUtils.requestWriteStoragePermissions(getActivity(), SettingsMediaFragment.this,  PERMISSION_REQUEST_SAVE_MEDIA);
 				}
 				return true;
 			}

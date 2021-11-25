@@ -21,7 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -41,14 +40,10 @@ public class QRCodeZoomActivity extends AppCompatActivity {
 
 		final View rootView = getWindow().getDecorView().getRootView();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
-				showPopup(v);
-				return insets;
-			});
-		} else {
-			showPopup(rootView);
-		}
+		ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+			showPopup(v);
+			return insets;
+		});
 	}
 
 	private void showPopup(final View v) {

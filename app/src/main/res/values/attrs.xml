@@ -51,42 +51,44 @@
 	<attr name="textColorPrimary" format="reference"/>
 	<attr name="textColorSecondary" format="reference"/>
 	<attr name="textColorTertiary" format="reference"/>
-	<attr name="chat_bubble_recv" format="reference"/>
-	<attr name="chat_bubble_send" format="reference"/>
-	<attr name="chat_bubble_fade_recv" format="reference"/>
-	<attr name="chat_bubble_fade_send" format="reference"/>
-	<attr name="chat_bubble_status" format="reference"/>
-	<attr name="detail_highlight_bg_color" format="reference"/>
-	<attr name="divider_color" format="reference"/>
-	<attr name="card_style" format="reference"/>
+
+	<attr name="bubble_selected" format="reference|color"/>
+	<attr name="bubble_pressed" format="reference|color"/>
+	<attr name="bubble_status" format="reference|color"/>
+	<attr name="bubble_recv" format="reference|color"/>
+	<attr name="bubble_send" format="reference|color"/>
+	<attr name="bubble_pressed_overlay" format="reference|color"/>
+	<attr name="bubble_selected_overlay" format="reference|color"/>
+	<attr name="date_separator_bg_color" format="reference|color"/>
+
+<!--	<attr name="bubble_date_separator" format="reference"/>
+-->
+	<attr name="unread_messages_bg_color" format="reference|color"/>
+	<attr name="unread_messages_text_color" format="reference|color"/>
+
+	<attr name="detail_highlight_bg_color" format="reference|color"/>
+	<attr name="divider_color" format="reference|color"/>
 	<attr name="background_primary" format="reference|color"/>
 	<attr name="background_secondary" format="reference|color"/>
-	<attr name="emoji_picker_background_top" format="reference"/>
-	<attr name="emoji_picker_background_main" format="reference"/>
-	<attr name="emoji_picker_divider" format="reference"/>
-	<attr name="emoji_picker_top_divider" format="reference"/>
+	<attr name="emoji_picker_background_top" format="reference|color"/>
+	<attr name="emoji_picker_background_main" format="reference|color"/>
+	<attr name="emoji_picker_divider" format="reference|color"/>
+	<attr name="emoji_picker_top_divider" format="reference|color"/>
 	<attr name="emoji_picker_hint" format="reference|color"/>
 	<attr name="ballot_matrix_header_background" format="reference"/>
 	<attr name="image_tint_default" format="reference|color"/>
-	<attr name="selector_list_checkbox" format="reference"/>
 	<attr name="mention_background" format="reference|color"/>
 	<attr name="mention_background_inverted" format="reference|color"/>
 	<attr name="mention_text_color" format="reference|color"/>
 	<attr name="mention_text_color_inverted" format="reference|color"/>
 	<attr name="markup_marker_color" format="reference|color"/>
+	<attr name="compose_bubble" format="reference|color"/>
 	<attr name="compose_edittext_bubble" format="reference"/>
 	<attr name="compose_container" format="reference|color"/>
-	<attr name="send_button_background" format="reference"/>
 	<attr name="directory_header_background" format="reference|color"/>
-	<attr name="shape_detail" format="reference"/>
 	<attr name="cardview_background" format="reference|color"/>
 	<attr name="gallery_attach_item_background" format="reference|color"/>
-	<attr name="bubble_date_separator" format="reference"/>
-	<attr name="unread_messages_bg_color" format="reference|color"/>
-	<attr name="unread_messages_text_color" format="reference|color"/>
 	<attr name="secondary_accent_color" format="reference|color"/>
-	<attr name="shape_rounded_corner_popup_bg" format="reference"/>
-	<attr name="bubble_selector_overlay" format="reference"/>
 	<attr name="whatsnew_wallpaper_drawable" format="reference"/>
 	<attr name="text_color_first_line" format="reference|color"/>
 	<attr name="text_color_second_line" format="reference|color"/>
@@ -94,23 +96,22 @@
 	<attr name="text_color_second_line_bold" format="reference|color"/>
 	<attr name="text_color_third_line" format="reference|color"/>
 	<attr name="background_identity_popup" format="reference|color"/>
-	<attr name="multipane_shadow" format="reference"/>
+	<attr name="multipane_divider_start_color" format="reference|color"/>
+	<attr name="multipane_divider_end_color" format="reference|color"/>
 	<attr name="popup_menu_background" format="reference|color"/>
 	<attr name="settings_multipane_selection_bg" format="reference|color"/>
-	<attr name="count_box_background_accent" format="reference"/>
-	<attr name="background_quickscroll" format="reference" />
+	<attr name="quickscroll_background" format="reference|color" />
 	<attr name="accent_alpha" format="reference|color" />
-	<attr name="bubble_divider_color" format="reference|color" />
+	<attr name="cardview_divider_color" format="reference|color" />
 	<attr name="control_panel_background" format="reference|color" />
-	<attr name="background_openballots" format="reference|color" />
-	<attr name="text_color_openballots" format="reference|color" />
-	<attr name="shape_border_toprounded_square" format="reference" />
-	<attr name="materialToolbarStyle" format="reference" />
-	<attr name="bottomsheet_grapple" format="reference" />
-	<attr name="attach_status_bar_color_expanded" format="color" />
-	<attr name="attach_status_bar_color_collapsed" format="color" />
-	<attr name="attach_button_background" format="color"/>
-	<attr name="attach_media_thumb_drawable" format="reference"/>
+	<attr name="background_openNotice" format="reference|color" />
+	<attr name="text_color_openNotice" format="reference|color" />
+	<attr name="bottomsheet_grapple_color" format="reference|color" />
+	<attr name="attach_status_bar_color_expanded" format="reference|color" />
+	<attr name="attach_status_bar_color_collapsed" format="reference|color" />
+	<attr name="attach_button_background" format="reference|color"/>
+	<attr name="material_toolbar_color" format="reference|color" />
+	<attr name="circle_button_stroke_color" format="reference|color"/>
 
 	<!-- Confirm device credentials screen -->
 	<attr name="confirmDeviceCredentialsSideMargin" format="dimension"/>

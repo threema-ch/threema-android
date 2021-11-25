@@ -34,16 +34,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.Person;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
+import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
+import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 public interface NotificationService {
 	Logger logger = LoggerFactory.getLogger(NotificationService.class);
@@ -59,6 +64,8 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS =  "bk";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE =  "cu";
 	String NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS = "nc";
+	String NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE = "jres";
+	String NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST = "jreq";
 
 	String NOTIFICATION_CHANNELGROUP_CHAT = "group";
 	String NOTIFICATION_CHANNELGROUP_VOIP = "vgroup";
@@ -353,4 +360,10 @@ public interface NotificationService {
 	void showWebclientResumeFailed(String msg);
 	void cancelRestartNotification();
 	void resetConversationNotifications();
+
+	void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
+	                                       @NonNull OutgoingGroupJoinRequestModel.Status status,
+	                                       @NonNull DatabaseServiceNew databaseService);
+
+	void showGroupJoinRequestNotification(@NonNull IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel);
 }

@@ -16,7 +16,7 @@
 	              android:orientation="vertical"
 	              android:paddingTop="@dimen/wizard_contents_padding">
 
-		<ch.threema.app.ui.TextViewRobotoMedium
+		<TextView
 			android:id="@+id/wizard_welcome"
 			style="@style/WizardTitleText"
 			android:layout_width="match_parent"
@@ -68,9 +68,9 @@
 
 		</LinearLayout>
 
-		<ch.threema.app.ui.TextViewRobotoMedium
-			android:id="@+id/enter_password_explain"
+		<TextView
 			style="@style/WizardSmallText"
+			android:id="@+id/enter_password_explain"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"

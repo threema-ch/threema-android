@@ -36,9 +36,8 @@ import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import ch.threema.app.video.transcoder.VideoTranscoder;
 import ch.threema.app.video.transcoder.MediaComponent;
+import ch.threema.app.video.transcoder.VideoTranscoder;
 import java8.util.Optional;
 
 
@@ -75,26 +74,6 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 
 	private MediaCodec encoder;
 	private MediaCodec decoder;
-
-	/**
-	 * Decoder input buffer access for for Android before {@link Build.VERSION_CODES#LOLLIPOP}
-	 */
-	private ByteBuffer[] decoderInputBuffers;
-
-	/**
-	 * Decoder output buffer access for for Android before {@link Build.VERSION_CODES#LOLLIPOP}
-	 */
-	private ByteBuffer[] decoderOutputBuffers;
-
-	/**
-	 * Encoder input buffer access for for Android before {@link Build.VERSION_CODES#LOLLIPOP}
-	 */
-	private ByteBuffer[] encoderInputBuffers;
-
-	/**
-	 * Encoder output buffer access for for Android before {@link Build.VERSION_CODES#LOLLIPOP}
-	 */
-	private ByteBuffer[] encoderOutputBuffers;
 
 	/**
 	 * Information about the last decoder output buffer that was made available.
@@ -180,19 +159,11 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 			logger.debug("audio decoder: decoding unknown bit rate");
 		}
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			this.decoder = this.getDecoderFor(inputFormat);
-		} else {
-			this.decoder = MediaCodec.createDecoderByType(VideoTranscoder.getMimeTypeFor(inputFormat));
-		}
+		this.decoder = this.getDecoderFor(inputFormat);
 
 		this.decoder.configure(inputFormat, null, null, 0);
 		this.decoder.start();
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			this.decoderInputBuffers = this.decoder.getInputBuffers();
-			this.decoderOutputBuffers = this.decoder.getOutputBuffers();
-		}
 		this.decoderOutputBufferInfo = new MediaCodec.BufferInfo();
 	}
 
@@ -218,10 +189,6 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		this.encoder.configure(this.outputFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 		this.encoder.start();
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			this.encoderInputBuffers = this.encoder.getInputBuffers();
-			this.encoderOutputBuffers = this.encoder.getOutputBuffers();
-		}
 		this.encoderOutputBufferInfo = new MediaCodec.BufferInfo();
 	}
 
@@ -232,7 +199,6 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 	 * @throws UnsupportedAudioFormatException if there is no decoder for this format available.
 	 * @throws IOException If the codec creation failed.
 	 */
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private MediaCodec getDecoderFor(MediaFormat inputFormat) throws UnsupportedAudioFormatException, IOException {
 
 		final MediaCodecList mediaCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS);
@@ -269,7 +235,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		// Do not extract audio if we have determined the output format but we are not yet
 		// ready to mux the frames.
 		if (!this.extractorDone) {
-			this.extractorDone = this.pipeExtractorFrameToDecoder(this.decoder, this.decoderInputBuffers, this.component);
+			this.extractorDone = this.pipeExtractorFrameToDecoder(this.decoder, this.component);
 		}
 
 		// Poll output frames from the audio decoder.
@@ -298,7 +264,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 	 *
 	 * @return Finished. True when it extracts the last frame.
 	 */
-	private boolean pipeExtractorFrameToDecoder(MediaCodec decoder, ByteBuffer[] buffers, MediaComponent component) {
+	private boolean pipeExtractorFrameToDecoder(MediaCodec decoder, MediaComponent component) {
 		final int decoderInputBufferIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC);
 
 		if (decoderInputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
@@ -310,9 +276,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 
 		MediaExtractor extractor = component.getMediaExtractor();
 		int chunkSize = extractor.readSampleData(
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-				buffers[decoderInputBufferIndex] :
-				decoder.getInputBuffer(decoderInputBufferIndex), 0);
+			decoder.getInputBuffer(decoderInputBufferIndex), 0);
 
 		long sampleTime = extractor.getSampleTime();
 
@@ -355,7 +319,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 				// BUFFER_FLAG_END_OF_STREAM is set on non-empty buffers.
 				this.resendRetryCount++;
 				if (this.resendRetryCount < 5) {
-					return this.pipeExtractorFrameToDecoder(decoder, buffers, component);
+					return this.pipeExtractorFrameToDecoder(decoder, component);
 				} else {
 					this.resendRetryCount = 0;
 					throw e;
@@ -388,9 +352,6 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 
 		if (decoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
 			logger.debug("audio decoder: output buffers changed");
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-				this.decoderOutputBuffers = this.decoder.getOutputBuffers();
-			}
 			return;
 		}
 
@@ -435,9 +396,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		logger.trace("audio encoder: returned input buffer: {}", encoderInputBufferIndex);
 
 		ByteBuffer encoderInputBuffer =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-				this.encoderInputBuffers[encoderInputBufferIndex] :
-				this.encoder.getInputBuffer(encoderInputBufferIndex);
+			this.encoder.getInputBuffer(encoderInputBufferIndex);
 
 		int chunkSize = Math.min(audioDecoderOutputBufferInfo.size, encoderInputBuffer.capacity());
 	    long presentationTime = audioDecoderOutputBufferInfo.presentationTimeUs;
@@ -447,9 +406,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		logger.trace("audio decoder: pending buffer for time {}", presentationTime);
 
 		if (chunkSize >= 0) {
-			ByteBuffer decoderOutputBuffer = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-				this.decoderOutputBuffers[this.decoderOutputBufferNextIndex.get()].duplicate() :
-				this.decoder.getOutputBuffer(this.decoderOutputBufferNextIndex.get()).duplicate();
+			ByteBuffer decoderOutputBuffer = this.decoder.getOutputBuffer(this.decoderOutputBufferNextIndex.get()).duplicate();
 			decoderOutputBuffer.position(audioDecoderOutputBufferInfo.offset);
 			decoderOutputBuffer.limit(audioDecoderOutputBufferInfo.offset + chunkSize);
 			encoderInputBuffer.position(0);
@@ -482,9 +439,6 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 
 		if (encoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
 			logger.debug("audio encoder: output buffers changed");
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-				this.encoderOutputBuffers = this.encoder.getOutputBuffers();
-			}
 			return false;
 		}
 
@@ -514,9 +468,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		logger.trace("audio encoder: returned buffer for time {}", audioEncoderOutputBufferInfo.presentationTimeUs);
 
 		if (audioEncoderOutputBufferInfo.size != 0) {
-			ByteBuffer encoderOutputBuffer = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-				this.encoderOutputBuffers[encoderOutputBufferIndex] :
-				this.encoder.getOutputBuffer(encoderOutputBufferIndex);
+			ByteBuffer encoderOutputBuffer = this.encoder.getOutputBuffer(encoderOutputBufferIndex);
 			if (audioEncoderOutputBufferInfo.presentationTimeUs >= this.previousPresentationTime) {
 				this.previousPresentationTime = audioEncoderOutputBufferInfo.presentationTimeUs;
 				this.muxer.writeSampleData(this.muxerTrack.get(), encoderOutputBuffer, audioEncoderOutputBufferInfo);

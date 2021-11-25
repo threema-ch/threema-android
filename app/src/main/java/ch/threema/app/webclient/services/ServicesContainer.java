@@ -41,7 +41,7 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
-import ch.threema.client.MessageQueue;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.storage.DatabaseServiceNew;
 
 /**
@@ -115,7 +115,7 @@ public class ServicesContainer {
 		this.sessionWakeUp = SessionWakeUpServiceImpl.getInstance();
 
 		// Initialize wakelock service
-		this.wakeLock = new WakeLockServiceImpl(appContext);
+		this.wakeLock = new WakeLockServiceImpl(appContext, lifetime);
 
 		// Initialize battery status service
 		this.batteryStatus = new BatteryStatusServiceImpl(appContext);

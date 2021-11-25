@@ -8,7 +8,7 @@
 				android:paddingTop="@dimen/wizard_contents_padding"
 				android:paddingBottom="@dimen/wizard_contents_padding">
 
-	<ch.threema.app.ui.TextViewRobotoMedium
+	<TextView
 			style="@style/WizardTitleText"
 			android:id="@+id/wizard_welcome"
 			android:layout_width="wrap_content"

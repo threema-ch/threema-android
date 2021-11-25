@@ -3,7 +3,7 @@
 	<item>
 		<shape android:shape="rectangle">
 			<corners android:radius="@dimen/edittext_bubble_border_radius"/>
-			<solid android:color="@color/compose_bubble_dark"/>
+			<solid android:color="@color/dark_compose_bubble"/>
 		</shape>
 	</item>
 	<item
@@ -20,7 +20,7 @@
 				android:right="@dimen/chat_bubble_border_padding"
 				android:top="@dimen/chat_bubble_border_padding"/>
 			<solid android:color="@color/dark_toolbar_color"/>
-			<stroke android:color="@color/compose_bubble_dark" android:width="0.5dp" />
+			<stroke android:color="@color/dark_compose_bubble" android:width="0.5dp" />
 		</shape>
 	</item>
 </layer-list>

@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    id 'org.sonarqube'
+    id "org.jetbrains.kotlin.jvm"
+    id 'jacoco'
+}
+
+dependencies {
+
+    implementation platform('org.jetbrains.kotlin:kotlin-bom')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlin_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
+    implementation "org.slf4j:slf4j-api:$slf4j_version"
+
+    testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'android-client'
+        property 'sonar.projectName', 'Threema for Android'
+        property "sonar.sources", "src/main/"
+        property "sonar.tests", "src/test/"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.verbose", "true"
+        property 'sonar.coverage.jacoco.xmlReportPaths', "$projectDir.parentFile.path/build/reports/jacoco/codeCoverageReport/codeCoverageReport.xml"
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = false
+    }
+}
+
+sourceCompatibility = '1.8'

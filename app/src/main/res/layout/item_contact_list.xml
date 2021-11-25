@@ -55,7 +55,7 @@
 		android:id="@+id/check_box"
 		android:layout_width="@dimen/avatar_size_small"
 		android:layout_height="@dimen/avatar_size_small"
-		android:background="?selector_list_checkbox"
+		android:background="@drawable/selector_list_checkbox"
 		android:duplicateParentState="true"
 		android:stateListAnimator="@animator/selector_list_checkbox_fg"
 		app:layout_constraintBottom_toBottomOf="@id/avatar_view"

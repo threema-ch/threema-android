@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
-import ch.threema.client.MessageId;
+import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
@@ -423,7 +423,9 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						"`" + MessageModel.COLUMN_IS_STATUS_MESSAGE +"` SMALLINT ," +
 						"`" + MessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID +"` VARCHAR ," +
 						"`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
-						"`" + MessageModel.COLUMN_MESSAGE_FLAGS +"` INT )",
+						"`" + MessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
+						"`" + MessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
+						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME );",
 
 			//indices
 				"CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_UID +"` )",

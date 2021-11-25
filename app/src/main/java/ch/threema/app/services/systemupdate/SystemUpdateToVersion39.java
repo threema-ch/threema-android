@@ -28,7 +28,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.client.ThreemaFeature;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 

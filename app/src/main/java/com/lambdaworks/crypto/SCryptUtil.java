@@ -49,8 +49,8 @@ public class SCryptUtil {
      * in {@link SCryptUtil}.
      *
      * @param passwd    Password.
-     * @param N         CPU cost parameter.
-     * @param r         Memory cost parameter.
+     * @param N         Iteration count.
+     * @param r         Block size.
      * @param p         Parallelization parameter.
      *
      * @return The hashed password.
@@ -69,8 +69,8 @@ public class SCryptUtil {
      * in {@link SCryptUtil}.
      *
      * @param passwd Password.
-     * @param N      CPU cost parameter.
-     * @param r      Memory cost parameter.
+     * @param N      Iteration count.
+     * @param r      Block size.
      * @param p      Parallelization parameter.
      *
      * @return The hashed password.
@@ -89,8 +89,8 @@ public class SCryptUtil {
      * in {@link SCryptUtil}.
      *
      * @param passwordBytes Password.
-     * @param N             CPU cost parameter.
-     * @param r             Memory cost parameter.
+     * @param N             Iteration count.
+     * @param r             Block size.
      * @param p             Parallelization parameter.
      *
      * @return The hashed password.
@@ -110,8 +110,8 @@ public class SCryptUtil {
      *
      * @param passwordBytes Password.
      * @param salt          128 bit salt.
-     * @param N             CPU cost parameter.
-     * @param r             Memory cost parameter.
+     * @param N             Iteration count.
+     * @param r             Block size.
      * @param p             Parallelization parameter.
      *
      * @return The hashed password.

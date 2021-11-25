@@ -53,7 +53,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.ProtocolStrings;
+import ch.threema.domain.protocol.ProtocolStrings;
 
 class PoiRepository {
 	private static final Logger logger = LoggerFactory.getLogger(PoiRepository.class);

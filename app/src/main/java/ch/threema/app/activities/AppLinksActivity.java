@@ -26,19 +26,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactAsyncTask;
+import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
-import ch.threema.client.ProtocolDefines;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class AppLinksActivity extends ThreemaToolbarActivity {
-	private static final Logger logger = LoggerFactory.getLogger(AppLinksActivity.class);
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,40 +79,53 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 	private void handleIntent() {
 		String appLinkAction = getIntent().getAction();
 		final Uri appLinkData = getIntent().getData();
-		if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData != null){
-			final String threemaId = appLinkData.getLastPathSegment();
-			if (threemaId != null) {
-				if (threemaId.equalsIgnoreCase("compose")) {
-					Intent intent = new Intent(this, RecipientListActivity.class);
-					intent.setAction(appLinkAction);
-					intent.setData(appLinkData);
+		if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.contactActionUrl)) {
+			handleContactUrl(appLinkAction, appLinkData);
+		}
+		else if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.groupLinkActionUrl)) {
+			handleGroupLinkUrl(appLinkData);
+		}
+		finish();
+	}
+
+	private void handleContactUrl(String appLinkAction, Uri appLinkData) {
+		final String threemaId = appLinkData.getLastPathSegment();
+		if (threemaId != null) {
+			if (threemaId.equalsIgnoreCase("compose")) {
+				Intent intent = new Intent(this, RecipientListActivity.class);
+				intent.setAction(appLinkAction);
+				intent.setData(appLinkData);
+				startActivity(intent);
+			} else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
+				new AddContactAsyncTask(null, null, threemaId, false, () -> {
+					String text = appLinkData.getQueryParameter("text");
+
+					Intent intent = new Intent(AppLinksActivity.this, text != null ?
+						ComposeMessageActivity.class :
+						ContactDetailActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+
+					if (text != null) {
+						text = text.trim();
+						intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
+					}
+
 					startActivity(intent);
-				} else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
-					new AddContactAsyncTask(null, null, threemaId, false, () -> {
-						String text = appLinkData.getQueryParameter("text");
-
-						Intent intent = new Intent(AppLinksActivity.this, text != null ?
-							ComposeMessageActivity.class :
-							ContactDetailActivity.class);
-						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
-						intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
-
-						if (text != null) {
-							text = text.trim();
-							intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
-						}
-
-						startActivity(intent);
-					}).execute();
-				} else {
-					Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
-				}
+				}).execute();
 			} else {
 				Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
 			}
+		} else {
+			Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
 		}
-		finish();
+	}
+
+	private void handleGroupLinkUrl(Uri appLinkData) {
+		Intent intent = new Intent(AppLinksActivity.this, OutgoingGroupRequestActivity.class);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_LINK, appLinkData.getEncodedFragment());
+		startActivity(intent);
 	}
 
 	@Override
@@ -125,7 +136,6 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		logger.debug("onActivityResult");
 		switch (requestCode) {
 			case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
 				if (resultCode == RESULT_OK) {

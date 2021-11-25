@@ -23,7 +23,6 @@ package ch.threema.app.webclient.adapters;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.AbstractRecyclerAdapter;
 import ch.threema.app.services.BrowserDetectionService.Browser;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
@@ -55,7 +53,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 	private final SessionService sessionService;
 	private final String currentPushToken;
 	private OnClickItemListener onClickItemListener;
-	private int red, green, orange, grey;
+	private final int red, green, orange, grey;
 
 	private static class SessionListViewHolder extends RecyclerView.ViewHolder {
 		private final TextView createDateView;
@@ -236,15 +234,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 						browserId = R.drawable.browser_edge;
 						break;
 					case WEBTOP:
-						if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-							browserId = R.drawable.browser_desktop;
-						} else {
-							if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
-								browserId = R.drawable.browser_desktop_dark;
-							} else {
-								browserId = R.drawable.browser_desktop_light;
-							}
-						}
+						browserId = R.drawable.browser_desktop;
 						break;
 					default:
 						browserId = R.drawable.browser_unknown;

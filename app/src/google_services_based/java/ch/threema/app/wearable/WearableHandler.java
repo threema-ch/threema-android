@@ -53,7 +53,7 @@ import ch.threema.app.voip.services.CallRejectService;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.client.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;

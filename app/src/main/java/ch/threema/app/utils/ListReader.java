@@ -22,17 +22,10 @@
 package ch.threema.app.utils;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
 
 /**
  * Convert Json to X and X to Json

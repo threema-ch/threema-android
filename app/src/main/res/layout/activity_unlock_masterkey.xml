@@ -15,7 +15,7 @@
 			android:layout_height="wrap_content"
 			android:paddingTop="24dp">
 
-		<ch.threema.app.ui.TextViewRobotoMedium
+		<TextView
 				style="@style/WizardTitleText"
 				android:id="@+id/unlock_masterkey_title"
 				android:layout_width="wrap_content"

@@ -22,10 +22,10 @@
 package ch.threema.app.voip.listeners;
 
 import androidx.annotation.AnyThread;
-import ch.threema.client.voip.VoipCallAnswerData;
-import ch.threema.client.voip.VoipCallHangupData;
-import ch.threema.client.voip.VoipCallOfferData;
-import ch.threema.client.voip.VoipCallRingingData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
 
 public interface VoipMessageListener {
 	@AnyThread default void onOffer(final String identity, final VoipCallOfferData data) { }

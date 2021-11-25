@@ -75,21 +75,36 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 	private int dividersHeight, viewableSpaceHeight;
 	private int popupY, popupX;
 	private TextWatcher textWatcher = new TextWatcher() {
+		private void run() {
+			dismiss();
+		}
+
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			try {
+				if (count == 0 && start == 0) { // @ at first position is deleted
+					editText.post(this::run);
+					return;
+				}
+				char last = s.charAt(start -1);
+				if ((count == 0 && (' ' == last || '\n' == last)) // if backspace is hit until the @ is gone
+					|| (count == 1 && (' ' == s.charAt(start) || '\n' == s.charAt(start)))) { // if spacebar or newline is added, escape the mention popup.
+					editText.post(this::run);
+				}
+			}
+			catch (IndexOutOfBoundsException e) {
+				// don't care, happens when deleting a char after the @ the first time around
+				// hacky because there is no other logic with the listener callback that would not mess with the rest of the logic.
+			}
+		}
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			if (TextUtils.isEmpty(s)) {
-				editText.post(new Runnable() {
-					@Override
-					public void run() {
-						dismiss();
-					}
-				});
+			if (TextUtils.isEmpty(s)) {// if text field is completely empty
+				editText.post(this::run);
 			}
 			else if (!s.toString().equals(filterText)) {
 				String filterTextAfterAtChar = null;
@@ -98,6 +113,9 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 					filterTextAfterAtChar = s.toString().substring(filterStart);
 					if (!TestUtil.empty(filterTextAfterAtChar)) {
 						spacePosition = filterTextAfterAtChar.indexOf(" ");
+						if (spacePosition == -1) {
+							spacePosition = filterTextAfterAtChar.indexOf("\n");
+						}
 					}
 				} catch (IndexOutOfBoundsException e) {
 					//
@@ -105,10 +123,10 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 
 				if (spacePosition != -1) {
 					filterText = s.toString().substring(0, filterStart + spacePosition);
-					editText.setSelection(filterStart + spacePosition);
 				} else {
 					filterText = s.toString();
 				}
+
 				updateList(false);
 				updateRecyclerViewDimensions();
 			}
@@ -229,9 +247,8 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 			groupContacts = Functional.filter(groupContacts, (IPredicateNonNull<ContactModel>) contactModel -> ContactUtil.getSafeNameString(contactModel, isSortingFirstName).toLowerCase().contains(filterText.substring(filterStart).toLowerCase()));
 		}
 
-		if (groupContacts.size() < 1) {
-			dismiss();
-			return null;
+		if (groupContacts.isEmpty()) {// just show all selector as default placeholder if there are no more specific results
+			groupContacts.add(allContactModel);
 		}
 
 		if (this.mentionAdapter == null) {

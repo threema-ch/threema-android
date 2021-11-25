@@ -16,7 +16,7 @@
 					android:paddingBottom="@dimen/wizard_contents_padding"
 					android:layout_marginBottom="32dp">
 
-		<ch.threema.app.ui.TextViewRobotoMedium
+		<TextView
 				style="@style/WizardTitleText"
 				android:id="@+id/wizard_welcome"
 				android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
 			<ch.threema.app.ui.NewWizardFingerPrintView
 					android:id="@+id/wizard1_finger_print"
 					android:importantForAccessibility="no"
-					android:background="@color/new_wizard_alpha_background"
+					android:background="@color/wizard_alpha_background"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"/>
 
@@ -80,6 +80,14 @@
 					app:srcCompat="@drawable/ic_finger_with_circles"
 					/>
 		</FrameLayout>
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/cancel"
+			style="@style/WizardButtonInverse"
+			android:layout_width="match_parent"
+			android:layout_below="@id/thumb_layout"
+			android:layout_marginTop="@dimen/wizard_contents_padding"
+			android:text="@string/cancel"/>
 
 	</RelativeLayout>
 
@@ -103,9 +111,9 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				app:srcCompat="@drawable/ic_info_outline"
-				android:tint="@color/new_wizard_color_primary"
 				android:textSize="14sp"
-				android:textColor="@color/new_wizard_color_accent"/>
+				android:textColor="@color/wizard_color_accent"
+				app:tint="@color/wizard_color_primary" />
 
 			<TextView
 					android:id="@+id/wizard_id_info"
@@ -115,7 +123,7 @@
 					android:text="@string/new_wizard_more_information"
 					android:fontFamily="sans-serif-light"
 					android:textSize="14sp"
-					android:textColor="@color/new_wizard_color_accent"/>
+					android:textColor="@color/wizard_color_accent"/>
 
 		</LinearLayout>
 

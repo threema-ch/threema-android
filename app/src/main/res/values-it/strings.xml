@@ -34,8 +34,8 @@
     <string name="prefs_header_chat">Chat</string>
     <string name="prefs_header_reset">Immagine di sfondo</string>
     <string name="prefs_header_keyboard">Tastiera</string>
-    <string name="prefs_sum_sync_contacts_on">Collegare i contatti di Threema alla rubrica del sistema</string>
-    <string name="prefs_sum_sync_contacts_off">Eliminato collegamento tra Threema e rubrica</string>
+    <string name="prefs_sum_sync_contacts_on">Collegare i contatti di %s alla rubrica del sistema</string>
+    <string name="prefs_sum_sync_contacts_off">Eliminato collegamento tra %s e rubrica</string>
     <string name="prefs_title_sync_contacts">Sincronizza contatti</string>
     <string name="prefs_sum_block_unknown_off">Chiunque può inviarti messaggi. I nuovi contatti vengono aggiunti
 		automaticamente dopo il primo messaggio.</string>
@@ -123,7 +123,7 @@
     <string name="linked_mobile">Numero di cellulare</string>
     <string name="public_nickname">Nickname</string>
     <string name="share_via">Condividi mediante…</string>
-    <string name="share_subject">Threema chat</string>
+    <string name="share_subject">%s chat</string>
     <string name="message_delete_undo">Annulla</string>
     <string name="message_deleted">Messaggio cancellato</string>
     <string name="mobile_already_linked">Il tuo Threema ID è già collegato con questo numero di cellulare</string>
@@ -278,7 +278,7 @@
     <string name="restore_data_password_msg">Inserisci la password utilizzata per creare questo backup.</string>
     <string name="backup_data_media">Comprende file multimediali di grandi dimensioni (video, documenti, immagini originali)</string>
     <string name="backup_data_new">Esegui nuovo backup</string>
-    <string name="pinentry_enter_pin">Inserisci codice PIN</string>
+    <string name="pinentry_enter_pin">Inserisci codice PIN %s</string>
     <string name="pinentry_wrong_pin">Codice PIN errato</string>
     <string name="prefs_sum_security_pin">Bloccare l\'accesso all\'interfaccia utente di Threema</string>
     <string name="prefs_title_pin_switch">Protezione dell\'App</string>
@@ -385,8 +385,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="touch_to_link">(nessuno)</string>
     <string name="prefs_validate_contacts">Verifica collegamento contatti</string>
     <string name="prefs_validate_contacts_loading">Verifica collegamento contatti in corso</string>
-    <string name="prefs_sum_validate_contacts">Verificare i collegamenti tra i contatti di Threema e quelli di Android e
-		correggerli se necessario.</string>
     <string name="prefs_title_fullscreen_ime">Tastiera a schermo intero</string>
     <string name="prefs_sum_fullscreen_ime_on">La tastiera in orizzontale occupa tutto lo schermo</string>
     <string name="prefs_sum_fullscreen_ime_off">Sopra alla tastiera viene visualizzato un estratto della chat</string>
@@ -1193,6 +1191,30 @@ messaggi ogni 15 minuti.</string>
     <string name="missing_app_licence">L\'app store non è stato in grado di confermare l\'acquisto. Se usi Google Play, elimina i dati di Google Play Store App e riavvia il dispositivo.</string>
     <string name="set_backup_path">Definisci percorso backup</string>
     <string name="set_backup_path_intro">Scegli nello schermo seguente il folder dove salvare i backup.</string>
+    <string name="discard_changes_title">Annulla modifiche</string>
+    <string name="group_link_share">Condividi link gruppo</string>
+    <string name="group_request_incoming_dialog_title">Richiesta di %s</string>
+    <string name="accept">Accetta</string>
+    <string name="reject">Rifiuta</string>
+    <string name="group_request_already_sent"><![CDATA[Hai già inviato una richiesta di adesione a <b>%s</b> mediante questo link.]]></string>
+    <string name="group_link_none">Il link non è stato creato</string>
+    <string name="really_delete_group_request_title">Vuoi davvero cancellare la richiesta gruppo?</string>
+    <string name="sent_to">Inviato a: %s</string>
+    <string name="sent_on">Inviato il: %s</string>
+    <string name="group_response">Risposta alla richiesta gruppo</string>
+    <string name="group_response_accepted">La tua richiesta gruppo per %s è stata accettata.</string>
+    <string name="group_response_full">La tua richiesta gruppo per %s è stata rifiutata perché il gruppo è già pieno.</string>
+    <string name="group_response_rejected">La tua richiesta gruppo per %s è stata rifiutata.</string>
+    <string name="group_qr_code_title">Codice QR gruppo</string>
+    <string name="group_link_invalid">Scaduto</string>
+    <string name="received_on">Ricevuto il %s</string>
+    <string name="group_request_state_full">Gruppo pieno</string>
+    <string name="group_request_state_rejected">Respinta</string>
+    <string name="group_request_state_expired">Scaduta</string>
+    <string name="group_request_state_pending">In sospeso</string>
+    <string name="group_request_state_accepted">Accettata</string>
+    <string name="group_request_link_already_deleted">Link gruppo già cancellato</string>
+    <string name="really_delete_incoming_request">Vuoi davvero cancellare %d richieste gruppo? Una volta cancellate non potrai più rispondere a queste richieste.</string>
     <string name="tap_here_for_more">Tocca qui per ulteriori informazioni</string>
     <string name="another_connection_instructions">Il server ha individuato due o più connessioni da dispositivi diversi con lo stesso Threema ID.\n\nNon è possibile usare lo stesso Threema ID su diversi dispositivi contemporaneamente. I nuovi messaggi sono trasmessi solo al dispositivo che ha avuto accesso per ultimo al server.\n\nSe stai passando a un altro dispositivo, disinstalla o disattiva %s sul dispositivo precedente e riavvia quello nuovo.</string>
     <string name="app_store_error_code">Codice errore app store: %d</string>
@@ -1205,4 +1227,13 @@ messaggi ogni 15 minuti.</string>
     <string name="label_continue">Continua</string>
     <string name="select_date">Seleziona una data</string>
     <string name="select_time">Seleziona un\'ora</string>
+    <string name="send_to">Invia a %s</string>
+    <string name="receipts_override_choice_send">Invia</string>
+    <string name="receipts_override_choice_dont_send">Non inviare</string>
+    <string name="receipts_override_choice_default">Predefinito (%s)</string>
+    <string name="unable_to_determine_recording_length">Registrazione vuota o durata non determinabile</string>
+    <string name="prefs_header_receipts">Conferme</string>
+    <string name="prefs_title_reset_receipts">Resettare impostazioni personali</string>
+    <string name="prefs_sum_reset_receipts">Ripristinare le impostazioni relative ai contatti per la conferma di lettura e l\'indicatore di scrittura ai valori predefiniti</string>
+    <string name="reset_successful">Impostazioni predefinite reimpostate con successo</string>
 </resources>

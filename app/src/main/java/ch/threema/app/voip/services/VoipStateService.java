@@ -91,18 +91,18 @@ import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.ThreemaException;
-import ch.threema.client.MessageQueue;
-import ch.threema.client.voip.VoipCallAnswerData;
-import ch.threema.client.voip.VoipCallAnswerMessage;
-import ch.threema.client.voip.VoipCallHangupData;
-import ch.threema.client.voip.VoipCallHangupMessage;
-import ch.threema.client.voip.VoipCallOfferData;
-import ch.threema.client.voip.VoipCallOfferMessage;
-import ch.threema.client.voip.VoipCallRingingData;
-import ch.threema.client.voip.VoipCallRingingMessage;
-import ch.threema.client.voip.VoipICECandidatesData;
-import ch.threema.client.voip.VoipICECandidatesMessage;
-import ch.threema.client.voip.features.VideoFeature;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
+import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
@@ -126,8 +126,8 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
  */
 @AnyThread
 public class VoipStateService implements AudioManager.OnAudioFocusChangeListener {
-	private static final Logger logger = LoggerFactory.getLogger(VoipStateService.class);
-	private final static String TAG = "VoipStateService";
+	private static final Logger logger = LoggerFactory.getLogger("VoipStateService");
+	private final static String LIFETIME_SERVICE_TAG = "VoipStateService";
 
 	public static final int VIDEO_RENDER_FLAG_NONE = 0x00;
 	public static final int VIDEO_RENDER_FLAG_INCOMING = 0x01;
@@ -354,7 +354,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Make sure connection is open
 		if (!this.connectionAcquired) {
-			this.lifetimeService.acquireConnection(TAG);
+			this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
 			this.connectionAcquired = true;
 		}
 
@@ -449,7 +449,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Release Threema connection
 		if (this.connectionAcquired) {
-			this.lifetimeService.releaseConnectionLinger(TAG, VOIP_CONNECTION_LINGER);
+			this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, VOIP_CONNECTION_LINGER);
 			this.connectionAcquired = false;
 		}
 	}
@@ -923,7 +923,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.setStateIdle();
 
 		// Cancel call notification for that person
-		this.cancelCallNotification(msg.getFromIdentity());
+		this.cancelCallNotification(msg.getFromIdentity(), CallActivity.ACTION_DISCONNECTED);
 
 		// Notify listeners
 		VoipListenerManager.messageListener.handle(listener -> {
@@ -1315,10 +1315,14 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 	/**
 	 * Cancel a pending call notification for the specified identity.
+	 *
+	 * @param cancelReason Either CallActivity.ACTION_CANCELLED (if a call was cancelled before
+	 *                     being established) or CallActivity.ACTION_DISCONNECTED (if a previously
+	 *                     established call was disconnected).
 	 */
-	void cancelCallNotification(@NonNull String identity) {
+	void cancelCallNotification(@NonNull String identity, @NonNull String cancelReason) {
 		// Cancel fullscreen activity launched by notification first
-		VoipUtil.sendVoipBroadcast(appContext, CallActivity.ACTION_CANCELLED);
+		VoipUtil.sendVoipBroadcast(appContext, cancelReason);
 		appContext.stopService(new Intent(ThreemaApplication.getAppContext(), VoipCallService.class));
 
 		this.stopRingtone();

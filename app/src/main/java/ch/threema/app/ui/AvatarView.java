@@ -23,6 +23,7 @@ package ch.threema.app.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -72,6 +73,11 @@ public class AvatarView extends FrameLayout {
 
 	public void setImageBitmap(Bitmap bitmap) {
 		avatar.setImageBitmap(bitmap);
+		avatar.requestLayout();
+	}
+
+	public void setImageDrawable(Drawable drawable) {
+		avatar.setImageDrawable(drawable);
 		avatar.requestLayout();
 	}
 

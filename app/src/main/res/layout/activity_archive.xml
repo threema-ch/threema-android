@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2019 Threema GmbH
+  ~ Copyright (c) 2021 Threema GmbH
   ~ All rights reserved.
   -->
 
@@ -21,7 +21,7 @@
 
 		<com.google.android.material.appbar.MaterialToolbar
 			android:id="@+id/material_toolbar"
-			style="?attr/materialToolbarStyle"
+			style="@style/Threema.ToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			app:menu="@menu/activity_archive"

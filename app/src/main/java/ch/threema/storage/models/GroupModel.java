@@ -23,8 +23,10 @@ package ch.threema.storage.models;
 
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.GroupId;
 
 public class GroupModel implements ReceiverModel {
 	public static final int GROUP_NAME_MAX_LENGTH_BYTES = 256;
@@ -40,7 +42,7 @@ public class GroupModel implements ReceiverModel {
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
 
 	private int id;
-	private String apiGroupId;
+	private GroupId apiGroupId;
 	private String name;
 	private String creatorIdentity;
 	private Date createdAt;
@@ -68,12 +70,12 @@ public class GroupModel implements ReceiverModel {
 		return this;
 	}
 
-	public GroupModel setApiGroupId(String apiGroupId) {
+	public GroupModel setApiGroupId(GroupId apiGroupId) {
 		this.apiGroupId = apiGroupId;
 		return this;
 	}
 
-	public String getApiGroupId() {
+	public @NonNull GroupId getApiGroupId() {
 		return this.apiGroupId;
 	}
 

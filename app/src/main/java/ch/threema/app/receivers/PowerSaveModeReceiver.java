@@ -24,7 +24,6 @@ package ch.threema.app.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PowerManager;
 
 import org.slf4j.Logger;
@@ -36,13 +35,11 @@ public class PowerSaveModeReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(final Context context, final Intent intent) {
 		if (intent != null && intent.getAction() != null && intent.getAction().equals(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				final PowerManager pm = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-				if (pm != null && pm.isPowerSaveMode()) {
-					logger.info("Power Save Mode enabled");
-				} else {
-					logger.info("Power Save Mode disabled");
-				}
+			final PowerManager pm = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+			if (pm != null && pm.isPowerSaveMode()) {
+				logger.info("Power Save Mode enabled");
+			} else {
+				logger.info("Power Save Mode disabled");
 			}
 		}
 	}

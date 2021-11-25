@@ -23,7 +23,7 @@ package ch.threema.app.services.license;
 
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.APIConnector;
+import ch.threema.domain.protocol.api.APIConnector;
 
 public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredentials> {
 

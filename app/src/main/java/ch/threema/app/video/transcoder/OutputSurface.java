@@ -39,7 +39,6 @@ package ch.threema.app.video.transcoder;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.Surface;
@@ -111,11 +110,7 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
 		// causes the native finalizer to run.
 		logger.debug("textureID=" + mTextureRender.getTextureId());
 		mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			mSurfaceTexture.setOnFrameAvailableListener(this, mHandler);
-		} else {
-			mSurfaceTexture.setOnFrameAvailableListener(this);
-		}
+		mSurfaceTexture.setOnFrameAvailableListener(this, mHandler);
 		mSurface = new Surface(mSurfaceTexture);
 	}
 

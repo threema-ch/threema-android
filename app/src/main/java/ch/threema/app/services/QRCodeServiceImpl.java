@@ -34,19 +34,20 @@ import java.util.Date;
 import java.util.Hashtable;
 
 import ch.threema.app.utils.TestUtil;
-import ch.threema.client.ProtocolDefines;
-import ch.threema.client.Utils;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class QRCodeServiceImpl implements QRCodeService {
 	private final UserService userService;
-	private final static String CONTENT_PREFIX = "3mid:";
+	public final static String CONTENT_PREFIX = "3mid:";
+	public final static String ID_SCHEME = "3mid";
 	private Bitmap userQRCodeBitmap;
 
 	public QRCodeServiceImpl(UserService userService) {
 		this.userService = userService;
 	}
 
-	private String getContent() {
+	private String getUserQRCodeString() {
 		return CONTENT_PREFIX + this.userService.getIdentity() + "," +
 				Utils.byteArrayToHexString(this.userService.getPublicKey());
 	}
@@ -106,7 +107,7 @@ public class QRCodeServiceImpl implements QRCodeService {
 			if (raw != null && raw.length()>0) {
 				matrix = this.renderQR(raw, 0, 0, 0, unicode);
 			} else {
-				matrix = this.renderQR(getContent(), 0, 0, 0, unicode);
+				matrix = this.renderQR(getUserQRCodeString(), 0, 0, 0, unicode);
 			}
 
 			if (matrix != null) {

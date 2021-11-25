@@ -22,7 +22,6 @@
 package ch.threema.app.services.messageplayer;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
@@ -67,13 +66,13 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 	private int duration = 0;
 	private int position = 0;
 	private Thread mediaPositionListener;
-	private AudioManager audioManager;
+	private final AudioManager audioManager;
 	private int streamType = STREAM_MUSIC;
 	private int audioStreamType = STREAM_MUSIC;
-	private PreferenceService preferenceService;
-	private SensorService sensorService;
-	private FileService fileService;
-	private boolean micPermission;
+	private final PreferenceService preferenceService;
+	private final SensorService sensorService;
+	private final FileService fileService;
+	private final boolean micPermission;
 
 	protected AudioMessagePlayer(Context context,
 	                             MessageService messageService,
@@ -131,7 +130,6 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		return messageModel;
 	}
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private AudioAttributes getAudioAttributes(int stream) {
 		if (stream == AudioManager.STREAM_VOICE_CALL) {
 			return new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION).build();
