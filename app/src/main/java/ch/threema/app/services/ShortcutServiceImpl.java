@@ -22,7 +22,6 @@
 package ch.threema.app.services;
 
 import android.annotation.TargetApi;
-import android.app.Person;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
@@ -39,23 +38,25 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.WorkerThread;
+import androidx.core.app.Person;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.CallActivity;
@@ -75,15 +76,17 @@ public class ShortcutServiceImpl implements ShortcutService {
 	private final ContactService contactService;
 	private final GroupService groupService;
 	private final DistributionListService distributionListService;
+	private final PreferenceService preferenceService;
 
-	private static final String DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY = "ch.threema.app.category.DYNAMIC_SHORTCUT_SHARE_TARGET";
+	private static final String DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY = BuildConfig.APPLICATION_ID + ".category.DYNAMIC_SHORTCUT_SHARE_TARGET";
 
 	public ShortcutServiceImpl(Context context, ContactService contactService, GroupService groupService,
-	                           DistributionListService distributionListService) {
+	                           DistributionListService distributionListService, PreferenceService preferenceService) {
 		this.context = context;
 		this.contactService = contactService;
 		this.groupService = groupService;
 		this.distributionListService = distributionListService;
+		this.preferenceService = preferenceService;
 	}
 
 	private static class CommonShortcutInfo {
@@ -93,7 +96,15 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void publishRecentChatsAsSharingTargets() {
+		if (!preferenceService.isDirectShare()) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+				publishPinnedShortcutsAsSharingTargets();
+			}
+			return;
+		}
+
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
 			return;
@@ -138,12 +149,17 @@ public class ShortcutServiceImpl implements ShortcutService {
 		for (int i = 0; i < numPublishableConversations; i++) {
 			final ConversationModel conversationModel = conversations.get(i);
 
+			ShortcutInfoCompat shortcutInfoCompat;
 			if (conversationModel.isContactConversation()) {
-				sharingTargetShortcuts.add(getSharingTargetShortcutInfoCompat(conversationModel.getContact()));
-			} else if (conversationModel.isGroupConversation()){
-				sharingTargetShortcuts.add(getSharingTargetShortcutInfoCompat(conversationModel.getGroup()));
+				shortcutInfoCompat = getSharingTargetShortcutInfoCompat(conversationModel.getContact());
+			} else if (conversationModel.isGroupConversation()) {
+				shortcutInfoCompat = getSharingTargetShortcutInfoCompat(conversationModel.getGroup());
 			} else {
-				sharingTargetShortcuts.add(getSharingTargetShortcutInfoCompat(conversationModel.getDistributionList()));
+				shortcutInfoCompat = getSharingTargetShortcutInfoCompat(conversationModel.getDistributionList());
+			}
+
+			if (shortcutInfoCompat != null) {
+				sharingTargetShortcuts.add(shortcutInfoCompat);
 			}
 		}
 		if (sharingTargetShortcuts.isEmpty()) {
@@ -154,9 +170,12 @@ public class ShortcutServiceImpl implements ShortcutService {
 		logger.info("Published most recent conversations as sharing target shortcuts");
 	}
 
+	/**
+	 *  Use launcher shortcuts as share targets if direct share is disabled
+	 */
 	@RequiresApi(api = Build.VERSION_CODES.N_MR1)
-	@Override
-	public void publishPinnedShortcutsAsSharingTargets() {
+	@WorkerThread
+	private void publishPinnedShortcutsAsSharingTargets() {
 		ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
 		final List<ShortcutInfoCompat> sharingTargetShortcuts = new ArrayList<>();
 
@@ -165,21 +184,27 @@ public class ShortcutServiceImpl implements ShortcutService {
 			Intent shortcutIntent = shortcut.getIntent();
 
 			if (!shortcutIntent.hasExtra(CallActivity.EXTRA_CALL_FROM_SHORTCUT)) {
+				ShortcutInfoCompat shortcutInfoCompat;
+
 				if (shortcutIntent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP)) {
 					GroupModel groupModel = groupService.getById(
 						shortcutIntent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0)
 					);
-					sharingTargetShortcuts.add(getSharingTargetShortcutInfoCompat(groupModel));
+					 shortcutInfoCompat = getSharingTargetShortcutInfoCompat(groupModel);
 				} else if (shortcutIntent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
 					DistributionListModel distributionList = distributionListService.getById(
 						shortcutIntent.getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0)
 					);
-					sharingTargetShortcuts.add(getSharingTargetShortcutInfoCompat(distributionList));
+					shortcutInfoCompat = getSharingTargetShortcutInfoCompat(distributionList);
 				} else {
 					ContactModel contact = contactService.getByIdentity(
 						shortcutIntent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT)
 					);
-					sharingTargetShortcuts.add(getSharingTargetShortcutInfoCompat(contact));
+					shortcutInfoCompat = getSharingTargetShortcutInfoCompat(contact);
+				}
+
+				if (shortcutInfoCompat != null) {
+					sharingTargetShortcuts.add(shortcutInfoCompat);
 				}
 			}
 		}
@@ -193,6 +218,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void createShortcut(ContactModel contactModel, int type) {
 		ShortcutInfoCompat shortcutInfoCompat = getShortcutInfoCompat(contactModel, type);
 
@@ -202,6 +228,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void createShortcut(GroupModel groupModel) {
 		ShortcutInfoCompat shortcutInfoCompat = getShortcutInfoCompat(groupModel);
 
@@ -211,31 +238,44 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void createShortcut(DistributionListModel distributionListModel) {
 		ShortcutInfoCompat shortcutInfoCompat = getShortcutInfoCompat(distributionListModel);
-
 		if (shortcutInfoCompat != null) {
 			ShortcutManagerCompat.requestPinShortcut(context, shortcutInfoCompat, null);
 		}
 	}
 
 	@Override
+	@WorkerThread
 	public void createShareTargetShortcut(ContactModel contactModel) {
-		publishDynamicShortcuts(Collections.singletonList(getSharingTargetShortcutInfoCompat(contactModel)));
+		ShortcutInfoCompat shortcutInfoCompat = getSharingTargetShortcutInfoCompat(contactModel);
+		if (shortcutInfoCompat != null) {
+			publishDynamicShortcuts(Collections.singletonList(shortcutInfoCompat));
+		}
 	}
 
 	@Override
+	@WorkerThread
 	public void createShareTargetShortcut(GroupModel groupModel) {
-		publishDynamicShortcuts(Collections.singletonList(getSharingTargetShortcutInfoCompat(groupModel)));
+		ShortcutInfoCompat shortcutInfoCompat = getSharingTargetShortcutInfoCompat(groupModel);
+		if (shortcutInfoCompat != null) {
+			publishDynamicShortcuts(Collections.singletonList(shortcutInfoCompat));
+		}
 	}
 
 	@Override
+	@WorkerThread
 	public void createShareTargetShortcut(DistributionListModel distributionListModel) {
-		publishDynamicShortcuts(Collections.singletonList(getSharingTargetShortcutInfoCompat(distributionListModel)));
+		ShortcutInfoCompat shortcutInfoCompat = getSharingTargetShortcutInfoCompat(distributionListModel);
+		if (shortcutInfoCompat != null) {
+			publishDynamicShortcuts(Collections.singletonList(shortcutInfoCompat));
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.O)
 	@Override
+	@WorkerThread
 	public void updateShortcut(ContactModel contactModel) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
@@ -261,6 +301,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 
 	@TargetApi(Build.VERSION_CODES.O)
 	@Override
+	@WorkerThread
 	public void updateShortcut(GroupModel groupModel) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
@@ -284,6 +325,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 
 	@TargetApi(Build.VERSION_CODES.O)
 	@Override
+	@WorkerThread
 	public void updateShortcut(DistributionListModel distributionListModel) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
@@ -306,6 +348,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void deleteShortcut(ContactModel contactModel) {
 		String uniqueId = contactModel.getIdentity();
 
@@ -313,6 +356,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void deleteShortcut(GroupModel groupModel) {
 		String uniqueId = String.valueOf(groupModel.getId());
 
@@ -320,6 +364,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void deleteShortcut(DistributionListModel distributionListModel) {
 		String uniqueId = String.valueOf(distributionListModel.getId());
 
@@ -327,10 +372,12 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Override
+	@WorkerThread
 	public void deleteDynamicShortcuts() {
 		ShortcutManagerCompat.removeAllDynamicShortcuts(context);
 	}
 
+	@WorkerThread
 	private void deleteShortcutByID(String id) {
 		if (!TestUtil.empty(id)) {
 			for (ShortcutInfoCompat shortcutInfo : ShortcutManagerCompat.getDynamicShortcuts(context)) {
@@ -345,6 +392,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	 * uses addDynamicShortcuts(List<ShortcutInfoCompat> shortcuts) to add a list of shortcuts to existing shortcuts
 	 * @param shortcuts to be added to already existing dynamic shortcuts
 	 */
+	@WorkerThread
 	private void tryAddingDynamicShortcuts(List<ShortcutInfoCompat> shortcuts) {
 		logger.info("tryAddingDynamicShortcuts {}", shortcuts.size());
 		// try to catch the max shortcuts exceeded error for some devices that always return 0 active shortcuts
@@ -359,6 +407,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	 * removeAllDynamicShortcuts() + addDynamicShortcuts(List<ShortcutInfoCompat> shortcuts)
 	 * @param shortcuts to be set as a fresh list of dynamic shortcuts, all previous dynamic shortcuts not included in this list will be removed.
 	 */
+	@WorkerThread
 	private void trySettingDynamicShortcuts(List<ShortcutInfoCompat> shortcuts) {
 		logger.info("trying to reset shortcut list {}", shortcuts.size());
 		// try to catch the max shortcuts exceeded error for some devices that always return 0 active shortcuts
@@ -442,80 +491,75 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Nullable
-	private ShortcutInfoCompat getSharingTargetShortcutInfoCompat(ContactModel contactModel) {
-		Intent intent = new Intent(Intent.ACTION_DEFAULT);
+	private ShortcutInfoCompat createSharingShortcut(@NonNull String tag, @Nullable Bitmap avatarBitmap, @Nullable String label, @Nullable String shortLabel, @Nullable Person person) {
+		if (avatarBitmap != null && !TestUtil.empty(label)) {
 
-		Set<String> shortcutCategories = new HashSet<>();
-		shortcutCategories.add(DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY);
-
-		Bitmap avatarBitmap = getRoundBitmap(contactService.getAvatar(contactModel, false));
-
-		if (avatarBitmap != null) {
 			// workaround because intent extras are lost in dynamic shortcut
 			// receiver identity is passed as the shortcut id with a specific type
-			return new ShortcutInfoCompat.Builder(context, TYPE_SHARE_SHORTCUT_CONTACT + contactModel.getIdentity())
-				.setIcon(IconCompat.createWithBitmap(avatarBitmap))
-				.setShortLabel(NameUtil.getDisplayNameOrNickname(contactModel, true))
-				.setIntent(intent)
-				.setLongLived(true)
-				.setCategories(shortcutCategories)
-				.build();
+			try {
+				ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(context, tag)
+					.setIcon(IconCompat.createWithBitmap(avatarBitmap))
+					.setShortLabel(shortLabel != null ? shortLabel : label)
+					.setLongLabel(label)
+					.setIntent(new Intent(Intent.ACTION_DEFAULT))
+					.setLongLived(true)
+					.setCategories(Collections.singleton(DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY));
+
+				if (person != null) {
+					shortcutInfoCompatBuilder.setPerson(person);
+				}
+
+				return shortcutInfoCompatBuilder.build();
+			} catch (IllegalArgumentException e) {
+				logger.debug("Unable to build shortcut", e);
+			}
 		}
 		return null;
 	}
 
 	@Nullable
-	private ShortcutInfoCompat getSharingTargetShortcutInfoCompat(GroupModel groupModel) {
-		Intent intent = new Intent(Intent.ACTION_DEFAULT);
-
-		Set<String> shortcutCategories = new HashSet<>();
-		shortcutCategories.add(DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY);
-
-		Bitmap avatarBitmap = getRoundBitmap(groupService.getAvatar(groupModel, false));
-		String groupName = groupModel.getName();
-		if (groupName == null) {
-			groupName = groupService.getMembersString(groupModel);
+	private ShortcutInfoCompat getSharingTargetShortcutInfoCompat(@Nullable ContactModel contactModel) {
+		if (contactModel == null) {
+			return null;
 		}
 
-		if (avatarBitmap != null) {
-			// workaround because intent extras are lost in dynamic shortcut
-			// receiver identity is passed as the shortcut id and a specific type
-			return new ShortcutInfoCompat.Builder(context,TYPE_SHARE_SHORTCUT_GROUP + "" + groupModel.getId())
-				.setIcon(IconCompat.createWithBitmap(avatarBitmap))
-				.setShortLabel(groupName)
-				.setIntent(intent)
-				.setLongLived(true)
-				.setCategories(shortcutCategories)
-				.build();
-		}
-		return null;
+		String fullName = NameUtil.getDisplayNameOrNickname(contactModel, true);
+		Person person = ConversationNotificationUtil.getPerson(contactService, contactModel, fullName);
+
+		return createSharingShortcut(
+			TYPE_SHARE_SHORTCUT_CONTACT + contactModel.getIdentity(),
+			contactService.getAvatar(contactModel, false),
+			fullName,
+			NameUtil.getShortName(contactModel),
+			person);
 	}
 
 	@Nullable
-	private ShortcutInfoCompat getSharingTargetShortcutInfoCompat(DistributionListModel distributionListModel) {
-		Intent intent = new Intent(Intent.ACTION_DEFAULT);
-
-		Set<String> shortcutCategories = new HashSet<>();
-		shortcutCategories.add(DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY);
-
-		Bitmap avatarBitmap = getRoundBitmap(distributionListService.getAvatar(distributionListModel, false));
-		String distributionListName = distributionListModel.getName();
-		if (distributionListName == null) {
-			distributionListName = distributionListService.getMembersString(distributionListModel);
+	private ShortcutInfoCompat getSharingTargetShortcutInfoCompat(@Nullable GroupModel groupModel) {
+		if (groupModel == null) {
+			return null;
 		}
 
-		if (avatarBitmap != null) {
-			// workaround because intent extras are lost in dynamic shortcut
-			// receiver identity is passed as the shortcut id and a specific type
-			return new ShortcutInfoCompat.Builder(context, TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST + "" + distributionListModel.getId())
-				.setIcon(IconCompat.createWithBitmap(avatarBitmap))
-				.setShortLabel(distributionListName)
-				.setIntent(intent)
-				.setLongLived(true)
-				.setCategories(shortcutCategories)
-				.build();
+		return createSharingShortcut(
+			TYPE_SHARE_SHORTCUT_GROUP + String.valueOf(groupModel.getId()),
+			groupService.getAvatar(groupModel, false),
+			NameUtil.getDisplayName(groupModel, groupService),
+			null,
+			null);
+	}
+
+	@Nullable
+	private ShortcutInfoCompat getSharingTargetShortcutInfoCompat(@Nullable DistributionListModel distributionListModel) {
+		if (distributionListModel == null) {
+			return null;
 		}
-		return null;
+
+		return createSharingShortcut(
+			TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST + String.valueOf(distributionListModel.getId()),
+			distributionListService.getAvatar(distributionListModel, false),
+			NameUtil.getDisplayName(distributionListModel, distributionListService),
+			null,
+			null);
 	}
 
 	@TargetApi(Build.VERSION_CODES.O)
@@ -530,7 +574,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 				.setLongLabel(commonShortcutInfo.longLabel)
 				.setLongLived(true)
 				.setPerson(
-					new Person.Builder()
+					new android.app.Person.Builder()
 						.setName(contactModel.getIdentity())
 						.setIcon(Icon.createWithBitmap((commonShortcutInfo.bitmap)))
 						.build()
@@ -634,15 +678,18 @@ public class ShortcutServiceImpl implements ShortcutService {
 		return null;
 	}
 
-	private void publishDynamicShortcuts(List<ShortcutInfoCompat> shortcuts) {
+	@WorkerThread
+	private void publishDynamicShortcuts(@NonNull List<ShortcutInfoCompat> shortcuts) {
 		List<ShortcutInfoCompat> activeShortcuts = ShortcutManagerCompat.getDynamicShortcuts(context);
 		int shortcutsSurplusCount = activeShortcuts.size() + shortcuts.size() - 4; //  4 as there is anyway max 4 slots of share target options in the OS share sheet
 		logger.info("publish dynamic shortcuts list compat: to publish {} active {} max limit {} surplus {}",
 			shortcuts.size(), activeShortcuts.size(), 4, shortcutsSurplusCount);
 		if (shortcutsSurplusCount > 0) {
 			while (shortcutsSurplusCount > 0) {
-				activeShortcuts.remove(0);
-				shortcutsSurplusCount -= 1;
+				if (activeShortcuts.size() > 0) {
+					activeShortcuts.remove(0);
+					shortcutsSurplusCount -= 1;
+				}
 			}
 			activeShortcuts.addAll(shortcuts);
 			// clear all and publish the modified list

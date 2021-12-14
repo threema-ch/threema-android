@@ -165,17 +165,6 @@ public class NameUtil {
 		return null;
 	}
 
-	public static String getPersonName(Context context, AbstractMessageModel messageModel, ContactService contactService) {
-		if (TestUtil.required(context, messageModel)) {
-			if (messageModel.isOutbox()) {
-				return context.getString(R.string.me_myself_and_i);
-			} else {
-				return getDisplayNameOrNickname(messageModel.getIdentity(), contactService);
-			}
-		}
-		return null;
-	}
-
 	private static String getFallbackName(ContactModel model) {
 		if (!TestUtil.empty(model.getPublicNickName()) &&
 				!model.getPublicNickName().equals(model.getIdentity())) {

@@ -26,4 +26,9 @@
 			android:targetPackage="ch.threema.app.onprem"/>
 		<categories android:name="android.shortcut.conversation"/>
 	</shortcut>
+	<share-target
+		android:targetClass="ch.threema.app.activities.RecipientListActivity">
+		<data android:mimeType="*/*"/>
+		<category android:name="ch.threema.app.onprem.category.DYNAMIC_SHORTCUT_SHARE_TARGET" />
+	</share-target>
 </shortcuts>

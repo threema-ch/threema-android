@@ -7,7 +7,7 @@
 	android:paddingRight="@dimen/qrcode_min_margin"
 	android:paddingTop="@dimen/qrcode_min_margin"
 	android:paddingBottom="@dimen/qrcode_min_margin"
-	android:background="@drawable/shape_rounded_corner_popup_bg">
+	android:background="@drawable/shape_rounded_corner_popup_bg_forced_light">
 
 	<ImageView
 		android:id="@+id/image_view"

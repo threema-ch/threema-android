@@ -1838,23 +1838,29 @@ public class NotificationServiceImpl implements NotificationService {
 			try {
 				String launcherClassName = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
 				if (context.getPackageManager().resolveContentProvider("com.sonymobile.home.resourceprovider", 0) != null) {
-					// use content provider
-					final ContentValues contentValues = new ContentValues();
-					contentValues.put("badge_count", unreadMessages);
-					contentValues.put("package_name", BuildConfig.APPLICATION_ID);
-					contentValues.put("activity_name", launcherClassName);
+					logger.info("Badge: Sony content provider showing " + unreadMessages + " unread");
 
-					if (RuntimeUtil.isOnUiThread()) {
-						if (queryHandler == null) {
-							queryHandler = new AsyncQueryHandler(
-								context.getApplicationContext().getContentResolver()) {
-							};
+					// use content provider
+					if (unreadMessages < 0) {
+						final ContentValues contentValues = new ContentValues();
+						contentValues.put("badge_count", unreadMessages);
+						contentValues.put("package_name", BuildConfig.APPLICATION_ID);
+						contentValues.put("activity_name", launcherClassName);
+
+						if (RuntimeUtil.isOnUiThread()) {
+							if (queryHandler == null) {
+								queryHandler = new AsyncQueryHandler(
+									context.getApplicationContext().getContentResolver()) {
+								};
+							}
+							queryHandler.startInsert(0, null, Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
+						} else {
+							context.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
 						}
-						queryHandler.startInsert(0, null, Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
-					} else {
-						context.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
 					}
 				} else {
+					logger.info("Badge: Sony broadcast showing " + unreadMessages + " unread");
+
 					// use broadcast
 					Intent intent = new Intent("com.sonyericsson.home.action.UPDATE_BADGE");
 					intent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", BuildConfig.APPLICATION_ID);

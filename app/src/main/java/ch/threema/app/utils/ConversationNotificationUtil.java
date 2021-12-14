@@ -89,23 +89,32 @@ public class ConversationNotificationUtil {
 		}
 	}
 
-	private static Person getSender(AbstractMessageModel messageModel) {
+	private static Person getSenderPerson(AbstractMessageModel messageModel) {
 		//load lazy
 		try {
 			final ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
 			final ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
 
-			Person.Builder builder = new Person.Builder().setKey(contactService.getUniqueIdString(contactModel)).setName(NameUtil.getShortName(ThreemaApplication.getAppContext(), messageModel, contactService));
-			Bitmap avatar = contactService.getAvatar(contactModel, false);
-			if (avatar != null) {
-				IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
-				builder.setIcon(iconCompat);
-			}
-			return builder.build();
+			return getPerson(contactService, contactModel, NameUtil.getShortName(ThreemaApplication.getAppContext(), messageModel, contactService));
 		} catch (ThreemaException e) {
 			logger.error("ThreemaException", e);
 			return null;
 		}
+	}
+
+	public static Person getPerson(ContactService contactService, ContactModel contactModel, String name) {
+		Person.Builder builder = new Person.Builder()
+			.setKey(contactService.getUniqueIdString(contactModel))
+			.setName(name);
+		Bitmap avatar = contactService.getAvatar(contactModel, false);
+		if (avatar != null) {
+			IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
+			builder.setIcon(iconCompat);
+		}
+		if (contactModel != null && contactModel.getAndroidContactLookupKey() != null) {
+			builder.setUri(contactService.getAndroidContactLookupUriString(contactModel));
+		}
+		return builder.build();
 	}
 
 	private static MessageType getMessageType(AbstractMessageModel messageModel) {
@@ -164,7 +173,7 @@ public class ConversationNotificationUtil {
 					group,
 					getFetchThumbnail(messageModel),
 					getShortcut(messageModel),
-					getSender(messageModel),
+					getSenderPerson(messageModel),
 					getMessageType(messageModel)
 			);
 
@@ -216,7 +225,7 @@ public class ConversationNotificationUtil {
 					group,
 					getFetchThumbnail(messageModel),
 					getShortcut(messageModel),
-					getSender(messageModel),
+					getSenderPerson(messageModel),
 					getMessageType(messageModel)
 			);
 		}

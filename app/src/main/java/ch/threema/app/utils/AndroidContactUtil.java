@@ -530,16 +530,20 @@ public class AndroidContactUtil {
 
 		for (Map.Entry<String, RawContactInfo> rawContact : rawContacts.entries()) {
 			if (!TestUtil.empty(rawContact.getKey()) && rawContact.getValue().rawContactId != 0L) {
-				ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(
-					ContactsContract.RawContacts.CONTENT_URI
-						.buildUpon()
-						.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-						.appendQueryParameter(ContactsContract.RawContacts.SYNC1, rawContact.getKey())
-						.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-						.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build())
-						.withSelection(ContactsContract.RawContacts._ID+" = ?", new String[] {String.valueOf(rawContact.getValue().rawContactId)});
+				try {
+					ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(
+						ContactsContract.RawContacts.CONTENT_URI
+							.buildUpon()
+							.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+							.appendQueryParameter(ContactsContract.RawContacts.SYNC1, rawContact.getKey())
+							.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
+							.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build())
+						.withSelection(ContactsContract.RawContacts._ID + " = ?", new String[]{String.valueOf(rawContact.getValue().rawContactId)});
 
-				contentProviderOperations.add(builder.build());
+					contentProviderOperations.add(builder.build());
+				} catch (Exception e) {
+					logger.error("Exception", e);
+				}
 			}
 		}
 

@@ -23,42 +23,42 @@ package ch.threema.app.services;
 
 import android.content.pm.ShortcutInfo;
 
+import androidx.annotation.WorkerThread;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
 public interface ShortcutService {
-	public static final int TYPE_NONE = 0;
-	public static final int TYPE_CHAT = 1;
-	public static final int TYPE_CALL = 2;
-	public static final int TYPE_SHARE_SHORTCUT_CONTACT = 3;
-	public static final int TYPE_SHARE_SHORTCUT_GROUP = 4;
-	public static final int TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST = 5;
+	int TYPE_NONE = 0;
+	int TYPE_CHAT = 1;
+	int TYPE_CALL = 2;
+	int TYPE_SHARE_SHORTCUT_CONTACT = 3;
+	int TYPE_SHARE_SHORTCUT_GROUP = 4;
+	int TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST = 5;
 
-	void publishRecentChatsAsSharingTargets();
-	void publishPinnedShortcutsAsSharingTargets();
+	@WorkerThread void publishRecentChatsAsSharingTargets();
 
-	void updateShortcut(ContactModel contactModel);
-	void updateShortcut(GroupModel groupModel);
-	void updateShortcut(DistributionListModel distributionListModel);
+	@WorkerThread void updateShortcut(ContactModel contactModel);
+	@WorkerThread void updateShortcut(GroupModel groupModel);
+	@WorkerThread void updateShortcut(DistributionListModel distributionListModel);
 
-	void createShortcut(ContactModel contactModel, int type);
-	void createShortcut(GroupModel groupModel);
-	void createShortcut(DistributionListModel distributionListModel);
+	@WorkerThread void createShortcut(ContactModel contactModel, int type);
+	@WorkerThread void createShortcut(GroupModel groupModel);
+	@WorkerThread void createShortcut(DistributionListModel distributionListModel);
 
 	ShortcutInfo getShortcutInfo(ContactModel contactModel, int type);
 	ShortcutInfo getShortcutInfo(GroupModel groupModel);
 	ShortcutInfo getShortcutInfo(DistributionListModel distributionListModel);
 
-	void createShareTargetShortcut(ContactModel contactModel);
-	void createShareTargetShortcut(GroupModel groupModel);
-	void createShareTargetShortcut(DistributionListModel distributionListModel);
+	@WorkerThread void createShareTargetShortcut(ContactModel contactModel);
+	@WorkerThread void createShareTargetShortcut(GroupModel groupModel);
+	@WorkerThread void createShareTargetShortcut(DistributionListModel distributionListModel);
 
-	void deleteShortcut(ContactModel contactModel);
-	void deleteShortcut(GroupModel groupModel);
-	void deleteShortcut(DistributionListModel distributionListModel);
-	void deleteDynamicShortcuts();
+	@WorkerThread void deleteShortcut(ContactModel contactModel);
+	@WorkerThread void deleteShortcut(GroupModel groupModel);
+	@WorkerThread void deleteShortcut(DistributionListModel distributionListModel);
+	@WorkerThread void deleteDynamicShortcuts();
 
 	ShortcutInfoCompat getShortcutInfoCompat(ContactModel contactModel, int type);
 	ShortcutInfoCompat getShortcutInfoCompat(GroupModel groupModel);

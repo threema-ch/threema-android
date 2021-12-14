@@ -1945,7 +1945,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
 			if (preferenceService.isDirectShare()) {
-				shortcutService.createShareTargetShortcut(groupModel);
+				new Thread(() -> shortcutService.createShareTargetShortcut(groupModel), "createShortcut").start();
 			}
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
 			this.isDistributionListChat = true;
@@ -1969,7 +1969,7 @@ public class ComposeMessageFragment extends Fragment implements
 				intent.removeExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
 				this.messageReceiver = distributionListService.createReceiver(this.distributionListModel);
 				if (preferenceService.isDirectShare()) {
-					shortcutService.createShareTargetShortcut(distributionListModel);
+					new Thread(() -> shortcutService.createShareTargetShortcut(distributionListModel), "createShortcut").start();
 				}
 			} catch (Exception e) {
 				logger.error("Exception", e);
@@ -2016,7 +2016,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.typingIndicatorTextWatcher = new TypingIndicatorTextWatcher(this.userService, contactModel);
 			this.conversationUid = ConversationUtil.getIdentityConversationUid(this.identity);
 			if (preferenceService.isDirectShare()) {
-				shortcutService.createShareTargetShortcut(contactModel);
+				new Thread(() -> shortcutService.createShareTargetShortcut(contactModel), "createShortcut").start();
 			}
 		}
 

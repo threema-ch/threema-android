@@ -1343,6 +1343,7 @@ public class ContactServiceImpl implements ContactService {
 	 * @param contactModel ContactModel to get Uri for
 	 * @return Uri of Android contact as a string or null if there's no linked contact or permission to access contacts has not been granted
 	 */
+	@Nullable
 	public String getAndroidContactLookupUriString(ContactModel contactModel) {
 		String contactLookupUri = null;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

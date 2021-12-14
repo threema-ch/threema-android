@@ -950,25 +950,23 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				scheduleWorkSync(preferenceStore);
 				// schedule identity states / feature masks etc.
 				scheduleIdentityStatesSync(preferenceStore);
-			}).start();
+			}, "scheduleSync").start();
 
 			initMapbox();
 
 			// publish most recent chats or pinned shortcuts as sharing targets
-			ShortcutService shortcutService;
-			try {
-				shortcutService = serviceManager.getShortcutService();
-
-				if (shortcutService != null) {
-					if (serviceManager.getPreferenceService().isDirectShare()) {
+			new Thread(() -> {
+				ShortcutService shortcutService;
+				try {
+					shortcutService = serviceManager.getShortcutService();
+					if (shortcutService != null) {
+						shortcutService.deleteDynamicShortcuts();
 						shortcutService.publishRecentChatsAsSharingTargets();
-					} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-						shortcutService.publishPinnedShortcutsAsSharingTargets();
 					}
+				} catch (ThreemaException e) {
+					logger.error("Exception, failed to publish sharing shortcut targets", e);
 				}
-			} catch (ThreemaException e) {
-				logger.error("Exception, failed to publish sharing shortcut targets", e);
-			}
+			}, "createShareTargets").start();
 
 			// setup locale override
 			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());

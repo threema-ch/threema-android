@@ -232,7 +232,7 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			});
 		}
 
-		if (Build.VERSION.SDK_INT < 29) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
 			PreferenceCategory preferenceCategory = findPreference("pref_key_other");
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 				preferenceCategory.removePreference(findPreference(getResources().getString(R.string.preferences__direct_share)));

@@ -20,7 +20,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.6"
+def app_version = "4.61"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -99,7 +99,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 705
+        versionCode 708
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter

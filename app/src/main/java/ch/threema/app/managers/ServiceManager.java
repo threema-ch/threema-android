@@ -921,7 +921,8 @@ public class ServiceManager {
 					this.getContext(),
 					this.getContactService(),
 					this.getGroupService(),
-					this.getDistributionListService()
+					this.getDistributionListService(),
+					this.getPreferenceService()
 			);
 		}
 		return this.shortcutService;

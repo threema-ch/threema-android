@@ -128,7 +128,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		Date recentlyAddedDate = new Date(System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS);
 
 		for (ContactModel contactModel : all) {
-			if (contactModel != null && contactModel.getDateCreated() != null && recentlyAddedDate.before(contactModel.getDateCreated()) && !ContactUtil.isChannelContact(contactModel) && !"ECHOECHO".equalsIgnoreCase(contactModel.getIdentity())) {
+			if (contactModel != null && contactModel.getDateCreated() != null && recentlyAddedDate.before(contactModel.getDateCreated()) && !"ECHOECHO".equalsIgnoreCase(contactModel.getIdentity())) {
 				recents.add(contactModel);
 			}
 		}
