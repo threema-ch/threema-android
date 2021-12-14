@@ -345,7 +345,7 @@ public class APIConnectorTest {
 		when(connector.obtainTurnServers(eq(identityStore), eq("voip"))).thenCallRealMethod();
 		when(connector.doPost(eq("https://server.url/identity/turn_cred"), ArgumentMatchers.any()))
 			.thenReturn("{"
-				+ "\"token\": \"0123456789abcdef\","
+				+ "\"token\": \"/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\","
 				+ "\"tokenRespKeyPub\": \"dummy\""
 				+ "}")
 			.thenReturn("{"

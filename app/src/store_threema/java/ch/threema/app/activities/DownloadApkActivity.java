@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import android.app.DownloadManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -35,9 +36,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +60,8 @@ import ch.threema.app.utils.DownloadUtil;
 import ch.threema.app.utils.IntentDataUtil;
 
 public class DownloadApkActivity extends AppCompatActivity implements GenericAlertDialog.DialogClickListener {
+	private static final Logger logger = LoggerFactory.getLogger(DownloadApkActivity.class);
+
 	private static final String DIALOG_TAG_DOWNLOAD_UPDATE = "cfu";
 	private static final String DIALOG_TAG_DOWNLOADING = "dtd";
 
@@ -63,6 +72,12 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 
 	private SharedPreferences sharedPreferences;
 	private String downloadUrl;
+	private DownloadUtil.DownloadState downloadState;
+
+	private final ActivityResultLauncher<Intent> requestUnknownSourcesSettingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			installPackage();
+		});
 
 	private final BroadcastReceiver downloadApkFinishedReceiver = new BroadcastReceiver() {
 		@Override
@@ -73,7 +88,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 			final long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
 			if (referenceId > 0 && context != null) {
-				DownloadUtil.DownloadState downloadState = DownloadUtil.getNewestApkDownloadState(referenceId);
+				downloadState = DownloadUtil.getNewestApkDownloadState(referenceId);
 				if (downloadState != null) {
 					int status = 0, reason = 0;
 					DownloadManager downloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
@@ -93,35 +108,51 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 					}
 
 					if (status == DownloadManager.STATUS_SUCCESSFUL) {
-						Uri uri;
-						Intent installIntent;
-
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-							uri = NamedFileProvider.getUriForFile(DownloadApkActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", downloadState.getDestinationFile(), null);
-							installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-							installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-							installIntent.setData(uri);
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !getPackageManager().canRequestPackageInstalls()) {
+								try {
+									requestUnknownSourcesSettingsLauncher.launch(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).setData(Uri.parse(String.format("package:%s", getPackageName()))));
+								} catch (ActivityNotFoundException e) {
+									logger.error("No activity for unknown sources", e);
+									Toast.makeText(getApplicationContext(), getString(R.string.enable_unknown_sources, getString(R.string.app_name)), Toast.LENGTH_LONG).show();
+									finishUp();
+								}
+							} else {
+								installPackage();
+							}
+							return;
 						} else {
-							uri = Uri.fromFile(downloadState.getDestinationFile());
-							installIntent = new Intent(Intent.ACTION_VIEW);
+							Uri uri = Uri.fromFile(downloadState.getDestinationFile());
+							Intent installIntent = new Intent(Intent.ACTION_VIEW);
 							installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
 							installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							context.startActivity(installIntent);
 						}
-						context.startActivity(installIntent);
 					} else {
 						Toast.makeText(getApplicationContext(), getString(R.string.download_failed, reason), Toast.LENGTH_LONG).show();
 					}
-
-					new Handler().postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							finish();
-						}
-					}, 1000);
+					finishUp();
 				}
 			}
 		}
 	};
+
+	private void finishUp() {
+		new Handler().postDelayed(this::finish, 1000);
+	}
+
+	private void installPackage() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !getPackageManager().canRequestPackageInstalls()) {
+			Toast.makeText(getApplicationContext(), getString(R.string.enable_unknown_sources, getString(R.string.app_name)), Toast.LENGTH_LONG).show();
+		} else {
+			Uri uri = NamedFileProvider.getUriForFile(DownloadApkActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", downloadState.getDestinationFile(), null);
+			Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+			installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			installIntent.setData(uri);
+			startActivity(installIntent);
+		}
+		finishUp();
+	}
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -83,10 +83,9 @@ import ch.threema.domain.stores.TokenStoreInterface;
  * <p>
  * All calls run synchronously; if necessary the caller should dispatch a separate thread.
  */
-@SuppressWarnings("DuplicateThrows")
 public class APIConnector {
 
-	private static final Logger logger = LoggerFactory.getLogger(APIConnector.class);
+	private static final Logger logger = LoggerFactory.getLogger("APIConnector");
 
 	/* HMAC-SHA256 keys for contact matching */
 	private static final byte[] EMAIL_HMAC_KEY = new byte[]{(byte) 0x30, (byte) 0xa5, (byte) 0x50, (byte) 0x0f, (byte) 0xed, (byte) 0x97, (byte) 0x01, (byte) 0xfa, (byte) 0x6d, (byte) 0xef, (byte) 0xdb, (byte) 0x61, (byte) 0x08, (byte) 0x41, (byte) 0x90, (byte) 0x0f, (byte) 0xeb, (byte) 0xb8, (byte) 0xe4, (byte) 0x30, (byte) 0x88, (byte) 0x1f, (byte) 0x7a, (byte) 0xd8, (byte) 0x16, (byte) 0x82, (byte) 0x62, (byte) 0x64, (byte) 0xec, (byte) 0x09, (byte) 0xba, (byte) 0xd7};
@@ -125,8 +124,6 @@ public class APIConnector {
 
 	/**
 	 * Set an optional object that adds authentication information to URLConnections.
-	 *
-	 * @param authenticator
 	 */
 	public void setAuthenticator(APIAuthenticator authenticator) {
 		this.authenticator = authenticator;
@@ -183,6 +180,9 @@ public class APIConnector {
 
 		byte[] token = Base64.decode(tokenString);
 		byte[] tokenRespKeyPub = Base64.decode(p1Result.getString("tokenRespKeyPub"));
+		if (isBadToken(token)) {
+			throw new ThreemaException("Bad token");
+		}
 
 		logger.debug("Got token from server; sending response");
 
@@ -243,7 +243,7 @@ public class APIConnector {
 	 * @throws FileNotFoundException if identity not found
 	 * @throws Exception             on network error
 	 */
-	public ArrayList<FetchIdentityResult> fetchIdentities(ArrayList<String> identities) throws FileNotFoundException, Exception {
+	public ArrayList<FetchIdentityResult> fetchIdentities(ArrayList<String> identities) throws Exception {
 		if (identities == null || identities.size() < 1) {
 			throw new ThreemaException("empty identities array");
 		}
@@ -610,7 +610,7 @@ public class APIConnector {
 		logger.debug(String.format("Match identities: response from server: %s", result.toString()));
 
 		matchCheckInterval = result.getInt("checkInterval");
-		logger.debug(String.format("Server requested check interval of %d seconds", matchCheckInterval));
+		logger.debug("Server requested check interval of {} seconds", matchCheckInterval);
 
 		JSONArray identities = result.getJSONArray("identities");
 
@@ -684,7 +684,6 @@ public class APIConnector {
 	 * @param authTokenStore the token store to use for caching the token
 	 * @param forceRefresh if true, a new token is always requested even if one is currently cached
 	 * @return The authentication token
-	 * @throws Exception
 	 */
 	public String obtainAuthToken(TokenStoreInterface authTokenStore, boolean forceRefresh) throws JSONException, IOException, ThreemaException {
 		String token = null;
@@ -774,10 +773,6 @@ public class APIConnector {
 
 	/**
 	 * Check the revocation key
-	 *
-	 * @param identityStore
-	 * @return
-	 * @throws Exception
 	 */
 	public CheckRevocationKeyResult checkRevocationKey(IdentityStoreInterface identityStore) throws Exception {
 		String url = getServerUrl() + "identity/check_revocation_key";
@@ -807,11 +802,6 @@ public class APIConnector {
 
 	/**
 	 * Set the revocation key for the stored identity
-	 *
-	 * @param identityStore
-	 * @param revocationKey
-	 * @return
-	 * @throws Exception
 	 */
 	public SetRevocationKeyResult setRevocationKey(IdentityStoreInterface identityStore, String revocationKey) throws Exception {
 
@@ -845,11 +835,8 @@ public class APIConnector {
 	}
 
 	/**
-	 * This call is used to check a list of IDs and determine the status of each ID. The response contains a list of status codes, one for each ID in the same order as in the request.
-	 *
-	 * @param identities
-	 * @return
-	 * @throws Exception
+	 * This call is used to check a list of IDs and determine the status of each ID.
+	 * The response contains a list of status codes, one for each ID in the same order as in the request.
 	 */
 	public CheckIdentityStatesResult checkIdentityStates(String[] identities) throws Exception {
 		String url = getServerUrl() + "identity/check";
@@ -936,7 +923,7 @@ public class APIConnector {
 		String turnUsername = p2Result.getString("turnUsername");
 		String turnPassword = p2Result.getString("turnPassword");
 		int expiration = p2Result.getInt("expiration");
-		Date expirationDate = new Date(new Date().getTime() + expiration*1000);
+		Date expirationDate = new Date(new Date().getTime() + expiration * 1000L);
 
 		return new TurnServerInfo(turnUrls, turnUrlsDualStack, turnUsername, turnPassword, expirationDate);
 	}
@@ -1024,14 +1011,7 @@ public class APIConnector {
 	}
 
 	/**
-	 * Fetch all custom work data from work api
-	 *
-	 * @param username
-	 * @param password
-	 * @param identities (list of existing threema id
-	 * @return
-	 * @throws IOException
-	 * @throws JSONException
+	 * Fetch all custom work data from work API.
 	 */
 	public WorkData fetchWorkData(String username, String password, String[] identities) throws Exception {
 		WorkData workData = new WorkData();
@@ -1138,17 +1118,17 @@ public class APIConnector {
 	/**
 	 * Fetch work contacts from work api
 	 *
-	 * @param username (threema work license username)
-	 * @param password (threema work license password)
-	 * @param identities (list of threema id to check)
-	 * @return list of valid threema work contacts - empty list if there are no matching contacts in this package
-	 * @throws IOException
-	 * @throws JSONException
+	 * @param username Threema Work license username
+	 * @param password Threema Work license password
+	 * @param identities List of Threema IDs to check
+	 * @return List of valid threema work contacts - empty list if there are no matching contacts in this package.
 	 */
 	@NonNull
-	public List<WorkContact> fetchWorkContacts(@NonNull String username,
-											   @NonNull String password,
-											   @NonNull String[] identities) throws Exception {
+	public List<WorkContact> fetchWorkContacts(
+		@NonNull String username,
+		@NonNull String password,
+		@NonNull String[] identities
+	) throws Exception {
 
 		List<WorkContact> contactsList = new ArrayList<>();
 		JSONObject request = new JSONObject();
@@ -1193,19 +1173,14 @@ public class APIConnector {
 	}
 
 	/**
-	 * Search the threema work directory without categories
-	 *
-	 * @param username
-	 * @param password
-	 * @param filter
-	 * @return Can be null
-	 * @throws IOException
-	 * @throws JSONException
+	 * Search the threema work directory without categories.
 	 */
-	public WorkDirectory fetchWorkDirectory(String username,
-											String password,
-											IdentityStoreInterface identityStore,
-											WorkDirectoryFilter filter) throws Exception {
+	public WorkDirectory fetchWorkDirectory(
+		String username,
+		String password,
+		IdentityStoreInterface identityStore,
+		WorkDirectoryFilter filter
+	) throws Exception {
 
 		JSONObject request = new JSONObject();
 		request.put("username", username);
@@ -1227,6 +1202,7 @@ public class APIConnector {
 		JSONObject jsonSort = new JSONObject();
 
 		jsonSort.put("asc", filter.isSortAscending());
+		//noinspection SwitchStatementWithTooFewBranches
 		switch (filter.getSortBy()) {
 			case WorkDirectoryFilter.SORT_BY_LAST_NAME:
 				jsonSort.put("by", "lastName");
@@ -1473,6 +1449,9 @@ public class APIConnector {
 	private void makeTokenResponse(JSONObject p1Result, JSONObject request, IdentityStoreInterface identityStore) throws JSONException, IOException, ThreemaException {
 		byte[] token = Base64.decode(p1Result.getString("token"));
 		byte[] tokenRespKeyPub = Base64.decode(p1Result.getString("tokenRespKeyPub"));
+		if (isBadToken(token)) {
+			throw new ThreemaException("Bad token");
+		}
 
 		/* sign token with our secret key */
 		byte[] nonce = new byte[NaCl.NONCEBYTES];
@@ -1488,7 +1467,18 @@ public class APIConnector {
 		request.put("nonce", Base64.encodeBytes(nonce));
 	}
 
-	public @Nullable APIConnector.FetchIdentityResult getFetchResultByIdentity(ArrayList<APIConnector.FetchIdentityResult> results, String identity) {
+	/**
+	 * A token must start with 0xff and be longer than 32 bytes to avoid payload confusion.
+	 * @return true if the token is invalid, false otherwise.
+	 */
+	private boolean isBadToken(@Nullable byte[] token) {
+		return (token == null || token.length <= 32 || token[0] != (byte) 0xff);
+	}
+
+	public @Nullable APIConnector.FetchIdentityResult getFetchResultByIdentity(
+		ArrayList<APIConnector.FetchIdentityResult> results,
+		String identity
+	) {
 		if (identity != null) {
 			for (APIConnector.FetchIdentityResult result : results) {
 				if (identity.equals(result.identity)) {
@@ -1533,11 +1523,6 @@ public class APIConnector {
 		public Object refObjectEmail;
 	}
 
-	public static class CheckBetaResult {
-		public boolean success;
-		public String error;
-	}
-
 	public static class CheckLicenseResult {
 		public boolean success;
 		public String error;
@@ -1577,8 +1562,7 @@ public class APIConnector {
 		}
 	}
 
-
-	public class SetRevocationKeyResult {
+	public static class SetRevocationKeyResult {
 		public final boolean success;
 		public final String error;
 
@@ -1588,7 +1572,7 @@ public class APIConnector {
 		}
 	}
 
-	public class TurnServerInfo {
+	public static class TurnServerInfo {
 		public final String[] turnUrls;
 		public final String[] turnUrlsDualStack;
 		public final String turnUsername;

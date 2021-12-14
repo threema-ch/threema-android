@@ -55,9 +55,6 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 	<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
-	<!-- To install updates - Threema Shop version only -->
-	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-
 	<!-- Access to address book -->
 	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
 	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>

@@ -211,7 +211,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 					try {
 						sqLiteDatabase.close();
 					} catch (Exception e) {
-						//
+						logger.error("Exception while closing database", e);
 					}
 				}
 				System.exit(2);
@@ -661,7 +661,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			try {
 				FileUtil.createNewFileOrLog(lockfile, logger);
 			} catch (IOException e) {
-				logger.error("Exception", e);
+				logger.error("IOException when creating lockfile", e);
 			}
 
 			if (!newDatabaseFile.exists()) {
@@ -726,7 +726,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 							}
 						} catch (Exception e) {
 							logger.info("Database migration FAILED");
-							logger.error("Exception", e);
+							logger.error("Exception while migrating", e);
 							FileUtil.deleteFileOrWarn(newDatabaseFile, "New Database File", logger);
 						}
 					}
@@ -736,7 +736,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 				try {
 					migrateThread.join();
 				} catch (InterruptedException e) {
-					logger.error("Exception", e);
+					logger.error("InterruptedException while waiting for migrateThread", e);
 					migrateSuccess[0] = false;
 				}
 

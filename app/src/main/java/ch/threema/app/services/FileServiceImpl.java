@@ -831,7 +831,7 @@ public class FileServiceImpl implements FileService {
 		return new File(getAppDataPathAbsolute(), "." + uid);
 	}
 
-	private File getMessageThumbnail(AbstractMessageModel messageModel) {
+	private File getMessageThumbnail(@Nullable AbstractMessageModel messageModel) {
 		// locations do not have a file, do not check for existing!
 		if (messageModel == null) {
 			return null;
@@ -1102,7 +1102,12 @@ public class FileServiceImpl implements FileService {
 		return false;
 	}
 
-	private void generateConversationMediaThumbnail(AbstractMessageModel messageModel, byte[] originalPicture, int pos, int length) throws Exception {
+	private void generateConversationMediaThumbnail(
+		AbstractMessageModel messageModel,
+		@NonNull byte[] originalPicture,
+		int pos,
+		int length
+	) throws Exception {
 		if (this.masterKey.isLocked()) {
 			throw new Exception("no masterkey or locked");
 		}
@@ -1119,10 +1124,8 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, byte[] originalPicture) throws Exception {
-		if (originalPicture != null) {
-			generateConversationMediaThumbnail(messageModel, originalPicture, 0, originalPicture.length);
-		}
+	public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] originalPicture) throws Exception {
+		generateConversationMediaThumbnail(messageModel, originalPicture, 0, originalPicture.length);
 	}
 
 	/**

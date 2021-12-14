@@ -1416,4 +1416,5 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
 	<string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
 	<string name="invalid_onprem_id">Keine gültige Threema OnPrem-ID</string>
+	<string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie \"Unbekannte Apps installieren\" für %s.</string>
 </resources>

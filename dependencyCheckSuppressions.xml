@@ -12,6 +12,25 @@
         <cve>CVE-2020-8908</cve>
     </suppress>
 
+    <!-- Ignore CVE-2021-29425: Vulnerable code (FileNameUtils.normalize) not used. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: commons-io-2.6.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/commons\-io/commons\-io@.*$</packageUrl>
+        <cve>CVE-2021-29425</cve>
+    </suppress>
+
+    <!-- Ignore CVE-2018-20200: It requires hooking into the running application, CVE is disputed.
+    https://github.com/square/okhttp/issues/4967 -->
+    <suppress>
+        <notes><![CDATA[
+        file name: okhttp-3.12.0.jar
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.squareup\.okhttp3/okhttp@.*$</packageUrl>
+        <cve>CVE-2018-20200</cve>
+    </suppress>
+
     <!-- Ignore wrong matches. -->
     <suppress>
         <packageUrl regex="true">^pkg:maven/org\.saltyrtc/saltyrtc\-task\-webrtc@.*$</packageUrl>

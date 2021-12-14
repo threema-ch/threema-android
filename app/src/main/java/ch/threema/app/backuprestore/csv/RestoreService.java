@@ -117,7 +117,7 @@ import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_A
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
 
 public class RestoreService extends Service {
-	private static final Logger logger = LoggerFactory.getLogger(RestoreService.class);
+	private static final Logger logger = LoggerFactory.getLogger("RestoreService");
 
 	public static final String EXTRA_RESTORE_BACKUP_FILE = "file";
 	public static final String EXTRA_RESTORE_BACKUP_PASSWORD = "pwd";
@@ -255,7 +255,7 @@ public class RestoreService extends Service {
 
 	@Override
 	public void onCreate() {
-		logger.debug("onCreate");
+		logger.info("onCreate");
 
 		super.onCreate();
 
@@ -276,7 +276,7 @@ public class RestoreService extends Service {
 			preferenceService = serviceManager.getPreferenceService();
 			threemaConnection = serviceManager.getConnection();
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Could not instantiate all required services", e);
 			stopSelf();
 			return;
 		}
@@ -286,7 +286,7 @@ public class RestoreService extends Service {
 
 	@Override
 	public void onDestroy() {
-		logger.debug("onDestroy success = " + restoreSuccess + " canceled = " + isCanceled);
+		logger.info("onDestroy success = {} cancelled = {}", restoreSuccess, isCanceled);
 
 		if (isCanceled) {
 			onFinished(getString(R.string.restore_data_cancelled));
@@ -297,13 +297,13 @@ public class RestoreService extends Service {
 
 	@Override
 	public void onLowMemory() {
-		logger.debug("onLowMemory");
+		logger.info("onLowMemory");
 		super.onLowMemory();
 	}
 
 	@Override
 	public void onTaskRemoved(Intent rootIntent) {
-		logger.debug("onTaskRemoved");
+		logger.info("onTaskRemoved");
 
 		Intent intent = new Intent(this, DummyActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -369,6 +369,8 @@ public class RestoreService extends Service {
 	private boolean writeToDb = false;
 
 	public boolean restore() {
+		logger.info("Restoring data backup");
+
 		int mediaCount;
 		int messageCount;
 		String message;
@@ -384,6 +386,7 @@ public class RestoreService extends Service {
 		try {
 			// we use two passes for a restore
 			for (int nTry = 0; nTry < 2; nTry++) {
+				logger.info("Attempt {}", nTry + 1);
 				if (nTry > 0) {
 					this.writeToDb = true;
 					this.initProgress(stepSizeTotal);
@@ -404,6 +407,7 @@ public class RestoreService extends Service {
 					*/
 
 					//clear tables!!
+					logger.info("Clearing current tables");
 					databaseServiceNew.getMessageModelFactory().deleteAll();
 					databaseServiceNew.getContactModelFactory().deleteAll();
 					databaseServiceNew.getGroupMessageModelFactory().deleteAll();
@@ -419,6 +423,7 @@ public class RestoreService extends Service {
 					databaseServiceNew.getGroupRequestSyncLogModelFactory().deleteAll();
 
 					//remove all media files (don't remove recursive, tmp folder contain the restoring files
+					logger.info("Deleting current media files");
 					fileService.clearDirectory(fileService.getAppDataPath(), false);
 				}
 
@@ -442,14 +447,14 @@ public class RestoreService extends Service {
 					}
 				}
 
-				//try to restore the identity
+				// Restore the identity
+				logger.info("Restoring identity");
 				FileHeader identityHeader = Functional.select(fileHeaders, new IPredicateNonNull<FileHeader>() {
 					@Override
 					public boolean apply(@NonNull FileHeader type) {
 						return TestUtil.compare(type.getFileName(), Tags.IDENTITY_FILE_NAME);
 					}
 				});
-
 				if (identityHeader != null && this.writeToDb) {
 					//restore identity first!!
 
@@ -476,6 +481,7 @@ public class RestoreService extends Service {
 				}
 
 				//contacts, groups and distribution lists
+				logger.info("Restoring main files (contacts, groups, distribution lists)");
 				if(!this.restoreMainFiles(fileHeaders)) {
 					logger.error("restore main files failed");
 					//continue anyway!
@@ -483,12 +489,14 @@ public class RestoreService extends Service {
 
 				updateProgress(STEP_SIZE_MAIN_FILES);
 
+				logger.info("Restoring message files");
 				messageCount = this.restoreMessageFiles(fileHeaders);
 				if(messageCount == 0) {
 					logger.error("restore message files failed");
 					//continue anyway!
 				}
 
+				logger.info("Restoring group avatar files");
 				if(!this.restoreGroupAvatarFiles(fileHeaders)) {
 					logger.error("restore group avatar files failed");
 					//continue anyway!
@@ -496,15 +504,17 @@ public class RestoreService extends Service {
 
 				updateProgress(STEP_SIZE_GRPOUP_AVATARS);
 
+				logger.info("Restoring message media files");
 				mediaCount = this.restoreMessageMediaFiles(fileHeaders);
 				if (mediaCount == 0) {
 					logger.error("restore message media files failed");
 					//continue anyway!
 				} else {
-					logger.info(mediaCount + " media files found");
+					logger.info("{} media files found", mediaCount);
 				}
 
 				//restore all avatars
+				logger.info("Restoring avatars");
 				if(!this.restoreContactAvatars(fileHeaders)) {
 					logger.error("restore contact avatar files failed");
 					//continue anyway!
@@ -515,6 +525,7 @@ public class RestoreService extends Service {
 				}
 			}
 
+			logger.info("Restore successful!");
 			restoreSuccess = true;
 			onFinished(null);
 
@@ -524,11 +535,11 @@ public class RestoreService extends Service {
 			Thread.currentThread().interrupt();
 			message = "Interrupted while restoring identity";
 		} catch (RestoreCanceledException e) {
-			logger.error("Exception", e);
+			logger.error("Restore cancelled", e);
 			message = getString(R.string.restore_data_cancelled);
 		} catch (Exception x) {
 			// wrong password? no connection? throw
-			logger.error("Exception", x);
+			logger.error("Exception while restoring backup", x);
 			message = x.getMessage();
 		}
 
@@ -741,7 +752,10 @@ public class RestoreService extends Service {
 							FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
 							if (thumbnailFileHeader != null) {
 								try (ZipInputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
-									this.fileService.writeConversationMediaThumbnail(model, IOUtils.toByteArray(inputStream));
+									byte[] thumbnailBytes = IOUtils.toByteArray(inputStream);
+									if (thumbnailBytes != null) {
+										this.fileService.writeConversationMediaThumbnail(model, thumbnailBytes);
+									}
 								}
 								//
 							}
@@ -760,7 +774,7 @@ public class RestoreService extends Service {
 								FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
 
 								//if no thumbnail file exist in backup, generate one
-								if (thumbnailFileHeader == null) {
+								if (thumbnailFileHeader == null && imageData != null) {
 									this.fileService.writeConversationMediaThumbnail(model, imageData);
 								}
 							}
@@ -1604,7 +1618,7 @@ public class RestoreService extends Service {
 	}
 
 	public void onFinished(String message) {
-		logger.debug("onFinished success = " + restoreSuccess);
+		logger.info("onFinished success = {}", restoreSuccess);
 
 		cancelPersistentNotification();
 
@@ -1669,7 +1683,7 @@ public class RestoreService extends Service {
 	}
 
 	private void updatePersistentNotification(int currentStep, int steps, boolean indeterminate) {
-		logger.debug("updatePersistentNoti " + currentStep + " of " + steps);
+		logger.debug("updatePersistentNoti {} of {}", currentStep, steps);
 
 		if (currentStep != 0) {
 			final long millisPassed = System.currentTimeMillis() - startTime;

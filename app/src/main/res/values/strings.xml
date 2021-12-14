@@ -1352,4 +1352,5 @@
 	<string name="permission_contacts_sync_required">Please allow access to your contacts in order to be able to sync them.</string>
 	<string name="not_voted_user_list">These participants did not vote: %s</string>
 	<string name="invalid_onprem_id">Not a valid Threema OnPrem-ID</string>
+	<string name="enable_unknown_sources">Unable to install. Please make sure \"Install unknown apps\" is enabled for %s.</string>
 </resources>

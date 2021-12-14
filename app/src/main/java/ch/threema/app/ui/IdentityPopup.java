@@ -38,15 +38,13 @@ import android.widget.TextView;
 
 import com.google.android.material.chip.Chip;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.ref.WeakReference;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.UserService;
@@ -166,7 +164,16 @@ public class IdentityPopup extends DimmingPopupWindow {
 	}
 
 	private void scanQR() {
-		QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(activityRef.get(), context.getString(R.string.qr_scanner_id_hint));
+		if (ConfigUtils.supportsGroupLinks()) {
+			QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(activityRef.get(), context.getString(R.string.qr_scanner_id_hint));
+		} else {
+			Intent intent = new Intent(context, AddContactActivity.class);
+			intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
+			if (activityRef.get() != null) {
+				activityRef.get().startActivity(intent);
+				activityRef.get().overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+			}
+		}
 	}
 
 	private void zoomQR(View v) {
@@ -242,7 +249,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 		WebClientListenerManager.serviceListener.remove(this.webClientServiceListener);
 	}
 
-	private WebClientServiceListener webClientServiceListener = new WebClientServiceListener() {
+	private final WebClientServiceListener webClientServiceListener = new WebClientServiceListener() {
 		@Override
 		public void onEnabled() {
 			this.setEnabled(true);

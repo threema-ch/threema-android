@@ -40,7 +40,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.base.ThreemaException;
 
 public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
-	private static final Logger logger = LoggerFactory.getLogger(BackupRestoreDataServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger("BackupRestoreDataServiceImpl");
 
 	private final Context context;
 	private final FileService fileService;
@@ -55,6 +55,7 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 
 	@Override
 	public boolean deleteBackup(BackupData backupData) throws IOException, ThreemaException {
+		logger.info("Deleting backup");
 		this.fileService.remove(backupData.getFile(), true);
 		return true;
 	}

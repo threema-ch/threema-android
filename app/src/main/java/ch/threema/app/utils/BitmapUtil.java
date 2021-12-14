@@ -125,11 +125,11 @@ public class BitmapUtil {
 		return result;
 	}
 
-	static public byte[] bitmapToPngByteArray(Bitmap bitmap) {
+	static public byte[] bitmapToPngByteArray(@NonNull Bitmap bitmap) {
 		return bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, DEFAULT_PNG_QUALITY);
 	}
 
-	static public byte[] bitmapToJpegByteArray(Bitmap bitmap) {
+	static public byte[] bitmapToJpegByteArray(@NonNull Bitmap bitmap) {
 		return bitmapToByteArray(bitmap, Bitmap.CompressFormat.JPEG, DEFAULT_JPG_QUALITY);
 	}
 
@@ -139,7 +139,7 @@ public class BitmapUtil {
 	 * @param quality
 	 * @return Byte array of bitmap
 	 */
-	public static byte[] bitmapToByteArray(Bitmap bitmap, Bitmap.CompressFormat format, int quality) {
+	public static byte[] bitmapToByteArray(@NonNull Bitmap bitmap, @NonNull Bitmap.CompressFormat format, int quality) {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(format, quality, stream);
 		return stream.toByteArray();

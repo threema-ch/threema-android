@@ -1080,7 +1080,8 @@ public class MessageServiceImpl implements MessageService {
 				this.save(messageModel);
 				this.fireOnModifiedMessage(messageModel);
 			} else {
-				logger.error("Illegal state transition from {} to {} (outbox={}), ignoring", messageModel.getState(), newState, messageModel.isOutbox());
+				// duplicate message state transitions (for example from SENT to SENT) are normal for group messages as we will get an ack for each message
+				logger.warn("State transition from {} to {} (outbox={}), ignoring", messageModel.getState(), newState, messageModel.isOutbox());
 			}
 		}
 	}
@@ -1714,11 +1715,13 @@ public class MessageServiceImpl implements MessageService {
 		if (thumbnailBlob != null && thumbnailBlob.length > NaCl.BOXOVERHEAD) {
 			byte[] thumbnail = NaCl.symmetricDecryptData(thumbnailBlob, encryptionKey, ProtocolDefines.THUMBNAIL_NONCE);
 
-			try {
-				fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
-			} catch (Exception e) {
-				this.downloadService.error(messageModel.getId());
-				throw e;
+			if (thumbnail != null) {
+				try {
+					fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
+				} catch (Exception e) {
+					this.downloadService.error(messageModel.getId());
+					throw e;
+				}
 			}
 
 			messageModel.setSaved(true);
@@ -1841,12 +1844,14 @@ public class MessageServiceImpl implements MessageService {
 
 			byte[] thumbnail = NaCl.symmetricDecryptData(thumbnailBlob, fileData.getEncryptionKey(), ProtocolDefines.FILE_THUMBNAIL_NONCE);
 
-			try {
-				fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
-			} catch (Exception e) {
-				downloadService.error(messageModel.getId());
-				logger.info("Error writing thumbnail for message " + messageModel.getApiMessageId());
-				throw e;
+			if (thumbnail != null) {
+				try {
+					fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
+				} catch (Exception e) {
+					downloadService.error(messageModel.getId());
+					logger.info("Error writing thumbnail for message " + messageModel.getApiMessageId());
+					throw e;
+				}
 			}
 
 			this.downloadService.complete(messageModel.getId(), fileData.getThumbnailBlobId());

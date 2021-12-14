@@ -288,7 +288,7 @@ public interface FileService {
 	/**
 	 * write a thumbnail to disk
 	 */
-	void writeConversationMediaThumbnail(AbstractMessageModel messageModel, byte[] thumbnail) throws Exception;
+	void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] thumbnail) throws Exception;
 
 	/**
 	 * return whether a thumbnail file exists for the specified message model

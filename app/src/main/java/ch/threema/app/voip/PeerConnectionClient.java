@@ -128,7 +128,7 @@ import java8.util.stream.StreamSupport;
  */
 public class PeerConnectionClient {
 	// Note: Not static, because we want to set a prefix
-	private final Logger logger = LoggerFactory.getLogger(PeerConnectionClient.class);
+	private final Logger logger = LoggerFactory.getLogger("PeerConnectionClient");
 
 	private static final String AUDIO_TRACK_ID = "3MACALLa0";
 	private static final String AUDIO_CODEC_OPUS = "opus";
