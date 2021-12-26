@@ -288,459 +288,429 @@
 	</string>
 	<string name="restore_data_password_msg">Itt adja meg a biztonsági mentés létrehozásakor beállított jelszót.
 	</string>
-	<string name="backup_data_media" tools:ignore="Typos">Grosse Medien (Videos, Dateien, Bilder) mitsichern</string>
-	<string name="backup_data_new">Daten-Backup erstellen</string>
-	<string name="pinentry_enter_pin">%s-PIN eingeben um fortzufahren</string>
-	<string name="pinentry_wrong_pin">Falsche PIN</string>
-	<string name="prefs_sum_security_pin">Zugriff auf App schützen</string>
-	<string name="prefs_title_pin_switch">App-Sperre</string>
-	<string name="prefs_title_pin_code">PIN festlegen</string>
-	<string name="prefs_pin_grace">Zeit bis zum Sperren</string>
-	<string name="prefs_sum_pin_grace">Zeitspanne wählen</string>
-	<string name="click_here_to_change_pin">PIN gesetzt. Hier tippen zum Ändern</string>
-	<string name="set_pin_menu_title">Neue PIN setzen</string>
-	<string name="set_pin_summary_intro">Schützen Sie Ihre Privatsphäre, indem Sie die App mit einer PIN-Sperre
-		versehen. Die Sperre wird nach einer festgelegten Wartezeit automatisch aktiviert (Nur Ziffern erlaubt)
+	<string name="backup_data_media">Nagyméretű médiák (videók, fájlok, képek) mentése</string>
+	<string name="backup_data_new">Adatmentés létrehozása</string>
+	<string name="pinentry_enter_pin">A folytatáshoz adja meg a %s-PIN-kódot</string>
+	<string name="pinentry_wrong_pin">Rossz PIN-kód</string>
+	<string name="prefs_sum_security_pin">Az alkalmazáshoz való hozzáférés védelme</string>
+	<string name="prefs_title_pin_switch">Alkalmazás zárolása</string>
+	<string name="prefs_title_pin_code">PIN-kód beállítása</string>
+	<string name="prefs_pin_grace">Idő a zárásig</string>
+	<string name="prefs_sum_pin_grace">Időtartam kiválasztása</string>
+	<string name="click_here_to_change_pin">PIN-kód beállítva. Kattintson ide a módosításhoz</string>
+	<string name="set_pin_menu_title">Új PIN-kód beállítása</string>
+	<string name="set_pin_summary_intro">Védje magánéletét az alkalmazás PIN-zárának beállításával. A zár 
+		automatikusan aktiválódik a beállított várakozási idő után (csak számjegyek engedélyezettek).</string>
+	<string name="set_pin_again_summary">Ismételje meg a PIN-kódot</string>
+	<string name="set_pin_hint">PIN-kód</string>
+	<string name="title_addgroup">Új csoport</string>
+	<string name="search_group">Csoport keresése</string>
+	<string name="updating_system">Rendszerfrissítés</string>
+	<string name="title_select_contacts">Válassza ki a tagokat</string>
+	<string name="pin_invalid_not_set">PIN-kód érvénytelen</string>
+	<string name="prefs_group_notifications">Csoportos csevegés</string>
+	<string name="add_group_members_list">Csoporttagok</string>
+	<string name="group_select_at_least_two">Kérjük, válasszon legalább egy tagot</string>
+	<string name="group_select_max">A csoporthoz legfeljebb %1$d tag adható hozzá.</string>
+	<string name="search">Keresés</string>
+	<string name="hint_search_keyword">Keresési kifejezés</string>
+	<string name="add_group_owner">Létrehozó</string>
+	<string name="title_tab_users">Névjegyek</string>
+	<string name="title_tab_groups">Csoportok</string>
+	<string name="no_matching_groups">Nem találtunk csoportot</string>
+	<string name="action_leave_group">Csoport elhagyása</string>
+	<string name="group_edit_title">Csoport szerkesztése</string>
+	<string name="really_leave_group_message">Biztos, hogy el akarod hagyni ezt a csoportot?</string>
+	<string name="search_no_matches">Keresési kifejezés nem található</string>
+	<string name="search_no_more_matches">Nincs több találat</string>
+	<string name="backup_share">Biztonsági mentés továbbítása</string>
+	<string name="my_backups_title">Biztonsági mentések</string>
+	<string name="backup_delete_confirm">Biztonsági mentés fájl törölve</string>
+	<string name="message_log_title">Üzenet részletei</string>
+	<string name="state_read">elolvasva</string>
+	<string name="state_ack">megerősítve</string>
+	<string name="state_delivered">megkapva</string>
+	<string name="state_sending">küldés</string>
+	<string name="state_pending">várakozás</string>
+	<string name="state_failed">sikertelen</string>
+	<string name="state_sent">elküldve</string>
+	<string name="state_dialog_created">Létrehozva</string>
+	<string name="state_dialog_posted">Elküldve</string>
+	<string name="state_dialog_modified">Frissítve</string>
+	<string name="state_dialog_status">Állapot</string>
+	<string name="title_tab_recent">Legutóbbi</string>
+	<string name="no_recent_conversations">Nem találtunk csevegést</string>
+	<string name="save_changes">Mentés</string>
+	<string name="group_created_confirm">Csoport sikeresen létrehozva</string>
+	<string name="creating_group">Csoport létrehozása folyamatban</string>
+	<string name="updating_group">Csoport frissítése</string>
+	<string name="status_create_group">Csoport létrehozva.</string>
+	<string name="status_rename_group">Csoport átnevezve: «%1$s»</string>
+	<string name="status_group_new_photo">Csoport frissítve.</string>
+	<string name="status_group_new_member">«%1$s» hozzá lett adva a csoporthoz.</string>
+	<string name="status_group_member_left">«%1$s» elhagyta a csoportot.</string>
+	<string name="status_group_member_kicked">«%1$s» eltávolításra került a csoportból.</string>
+	<string name="can_not_send_no_group_members">Üres csoportnak nem küldhető üzenet.
 	</string>
-	<string name="set_pin_again_summary">PIN wiederholen</string>
-	<string name="set_pin_hint">PIN</string>
-	<string name="title_addgroup">Neue Gruppe</string>
-	<string name="search_group">Gruppe suchen</string>
-	<string name="updating_system">System-Update</string>
-	<string name="title_select_contacts">Mitglieder auswählen</string>
-	<string name="pin_invalid_not_set">PIN ungültig</string>
-	<string name="prefs_group_notifications">Gruppenchat</string>
-	<string name="add_group_members_list">Gruppenmitglieder</string>
-	<string name="group_select_at_least_two">Bitte mindestens ein Mitglied wählen</string>
-	<string name="group_select_max">Es können maximal %1$d Mitglieder zur Gruppe hinzugefügt werden</string>
-	<string name="search">Suche</string>
-	<string name="hint_search_keyword">Suchbegriff</string>
-	<string name="add_group_owner">Ersteller</string>
-	<string name="title_tab_users">Kontakte</string>
-	<string name="title_tab_groups">Gruppen</string>
-	<string name="no_matching_groups">Keine Gruppen gefunden</string>
-	<string name="action_leave_group">Gruppe verlassen</string>
-	<string name="group_edit_title">Gruppe bearbeiten</string>
-	<string name="really_leave_group_message">Möchten Sie diese Gruppe wirklich verlassen?</string>
-	<string name="search_no_matches">Suchbegriff nicht gefunden</string>
-	<string name="search_no_more_matches">Keine weiteren Treffer</string>
-	<string name="backup_share">Backup weiterleiten</string>
-	<string name="my_backups_title">Backups</string>
-	<string name="backup_delete_confirm">Backup-Datei gelöscht</string>
-	<string name="message_log_title">Nachrichtendetails</string>
-	<string name="state_read">gelesen</string>
-	<string name="state_ack">bestätigt</string>
-	<string name="state_delivered">erhalten</string>
-	<string name="state_sending">wird gesendet</string>
-	<string name="state_pending">wartend</string>
-	<string name="state_failed">fehlgeschlagen</string>
-	<string name="state_sent">gesendet</string>
-	<string name="state_dialog_created">Erstellt</string>
-	<string name="state_dialog_posted">Gesendet</string>
-	<string name="state_dialog_modified">Aktualisiert</string>
-	<string name="state_dialog_status">Status</string>
-	<string name="title_tab_recent">Zuletzt</string>
-	<string name="no_recent_conversations">Keine Chats gefunden</string>
-	<string name="save_changes">Sichern</string>
-	<string name="group_created_confirm">Gruppe erfolgreich erstellt</string>
-	<string name="creating_group">Gruppe wird erstellt</string>
-	<string name="updating_group">Gruppe aktualisieren</string>
-	<string name="status_create_group">Gruppe erstellt.</string>
-	<string name="status_rename_group">Gruppe umbenannt zu «%1$s»</string>
-	<string name="status_group_new_photo">Gruppe aktualisiert.</string>
-	<string name="status_group_new_member">«%1$s» wurde zur Gruppe hinzugefügt.</string>
-	<string name="status_group_member_left">«%1$s» hat die Gruppe verlassen.</string>
-	<string name="status_group_member_kicked">«%1$s» wurde aus der Gruppe entfernt.</string>
-	<string name="can_not_send_no_group_members">Es können keine Nachrichten an eine leere Gruppe gesendet werden.
+	<string name="you_are_not_a_member_of_this_group">Ön nem tagja ennek a csoportnak.</string>
+	<string name="can_not_delete_not_valid">Egy érvénytelen objektum nem távolítható el</string>
+	<string name="can_not_delete_contact_until_in_group">A névjegy nem törölhető, amíg még egy csoportban van.</string>
+	<string name="can_not_delete_contact">A névjegy nem törölhető</string>
+	<string name="title_public_nickname">Becenév</string>
+	<string name="prefs_sum_excluded_sync_identities">Az itt felsorolt ID-kat a kapcsolatok szinkronizálásakor figyelmen kívül hagyjuk.</string>
+	<string name="prefs_title_excluded_sync_identities">Kizárási lista</string>
+	<string name="synchronize_contact">Címjegyzék szinkronizálása</string>
+	<string name="exclude_contact">Szinkronizálásból kizárás.</string>
+	<string name="prefs_header_lists">Listák</string>
+	<string name="prefs_title_black_list">Blokkolt névjegyek</string>
+	<string name="prefs_sum_black_list">Az itt felsorolt ID-k üzeneteit a rendszer figyelmen kívül hagyja.</string>
+	<string name="verified">Ellenőrizve</string>
+	<string name="want_to_add_to_exclude_list">Ez a kapcsolat egy a telefonos címjegyzék bejegyzéséhez kapcsolódik. 
+		Ha törli a Threema rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben 
+		ezt az azonosítót kizárni a szinkronizálásból?</string>
+	<string name="no">Nem</string>
+	<string name="yes">Igen</string>
+	<string name="deleting_contact">A névjegy törlésre kerül</string>
+	<string name="prefs_contact_soring">Rendezés</string>
+	<string name="prefs_sum_contact_soring">A névjegyzék rendezésének beállítása</string>
+	<string name="prefs_contact_format">Névjegy nevének megjelenítése</string>
+	<string name="prefs_sum_contact_format">A névjegylista nevének megjelenítésére vonatkozó beállítás</string>
+	<string name="prefs_contact_list_title">Névjegylista</string>
+	<string name="prefs_default_contact_picture_colored">Színes kontaktképek</string>
+	<string name="prefs_show_inactive_contacts">Inaktív azonosítók megjelenítése</string>
+	<string name="prefs_sum_default_contact_picture_colored_on">Különböző színű helytartók megjelenítése, ha nincs kapcsolati kép.</string>
+	<string name="prefs_sum_default_contact_picture_colored_off">Szürke helytartók megjelenítése, ha nincs kapcsolati kép.</string>
+	<string name="prefs_sum_show_inactive_contacts_on">Az összes Threema azonosító megjelenítése a névjegyzékben.</string>
+	<string name="prefs_sum_show_inactive_contacts_off">Inaktív/visszavont Threema azonosítók elrejtése</string>
+	<string name="contact_sorting_first_name">Keresztnév - Vezetéknév</string>
+	<string name="contact_sorting_last_name">Vezetéknév - Keresztnév</string>
+	<string name="contact_format_first_name_last_name">Keresztnév Vezetéknév</string>
+	<string name="contact_format_last_name_first_name">Vezetéknév Keresztnév</string>
+	<string name="block_contact">Névjegy blokkolása</string>
+	<string name="unblock_contact">Névjegy feloldása</string>
+	<string name="unread_messages">%d olvasatlan üzenet</string>
+	<string name="one_unread_message">1 olvasatlan üzenet</string>
+	<string name="really_unlink_contact_title">Kapcsolat összecsatolás feloldása</string>
+	<string name="really_unlink_contact">Biztos, hogy el akarja távolítani a címjegyzéki kapcsolat összecsatolását?</string>
+	<string name="do_unlink_contact">Összecsatolás eltávolítása</string>
+	<string name="do_choose_other_contact">Válasszon ki egy másik névjegyet</string>
+	<string name="touch_to_link">(nincs)</string>
+	<string name="prefs_validate_contacts">Névjegy kapcsolat felülvizsgálása</string>
+	<string name="prefs_validate_contacts_loading">Névjegy kapcsolat felülvizsgálat alatt</string>
+	<string name="prefs_title_fullscreen_ime">Teljes képernyős billentyűzet</string>
+	<string name="prefs_sum_fullscreen_ime_on">A billentyűzet a teljes képernyőt kitölti fekvő módban</string>
+	<string name="prefs_sum_fullscreen_ime_off">A billentyűzet felett megjelenik a csevegés egy szakasza</string>
+	<string name="add_acount_from_within_threema">Hozzon létre egy új ID-t a Threema alkalmazásból.</string>
+	<string name="save_image">Kép mentése</string>
+	<string name="share_image">Kép megosztása</string>
+	<string name="view_in_gallery">Megtekintés a galériában</string>
+	<string name="file_saved">%d fájl(ok) mentve.</string>
+	<string name="token_register_failed">A push tokent nem sikerült frissíteni. Kérjük, próbálja meg később újra.</string>
+	<string name="internet_connection_required">Nincs internetkapcsolat.</string>
+	<string name="sending_message_failed">%1$d Üzenet(ek) nem küldhető(k)</string>
+	<string name="prefs_sum_save_media">A bejövő képek és videók, valamint a kimenő kameraképek titkosítás nélküli mentése</string>
+	<string name="prefs_save_media">Mentés a galériába</string>
+	<string name="title_add_distribution_list">Új elosztási lista</string>
+	<string name="title_edit_distribution_list">Elosztási lista szerkesztése</string>
+	<string name="really_delete_distribution_list">Elosztási lista törlése</string>
+	<string name="really_delete_distribution_list_message">Biztos, hogy törölni szeretné ezt az elosztási listát?</string>
+	<string name="enter_distribution_list_name">Válasszon nevet a listának</string>
+	<string name="distribution_list">Elosztási lista</string>
+	<string name="title_tab_distribution_list">Elosztási listák</string>
+	<string name="no_matching_distribution_lists">Még nincsenek elosztási listák meghatározva.</string>
+	<string name="is_typing">írja…</string>
+	<string name="push_not_available_title">Push szolgáltatás nem elérhető</string>
+	<string name="push_not_available_text">Nincs push szolgáltatás a készüléken, mert a Google Play szolgáltatások hiányoznak vagy nem naprakészek. A Threema 15 percenként ellenőrzi az új üzeneteket.</string>
+	<string name="backup_in_progress">Biztonsági mentés készítése</string>
+	<string name="backup_or_restore_success_body">Sikeresen létrehozott biztonsági mentés</string>
+	<string name="backup_or_restore_error">Threema biztonsági mentés</string>
+	<string name="backup_or_restore_error_body">A biztonsági mentés sikertelen</string>
+	<string name="could_not_download_message">Az üzenetet nem lehetett letölteni</string>
+	<string name="info">Információk</string>
+	<string name="resync_group">Csoport újraszinkronizálás</string>
+	<string name="edit_name">Név és kép beállítása</string>
+	<string name="group_was_synchronized">Csoport újraszinkronizálva</string>
+	<string name="verification_level2_work_explain">A szervezet által meghatározott belső kapcsolat.</string>
+	<string name="verification_level3_work_explain">Belső kapcsolat, akinek személyazonosságát és nyilvános kulcsát személyesen ellenőrizte a QR-kód beolvasásával.</string>
+	<string name="verification_level3_explain">Kapcsolat, amelynek személyazonosságát és nyilvános kulcsát személyesen ellenőrizte a QR-kód beolvasásával.
 	</string>
-	<string name="you_are_not_a_member_of_this_group">Sie sind kein Mitglied dieser Gruppe.</string>
-	<string name="can_not_delete_not_valid">Ein ungültiges Objekt kann nicht entfernt werden</string>
-	<string name="can_not_delete_contact_until_in_group">Der Kontakt kann nicht gelöscht werden, solange er sich noch in
-		einer Gruppe befindet
+	<string name="verification_level2_explain">Olyan kapcsolat, amelynek telefonszáma és/vagy e-mail címe szerepel az Ön címjegyzékében.
 	</string>
-	<string name="can_not_delete_contact">Der Kontakt kann nicht gelöscht werden</string>
-	<string name="title_public_nickname">Nickname</string>
-	<string name="prefs_sum_excluded_sync_identities">Die IDs, die hier aufgelistet sind, werden beim Synchronisieren
-		von Kontakten ignoriert.
+	<string name="verification_level1_explain">Ismeretlen kapcsolat; a kapcsolat ID-jéhez nem tartozik se telefonszám, se e-mail cím, 
+		vagy a címjegyzék nem tartalmazza ezeket az információkat.</string>
+	<string name="state_dialog_received">Fogadva</string>
+	<string name="prefs_title_hide_screenshots">Miniatűrök és képernyőképek megakadályozása</string>
+	<string name="prefs_summary_hide_screenshots">A miniatűrök elrejtése az alkalmazásváltóban és a képernyőképek készítésének megakadályozása</string>
+	<string name="media_gallery">Média galéria</string>
+	<string name="media_file_not_found">A médiafájl nem nyitható meg. Törölték vagy nem töltötte le a szerverről.</string>
+	<string name="no_media_found">Ebben a csevegésben nem találtunk %s-t.</string>
+	<string name="media_gallery_all">Minden</string>
+	<string name="media_gallery_pictures">Képek</string>
+	<string name="media_gallery_videos">Videók</string>
+	<string name="group_membership_title">Ezeknek a csoportoknak a tagja</string>
+	<string name="num_items_sected">%s kiválasztott</string>
+	<string name="really_delete_media">Tényleg törölni szeretné ezt a(z) %d médiaüzenetet?</string>
+	<string name="check_updates">Frissítések keresése</string>
+	<string name="masterkey_lock_explain">A Threema a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót, 
+		az lehet, hogy egy taskkiller vagy akkumulátorkímélő alkalmazás miatt van, amely eltávolítja a jelszót a memóriából.
 	</string>
-	<string name="prefs_title_excluded_sync_identities">Ausschlussliste</string>
-	<string name="synchronize_contact">Adressbuch-Synchronisation</string>
-	<string name="exclude_contact" tools:ignore="Typos">Von autom. Synchr. ausschliessen</string>
-	<string name="prefs_header_lists">Listen</string>
-	<string name="prefs_title_black_list">Blockierte Kontakte</string>
-	<string name="prefs_sum_black_list">Nachrichten von IDs, die hier aufgelistet sind, werden ignoriert.</string>
-	<string name="verified">Überprüft</string>
-	<string name="want_to_add_to_exclude_list" tools:ignore="Typos">Dieser Kontakt ist mit einem Eintrag in Ihrem Telefon-Adressbuch
-		verknüpft. Wenn Sie ihn in Threema löschen, taucht er nach einer Kontaktsynchronisation wieder auf.\nMöchten sie
-		diese ID zukünftig aus der Synchronisation ausschliessen?
+	<string name="identity_already_exists">Ez az ID már szerepel a névjegyzékében</string>
+	<string name="share_contact">Kapcsolat megosztása</string>
+	<string name="add_shortcut">Parancsikon létrehozása</string>
+	<string name="group_not_found">A csoport nem található.</string>
+	<string name="contact_not_found">Névjegy nem található</string>
+	<string name="contact_now_blocked">Névjegy blokkolva</string>
+	<string name="contact_now_unblocked">Névjegy feloldva</string>
+	<string name="not_enough_disk_space_title">Túl kevés tárolóhely</string>
+	<string name="not_enough_disk_space_text">Legalább %1$s szükséges az üzenet fogadásához</string>
+	<string name="sending_images">Képek küldése</string>
+	<string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra 
+		van szükség. pl. http://www.7-zip.org vagy https://itunes.apple.com/de/app/the-unarchiver/id425424353
 	</string>
-	<string name="no">Nein</string>
-	<string name="yes">Ja</string>
-	<string name="deleting_contact">Kontakt wird gelöscht</string>
-	<string name="prefs_contact_soring">Sortierung</string>
-	<string name="prefs_sum_contact_soring">Einstellung zur Sortierung der Kontaktliste</string>
-	<string name="prefs_contact_format">Kontaktnamen anzeigen</string>
-	<string name="prefs_sum_contact_format">Einstellung zur Anzeige der Kontaktnamen</string>
-	<string name="prefs_contact_list_title">Kontaktliste</string>
-	<string name="prefs_default_contact_picture_colored">Farbige Kontaktbilder</string>
-	<string name="prefs_show_inactive_contacts">Inaktive IDs anzeigen</string>
-	<string name="prefs_sum_default_contact_picture_colored_on">Verschiedenfarbige Platzhalter anzeigen, wenn kein
-		Kontaktbild vorhanden ist.
+	<string name="enter_zip_password_body">A csevegés titkosított zip-fájlként kerül elküldésre. Kérjük, válasszon egy jelszót:</string>
+	<string name="new_messages_in_chats">%1$d új üzenet %2$d csevegésben</string>
+	<string name="ballot_create">Szavazás létrehozása</string>
+	<string name="ballot_choice_add">válasz szövege</string>
+	<string name="ballot_state_closed">zárva</string>
+	<string name="ballot_vote">Szavaz</string>
+	<string name="ballot_placeholder">Szavazás</string>
+	<string name="ballot_close">A szavazás lezárása</string>
+	<string name="ballot_really_close">Szeretné lezárni ezt a szavazást, és elérhetővé tenni az eredményeket?</string>
+	<string name="ballot_multiple_choice">Többszörös választás</string>
+	<string name="ballot_result_intermediate">Közbenső eredmények</string>
+	<string name="ballot_error_more_than_x_choices">Legalább két választási lehetőséget kell létrehoznia</string>
+	<string name="ballot_message_closed">Az eredmények készen állnak</string>
+	<string name="ballot_vote_posted_successfully">Sikeresen leadott szavazat</string>
+	<string name="ballot_vote_posted_failed">A szavazás sikertelen</string>
+	<string name="attach_ballot">Szavazás</string>
+	<string name="ballot_overview">Összes szavazás</string>
+	<string name="ballot_copy">Szavazás másolása</string>
+	<string name="ballot_remove">Szavazás eltávolítása</string>
+	<string name="ballot_really_delete">Szavazás törlése</string>
+	<string name="ballot_really_delete_text">Tényleg törölni akarja a %1$d szavazatot? A szavazatokat nem lehet visszaállítani.
 	</string>
-	<string name="prefs_sum_default_contact_picture_colored_off">Graue Platzhalter anzeigen, wenn kein Kontaktbild
-		vorhanden ist.
+	<string name="ballot_not_exist">A szavazás nem létezik</string>
+	<string name="ballot_tap_to_vote">Szavazás megérintéssel</string>
+	<string name="ballot_tap_to_view_results">Szavazás lezárva. Érintse meg az eredményekért</string>
+	<string name="ballot_subject_hint">Szavazás címének megadása</string>
+	<string name="ballot_no_ballots_yet">Még nincsenek szavazások.</string>
+	<string name="print">Nyomtatás</string>
+	<string name="ballot_wizard0_explain">Gyorsan és egyszerűen hozhat létre szavazást közvetlenül a Threema programban. 
+		Szervezzen időpontot, vagy végezzen szavazást barátai körében.
 	</string>
-	<string name="prefs_sum_show_inactive_contacts_on">Alle Threema-IDs in der Kontaktliste anzeigen</string>
-	<string name="prefs_sum_show_inactive_contacts_off">Inaktive/widerrufene Threema-IDs ausblenden</string>
-	<string name="contact_sorting_first_name">Vorname - Nachname</string>
-	<string name="contact_sorting_last_name">Nachname - Vorname</string>
-	<string name="contact_format_first_name_last_name">Vorname Nachname</string>
-	<string name="contact_format_last_name_first_name">Nachname Vorname</string>
-	<string name="block_contact">Kontakt blockieren</string>
-	<string name="unblock_contact">Kontakt deblockieren</string>
-	<string name="unread_messages">%d ungelesene Nachrichten</string>
-	<string name="one_unread_message">1 ungelesene Nachricht</string>
-	<string name="really_unlink_contact_title">Verknüpfung aufheben</string>
-	<string name="really_unlink_contact">Möchten Sie die Verknüpfung zum Adressbuch-Kontakt wirklich aufheben?</string>
-	<string name="do_unlink_contact">Verknüpfung aufheben</string>
-	<string name="do_choose_other_contact">Anderen Kontakt wählen</string>
-	<string name="touch_to_link">(keiner)</string>
-	<string name="prefs_validate_contacts">Kontaktverbindung überprüfen</string>
-	<string name="prefs_validate_contacts_loading">Kontaktverbindung in Überprüfung</string>
-	<string name="prefs_title_fullscreen_ime">Bildschirmfüllende Tastatur</string>
-	<string name="prefs_sum_fullscreen_ime_on">Die Tastatur füllt im Querformat den ganzen Bildschirm</string>
-	<string name="prefs_sum_fullscreen_ime_off">Oberhalb der Tastatur wird ein Ausschnitt des Chats angezeigt</string>
-	<string name="add_acount_from_within_threema">Erstellen Sie eine neue ID von der Threema-App aus.</string>
-	<string name="save_image">Bild speichern</string>
-	<string name="share_image">Bild teilen</string>
-	<string name="view_in_gallery">In Galerie ansehen</string>
-	<string name="file_saved">%d Datei(en) gespeichert.</string>
-	<string name="token_register_failed">Push-Token konnte nicht aktualisiert werden. Bitte versuchen Sie es später
-		erneut.
+	<string name="ballot_add_choices">Válaszlehetőségek megadása</string>
+	<string name="blocked_cannot_send">Nem küldhet üzeneteket blokkolt névjegytől</string>
+	<string name="really_block_contact">Többé nem fog üzeneteket kapni ettől a névjegytől. Folytatja?
 	</string>
-	<string name="internet_connection_required">Keine Internet-Verbindung.</string>
-	<string name="sending_message_failed">%1$d Nachricht(en) konnte(n) nicht gesendet werden</string>
-	<string name="prefs_sum_save_media">Eingehende Bilder und Videos sowie ausgehende Kamerabilder unverschlüsselt sichern</string>
-	<string name="prefs_save_media">In Galerie speichern</string>
-	<string name="title_add_distribution_list">Neue Verteilerliste</string>
-	<string name="title_edit_distribution_list">Verteilerliste bearbeiten</string>
-	<string name="really_delete_distribution_list">Verteilerliste löschen</string>
-	<string name="really_delete_distribution_list_message">Möchten Sie diese Verteilerliste wirklich löschen?</string>
-	<string name="enter_distribution_list_name">Wählen Sie einen Namen für die Liste</string>
-	<string name="distribution_list">Verteilerliste</string>
-	<string name="title_tab_distribution_list">Verteilerlisten</string>
-	<string name="no_matching_distribution_lists">Noch keine Verteilerlisten definiert.</string>
-	<string name="is_typing">schreibt gerade…</string>
-	<string name="push_not_available_title">Push-Dienst nicht verfügbar</string>
-	<string name="push_not_available_text">Kein Push-Dienst auf Ihrem Gerät gefunden, da die Google Play-Dienste fehlen oder nicht aktuell sind. Threema wird alle 15 Minuten nach neuen Nachrichten prüfen.</string>
-	<string name="backup_in_progress">Datensicherung wird erstellt</string>
-	<string name="backup_or_restore_success_body">Datensicherung erfolgreich erstellt</string>
-	<string name="backup_or_restore_error">Threema-Datensicherung</string>
-	<string name="backup_or_restore_error_body">Datensicherung fehlgeschlagen</string>
-	<string name="could_not_download_message">Nachricht konnte nicht heruntergeladen werden</string>
-	<string name="info">Informationen</string>
-	<string name="resync_group">Gruppe neu synchronisieren</string>
-	<string name="edit_name">Name und Bild festlegen</string>
-	<string name="group_was_synchronized">Gruppe wurde neu synchronisiert</string>
-	<string name="verification_level2_work_explain">Interner Kontakt, durch Ihre Organisation vorgegeben.</string>
-	<string name="verification_level3_work_explain">Interner Kontakt, dessen Identität und öffentlichen Schlüssel Sie durch Scannen des QR-Codes persönlich verifiziert haben.</string>
-	<string name="verification_level3_explain">Kontakt, dessen Identität und öffentlichen Schlüssel Sie durch Scannen des QR-Codes persönlich verifiziert haben.
+	<string name="ballot_result_final">Végeredmény</string>
+	<string name="invalid_cannot_send">Nem küldhet üzenetet érvénytelen kapcsolatnak</string>
+	<string name="ballot_answer_count_error">Kérjük, legalább két választ adjon meg.</string>
+	<string name="ballot_one_contact_not_supported">Figyelem: %1$s még nem tud részt venni a szavazásokban.</string>
+	<string name="ballot_x_contact_not_supported">Figyelem: %1$d kapcsolat még nem tud részt venni a szavazásokban.
 	</string>
-	<string name="verification_level2_explain">Kontakt, dessen Rufnummer und/oder E-Mail-Adresse in Ihrem Adressbuch enthalten ist.
+	<string name="enable_polling">Lekérdezés használata</string>
+	<string name="contact_state_inactive">Inaktív</string>
+	<string name="contact_state_invalid">Érvénytelen</string>
+	<string name="back">Vissza</string>
+	<string name="wearable_reply">Válasz</string>
+	<string name="wearable_reply_label">Válasz %s-nak</string>
+	<string name="message_acknowledged">Üzenet megerősítve</string>
+	<string name="push_disable_text">Ha folytatja, a push üzenetek letiltásra kerülnek, és 
+		a Threema 15 percenként ellenőrzi az új üzeneteket.
 	</string>
-	<string name="verification_level1_explain">Unbekannter Kontakt; dieser Kontakt hat seine ID weder mit einer Rufnummer noch mit einer E-Mail-Adresse verknüpft, oder Ihr Adressbuch enthält diese Angaben nicht.
+	<string name="ballot_intermediate_results_show">Közbenső eredmények megjelenítése</string>
+	<string name="converting_video">A videó feldolgozása folyamatban van</string>
+	<string name="video_size_small">Magas (kis mennyiségű adat)</string>
+	<string name="video_size_large">Alacsony (közepes adatmennyiség)</string>
+	<string name="video_size_original">Nincs (nagy mennyiségű adat)</string>
+	<string name="prefs_video_size">Videó tömörítés</string>
+	<string name="show_contact">Névjegy megjelenítése</string>
+	<string name="chat_with">Csevegés %1$s</string>
+	<string name="kick_user_from_group">%1$s eltávolítása a csoportból</string>
+	<string name="show_as_qrcode">QR-kódként megjeleníteni</string>
+	<string name="qr_code">QR-kód</string>
+	<string name="really_leave_id_export">Győződjön meg róla, hogy az ID exportálási karakterláncot vagy 
+		a QR-kódot elmentette egy biztonságos helyre vagy kinyomtatta.</string>
+	<string name="prefs_sum_remove_wallpapers">Az összes egyedi háttérkép eltávolítása</string>
+	<string name="prefs_title_remove_wallpapers">Minden háttérkép eltávolítása</string>
+	<string name="really_remove_wallpapers">Biztos, hogy az összes háttérképet el akarja távolítani?</string>
+	<string name="wallpapers_removed">Háttérképek eltávolítva</string>
+	<string name="invalid_backup">A biztonsági másolat adatai érvénytelenek. Visszaállítás nem lehetséges.</string>
+	<string name="revocation_key_title">ID visszavonása</string>
+	<string name="revocation_key_not_set">Nincs visszavonási jelszó beállítva</string>
+	<string name="revocation_key_set_at">Jelszó megadva %1$s</string>
+	<string name="revocation_explain">Az itt megadott jelszóval visszavonhatja ID-jét a 
+		https://myid.threema.ch/revoke címen, ha elveszítette vagy ellopták.
 	</string>
-	<string name="state_dialog_received">Empfangen</string>
-	<string name="prefs_title_hide_screenshots">Miniaturen und Screenshots verhindern</string>
-	<string name="prefs_summary_hide_screenshots">Miniaturen im App-Switcher verstecken und Screenshots verhindern
+	<string name="no_unread_messages">Nincsenek olvasatlan üzenetek vagy a PIN-zár aktív</string>
+	<string name="send_media">Média küldése</string>
+	<string name="rotate">Elforgatni</string>
+	<string name="remove">Eltávolítani</string>
+	<string name="image_already_added">Ez a kép már ki van választva.</string>
+	<string name="password_too_short">Legalább %d karakter</string>
+	<string name="mark_read">Elolvasottként megjelölés</string>
+	<string name="emoji_flags">Zászlók</string>
+	<string name="attach_document">Fájl</string>
+	<string name="parent_directory">Felső könyvtár</string>
+	<string name="file_placeholder">Fájl</string>
+	<string name="internal_storage">Tárhely</string>
+	<string name="no_activity_for_mime_type">Nem találtunk megfelelő alkalmazást ehhez a fájlhoz.</string>
+	<string name="message_copied">Üzenet másolva</string>
+	<string name="open_from">Megnyitás</string>
+	<string name="file_one_contact_not_supported">%1$s még nem tud fájlokat fogadni.</string>
+	<string name="file_x_contact_not_supported">Figyelmeztetés: %1$d kapcsolat nem tud fájlokat fogadni.</string>
+	<string name="mime_android_apk">Android csomag</string>
+	<string name="mime_audio">Hangfájl</string>
+	<string name="mime_certificate">Digitális tanúsítvány</string>
+	<string name="mime_codes">Programkód</string>
+	<string name="mime_compressed">Tömörített fájl</string>
+	<string name="mime_contact">Névjegy</string>
+	<string name="mime_event">Meghívó</string>
+	<string name="mime_font">Betűtípus fájl</string>
+	<string name="mime_image">Kép</string>
+	<string name="mime_pdf">PDF dokumentum</string>
+	<string name="mime_presentation">Prezentáció</string>
+	<string name="mime_spreadsheet">Táblázat</string>
+	<string name="mime_text">Szöveges fájl</string>
+	<string name="mime_video">Videó fájl</string>
+	<string name="mime_word">Szöveges dokumentum</string>
+	<string name="no_filename"><![CDATA[<Nincs fájlnév>]]></string>
+	<string name="send_as_files">Küldés fájlként</string>
+	<string name="send_as_files_warning">A tömörítetlen fájlok és képek továbbítása megnövekedett adatfogyasztáshoz vezet. 
+		Ez további költségeket eredményezhet a mobiltelefon-szolgáltatónál. Javasoljuk a WLAN használatát.
 	</string>
-	<string name="media_gallery">Medienübersicht</string>
-	<string name="media_file_not_found">Mediendatei kann nicht geöffnet werden. Sie wurde gelöscht oder nicht vom Server
-		heruntergeladen.
+	<string name="prefs_theme">Disájn stílus</string>
+	<string name="list_theme_light">Világos (standard)</string>
+	<string name="list_theme_dark">Sötét</string>
+	<string name="prefs_header_appearance">Megjelenés</string>
+	<string name="prefs_sum_passphrase">Jelszó megkövetelése a helyi titkosításhoz</string>
+	<string name="prefs_title_masterkey_change_passphrase">Jelszó módosítása</string>
+	<string name="storage_total">Belső tároló</string>
+	<string name="storage_threema">Threema által használt</string>
+	<string name="storage_total_free">Szabad tárhely</string>
+	<string name="storage_total_in_use">Felhasznált</string>
+	<string name="one_year">1 év</string>
+	<string name="six_months">6 hónap</string>
+	<string name="three_months">3 hónap</string>
+	<string name="one_month">1 hónap</string>
+	<string name="one_week">1 hét</string>
+	<string name="everything">mind</string>
+	<string name="delete_media_files_time">Törölje a következőnél régebbi médiákat és fájlokat:</string>
+	<string name="storage_explain">Ha kifogyóban van a tárhelye, törölheti a titkosított formában tárolt régi 
+		médiafájlokat, hogy helyet szabadítson fel. A miniatűrök megmaradnak. Vegye figyelembe, hogy ez nem 
+		automatikus folyamat. Csak akkor törlődik, ha megérinti az alábbi gombok egyikét.
 	</string>
-	<string name="no_media_found">In diesem Chat wurden keine %s gefunden.</string>
-	<string name="media_gallery_all">Alles</string>
-	<string name="media_gallery_pictures">Bilder</string>
-	<string name="media_gallery_videos">Videos</string>
-	<string name="group_membership_title">Mitglied in diesen Gruppen</string>
-	<string name="num_items_sected">%s ausgewählt</string>
-	<string name="really_delete_media">Möchten Sie diese %d Medien-Nachricht(en) wirklich löschen?</string>
-	<string name="check_updates">Auf Updates prüfen</string>
-	<string name="masterkey_lock_explain">Threema hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der
-		Passphrase gefragt werden, kann dies an einer Taskkiller- oder Batterie-Spar-App liegen, welche die Passphrase
-		aus dem Speicher entfernt.
+	<string name="delete_data">Adatok törlése most</string>
+	<string name="delete_date_confirm_message">A fájlok véglegesen törlődnek, és csak a miniatűrök maradnak meg.</string>
+	<string name="media_files_deleted">%d Média/fájlok törölve.</string>
+	<string name="storage_management">Tároláskezelés</string>
+	<string name="media">Média</string>
+	<string name="prefs_storage_mgmt_title">Fájlok és üzenetek tisztítása</string>
+	<string name="num_messages">Üzenetek száma</string>
+	<string name="delete_messages_explain">A következőnél régebbi üzenetek törlése:</string>
+	<string name="delete_message">Üzenetek törlése</string>
+	<string name="really_delete_messages">Az üzenetek teljesen törlődnek, és nem állíthatók vissza.</string>
+	<string name="messages_delete_explain">A régebbi üzeneteket is teljesen törölheti.</string>
+	<string name="backup_started">Az adatmentés elindult</string>
+	<string name="invalid_data">Érvénytelen adat. Küldés nem lehetséges.</string>
+	<string name="prefs_android_emojis">Rendszer emojik</string>
+	<string name="prefs_emoji_style">Emoji stílus</string>
+	<string name="prefs_default_emojis">Threema-emojik (alapértelmezett)</string>
+	<string name="android_emojis_warning">Megjegyzés: Előfordulhat, hogy a rendszer karakterkészlete nem képes 
+		megjeleníteni a Threema által támogatott összes emojit.
 	</string>
-	<string name="identity_already_exists">Diese ID ist bereits in Ihrer Kontaktliste</string>
-	<string name="share_contact">Kontakt teilen</string>
-	<string name="add_shortcut">Desktop-Verkn. erstellen</string>
-	<string name="group_not_found">Gruppe nicht gefunden.</string>
-	<string name="contact_not_found">Kontakt nicht gefunden</string>
-	<string name="contact_now_blocked">Kontakt blockiert</string>
-	<string name="contact_now_unblocked">Kontakt deblockiert</string>
-	<string name="not_enough_disk_space_title">Zu wenig Speicherplatz</string>
-	<string name="not_enough_disk_space_text">Es werden mindestens %1$s benötigt, um die Nachricht zu empfangen</string>
-	<string name="sending_images">Bilder senden</string>
-	<string name="share_conversation_body">Ein modernes ZIP Tool mit AES Unterstützung wird benötigt um die Datei zu
-		öffnen, z.B. http://www.7-zip.org oder https://itunes.apple.com/de/app/the-unarchiver/id425424353
+	<string name="crop">Kivágás</string>
+	<string name="scan_id_mismatch_title">Az ID nem egyezik</string>
+	<string name="scan_id_mismatch_message">A beolvasott ID nem egyezik a mentett névjeggyel.
 	</string>
-	<string name="enter_zip_password_body">Der Chat wird als verschlüsselte Zip-Datei versendet. Bitte wählen Sie ein
-		Passwort:
+	<string name="title_remove_picture">Kép eltávolítása</string>
+	<string name="blocked">blokkolt</string>
+	<string name="name">Név</string>
+	<string name="privacy_policy">Adatvédelmi szabályzat</string>
+	<string name="save_group_changes">Szeretné a csoportra alkalmazni a módosításokat?</string>
+	<string name="prefs_title_fontsize">Betűméret</string>
+	<string name="fontsize_normal">Normál</string>
+	<string name="fontsize_large">Nagy</string>
+	<string name="fontsize_xlarge">Nagyon nagy</string>
+	<string name="no_app_for_location">Ezen a készüléken nem található térképalkalmazás.</string>
+	<string name="polling_interval_5">5 perc</string>
+	<string name="polling_interval_15">15 perc (alapértelmezett)</string>
+	<string name="polling_interval_30">30 perc</string>
+	<string name="prefs_polling_interval">Lekérdezési időköz</string>
+	<string name="chat_deleted">%d csevegés törölve</string>
+	<string name="prefs_sendlog">Naplófájl küldése</string>
+	<string name="prefs_sendlog_summary">Naplófájl elküldése a Threema számára a problémaelemzéshez.</string>
+	<string name="permission_storage_required">Aktiválja a mentési engedélyt a média mentéséhez vagy küldéséhez.</string>
+	<string name="permission_location_required">Aktiválja a helymeghatározási engedélyt a tartózkodási helye elküldéséhez.
 	</string>
-	<string name="new_messages_in_chats">%1$d neue Nachrichten in %2$d Chats</string>
-	<string name="ballot_create">Umfrage erstellen</string>
-	<string name="ballot_choice_add">Antworttext</string>
-	<string name="ballot_state_closed">geschlossen</string>
-	<string name="ballot_vote">Abstimmen</string>
-	<string name="ballot_placeholder">Umfrage</string>
-	<string name="ballot_close" tools:ignore="Typos">Umfrage abschliessen</string>
-	<string name="ballot_really_close" tools:ignore="Typos">Möchten Sie diese Umfrage abschliessen und die Resultate verfügbar machen?
+	<string name="permission_contacts_required">Aktiválja a kapcsolatok engedélyt egy névjegy elküldéséhez.
 	</string>
-	<string name="ballot_multiple_choice">Mehrfachauswahl</string>
-	<string name="ballot_result_intermediate">Zwischenresultate</string>
-	<string name="ballot_error_more_than_x_choices">Sie müssen mindestens zwei Auswahlmöglichkeiten erstellen</string>
-	<string name="ballot_message_closed">Resultate verfügbar</string>
-	<string name="ballot_vote_posted_successfully">Stimme erfolgreich abgegeben</string>
-	<string name="ballot_vote_posted_failed">Stimmabgabe fehlgeschlagen</string>
-	<string name="attach_ballot">Umfrage</string>
-	<string name="ballot_overview">Alle Umfragen</string>
-	<string name="ballot_copy">Umfrage kopieren</string>
-	<string name="ballot_remove">Umfrage entfernen</string>
-	<string name="ballot_really_delete">Umfrage löschen</string>
-	<string name="ballot_really_delete_text">Möchten Sie wirklich %1$d Abstimmungen löschen? Die Stimmen können nicht
-		wiederhergestellt werden.
+	<string name="message_declined">Üzenet elutasítva</string>
+	<string name="notifications_settings">Értesítési beállítások</string>
+	<string name="notifications_default">Alapértelmezett beállítás</string>
+	<string name="notifications_for_x_hours">%d órára</string>
+	<string name="notifications_until">%s-ig</string>
+	<string name="notifications_mute">Néma</string>
+	<string name="notifications_choose_sound">Hang kiválasztása</string>
+	<string name="error_video_conversion">Videókonverziós hiba.</string>
+	<string name="confirm_your_pin">PIN-kód megerősítése</string>
+	<string name="too_many_incorrect_attempts">Túl sok hibás próbálkozás. Kérjük, próbálja meg újra %s másodperc múlva.</string>
+	<string name="no_lockscreen_set">Nincs beállítva a rendszer kijelzőjének zárolása.</string>
+	<string name="on">be</string>
+	<string name="off">ki</string>
+	<string name="new_wizard_select_country">Válasszon országot</string>
+	<string name="new_wizard_lets_get_started">Gyerünk!</string>
+	<string name="new_wizard_setup_threema">Beállítás</string>
+	<string name="new_wizard_restore_id_backup">Exportált ID visszaállítása</string>
+	<string name="new_wizard_welcome">Üdvözöljük Threema-nál</string>
+	<string name="new_wizard_move_finger">Mozgassa az ujját a mezőben, hogy új Threema ID-t hozzon létre.</string>
+	<string name="new_wizard_this_is_your_id">Ez az Ön Threema ID-ja:</string>
+	<string name="new_wizard_works_like_phone_number">A Threema ID úgy működik, mint egy telefonszám. Barátai ezen az ID-n keresztül érhetik el Önt.
 	</string>
-	<string name="ballot_not_exist">Umfrage existiert nicht</string>
-	<string name="ballot_tap_to_vote">Zum Abstimmen tippen</string>
-	<string name="ballot_tap_to_view_results">Umfrage beendet. Tippen für Resultate</string>
-	<string name="ballot_subject_hint">Titel der Umfrage eingeben</string>
-	<string name="ballot_no_ballots_yet">Noch keine Umfragen vorhanden.</string>
-	<string name="print">Drucken</string>
-	<string name="ballot_wizard0_explain">Erstellen Sie schnell und einfach eine Umfrage direkt innerhalb von
-		Threema. Vereinbaren Sie einen Termin oder machen Sie eine Umfrage unter Ihren Freunden.
+	<string name="new_wizard_choose_nickname">Válasszon becenevet</string>
+	<string name="new_wizard_nickname_explain">A becenév megjelenik a barátainak, amikor üzenetet kapnak.</string>
+	<string name="new_wizard_hint_enter_nickname">Becenév megadása</string>
+	<string name="new_wizard_help_your_friends_find_you">Hogy az emberek könnyebben megtalálják Önt</string>
+	<string name="new_wizard_link_mobile">Csatolja össze mobilszámát és/vagy e-mail címét a Threema ID-jával.</string>
+	<string name="new_wizard_link_mobile_only">Csatolja össze mobilszámát a Threema ID-jával.</string>
+	<string name="new_wizard_hint_mobile_number">Mobilszám (nem kötelező)</string>
+	<string name="new_wizard_hint_email">Email (nem kötelező)</string>
+	<string name="new_wizard_find_friends">Találd meg barátaidat Threema-n</string>
+	<string name="new_wizard_sync_contacts_explain">Kapcsolja be, hogy lássa, mely barátai használják a Threema-t.</string>
+	<string name="new_wizard_done_title">Minden rendben?</string>
+	<string name="new_wizard_linked_to">Összecsatolva:</string>
+	<string name="new_wizard_need_internet">Az egyedi Threema ID létrehozásához stabil internetkapcsolat szükséges. Kérjük, próbálja meg újra.</string>
+	<string name="new_wizard_more_information">További információ</string>
+	<string name="new_wizard_use_id_as_nickname">Szeretné becenévként használni a Threema ID-t?</string>
+	<string name="new_wizard_phone_email_invalid">A megadott mobilszám vagy e-mail cím érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
+	<string name="new_wizard_phone_invalid">Az Ön által megadott mobilszám érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
+	<string name="new_wizard_info_fingerprint">Az ujjad mozgatásával véletlenszerű adatokat (úgynevezett entrópiát) generálsz, amelyekből a 
+		kulcspár generálódik. Ez a kulcspár az új Threema ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid 
+		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló 
+		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.	
 	</string>
-	<string name="ballot_add_choices">Antwortmöglichkeiten eingeben</string>
-	<string name="blocked_cannot_send">Sie können keine Nachrichten an blockierte Kontakte senden</string>
-	<string name="really_block_contact">Sie werden keine Nachrichten von diesem Kontakt mehr erhalten. Fortfahren?
+	<string name="new_wizard_info_id">A Threema IV-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre. 
+		A privát kulcs soha nem hagyja el a készülékét. Ez biztosítja, hogy senki más ne tudja elolvasni az üzeneteit.
 	</string>
-	<string name="ballot_result_final">Endresultat</string>
-	<string name="invalid_cannot_send">Sie können keine Nachrichten an einen ungültigen Kontakt senden</string>
-	<string name="ballot_answer_count_error">Bitte mindestens zwei Antworten festlegen.</string>
-	<string name="ballot_one_contact_not_supported">Achtung: %1$s kann noch nicht an Umfragen teilnehmen.</string>
-	<string name="ballot_x_contact_not_supported">Achtung: %1$d Kontakte können noch nicht an Umfragen teilnehmen.
+	<string name="new_wizard_info_sync_contacts">Ha engedélyezi ezt a beállítást, a címjegyzékből származó e-mail címek és telefonszámok 
+		egyirányú titkosításra (hashed) kerülnek, mielőtt elküldjük őket a kiszolgálónak a kapcsolattartás céljából. 
+		Nem tárolunk semmilyen címjegyzékadatot.</string>
+	<string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a Threema segítségével barátai automatikusan 
+		megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hashed) tároljuk a szerverünkön. 
+		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.
 	</string>
-	<string name="enable_polling">Polling nutzen</string>
-	<string name="contact_state_inactive">Inaktiv</string>
-	<string name="contact_state_invalid">Ungültig</string>
-	<string name="back">Zurück</string>
-	<string name="wearable_reply">Antworten</string>
-	<string name="wearable_reply_label">Antwort an %s</string>
-	<string name="message_acknowledged">Nachricht bestätigt</string>
-	<string name="push_disable_text">Wenn Sie fortfahren, werden Push-Nachrichten deaktiviert und Threema wird alle 15
-		Minuten nach neuen Nachrichten prüfen.
+	<string name="new_wizard_info_link_phone_only">Ha megadja a saját mobilszámát, a Threema segítségével barátai automatikusan 
+		megtalálják önt, ha benne vagy a címjegyzékükben. A számot egyirányú titkosítással (hashed) tároljuk a szerverünkön. 
+		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.
 	</string>
-	<string name="ballot_intermediate_results_show">Zwischenresultate zeigen</string>
-	<string name="converting_video">Video wird bearbeitet</string>
-	<string name="video_size_small">Hoch (kleine Datenmenge)</string>
-	<string name="video_size_large">Gering (mittlere Datenmenge)</string>
-	<string name="video_size_original" tools:ignore="Typos">Keine (grosse Datenmenge)</string>
-	<string name="prefs_video_size">Video-Komprimierung</string>
-	<string name="show_contact">Kontakt anzeigen</string>
-	<string name="chat_with">Chat mit %1$s</string>
-	<string name="kick_user_from_group">%1$s aus Gruppe entfernen</string>
-	<string name="show_as_qrcode">Als QR-Code anzeigen</string>
-	<string name="qr_code">QR-Code</string>
-	<string name="really_leave_id_export">Vergewissern Sie sich, dass Sie die Zeichenfolge des ID-Exports oder den QR-Code an einen
-sicheren Ort gesichert oder ausgedruckt haben.</string>
-	<string name="prefs_sum_remove_wallpapers">Entfernt alle individuellen Hintergrundbilder</string>
-	<string name="prefs_title_remove_wallpapers">Alle Hintergrundbilder löschen</string>
-	<string name="really_remove_wallpapers">Möchten Sie wirklich alle Hintergrundbilder entfernen?</string>
-	<string name="wallpapers_removed">Hintergrundbilder entfernt</string>
-	<string name="invalid_backup">Die Backup-Daten sind ungültig. Wiederherstellen nicht möglich.</string>
-	<string name="revocation_key_title">ID-Widerruf</string>
-	<string name="revocation_key_not_set">Kein Widerrufspasswort gesetzt</string>
-	<string name="revocation_key_set_at">Passwort gesetzt %1$s</string>
-	<string name="revocation_explain">Das Passwort, das Sie hier eingeben, erlaubt Ihnen, Ihre ID unter
-		https://myid.threema.ch/revoke zu widerrufen, falls Sie sie verloren haben oder sie gestohlen wurde.
+	<string name="new_wizard_info_nickname">A becenév egyes eszközökön megjelenik az értesítésekben, és további azonosító jelként 
+		szolgál a névjegyzékben azon csevegőpartnerek számára, akik nem szerepelnek a névjegyzékben. Javasoljuk, hogy csak keresztnevet 
+		vagy álnevet használjon. Ha nem állít be becenevet, a Threema ID lesz használva.
 	</string>
-	<string name="no_unread_messages">Keine ungelesenen Nachrichten oder PIN-Sperre aktiv</string>
-	<string name="send_media">Medien senden</string>
-	<string name="rotate">Drehen</string>
-	<string name="remove">Entfernen</string>
-	<string name="image_already_added">Dieses Bild ist bereits ausgewählt.</string>
-	<string name="password_too_short">Mindestens %d Zeichen</string>
-	<string name="mark_read">Als gelesen markieren</string>
-	<string name="emoji_flags">Flaggen</string>
-	<string name="attach_document">Datei</string>
-	<string name="parent_directory">Übergeordnetes Verzeichnis</string>
-	<string name="file_placeholder">Datei</string>
-	<string name="internal_storage">Int. Speicher</string>
-	<string name="no_activity_for_mime_type">Keine passende App für diese Datei gefunden.</string>
-	<string name="message_copied">Nachricht kopiert</string>
-	<string name="open_from">Öffnen von</string>
-	<string name="file_one_contact_not_supported">%1$s kann noch keine Dateien erhalten.</string>
-	<string name="file_x_contact_not_supported">Warnung: %1$d Kontakte können keine Dateien erhalten.</string>
-	<string name="mime_android_apk">Android-Paket</string>
-	<string name="mime_audio">Audio-Datei</string>
-	<string name="mime_certificate">Digitales Zertifikat</string>
-	<string name="mime_codes">Programmcode</string>
-	<string name="mime_compressed">Archiv</string>
-	<string name="mime_contact">Kontakt</string>
-	<string name="mime_event">Termineinladung</string>
-	<string name="mime_font">Schrift-Datei</string>
-	<string name="mime_image">Bild</string>
-	<string name="mime_pdf">PDF-Dokument</string>
-	<string name="mime_presentation">Präsentation</string>
-	<string name="mime_spreadsheet">Tabellendokument</string>
-	<string name="mime_text">Textdatei</string>
-	<string name="mime_video">Video-Datei</string>
-	<string name="mime_word">Textdokument</string>
-	<string name="no_filename"><![CDATA[<Kein Dateiname>]]></string>
-	<string name="send_as_files">Als Datei senden</string>
-	<string name="send_as_files_warning">Die Übertragung von unkomprimierten Dateien und Bildern führt zu erhöhtem
-		Datenverbrauch. Dadurch können zusätzliche Kosten durch den Mobilfunkanbieter entstehen. Wir empfehlen deshalb
-		die Nutzung im WLAN.
-	</string>
-	<string name="prefs_theme">Designstil</string>
-	<string name="list_theme_light">Hell (standard)</string>
-	<string name="list_theme_dark">Dunkel</string>
-	<string name="prefs_header_appearance">Erscheinungsbild</string>
-	<string name="prefs_sum_passphrase">Passphrase für lokale Verschlüsselung verlangen</string>
-	<string name="prefs_title_masterkey_change_passphrase">Passphrase ändern</string>
-	<string name="storage_total">Interner Speicherplatz</string>
-	<string name="storage_threema">Von Threema genutzt</string>
-	<string name="storage_total_free">Freier Speicher</string>
-	<string name="storage_total_in_use">In Benutzung</string>
-	<string name="one_year">1 Jahr</string>
-	<string name="six_months">6 Monate</string>
-	<string name="three_months">3 Monate</string>
-	<string name="one_month">1 Monat</string>
-	<string name="one_week">1 Woche</string>
-	<string name="everything">alles</string>
-	<string name="delete_media_files_time">Medien und Dateien löschen die älter sind als:</string>
-	<string name="storage_explain">Falls der Speicherplatz knapp wird, können Sie alte, verschlüsselt gespeicherte
-		Medien-Dateien löschen, um Platz zu schaffen. Die Vorschaubilder bleiben dabei erhalten. Beachten Sie, dass dies kein automatischer Prozess ist. Gelöscht wird nur, wenn Sie einen der untenstehenden Buttons antippen.
-	</string>
-	<string name="delete_data">Daten jetzt löschen</string>
-	<string name="delete_date_confirm_message">Die Dateien werden endgültig gelöscht und nur noch Vorschaubilder
-		behalten.
-	</string>
-	<string name="media_files_deleted">%d Medien/Dateien gelöscht.</string>
-	<string name="storage_management">Speichermanagement</string>
-	<string name="media">Medien</string>
-	<string name="prefs_storage_mgmt_title">Dateien und Nachrichten aufräumen</string>
-	<string name="num_messages">Anzahl der Nachrichten</string>
-	<string name="delete_messages_explain">Nachrichten löschen, die älter sind als:</string>
-	<string name="delete_message">Nachrichten jetzt löschen</string>
-	<string name="really_delete_messages">Die Nachrichten werden vollständig gelöscht und können nicht wiederhergestellt
-		werden.
-	</string>
-	<string name="messages_delete_explain">Sie können auch ältere Nachrichten vollständig löschen.</string>
-	<string name="backup_started">Daten-Backup wurde gestartet</string>
-	<string name="invalid_data">Ungültige Daten. Senden nicht möglich.</string>
-	<string name="prefs_android_emojis">System-Emojis</string>
-	<string name="prefs_emoji_style">Emoji-Stil</string>
-	<string name="prefs_default_emojis">Threema-Emojis (standard)</string>
-	<string name="android_emojis_warning">Hinweis: Der System-Zeichensatz kann unter Umständen nicht alle von Threema
-		unterstützten Emojis darstellen.
-	</string>
-	<string name="crop">Zuschneiden</string>
-	<string name="scan_id_mismatch_title">ID stimmt nicht überein</string>
-	<string name="scan_id_mismatch_message">Die ID, die Sie gescannt haben, stimmt nicht mit dem gespeicherten Kontakt
-		überein.
-	</string>
-	<string name="title_remove_picture">Bild entfernen</string>
-	<string name="blocked">blockiert</string>
-	<string name="name">Name</string>
-	<string name="privacy_policy">Datenschutzerklärung</string>
-	<string name="save_group_changes">Möchten Sie Änderungen an der Gruppe übernehmen?</string>
-	<string name="prefs_title_fontsize">Schriftgrösse</string>
-	<string name="fontsize_normal">Normal</string>
-	<string name="fontsize_large">Gross</string>
-	<string name="fontsize_xlarge">Sehr gross</string>
-	<string name="no_app_for_location">Keine Karten-App auf diesem Gerät gefunden.</string>
-	<string name="polling_interval_5">5 Minuten</string>
-	<string name="polling_interval_15">15 Minuten (Standard)</string>
-	<string name="polling_interval_30">30 Minuten</string>
-	<string name="prefs_polling_interval">Polling-Intervall</string>
-	<string name="chat_deleted">%d Chat(s) gelöscht</string>
-	<string name="prefs_sendlog">Logdatei versenden</string>
-	<string name="prefs_sendlog_summary">Logdatei für Problemanalyse an Threema senden</string>
-	<string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
-	<string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.
-	</string>
-	<string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung, um einen Kontakt zu senden.
-	</string>
-	<string name="message_declined">Nachricht abgelehnt</string>
-	<string name="notifications_settings">Benachrichtigungseinstellungen</string>
-	<string name="notifications_default">Standardeinstellung</string>
-	<string name="notifications_for_x_hours">Für %d Stunde(n)</string>
-	<string name="notifications_until">Bis %s</string>
-	<string name="notifications_mute">Stumm</string>
-	<string name="notifications_choose_sound">Ton wählen</string>
-	<string name="error_video_conversion">Fehler bei der Videokonvertierung.</string>
-	<string name="confirm_your_pin">PIN bestätigen</string>
-	<string name="too_many_incorrect_attempts">Zu viele fehlerhafte Versuche. Bitte versuchen Sie es in %s Sekunden
-		erneut.
-	</string>
-	<string name="no_lockscreen_set">Keine System-Displaysperre festgelegt.</string>
-	<string name="on">ein</string>
-	<string name="off">aus</string>
-	<string name="new_wizard_select_country">Land auswählen</string>
-	<string name="new_wizard_lets_get_started">Los geht\'s!</string>
-	<string name="new_wizard_setup_threema">Jetzt einrichten</string>
-	<string name="new_wizard_restore_id_backup">Exportierte ID wiederherstellen</string>
-	<string name="new_wizard_welcome">Willkommen bei Threema</string>
-	<string name="new_wizard_move_finger">Bewegen Sie Ihren Finger im Feld, um eine neue Threema-ID zu generieren.</string>
-	<string name="new_wizard_this_is_your_id">Das ist Ihre Threema-ID:</string>
-	<string name="new_wizard_works_like_phone_number">Ihre Threema-ID funktioniert wie eine Telefonnummer. Ihre Freunde können Sie über diese ID erreichen.
-	</string>
-	<string name="new_wizard_choose_nickname">Nickname wählen</string>
-	<string name="new_wizard_nickname_explain">Der Nickname wird bei Ihren Freunden angezeigt, wenn sie eine Nachricht empfangen.</string>
-	<string name="new_wizard_hint_enter_nickname">Nickname eingeben</string>
-	<string name="new_wizard_help_your_friends_find_you">Damit Sie einfacher gefunden werden</string>
-	<string name="new_wizard_link_mobile">Verknüpfen Sie Ihre Handynummer und/oder E-Mail-Adresse mit Ihrer Threema-ID.</string>
-	<string name="new_wizard_link_mobile_only">Verknüpfen Sie Ihre Handynummer mit Ihrer Threema-ID.</string>
-	<string name="new_wizard_hint_mobile_number">Handynummer (optional)</string>
-	<string name="new_wizard_hint_email">E-Mail (optional)</string>
-	<string name="new_wizard_find_friends">Finden Sie Ihre Freunde auf Threema</string>
-	<string name="new_wizard_sync_contacts_explain">Einschalten, um zu sehen, welche Ihrer Freunde Threema nutzen.</string>
-	<string name="new_wizard_done_title">Alles korrekt?</string>
-	<string name="new_wizard_linked_to">Verknüpft mit</string>
-	<string name="new_wizard_need_internet">Eine stabile Internet-Verbindung wird benötigt, um Ihre eindeutige Threema ID erzeugen zu können.
-		Bitte versuchen Sie es erneut.
-	</string>
-	<string name="new_wizard_more_information">Mehr Informationen</string>
-	<string name="new_wizard_use_id_as_nickname">Möchten Sie Ihre Threema-ID als Nickname verwenden?</string>
-	<string name="new_wizard_phone_email_invalid">Die angegebene Handynummer oder die E-Mail-Adresse sind ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
-	<string name="new_wizard_phone_invalid">Die angegebene Handynummer ist ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
-	<string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie),
-		die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen Threema-ID verbunden. Es besteht aus einem
-		<b>öffentlichen Schlüssel</b>, der an Ihre Freunde verteilt wird und einem <b>privaten Schlüssel</b>, der auf Ihrem Gerät verbleibt. Bei Ihren
-		Freunden wird der öffentliche Schlüssel genutzt, um Nachrichten an Sie zu verschlüsseln. Nur der Inhaber des privaten Schlüssels und niemand
-		anderes kann die Nachrichten wieder entschlüsseln.
-	</string>
-	<string name="new_wizard_info_id">Sie haben mit der Threema-ID ein Schlüsselpaar erzeugt. Der öffentliche Schlüssel wurde an unseren Server gesendet.
-		Der private Schlüssel verlässt Ihr Gerät nie. Dies stellt sicher, dass niemand anderes Ihre Nachrichten lesen kann.
-	</string>
-	<string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch einwegverschlüsselt (gehasht), bevor sie zum
-		Kontaktabgleich an der Server geschickt werden. Wir speichern keinerlei Adressbuchdaten.
-	</string>
-	<string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann Threema Ihren Freunden helfen, Sie
-		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form
-		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema anonym benutzen möchten.
-	</string>
-	<string name="new_wizard_info_link_phone_only">Wenn Sie Ihre eigene Handynummer angeben, kann Threema Ihren Freunden helfen, Sie
-		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Nummer wird dazu in einwegverschlüsselter (gehashter) Form
-		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema anonym benutzen möchten.
-	</string>
-	<string name="new_wizard_info_nickname">Der Nickname wird auf einigen Geräten in Benachrichtigungen angezeigt und dient in der Kontaktliste als zusätzliche
-		Identifikationsmöglichkeit für Chatpartner, die Sie nicht in ihrer Kontaktliste haben. Wir empfehlen, nur einen Vornamen oder ein Pseudonym zu verwenden.
-		Wenn Sie keinen Nickname festlegen, wird Ihre Threema-ID verwendet.
-	</string>
-	<string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in der Kontaktliste Ihrer Freunde gelistet. Möchten Sie Threema wirklich komplett anonym nutzen?</string>
-	<string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in der Kontaktliste Ihrer Freunde gelistet. Möchten Sie Threema wirklich komplett anonym nutzen?</string>
-	<string name="not_linked">nicht verknüpft</string>
-	<string name="linked">verknüpft</string>
+	<string name="new_wizard_anonymous_confirm">Nem adtál meg mobiltelefonszámot vagy e-mail címet összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
+	<string name="new_wizard_anonymous_confirm_phone_only">Ön nem adott meg mobiltelefonszámot összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
+	<string name="not_linked">nem összecsatolt</string>
+	<string name="linked">összecsatolt</string>
 	<string name="pending_sms_verification_notice">Ihre Handynummer ist noch nicht überprüft.</string>
 	<string name="no_sms_received">Keine SMS erhalten?</string>
 	<string name="really_cancel_verify">Möchten Sie die Überprüfung Ihrer Handynummer wirklich abbrechen? Wenn Sie die Überprüfung abbrechen, wird die Handynummer nicht verknüpft.</string>
