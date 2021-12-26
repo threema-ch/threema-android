@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="webclient_qr_scan_error">QR-kód érvénytelen</string>
+	<string name="webclient_init_session">Új munkamenet kezdése</string>
+	<string name="webclient_sessions_really_delete">Biztos, hogy törölni szeretné ezt a Threema webes munkamenetet?</string>
+	<string name="webclient_last_usage">Utoljára használva: %s</string>
+	<string name="webclient_active_since">Aktív: %s óta</string>
+	<string name="webclient_created_at">Létrehozva: %1$s (%2$s)</string>
+	<string name="webclient_enable">Threema Webet aktiválás</string>
+	<string name="webclient_no_sessions_found">A csatlakozáshoz nyissa meg az internetböngészőt a számítógépén, és menjen a https://web.threema.ch oldalra. Kattintson a lenti gombra a megjelenő kód beolvasásához.</string>
+	<string name="webclient_session_rename">Munkamenet átnevezése</string>
+	<string name="webclient_session_label">Új név</string>
+	<string name="webclient_session_start">Munkamenet megkezdése</string>
+	<string name="webclient_session_stop">Munkamenet megállítása</string>
+	<string name="webclient_unnamed_session">Névtelen munkamenet</string>
+	<string name="webclient_persistent">mentve</string>
+	<string name="webclient_disposable">nem mentve</string>
+	<string name="webclient_session_remove">Munkamenet eltávolítása</string>
+	<string name="webclient_welcome_title">Csevegés a számítógépről</string>
+	<string name="webclient_welcome_explain">A Threema Web segítségével kényelmesen cseveghet számítógépéről vagy notebookjáról. Teljes körű hozzáférést biztosít az összes kapcsolatához, médiáihoz és beszélgetéseihez, beleértve a korábbi beszélgetéseket is.\n\n<b>A mobiltelefon és a számítógép közötti kommunikáció teljes mértékben végponttól végpontig titkosított</b> és közvetlen kapcsolatot használ, ha mindkét eszköz ugyanazon a hálózaton van.\n\nFigyelem: Ha a Threema Web aktív, az energiafogyasztás magasabb lehet. A funkciót azonban bármikor be- vagy kikapcsolhatja.</string>
+	<string name="webclient_launch">Threema Web indítása</string>
+	<string name="webclient_qr_scan_message">Szkennelje be a számítógépen megjelenő QR-kódot.</string>
+	<string name="webclient_invalid_qr_code">Érvénytelen Threema Web QR-kód</string>
+	<string name="webclient_new_connection_toast">A Threema Web munkamenet elindult</string>
+	<string name="webclient_protocol_error">Protokoll-hiba</string>
+	<string name="webclient_protocol_version_to_old">Az asztali alkalmazás / webes ügyfél nem kompatibilis ezzel az Android alkalmazással. Kérjük, frissítse a Threema-t a legújabb verzióra.</string>
+	<string name="webclient_protocol_version_too_new_selfhosted">Az alkalmazás nem támogatja az asztali alkalmazás / Threema Web ezen verzióját. Kérje meg a Threema Web példányának rendszergazdáját, hogy frissítse a Threema Web legújabb verziójára.</string>
+	<string name="webclient_protocol_version_too_new_threema">Az Ön alkalmazása nem támogatja az asztali alkalmazás / a Threema Web ezen verzióját. Kérjük, használja a Threema Web / az asztali alkalmazás újabb verzióját.</string>
+	<string name="webclient_session_already_exists">Ehhez a QR-kódhoz már létezik munkamenet. Kérjük, indítsa újra a böngészőjét / asztali alkalmazását.</string>
+	<string name="webclient_really_start_webclient_by_payload_body">El akarja kezdeni ezt az munkamenetet most?</string>
+	<string name="webclient_cannot_restore">Nem lehet folytatni a munkamenetet</string>
+	<string name="webclient_disabled">Asztal/Web letiltva</string>
+	<string name="webclient_clear_all_sessions">Az összes munkamenet törlése</string>
+	<string name="webclient_clear_all_sessions_confirm">Tényleg törölni szeretné az összes Threema Web munkamenetet?</string>
+	<string name="webclient_prefs_debug_tool_summary">Eszköz a Threema webkapcsolat létrehozásával kapcsolatos problémák elemzésére</string>
+	<string name="webclient_diagnostics">Threema Web diagnózis</string>
+	<string name="webclient_diagnostics_start">Indítás</string>
+	<string name="webclient_diagnostics_intro">A teszt elindításához kattintson az "Indítás" gombra.</string>
+	<string name="webclient_diagnostics_done">Befejezve. Ha problémái vannak a Threema webkapcsolat létrehozásával, kérjük küldje el ezt a naplót a Threema ügyfélszolgálatának.</string>
+	<string name="webclient_cannot_start">A Threema webes munkamenet nem indítható</string>
+	<string name="webclient_constrained_by_mdm">A szervert a rendszergazda nem engedélyezte.</string>
+</resources>

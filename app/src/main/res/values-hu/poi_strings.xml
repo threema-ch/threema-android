@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<string name="hamlet">Kisfalu</string>
+	<string name="village">Falu</string>
+	<string name="town">Város</string>
+	<string name="isolated_dwelling">Település</string>
+	<string name="island">Sziget</string>
+	<string name="islet">Szigetecske</string>
+	<string name="suburb">Körzet</string>
+	<string name="city">Nagyváros</string>
+	<string name="city_block">Negyed</string>
+	<string name="neighbourhood">Kerület</string>
+	<string name="locality">Helyszín</string>
+	<string name="state">Megye</string>
+	<string name="farm">Tanya</string>
+	<string name="street" tools:ignore="Typos">Utca</string>
+	<string name="country">Ország</string>
+</resources>

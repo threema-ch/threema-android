@@ -14,7 +14,7 @@
 	<string name="voip_status_connecting">Wird verbunden</string>
 	<string name="voip_status_disconnecting">Verbindung wird getrennt</string>
 	<string name="voip_status_ringing">Es klingelt</string>
-	<string name="voip_mic_enable">Mkrofon einschalten</string>
+	<string name="voip_mic_enable">Mikrofon einschalten</string>
 	<string name="voip_mic_disable">Stummschalten</string>
 	<string name="voip_checking_compatibility">Es wird geprüft, ob der Kontakt Threema-Anrufe erhalten kann</string>
 	<string name="voip_incompatible">Dieser Kontakt kann noch keine Threema-Anrufe erhalten.</string>
