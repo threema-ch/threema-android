@@ -913,7 +913,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_sum_voice_call_vibrate">Bei eingehenden Threema-Sprachanrufen vibrieren</string>
 	<string name="prefs_title_voip">Threema-Anrufe</string>
 	<string name="prefs_title_force_turn">Anrufe immer über Server</string>
-	<string name="prefs_summary_force_turn_off"> Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
+	<string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
 	<string name="prefs_summary_force_turn_on">Alle Anrufe über Threema-Server leiten. Schützt Ihre IP-Adresse, kann aber zu schlechterer Anrufqualität führen.</string>
 	<string name="prefs_title_voip_enable">Threema-Anrufe aktivieren</string>
 	<string name="webclient_invalid_push_token_message">Manuelles Starten erforderlich</string>
