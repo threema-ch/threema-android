@@ -927,7 +927,7 @@
 	<string name="passphrase_service_description">Értesítés ha a jelszó feloldva</string>
 	<string name="webclient_service_description">Értesítés, ha egy webes/asztalos munkamenet aktív</string>
 	<string name="prefs_title_accept_privacy_policy">Adatvédelmi irányelvek elfogadása</string>
-	<string name="privacy_policy_explain">%1$s következetesebben védi az Ön privátszféráját, mint bármely más üzenetküldő. Nézze meg a %2$s-t, hogy többet tudjon meg.</string>
+	<string name="privacy_policy_explain">%1$s következetesebben védi az Ön privátszféráját, mint bármely más messenger. Nézze meg az %2$s-ot, hogy többet tudjon meg.</string>
 	<string name="privacy_policy_check_confirm">Kérjük, fogadja el az adatvédelmi nyilatkozatot, hogy használni tudja a %s-t.\n\n(Az EU 2016/679 rendelet szerinti követelmény)</string>
 	<string name="prefs_title_incognito_keyboard">Inkognitó billentyűzet kérése</string>
 	<string name="prefs_sum_incognito_keyboard">Az adatok gyűjtésének letiltása a személyre szabott javaslatokhoz (ha a billentyűzet támogatja)</string>
