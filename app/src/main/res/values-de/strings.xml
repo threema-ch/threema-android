@@ -1410,7 +1410,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="reset_default_group_link_desc">Der zuvor geteilte Link wird somit ungültig und Anfragen über den alten Link werden automatisch abgelehnt.</string>
 	<string name="other_group_links">weitere</string>
 	<string name="show_public_key">Öffentlichen Schlüssel anzeigen</string>
-	<string name="public_key_for">Offentlicher Schlüssel von %s</string>
+	<string name="public_key_for">Öffentlicher Schlüssel von %s</string>
 	<string name="copied">Kopiert</string>
 	<string name="no_votes_yet">Bisher wurden noch keine Stimmen abgegeben.</string>
 	<string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
