@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 	<string name="title_section2">Névjegyek</string>
-	<string name="title_section1">Beszélgetések</string>
-	<string name="title_compose_message">Beszélgetés indítása</string>
+	<string name="title_section1">Csevegések</string>
+	<string name="title_compose_message">Csevegés indítása</string>
 	<string name="title_choose_recipient">Címzett kiválasztása</string>
 	<string name="title_keyfingerprint">Kulcs ujjlenyomat</string>
 	<string name="title_mythreemaid">Az én Threema ID-m</string>
@@ -122,7 +122,7 @@
 	<string name="share_via">Megosztás…</string>
 	<string name="share_subject">%s-csevegés</string>
 	<string name="message_delete_undo">Visszavonás</string>
-	<string name="message_deleted">Üzenet(ek) törölve</string>
+	<string name="message_deleted">Üzenet törölve</string>
 	<string name="mobile_already_linked">Az Ön Threema ID-je már társítva van ehhez a mobilszámhoz.</string>
 	<string name="email_already_linked">Az Ön Threema ID-je már társítva van ehhez az e-mail címhez.</string>
 	<string name="whoaaa">Megjegyzés</string>
@@ -407,7 +407,7 @@
 	<string name="file_saved">%d fájl(ok) mentve.</string>
 	<string name="token_register_failed">A push tokent nem sikerült frissíteni. Kérjük, próbálja meg később újra.</string>
 	<string name="internet_connection_required">Nincs internetkapcsolat.</string>
-	<string name="sending_message_failed">%1$d Üzenet(ek) nem küldhető(k)</string>
+	<string name="sending_message_failed">%1$d üzenet nem küldhető</string>
 	<string name="prefs_sum_save_media">A bejövő képek és videók, valamint a kimenő kameraképek titkosítás nélküli mentése</string>
 	<string name="prefs_save_media">Mentés a galériába</string>
 	<string name="title_add_distribution_list">Új elosztási lista</string>
@@ -439,7 +439,7 @@
 	<string name="verification_level1_explain">Ismeretlen kapcsolat; a kapcsolat ID-jéhez nem tartozik se telefonszám, se e-mail cím, 
 		vagy a címjegyzék nem tartalmazza ezeket az információkat.</string>
 	<string name="state_dialog_received">Fogadva</string>
-	<string name="prefs_title_hide_screenshots">Miniatűrök és képernyőképek megakadályozása</string>
+	<string name="prefs_title_hide_screenshots">Miniatűrök és képernyőképek rejt.</string>
 	<string name="prefs_summary_hide_screenshots">A miniatűrök elrejtése az alkalmazásváltóban és a képernyőképek készítésének megakadályozása</string>
 	<string name="media_gallery">Média galéria</string>
 	<string name="media_file_not_found">A médiafájl nem nyitható meg. Törölték vagy nem töltötte le a szerverről.</string>
@@ -610,7 +610,7 @@
 	<string name="delete_messages_explain">A következőnél régebbi üzenetek törlése:</string>
 	<string name="delete_message">Üzenetek törlése</string>
 	<string name="really_delete_messages">Az üzenetek teljesen törlődnek, és nem állíthatók vissza.</string>
-	<string name="messages_delete_explain">A régebbi üzeneteket is teljesen törölheti.</string>
+	<string name="messages_delete_explain">A régi üzeneteket teljesen törölheti.</string>
 	<string name="backup_started">Az adatmentés elindult</string>
 	<string name="invalid_data">Érvénytelen adat. Küldés nem lehetséges.</string>
 	<string name="prefs_android_emojis">Rendszer emojik</string>
@@ -662,7 +662,7 @@
 	<string name="new_wizard_lets_get_started">Gyerünk!</string>
 	<string name="new_wizard_setup_threema">Beállítás</string>
 	<string name="new_wizard_restore_id_backup">Exportált ID visszaállítása</string>
-	<string name="new_wizard_welcome">Üdvözöljük Threema-nál</string>
+	<string name="new_wizard_welcome">Üdvözöljük a Threema-nál</string>
 	<string name="new_wizard_move_finger">Mozgassa az ujját a mezőben, hogy új Threema ID-t hozzon létre.</string>
 	<string name="new_wizard_this_is_your_id">Ez az Ön Threema ID-ja:</string>
 	<string name="new_wizard_works_like_phone_number">A Threema ID úgy működik, mint egy telefonszám. Barátai ezen az ID-n keresztül érhetik el Önt.
@@ -689,7 +689,7 @@
 		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló 
 		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.	
 	</string>
-	<string name="new_wizard_info_id">A Threema IV-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre. 
+	<string name="new_wizard_info_id">A Threema ID-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre. 
 		A privát kulcs soha nem hagyja el a készülékét. Ez biztosítja, hogy senki más ne tudja elolvasni az üzeneteit.
 	</string>
 	<string name="new_wizard_info_sync_contacts">Ha engedélyezi ezt a beállítást, a címjegyzékből származó e-mail címek és telefonszámok 
@@ -938,7 +938,7 @@
 	<string name="quote_not_found">Idézett üzenet nem található</string>
 	<string name="ballot_secret">titkos</string>
 	<string name="password_too_short_generic">A jelszó túl rövid</string>
-	<string name="passwords_dont_match">Nincs találat</string>
+	<string name="passwords_dont_match">Nem azonos</string>
 	<string name="disable_autostart_explain">A következő képernyőn kérjük, aktiválja az automatikus indítást a «%s» számára! Kattintson a "Vissza" gombra, ha végzett.</string>
 	<string name="disable_powermanager_title">Akku-korlátozások</string>
 	<string name="disable_autostart_title">Autom. indulás</string>
@@ -1073,12 +1073,12 @@
 	<string name="data_backup_save_path">Biztonsági mentés útvonala</string>
 	<string name="change">Módosítás</string>
 	<string name="data_backup_last_date">Utolsó sikeres biztonsági mentés</string>
-	<string name="archived">Archivált</string>
+	<string name="archived">Archív</string>
 	<string name="to_archive">Archiválás</string>
 	<string name="message_archived">%d csevegés archiválva</string>
 	<string name="archived_chats">Archivált csevegések</string>
 	<string name="unarchive">Archívból törlés</string>
-	<string name="no_archived_chats">Nincsenek archivált csevegések.\nEgy csevegés archiválásához húzza balra a csevegési listában.</string>
+	<string name="no_archived_chats">Nincsenek archivált csevegések.\nHúzzon balra egy csevegést a csevegési listában az archiválásához.</string>
 	<string name="add_contact_enter_id_hint">Kérjük, adja meg a hozzáadni kívánt kapcsolat Threema ID-ját.</string>
 	<string name="notification_channel_new_contact">Új névjegyek</string>
 	<string name="notification_channel_new_contact_desc">Értesítés új névjegyekről</string>
@@ -1127,7 +1127,7 @@
 	<string name="sending_media">Médiá(k) elküldése</string>
 	<string name="permission_record_video_audio_required">Kérjük, engedélyezze a mikrofon használatát a hanggal ellátott videó rögzítéséhez</string>
 	<string name="media_files">Fájlok</string>
-	<string name="auto_download_limit_explain">A %s-nál több videók és fájlok mindig igény szerint kerülnek letöltésre</string>
+	<string name="auto_download_limit_explain">A %s-nál nagyobb videók és fájlok mindig igény szerint kerülnek letöltésre</string>
 	<string name="quoted_message_deleted">Az idézett üzenet már nem elérhető</string>
 	<string name="searching">Keressük…</string>
 	<string name="prefs_work_life_balance">Ne zavarjanak</string>
@@ -1204,7 +1204,7 @@
 	<string name="error_unable_loading_media_thumb">Az előnézet nem tölthető be</string>
 	<string name="select">Kiválaszt</string>
 	<string name="filter_list">Lista szűrése</string>
-	<string name="hint_filter_list">Szűrőszöveg megadása</string>
+	<string name="hint_filter_list">Szűrő kifejezés megadása</string>
 	<string name="add">Hozzáadás</string>
 	<string name="threema_message_from">Üzenet %s-től</string>
 	<string name="show_text">Szöveg megjelenítése</string>
@@ -1235,7 +1235,7 @@
 	<string name="transcoder_unsupported_audio_format">A hangformátum konvertálása a rendszer támogatásának hiánya miatt nem sikerült.</string>
 	<string name="transcoder_unknown_audio_error">A hangformátum konvertálása ismeretlen hibával megszakadt.</string>
 	<string name="video_size_explain">A nagyon nagyméretű videók tömörítésre kerülnek, így ettől a beállítástól függetlenül elküldhetők.</string>
-	<string name="status_create_notes">*Egyedül vagy itt*\nEzt a csevegést biztonságos jegyzetfüzetként használhatod szövegek, médiaanyagok vagy dokumentumok számára.</string>
+	<string name="status_create_notes">*Egyedül vagy itt*\nEzt a csevegést biztonságos jegyzetfüzetként használhatod szövegek, médiaanyagok és dokumentumok számára.</string>
 	<string name="status_create_notes_off">*Nem vagy többé egyedül ebben a csevegésben*\nAz új üzeneteket a csoport minden tagjának elküldjük.</string>
 	<string name="note_group_howto">Tipp: Ha nem ad hozzá tagokat, a csoportba küldött üzenetek helyben maradnak. Ez ideális jegyzetek, médiatartalmak vagy dokumentumok biztonságos tárolására vagy az asztalra történő átvitelére.</string>
 	<string name="mark_unread">Olvasatlannak jelölni</string>
@@ -1269,7 +1269,7 @@
 	<string name="group_request_send_title">Csoportkérelem küldése</string>
 	<string name="group_request_message_empty">Az adminisztrátornak küldött üzenet nem lehet üres!</string>
 	<string name="group_requests_all_title">Összes csoportkérelem</string>
-	<string name="group_requests_none_outgoing">Nem küldtek csoportkérelmet. A kérelmeket csoporthivatkozásokon keresztül lehet elküldeni.</string>
+	<string name="group_requests_none_outgoing">Nem küldött csoportkérelmet. A kérelmeket csoporthivatkozásokon keresztül lehet elküldeni.</string>
 	<string name="notification_channel_group_join_response">Értesítés a csoportkérelmekre adott válaszokról</string>
 	<string name="group_qr_code_title">Csoport QR-kód</string>
 	<string name="group_link_qr_desc"><![CDATA[Ossza meg ezt a linket azokkal, akiket szeretne meghívni az <b>%s</b> csoportba.]]></string>
