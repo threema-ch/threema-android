@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -102,6 +102,7 @@ import ch.threema.storage.models.group.GroupInviteModel;
 
 public class GroupServiceImpl implements GroupService {
 	private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
+	private static final String GROUP_UID_PREFIX = "g-";
 
 	private final ApiService apiService;
 	private final GroupMessagingService groupMessagingService;
@@ -1681,7 +1682,7 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Deprecated
 	public int getUniqueId(GroupModel groupModel) {
-		return ("g-" + String.valueOf(groupModel.getId())).hashCode();
+		return (GROUP_UID_PREFIX + groupModel.getId()).hashCode();
 	}
 
 	@Override
@@ -1696,7 +1697,7 @@ public class GroupServiceImpl implements GroupService {
 	public String getUniqueIdString(int groupId) {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-			messageDigest.update(("g-" + String.valueOf(groupId)).getBytes());
+			messageDigest.update((GROUP_UID_PREFIX + groupId).getBytes());
 			return Base32.encode(messageDigest.digest());
 		} catch (NoSuchAlgorithmException e) {
 			//

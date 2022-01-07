@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -245,16 +245,20 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	private boolean checkHiddenChatLock(Intent intent, int requestCode) {
 		MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(getApplicationContext(), intent);
 
-		if (messageReceiver != null && serviceManager != null) {
-			DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
-			if (hiddenChatsListService != null && hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
-				if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
-					HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
-				} else {
-					GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
+		if (messageReceiver != null) {
+			if (serviceManager != null) {
+				DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
+				if (hiddenChatsListService != null && hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
+					if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
+						HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
+					} else {
+						GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
+					}
+					return true;
 				}
-				return true;
 			}
+		} else {
+			logger.info("Intent does not have any extras. Check \"Don't keep activities\" option in developer settings.");
 		}
 		return false;
 	}

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -70,6 +70,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
 import androidx.core.app.RemoteInput;
 import androidx.core.app.TaskStackBuilder;
+import androidx.core.content.LocusIdCompat;
 import androidx.core.graphics.drawable.IconCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -596,6 +597,10 @@ public class NotificationServiceImpl implements NotificationService {
 
 				if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
 					builder.setStyle(getMessagingStyle(newestGroup, getConversationNotificationsForGroup(newestGroup)));
+					if (uniqueId != null) {
+						builder.setShortcutId(uniqueId);
+						builder.setLocusId(new LocusIdCompat(uniqueId));
+					}
 
 					latestThumbnail = conversationNotification.getThumbnail();
 					if (latestThumbnail != null && !latestThumbnail.isRecycled() && numberOfNotificationsForCurrentChat == 1) {
@@ -1390,6 +1395,7 @@ public class NotificationServiceImpl implements NotificationService {
 		/* called when pin lock becomes active */
 		synchronized (this.conversationNotifications) {
 			cancelAllCachedConversationNotifications();
+			showIconBadge(this.conversationNotifications.size());
 		}
 	}
 
@@ -1809,7 +1815,7 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	private void showIconBadge(int unreadMessages) {
-		logger.debug("Badge: showing " + unreadMessages + " unread");
+		logger.info("Badge: showing " + unreadMessages + " unread");
 
 		if (context.getPackageManager().resolveContentProvider("com.teslacoilsw.notifier", 0) != null) {
 			// nova launcher / teslaunread
@@ -1838,29 +1844,23 @@ public class NotificationServiceImpl implements NotificationService {
 			try {
 				String launcherClassName = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
 				if (context.getPackageManager().resolveContentProvider("com.sonymobile.home.resourceprovider", 0) != null) {
-					logger.info("Badge: Sony content provider showing " + unreadMessages + " unread");
-
 					// use content provider
-					if (unreadMessages < 0) {
-						final ContentValues contentValues = new ContentValues();
-						contentValues.put("badge_count", unreadMessages);
-						contentValues.put("package_name", BuildConfig.APPLICATION_ID);
-						contentValues.put("activity_name", launcherClassName);
+					final ContentValues contentValues = new ContentValues();
+					contentValues.put("badge_count", unreadMessages);
+					contentValues.put("package_name", BuildConfig.APPLICATION_ID);
+					contentValues.put("activity_name", launcherClassName);
 
-						if (RuntimeUtil.isOnUiThread()) {
-							if (queryHandler == null) {
-								queryHandler = new AsyncQueryHandler(
-									context.getApplicationContext().getContentResolver()) {
-								};
-							}
-							queryHandler.startInsert(0, null, Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
-						} else {
-							context.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
+					if (RuntimeUtil.isOnUiThread()) {
+						if (queryHandler == null) {
+							queryHandler = new AsyncQueryHandler(
+								context.getApplicationContext().getContentResolver()) {
+							};
 						}
+						queryHandler.startInsert(0, null, Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
+					} else {
+						context.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
 					}
 				} else {
-					logger.info("Badge: Sony broadcast showing " + unreadMessages + " unread");
-
 					// use broadcast
 					Intent intent = new Intent("com.sonyericsson.home.action.UPDATE_BADGE");
 					intent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", BuildConfig.APPLICATION_ID);

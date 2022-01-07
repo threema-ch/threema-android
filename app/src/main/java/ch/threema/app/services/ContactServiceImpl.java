@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -114,6 +114,7 @@ public class ContactServiceImpl implements ContactService {
 	private static final Logger logger = LoggerFactory.getLogger(ContactServiceImpl.class);
 
 	private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.MINUTE_IN_MILLIS;
+	private static final String CONTACT_UID_PREFIX = "c-";
 
 	private final Context context;
 	private final AvatarCacheService avatarCacheService;
@@ -1088,7 +1089,7 @@ public class ContactServiceImpl implements ContactService {
 	@Deprecated
 	public int getUniqueId(ContactModel contactModel) {
 		if (contactModel != null) {
-			return ("c-" + contactModel.getIdentity()).hashCode();
+			return (CONTACT_UID_PREFIX + contactModel.getIdentity()).hashCode();
 		} else {
 			return 0;
 		}
@@ -1107,7 +1108,7 @@ public class ContactServiceImpl implements ContactService {
 		if (identity != null) {
 			try {
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				messageDigest.update(("c-" + identity).getBytes());
+				messageDigest.update((CONTACT_UID_PREFIX + identity).getBytes());
 				return Base32.encode(messageDigest.digest());
 			} catch (NoSuchAlgorithmException e) {
 				//

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2021 Threema GmbH
+ * Copyright (c) 2019-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -108,20 +108,17 @@ public class IdentityPopup extends DimmingPopupWindow {
 		this.qrCodeView = popupLayout.findViewById(R.id.qr_image);
 		Group webControls = popupLayout.findViewById(R.id.web_controls);
 		this.webEnableView = popupLayout.findViewById(R.id.web_enable);
-		popupLayout.findViewById(R.id.web_label).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(context, SessionsActivity.class);
-				AnimationUtil.startActivity(activityRef.get(), v, intent);
-				dismiss();
-			}
+		popupLayout.findViewById(R.id.web_label).setOnClickListener(v -> {
+			Intent intent = new Intent(context, SessionsActivity.class);
+			AnimationUtil.startActivity(activityRef.get(), v, intent);
+			dismiss();
 		});
-		popupLayout.findViewById(R.id.share_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ShareUtil.shareContact(activityRef.get(), null);
-			}
-		});
+
+		if (ConfigUtils.isOnPremBuild()) {
+			popupLayout.findViewById(R.id.share_button).setVisibility(View.GONE);
+		} else {
+			popupLayout.findViewById(R.id.share_button).setOnClickListener(v -> ShareUtil.shareContact(activityRef.get(), null));
+		}
 
 		textView.setText(userService.getIdentity());
 		textView.setContentDescription(context.getString(R.string.my_id) + " " + userService.getIdentity());

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,9 +22,7 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
-import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
-import android.os.Build;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +41,6 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
-import ch.threema.app.services.ShortcutService;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -172,7 +169,6 @@ public class ConversationNotificationUtil {
 					getUid(messageModel),
 					group,
 					getFetchThumbnail(messageModel),
-					getShortcut(messageModel),
 					getSenderPerson(messageModel),
 					getMessageType(messageModel)
 			);
@@ -224,7 +220,6 @@ public class ConversationNotificationUtil {
 					getUid(messageModel),
 					group,
 					getFetchThumbnail(messageModel),
-					getShortcut(messageModel),
 					getSenderPerson(messageModel),
 					getMessageType(messageModel)
 			);
@@ -277,34 +272,4 @@ public class ConversationNotificationUtil {
 
 		return null;
 	}
-
-	public static ShortcutInfo getShortcut(final AbstractMessageModel messageModel){
-		ShortcutService shortcutService = null;
-		ContactService contactService = null;
-		GroupService groupService = null;
-		try {
-			shortcutService = ThreemaApplication.getServiceManager().getShortcutService();
-			contactService = ThreemaApplication.getServiceManager().getContactService();
-			groupService = ThreemaApplication.getServiceManager().getGroupService();
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-			return null;
-		}
-
-		if (TestUtil.required(shortcutService, contactService, groupService) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)) {
-			try {
-				if(messageModel instanceof MessageModel){
-					return shortcutService.getShortcutInfo(contactService.getByIdentity(messageModel.getIdentity()), ShortcutService.TYPE_NONE);
-				}
-				if(messageModel instanceof GroupMessageModel){
-					return shortcutService.getShortcutInfo(groupService.getById(((GroupMessageModel) messageModel).getGroupId()));
-				}
-			} catch (Exception e) {
-				logger.error("cannot fetch shortcut, abort");
-				return null;
-			}
-		}
-		return null;
-	}
-
 }

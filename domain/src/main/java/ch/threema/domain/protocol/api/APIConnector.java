@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1472,7 +1472,7 @@ public class APIConnector {
 	 * @return true if the token is invalid, false otherwise.
 	 */
 	private boolean isBadToken(@Nullable byte[] token) {
-		return (token == null || token.length <= 32 || token[0] != (byte) 0xff);
+		return (token == null || token.length <= 32 || token[0] != (byte) ProtocolDefines.MSGTYPE_AUTH_TOKEN);
 	}
 
 	public @Nullable APIConnector.FetchIdentityResult getFetchResultByIdentity(

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,8 +36,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.base.utils.Utils;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
@@ -61,12 +59,8 @@ public class PublicKeyDialog extends SimpleStringAlertDialog {
 		MenuItem menuItem = menu.add(0, v.getId(), 0, getContext().getString(R.string.copy));
 		menuItem.setOnMenuItemClickListener(item -> {
 			ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
-
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager != null) {
-				ClipData clip = ClipData.newPlainText(title, publicKeyString);
-				clipboard.setPrimaryClip(clip);
-			}
+			ClipData clip = ClipData.newPlainText(title, publicKeyString);
+			clipboard.setPrimaryClip(clip);
 
 			Toast.makeText(getContext(), R.string.copied, Toast.LENGTH_SHORT).show();
 

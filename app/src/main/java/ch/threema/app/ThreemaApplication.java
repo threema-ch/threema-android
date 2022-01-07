@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -91,6 +91,7 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
+import ch.threema.app.jobs.ShareTargetShortcutUpdateJobService;
 import ch.threema.app.jobs.WorkSyncJobService;
 import ch.threema.app.jobs.WorkSyncService;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -125,7 +126,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.UpdateSystemServiceImpl;
@@ -263,6 +263,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int MIN_PW_LENGTH_ID_EXPORT_LEGACY = 4; // extremely ancient versions of the app on some platform accepted four-letter passwords when generating ID exports
 
 	private static final int WORK_SYNC_JOB_ID = 63339;
+	public static final int SHORTCUTS_UPDATE_JOB_ID = 63340;
 
 	private static final String WORKER_IDENTITY_STATES_PERIODIC_NAME = "IdentityStates";
 
@@ -273,7 +274,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static volatile MasterKey masterKey;
 
 	private static Date lastLoggedIn;
-	private static long lastNotificationTimeStamp;
 	private static boolean isDeviceIdle;
 	private static boolean ipv6 = false;
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
@@ -950,23 +950,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				scheduleWorkSync(preferenceStore);
 				// schedule identity states / feature masks etc.
 				scheduleIdentityStatesSync(preferenceStore);
+				// schedule shortcut update
+				if (preferenceStore.getBoolean(getAppContext().getString(R.string.preferences__direct_share))) {
+					scheduleShareTargetShortcutUpdate();
+
+				}
 			}, "scheduleSync").start();
 
 			initMapbox();
-
-			// publish most recent chats or pinned shortcuts as sharing targets
-			new Thread(() -> {
-				ShortcutService shortcutService;
-				try {
-					shortcutService = serviceManager.getShortcutService();
-					if (shortcutService != null) {
-						shortcutService.deleteDynamicShortcuts();
-						shortcutService.publishRecentChatsAsSharingTargets();
-					}
-				} catch (ThreemaException e) {
-					logger.error("Exception, failed to publish sharing shortcut targets", e);
-				}
-			}, "createShareTargets").start();
 
 			// setup locale override
 			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
@@ -1083,6 +1074,23 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		return false;
 	}
 
+	@WorkerThread
+	public static boolean scheduleShareTargetShortcutUpdate() {
+		logger.info("Scheduling share target shortcut update job");
+
+		JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+		if (jobScheduler != null) {
+			ComponentName serviceComponent = new ComponentName(context, ShareTargetShortcutUpdateJobService.class);
+			JobInfo.Builder builder = new JobInfo.Builder(SHORTCUTS_UPDATE_JOB_ID, serviceComponent)
+				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+				.setPeriodic(DateUtils.MINUTE_IN_MILLIS * 15);
+			jobScheduler.schedule(builder.build());
+			return true;
+		}
+		logger.debug("Unable to schedule share target update job");
+		return false;
+	}
+
 	private static void configureListeners() {
 		ListenerManager.groupListeners.add(new GroupListener() {
 			@Override
@@ -1099,41 +1107,50 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onRename(GroupModel groupModel) {
-				try {
-					serviceManager.getConversationService().refresh(groupModel);
-					serviceManager.getMessageService().createStatusMessage(
+				new Thread(() -> {
+					try {
+						MessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
+						serviceManager.getConversationService().refresh(groupModel);
+						serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_rename_group, groupModel.getName()),
-							serviceManager.getGroupService().createReceiver(groupModel));
-					serviceManager.getShortcutService().updateShortcut(groupModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+							messageReceiver);
+						serviceManager.getShortcutService().updatePinnedShortcut(messageReceiver);
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 
 			@Override
 			public void onUpdatePhoto(GroupModel groupModel) {
-				try {
-					serviceManager.getConversationService().refresh(groupModel);
-					serviceManager.getMessageService().createStatusMessage(
+				new Thread(() -> {
+					try {
+						MessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
+
+						serviceManager.getConversationService().refresh(groupModel);
+						serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_group_new_photo),
-							serviceManager.getGroupService().createReceiver(groupModel));
-					serviceManager.getShortcutService().updateShortcut(groupModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+							messageReceiver);
+						serviceManager.getShortcutService().updatePinnedShortcut(messageReceiver);
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 
 			@Override
 			public void onRemove(GroupModel groupModel) {
-				try {
-					final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(groupModel);
-					serviceManager.getBallotService().remove(receiver);
-					serviceManager.getConversationService().removed(groupModel);
-					serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, null, null, serviceManager.getApiService()));
-					serviceManager.getShortcutService().deleteShortcut(groupModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+				new Thread(() -> {
+					try {
+						final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(groupModel);
+						serviceManager.getBallotService().remove(receiver);
+						serviceManager.getConversationService().removed(groupModel);
+						serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, null, null, serviceManager.getApiService()));
+						serviceManager.getShortcutService().deletePinnedShortcut(receiver);
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 
 			@Override
@@ -1273,12 +1290,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onLeave(GroupModel groupModel) {
-				try {
-					serviceManager.getConversationService().refresh(groupModel);
-					serviceManager.getShortcutService().deleteShortcut(groupModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+				new Thread(() -> {
+					try {
+						serviceManager.getConversationService().refresh(groupModel);
+						serviceManager.getShortcutService().deletePinnedShortcut(serviceManager.getGroupService().createReceiver(groupModel));
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 
 			@Override
@@ -1301,23 +1320,27 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onModify(DistributionListModel distributionListModel) {
-				try {
-					serviceManager.getConversationService().refresh(distributionListModel);
-					serviceManager.getShortcutService().updateShortcut(distributionListModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+				new Thread(() -> {
+					try {
+						serviceManager.getConversationService().refresh(distributionListModel);
+						serviceManager.getShortcutService().updatePinnedShortcut(serviceManager.getDistributionListService().createReceiver(distributionListModel));
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 
 
 			@Override
 			public void onRemove(DistributionListModel distributionListModel) {
-				try {
-					serviceManager.getConversationService().removed(distributionListModel);
-					serviceManager.getShortcutService().deleteShortcut(distributionListModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+				new Thread(() -> {
+					try {
+						serviceManager.getConversationService().removed(distributionListModel);
+						serviceManager.getShortcutService().deletePinnedShortcut(serviceManager.getDistributionListService().createReceiver(distributionListModel));
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 		}, THREEMA_APPLICATION_LISTENER_TAG);
 
@@ -1460,12 +1483,25 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		ListenerManager.contactListeners.add(new ContactListener() {
 			@Override
 			public void onModified(ContactModel modifiedContactModel) {
-				try {
-					serviceManager.getConversationService().refresh(modifiedContactModel);
-					serviceManager.getShortcutService().updateShortcut(modifiedContactModel);
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+				new Thread(() -> {
+					try {
+						serviceManager.getConversationService().refresh(modifiedContactModel);
+						serviceManager.getShortcutService().updatePinnedShortcut(serviceManager.getContactService().createReceiver(modifiedContactModel));
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
+			}
+
+			@Override
+			public void onAvatarChanged(ContactModel contactModel) {
+				new Thread(() -> {
+					try {
+						serviceManager.getShortcutService().updatePinnedShortcut(serviceManager.getContactService().createReceiver(contactModel));
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
+					}
+				}).start();
 			}
 
 			@Override
@@ -1473,28 +1509,30 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onRemoved(ContactModel removedContactModel) {
-				try {
-					serviceManager.getConversationService().removed(removedContactModel);
-					serviceManager.getShortcutService().deleteShortcut(removedContactModel);
+				new Thread(() -> {
+					try {
+						serviceManager.getConversationService().removed(removedContactModel);
+						serviceManager.getShortcutService().deletePinnedShortcut(serviceManager.getContactService().createReceiver(removedContactModel));
 
-					//remove notification from this contact
+						//remove notification from this contact
 
-					//hack. create a receiver to become the notification id
-					serviceManager.getNotificationService().cancel(new ContactMessageReceiver
+						//hack. create a receiver to become the notification id
+						serviceManager.getNotificationService().cancel(new ContactMessageReceiver
 							(
-									removedContactModel,
-									serviceManager.getContactService(),
-									null, null, null, null, serviceManager.getApiService()));
+								removedContactModel,
+								serviceManager.getContactService(),
+								null, null, null, null, serviceManager.getApiService()));
 
-					//remove custom avatar (ANDR-353)
-					FileService f = serviceManager.getFileService();
-					if (f != null) {
-						f.removeContactAvatar(removedContactModel);
-						f.removeContactPhoto(removedContactModel);
+						//remove custom avatar (ANDR-353)
+						FileService f = serviceManager.getFileService();
+						if (f != null) {
+							f.removeContactAvatar(removedContactModel);
+							f.removeContactPhoto(removedContactModel);
+						}
+					} catch (ThreemaException e) {
+						logger.error("Exception", e);
 					}
-				} catch (ThreemaException e) {
-					logger.error("Exception", e);
-				}
+				}).start();
 			}
 		}, THREEMA_APPLICATION_LISTENER_TAG);
 

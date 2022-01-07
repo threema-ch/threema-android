@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2021 Threema GmbH
+ * Copyright (c) 2019-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,6 +23,8 @@ package ch.threema.app.utils;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -61,6 +63,8 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.MentionClickableSpan;
 import ch.threema.storage.models.AbstractMessageModel;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
+
 
 public class LinkifyUtil {
 	private static final Logger logger = LoggerFactory.getLogger(LinkifyUtil.class);
@@ -68,6 +72,7 @@ public class LinkifyUtil {
 	private final Pattern compose, add, license;
 	private GestureDetectorCompat gestureDetector;
 	private boolean isLongClick;
+	private Uri uri;
 
 	// Singleton stuff
 	private static LinkifyUtil sInstance = null;
@@ -114,6 +119,13 @@ public class LinkifyUtil {
 			public void onLongPress(MotionEvent e) {
 				isLongClick = true;
 				logger.debug("Longpress detected");
+
+				if (uri != null) {
+					ClipboardManager clipboard = (ClipboardManager) ThreemaApplication.getAppContext().getSystemService(CLIPBOARD_SERVICE);
+					ClipData clip = ClipData.newPlainText(ThreemaApplication.getAppContext().getString(R.string.web_link), uri.toString());
+					clipboard.setPrimaryClip(clip);
+					Toast.makeText(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getString(R.string.link_copied, uri.toString()), Toast.LENGTH_SHORT).show();
+				}
 			}
 
 			@Override
@@ -222,25 +234,24 @@ public class LinkifyUtil {
 					return false;
 				}
 
+				uri = getUriFromSpan(link[0]);
+
 				gestureDetector.onTouchEvent(event);
 
 				switch (action) {
 					case MotionEvent.ACTION_UP:
 						logger.debug("ACTION_UP");
 						if (!actionModeEnabled) {
-							if (link[0] instanceof URLSpan) {
+							if (uri != null) {
 								if (fragment == null) {
 									Selection.removeSelection(buffer);
 								}
 
 								if (isLongClick) {
-									logger.debug("Ignore link due to long click");
 									isLongClick = false;
 									return true;
 								}
 
-								URLSpan urlSpan = (URLSpan) link[0];
-								Uri uri = Uri.parse(urlSpan.getURL());
 								if (UrlUtil.isLegalUri(uri)) {
 									LinkifyUtil.this.openLink(context, uri);
 								} else {
@@ -300,10 +311,19 @@ public class LinkifyUtil {
 		});
 	}
 
+	private @Nullable Uri getUriFromSpan(@Nullable ClickableSpan clickableSpan) {
+		if (clickableSpan instanceof URLSpan) {
+			URLSpan urlSpan = (URLSpan) clickableSpan;
+			return Uri.parse(urlSpan.getURL());
+		}
+		return null;
+	}
+
 	public void openLink(@NonNull Context context, Uri uri) {
-		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		Bundle bundle = new Bundle();
 		bundle.putBoolean("new_window", true);
+		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtras(bundle);
 		try {
 			context.startActivity(intent);

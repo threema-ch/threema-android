@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="recording">Hangüzenet felvétele folyamatban</string>
+	<string name="recording_stopped_title">A felvétel szünetel</string>
+	<string name="recording_stopped_message">Szeretné most elküldeni a rögzített hangüzenetet?</string>
+	<string name="recording_canceled">A felvétel ismeretlen hiba miatt leállt.</string>
+	<string name="cancel_recording">Felvétel törlése</string>
+	<string name="cancel_recording_message">Tényleg le akarja állítani és törölni a felvételt?</string>
+	<string name="stop">Leállítás</string>
+</resources>

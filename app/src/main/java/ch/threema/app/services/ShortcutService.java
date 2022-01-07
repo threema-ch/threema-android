@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2021 Threema GmbH
+ * Copyright (c) 2017-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,46 +21,26 @@
 
 package ch.threema.app.services;
 
-import android.content.pm.ShortcutInfo;
+import android.os.BaseBundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.core.content.pm.ShortcutInfoCompat;
-import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.storage.models.AbstractMessageModel;
 
 public interface ShortcutService {
 	int TYPE_NONE = 0;
 	int TYPE_CHAT = 1;
 	int TYPE_CALL = 2;
-	int TYPE_SHARE_SHORTCUT_CONTACT = 3;
-	int TYPE_SHARE_SHORTCUT_GROUP = 4;
-	int TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST = 5;
 
-	@WorkerThread void publishRecentChatsAsSharingTargets();
+	/* pinned shortcuts */
+	@WorkerThread void createPinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type);
+	@WorkerThread void updatePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver);
+	@WorkerThread void deletePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver);
 
-	@WorkerThread void updateShortcut(ContactModel contactModel);
-	@WorkerThread void updateShortcut(GroupModel groupModel);
-	@WorkerThread void updateShortcut(DistributionListModel distributionListModel);
-
-	@WorkerThread void createShortcut(ContactModel contactModel, int type);
-	@WorkerThread void createShortcut(GroupModel groupModel);
-	@WorkerThread void createShortcut(DistributionListModel distributionListModel);
-
-	ShortcutInfo getShortcutInfo(ContactModel contactModel, int type);
-	ShortcutInfo getShortcutInfo(GroupModel groupModel);
-	ShortcutInfo getShortcutInfo(DistributionListModel distributionListModel);
-
-	@WorkerThread void createShareTargetShortcut(ContactModel contactModel);
-	@WorkerThread void createShareTargetShortcut(GroupModel groupModel);
-	@WorkerThread void createShareTargetShortcut(DistributionListModel distributionListModel);
-
-	@WorkerThread void deleteShortcut(ContactModel contactModel);
-	@WorkerThread void deleteShortcut(GroupModel groupModel);
-	@WorkerThread void deleteShortcut(DistributionListModel distributionListModel);
-	@WorkerThread void deleteDynamicShortcuts();
-
-	ShortcutInfoCompat getShortcutInfoCompat(ContactModel contactModel, int type);
-	ShortcutInfoCompat getShortcutInfoCompat(GroupModel groupModel);
-	ShortcutInfoCompat getShortcutInfoCompat(DistributionListModel distributionListModel);
+	/* dynamic shortcuts (share targets) */
+	@WorkerThread void publishRecentChatsAsShareTargets();
+	@WorkerThread void deleteAllShareTargetShortcuts();
+	@Nullable BaseBundle getShareTargetExtrasFromShortcutId(@NonNull String id);
 }

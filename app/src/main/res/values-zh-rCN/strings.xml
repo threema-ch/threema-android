@@ -1298,7 +1298,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_link_property_expiration_desc">该链接在已设置的日期后过期。</string>
     <string name="group_image">群组图标</string>
     <string name="add_group_link">通过群组链接添加成员</string>
-    <string name="miui_battery_optimization">请为 %s 禁用 “电池优化” 以便 %s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
+    <string name="miui_battery_optimization">请为 %1$s 禁用 “电池优化” 以便 %1$s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
     <string name="forward_captions">包含描述</string>
     <string name="importing_files_failed">无法导入备份文件，请确保内部存储有足够的可用空间。</string>
     <string name="label_continue">继续</string>

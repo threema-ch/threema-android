@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="webclient" translatable="false">Threema Web</string>
+	<string name="webclient" translatable="false">Desktop/Web</string>
 	<string name="webclient_qr_scan_error">Invalid QR code data</string>
 	<string name="webclient_init_session">Initiate new session</string>
-	<string name="webclient_sessions_really_delete">Do you really want to delete this Threema Web session?</string>
+	<string name="webclient_sessions_really_delete">Do you really want to delete this desktop/web session?</string>
 	<string name="webclient_last_usage">Last usage: %s</string>
 	<string name="webclient_created_at">Created at: %1$s (%2$s)</string>
 	<string name="webclient_active_since">Active since: %s</string>
-	<string name="webclient_enable">Enable Threema Web</string>
-	<string name="webclient_no_sessions_found">To connect, open <b>https://web.threema.ch</b> in the browser of your PC and tap the button below to scan the code.</string>
+	<string name="webclient_enable">Enable desktop app / web client</string>
+	<string name="webclient_no_sessions_found">To connect, download the desktop app (<b>https://threema.ch/download</b>) or open the web client (<b>https://web.threema.ch</b>) on your computer, and tap the button below to scan the QR code displayed on your computer screen.</string>
 	<string name="webclient_session_rename">Rename session</string>
 	<string name="webclient_session_label">New name</string>
 	<string name="webclient_session_start">Start session</string>
@@ -18,26 +18,26 @@
 	<string name="webclient_unnamed_session">Unnamed Session</string>
 	<string name="webclient_session_remove">Remove session</string>
 	<string name="webclient_welcome_title">Chat from your PC!</string>
-	<string name="webclient_welcome_explain">Threema Web allows you to chat from your PC or notebook while giving you full access to all your contacts, media and chats, even past conversations.\n\n<b>All communication between phone and PC is fully end-to-end encrypted</b> and uses a direct connection if both phone and PC are on the same network.\n\nPlease note: Threema Web may cause some additional battery drain while it is active. You can enable or disable it at any time.</string>
-	<string name="webclient_launch">Start Threema Web now</string>
+	<string name="webclient_welcome_explain">The desktop app and the web client allow you to chat from your PC or notebook while giving you full access to all your contacts, media and chats, even past conversations.\n\n<b>All communication between phone and PC is fully end-to-end encrypted</b> and uses a direct connection if both phone and PC are on the same network.\n\nPlease note: The desktop app / web client may cause some additional battery drain while it is active. You can enable or disable it at any time.</string>
+	<string name="webclient_launch">Start desktop app / web client now</string>
 	<string name="webclient_qr_scan_message">Please scan the QR code displayed on the PC.</string>
-	<string name="webclient_invalid_qr_code">Invalid Threema Web QR code</string>
-	<string name="webclient_new_connection_toast">Threema Web session started</string>
+	<string name="webclient_invalid_qr_code">Invalid QR code</string>
+	<string name="webclient_new_connection_toast">Desktop/Web session started</string>
 	<string name="webclient_protocol_error">Protocol Error</string>
-	<string name="webclient_protocol_version_to_old">Your app does not support this version of Threema Web. Please update Threema to the latest version.</string>
-	<string name="webclient_protocol_version_too_new_selfhosted">Your app does not support this version of Threema Web. Please ask the administrator of your Threema Web instance to upgrade to the latest version.</string>
-	<string name="webclient_protocol_version_too_new_threema">Your app does not support this version of Threema Web. Please use a newer version of Threema Web.</string>
-	<string name="webclient_session_already_exists">The session of the QR code you scanned already exists. Please reload Threema Web in your web browser and try again.</string>
-	<string name="webclient_really_start_webclient_by_payload_body">Would you like to start this Threema Web session now?</string>
-	<string name="webclient_cannot_restore">Cannot restore Threema Web session</string>
-	<string name="webclient_disabled">Threema Web is not enabled</string>
-	<string name="webclient_cannot_start">Cannot start Threema Web session</string>
+	<string name="webclient_protocol_version_to_old">Your app does not support this version of the desktop app / web client. Please update Threema for Android to the latest version.</string>
+	<string name="webclient_protocol_version_too_new_selfhosted">Your app does not support this version of the desktop app / web client. Please download the latest version of the desktop app, or ask the administrator of your web client to upgrade to the latest version.</string>
+	<string name="webclient_protocol_version_too_new_threema">Your app does not support this version of the desktop app / web client. Please use the current version of the desktop app / web client.</string>
+	<string name="webclient_session_already_exists">The session of the QR code you scanned already exists. Please relaunch the desktop app / reload the web client, and try again.</string>
+	<string name="webclient_really_start_webclient_by_payload_body">Would you like to start this session now?</string>
+	<string name="webclient_cannot_restore">Cannot restore session</string>
+	<string name="webclient_disabled">Desktop/Web is not enabled</string>
+	<string name="webclient_cannot_start">Cannot start session</string>
 	<string name="webclient_constrained_by_mdm">Server is not approved by the administrator.</string>
 	<string name="webclient_clear_all_sessions">Clear all sessions</string>
-	<string name="webclient_clear_all_sessions_confirm">Are you sure that you want to stop and remove all Threema Web sessions?</string>
-	<string name="webclient_prefs_debug_tool_summary">Start this tool to debug problems with setting up a Threema Web connection</string>
-	<string name="webclient_diagnostics">Threema Web Diagnostics</string>
+	<string name="webclient_clear_all_sessions_confirm">Are you sure that you want to stop and remove all  sessions?</string>
+	<string name="webclient_prefs_debug_tool_summary">Start this tool to debug problems with setting up a connection to the desktop app or the web client</string>
+	<string name="webclient_diagnostics">Desktop/Web Diagnostics</string>
 	<string name="webclient_diagnostics_start">Start</string>
 	<string name="webclient_diagnostics_intro">Tap on «Start» to launch the test.</string>
-	<string name="webclient_diagnostics_done">Done. If you experience problems with Threema Web connection build-up, please send this log to Threema support.</string>
+	<string name="webclient_diagnostics_done">Done. If you experience problems with the connection build-up to the desktop app or the web client, please send this log to Threema support.</string>
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -162,10 +162,6 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 			logger.debug("starting prepare - streamType = {}", streamType);
 			setOutputStream(streamType);
 			mediaPlayer.setDataSource(getContext(), uri);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
-				mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(audioPlaybackSpeed).setPitch(1f));
-			}
 			mediaPlayer.prepare();
 			prepared(mediaPlayer, resume);
 			markAsConsumed();
@@ -204,7 +200,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 	}
 
 	/**
-	 * called, if the media player prepared
+	 * called, after the media player was prepared
 	 */
 	private void prepared(MediaPlayerStateWrapper mp, boolean resume) {
 		logger.debug("prepared");
@@ -238,6 +234,11 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		}
 
 		logger.debug("play from position {}", this.position);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
+			mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(audioPlaybackSpeed).setPitch(1f));
+		}
 
 		if (requestFocus(resume)) {
 			logger.debug("request focus done");

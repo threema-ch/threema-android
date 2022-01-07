@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,7 +22,6 @@
 package ch.threema.app.services;
 
 import android.annotation.TargetApi;
-import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -174,19 +173,17 @@ public interface NotificationService {
 		private final FetchBitmap fetchThumbnail;
 		private final int id;
 		private Bitmap thumbnail = null;
-		private ShortcutInfo shortcutInfo;
 		private MessageType messageType;
 		private EmojiMarkupUtil emojiMarkupUtil;
 
 		public ConversationNotification(MessageService.MessageString messageString, Date when, int id, String uid,
 		                                ConversationNotificationGroup group, FetchBitmap fetchThumbnail,
-		                                ShortcutInfo shortcutInfo, Person senderPerson, MessageType messageType) {
+		                                Person senderPerson, MessageType messageType) {
 			this.when = when;
 			this.uid = uid;
 			this.id = id;
 			this.group = group;
 			this.fetchThumbnail = fetchThumbnail;
-			this.shortcutInfo = shortcutInfo;
 			this.emojiMarkupUtil = EmojiMarkupUtil.getInstance();
 			this.messageType = messageType;
 			setMessage(messageString.getMessage());
@@ -230,10 +227,6 @@ public interface NotificationService {
 			} else {
 				this.senderPerson = null;
 			}
-		}
-
-		public ShortcutInfo getShortcutInfo(){
-			return shortcutInfo;
 		}
 
 		public Date getWhen() {

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2021 Threema GmbH
+ * Copyright (c) 2015-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -49,7 +49,6 @@ import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
@@ -91,12 +90,12 @@ public class BackupChatServiceImpl implements BackupChatService {
 			String filename = "";
 			String messageLine = "";
 
-			if (!conversationModel.isGroupConversation() || MessageType.TEXT == m.getType()) {
+			if (!conversationModel.isGroupConversation()) {
 				messageLine = m.isOutbox() ? this.context.getString(R.string.me_myself_and_i) : NameUtil.getDisplayNameOrNickname(this.contactService.getByIdentity(m.getIdentity()), true);
 				messageLine += ": ";
 			}
 
-			messageLine += messageService.getMessageString(m, 0).getMessage();
+			messageLine += messageService.getMessageString(m, 0).getRawMessage();
 
 			// add media file to zip
 			try {

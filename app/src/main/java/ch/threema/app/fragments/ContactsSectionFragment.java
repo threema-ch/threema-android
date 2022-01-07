@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -105,6 +105,7 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
@@ -1218,7 +1219,7 @@ public class ContactsSectionFragment
 		if (packageManager == null) return;
 
 		Intent messageIntent = new Intent(Intent.ACTION_SEND);
-		messageIntent.setType("text/plain");
+		messageIntent.setType(MimeUtil.MIME_TYPE_TEXT);
 		@SuppressLint({"WrongConstant", "InlinedApi"}) final List<ResolveInfo> messageApps = packageManager.queryIntentActivities(messageIntent, PackageManager.MATCH_ALL);
 
 		if (!messageApps.isEmpty()) {
@@ -1254,7 +1255,7 @@ public class ContactsSectionFragment
 		}
 
 		Intent intent = new Intent(Intent.ACTION_SEND);
-		intent.setType("text/plain");
+		intent.setType(MimeUtil.MIME_TYPE_TEXT);
 		intent.setPackage(packageName);
 
 		UserService userService = ThreemaApplication.getServiceManager().getUserService();
@@ -1269,12 +1270,12 @@ public class ContactsSectionFragment
 			intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.invite_email_subject));
 			intent.putExtra(Intent.EXTRA_TEXT, messageBody);
 		}
-		if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-			try {
-				startActivity(intent);
-			} catch (SecurityException e) {
-				logger.error("Exception", e);
-			}
+
+		try {
+			startActivity(intent);
+		} catch (Exception e) {
+			Toast.makeText(getContext(), R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
+			logger.error("Exception", e);
 		}
 	}
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.SystemClock;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -36,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
@@ -55,7 +55,6 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.ShortcutService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -91,7 +90,6 @@ public class IntentDataUtil {
 	private static final String INTENT_DATA_MESSAGE = "message";
 	private static final String INTENT_DATA_URL = "url";
 	private static final String INTENT_DATA_CONTACTS = "contacts";
-	public static final String INTENT_DATA_GROUP_ID = "group_id";
 	public static final String INTENT_DATA_GROUP_LINK_ID = "group_link";
 	public static final String INTENT_DATA_GROUP_LINK = "group_url";
 	public static final String INTENT_DATA_GROUP_NAME = "group_group";
@@ -99,7 +97,6 @@ public class IntentDataUtil {
 	private static final String INTENT_DATA_ABSTRACT_MESSAGE_IDS = "abstract_message_ids";
 	private static final String INTENT_DATA_ABSTRACT_MESSAGE_TYPE = "abstract_message_type";
 	private static final String INTENT_DATA_ABSTRACT_MESSAGE_TYPES = "abstract_message_types";
-	public static final String INTENT_DATA_IDENTITY = "identity";
 	public static final String INTENT_DATA_WEB_CLIENT_SESSION_MODEL_ID = "session_model_id";
 	public static final String INTENT_DATA_PAYLOAD = "payload";
 
@@ -118,15 +115,15 @@ public class IntentDataUtil {
 	}
 
 	public static void append(ContactModel contactModel, Intent intent) {
-		intent.putExtra(INTENT_DATA_IDENTITY, contactModel.getIdentity());
+		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, contactModel.getIdentity());
 	}
 
 	public static void append(String identity, Intent intent) {
-		intent.putExtra(INTENT_DATA_IDENTITY, identity);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
 	}
 
 	public static void append(GroupModel groupModel, Intent intent) {
-		intent.putExtra(INTENT_DATA_GROUP_ID, groupModel.getId());
+		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
 	}
 
 	public static void append(GroupInviteModel groupInviteModel, Intent intent) {
@@ -256,27 +253,33 @@ public class IntentDataUtil {
 		return intent.getStringExtra(INTENT_DATA_MESSAGE);
 	}
 
-    public static String getUrl(Intent intent) {
-        return intent.getStringExtra(INTENT_DATA_URL);
-    }
+	// used by threema shop builds
+	public static String getUrl(Intent intent) {
+		return intent.getStringExtra(INTENT_DATA_URL);
+	}
 
 	public static String[] getContactIdentities(Intent intent) {
 		return intent.getStringArrayExtra(INTENT_DATA_CONTACTS);
 	}
 
 	public static int getGroupId(Intent intent) {
-		if(intent.hasExtra(INTENT_DATA_GROUP_ID)) {
-			return intent.getIntExtra(INTENT_DATA_GROUP_ID, -1);
+		if(intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP)) {
+			return intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, -1);
 		}
+		return -1;
+	}
 
+	public static int getDistributionListId(Intent intent) {
+		if(intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
+			return intent.getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, -1);
+		}
 		return -1;
 	}
 
 	public static String getIdentity(Intent intent) {
-		if(intent.hasExtra(INTENT_DATA_IDENTITY)) {
-			return intent.getStringExtra(INTENT_DATA_IDENTITY);
+		if(intent.hasExtra(ThreemaApplication.INTENT_DATA_CONTACT)) {
+			return intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
 		}
-
 		return null;
 	}
 
@@ -346,6 +349,7 @@ public class IntentDataUtil {
 		return messageModels;
 	}
 
+	@Nullable
 	public static MessageReceiver getMessageReceiverFromIntent(Context context, Intent intent) {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		ContactService contactService;
@@ -369,14 +373,23 @@ public class IntentDataUtil {
 			return contactService.createReceiver(contactService.getByIdentity(identity));
 		}
 
-		if (intent.hasExtra(ThreemaApplication.INTENT_DATA_CONTACT)) {
-			String cIdentity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+		return getMessageReceiverFromExtras(intent.getExtras(), contactService, groupService, distributionListService);
+	}
+
+	@Nullable
+	public static MessageReceiver getMessageReceiverFromExtras(@Nullable Bundle extras, ContactService contactService, GroupService groupService, DistributionListService distributionListService) {
+		if (extras == null) {
+			return null;
+		}
+
+		if (extras.containsKey(ThreemaApplication.INTENT_DATA_CONTACT)) {
+			String cIdentity = extras.getString(ThreemaApplication.INTENT_DATA_CONTACT);
 			return contactService.createReceiver(contactService.getByIdentity(cIdentity));
-		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP)) {
-			int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+		} else if (extras.containsKey(ThreemaApplication.INTENT_DATA_GROUP)) {
+			int groupId = extras.getInt(ThreemaApplication.INTENT_DATA_GROUP, 0);
 			return groupService.createReceiver(groupService.getById(groupId));
-		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-			int distId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
+		} else if (extras.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
+			int distId = extras.getInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
 			return distributionListService.createReceiver(distributionListService.getById(distId));
 		}
 
@@ -553,33 +566,6 @@ public class IntentDataUtil {
 		intent.putExtra(ThreemaApplication.INTENT_DATA_TIMESTAMP, SystemClock.elapsedRealtime());
 
 		return intent;
-	}
-
-	public static String getIdentityFromSharingShortcut(Intent intent) {
-		String identity = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
-		//Only chat shortcuts can receive direct share intents
-		if (identity != null && identity.startsWith(String.valueOf(ShortcutService.TYPE_SHARE_SHORTCUT_CONTACT))) {
-			return identity.substring(1);
-		}
-		return null;
-	}
-
-	public static int getGroupIdFromSharingShortcut(Intent intent) {
-		String id = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
-		//Only chat shortcuts can receive direct share intents
-		if (id != null && id.startsWith(String.valueOf(ShortcutService.TYPE_SHARE_SHORTCUT_GROUP))) {
-			return Integer.parseInt(id.substring(1));
-		}
-		return -1;
-	}
-
-	public static int getDistributionListIdFromSharingShortcut(Intent intent) {
-		String id = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
-		//Only chat shortcuts can receive direct share intents
-		if (id != null && id.startsWith(String.valueOf(ShortcutService.TYPE_SHARE_SHORTCUT_DISTRIBUTION_LIST))) {
-			return Integer.parseInt(id.substring(1));
-		}
-		return -1;
 	}
 
 	public static Intent getJumpToMessageIntent(Context context, AbstractMessageModel messageModel) {

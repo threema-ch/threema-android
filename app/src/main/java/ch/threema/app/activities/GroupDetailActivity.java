@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -866,7 +866,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			case DIALOG_TAG_DELETE_GROUP:
 				deleteGroupAndQuit();
 				try {
-					serviceManager.getShortcutService().deleteShortcut((groupModel));
+					serviceManager.getShortcutService().deletePinnedShortcut(groupService.createReceiver(groupModel));
 				} catch (ThreemaException e) {
 					logger.debug("Exception, failed to delete direct group shortcut", e);
 				}

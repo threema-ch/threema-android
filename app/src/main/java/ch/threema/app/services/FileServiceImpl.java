@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -564,7 +564,7 @@ public class FileServiceImpl implements FileService {
 		try {
 			is = getDecryptedMessageStream(messageModel);
 			if (is != null) {
-				File decoded = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, !ConfigUtils.useContentUris());
+				File decoded = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
 				fos = new FileOutputStream(decoded);
 
 				IOUtils.copy(is, fos);

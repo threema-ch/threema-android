@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -45,6 +45,8 @@ import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListServiceImpl implements DistributionListService {
+
+	private static final String DISTRIBUTION_LIST_UID_PREFIX = "d-";
 
 	private final CacheService cacheService;
 	private final AvatarCacheService avatarCacheService;
@@ -300,7 +302,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 		if (distributionListModel != null) {
 			try {
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				messageDigest.update(("d-" + String.valueOf(distributionListModel.getId())).getBytes());
+				messageDigest.update((DISTRIBUTION_LIST_UID_PREFIX + String.valueOf(distributionListModel.getId())).getBytes());
 				return Base32.encode(messageDigest.digest());
 			} catch (NoSuchAlgorithmException e) {
 				//

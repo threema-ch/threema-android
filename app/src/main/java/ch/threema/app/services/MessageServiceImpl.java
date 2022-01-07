@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -2843,7 +2843,7 @@ public class MessageServiceImpl implements MessageService {
 					}
 				}
 			} else {
-				byte image[];
+				byte[] image;
 
 				if (mediaMessageModel instanceof GroupMessageModel) {
 					image = NaCl.symmetricDecryptData(blob, data.getEncryptionKey(), nonce);
@@ -3214,10 +3214,13 @@ public class MessageServiceImpl implements MessageService {
 
 			intent.setAction(Intent.ACTION_SEND);
 			intent.putExtra(android.content.Intent.EXTRA_TEXT, text);
-			intent.setType("text/plain");
+			intent.setType(MimeUtil.MIME_TYPE_TEXT);
 
-			if (intent.resolveActivity(context.getPackageManager()) != null) {
+			try {
 				context.startActivity(Intent.createChooser(intent, context.getResources().getText(R.string.share_via)));
+			} catch (Exception e) {
+				Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
+				logger.error("Exception", e);
 			}
 		}
 		return false;

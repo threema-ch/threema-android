@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -108,15 +108,21 @@ public class FileUtil {
 			startAction(activity, fragment, ID, intent);
 		} catch (ActivityNotFoundException e) {
 			if (useOpenDocument) {
-				// fallback to ACTION_GET_CONTENT on broken devices
-				intent = getGetContentIntent(context, mimeTypes, initialPath);
-				addExtras(intent, multi, sizeLimit);
-				try {
-					startAction(activity, fragment, ID, intent);
-					return;
-				} catch (ActivityNotFoundException ignored) {}
+				if (!ConfigUtils.hasScopedStorage()) {
+					// fallback to ACTION_GET_CONTENT on broken devices
+					intent = getGetContentIntent(context, mimeTypes, initialPath);
+					addExtras(intent, multi, sizeLimit);
+					try {
+						startAction(activity, fragment, ID, intent);
+					} catch (ActivityNotFoundException ignored) {
+					}
+				} else {
+					// device is missing DocumentsUI - impossible to get access to the backup file
+					Toast.makeText(context, String.format("Broken device. DocumentsUI is disabled or missing. Please fix or contact %s.", Build.MANUFACTURER), Toast.LENGTH_LONG).show();
+				}
+			} else {
+				Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
 			}
-			Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
 		}
 	}
 

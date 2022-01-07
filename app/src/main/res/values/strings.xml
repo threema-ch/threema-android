@@ -156,8 +156,7 @@
 	<string name="backup_and_delete">Backup and delete</string>
 	<string name="delete_id_title">Delete ID</string>
 	<string name="delete_id_message">Unless you have created a backup or exported and saved a copy of this ID, you will never be able to send or receive
-		messages with this ID again.\n\nIf you don’t intend to use this ID again, you should remove any linked email
-		addresses/phone numbers before you delete it.</string>
+		messages with this ID again.\n\nIf you don’t want to use this ID anymore, it is recommended to set a revocation password and revoke the ID on myid.threema.ch/revoke before deleting it.</string>
 	<string name="delete_id_message2">Last warning: do you really want to delete your ID on this device?</string>
 	<string name="delete_id_sum">Permanently delete your ID and all data on this device</string>
 	<string name="backup_password_summary">Your ID export will be encrypted with a password. Use a combination of letters, numbers and symbols. Do not forget what you enter here!</string>
@@ -1353,4 +1352,8 @@
 	<string name="not_voted_user_list">These participants did not vote: %s</string>
 	<string name="invalid_onprem_id">Not a valid Threema OnPrem-ID</string>
 	<string name="enable_unknown_sources">Unable to install. Please make sure \"Install unknown apps\" is enabled for %s.</string>
+	<string name="add_shortcut_success">Shortcut successfully created</string>
+	<string name="add_shortcut_error">Error adding shortcut to launcher screen</string>
+	<string name="web_link">Link</string>
+	<string name="link_copied">%s copied</string>
 </resources>

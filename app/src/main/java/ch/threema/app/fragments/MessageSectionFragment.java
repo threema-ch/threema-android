@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -741,7 +741,7 @@ public class MessageSectionFragment extends MainFragment
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				tempMessagesFile = FileUtil.getUniqueFile(ConfigUtils.useContentUris() ? fileService.getTempPath().getPath() : fileService.getExtTmpPath().getPath(), "threema-chat.zip");
+				tempMessagesFile = FileUtil.getUniqueFile(fileService.getTempPath().getPath(), "threema-chat.zip");
 				FileUtil.deleteFileOrWarn(tempMessagesFile, "tempMessagesFile", logger);
 
 				if (backupChatService.backupChatToZip(conversationModel, tempMessagesFile, password, includeMedia)) {
@@ -1549,7 +1549,11 @@ public class MessageSectionFragment extends MainFragment
 							}
 
 							if (messageListAdapter != null) {
-								messageListAdapter.setData(conversationModels, changedPositions);
+								try {
+									messageListAdapter.setData(conversationModels, changedPositions);
+								} catch (IndexOutOfBoundsException e) {
+									logger.debug("Failed to set adapter data", e);
+								}
 								// make sure footer is refreshed
 								messageListAdapter.refreshFooter();
 							}

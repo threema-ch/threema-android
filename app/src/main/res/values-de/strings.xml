@@ -162,10 +162,7 @@
 	<string name="backup_sum">Exportieren Sie Ihre Threema-ID</string>
 	<string name="backup_and_delete">Sichern und Löschen</string>
 	<string name="delete_id_title">ID löschen</string>
-	<string name="delete_id_message">Sofern Sie die ID nicht gesichert haben und kein Backup erstellt haben, werden Sie nie mehr in der Lage sein,
-		mit dieser ID Nachrichten zu versenden oder zu empfangen.\n\nFalls Sie diese ID nicht mehr verwenden möchten,
-		sollten Sie vor dem Löschen die Verknüpfungen (E-Mail/Nummer) entfernen.
-	</string>
+	<string name="delete_id_message">Sofern Sie die ID nicht gesichert haben und kein Backup erstellt haben, werden Sie nie mehr in der Lage sein, mit dieser ID Nachrichten zu versenden oder zu empfangen.\n\nFalls Sie diese ID nicht mehr verwenden möchten, empfiehlt es sich, vor dem Löschen ein ID-Widerrufspasswort zu setzen und die ID auf myid.threema.ch/revoke zu widerrufen.</string>
 	<string name="delete_id_message2">Letzte Warnung: wollen Sie Ihre ID wirklich von diesem Gerät löschen?</string>
 	<string name="delete_id_sum">Threema-ID und Chats auf diesem Gerät löschen</string>
 	<string name="backup_password_summary">Ihre ID wird mit einem Passwort verschlüsselt. Benutzen Sie eine Kombination aus Buchstaben, Ziffern und Symbolen. Merken Sie sich, was Sie hier eingeben!</string>
@@ -913,7 +910,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_sum_voice_call_vibrate">Bei eingehenden Threema-Sprachanrufen vibrieren</string>
 	<string name="prefs_title_voip">Threema-Anrufe</string>
 	<string name="prefs_title_force_turn">Anrufe immer über Server</string>
-	<string name="prefs_summary_force_turn_off"> Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
+	<string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
 	<string name="prefs_summary_force_turn_on">Alle Anrufe über Threema-Server leiten. Schützt Ihre IP-Adresse, kann aber zu schlechterer Anrufqualität führen.</string>
 	<string name="prefs_title_voip_enable">Threema-Anrufe aktivieren</string>
 	<string name="webclient_invalid_push_token_message">Manuelles Starten erforderlich</string>
@@ -1410,11 +1407,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="reset_default_group_link_desc">Der zuvor geteilte Link wird somit ungültig und Anfragen über den alten Link werden automatisch abgelehnt.</string>
 	<string name="other_group_links">weitere</string>
 	<string name="show_public_key">Öffentlichen Schlüssel anzeigen</string>
-	<string name="public_key_for">Offentlicher Schlüssel von %s</string>
+	<string name="public_key_for">Öffentlicher Schlüssel von %s</string>
 	<string name="copied">Kopiert</string>
 	<string name="no_votes_yet">Bisher wurden noch keine Stimmen abgegeben.</string>
 	<string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
 	<string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
 	<string name="invalid_onprem_id">Keine gültige Threema OnPrem-ID</string>
 	<string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie \"Unbekannte Apps installieren\" für %s.</string>
+	<string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
+	<string name="add_shortcut_error">Fehler beim Erstellen der Desktop-Verknüpfung</string>
+	<string name="web_link">Link</string>
+	<string name="link_copied">%s kopiert</string>
 </resources>

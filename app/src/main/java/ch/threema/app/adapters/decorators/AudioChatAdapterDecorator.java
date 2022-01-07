@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -223,9 +223,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 							updateProgressCount(holder, audioMessagePlayer.getPosition());
 							holder.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 								@Override
-								public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-									if (b) {
-										audioMessagePlayer.seekTo(i);
+								public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+									if (fromUser) {
+										audioMessagePlayer.seekTo(progress);
 									}
 								}
 
@@ -318,7 +318,10 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 							RuntimeUtil.runOnUiThread(() -> {
 								if (holder.position == position) {
 									if (holder.seekBar != null) {
-										holder.seekBar.setMax(holder.messagePlayer.getDuration());
+										if (holder.seekBar.getMax() != holder.messagePlayer.getDuration()) {
+											logger.info("Audio message player duration changed old={} new={}", holder.seekBar.getMax(), holder.messagePlayer.getDuration());
+											holder.seekBar.setMax(holder.messagePlayer.getDuration());
+										}
 									}
 									updateProgressCount(holder, pos);
 

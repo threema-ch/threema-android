@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -434,7 +434,7 @@ public class AndroidContactUtil {
 		int backReference = contentProviderOperations.size();
 		logger.debug("Adding contact: " + identity);
 
-		logger.debug("Create our RawContact");
+		/* Create our RawContact */
 		ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI);
 		builder.withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name);
 		builder.withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type);
@@ -443,7 +443,16 @@ public class AndroidContactUtil {
 
 		Uri insertUri = ContactsContract.Data.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
-		logger.debug("Create a Data record of custom type");
+		/* Some contact apps may require a name */
+		/*
+		builder = ContentProviderOperation.newInsert(insertUri);
+		builder.withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, backReference);
+		builder.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+		builder.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, identity);
+		contentProviderOperations.add(builder.build());
+		*/
+
+		/* Create a Data record of custom type */
 		builder = ContentProviderOperation.newInsert(insertUri);
 		builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backReference);
 		builder.withValue(ContactsContract.Data.MIMETYPE, context.getString(R.string.contacts_mime_type));
@@ -454,7 +463,7 @@ public class AndroidContactUtil {
 		contentProviderOperations.add(builder.build());
 
 		if (supportsVoiceCalls) {
-			logger.debug("Create a Data record of custom type for call");
+			/* Create a Data record of custom type for call */
 			builder = ContentProviderOperation.newInsert(insertUri);
 			builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, backReference);
 			builder.withValue(ContactsContract.Data.MIMETYPE, context.getString(R.string.call_mime_type));
@@ -757,14 +766,14 @@ public class AndroidContactUtil {
 			intent.putExtra("finishActivityOnSaveCompleted", true);
 
 			// make sure users are coming back to threema and not the external activity
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-			if (intent.resolveActivity(context.getPackageManager()) != null) {
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+			try {
 				if (context instanceof Activity) {
 					((Activity) context).startActivityForResult(intent, requestCode);
 				} else {
 					context.startActivity(intent);
 				}
-			} else {
+			} catch (Exception e) {
 				Toast.makeText(context, "No contact editor found on device.", Toast.LENGTH_SHORT).show();
 			}
 			return true;

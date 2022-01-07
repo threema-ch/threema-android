@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021 Threema GmbH
+ * Copyright (c) 2021-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -101,7 +101,7 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 			return false;
 		}
 
-		int groupId = getIntent().getIntExtra(IntentDataUtil.INTENT_DATA_GROUP_ID, 0);
+		int groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
 		GroupModel groupModel = this.groupService.getById(groupId);
 
 		if (groupModel == null) {

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -231,15 +231,23 @@ public class MyIDFragment extends MainFragment
 
 			configureEditWithButton(fragmentView.findViewById(R.id.linked_email_layout), fragmentView.findViewById(R.id.change_email), isReadonlyProfile);
 			configureEditWithButton(fragmentView.findViewById(R.id.linked_mobile_layout), fragmentView.findViewById(R.id.change_mobile), isReadonlyProfile);
-
 			configureEditWithButton(fragmentView.findViewById(R.id.delete_id_layout), fragmentView.findViewById(R.id.delete_id), isReadonlyProfile);
-			configureEditWithButton(fragmentView.findViewById(R.id.revocation_key_layout), fragmentView.findViewById(R.id.revocation_key), isReadonlyProfile);
 			configureEditWithButton(fragmentView.findViewById(R.id.export_id_layout), fragmentView.findViewById(R.id.export_id), (AppRestrictionUtil.isBackupsDisabled(ThreemaApplication.getAppContext()) ||
 												AppRestrictionUtil.isIdBackupsDisabled(ThreemaApplication.getAppContext())));
 
+			if (ConfigUtils.isOnPremBuild()) {
+				fragmentView.findViewById(R.id.revocation_key_layout).setVisibility(View.GONE);
+			} else {
+				configureEditWithButton(fragmentView.findViewById(R.id.revocation_key_layout), fragmentView.findViewById(R.id.revocation_key), isReadonlyProfile);
+			}
+
 			if (userService != null && userService.getIdentity() != null) {
 				((TextView) fragmentView.findViewById(R.id.my_id)).setText(userService.getIdentity());
-				fragmentView.findViewById(R.id.my_id_share).setOnClickListener(this);
+				if (ConfigUtils.isOnPremBuild()) {
+					fragmentView.findViewById(R.id.my_id_share).setVisibility(View.GONE);
+				} else {
+					fragmentView.findViewById(R.id.my_id_share).setOnClickListener(this);
+				}
 				fragmentView.findViewById(R.id.my_id_qr).setOnClickListener(this);
 
 				fragmentView.findViewById(R.id.public_key_button).setOnClickListener(
@@ -430,35 +438,36 @@ public class MyIDFragment extends MainFragment
 		}
 		linkedMobileText.invalidate();
 
-		//revocation key
-		TextView revocationKey = fragmentView.findViewById(R.id.revocation_key_sum);
-		new AsyncTask<TextView, Void, String>() {
-			private TextView textView;
+		if (!ConfigUtils.isOnPremBuild()) {
+			//revocation key
+			TextView revocationKey = fragmentView.findViewById(R.id.revocation_key_sum);
+			new AsyncTask<TextView, Void, String>() {
+				private TextView textView;
 
-			@Override
-			protected String doInBackground(TextView... params) {
-				if (isAdded()) {
-					textView = params[0];
-					Date revocationKeyLastSet = userService.getLastRevocationKeySet();
-					if (!isDetached() && !isRemoving() && getContext() != null) {
-						if (revocationKeyLastSet != null) {
-							return getContext().getString(R.string.revocation_key_set_at, LocaleUtil.formatTimeStampString(getContext(), revocationKeyLastSet.getTime(), true));
-						} else {
-							return getContext().getString(R.string.revocation_key_not_set);
+				@Override
+				protected String doInBackground(TextView... params) {
+					if (isAdded()) {
+						textView = params[0];
+						Date revocationKeyLastSet = userService.getLastRevocationKeySet();
+						if (!isDetached() && !isRemoving() && getContext() != null) {
+							if (revocationKeyLastSet != null) {
+								return getContext().getString(R.string.revocation_key_set_at, LocaleUtil.formatTimeStampString(getContext(), revocationKeyLastSet.getTime(), true));
+							} else {
+								return getContext().getString(R.string.revocation_key_not_set);
+							}
 						}
 					}
+					return null;
 				}
-				return null;
-			}
 
-			@Override
-			protected void onPostExecute(String result) {
-				if (isAdded() && !isDetached() && !isRemoving() && getContext() != null) {
-					textView.setText(result);
+				@Override
+				protected void onPostExecute(String result) {
+					if (isAdded() && !isDetached() && !isRemoving() && getContext() != null) {
+						textView.setText(result);
+					}
 				}
-			}
-		}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, revocationKey);
-
+			}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, revocationKey);
+		}
 		return pending;
 	}
 

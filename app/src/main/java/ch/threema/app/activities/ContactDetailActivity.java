@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -777,7 +777,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	private void scanQR() {
-		QRScannerUtil.getInstance().initiateScan(this, false, null);
+		QRScannerUtil.getInstance().initiateScan(this, false, getString(R.string.qr_scanner_id_hint));
 	}
 
 	@Override
@@ -882,9 +882,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	public void onYes(String tag, Object data) {
 		switch (tag) {
 			case DIALOG_TAG_DELETE_CONTACT:
-				deleteContact((ContactModel) data);
+				ContactModel contactModel = (ContactModel)data;
+				deleteContact(contactModel);
 				try {
-					serviceManager.getShortcutService().deleteShortcut((ContactModel) data);
+					serviceManager.getShortcutService().deletePinnedShortcut(contactService.createReceiver(contactModel));
 				} catch (ThreemaException e) {
 					logger.error("Exception, failed to delete direct share shortcut", e);
 				}

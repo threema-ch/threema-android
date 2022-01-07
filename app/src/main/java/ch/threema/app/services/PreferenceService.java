@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -373,8 +373,16 @@ public interface PreferenceService {
 	boolean isVoipEnabled();
 	void setVoipEnabled(boolean value);
 
+	/**
+	 * If true, then mobile POTS calls should be rejected while a Threema call is active.
+	 */
 	boolean isRejectMobileCalls();
 
+	/**
+	 * Set whether or not a mobile POTS calls should be rejected while a Threema call is active.
+	 *
+	 * Note that this requires the "manage phone call" permission.
+	 */
 	void setRejectMobileCalls(boolean value);
 
 	boolean allowWebrtcIpv6();

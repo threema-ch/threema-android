@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -32,6 +32,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.BadParcelableException;
+import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.DocumentsContract;
@@ -68,6 +69,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -99,6 +101,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
@@ -165,6 +168,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private DistributionListService distributionListService;
 	private MessageService messageService;
 	private FileService fileService;
+	private ShortcutService shortcutService;
 
 	private final Runnable copyFilesRunnable = new Runnable() {
 		@Override
@@ -242,6 +246,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			this.distributionListService = serviceManager.getDistributionListService();
 			this.messageService = serviceManager.getMessageService();
 			this.fileService = serviceManager.getFileService();
+			this.shortcutService = serviceManager.getShortcutService();
 			userService = serviceManager.getUserService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
@@ -400,21 +405,21 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			}
 
 			String identity = IntentDataUtil.getIdentity(intent);
-			int groupId = -1;
-			int distributionListID = -1;
-			//check for receiver information either through intent extras or sharing shortcut id which looses its intent extras
-			// (workaround to pass identity extras in shortcut id https://medium.com/@styrc.adam/android-dynamic-shortcuts-passing-extras-64db534621c1)
-			if (TestUtil.empty(identity)) {
-				identity = IntentDataUtil.getIdentityFromSharingShortcut(intent);
-				if (TestUtil.empty(identity)) {
-					groupId = IntentDataUtil.getGroupId(intent);
+			int groupId = IntentDataUtil.getGroupId(intent);
+			int distributionListID = IntentDataUtil.getDistributionListId(intent);
 
-					if (groupId == -1) {
-						groupId = IntentDataUtil.getGroupIdFromSharingShortcut(intent);
-
-						if (groupId == -1) {
-							// distribution list is only passed as id to recipient activity, no check for intent extras
-							distributionListID = IntentDataUtil.getDistributionListIdFromSharingShortcut(intent);
+			if (TestUtil.empty(identity) && groupId == -1 && distributionListID == -1) {
+				// maybe a shortcut?
+				String id = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
+				if (!TestUtil.empty(id)) {
+					BaseBundle bundle = shortcutService.getShareTargetExtrasFromShortcutId(id);
+					if (bundle != null) {
+						if (bundle.containsKey(ThreemaApplication.INTENT_DATA_CONTACT)) {
+							identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
+						} else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_GROUP)) {
+							groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP);
+						} else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
+							distributionListID = bundle.getInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
 						}
 					}
 				}
@@ -587,6 +592,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 										prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
 									}
 								}
+							} else {
+								// redirect to chat
+								MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromExtras(intent.getExtras(), contactService, groupService, distributionListService);
+								if (messageReceiver != null) {
+									Intent composeIntent = IntentDataUtil.getComposeIntentForReceivers(this, new ArrayList<>(Collections.singletonList(messageReceiver)));
+									startComposeActivity(composeIntent);
+								}
+								return;
 							}
 						}
 					}

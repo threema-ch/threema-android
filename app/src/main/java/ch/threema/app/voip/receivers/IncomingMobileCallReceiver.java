@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2021 Threema GmbH
+ * Copyright (c) 2017-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -46,7 +46,7 @@ import ch.threema.base.ThreemaException;
  * Attempt to reject regular phone call if a Threema Call is running
  */
 public class IncomingMobileCallReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(IncomingMobileCallReceiver.class);
+	private static final Logger logger = LoggerFactory.getLogger("IncomingMobileCallReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -54,10 +54,11 @@ public class IncomingMobileCallReceiver extends BroadcastReceiver {
 			return;
 		}
 
-		logger.debug("Incoming mobile call");
+		logger.info("Incoming mobile call");
 
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
+			logger.error("Could not acquire service manager");
 			return;
 		}
 
@@ -65,6 +66,7 @@ public class IncomingMobileCallReceiver extends BroadcastReceiver {
 		try {
 			voipStateService = serviceManager.getVoipStateService();
 		} catch (ThreemaException e) {
+			logger.error("Could not acquire VoipStateService");
 			return;
 		}
 
@@ -73,7 +75,9 @@ public class IncomingMobileCallReceiver extends BroadcastReceiver {
 				if (ContextCompat.checkSelfPermission(context, Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
 					TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
 					if (telecomManager != null) {
+						logger.info("Trying to end call via TelecomManager");
 						telecomManager.endCall();
+						logger.info("Mobile call rejected");
 					}
 				}
 			} else {
@@ -81,6 +85,7 @@ public class IncomingMobileCallReceiver extends BroadcastReceiver {
 					TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 					// Hacky, hacky
 					try {
+						logger.info("Trying to end call via TelephonyManager");
 						@SuppressLint("PrivateApi") Method getTelephony = telephonyManager.getClass().getDeclaredMethod("getITelephony");
 						getTelephony.setAccessible(true);
 						Object telephonyService = getTelephony.invoke(telephonyManager);
@@ -88,8 +93,7 @@ public class IncomingMobileCallReceiver extends BroadcastReceiver {
 						silenceRinger.invoke(telephonyService);
 						Method endCall = telephonyService.getClass().getDeclaredMethod("endCall");
 						endCall.invoke(telephonyService);
-
-						logger.debug("Mobile call rejected");
+						logger.info("Mobile call rejected");
 					} catch (Exception e) {
 						logger.error("Exception", e);
 					}

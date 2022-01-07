@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -106,6 +106,7 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_VOIP_CALL_RINGING = 0x64;
 	public static final int MSGTYPE_DELIVERY_RECEIPT = 0x80;
 	public static final int MSGTYPE_TYPING_INDICATOR = 0x90;
+	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
 
 	/* message flags */
 	public static final int MESSAGE_FLAG_PUSH = 0x01;

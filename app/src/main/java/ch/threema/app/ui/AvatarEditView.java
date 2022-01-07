@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2021 Threema GmbH
+ * Copyright (c) 2020-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -219,18 +219,6 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 				avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
 			}
 		}.execute();
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-//		ListenerManager.profileListeners.remove(this.profileListener);
-		super.onDetachedFromWindow();
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-//		ListenerManager.profileListeners.add(this.profileListener);
 	}
 
 	@Nullable

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -191,8 +191,13 @@ public class MessageProcessor implements MessageProcessorInterface {
 			this.contactService.setActive(msg.getFromIdentity());
 
 			if (msg instanceof TypingIndicatorMessage) {
-				this.contactService.setIsTyping(boxmsg.getFromIdentity(), ((TypingIndicatorMessage) msg).isTyping());
-				return ProcessIncomingResult.ok(msg);
+				if (this.contactService.getByIdentity(boxmsg.getFromIdentity()) != null) {
+					this.contactService.setIsTyping(boxmsg.getFromIdentity(), ((TypingIndicatorMessage) msg).isTyping());
+					return ProcessIncomingResult.ok(msg);
+				} else {
+					logger.debug("Ignoring typing indicator message from unknown identity {}", boxmsg.getFromIdentity());
+					return ProcessIncomingResult.ignore();
+				}
 			}
 
 			if (msg instanceof DeliveryReceiptMessage) {

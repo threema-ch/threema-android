@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,8 @@
 package ch.threema.app.preference;
 
 import android.Manifest;
+import android.app.job.JobScheduler;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -209,26 +211,27 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 
 		Preference directSharePreference = findPreference(getResources().getString(R.string.preferences__direct_share));
 		if (directSharePreference != null) {
-			directSharePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					boolean newCheckedValue = newValue.equals(true);
-					if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
-						ShortcutService shortcutService = null;
-						try {
-							shortcutService = serviceManager.getShortcutService();
-						} catch (ThreemaException e) {
-							logger.error("Exception, could not update or delete shortcuts upon changing direct share setting", e);
-							return false;
-						}
-						if (newCheckedValue) {
-							shortcutService.publishRecentChatsAsSharingTargets();
-						} else {
-							shortcutService.deleteDynamicShortcuts();
-						}
+			directSharePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+				boolean newCheckedValue = newValue.equals(true);
+				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
+					ShortcutService shortcutService = null;
+					try {
+						shortcutService = serviceManager.getShortcutService();
+					} catch (ThreemaException e) {
+						logger.error("Exception, could not update or delete shortcuts upon changing direct share setting", e);
+						return false;
 					}
-					return true;
+					if (newCheckedValue) {
+						ThreemaApplication.scheduleShareTargetShortcutUpdate();
+					} else {
+						JobScheduler jobScheduler = (JobScheduler) getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+						if (jobScheduler != null) {
+							jobScheduler.cancel(ThreemaApplication.SHORTCUTS_UPDATE_JOB_ID);
+						}
+						shortcutService.deleteAllShareTargetShortcuts();
+					}
 				}
+				return true;
 			});
 		}
 

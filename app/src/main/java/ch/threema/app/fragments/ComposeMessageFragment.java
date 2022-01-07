@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1934,18 +1934,13 @@ public class ComposeMessageFragment extends Fragment implements
 				});
 				return;
 			}
-			// we dont want to handle the same intent twice
-//			if (!ConfigUtils.isTabletLayout()) {
+
 			intent.removeExtra(ThreemaApplication.INTENT_DATA_GROUP);
-//			}
 			this.messageReceiver = this.groupService.createReceiver(this.groupModel);
 			this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupId);
 			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupOwner(this.groupModel)) {
 				this.openGroupRequestNoticeView.setGroupIdReference(this.groupId);
 				this.openGroupRequestNoticeView.updateGroupRequests();
-			}
-			if (preferenceService.isDirectShare()) {
-				new Thread(() -> shortcutService.createShareTargetShortcut(groupModel), "createShortcut").start();
 			}
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
 			this.isDistributionListChat = true;
@@ -1968,9 +1963,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 				intent.removeExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
 				this.messageReceiver = distributionListService.createReceiver(this.distributionListModel);
-				if (preferenceService.isDirectShare()) {
-					new Thread(() -> shortcutService.createShareTargetShortcut(distributionListModel), "createShortcut").start();
-				}
 			} catch (Exception e) {
 				logger.error("Exception", e);
 				return;
@@ -1991,11 +1983,7 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			}
 
-			// we dont want to handle the same intent twice (but we need it in the other pane of the tablet)
-//			if (!ConfigUtils.isTabletLayout()) {
 			intent.removeExtra(ThreemaApplication.INTENT_DATA_CONTACT);
-//			}
-
 			if (this.identity == null || this.identity.length() == 0 || this.identity.equals(this.userService.getIdentity())) {
 				logger.error("no identity found");
 				activity.finish();
@@ -2015,9 +2003,6 @@ public class ComposeMessageFragment extends Fragment implements
 			this.messageReceiver = this.contactService.createReceiver(this.contactModel);
 			this.typingIndicatorTextWatcher = new TypingIndicatorTextWatcher(this.userService, contactModel);
 			this.conversationUid = ConversationUtil.getIdentityConversationUid(this.identity);
-			if (preferenceService.isDirectShare()) {
-				new Thread(() -> shortcutService.createShareTargetShortcut(contactModel), "createShortcut").start();
-			}
 		}
 
 		if (this.messageReceiver == null) {
@@ -2033,12 +2018,21 @@ public class ComposeMessageFragment extends Fragment implements
 		// hide chat from view and prevent screenshots - may not work on some devices
 		if (this.hiddenChatsListService.has(this.messageReceiver.getUniqueIdString())) {
 			try {
-				getActivity().getWindow().addFlags(FLAG_SECURE);
+				activity.getWindow().addFlags(FLAG_SECURE);
 			} catch (Exception ignored) { }
 		}
 
 		// set wallpaper based on message receiver
 		this.setBackgroundWallpaper();
+
+		// report shortcut as used
+		if (preferenceService.isDirectShare()) {
+			try {
+				ShortcutManagerCompat.reportShortcutUsed(activity, this.messageReceiver.getUniqueIdString());
+			} catch (IllegalStateException e) {
+				logger.debug("Failed to report shortcut use", e);
+			}
+		}
 
 		this.initConversationList(intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY) ? (Runnable) () -> {
 				String apiMessageId = intent.getStringExtra(EXTRA_API_MESSAGE_ID);
@@ -3795,25 +3789,18 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void createShortcut() {
-		if (this.isGroupChat) {
-			this.shortcutService.createShortcut(groupModel);
-			this.shortcutService.createShareTargetShortcut(groupModel);
-		} else if (this.isDistributionListChat) {
-			this.shortcutService.createShortcut(distributionListModel);
-			this.shortcutService.createShareTargetShortcut(distributionListModel);
-		} else {
-			if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
-					&& ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
-				ArrayList<SelectorDialogItem> items = new ArrayList<>();
+		if (!this.isGroupChat &&
+			!this.isDistributionListChat &&
+			ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService) &&
+			ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
+							ArrayList<SelectorDialogItem> items = new ArrayList<>();
 				items.add(new SelectorDialogItem(getString(R.string.prefs_header_chat), R.drawable.ic_outline_chat_bubble_outline));
 				items.add(new SelectorDialogItem(getString(R.string.threema_call), R.drawable.ic_call_outline));
 				SelectorDialog selectorDialog = SelectorDialog.newInstance(getString(R.string.shortcut_choice_title), items, getString(R.string.cancel));
 				selectorDialog.setTargetFragment(this, 0);
 				selectorDialog.show(getFragmentManager(), DIALOG_TAG_CHOOSE_SHORTCUT_TYPE);
-			} else {
-				this.shortcutService.createShortcut(contactModel, ShortcutService.TYPE_CHAT);
-				this.shortcutService.createShareTargetShortcut(contactModel);
-			}
+		} else {
+			this.shortcutService.createPinnedShortcut(messageReceiver, ShortcutService.TYPE_CHAT);
 		}
 	}
 
@@ -3861,11 +3848,8 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onClick(String tag, int which, Object data) {
 		if (DIALOG_TAG_CHOOSE_SHORTCUT_TYPE.equals(tag)) {
-			this.shortcutService.createShortcut(contactModel, which + 1);
-			// only type chat shortcuts are addressable as share targets
-			if (which+1 == shortcutService.TYPE_CHAT) {
-				this.shortcutService.createShareTargetShortcut(contactModel);
-			}
+			int shortcutType = which + 1;
+			this.shortcutService.createPinnedShortcut(messageReceiver, shortcutType);
 		}
 	}
 
@@ -4458,7 +4442,7 @@ public class ComposeMessageFragment extends Fragment implements
 						@Override
 						public void run() {
 							distributionListService.remove(dmodel);
-							shortcutService.deleteShortcut(dmodel);
+							shortcutService.deletePinnedShortcut(distributionListService.createReceiver(dmodel));
 							RuntimeUtil.runOnUiThread(() -> activity.finish());
 						}
 					}).start();

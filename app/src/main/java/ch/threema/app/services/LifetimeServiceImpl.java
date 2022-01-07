@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -141,10 +141,6 @@ public class LifetimeServiceImpl implements LifetimeService {
 	public void setPollingInterval(long intervalMs) {
 		// account for inexact repeating - which is the default in API 19+
 		// "Your alarm's first trigger will not be before the requested time, but it might not occur for almost a full interval after that time"
-		if (intervalMs == 0) {
-			intervalMs = intervalMs * 2 / 3;
-		}
-
 		if (pollingInterval == intervalMs)
 			return;
 

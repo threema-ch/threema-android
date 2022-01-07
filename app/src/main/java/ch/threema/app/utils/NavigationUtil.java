@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,6 +27,7 @@ import android.content.Intent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NavUtils;
 import androidx.core.app.TaskStackBuilder;
 import ch.threema.app.R;
@@ -35,7 +36,7 @@ import ch.threema.app.activities.PinLockActivity;
 public class NavigationUtil {
 	private static final Logger logger = LoggerFactory.getLogger(NavigationUtil.class);
 
-	public static void navigateUpToHome(Activity activity) {
+	public static void navigateUpToHome(@NonNull Activity activity) {
 		// navigate to home and get rid of the backstack (since we may have pulled the rug from under our feet)
 		// use this, if there are intent filters to get to this activity
 		Intent upIntent = NavUtils.getParentActivityIntent(activity);
@@ -43,6 +44,7 @@ public class NavigationUtil {
 			TaskStackBuilder.create(activity)
 					.addNextIntentWithParentStack(upIntent)
 					.startActivities();
+			activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 		} else {
 			try {
 				NavUtils.navigateUpFromSameTask(activity);

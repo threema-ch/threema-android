@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021 Threema GmbH
+ * Copyright (c) 2021-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -39,8 +39,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -108,26 +106,46 @@ public class BaseQrScannerActivity extends AppCompatActivity implements
 		ConfigUtils.setRequestedOrientation(this, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
 		if (intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_QRCODE_TYPE_OK, false)) {
-			String resultRaw = intent.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE);
-			Uri uri = Uri.parse(resultRaw);
-			String scheme = uri.getScheme();
-			String authority = uri.getAuthority();
+			final String resultRaw = intent.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE);
+			final Uri uri = Uri.parse(resultRaw);
+			final String scheme = uri.getScheme();
+			final String authority = uri.getAuthority();
+			final String path = uri.getPath();
 
-			// must be base64 web session or invalid
+			// If not an URI, contents must be base64 web session
 			if (scheme == null && authority == null) {
 				handleWebSessionResult(resultRaw);
 				return;
 			}
 
-			if (scheme != null && scheme.equals(QRCodeServiceImpl.ID_SCHEME) ||
-				(scheme != null && (scheme.equals(BuildConfig.uriScheme) && "add".equals(uri.getAuthority())))) {
+			// 3mid:<IDENTITY>,<publicKeyHex>
+			if (QRCodeServiceImpl.ID_SCHEME.equals(scheme)) {
 				handleContactResult(resultRaw);
 				return;
 			}
-			else if (authority != null && authority.equals(BuildConfig.groupLinkActionUrl)) {
+
+			// threema://add?id=<IDENTITY>
+			if (BuildConfig.uriScheme.equals(scheme) && "add".equals(authority)) {
+				handleContactResult(resultRaw);
+				return;
+			}
+
+			// https://threema.id/<IDENTITY>
+			if ("https".equals(scheme) && BuildConfig.contactActionUrl.equals(authority) && path != null && path.length() == 9) {
+				// For now, convert a threema.id URL to a threema://add URL.
+				// TODO(ANDR-1599): Handle validation and processing of all "contact add" URLs in one place.
+				final String identity = path.substring(1);
+				handleContactResult(BuildConfig.uriScheme + "://add?id=" + identity);
+				return;
+			}
+
+			// https://threema.group/join#<token>
+			if ("https".equals(scheme) && BuildConfig.groupLinkActionUrl.equals(authority)) {
 				handleGroupLinkResult(resultRaw);
 				return;
 			}
+
+			// Otherwise, show dialog indicating that this is not a threema-specific QR code.
 			noThreemaQrCodeDialog(resultRaw);
 		}
 		else {

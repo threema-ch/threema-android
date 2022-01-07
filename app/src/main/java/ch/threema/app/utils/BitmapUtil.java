@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2021 Threema GmbH
+ * Copyright (c) 2013-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -351,6 +351,7 @@ public class BitmapUtil {
 	public static Bitmap replaceTransparency(@NonNull Bitmap in, @ColorInt int color) {
 		if (in.getConfig() != null) {
 			final Bitmap out = Bitmap.createBitmap(in.getWidth(), in.getHeight(), in.getConfig());
+			out.setDensity(in.getDensity());
 			out.eraseColor(color);
 			Canvas canvas = new Canvas(out);  // create a canvas to draw on the new image
 			canvas.drawBitmap(in, 0f, 0f, null); // draw old image on the background
@@ -528,7 +529,7 @@ public class BitmapUtil {
 		return bitmap;
 	}
 
-	public static Bitmap addOverlay(Bitmap background, Bitmap foreground, int offset) {
+	public static Bitmap addOverlay(@NonNull Bitmap background, @NonNull Bitmap foreground, int offset) {
 		try {
 			int bgWidth = background.getWidth();
 			int bgHeight = background.getHeight();

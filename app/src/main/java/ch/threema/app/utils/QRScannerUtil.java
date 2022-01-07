@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -65,7 +65,7 @@ public class QRScannerUtil {
 			intent.putExtra(CaptureActivity.KEY_NEED_SCAN_HINT_TEXT, hint);
 		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 		activity.startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
 	}
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2021 Threema GmbH
+ * Copyright (c) 2014-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -192,6 +192,10 @@ public class BallotWizardActivity extends ThreemaActivity {
 
 	private void handleIntent() {
 		this.receiver = IntentDataUtil.getMessageReceiverFromIntent(this, getIntent());
+		if (this.receiver == null) {
+			logger.info("No message receiver");
+			finish();
+		}
 	}
 
 	@Override
