@@ -101,7 +101,7 @@ android {
         testApplicationId 'ch.threema.app.test'
         versionCode 712
         versionName "${app_version}${beta_suffix}"
-        resValue "string", "app_name", "Threema"
+        resValue "string", "app_name", "LeOS-Massenger"
         // package name used for sync adapter
         resValue "string", "package_name", applicationId
         resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.profile"

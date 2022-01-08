@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_title">Threema OnPrem para Android</string>
+    <string name="about_title">LeOS-MessengerOnPrem para Android</string>
     <string name="enter_serial_body">Insira as credenciais fornecidas por sua empresa ou organização</string>
-    <string name="serial_required_want_exit">A licença é inválida. Você gostaria de tentar novamente ou sair do Threema OnPrem?</string>
+    <string name="serial_required_want_exit">A licença é inválida. Você gostaria de tentar novamente ou sair do LeOS-MessengerOnPrem?</string>
     <string name="checking_serial">Verificando credenciais</string>
     <string name="username_hint">Nome de usuário</string>
-    <string name="new_wizard_works_like_phone_number">A sua ID do Threema funciona como um número de telefone. Seus contatos podem encontrar você por meio dessa ID.</string>
+    <string name="new_wizard_works_like_phone_number">A sua ID do LeOS-Messengerfunciona como um número de telefone. Seus contatos podem encontrar você por meio dessa ID.</string>
     <string name="new_wizard_nickname_explain">Seus contatos verão o seu apelido nas notificações.</string>
     <string name="new_wizard_help_your_friends_find_you">Ajude os seus contatos a encontrarem você!</string>
-    <string name="new_wizard_find_friends">Encontre os seus contatos no Threema OnPrem</string>
-    <string name="new_wizard_sync_contacts_explain">Habilite para ver quais dos seus contatos já estão usando o Threema.</string>
-    <string name="new_wizard_anonymous_confirm">Você não inseriu um número de celular ou um endereço de e-mail para vincular à sua ID do Threema. Você não aparecerá em listas de contatos. Você realmente quer usar o Threema de forma anônima?</string>
-    <string name="new_wizard_setup_threema">Configurar Threema OnPrem</string>
-    <string name="new_wizard_welcome">Bem-vindo ao Threema OnPrem!</string>
+    <string name="new_wizard_find_friends">Encontre os seus contatos no LeOS-MessengerOnPrem</string>
+    <string name="new_wizard_sync_contacts_explain">Habilite para ver quais dos seus contatos já estão usando o LeOS-Messenger</string>
+    <string name="new_wizard_anonymous_confirm">Você não inseriu um número de celular ou um endereço de e-mail para vincular à sua ID do LeOS-Messenger Você não aparecerá em listas de contatos. Você realmente quer usar o LeOS-Messengerde forma anônima?</string>
+    <string name="new_wizard_setup_threema">Configurar LeOS-MessengerOnPrem</string>
+    <string name="new_wizard_welcome">Bem-vindo ao LeOS-MessengerOnPrem!</string>
     <string name="new_wizard_info_fingerprint">Ao mover o seu dedo, você cria dados aleatórios (chamados de entropia) usados para gerar
 		o par de chaves associado à sua nova ID exclusiva do Threma. O par de chaves é composto por uma <b>chave pública</b> que é distribuída aos
 		seus contatos e uma <b>chave particular</b>que é armazenada com segurança no seu telefone. Seus contatos irão criptografar as mensagens enviadas para você com a
 		sua chave pública. Apenas o dono da chave particular e mais ninguém poderá decodificar estas mensagens.</string>
-    <string name="new_wizard_info_link">Ao nos dar o seu número de telefone e endereço de e-mail, o Threema OnPrem pode ajudar os seus amigos a encontrarem você automaticamente se tiverem os seus dados na agenda do telefone. Essas informações serão armazenadas de forma criptografada no nosso servidor. Você pode pular essa etapa se preferir usar o Threema OnPrem de forma anônima.</string>
-    <string name="threema_contact">Contato do Threema OnPrem</string>
-    <string name="menu_about">Sobre o Threema OnPrem</string>
+    <string name="new_wizard_info_link">Ao nos dar o seu número de telefone e endereço de e-mail, o LeOS-MessengerOnPrem pode ajudar os seus amigos a encontrarem você automaticamente se tiverem os seus dados na agenda do telefone. Essas informações serão armazenadas de forma criptografada no nosso servidor. Você pode pular essa etapa se preferir usar o LeOS-MessengerOnPrem de forma anônima.</string>
+    <string name="threema_contact">Contato do LeOS-MessengerOnPrem</string>
+    <string name="menu_about">Sobre o LeOS-MessengerOnPrem</string>
     <string name="list_theme_light">Claro</string>
     <string name="list_theme_dark">Escuro (padrão)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Para usuários privados</a>]]></string>

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018 Threema GmbH
+  ~ Copyright (c) 2018 LeOS-MessengerGmbH
   ~ All rights reserved.
   -->
 
 <resources>
-    <string name="about_title">Threema OnPrem для Android</string>
+    <string name="about_title">LeOS-MessengerOnPrem для Android</string>
 	<string name="enter_serial_body">Введите учетные данные, предоставленные вашей компанией или организацией</string>
-    <string name="serial_required_want_exit">Лицензия недействительна. Повторить попытку или выйти из Threema OnPrem?</string>
+    <string name="serial_required_want_exit">Лицензия недействительна. Повторить попытку или выйти из LeOS-MessengerOnPrem?</string>
     <string name="checking_serial">Проверка учетных данных</string>
     <string name="username_hint">Имя пользователя</string>
-    <string name="new_wizard_works_like_phone_number">Ваш Threema ID – это как номер телефона. Ваши контакты могут связаться с вами через этот ID.</string>
+    <string name="new_wizard_works_like_phone_number">Ваш LeOS-MessengerID – это как номер телефона. Ваши контакты могут связаться с вами через этот ID.</string>
     <string name="new_wizard_nickname_explain">Ваши контакты будут видеть ваш ник при получении уведомления.</string>
     <string name="new_wizard_help_your_friends_find_you">Помогите своим контактам найти вас!</string>
-    <string name="new_wizard_find_friends">Найдите свои контакты в Threema OnPrem</string>
-    <string name="new_wizard_sync_contacts_explain">Включите, чтобы увидеть, кто из ваших контактов уже использует Threema.</string>
-    <string name="new_wizard_anonymous_confirm">Вы не указали ни номера мобильного телефона, ни адреса электронной почты для привязки к вашему Threema ID. Таким образом, вы не появитесь в списках контактов. Действительно использовать Threema OnPrem анонимно?</string>
-    <string name="new_wizard_setup_threema">Настроить Threema OnPrem</string>
-    <string name="new_wizard_welcome">Добро пожаловать в Threema OnPrem!</string>
-    <string name="new_wizard_info_fingerprint">Двигая пальцем по экрану, вы создаете случайные данные (называемые энтропией), используемые для создания пары ключей, связанных с вашим новым уникальным Threema ID. Пара ключей состоит из <b>открытого ключа</b>, который рассылается вашим контактам, и <b>закрытого ключа</b>, который безопасно хранится в вашем телефоне. Ваши контакты будут шифровать сообщения при помощи открытого ключа. Только владелец закрытого ключа, и никто другой, может расшифровать эти сообщения.</string>
-    <string name="new_wizard_info_link">Если вы укажете свой номер телефона и адрес электронной почты, Threema OnPrem поможет вашим контактам автоматически найти вас, если вы записаны в их телефонной книге.
-Адреса электронной почты будут храниться в зашифрованном (хэшированном) виде на нашем сервере. Вы можете пропустить этот шаг, если хотите использовать Threema OnPrem анонимно.</string>
-    <string name="threema_contact">Контакт Threema OnPrem</string>
-    <string name="menu_about">О Threema OnPrem</string>
+    <string name="new_wizard_find_friends">Найдите свои контакты в LeOS-MessengerOnPrem</string>
+    <string name="new_wizard_sync_contacts_explain">Включите, чтобы увидеть, кто из ваших контактов уже использует LeOS-Messenger</string>
+    <string name="new_wizard_anonymous_confirm">Вы не указали ни номера мобильного телефона, ни адреса электронной почты для привязки к вашему LeOS-MessengerID. Таким образом, вы не появитесь в списках контактов. Действительно использовать LeOS-MessengerOnPrem анонимно?</string>
+    <string name="new_wizard_setup_threema">Настроить LeOS-MessengerOnPrem</string>
+    <string name="new_wizard_welcome">Добро пожаловать в LeOS-MessengerOnPrem!</string>
+    <string name="new_wizard_info_fingerprint">Двигая пальцем по экрану, вы создаете случайные данные (называемые энтропией), используемые для создания пары ключей, связанных с вашим новым уникальным LeOS-MessengerID. Пара ключей состоит из <b>открытого ключа</b>, который рассылается вашим контактам, и <b>закрытого ключа</b>, который безопасно хранится в вашем телефоне. Ваши контакты будут шифровать сообщения при помощи открытого ключа. Только владелец закрытого ключа, и никто другой, может расшифровать эти сообщения.</string>
+    <string name="new_wizard_info_link">Если вы укажете свой номер телефона и адрес электронной почты, LeOS-MessengerOnPrem поможет вашим контактам автоматически найти вас, если вы записаны в их телефонной книге.
+Адреса электронной почты будут храниться в зашифрованном (хэшированном) виде на нашем сервере. Вы можете пропустить этот шаг, если хотите использовать LeOS-MessengerOnPrem анонимно.</string>
+    <string name="threema_contact">Контакт LeOS-MessengerOnPrem</string>
+    <string name="menu_about">О LeOS-MessengerOnPrem</string>
     <string name="list_theme_light">Светлая</string>
     <string name="list_theme_dark">Темная (по умолчанию)</string>
-    <string name="private_threema_download"><![CDATA[Если вы частный пользователь, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">нажмите здесь</a> для скачивания приложения Threema.]]></string>
+    <string name="private_threema_download"><![CDATA[Если вы частный пользователь, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">нажмите здесь</a> для скачивания приложения LeOS-Messenger]]></string>
 </resources>

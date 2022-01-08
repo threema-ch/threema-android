@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_title">Threema OnPrem na Androida</string>
+    <string name="about_title">LeOS-MessengerOnPrem na Androida</string>
     <string name="enter_serial_body">Wprowadź dane dostępu, które otrzymałeś od swojej firmy lub organizacji</string>
-    <string name="serial_required_want_exit">Licencja jest nieprawidłowa. Chcesz spróbować ponownie czy wolisz opuścić Threema OnPrem?</string>
+    <string name="serial_required_want_exit">Licencja jest nieprawidłowa. Chcesz spróbować ponownie czy wolisz opuścić LeOS-MessengerOnPrem?</string>
     <string name="checking_serial">Sprawdzanie danych dostępowych</string>
     <string name="username_hint">Nazwa użytkownika</string>
-    <string name="new_wizard_works_like_phone_number">Twój identyfikator Threema działa jak numer telefonu.\nDzięki niemu Twoje kontakty mogą się z Tobą skontaktować.</string>
+    <string name="new_wizard_works_like_phone_number">Twój identyfikator LeOS-Messengerdziała jak numer telefonu.\nDzięki niemu Twoje kontakty mogą się z Tobą skontaktować.</string>
     <string name="new_wizard_nickname_explain">Twoje kontakty zobaczą Twój pseudonim w swoich powiadomieniach.</string>
     <string name="new_wizard_help_your_friends_find_you">Pomóż swoim kontaktom Cię znaleźć!</string>
-    <string name="new_wizard_find_friends">Znajdź swoje kontakty w Threema OnPrem</string>
-    <string name="new_wizard_sync_contacts_explain">Włącz, aby sprawdzić, kto z Twoich kontaktów korzysta już z Threema.</string>
-    <string name="new_wizard_anonymous_confirm">Nie wprowadziłeś numeru komórkowego ani adresu e-mail do powiązania z identyfikatorem Threema, dlatego nie będziesz widoczny na listach kontaktów. Czy chcesz korzystać z Threema OnPrem anonimowo?</string>
-    <string name="new_wizard_setup_threema">Skonfiguruj Threema OnPrem</string>
-    <string name="new_wizard_welcome">Witaj w Threema OnPrem!</string>
-    <string name="new_wizard_info_fingerprint">Przesuwając palec, tworzysz losowe dane (tak zwaną entropię), które służą do generowania pary kluczy powiązanej z Twoim unikalnym identyfikatorem Threema. Para kluczy składa się z <b>klucza publicznego</b> przekazywanego Twoim kontaktom oraz <b>klucza prywatnego</b>, który jest bezpiecznie przechowywany na Twoim telefonie. Twoje kontakty będą szyfrować wysyłane do Ciebie wiadomości Twoim kluczem publicznym. Nikt poza właścicielem odpowiedniego klucza prywatnego nie będzie w stanie ich odczytać.</string>
-    <string name="new_wizard_info_link">Podając swój numer telefonu i adres e-mail, umożliwisz swoim znajomym, którzy mają Cię w książce kontaktów w telefonie, odnalezienie Cię automatycznie w Threema OnPrem. Adresy e-mail przechowywane są na naszym serwerze w formie zaszyfrowanej jednokierunkowo. Możesz oczywiście pominąć ten krok, jeśli wolisz korzystać z Threema OnPrem anonimowo.</string>
-    <string name="threema_contact">Kontakt Threema OnPrem</string>
-    <string name="menu_about">O Threema OnPrem</string>
+    <string name="new_wizard_find_friends">Znajdź swoje kontakty w LeOS-MessengerOnPrem</string>
+    <string name="new_wizard_sync_contacts_explain">Włącz, aby sprawdzić, kto z Twoich kontaktów korzysta już z LeOS-Messenger</string>
+    <string name="new_wizard_anonymous_confirm">Nie wprowadziłeś numeru komórkowego ani adresu e-mail do powiązania z identyfikatorem LeOS-Messenger dlatego nie będziesz widoczny na listach kontaktów. Czy chcesz korzystać z LeOS-MessengerOnPrem anonimowo?</string>
+    <string name="new_wizard_setup_threema">Skonfiguruj LeOS-MessengerOnPrem</string>
+    <string name="new_wizard_welcome">Witaj w LeOS-MessengerOnPrem!</string>
+    <string name="new_wizard_info_fingerprint">Przesuwając palec, tworzysz losowe dane (tak zwaną entropię), które służą do generowania pary kluczy powiązanej z Twoim unikalnym identyfikatorem LeOS-Messenger Para kluczy składa się z <b>klucza publicznego</b> przekazywanego Twoim kontaktom oraz <b>klucza prywatnego</b>, który jest bezpiecznie przechowywany na Twoim telefonie. Twoje kontakty będą szyfrować wysyłane do Ciebie wiadomości Twoim kluczem publicznym. Nikt poza właścicielem odpowiedniego klucza prywatnego nie będzie w stanie ich odczytać.</string>
+    <string name="new_wizard_info_link">Podając swój numer telefonu i adres e-mail, umożliwisz swoim znajomym, którzy mają Cię w książce kontaktów w telefonie, odnalezienie Cię automatycznie w LeOS-MessengerOnPrem. Adresy e-mail przechowywane są na naszym serwerze w formie zaszyfrowanej jednokierunkowo. Możesz oczywiście pominąć ten krok, jeśli wolisz korzystać z LeOS-MessengerOnPrem anonimowo.</string>
+    <string name="threema_contact">Kontakt LeOS-MessengerOnPrem</string>
+    <string name="menu_about">O LeOS-MessengerOnPrem</string>
     <string name="list_theme_light">Jasny</string>
     <string name="list_theme_dark">Ciemny (domyślny)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Dla użytkowników prywatnych</a>]]></string>
