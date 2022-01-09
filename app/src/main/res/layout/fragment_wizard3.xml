@@ -9,26 +9,28 @@
 				android:paddingBottom="@dimen/wizard_contents_padding">
 
 	<TextView
-			style="@style/WizardTitleText"
-			android:id="@+id/wizard_welcome"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center_horizontal"
-			android:layout_centerHorizontal="true"
-			android:text="@string/new_wizard_help_your_friends_find_you"
-			android:layout_marginTop="8dp"/>
+		android:id="@+id/wizard_welcome"
+		style="@style/WizardTitleText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="8dp"
+		android:gravity="center_horizontal"
+		android:text="@string/new_wizard_help_your_friends_find_you"
+		android:textColor="#303F9F" />
 
 	<TextView
-			style="@style/WizardSubTitleText"
-			android:id="@+id/scooter"
-			android:layout_below="@id/wizard_welcome"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_link_mobile"
-			android:layout_marginTop="@dimen/wizard_paragraph_height"
-			android:layout_marginBottom="@dimen/wizard_paragraph_height"/>
+		android:id="@+id/scooter"
+		style="@style/WizardSubTitleText"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/wizard_welcome"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="@dimen/wizard_paragraph_height"
+		android:layout_marginTop="@dimen/wizard_paragraph_height"
+		android:gravity="center_horizontal"
+		android:text="@string/new_wizard_link_mobile"
+		android:textColor="#303F9F" />
 
 	<Spinner
 			style="@style/WizardSpinner"

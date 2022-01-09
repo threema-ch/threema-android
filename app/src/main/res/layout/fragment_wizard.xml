@@ -63,14 +63,14 @@
 					app:tint="@color/wizard_color_primary" />
 
 				<TextView
-						android:id="@+id/wizard_id_info"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_marginLeft="8dp"
-						android:text="@string/new_wizard_more_information"
-						android:fontFamily="sans-serif-light"
-						android:textSize="@dimen/wizard_small_text_size"
-						android:textColor="@color/wizard_color_accent"/>
+					android:id="@+id/wizard_id_info"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="8dp"
+					android:fontFamily="sans-serif-light"
+					android:text="@string/new_wizard_more_information"
+					android:textColor="#030403"
+					android:textSize="@dimen/wizard_small_text_size" />
 
 			</LinearLayout>
 

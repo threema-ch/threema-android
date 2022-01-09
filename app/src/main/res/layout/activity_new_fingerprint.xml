@@ -17,25 +17,27 @@
 					android:layout_marginBottom="32dp">
 
 		<TextView
-				style="@style/WizardTitleText"
-				android:id="@+id/wizard_welcome"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_centerHorizontal="true"
-				android:gravity="center_horizontal"
-				android:text="@string/new_wizard_welcome"
-				android:layout_marginTop="8dp"/>
+			android:id="@+id/wizard_welcome"
+			style="@style/WizardTitleText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="8dp"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_welcome"
+			android:textColor="#0734BF" />
 
 		<TextView
-				style="@style/WizardSubTitleText"
-				android:id="@+id/scooter"
-				android:layout_below="@id/wizard_welcome"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_centerHorizontal="true"
-				android:gravity="center_horizontal"
-				android:text="@string/new_wizard_move_finger"
-				android:layout_marginTop="@dimen/wizard_paragraph_height"/>
+			android:id="@+id/scooter"
+			style="@style/WizardSubTitleText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/wizard_welcome"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_move_finger"
+			android:textColor="#303F9F" />
 
 		<ProgressBar
 				android:id="@+id/wizard1_swipe_progress"
@@ -87,7 +89,9 @@
 			android:layout_width="match_parent"
 			android:layout_below="@id/thumb_layout"
 			android:layout_marginTop="@dimen/wizard_contents_padding"
-			android:text="@string/cancel"/>
+			android:text="@string/cancel"
+			android:textColor="#0E0E0E"
+			android:textColorLink="#0E0E0E" />
 
 	</RelativeLayout>
 

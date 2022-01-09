@@ -63,9 +63,7 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 					WizardStartActivity.this,
 
 					new Pair<>(findViewById(R.id.wizard_animation),
-						getString(R.string.transition_name_dots)),
-					new Pair<>(findViewById(R.id.wizard_footer),
-						getString(R.string.transition_name_logo))
+						getString(R.string.transition_name_dots))
 				);
 				launchNextActivity(options);
 			}
