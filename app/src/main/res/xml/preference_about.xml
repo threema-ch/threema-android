@@ -35,18 +35,6 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory
-		android:key="pref_key_feedback_header"
-		android:title="@string/feedback">
-
-		<Preference
-			android:key="@string/preferences__rate"
-			android:icon="@drawable/ic_star_outline_24dp"
-			android:fragment="ch.threema.app.preference.SettingsRateFragment"
-			android:title="@string/rate_title" />
-
-	</PreferenceCategory>
-
-	<PreferenceCategory
 		android:key="pref_key_feedback_credits"
 		android:title="@string/credits">
 
