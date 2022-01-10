@@ -1,8 +1,4 @@
-<div align="center">
-  <!-- Centered README header hack -->
-  <img width="400" src="logo.svg">
-  <br><br>
-</div>
+Screenshots available here: https://gitlab.com/leos1/leos-wiki/-/wikis/LeOS-Messenger-Setup-Wizard
 
 # Threema for Android
 
