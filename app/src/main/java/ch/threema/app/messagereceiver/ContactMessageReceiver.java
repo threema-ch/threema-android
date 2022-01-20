@@ -46,6 +46,7 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
@@ -73,7 +74,7 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
-	private static final Logger logger = LoggerFactory.getLogger(ContactMessageReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactMessageReceiver");
 	private static final Logger validationLogger = LoggerFactory.getLogger("Validation");
 
 	private final ContactModel contactModel;

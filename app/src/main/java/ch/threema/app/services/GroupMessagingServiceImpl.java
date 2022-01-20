@@ -22,7 +22,6 @@
 package ch.threema.app.services;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +32,13 @@ import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
-import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 import java8.util.J8Arrays;
@@ -49,7 +49,7 @@ import java8.util.stream.Stream;
  * {@inheritDoc}
  */
 public class GroupMessagingServiceImpl implements GroupMessagingService {
-	private static final Logger logger = LoggerFactory.getLogger(GroupMessagingServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupMessagingServiceImpl");
 
 	private final UserService userService;
 	private final ContactService contactService;
@@ -167,7 +167,7 @@ public class GroupMessagingServiceImpl implements GroupMessagingService {
 			logger.debug("Sending group message {}", groupMessage);
 			final MessageBox messageBox = this.messageQueue.enqueue(groupMessage);
 			if (messageBox == null) {
-				logger.error("Failed to enqueue group message to {}", groupMessage.getToIdentity());
+				logger.info("Failed to enqueue group message to {}", groupMessage.getToIdentity());
 			} else {
 				enqueuedMessagesCount++;
 				if (logger.isDebugEnabled()) {

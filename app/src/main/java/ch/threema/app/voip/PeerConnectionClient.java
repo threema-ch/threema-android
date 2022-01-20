@@ -38,7 +38,6 @@ import android.widget.Toast;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.CameraVideoCapturer;
@@ -116,6 +115,7 @@ import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
 import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.stream.StreamSupport;
@@ -128,7 +128,7 @@ import java8.util.stream.StreamSupport;
  */
 public class PeerConnectionClient {
 	// Note: Not static, because we want to set a prefix
-	private final Logger logger = LoggerFactory.getLogger("PeerConnectionClient");
+	private final Logger logger = LoggingUtil.getThreemaLogger("PeerConnectionClient");
 
 	private static final String AUDIO_TRACK_ID = "3MACALLa0";
 	private static final String AUDIO_CODEC_OPUS = "opus";
@@ -402,7 +402,7 @@ public class PeerConnectionClient {
 		VoipUtil.setLoggerPrefix(logger, callId);
 
 		// Create logger for SdpPatcher
-		final Logger sdpPatcherLogger = LoggerFactory.getLogger(PeerConnectionClient.class + ":" + "SdpPatcher");
+		final Logger sdpPatcherLogger = LoggingUtil.getThreemaLogger("PeerConnectionClient:SdpPatcher");
 		VoipUtil.setLoggerPrefix(sdpPatcherLogger, callId);
 
 		// Initialize instance variables
@@ -1663,7 +1663,7 @@ public class PeerConnectionClient {
 	}
 
 	private class DCObserver extends DataChannelObserver {
-		private final @NonNull Logger logger = LoggerFactory.getLogger("SignalingDataChannel");
+		private final @NonNull Logger logger = LoggingUtil.getThreemaLogger("SignalingDataChannel");
 		final @NonNull CompletableFuture<?> openFuture = new CompletableFuture<>();
 
 		@Override

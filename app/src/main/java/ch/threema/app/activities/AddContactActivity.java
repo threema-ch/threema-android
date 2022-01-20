@@ -227,7 +227,11 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 					showContactDetail(identity);
 					finish();
 				} else if (exception instanceof InvalidEntryException){
-					GenericAlertDialog.newInstance(R.string.title_adduser, ((InvalidEntryException) exception).getTextId(), R.string.close, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
+					GenericAlertDialog.newInstance(
+						ConfigUtils.isOnPremBuild() ?
+						R.string.invalid_onprem_id_title :
+						R.string.title_adduser,
+						((InvalidEntryException) exception).getTextId(), R.string.close, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
 				} else if (exception instanceof PolicyViolationException) {
 					Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
 					finish();

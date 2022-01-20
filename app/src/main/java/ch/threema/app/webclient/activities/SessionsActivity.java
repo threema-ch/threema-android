@@ -59,6 +59,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -390,6 +391,15 @@ public class SessionsActivity extends ThreemaToolbarActivity
 		});
 
 		View emptyView = this.findViewById(R.id.empty_frame);
+		TextView emptyTextView = emptyView.findViewById(R.id.empty_text);
+		String emptyText;
+		try {
+			emptyText = serviceManager.getServerAddressProviderService().getServerAddressProvider().getWebServerUrl();
+		} catch (ThreemaException e) {
+			emptyText = BuildConfig.WEB_SERVER_URL;
+		}
+
+		emptyTextView.setText(getString(R.string.webclient_no_sessions_found, emptyText));
 		this.listView.setEmptyView(emptyView);
 		this.reloadSessionList();
 
@@ -961,8 +971,6 @@ public class SessionsActivity extends ThreemaToolbarActivity
 			}
 		}
 	}
-
-
 
 	@TargetApi(Build.VERSION_CODES.M)
 	@Override

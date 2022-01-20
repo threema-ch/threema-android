@@ -23,11 +23,11 @@ package ch.threema.app.webrtc;
 
 import org.saltyrtc.tasks.webrtc.exceptions.IllegalStateError;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.DataChannel;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
 
@@ -40,7 +40,7 @@ import java8.util.concurrent.CompletableFuture;
  */
 @AnyThread
 public class FlowControlledDataChannel {
-	@NonNull final private Logger logger = LoggerFactory.getLogger("FlowControlledDataChannel");
+	@NonNull final private Logger logger = LoggingUtil.getThreemaLogger("FlowControlledDataChannel");
 	@NonNull public final DataChannel dc;
 	private final long lowWaterMark;
 	private final long highWaterMark;

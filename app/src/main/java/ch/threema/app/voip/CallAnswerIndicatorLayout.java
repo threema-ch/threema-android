@@ -27,12 +27,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
 
 public class CallAnswerIndicatorLayout extends RelativeLayout {
-	private static final Logger logger = LoggerFactory.getLogger(CallAnswerIndicatorLayout.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CallAnswerIndicatorLayout");
 
 	// Constants for Drawable.setAlpha()
 	private static final int DARK = 100;

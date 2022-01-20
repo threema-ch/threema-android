@@ -37,7 +37,6 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -47,15 +46,15 @@ import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS;
 
 /**
  * Guides user through the process of disabling battery optimization energy saving option.
  */
-
 public class DisableBatteryOptimizationsActivity extends AppCompatActivity implements GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(DisableBatteryOptimizationsActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DisableBatteryOptimizationsActivity");
 
 	private static final int REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS = 778;
 	private static final String DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS = "des";

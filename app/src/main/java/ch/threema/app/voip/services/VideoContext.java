@@ -22,11 +22,9 @@
 package ch.threema.app.voip.services;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.EglBase;
 import org.webrtc.JavaI420Buffer;
-import org.webrtc.NV21Buffer;
 import org.webrtc.VideoFrame;
 import org.webrtc.VideoSink;
 
@@ -37,6 +35,7 @@ import java.nio.ByteBuffer;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Encapsulate information required for rendering video.
@@ -44,7 +43,7 @@ import androidx.annotation.Nullable;
  * Instances of this class live in `VoipStateService`.
  */
 public class VideoContext {
-	private static final Logger logger = LoggerFactory.getLogger(VideoContext.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoContext");
 
 	// Camera orientation for VideoContext
 	@Retention(RetentionPolicy.SOURCE)
@@ -236,7 +235,7 @@ public class VideoContext {
 	 * If no target is set using the `setTarget` method, drop frames.
 	 */
 	private static class ProxyVideoSink implements VideoSink {
-		private static final Logger logger = LoggerFactory.getLogger(ProxyVideoSink.class);
+		private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyVideoSink");
 
 		private @Nullable VideoSink target;
 		private final @NonNull String label;

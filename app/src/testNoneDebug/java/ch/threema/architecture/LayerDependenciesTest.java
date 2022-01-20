@@ -52,6 +52,7 @@ import static ch.threema.architecture.ArchitectureDefinitions.APP;
 import static ch.threema.architecture.ArchitectureDefinitions.BASE;
 import static ch.threema.architecture.ArchitectureDefinitions.DOMAIN;
 import static ch.threema.architecture.ArchitectureDefinitions.LOCALCRYPTO;
+import static ch.threema.architecture.ArchitectureDefinitions.LOGGING;
 import static ch.threema.architecture.ArchitectureDefinitions.STORAGE;
 import static ch.threema.architecture.ArchitectureDefinitions.THREEMA_ROOT_PACKAGE;
 import static ch.threema.architecture.ArchitectureDefinitions.getLayeredArchitecture;
@@ -103,6 +104,6 @@ public class LayerDependenciesTest {
 
 	@ArchTest
 	public static final ArchRule baseLayerAccess = getLayeredArchitecture()
-		.whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, STORAGE, LOCALCRYPTO, DOMAIN);
+		.whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, STORAGE, LOCALCRYPTO, DOMAIN, LOGGING);
 
 }

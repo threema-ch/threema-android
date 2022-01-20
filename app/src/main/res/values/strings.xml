@@ -1147,10 +1147,8 @@
 	<string name="translators_thanks">Many thanks to our volunteer translators:\n%s</string>
 	<string name="ballot_window_hide">Hide open polls</string>
 	<string name="ballot_window_show">Show open polls</string>
-	<string name="tooltip_video_call">In addition to tap-proof voice calls, Threema now offers end-to-end encrypted video calls.</string>
 	<string name="tooltip_voip_other_party_video_on">The other party started a video call. Tap here to turn on your camera as well.</string>
 	<string name="tooltip_voip_other_party_video_disabled">The other party does not use a current app version or doesn’t allow video calls.</string>
-	<string name="video_calls_new">New: Video Calls</string>
 	<string name="biometrics_not_enrolled">No biometrics are enrolled in the system.</string>
 	<string name="biometrics_not_avilable">Biometrics are not available on this system.</string>
 	<string name="biometrics_no_permission">Missing permission to access biometrics data or hardware.</string>
@@ -1350,10 +1348,11 @@
 	<string name="no_votes_yet">No votes have been cast so far.</string>
 	<string name="permission_contacts_sync_required">Please allow access to your contacts in order to be able to sync them.</string>
 	<string name="not_voted_user_list">These participants did not vote: %s</string>
-	<string name="invalid_onprem_id">Not a valid Threema OnPrem-ID</string>
+	<string name="invalid_onprem_id">Either this ID doesn’t exist (anymore), or it isn’t compatible with your ID.</string>
 	<string name="enable_unknown_sources">Unable to install. Please make sure \"Install unknown apps\" is enabled for %s.</string>
 	<string name="add_shortcut_success">Shortcut successfully created</string>
 	<string name="add_shortcut_error">Error adding shortcut to launcher screen</string>
 	<string name="web_link">Link</string>
 	<string name="link_copied">%s copied</string>
+	<string name="invalid_onprem_id_title">Cannot Add ID</string>
 </resources>

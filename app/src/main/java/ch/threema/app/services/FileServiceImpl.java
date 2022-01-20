@@ -51,7 +51,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -108,6 +107,7 @@ import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -119,7 +119,7 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class FileServiceImpl implements FileService {
-	private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FileServiceImpl");
 
 	private final static String JPEG_EXTENSION = ".jpg";
 	public final static String MPEG_EXTENSION = ".mp4";
@@ -1114,7 +1114,11 @@ public class FileServiceImpl implements FileService {
 
 		int preferredThumbnailWidth = ConfigUtils.getPreferredThumbnailWidth(context, false);
 		int maxWidth = THUMBNAIL_SIZE_PX << 1;
-		byte[] resizedThumbnailBytes = BitmapUtil.resizeBitmapByteArrayToMaxWidth(originalPicture, preferredThumbnailWidth > maxWidth ? maxWidth : preferredThumbnailWidth , pos, length);
+		byte[] resizedThumbnailBytes = BitmapUtil.resizeBitmapByteArrayToMaxWidth(originalPicture, Math.min(preferredThumbnailWidth, maxWidth), pos, length);
+		if (resizedThumbnailBytes == null) {
+			throw new Exception("Unable to scale thumbnail");
+		}
+
 		File thumbnailFile = this.getMessageThumbnail(messageModel);
 		if (thumbnailFile != null) {
 			FileUtil.createNewFileOrLog(thumbnailFile, logger);

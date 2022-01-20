@@ -26,8 +26,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.base.ProgressListener;
 
 public interface DownloadService{
-	@WorkerThread @Nullable
-	byte[] download(int id, byte[] blobId, boolean markAsDown, ProgressListener progressListener);
+	@WorkerThread @Nullable byte[] download(int id, byte[] blobId, boolean markAsDown, @Nullable ProgressListener progressListener);
 	void complete(int id, byte[] blobId);
 	boolean cancel(int id);
 

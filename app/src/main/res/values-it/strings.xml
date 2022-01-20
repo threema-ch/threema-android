@@ -278,7 +278,7 @@
     <string name="restore_data_password_msg">Inserisci la password utilizzata per creare questo backup.</string>
     <string name="backup_data_media">Comprende file multimediali di grandi dimensioni (video, documenti, immagini originali)</string>
     <string name="backup_data_new">Esegui nuovo backup</string>
-    <string name="pinentry_enter_pin">Inserisci codice PIN %s</string>
+    <string name="pinentry_enter_pin">Inserisci codice PIN</string>
     <string name="pinentry_wrong_pin">Codice PIN errato</string>
     <string name="prefs_sum_security_pin">Bloccare l\'accesso all\'interfaccia utente di Threema</string>
     <string name="prefs_title_pin_switch">Protezione dell\'App</string>
@@ -1114,10 +1114,8 @@ messaggi ogni 15 minuti.</string>
     <string name="translators_thanks">Grazie mille ai nostri traduttori volontari:\n%s</string>
     <string name="ballot_window_hide">Nascondi sondaggi aperti</string>
     <string name="ballot_window_show">Mostra sondaggi aperti</string>
-    <string name="tooltip_video_call">Oltre alle chiamate vocali tap-proof, Threema offre ora videochiamate con crittografia end-to-end.</string>
     <string name="tooltip_voip_other_party_video_on">L\'altra persona ha avviato uno videochiamata. Tocca qui per attivare anche la fotocamera.</string>
     <string name="tooltip_voip_other_party_video_disabled">L\'altra persona non sta utilizzando una versione corrente dell\'app o non consente videochiamate.</string>
-    <string name="video_calls_new">Novità: videochiamate</string>
     <string name="biometrics_not_enrolled">Nessuna biometria iscritta nel sistema.</string>
     <string name="biometrics_not_avilable">Le biometria non sono disponibili in questo sistema.</string>
     <string name="biometrics_no_permission">Mancano i permessi per accedere ai dati biometrici o all\'hardware.</string>
@@ -1310,10 +1308,18 @@ messaggi ogni 15 minuti.</string>
     <string name="notification_channel_group_join_request">Notifiche per le richieste di adesione</string>
     <string name="reset_default_group_link_title">Resettare info</string>
     <string name="reset_default_group_link_desc">Il link appena condiviso non è più valido e le richieste inviate tramite il vecchio link saranno automaticamente rifiutate.</string>
+    <string name="other_group_links">altri</string>
     <string name="show_public_key">Visualizza chiave pubblica</string>
     <string name="public_key_for">Chiave pubblica di %s</string>
+    <string name="copied">Copiato</string>
     <string name="no_votes_yet">Finora non sono stati espressi voti.</string>
     <string name="permission_contacts_sync_required">Sei pregato di consentire l\'accesso ai contatti per sincronizzarli.</string>
     <string name="not_voted_user_list">Questi partecipanti non hanno votato: %s</string>
     <string name="invalid_onprem_id">L\'ID Threema OnPrem non è valida</string>
+    <string name="enable_unknown_sources">Non è possibile installare l\'app. Attiva %s alla voce \"Installare app sconosciute\".</string>
+    <string name="add_shortcut_success">È stato creato un collegamento</string>
+    <string name="add_shortcut_error">Errore durante la creazione del collegamento con il desktop</string>
+    <string name="web_link">Link</string>
+    <string name="link_copied">%s copiato</string>
+    <string name="invalid_onprem_id_title">Impossibile aggiungere</string>
 </resources>

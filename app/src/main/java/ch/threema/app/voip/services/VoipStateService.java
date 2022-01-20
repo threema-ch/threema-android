@@ -44,12 +44,9 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,7 +55,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -70,7 +66,6 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
-import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
@@ -89,7 +84,6 @@ import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.receivers.CallRejectReceiver;
 import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -103,6 +97,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
@@ -126,19 +121,12 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
  */
 @AnyThread
 public class VoipStateService implements AudioManager.OnAudioFocusChangeListener {
-	private static final Logger logger = LoggerFactory.getLogger("VoipStateService");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipStateService");
 	private final static String LIFETIME_SERVICE_TAG = "VoipStateService";
 
 	public static final int VIDEO_RENDER_FLAG_NONE = 0x00;
 	public static final int VIDEO_RENDER_FLAG_INCOMING = 0x01;
 	public static final int VIDEO_RENDER_FLAG_OUTGOING = 0x02;
-
-	// component type for wearable
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({TYPE_NOTIFICATION, TYPE_ACTIVITY})
-	public @interface Component {}
-	public static final int TYPE_NOTIFICATION = 0;
-	public static final int TYPE_ACTIVITY = 1;
 
 	// system managers
 	private final AudioManager audioManager;
@@ -191,7 +179,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private static final int RINGING_TIMEOUT_SECONDS = 60;
 	private static final int VOIP_CONNECTION_LINGER = 1000 * 5;
 
-	private final WearableHandler wearableHandler;
 	private ScreenOffReceiver screenOffReceiver;
 
 	private class ScreenOffReceiver extends BroadcastReceiver {
@@ -219,7 +206,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.notificationManagerCompat = NotificationManagerCompat.from(appContext);
 		this.notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		this.audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
-		this.wearableHandler = new WearableHandler(appContext);
 	}
 
 	//region Logging
@@ -1333,16 +1319,14 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				this.notificationManagerCompat.cancel(identity, INCOMING_CALL_NOTIFICATION_ID);
 				this.callNotificationTags.remove(identity);
 			} else {
-				logger.warn("No call notification found for {}", identity);
+				logger.warn("No call notification found for {}, number of tags: {}", identity, this.callNotificationTags.size());
+				if (this.callNotificationTags.size() == 0) {
+					this.notificationManagerCompat.cancel(identity, INCOMING_CALL_NOTIFICATION_ID);
+				}
 			}
 			if (this.callNotificationTags.size() == 0) {
 				unregisterScreenOffReceiver();
 			}
-		}
-
-		if (PushService.playServicesInstalled(appContext)){
-			WearableHandler.cancelOnWearable(TYPE_NOTIFICATION);
-			WearableHandler.cancelOnWearable(TYPE_ACTIVITY);
 		}
 	}
 
@@ -1357,11 +1341,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			}
 			this.callNotificationTags.clear();
 		}
-
-		if (PushService.playServicesInstalled(appContext)){
-			WearableHandler.cancelOnWearable(TYPE_NOTIFICATION);
-		}
-
 		unregisterScreenOffReceiver();
 	}
 
@@ -1491,11 +1470,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			} catch (PendingIntent.CanceledException e) {
 				logger.error("Could not send inCallPendingIntent", e);
 			}
-		}
-
-		// WEARABLE
-		if (PushService.playServicesInstalled(appContext)){
-			wearableHandler.showWearableNotification(contact, callId, avatar);
 		}
 
 		// register screen off receiver

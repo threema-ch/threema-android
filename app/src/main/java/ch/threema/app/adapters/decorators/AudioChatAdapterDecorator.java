@@ -121,7 +121,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 			isDownloaded = audioDataModel.isDownloaded();
 		} else {
 			fileDataModel = this.getMessageModel().getFileData();
-			duration = fileDataModel.getDuration();
+			duration = fileDataModel.getDurationSeconds();
 			isDownloaded = fileDataModel.isDownloaded();
 			caption = fileDataModel.getCaption();
 		}
@@ -393,7 +393,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 				(ComposeMessageFragment) helper.getFragment(),
 				holder.bodyTextView,
 				this.getMessageModel(),
-				caption.length() < 80,
+				true,
 				actionModeStatus.getActionModeEnabled(),
 				onClickElement);
 

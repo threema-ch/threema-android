@@ -44,6 +44,7 @@ public class OnPremConfigParser {
 			this.parseWorkConfig(obj.getJSONObject("work")),
 			this.parseAvatarConfig(obj.getJSONObject("avatar")),
 			this.parseSafeConfig(obj.getJSONObject("safe")),
+			this.parseWebConfig(obj.getJSONObject("web")),
 			this.parseMediatorConfig(obj.optJSONObject("mediator")));
 	}
 
@@ -85,6 +86,10 @@ public class OnPremConfigParser {
 
 	private OnPremConfigSafe parseSafeConfig(JSONObject obj) throws JSONException {
 		return new OnPremConfigSafe(obj.getString("url"));
+	}
+
+	private OnPremConfigWeb parseWebConfig(JSONObject obj) throws JSONException {
+		return new OnPremConfigWeb(obj.getString("url"));
 	}
 
 	private OnPremConfigWork parseWorkConfig(JSONObject obj) throws JSONException {

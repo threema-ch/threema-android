@@ -28,7 +28,7 @@ import org.slf4j.helpers.MessageFormatter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.logging.LogLevel;
-import ch.threema.logging.LoggingUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * A logging backend that logs to the ADB logcat.

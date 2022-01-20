@@ -150,7 +150,7 @@
     <string name="backup_sum">Uw Threema ID exporteren</string>
     <string name="backup_and_delete">Back-uppen en verwijderen</string>
     <string name="delete_id_title">ID verwijderen</string>
-    <string name="delete_id_message">Tenzij u een back-up voor dit ID heeft, kunt u nooit meer met dit ID berichten versturen/ontvangen.\n\nAls u niet van plan bent dit ID ooit nog te gebruiken, verwijder dan gekoppelde e-mailadressen en telefoonnummers voordat u het verwijderd.</string>
+    <string name="delete_id_message">Tenzij u een back-up voor dit ID heeft, kunt u nooit meer met dit ID berichten versturen/ontvangen.\n\nAls u dit ID niet meer wilt gebruiken, is het aanbevolen om een intrekkingswachtwoord in te stellen en het ID via myid.threema.ch in te trekken voordat u het verwijdert.</string>
     <string name="delete_id_message2">Laatste waarschuwing: wilt u uw ID echt verwijderen?</string>
     <string name="delete_id_sum">Uw ID en alle gegevens op dit apparaat permanent verwijderen</string>
     <string name="backup_password_summary">Uw ID-exportbestand wordt versleuteld met een wachtwoord. Gebruik een combinatie van letters, cijfers en symbolen. Vergeet niet wat u hier invoert!</string>
@@ -1097,10 +1097,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="translators_thanks">We willen onze vrijwillige vertalers ontzettend bedanken: %s</string>
     <string name="ballot_window_hide">Open polls verbergen</string>
     <string name="ballot_window_show">Open polls weergeven</string>
-    <string name="tooltip_video_call">Naast beveiligde spraakoproepen biedt Threema nu ook end-to-end versleutelde video-oproepen aan.</string>
     <string name="tooltip_voip_other_party_video_on">De andere partij heeft een video-oproep gestart. Tik hier om jouw camera ook in te schakelen.</string>
     <string name="tooltip_voip_other_party_video_disabled">De andere partij gebruikt een verouderde appversie of heeft video-oproepen niet toegestaan.</string>
-    <string name="video_calls_new">Nieuw: video-oproepen</string>
     <string name="biometrics_not_enrolled">Er zijn geen biometrics in het systeem opgenomen.</string>
     <string name="biometrics_not_avilable">Biometrics zijn niet beschikbaar in dit systeem.</string>
     <string name="biometrics_no_permission">Ontbrekende machtiging voor het benaderen van biometrische gegevens of hardware.</string>
@@ -1287,7 +1285,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="reset_default_group_link">Standaard groepslink herstellen</string>
     <string name="resend">Opnieuw verzenden</string>
     <string name="group_request_already_sent_title">Verzoek is al verzonden</string>
-    <string name="qr_scanner_id_hint">Scan de contact-QR-code van iemand anders. Geef de code weer door op de avatar linksboven in het startscherm van Threema te klikken.</string>
+    <string name="qr_scanner_id_hint">Scan de contact-QR-code om de identiteit te verifiëren. Vraag de contactpersoon om op de profielafbeelding linksboven in het startscherm van Threema te klikken om de code weer te geven.</string>
     <string name="enable_storage_access_for_media">Geef toegang tot de opslag om foto\'s en video\'s op je apparaat te bekijken</string>
     <string name="take_me_there">Breng me ernaartoe…</string>
     <string name="notification_channel_group_join_request">Meldingskanaal voor ontvangen aansluitverzoeken</string>
@@ -1300,5 +1298,11 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="no_votes_yet">Er zijn nog geen stemmen uitgebracht.</string>
     <string name="permission_contacts_sync_required">Geef toegang tot uw contactpersonen om ze te kunnen synchroniseren.</string>
     <string name="not_voted_user_list">Deze deelnemers hebben niet gestemd: %s</string>
-    <string name="invalid_onprem_id">Geen geldig Threema OnPrem-ID</string>
+    <string name="invalid_onprem_id">Dit ID bestaat niet (meer), of het is niet compatibel met uw ID.</string>
+    <string name="enable_unknown_sources">Kan niet installeren. Zorg ervoor dat \"Onbekende apps installeren\" is ingeschakeld voor %s.</string>
+    <string name="add_shortcut_success">Snelkoppeling aangemaakt</string>
+    <string name="add_shortcut_error">Fout tijdens toevoegen van snelkoppeling aan startscherm</string>
+    <string name="web_link">Link</string>
+    <string name="link_copied">%s gekopieerd</string>
+    <string name="invalid_onprem_id_title">ID niet toegevoegd</string>
 </resources>

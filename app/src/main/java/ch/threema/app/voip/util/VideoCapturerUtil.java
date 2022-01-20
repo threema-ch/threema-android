@@ -24,7 +24,6 @@ package ch.threema.app.voip.util;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.Camera1Enumerator;
 import org.webrtc.Camera2Enumerator;
 import org.webrtc.CameraEnumerator;
@@ -33,12 +32,13 @@ import org.webrtc.CameraVideoCapturer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Enumerate and initialize device cameras.
  */
 public class VideoCapturerUtil {
-	private static final Logger logger = LoggerFactory.getLogger(VideoCapturerUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoCapturerUtil");
 
 	/**
 	 * Return a flag indicating whether the Camera2 API should be used or not.

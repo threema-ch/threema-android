@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="title_section2">kontaktov</string>
+    <string name="title_section2">Kontakty</string>
     <string name="title_section1">Konverzácie</string>
     <string name="title_compose_message">Nová konverzácia</string>
     <string name="title_choose_recipient">Vybrať príjemcu</string>
@@ -264,14 +264,14 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="backup_data_new">Vytvoriť zálohu údajov</string>
     <string name="pinentry_enter_pin">Pre pokračovanie zadajte váš %s PIN</string>
     <string name="pinentry_wrong_pin">PIN je nesprávny</string>
-    <string name="prefs_sum_security_pin">Uzamknúť prístup do rozhrania aplikácie Threema</string>
+    <string name="prefs_sum_security_pin">Uzamknúť prístup do užív.rozhrania</string>
     <string name="prefs_title_pin_switch">Zámok aplikácie</string>
     <string name="prefs_title_pin_code">Nastaviť PIN</string>
     <string name="prefs_pin_grace">Čas do uzamknutia</string>
     <string name="prefs_sum_pin_grace">Čas do aktivácie zámku obrazovky</string>
     <string name="click_here_to_change_pin">PIN je nastavený. Kliknutím tu ho zmeníte</string>
     <string name="set_pin_menu_title">Nastaviť nový PIN</string>
-    <string name="set_pin_summary_intro">Ochráňte svoje súkromie nastavením PIN kódu (iba číslice). Tento PIN kód je možné použiť k zablokovaniu prístupu k uživateľskému rozhraniu aplikácie Threema po uplynutí zvolenej doby, alebo k zabezpečeniu súkromných konverzácií</string>
+    <string name="set_pin_summary_intro">Ochráňte svoje súkromie nastavením PIN kódu (iba číslice). Tento PIN kód je možné použiť k zablokovaniu prístupu k uživateľskému rozhraniu aplikácie po uplynutí zvolenej doby, alebo k zabezpečeniu súkromných konverzácií</string>
     <string name="set_pin_again_summary">Zadajte PIN znovu</string>
     <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">Nová skupina</string>
@@ -1094,10 +1094,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="translators_thanks">Veľké poďakovanie našim dobrovoľným prekladateľom:\n%s</string>
     <string name="ballot_window_hide">Skryť otvorené ankety</string>
     <string name="ballot_window_show">Zobraziť otvorené ankety</string>
-    <string name="tooltip_video_call">Okrem hlasových hovorov odolných proti odposluchu teraz Threema ponúka šifrované video hovory typu end-to-end.</string>
     <string name="tooltip_voip_other_party_video_on">Protistrana zahájila videohovor. Kliknutím sem zapnete kameru.</string>
     <string name="tooltip_voip_other_party_video_disabled">Protistrana buď nepoužíva aktuálnu verziu aplikácie, alebo nepodporuje videohovory.</string>
-    <string name="video_calls_new">Novinka: Video hovory</string>
     <string name="biometrics_not_enrolled">Biometrické údaje nie sú v systéme nastavené.</string>
     <string name="biometrics_not_avilable">Biometrické údaje nie sú v systéme nastavené.</string>
     <string name="biometrics_no_permission">Nebolo udelené povolenie k biometrickým údajom alebo k hardvéru.</string>
@@ -1180,10 +1178,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_request_incoming_dialog_title">Žiadosť od %s</string>
     <string name="accept">Prijať</string>
     <string name="reject">Odmetnúť</string>
-    <string name="group_request_already_sent"><![CDATA[Už ste žiadosť  o vstup do skupiny <b>%s</b> odoslali cez tento odkaz. Kliknite na žiadosť o opätovné odoslanie.]]></string>
+    <string name="group_request_already_sent"><![CDATA[Už ste žiadosť  o vstup do skupiny <b>%s</b> odoslali cez tento odkaz a čaká sa na odpoveď od správcu skupiny. Kliknite na žiadosť ak ju chcete opäť odoslať.]]></string>
     <string name="group_link_none">Odkaz nebol zatiaľ vygenerovaný.</string>
     <string name="group_request_confirm_send"><![CDATA[Chystáte sa odoslať žiadosť o vstup do skupiny <b>%1$s</b> správcovi <b>%2$s</b>. Pokiaľ nebol tento odkaz zneplatnený, budete do skupiny automaticky pridaný hneď, ako zariadenie správcu príjme túto vašu žiadosť.]]></string>
-    <string name="really_delete_outgoing_request">Chcete vymazať %d žiadosť(i) o vstup do skupiny? Zoberte prosím na vedomie, že pokiaľ sa na žiadosť ešte neodpovedalo, táto žiadosť nebude odvolaná a vy môžte byť stále prijatý alebo požiadaný o vstup.</string>
+    <string name="really_delete_outgoing_request">Chcete vymazať %d žiadosť(i) o vstup do skupiny? Zoberte prosím na vedomie, že pokiaľ sa na žiadosť ešte neodpovedalo, táto žiadosť nebude odvolaná a vy môžete byť stále prijatý alebo zamietnutý správcom skupiny.</string>
     <string name="really_delete_group_request_title">Naozaj vymazať žiadosť o vstup do skupiny</string>
     <string name="sent_to">Odoslané pre: %s</string>
     <string name="sent_on">Odoslané: %s</string>
@@ -1284,7 +1282,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="reset_default_group_link">Zresetovať predvolený odkaz skupiny</string>
     <string name="resend">Znovu odoslať</string>
     <string name="group_request_already_sent_title">Žiadosť už bola odoslaná</string>
-    <string name="qr_scanner_id_hint">Zoskenujte QR kód nejakého iného kontaktu. Ten môžete zobraziť kliknutím na postavičku v ľavom hornom rohu hlavnej obrazovky Threema.</string>
+    <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu a overte jeho identitu. Ak chcete zobraziť kód, požiadajte svoj kontakt, aby klikol na profilový obrázok v ľavom hornom rohu domovskej obrazovky Threema.</string>
     <string name="enable_storage_access_for_media">"Ak chcete vidieť obrázky a videá uložené na tomto zariadení, povolte prístup k úložisku "</string>
     <string name="take_me_there">Chcem tam ísť...</string>
     <string name="notification_channel_group_join_request">Notifikačný kanál prijatých žiadostí o vstup</string>
@@ -1294,4 +1292,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="show_public_key">Zobraziť verejný kľúč</string>
     <string name="public_key_for">Verejný kľúč %s</string>
     <string name="copied">Skopírované</string>
+    <string name="no_votes_yet">Doteraz neboli odovzdané žiadne hlasy.</string>
+    <string name="permission_contacts_sync_required">Povoľte prístup k svojim kontaktom, aby ste ich mohli synchronizovať.</string>
+    <string name="not_voted_user_list">Títo účastníci nehlasovali: %s</string>
+    <string name="invalid_onprem_id">Neplatné Threema OnPrem-ID</string>
+    <string name="enable_unknown_sources">Nedá sa nainštalovať. Skontrolujte, či je pre %s povolená možnosť „Inštalovať neznáme aplikácie“.</string>
 </resources>

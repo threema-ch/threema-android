@@ -22,7 +22,6 @@
 package ch.threema.app.voip;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,6 +31,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * The call state is a combination of the plain state and a call ID.
@@ -44,7 +45,7 @@ import androidx.annotation.NonNull;
  */
 @AnyThread
 public class CallState {
-	private static final Logger logger = LoggerFactory.getLogger(CallState.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CallState");
 
 	/**
 	 * No call is currently active.

@@ -33,7 +33,6 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -75,8 +74,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
@@ -183,7 +180,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
-import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.ballot.BallotService;
@@ -223,6 +219,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ToolbarUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
@@ -252,6 +249,7 @@ import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_AUDIORE
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_LIFECYCLE;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_VOIP;
 import static ch.threema.app.utils.LinkifyUtil.DIALOG_TAG_CONFIRM_LINK;
+import static ch.threema.app.utils.ShortcutUtil.TYPE_CHAT;
 
 public class ComposeMessageFragment extends Fragment implements
 	LifecycleOwner,
@@ -348,7 +346,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private UserService userService;
 	private FileService fileService;
 	private VoipStateService voipStateService;
-	private ShortcutService shortcutService;
 	private DownloadService downloadService;
 	private LicenseService licenseService;
 
@@ -572,14 +569,16 @@ public class ComposeMessageFragment extends Fragment implements
 
 		@Override
 		public void onRemoved(List<AbstractMessageModel> removedMessageModels) {
-			if (TestUtil.required(composeMessageAdapter, removedMessageModels)) {
-				for (AbstractMessageModel removedMessageModel: removedMessageModels) {
-					composeMessageAdapter.remove(removedMessageModel);
+			RuntimeUtil.runOnUiThread(() -> {
+				if (TestUtil.required(composeMessageAdapter, removedMessageModels)) {
+					for (AbstractMessageModel removedMessageModel : removedMessageModels) {
+						composeMessageAdapter.remove(removedMessageModel);
+					}
+					RuntimeUtil.runOnUiThread(() -> {
+						composeMessageAdapter.notifyDataSetChanged();
+					});
 				}
-				RuntimeUtil.runOnUiThread(() -> {
-					composeMessageAdapter.notifyDataSetChanged();
-				});
-			}
+			});
 		}
 
 		@Override
@@ -1830,58 +1829,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 									workTooltipPopup = new TooltipPopup(getActivity(), R.string.preferences__tooltip_work_hint_shown, R.layout.popup_tooltip_top_left_work, this, new Intent(getActivity(), WorkExplainActivity.class));
 									workTooltipPopup.show(getActivity(), actionBarAvatarView, getString(R.string.tooltip_work_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_LEFT, location, 4000);
-								}
-							}, 1000);
-						}
-					}
-				} else {
-					if (!preferenceService.getIsVideoCallTooltipShown()) {
-						if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
-							&& ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
-							View toolbar = ((ThreemaToolbarActivity) getActivity()).getToolbar();
-
-							toolbar.postDelayed(() -> {
-								if (getActivity() != null && isAdded()) {
-									int[] location = new int[2];
-									View itemView = toolbar.findViewById(R.id.menu_threema_call);
-									if (itemView != null) {
-										itemView.getLocationInWindow(location);
-										if (ConfigUtils.isVideoCallsEnabled()) {
-											try {
-												TapTargetView.showFor(getActivity(),
-													TapTarget.forView(itemView, getString(R.string.video_calls_new), getString(R.string.tooltip_video_call))
-														.outerCircleColor(ConfigUtils.getAppTheme(getActivity()) == ConfigUtils.THEME_DARK ? R.color.dark_accent : R.color.accent_light)      // Specify a color for the outer circle
-														.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-														.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
-														.titleTextSize(24)                  // Specify the size (in sp) of the title text
-														.titleTextColor(android.R.color.white)      // Specify the color of the title text
-														.descriptionTextSize(18)            // Specify the size (in sp) of the description text
-														.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
-														.textColor(android.R.color.white)            // Specify a color for both the title and description text
-														.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-														.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-														.drawShadow(true)                   // Whether to draw a drop shadow or not
-														.cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
-														.tintTarget(true)                   // Whether to tint the target view's color
-														.transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
-														.targetRadius(50),                  // Specify the target radius (in dp)
-													new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
-														@Override
-														public void onTargetClick(TapTargetView view) {
-															super.onTargetClick(view);
-															String name = NameUtil.getDisplayNameOrNickname(contactModel, false);
-
-															GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.threema_call, String.format(getContext().getString(R.string.voip_call_confirm), name), R.string.ok, R.string.cancel);
-															dialog.setTargetFragment(ComposeMessageFragment.this, 0);
-															dialog.show(getFragmentManager(), ComposeMessageFragment.DIALOG_TAG_CONFIRM_CALL);
-														}
-													});
-												preferenceService.setVideoCallTooltipShown(true);
-											} catch (Exception ignore) {
-												// catch null typeface exception on CROSSCALL Action-X3
-											}
-										}
-									}
 								}
 							}, 1000);
 						}
@@ -3800,7 +3747,7 @@ public class ComposeMessageFragment extends Fragment implements
 				selectorDialog.setTargetFragment(this, 0);
 				selectorDialog.show(getFragmentManager(), DIALOG_TAG_CHOOSE_SHORTCUT_TYPE);
 		} else {
-			this.shortcutService.createPinnedShortcut(messageReceiver, ShortcutService.TYPE_CHAT);
+			ShortcutUtil.createPinnedShortcut(messageReceiver, TYPE_CHAT);
 		}
 	}
 
@@ -3849,7 +3796,7 @@ public class ComposeMessageFragment extends Fragment implements
 	public void onClick(String tag, int which, Object data) {
 		if (DIALOG_TAG_CHOOSE_SHORTCUT_TYPE.equals(tag)) {
 			int shortcutType = which + 1;
-			this.shortcutService.createPinnedShortcut(messageReceiver, shortcutType);
+			ShortcutUtil.createPinnedShortcut(messageReceiver, shortcutType);
 		}
 	}
 
@@ -4393,8 +4340,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.wallpaperService,
 				this.mutedChatsListService,
 				this.ringtoneService,
-				this.voipStateService,
-				this.shortcutService
+				this.voipStateService
 		);
 	}
 
@@ -4422,7 +4368,6 @@ public class ComposeMessageFragment extends Fragment implements
 				this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
 				this.ringtoneService = serviceManager.getRingtoneService();
 				this.voipStateService = serviceManager.getVoipStateService();
-				this.shortcutService = serviceManager.getShortcutService();
 				this.downloadService = serviceManager.getDownloadService();
 				this.licenseService = serviceManager.getLicenseService();
 			} catch (Exception e) {
@@ -4442,7 +4387,6 @@ public class ComposeMessageFragment extends Fragment implements
 						@Override
 						public void run() {
 							distributionListService.remove(dmodel);
-							shortcutService.deletePinnedShortcut(distributionListService.createReceiver(dmodel));
 							RuntimeUtil.runOnUiThread(() -> activity.finish());
 						}
 					}).start();

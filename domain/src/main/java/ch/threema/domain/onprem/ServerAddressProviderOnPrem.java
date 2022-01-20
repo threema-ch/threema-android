@@ -102,6 +102,11 @@ public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 		return getOnPremConfigFetcher().fetch().getSafeConfig().getUrl();
 	}
 
+	@Override
+	public String getWebServerUrl() throws ThreemaException {
+		return getOnPremConfigFetcher().fetch().getWebConfig().getUrl();
+	}
+
 	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {
 		return fetcherProvider.getFetcher();
 	}

@@ -47,14 +47,11 @@ import android.widget.Toast;
 import com.datatheorem.android.trustkit.TrustKit;
 import com.datatheorem.android.trustkit.reporting.BackgroundReporter;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.mapbox.android.telemetry.TelemetryEnabler;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.maps.TelemetryDefinition;
 
 import net.sqlcipher.database.SQLiteException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +61,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -142,6 +138,7 @@ import ch.threema.app.utils.LoggingUEH;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.WidgetUtil;
@@ -158,6 +155,7 @@ import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.app.workers.IdentityStatesWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.AppVersion;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
@@ -191,8 +189,7 @@ import static ch.threema.app.services.PreferenceService.Theme_DARK;
 import static ch.threema.app.services.PreferenceService.Theme_LIGHT;
 
 public class ThreemaApplication extends MultiDexApplication implements DefaultLifecycleObserver {
-
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaApplication.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaApplication");
 
 	public static final String INTENT_DATA_CONTACT = "identity";
 	public static final String INTENT_DATA_CONTACT_READONLY = "readonly";
@@ -373,7 +370,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			FileUtil.deleteFileOrWarn(
 				messageQueueFile,
 				"message queue file",
-				LoggerFactory.getLogger("LoggingUEH.runOnUncaughtException")
+				LoggingUtil.getThreemaLogger("LoggingUEH.runOnUncaughtException")
 			);
 		});
 		Thread.setDefaultUncaughtExceptionHandler(loggingUEH);
@@ -957,7 +954,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				}
 			}, "scheduleSync").start();
 
-			initMapbox();
+			initMapLibre();
 
 			// setup locale override
 			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
@@ -971,19 +968,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 	}
 
-	private static void initMapbox() {
-		if (!ConfigUtils.hasNoMapboxSupport()) {
-			// Mapbox Access token
-			Mapbox.getInstance(getAppContext(), String.valueOf(new Random().nextInt()));
-			TelemetryEnabler.updateTelemetryState(TelemetryEnabler.State.DISABLED);
-			TelemetryDefinition telemetryDefinition = Mapbox.getTelemetry();
-			if (telemetryDefinition != null) {
-				telemetryDefinition.setDebugLoggingEnabled(BuildConfig.DEBUG);
-				telemetryDefinition.setUserTelemetryRequestState(false);
-			}
-			logger.debug("*** Mapbox telemetry: " + TelemetryEnabler.retrieveTelemetryStateFromPreferences());
+	private static void initMapLibre() {
+		if (ConfigUtils.hasNoMapboxSupport()) {
+			logger.debug("*** MapLibre disabled due to faulty firmware");
 		} else {
-			logger.debug("*** Mapbox disabled due to faulty firmware");
+			Mapbox.getInstance(getAppContext());
+			logger.debug("*** MapLibre enabled");
 		}
 	}
 
@@ -1114,7 +1104,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_rename_group, groupModel.getName()),
 							messageReceiver);
-						serviceManager.getShortcutService().updatePinnedShortcut(messageReceiver);
+						ShortcutUtil.updatePinnedShortcut(messageReceiver);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1126,12 +1116,11 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				new Thread(() -> {
 					try {
 						MessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
-
 						serviceManager.getConversationService().refresh(groupModel);
 						serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_group_new_photo),
 							messageReceiver);
-						serviceManager.getShortcutService().updatePinnedShortcut(messageReceiver);
+						ShortcutUtil.updatePinnedShortcut(messageReceiver);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1146,7 +1135,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						serviceManager.getBallotService().remove(receiver);
 						serviceManager.getConversationService().removed(groupModel);
 						serviceManager.getNotificationService().cancel(new GroupMessageReceiver(groupModel, null, null, null, null, serviceManager.getApiService()));
-						serviceManager.getShortcutService().deletePinnedShortcut(receiver);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1293,7 +1281,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				new Thread(() -> {
 					try {
 						serviceManager.getConversationService().refresh(groupModel);
-						serviceManager.getShortcutService().deletePinnedShortcut(serviceManager.getGroupService().createReceiver(groupModel));
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1323,7 +1310,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				new Thread(() -> {
 					try {
 						serviceManager.getConversationService().refresh(distributionListModel);
-						serviceManager.getShortcutService().updatePinnedShortcut(serviceManager.getDistributionListService().createReceiver(distributionListModel));
+						ShortcutUtil.updatePinnedShortcut(serviceManager.getDistributionListService().createReceiver(distributionListModel));
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1336,7 +1323,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				new Thread(() -> {
 					try {
 						serviceManager.getConversationService().removed(distributionListModel);
-						serviceManager.getShortcutService().deletePinnedShortcut(serviceManager.getDistributionListService().createReceiver(distributionListModel));
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1486,7 +1472,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				new Thread(() -> {
 					try {
 						serviceManager.getConversationService().refresh(modifiedContactModel);
-						serviceManager.getShortcutService().updatePinnedShortcut(serviceManager.getContactService().createReceiver(modifiedContactModel));
+						ShortcutUtil.updatePinnedShortcut(serviceManager.getContactService().createReceiver(modifiedContactModel));
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1497,7 +1483,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onAvatarChanged(ContactModel contactModel) {
 				new Thread(() -> {
 					try {
-						serviceManager.getShortcutService().updatePinnedShortcut(serviceManager.getContactService().createReceiver(contactModel));
+						ShortcutUtil.updatePinnedShortcut(serviceManager.getContactService().createReceiver(contactModel));
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 					}
@@ -1512,11 +1498,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				new Thread(() -> {
 					try {
 						serviceManager.getConversationService().removed(removedContactModel);
-						serviceManager.getShortcutService().deletePinnedShortcut(serviceManager.getContactService().createReceiver(removedContactModel));
-
-						//remove notification from this contact
-
-						//hack. create a receiver to become the notification id
 						serviceManager.getNotificationService().cancel(new ContactMessageReceiver
 							(
 								removedContactModel,
@@ -1871,7 +1852,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		});
 
 		VoipListenerManager.callEventListener.add(new VoipCallEventListener() {
-			private final Logger logger = LoggerFactory.getLogger("VoipCallEventListener");
+			private final Logger logger = LoggingUtil.getThreemaLogger("VoipCallEventListener");
 
 			@Override
 			public void onRinging(String peerIdentity) {

@@ -47,7 +47,6 @@ import android.os.Looper;
 import android.os.Process;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.ThreadUtils;
 
 import java.util.List;
@@ -57,13 +56,14 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.util.AppRTCUtils;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * VoipBluetoothManager manages functions related to Bluetoth devices in
  * Threema voice calls.
  */
 public class VoipBluetoothManager {
-	private static final Logger logger = LoggerFactory.getLogger("VoipBluetoothManager");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipBluetoothManager");
 
 	// Timeout interval for starting or stopping audio to a Bluetooth SCO device.
 	private static final int BLUETOOTH_SCO_TIMEOUT_MS = 4000;

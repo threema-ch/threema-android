@@ -433,6 +433,7 @@ public class MessageServiceImpl implements MessageService {
 				String messageId = messageModel.getApiMessageId();
 				logger.info(tag + ": message " + (messageId != null ? messageId : messageModel.getId()) + " successfully queued");
 			} else {
+				logger.info(tag + ": unable to send message. no recipients");
 				messageModel.setState(MessageState.SENDFAILED);
 			}
 			messageReceiver.saveLocalModel(messageModel);
@@ -1804,7 +1805,7 @@ public class MessageServiceImpl implements MessageService {
 
 		if(newModel) {
 			this.fireOnCreatedMessage(messageModel);
-
+			// Auto download
 			if (canDownload(messageModel)) {
 				downloadMediaMessage(messageModel, null);
 			}
@@ -2647,12 +2648,7 @@ public class MessageServiceImpl implements MessageService {
 			this.appLockService.addOnLockAppStateChanged(new LockAppService.OnLockAppStateChanged() {
 				@Override
 				public boolean changed(boolean locked) {
-					if(!locked) {
-//						fireOnNewMessage(messageModel);
-						return true;
-					}
-
-					return false;
+					return !locked;
 				}
 			});
 
@@ -2721,22 +2717,14 @@ public class MessageServiceImpl implements MessageService {
 				} else if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType())) {
 					if (TestUtil.empty(messageModel.getFileData().getCaption())) {
 						String durationString = messageModel.getFileData().getDurationString();
-						if (durationString != null) {
-							return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + " (" + durationString + ")");
-						} else {
-							return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder));
-						}
+						return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + " (" + durationString + ")");
 					} else {
 						return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}
 				} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())) {
 					if (TestUtil.empty(messageModel.getFileData().getCaption())) {
 						String durationString = messageModel.getFileData().getDurationString();
-						if (durationString != null) {
-							return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + " (" + durationString + ")");
-						} else {
-							return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder));
-						}
+						return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + " (" + durationString + ")");
 					} else {
 						return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}
@@ -2807,76 +2795,84 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		if (data != null && !data.isDownloaded()) {
+			boolean success = false;
 
-			byte[] blob = this.downloadService.download(
+			if (mediaMessageModel.getType() != MessageType.IMAGE) {
+				File messageFile = this.fileService.getMessageFile(mediaMessageModel);
+				if (messageFile != null && messageFile.exists() && messageFile.length() > NaCl.BOXOVERHEAD) {
+					// hack: do not re-download a blob that's already present on the file system
+					success = true;
+				}
+			}
+
+			if (!success) {
+				byte[] blob = this.downloadService.download(
 					mediaMessageModel.getId(),
 					data.getBlobId(),
 					!(mediaMessageModel instanceof GroupMessageModel),
 					progressListener);
-			if (blob == null || blob.length < NaCl.BOXOVERHEAD) {
-				logger.error("Blob for message {} is empty", mediaMessageModel.getApiMessageId());
+				if (blob == null || blob.length < NaCl.BOXOVERHEAD) {
+					logger.error("Blob for message {} is empty", mediaMessageModel.getApiMessageId());
 
-				this.downloadService.error(mediaMessageModel.getId());
-				// blob download failed or empty or canceled
-				throw new ThreemaException("failed to download message");
-			}
-
-			boolean success = false;
-			if (mediaMessageModel.getType() != MessageType.IMAGE) {
-				logger.info("Decrypting blob for message {}", mediaMessageModel.getApiMessageId());
-
-				if (NaCl.symmetricDecryptDataInplace(blob, data.getEncryptionKey(), nonce)) {
-					logger.info("Write conversation media for message {}", mediaMessageModel.getApiMessageId());
-
-					// save the file
-					try {
-						if (this.fileService.writeConversationMedia(mediaMessageModel, blob, 0, blob.length - NaCl.BOXOVERHEAD, true)) {
-							success = true;
-							logger.info("Media for message {} successfully saved.", mediaMessageModel.getApiMessageId());
-						}
-					} catch (Exception e) {
-						logger.warn("Unable to save media");
-
-						this.downloadService.error(mediaMessageModel.getId());
-
-						throw new ThreemaException("Unable to save media");
-					}
-				}
-			} else {
-				byte[] image;
-
-				if (mediaMessageModel instanceof GroupMessageModel) {
-					image = NaCl.symmetricDecryptData(blob, data.getEncryptionKey(), nonce);
-				} else {
-					image = identityStore.decryptData(blob, data.getNonce(), data.getEncryptionKey());
+					this.downloadService.error(mediaMessageModel.getId());
+					// blob download failed or empty or canceled
+					throw new ThreemaException("failed to download message");
 				}
 
-				if (image != null && image.length > 0) {
-					try {
+				if (mediaMessageModel.getType() != MessageType.IMAGE) {
+					logger.info("Decrypting blob for message {}", mediaMessageModel.getApiMessageId());
+
+					if (NaCl.symmetricDecryptDataInplace(blob, data.getEncryptionKey(), nonce)) {
+						logger.info("Write conversation media for message {}", mediaMessageModel.getApiMessageId());
+
 						// save the file
-						success = saveStrippedImage(image, mediaMessageModel);
-					} catch (Exception e) {
-						logger.error("Exception", e);
+						try {
+							if (this.fileService.writeConversationMedia(mediaMessageModel, blob, 0, blob.length - NaCl.BOXOVERHEAD, true)) {
+								success = true;
+								logger.info("Media for message {} successfully saved.", mediaMessageModel.getApiMessageId());
+							}
+						} catch (Exception e) {
+							logger.warn("Unable to save media");
+
+							this.downloadService.error(mediaMessageModel.getId());
+
+							throw new ThreemaException("Unable to save media");
+						}
+					}
+				} else {
+					byte[] image;
+
+					if (mediaMessageModel instanceof GroupMessageModel) {
+						image = NaCl.symmetricDecryptData(blob, data.getEncryptionKey(), nonce);
+					} else {
+						image = identityStore.decryptData(blob, data.getNonce(), data.getEncryptionKey());
+					}
+
+					if (image != null && image.length > 0) {
+						try {
+							// save the file
+							success = saveStrippedImage(image, mediaMessageModel);
+						} catch (Exception e) {
+							logger.error("Exception", e);
+						}
 					}
 				}
 			}
 
 			if (success) {
-				data.isDownloaded(true);
-
 				if(mediaMessageModel.getType() == MessageType.IMAGE) {
-					mediaMessageModel.setImageData((ImageDataModel)data);
-					mediaMessageModel.writeDataModelToBody();
+					mediaMessageModel.getImageData().isDownloaded(true);
 				}
 				else if(mediaMessageModel.getType() == MessageType.VIDEO) {
-					mediaMessageModel.setVideoData((VideoDataModel)data);
+					mediaMessageModel.getVideoData().isDownloaded(true);
 				}
 				else if(mediaMessageModel.getType() == MessageType.VOICEMESSAGE) {
-					mediaMessageModel.setAudioData((AudioDataModel) data);
+					mediaMessageModel.getAudioData().isDownloaded(true);
 				}
 				else if(mediaMessageModel.getType() == MessageType.FILE) {
-					mediaMessageModel.setFileData((FileDataModel) data);
+					mediaMessageModel.getFileData().isDownloaded(true);
 				}
+				mediaMessageModel.writeDataModelToBody();
 
 				this.save(mediaMessageModel);
 
@@ -3145,6 +3141,8 @@ public class MessageServiceImpl implements MessageService {
 
 				try {
 					context.startActivity(Intent.createChooser(intent, context.getResources().getText(R.string.share_via)));
+
+					return true;
 				} catch (ActivityNotFoundException e) {
 					// make sure Toast runs in UI thread
 					RuntimeUtil.runOnUiThread(new Runnable() {
@@ -3876,7 +3874,7 @@ public class MessageServiceImpl implements MessageService {
 						mediaItem.setDurationMs(trimmedDuration);
 					}
 				}
-				metaData.put(FileDataModel.METADATA_KEY_DURATION, trimmedDuration / (float) DateUtils.SECOND_IN_MILLIS);
+				metaData.put(FileDataModel.METADATA_KEY_DURATION, (float) trimmedDuration / (float) DateUtils.SECOND_IN_MILLIS);
 				thumbnailBitmap = IconUtil.getVideoThumbnailFromUri(context, mediaItem);
 				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
 				break;
@@ -3915,7 +3913,7 @@ public class MessageServiceImpl implements MessageService {
 				thumbnailBitmap = IconUtil.getThumbnailFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, fileDataModel.getMimeType(), true);
 				break;
 			case MediaItem.TYPE_VOICEMESSAGE:
-				metaData.put(FileDataModel.METADATA_KEY_DURATION, mediaItem.getDurationMs() / (float) DateUtils.SECOND_IN_MILLIS);
+				metaData.put(FileDataModel.METADATA_KEY_DURATION, (float) mediaItem.getDurationMs() / (float) DateUtils.SECOND_IN_MILLIS);
 				// voice messages do not have thumbnails
 				thumbnailBitmap = null;
 				break;

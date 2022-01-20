@@ -100,7 +100,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				(ComposeMessageFragment) helper.getFragment(),
 				holder.bodyTextView,
 				this.getMessageModel(),
-				messageText.length() < 80,
+				true,
 				actionModeStatus.getActionModeEnabled(),
 				onClickElement);
 		}

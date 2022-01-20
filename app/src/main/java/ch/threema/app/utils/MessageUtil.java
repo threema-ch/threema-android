@@ -465,8 +465,8 @@ public class MessageUtil {
 						if (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 							return new MessageViewElement(R.drawable.ic_mic_filled,
 								context.getString(R.string.audio_placeholder),
-								StringConversionUtil.secondsToString(messageModel.getFileData().getDuration(), false),
-								". " + context.getString(R.string.duration) + " " + StringConversionUtil.getDurationStringHuman(context, messageModel.getFileData().getDuration()) + ". ",
+								StringConversionUtil.secondsToString(messageModel.getFileData().getDurationSeconds(), false),
+								". " + context.getString(R.string.duration) + " " + StringConversionUtil.getDurationStringHuman(context, messageModel.getFileData().getDurationSeconds()) + ". ",
 								null);
 						} else {
 							return new MessageViewElement(R.drawable.ic_doc_audio,

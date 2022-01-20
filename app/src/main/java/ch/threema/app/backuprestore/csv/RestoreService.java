@@ -43,7 +43,6 @@ import net.lingala.zip4j.model.FileHeader;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,6 +84,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
@@ -117,7 +117,7 @@ import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_A
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
 
 public class RestoreService extends Service {
-	private static final Logger logger = LoggerFactory.getLogger("RestoreService");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
 
 	public static final String EXTRA_RESTORE_BACKUP_FILE = "file";
 	public static final String EXTRA_RESTORE_BACKUP_PASSWORD = "pwd";

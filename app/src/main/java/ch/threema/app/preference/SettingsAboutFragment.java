@@ -122,13 +122,17 @@ public class SettingsAboutFragment extends ThreemaPreferenceFragment {
 			}
 		});
 
-		privacyPolicyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(getActivity().getApplicationContext(), PrivacyPolicyActivity.class));
-				return true;
-			}
-		});
+		if (ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(preferenceService)) {
+			privacyPolicyPreference.setVisible(false);
+		} else {
+			privacyPolicyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					startActivity(new Intent(getActivity().getApplicationContext(), PrivacyPolicyActivity.class));
+					return true;
+				}
+			});
+		}
 
 		if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isWorkBuild()) {
 			checkUpdatePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

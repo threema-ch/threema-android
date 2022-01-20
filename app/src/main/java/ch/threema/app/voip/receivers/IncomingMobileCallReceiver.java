@@ -32,7 +32,6 @@ import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -41,12 +40,13 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Attempt to reject regular phone call if a Threema Call is running
  */
 public class IncomingMobileCallReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger("IncomingMobileCallReceiver");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingMobileCallReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

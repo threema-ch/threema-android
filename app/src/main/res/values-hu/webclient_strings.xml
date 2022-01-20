@@ -7,7 +7,7 @@
 	<string name="webclient_active_since">Aktív: %s óta</string>
 	<string name="webclient_created_at">Létrehozva: %1$s (%2$s)</string>
 	<string name="webclient_enable">Threema Webet aktiválás</string>
-	<string name="webclient_no_sessions_found">A csatlakozáshoz nyissa meg az internetböngészőt a számítógépén, és menjen a https://web.threema.ch oldalra. Kattintson a lenti gombra a megjelenő kód beolvasásához.</string>
+	<string name="webclient_no_sessions_found">A csatlakozáshoz nyissa meg az internetböngészőt a számítógépén, és menjen a %s oldalra. Kattintson a lenti gombra a megjelenő kód beolvasásához.</string>
 	<string name="webclient_session_rename">Munkamenet átnevezése</string>
 	<string name="webclient_session_label">Új név</string>
 	<string name="webclient_session_start">Munkamenet megkezdése</string>

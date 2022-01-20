@@ -192,7 +192,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 				(ComposeMessageFragment) helper.getFragment(),
 				holder.bodyTextView,
 				this.getMessageModel(),
-				fileData.getCaption().length() < 80,
+				true,
 				actionModeStatus.getActionModeEnabled(),
 				onClickElement);
 

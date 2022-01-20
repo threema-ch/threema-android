@@ -63,7 +63,6 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,6 +114,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import pl.droidsonroids.gif.GifImageView;
 
 import static ch.threema.app.adapters.SendMediaGridAdapter.VIEW_TYPE_ADD;
@@ -130,7 +130,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	GenericAlertDialog.DialogClickListener,
 	ThreemaToolbarActivity.OnSoftKeyboardChangedListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(SendMediaActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SendMediaActivity");
 
 	private static final String STATE_BIGIMAGE_POS = "bigimage_pos";
 	private static final String STATE_ITEMS = "items";

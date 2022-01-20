@@ -19,11 +19,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.logging;
+package ch.threema.base.utils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 
 public class LoggingUtil {
+	/**
+	 * Get a logger instance. Should be used by all Threema code like this:
+	 *
+	 * 	 private static final Logger logger = LoggingUtil.getLogger("VoipCallService");
+	 */
+	public static Logger getThreemaLogger(@NonNull String name) {
+		return LoggerFactory.getLogger("ch.threema." + name);
+	}
+
 	/**
 	 * Clean up a tag, strip unnecessary package prefixes.
 	 */

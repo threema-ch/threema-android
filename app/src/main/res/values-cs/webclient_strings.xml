@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Vytvořena: %1$s (%2$s)</string>
     <string name="webclient_active_since">Aktivní od: %s</string>
     <string name="webclient_enable">Zapnout aplikaci pro desktop / webový klient</string>
-    <string name="webclient_no_sessions_found">Chcete‑li se připojit, stáhněte aplikaci pro desktop (<b>https://threema.ch/download</b>) nebo ve vašem počítači otevřete webového klienta (<b>https://web.threema.ch</b>) a po klepnutí na tlačítko níže naskenujte QR kód zobrazený na obrazovce vašeho počítače.</string>
+    <string name="webclient_no_sessions_found">Chcete‑li se připojit, stáhněte aplikaci pro desktop (<b>https://threema.ch/download</b>) nebo ve vašem počítači otevřete webového klienta (<b>%s</b>) a po klepnutí na tlačítko níže naskenujte QR kód zobrazený na obrazovce vašeho počítače.</string>
     <string name="webclient_session_rename">Přejmenovat relaci</string>
     <string name="webclient_session_label">Nový název</string>
     <string name="webclient_session_start">Spustit relaci</string>

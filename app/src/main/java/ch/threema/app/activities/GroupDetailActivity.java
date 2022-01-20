@@ -43,7 +43,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -113,7 +112,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	TextEntryDialog.TextEntryDialogClickListener,
 	GroupDetailAdapter.OnGroupDetailsClickListener
 	{
-	private static final Logger logger = LoggerFactory.getLogger(GroupDetailActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailActivity");
 	// static values
 	private final int MODE_EDIT = 1;
 	private final int MODE_READONLY = 2;
@@ -865,11 +864,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				break;
 			case DIALOG_TAG_DELETE_GROUP:
 				deleteGroupAndQuit();
-				try {
-					serviceManager.getShortcutService().deletePinnedShortcut(groupService.createReceiver(groupModel));
-				} catch (ThreemaException e) {
-					logger.debug("Exception, failed to delete direct group shortcut", e);
-				}
 				break;
 			case DIALOG_TAG_QUIT:
 				saveGroupSettings();

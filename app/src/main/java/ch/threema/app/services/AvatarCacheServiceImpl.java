@@ -30,7 +30,6 @@ import android.net.Uri;
 import android.util.LruCache;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -45,12 +44,13 @@ import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
 final public class AvatarCacheServiceImpl implements AvatarCacheService {
-	private static final Logger logger = LoggerFactory.getLogger(AvatarCacheServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarCacheServiceImpl");
 
 	private static final String KEY_GROUP = "g";
 	private static final String KEY_DISTRIBUTION_LIST = "d";

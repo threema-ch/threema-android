@@ -28,7 +28,6 @@ import android.view.MenuItem;
 import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
@@ -44,11 +43,12 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
 
 public class BackupAdminActivity extends ThreemaToolbarActivity {
-	private static final Logger logger = LoggerFactory.getLogger(BackupAdminActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupAdminActivity");
 
 	private static final String BUNDLE_IS_UNLOCKED = "biu";
 

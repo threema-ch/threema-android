@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -34,9 +33,10 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaActivity");
 
 	final static public int ACTIVITY_ID_WIZARDFIRST = 20001;
 	final static public int ACTIVITY_ID_SETTINGS = 20002;

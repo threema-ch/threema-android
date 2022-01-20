@@ -221,7 +221,7 @@ language, please sign up at <https://threema.oneskyapp.com/collaboration/>.
 
 Threema for Android is licensed under the GNU Affero General Public License v3.
 
-    Copyright (c) 2013-2021 Threema GmbH
+    Copyright (c) 2013-2022 Threema GmbH
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License, version 3,

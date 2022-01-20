@@ -19,22 +19,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.wearable;
+package ch.threema.domain.onprem;
 
-import android.content.Context;
-import android.graphics.Bitmap;
+public class OnPremConfigWeb {
+	private final String url;
 
-import ch.threema.app.voip.services.VoipStateService;
-import ch.threema.storage.models.ContactModel;
+	public OnPremConfigWeb(String url) {
+		this.url = url;
+	}
 
-/**
- * stub for huawei builds because we have no Play Services on Huawei Builds and thus cannot communicate with a wearable
- */
-public class WearableHandler {
-
-	public WearableHandler(Context context) {}
-
-	public static void cancelOnWearable(@VoipStateService.Component int component) {}
-
-	public void showWearableNotification(ContactModel contact, long callId, Bitmap avatar) {}
+	public String getUrl() {
+		return url;
+	}
 }

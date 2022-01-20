@@ -151,7 +151,7 @@
     <string name="backup_sum">Экспортируйте свой ID Threema</string>
     <string name="backup_and_delete">Резервное копирование и удаление</string>
     <string name="delete_id_title">Удалить ID</string>
-    <string name="delete_id_message">Если у вас нет резервной копии этого ID, вы никогда не сможете отправлять или получать сообщения, используя этот ID.\n\nЕсли вы не собираетесь использовать этот ID снова, вы должны удалить все привязанные email/номера телефонов перед удалением.</string>
+    <string name="delete_id_message">Если у вас нет созданной или экспортированной резервной копии этого ID, вы больше никогда не сможете отправлять или получать сообщения, используя этот ID.\n\nЕсли вы больше не хотите использовать этот ID, рекомендуется задать пароль отзыва и отозвать ID на сайте myid.threema.ch/revoke перед его удалением.</string>
     <string name="delete_id_message2">Последнее предупреждение: вы действительно хотите удалить свой ID?</string>
     <string name="delete_id_sum">Навсегда удалить свой ID и все данные на этом устройстве</string>
     <string name="backup_password_summary">Ваш экспорт ID будет зашифрован паролем. Используйте сочетание латинских букв, цифр и специальных символов. Не забудьте записать или запомнить свой новый пароль!</string>
@@ -1095,10 +1095,8 @@
     <string name="translators_thanks">Большое спасибо нашим переводчикам-волонтерам:\n%s</string>
     <string name="ballot_window_hide">Скрыть открытые опросы</string>
     <string name="ballot_window_show">Показать открытые опросы</string>
-    <string name="tooltip_video_call">Помимо защищенных от прослушки голосовых звонков, Threema теперь предлагает видеозвонки со сквозным шифрованием.</string>
     <string name="tooltip_voip_other_party_video_on">Собеседник начал видеозвонок. Нажмите здесь, чтобы также включить камеру.</string>
     <string name="tooltip_voip_other_party_video_disabled">Собеседник не использует текущую версию приложения или не разрешает видеозвонки.</string>
-    <string name="video_calls_new">Новинка: видеозвонки</string>
     <string name="biometrics_not_enrolled">Биометрия не развернута в системе.</string>
     <string name="biometrics_not_avilable">Биометрия недоступна в этой системе.</string>
     <string name="biometrics_no_permission">Отсутствует разрешение на доступ к биометрическим данным или оборудованию.</string>
@@ -1285,7 +1283,7 @@
     <string name="reset_default_group_link">Сбросить ссылку по умолчанию</string>
     <string name="resend">Отпр. снова</string>
     <string name="group_request_already_sent_title">Запрос уже отправлен</string>
-    <string name="qr_scanner_id_hint">Сканируйте QR-контакта для других пользователей. Чтобы показать его, нажмите на аватар в левом верхнем углу на главном экране Threema.</string>
+    <string name="qr_scanner_id_hint">Сканируйте QR-код контакта для проверки его личности. Чтобы показать код, попросите контакта нажать на аватар в левом верхнем углу на главном экране Threema.</string>
     <string name="enable_storage_access_for_media">Предоставьте доступ к памяти устройства для просмотра изображений и видео на нем.</string>
     <string name="take_me_there">Перейти...</string>
     <string name="notification_channel_group_join_request">Канал уведомлений о полученных запросах вступления в группу</string>
@@ -1298,5 +1296,11 @@
     <string name="no_votes_yet">Голоса еще не были поданы.</string>
     <string name="permission_contacts_sync_required">Предоставьте доступ к своим контактам для возможности их синхронизировать.</string>
     <string name="not_voted_user_list">Эти участники не голосовали: %s</string>
-    <string name="invalid_onprem_id">Этот ID Threema OnPrem недействителен</string>
+    <string name="invalid_onprem_id">Этот ID либо (больше) не существует, либо несовместим с вашим ID.</string>
+    <string name="enable_unknown_sources">Не удается установить. Убедитесь, что для %s активирован параметр \"Устанавливать неизвестные приложения\".</string>
+    <string name="add_shortcut_success">Ярлык успешно создан.</string>
+    <string name="add_shortcut_error">Ошибка добавления ярлыка на экран средства запуска.</string>
+    <string name="web_link">Ссылка</string>
+    <string name="link_copied">%s: скопировано</string>
+    <string name="invalid_onprem_id_title">Не удается добавить ID</string>
 </resources>

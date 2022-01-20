@@ -42,4 +42,5 @@ public interface ServerAddressProvider {
 	String getAvatarServerUrl(boolean ipv6) throws ThreemaException;
 
 	String getSafeServerUrl(boolean ipv6) throws ThreemaException;
+	String getWebServerUrl() throws ThreemaException;
 }

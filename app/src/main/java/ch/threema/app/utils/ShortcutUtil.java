@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2015-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.services;
+package ch.threema.app.utils;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,8 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,41 +59,34 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.utils.AvatarConverterUtil;
-import ch.threema.app.utils.BitmapUtil;
-import ch.threema.app.utils.ConversationNotificationUtil;
-import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.TestUtil;
+import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationService;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
+import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
 import static androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED;
 
-public class ShortcutServiceImpl implements ShortcutService {
-	private static final Logger logger = LoggerFactory.getLogger(ShortcutService.class);
-	private static final int MAX_SHARE_TARGETS = 4; // we recommend that you publish only four distinct shortcuts to improve their visual appearance in the launcher. https://developer.android.com/guide/topics/ui/shortcuts/best-practices
+public final class ShortcutUtil {
+	private static final Logger logger = LoggerFactory.getLogger(ShortcutUtil.class);
 
-	private final Context context;
-	private final ContactService contactService;
-	private final ConversationService conversationService;
-	private final PreferenceService preferenceService;
+	private static final int MAX_SHARE_TARGETS = 100; // we recommend that you publish only four distinct shortcuts to improve their visual appearance in the launcher. https://developer.android.com/guide/topics/ui/shortcuts/best-practices
 
-	private final Object dynamicShortcutLock = new Object();
+	public static final int TYPE_NONE = 0;
+	public static final int TYPE_CHAT = 1;
+	public static final int TYPE_CALL = 2;
+
+	private static final Object dynamicShortcutLock = new Object();
 
 	private static final String DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY = "ch.threema.app.category.DYNAMIC_SHORTCUT_SHARE_TARGET"; // do not use BuildConfig.APPLICATION_ID
 
-	public ShortcutServiceImpl(Context context, ContactService contactService, ConversationService conversationService, PreferenceService preferenceService) {
-		this.context = context;
-		this.contactService = contactService;
-		this.conversationService = conversationService;
-		this.preferenceService = preferenceService;
-	}
-
 	private static class CommonShortcutInfo {
 		Intent intent;
-		@Nullable Bitmap bitmap;
+		@Nullable
+		Bitmap bitmap;
 		String longLabel;
 		String shortLabel;
 		String uniqueId;
@@ -99,30 +94,28 @@ public class ShortcutServiceImpl implements ShortcutService {
 
 	/*****************************************************************************************************************/
 
-	@Override
 	@WorkerThread
-	public void createPinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
+	public static void createPinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
 		ShortcutInfoCompat shortcutInfoCompat = getPinnedShortcutInfo(messageReceiver, type);
 
 		if (shortcutInfoCompat != null) {
-			if (ShortcutManagerCompat.requestPinShortcut(context, shortcutInfoCompat, null)) {
-				Toast.makeText(context, R.string.add_shortcut_success, Toast.LENGTH_SHORT).show();
+			if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, null)) {
+				Toast.makeText(getContext(), R.string.add_shortcut_success, Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(context, R.string.add_shortcut_error, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getContext(), R.string.add_shortcut_error, Toast.LENGTH_SHORT).show();
 				logger.info("Failed to add shortcut");
 			}
 		}
 	}
 
-	@Override
 	@WorkerThread
-	public void updatePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
+	public static void updatePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
 		String uniqueId = messageReceiver.getUniqueIdString();
 
 		if (!TestUtil.empty(uniqueId)) {
 			List<ShortcutInfoCompat> matchingShortcuts = new ArrayList<>();
 
-			for (ShortcutInfoCompat shortcutInfo : ShortcutManagerCompat.getShortcuts(context, FLAG_MATCH_PINNED)) {
+			for (ShortcutInfoCompat shortcutInfo : ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED)) {
 				if (shortcutInfo.getId().equals(TYPE_CHAT + uniqueId)) {
 					matchingShortcuts.add(getPinnedShortcutInfo(messageReceiver, TYPE_CHAT));
 				} else if (shortcutInfo.getId().equals(TYPE_CALL + uniqueId)) {
@@ -131,26 +124,23 @@ public class ShortcutServiceImpl implements ShortcutService {
 			}
 
 			if (matchingShortcuts.size() > 0) {
-				ShortcutManagerCompat.updateShortcuts(context, matchingShortcuts);
+				ShortcutManagerCompat.updateShortcuts(getContext(), matchingShortcuts);
 			}
 		}
 	}
 
-	@Override
 	@WorkerThread
-	public void deletePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
-		String uniqueId = messageReceiver.getUniqueIdString();
-
-		if (!TestUtil.empty(uniqueId)) {
-			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(context);
+	public static void deletePinnedShortcut(String uniqueIdString) {
+		if (!TestUtil.empty(uniqueIdString)) {
+			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED);
 
 			if (shortcutInfos.size() > 0) {
 				for (ShortcutInfoCompat shortcutInfo : shortcutInfos) {
 					String shortcutId = shortcutInfo.getId();
 					if (!TestUtil.empty(shortcutId)) {
 						// ignore first character which represents the type indicator
-						if (shortcutId.substring(1).equals(uniqueId)) {
-							ShortcutManagerCompat.removeLongLivedShortcuts(context, Collections.singletonList(shortcutInfo.getId()));
+						if (shortcutId.substring(1).equals(uniqueIdString)) {
+							ShortcutManagerCompat.removeLongLivedShortcuts(getContext(), Collections.singletonList(shortcutInfo.getId()));
 							break;
 						}
 					}
@@ -159,8 +149,29 @@ public class ShortcutServiceImpl implements ShortcutService {
 		}
 	}
 
+	/**
+	 * Delete all pinned shortcuts associated with our app
+	 */
+	@WorkerThread
+	public static void deleteAllPinnedShortcuts() {
+		List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED);
+
+		if (shortcutInfos.size() > 0) {
+			List<String> shortcutIds = new ArrayList<>();
+
+			for (ShortcutInfoCompat shortcutInfoCompat : shortcutInfos) {
+				shortcutIds.add(shortcutInfoCompat.getId());
+			}
+			try {
+				ShortcutManagerCompat.removeLongLivedShortcuts(getContext(), shortcutIds);
+			} catch (IllegalStateException e) {
+				logger.error("Failed to remove shortcuts.", e);
+			}
+		}
+	}
+
 	@NonNull
-	private CommonShortcutInfo getCommonShortcutInfo(@NonNull MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
+	private static CommonShortcutInfo getCommonShortcutInfo(@NonNull MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
 		CommonShortcutInfo commonShortcutInfo = new CommonShortcutInfo();
 
 		Bitmap bitmap = messageReceiver.getNotificationAvatar();
@@ -172,14 +183,14 @@ public class ShortcutServiceImpl implements ShortcutService {
 				// backwards compatibility
 				commonShortcutInfo.intent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
 			}
-			commonShortcutInfo.longLabel = String.format(context.getString(R.string.threema_call_with), messageReceiver.getDisplayName());
-			VectorDrawableCompat phoneDrawable = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_phone_locked, context.getTheme());
-			Bitmap phoneBitmap = AvatarConverterUtil.getAvatarBitmap(phoneDrawable, Color.BLACK, context.getResources().getDimensionPixelSize(R.dimen.shortcut_overlay_size));
-			commonShortcutInfo.bitmap = bitmap != null ? BitmapUtil.addOverlay(bitmap, phoneBitmap, context.getResources().getDimensionPixelSize(R.dimen.call_shortcut_shadow_offset)) : null;
+			commonShortcutInfo.longLabel = String.format(getContext().getString(R.string.threema_call_with), messageReceiver.getDisplayName());
+			VectorDrawableCompat phoneDrawable = VectorDrawableCompat.create(getContext().getResources(), R.drawable.ic_phone_locked, getContext().getTheme());
+			Bitmap phoneBitmap = AvatarConverterUtil.getAvatarBitmap(phoneDrawable, Color.BLACK, getContext().getResources().getDimensionPixelSize(R.dimen.shortcut_overlay_size));
+			commonShortcutInfo.bitmap = bitmap != null ? BitmapUtil.addOverlay(bitmap, phoneBitmap, getContext().getResources().getDimensionPixelSize(R.dimen.call_shortcut_shadow_offset)) : null;
 		} else {
 			commonShortcutInfo.intent = getChatShortcutIntent();
 			IntentDataUtil.addMessageReceiverToIntent(commonShortcutInfo.intent, messageReceiver);
-			commonShortcutInfo.longLabel = String.format(context.getString(R.string.chat_with), messageReceiver.getDisplayName());
+			commonShortcutInfo.longLabel = String.format(getContext().getString(R.string.chat_with), messageReceiver.getDisplayName());
 			commonShortcutInfo.bitmap = bitmap;
 		}
 		commonShortcutInfo.shortLabel = messageReceiver.getShortName();
@@ -189,16 +200,16 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@Nullable
-	public ShortcutInfoCompat getPinnedShortcutInfo(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
+	public static ShortcutInfoCompat getPinnedShortcutInfo(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
 		CommonShortcutInfo commonShortcutInfo = getCommonShortcutInfo(messageReceiver, type);
 
 		try {
 			Person person = null;
 			if (messageReceiver instanceof ContactMessageReceiver) {
-				person = ConversationNotificationUtil.getPerson(contactService, ((ContactMessageReceiver) messageReceiver).getContact(), messageReceiver.getDisplayName());
+				person = ConversationNotificationUtil.getPerson(getContactService(), ((ContactMessageReceiver) messageReceiver).getContact(), messageReceiver.getDisplayName());
 			}
 
-			ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(context, type + commonShortcutInfo.uniqueId)
+			ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(getContext(), type + commonShortcutInfo.uniqueId)
 				.setShortLabel(commonShortcutInfo.shortLabel)
 				.setLongLabel(commonShortcutInfo.longLabel)
 				.setIntent(commonShortcutInfo.intent)
@@ -219,8 +230,8 @@ public class ShortcutServiceImpl implements ShortcutService {
 		return null;
 	}
 
-	private Intent getChatShortcutIntent() {
-		Intent intent = new Intent(context, ComposeMessageActivity.class);
+	private static Intent getChatShortcutIntent() {
+		Intent intent = new Intent(getContext(), ComposeMessageActivity.class);
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.setAction(Intent.ACTION_MAIN);
@@ -228,8 +239,8 @@ public class ShortcutServiceImpl implements ShortcutService {
 		return intent;
 	}
 
-	private Intent getCallShortcutIntent() {
-		Intent intent = new Intent(context, CallActivity.class);
+	private static Intent getCallShortcutIntent() {
+		Intent intent = new Intent(getContext(), CallActivity.class);
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		intent.setAction(Intent.ACTION_MAIN);
 		intent.putExtra(CallActivity.EXTRA_CALL_FROM_SHORTCUT, true);
@@ -239,8 +250,8 @@ public class ShortcutServiceImpl implements ShortcutService {
 		return intent;
 	}
 
-	private Intent getShareTargetShortcutIntent(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
-		Intent intent = new Intent(context, RecipientListActivity.class);
+	private static Intent getShareTargetShortcutIntent(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
+		Intent intent = new Intent(getContext(), RecipientListActivity.class);
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		intent.setAction(Intent.ACTION_DEFAULT);
 		IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
@@ -254,44 +265,58 @@ public class ShortcutServiceImpl implements ShortcutService {
 	 * Try publishing the most recent chats as dynamic shortcuts to be shown as share targets or in a launcher popup
 	 * You may want to call deleteAllShareTargetShortcuts() before adding new dynamic shortcuts as they are limited
 	 */
-	@Override
 	@WorkerThread
-	public void publishRecentChatsAsShareTargets() {
-		if (!preferenceService.isDirectShare()) {
+	public static void publishRecentChatsAsShareTargets() {
+		if (ThreemaApplication.getServiceManager() == null) {
 			return;
 		}
 
-		if (ShortcutManagerCompat.isRateLimitingActive(context)) {
+		if (ThreemaApplication.getServiceManager().getPreferenceService() == null || !ThreemaApplication.getServiceManager().getPreferenceService().isDirectShare()) {
+			return;
+		}
+
+		if (ShortcutManagerCompat.isRateLimitingActive(getContext())) {
 			logger.info("Shortcuts are currently rate limited. Exiting");
 			return;
 		}
 
+		ConversationService conversationService = null;
+		try {
+			conversationService = ThreemaApplication.getServiceManager().getConversationService();
+		} catch (ThreemaException e) {
+			return;
+		}
+
+		if (conversationService == null) {
+			return;
+		}
+
+		final ConversationService.Filter filter = new ConversationService.Filter() {
+			@Override
+			public boolean onlyUnread() {
+					return false;
+				}
+
+			@Override
+			public boolean noDistributionLists() {
+					return false;
+				}
+
+			@Override
+			public boolean noHiddenChats() {
+					return true;
+				}
+
+			@Override
+			public boolean noInvalid() {
+					return true;
+				}
+		};
+
+		final List<ConversationModel> conversations = conversationService.getAll(false, filter);
+
 		synchronized (dynamicShortcutLock) {
-			final ConversationService.Filter filter = new ConversationService.Filter() {
-				@Override
-				public boolean onlyUnread() {
-					return false;
-				}
-
-				@Override
-				public boolean noDistributionLists() {
-					return false;
-				}
-
-				@Override
-				public boolean noHiddenChats() {
-					return true;
-				}
-
-				@Override
-				public boolean noInvalid() {
-					return true;
-				}
-			};
-
-			final List<ConversationModel> conversations = conversationService.getAll(false, filter);
-
-			final int numPublishableConversations = Math.min(conversations.size(), Math.min(ShortcutManagerCompat.getMaxShortcutCountPerActivity(context), MAX_SHARE_TARGETS));
+			final int numPublishableConversations = Math.min(conversations.size(), Math.min(ShortcutManagerCompat.getMaxShortcutCountPerActivity(getContext()), MAX_SHARE_TARGETS));
 
 			final List<ShortcutInfoCompat> shareTargetShortcuts = new ArrayList<>();
 			for (int i = 0; i < numPublishableConversations; i++) {
@@ -307,8 +332,8 @@ public class ShortcutServiceImpl implements ShortcutService {
 			}
 
 			try {
-				ShortcutManagerCompat.setDynamicShortcuts(context, shareTargetShortcuts);
-				logger.info("Published most recent conversations as sharing target shortcuts");
+				ShortcutManagerCompat.setDynamicShortcuts(getContext(), shareTargetShortcuts);
+				logger.info("Published most recent {} conversations as sharing target shortcuts", numPublishableConversations);
 			} catch (Exception e) {
 				logger.error("Failed setting dynamic shortcuts list ", e);
 			}
@@ -316,14 +341,12 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	/**
-	 * Delete all dynamic shortcuts associated with our app. This includes long lived shortcuts,
-	 * This may fail when the user is locked
+	 * Delete all dynamic shortcuts associated with our app.
 	 */
-	@Override
 	@WorkerThread
-	public void deleteAllShareTargetShortcuts() {
+	public static void deleteAllShareTargetShortcuts() {
 		synchronized (dynamicShortcutLock) {
-			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(context);
+			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
 
 			if (shortcutInfos.size() > 0) {
 				List<String> shortcutIds = new ArrayList<>();
@@ -332,7 +355,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 					shortcutIds.add(shortcutInfoCompat.getId());
 				}
 				try {
-					ShortcutManagerCompat.removeLongLivedShortcuts(context, shortcutIds);
+					ShortcutManagerCompat.removeLongLivedShortcuts(getContext(), shortcutIds);
 				} catch (IllegalStateException e) {
 					logger.error("Failed to remove shortcuts.", e);
 				}
@@ -341,15 +364,24 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	/**
+	 * Delete dynamic shortcut associated with provided message receiver
+	 */
+	@WorkerThread
+	public static void deleteShareTargetShortcut(String uniqueIdString) {
+		synchronized (dynamicShortcutLock) {
+			ShortcutManagerCompat.removeLongLivedShortcuts(getContext(), Collections.singletonList(uniqueIdString));
+		}
+	}
+
+	/**
 	 * Retrieve a bundle with the extras supplied with a shortcut specified by its shortcutId
 	 * @param shortcutId ID of the shortcut to retrieve extras from. The ID equals the MessageReceiver's uniqueId string
 	 * @return A BaseBundle containing the extras identifying the MessageReceiver
 	 */
-	@Override
 	@Nullable
-	public BaseBundle getShareTargetExtrasFromShortcutId(@NonNull String shortcutId) {
+	public static BaseBundle getShareTargetExtrasFromShortcutId(@NonNull String shortcutId) {
 		synchronized (dynamicShortcutLock) {
-			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(context);
+			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
 
 			if (shortcutInfos.size() > 0) {
 				for (ShortcutInfoCompat shortcutInfoCompat : shortcutInfos) {
@@ -364,7 +396,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 
 	@Nullable
 	@WorkerThread
-	private ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull ConversationModel conversationModel, int rank) {
+	private static ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull ConversationModel conversationModel, int rank) {
 		MessageReceiver messageReceiver = conversationModel.getReceiver();
 
 		if (messageReceiver == null) {
@@ -373,17 +405,27 @@ public class ShortcutServiceImpl implements ShortcutService {
 
 		Person person = null;
 		if (messageReceiver instanceof ContactMessageReceiver) {
-			person = ConversationNotificationUtil.getPerson(contactService, ((ContactMessageReceiver) messageReceiver).getContact(), messageReceiver.getDisplayName());
+			person = ConversationNotificationUtil.getPerson(getContactService(), ((ContactMessageReceiver) messageReceiver).getContact(), messageReceiver.getDisplayName());
+		}
+
+		List<Person> persons = new ArrayList<>();
+		if (messageReceiver instanceof GroupMessageReceiver) {
+			try {
+				Collection<ContactModel> contactModels = ThreemaApplication.getServiceManager().getGroupService().getMembers(conversationModel.getGroup());
+				for(ContactModel contactModel: contactModels) {
+					persons.add(ConversationNotificationUtil.getPerson(getContactService(), contactModel, NameUtil.getDisplayNameOrNickname(contactModel, true)));
+				}
+			} catch (Exception ignore) {}
 		}
 
 		if (messageReceiver.getNotificationAvatar() != null && !TestUtil.empty(messageReceiver.getDisplayName())) {
 			try {
-				ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(context, messageReceiver.getUniqueIdString())
+				ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(getContext(), messageReceiver.getUniqueIdString())
 					.setIcon(IconCompat.createWithBitmap(messageReceiver.getNotificationAvatar()))
 					.setIntent(getShareTargetShortcutIntent(messageReceiver))
 					.setShortLabel(messageReceiver.getShortName() != null ? messageReceiver.getShortName() : messageReceiver.getDisplayName())
 					.setLongLabel(messageReceiver.getDisplayName())
-					.setActivity(new ComponentName(context, MainActivity.class))
+					.setActivity(new ComponentName(getContext(), MainActivity.class))
 					.setExtras(putShareTargetExtras(messageReceiver))
 					.setLongLived(true)
 					.setRank(rank)
@@ -395,6 +437,10 @@ public class ShortcutServiceImpl implements ShortcutService {
 					shortcutInfoCompatBuilder.setPerson(person);
 				}
 
+				if (persons.size() > 0) {
+					shortcutInfoCompatBuilder.setPersons(persons.toArray(new Person[0]));
+				}
+
 				return shortcutInfoCompatBuilder.build();
 			} catch (Exception e) {
 				logger.debug("Unable to build shortcut", e);
@@ -404,7 +450,7 @@ public class ShortcutServiceImpl implements ShortcutService {
 	}
 
 	@NonNull
-	private PersistableBundle putShareTargetExtras(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
+	private static PersistableBundle putShareTargetExtras(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
 		PersistableBundle persistableBundle = new PersistableBundle();
 
 		switch (messageReceiver.getType()) {
@@ -422,5 +468,18 @@ public class ShortcutServiceImpl implements ShortcutService {
 		}
 
 		return persistableBundle;
+	}
+
+	private static Context getContext() {
+		return ThreemaApplication.getAppContext();
+	}
+
+	private static ContactService getContactService() {
+		try {
+			return Objects.requireNonNull(ThreemaApplication.getServiceManager()).getContactService();
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
+		return null;
 	}
 }

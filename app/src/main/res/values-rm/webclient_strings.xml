@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Creà: %1$s (%2$s)</string>
     <string name="webclient_active_since">Activ dapi: %s</string>
     <string name="webclient_enable">Activar Threema Web</string>
-    <string name="webclient_no_sessions_found">Avra il navigatur-web sin tes computer e chargia <b>https://web.threema.ch</b> per sa colliar. Clicca sin il button per scannar il code visualisà.</string>
+    <string name="webclient_no_sessions_found">Avra il navigatur-web sin tes computer e chargia <b>%s</b> per sa colliar. Clicca sin il button per scannar il code visualisà.</string>
     <string name="webclient_session_rename">Dar in auter num a la sesida</string>
     <string name="webclient_session_label">Nov num</string>
     <string name="webclient_session_start">Cumenzar la sesida</string>

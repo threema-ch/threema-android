@@ -50,8 +50,6 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
-import static ch.threema.storage.models.data.media.FileDataModel.METADATA_KEY_DURATION;
-
 public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 	private static final Logger logger = LoggerFactory.getLogger(VideoChatAdapterDecorator.class);
 
@@ -158,27 +156,17 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 
 			if (size > 0) {
 				datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
+				this.dateContentDescriptionPreifx = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
 			}
 
 			this.setDatePrefix(datePrefixString, holder.dateView.getTextSize());
 
 			setDefaultBackground(holder);
 		} else if (this.getMessageModel().getType() == MessageType.FILE && this.getMessageModel().getFileData() != null) {
-			String datePrefixString = "";
-			long duration = 0;
+			String datePrefixString = this.getMessageModel().getFileData().getDurationString();
+			long duration = this.getMessageModel().getFileData().getDurationSeconds();
 
-			Float durationF = this.getMessageModel().getFileData().getMetaDataFloat(METADATA_KEY_DURATION);
-			if (durationF != null) {
-				duration = durationF.longValue();
-				if (duration > 0) {
-					datePrefixString = StringConversionUtil.secondsToString(duration, false);
-					this.dateContentDescriptionPreifx = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
-				}
-			}
-
-			if (this.getMessageModel().getFileData().isDownloaded()) {
-				datePrefixString = "";
-			} else {
+			if (!this.getMessageModel().getFileData().isDownloaded()) {
 				long size = this.getMessageModel().getFileData().getFileSize();
 				if (size > 0) {
 					if (duration > 0) {
@@ -186,7 +174,10 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 					} else {
 						datePrefixString = Formatter.formatShortFileSize(getContext(), size);
 					}
+					this.dateContentDescriptionPreifx = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
 				}
+			} else {
+				this.dateContentDescriptionPreifx = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
 			}
 
 			if (holder.dateView != null) {
@@ -202,7 +193,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 					(ComposeMessageFragment) helper.getFragment(),
 					holder.bodyTextView,
 					this.getMessageModel(),
-					this.getMessageModel().getFileData().getCaption().length() < 80,
+					true,
 					actionModeStatus.getActionModeEnabled(),
 					onClickElement);
 

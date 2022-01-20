@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Aangemaakt op: %1$s (%2$s)</string>
     <string name="webclient_active_since">Actief sinds: %s</string>
     <string name="webclient_enable">Desktop-app/Webclient inschakelen</string>
-    <string name="webclient_no_sessions_found">Om te verbinden, download de desktop-app (<b>https://threema.ch/download</b> of open de webclient (<b>https://web.threema.ch</b> op uw pc en tik op de knop hieronder om de QR-code op het computerscherm te scannen.</string>
+    <string name="webclient_no_sessions_found">Om te verbinden, download de desktop-app (<b>https://threema.ch/download</b>) of open de webclient (<b>%s</b>) op uw pc en tik op de knop hieronder om de QR-code op het computerscherm te scannen.</string>
     <string name="webclient_session_rename">Sessie hernoemen</string>
     <string name="webclient_session_label">Nieuwe naam</string>
     <string name="webclient_session_start">Sessie starten</string>

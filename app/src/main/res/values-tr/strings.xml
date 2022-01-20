@@ -125,7 +125,7 @@ bu kimlik için kaydettiği anahtarla eşleşmiyor . Bu, birisinin taranan kodu 
     <string name="message_deleted">Mesaj(lar) Silindi</string>
     <string name="mobile_already_linked">Threema ID\'niz zaten bu cep telefonu numarasına bağlı</string>
     <string name="email_already_linked">Threema ID\'niz zaten bu e-posta adresine bağlı</string>
-    <string name="whoaaa">Threema Bildirimi</string>
+    <string name="whoaaa">Bildirim</string>
     <string name="really_delete_message_title">Mesajı Sil</string>
     <string name="really_delete_thread">Sohbeti Sil</string>
     <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">%d sohbeti gerçekten silmek istiyor musunuz ?
@@ -153,8 +153,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağın
     <string name="backup_sum">Threema ID\'nizi dışa aktarın</string>
     <string name="backup_and_delete">Yedekle ve Sil</string>
     <string name="delete_id_title">Kimliği Sil</string>
-    <string name="delete_id_message">Bir yedek oluşturmadığınız veya bu kimliğin bir kopyasını dışa aktarıp kaydetmediğiniz sürece, bir daha asla gönderemez veya tekrar bu kimliğe sahip mesajları.\n\nBu kimliği tekrar kullanmayı düşünmüyorsanız,
-silmeden önce bağlantılı tüm e-posta adreslerini/telefon numaralarını kaldırmalısınız .</string>
+    <string name="delete_id_message">Bir yedek oluşturmadığınız veya bu kimliğin bir kopyasını dışa aktarıp kaydetmediğiniz sürece, bu kimlikle bir daha asla mesaj gönderemez veya
+alamazsınız.\n\nBu kimliği artık kullanmak istemiyorsanız, şunu yapmanız önerilir: bir iptal parolası belirleyin ve silmeden önce myid. Threema.ch/revoke adresindeki kimliği iptal edin.</string>
     <string name="delete_id_message2">Son uyarı: Bu cihazdaki kimliğinizi gerçekten silmek istiyor musunuz?</string>
     <string name="delete_id_sum">Kimliğinizi ve bu cihazdaki tüm verileri kalıcı olarak silin</string>
     <string name="backup_password_summary">Kimlik dışa aktarma işleminiz bir şifre ile şifrelenir. Harfler, sayılar ve simgelerden oluşan bir kombinasyon kullanın. Buraya ne girdiğinizi unutmayın!</string>
@@ -195,7 +195,7 @@ Threema her başlatıldığında girmeniz gerekeceğini unutmayın .</string>
     <string name="error">Hata</string>
     <string name="no_contacts"><![CDATA[Henüz hiç kişiniz yok. Senkronizasyonu açın (Ayarlar> Gizlilik) veya kişileri manuel olarak ekleyin.]]></string>
     <string name="masterkey_title">Parolayı Girin</string>
-    <string name="masterkey_body">Threema ana anahtarınız bir parola ile korunmaktadır.
+    <string name="masterkey_body">Ana anahtarınız bir parola ile korunmaktadır.
 Anahtarın kilidini açmak için parolanızı girin .</string>
     <string name="masterkey_unlocking">Ana anahtarın kilidini açma</string>
     <string name="verify_phonecall_text">Çağrı isteyin</string>
@@ -519,7 +519,7 @@ kaybetmeniz veya çalınması durumunda kimliğinizi https://myid.threema.ch/rev
     <string name="remove">Kaldırmak</string>
     <string name="image_already_added">Bu resim zaten eklenmiş.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">%d karakter min.</string>
-    <string name="mark_read">Okuma İşareti</string>
+    <string name="mark_read">Okundu olarak işaretle</string>
     <string name="attach_document">Dosya</string>
     <string name="parent_directory">ebeveyn</string>
     <string name="file_placeholder">Dosya</string>
@@ -622,10 +622,10 @@ Yalnızca WiFi ağlarına dosya yüklemenizi ve indirmenizi öneririz .</string>
     <string name="off">kapalı</string>
     <string name="new_wizard_select_country">Ülkeni seç</string>
     <string name="new_wizard_lets_get_started">Başlayalım!</string>
-    <string name="new_wizard_setup_threema">Threema\'yı Kur</string>
+    <string name="new_wizard_setup_threema">Şimdi Kurun</string>
     <string name="new_wizard_restore_id_backup">Dışa aktarılan kimliği geri yükle</string>
     <string name="new_wizard_welcome">Threema\'ya Hoşgeldiniz!</string>
-    <string name="new_wizard_move_finger">Parmağınızı ekranda hareket ettirin</string>
+    <string name="new_wizard_move_finger">Yeni bir Threema Kimliği oluşturmak için parmağınızı ekranda hareket ettirin</string>
     <string name="new_wizard_this_is_your_id">Bu sizin Threema ID\'niz:</string>
     <string name="new_wizard_works_like_phone_number">Threema ID\'niz bir telefon numarası gibi çalışır.\nArkadaşlarınız size bu kimlikle ulaşabilir.</string>
     <string name="new_wizard_choose_nickname">Bir takma ad seçin</string>
@@ -874,10 +874,10 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="no_matching_work_contacts">Yönetici tarafından doğrulanmış Threema Work kişisi bulunamadı</string>
     <string name="all">Herşey</string>
     <string name="webclient_session_stop_all">Hepsini kapat</string>
-    <string name="webclient_running_sessions">%d Threema Web oturumları çalışıyor</string>
+    <string name="webclient_running_sessions">%d oturum çalışıyor</string>
     <string name="passphrase_service_name">Parola Hizmeti</string>
     <string name="passphrase_service_description">Parola kilidi açıldığında bildirim</string>
-    <string name="webclient_service_description">Bir Threema Web oturumu etkin olduğunda bildirim</string>
+    <string name="webclient_service_description">Bir Web oturumu etkin olduğunda bildirim göster</string>
     <string name="prefs_title_accept_privacy_policy">Gizlilik Politikasını Kabul Et</string>
     <string name="privacy_policy_explain">%1$s , gizliliğinizi diğer habercilerden daha sıkı bir şekilde korur. %2$s sayfamızdan daha fazla bilgi edinin.</string>
     <string name="privacy_policy_check_confirm">%s kullanmak için lütfen Gizlilik Politikası\'nı kabul edin.\n\n(AB yönetmeliği 2016/679 uyarınca gereklilik)</string>
@@ -898,7 +898,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="unchanged">Değişmemiş</string>
     <string name="safe_learn_more_button">Daha fazla bilgi edin</string>
     <string name="safe_enable_explain">Sohbet etmek için ihtiyacınız olan tek şey yalnızca cihazınızda saklanır. Bizde bir hesabınız yok ve telefonunuzu kaybederseniz veya verilerinizi yanlışlıkla silerseniz size yardımcı olamayız.\n\nThreema Safe, seçtiğiniz güvenli bir sunucuda anonim olarak anahtarlarınız, kişi listeniz ve grup üyelikleriniz (ancak mesaj içeriği yok) dahil olmak üzere tüm önemli verilerin otomatik yedeklerini oluşturur .</string>
-    <string name="safe_disable_confirm">Threema Safe\'i etkinleştirmeden gerçekten devam etmek istiyor musunuz?</string>
+    <string name="safe_disable_confirm">Threema Safe\'i etkinleştirmeden devam etmek istiyor musunuz? Threema Safe\'i kullanırken , cihazınıza erişiminizi kaybetmeniz durumunda Threema Kimliğinizi , kişilerinizi ve gruplarınızı geri yükleyebilirsiniz .</string>
     <string name="safe_configure_choose_password">Lütfen güçlü bir şifre seçin. Threema Safe yedeklemenizi geri yüklemek için bu şifreye ihtiyacınız olacaktır.</string>
     <string name="safe_configure_choose_server">Bir Threema Safe sunucusu seçin</string>
     <string name="safe_configure_server_explain">Threema\'nın sunucusunu kullanabilir veya bunun yerine kullanılacak bir üçüncü taraf yedekleme sunucusu belirtebilirsiniz.</string>
@@ -1041,15 +1041,15 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="delete">Sil</string>
     <string name="num_archived_chats">%d arşivlenmiş sohbet</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="tooltip_identity_popup">Threema ID\'nizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
+    <string name="tooltip_identity_popup">Threema Kimliğinizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
     <string name="tap_to_start">%s\'i şimdi başlatmak için buraya hafifçe vurun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme yolu</string>
     <string name="backup_data_no_permission">Bu dizine yazılamıyor. Lütfen başka birini seçiniz.</string>
-    <string name="prefs_sum_show_unread_badge">Mesajlar simgesinin yanındaki okunmamış mesaj sayısını gösteren bir rozet göster</string>
-    <string name="prefs_title_show_unread_badge">Okunmamış mesajlar rozeti</string>
+    <string name="prefs_sum_show_unread_badge">Mesaj Alt gezinme sekmelerinde rozetleri göster</string>
+    <string name="prefs_title_show_unread_badge">Rozetler</string>
     <string name="pinning_not_trusted">Sertifika Sabitleme Hatası. Lütfen cihazınızın kimlik bilgileri deposuna \"Kök Sertifika Yetkilisi - G2\" nin yüklü ve etkinleştirilmiş olup olmadığını kontrol edin.</string>
-    <string name="pinning_failed">Sertifika Sabitleme Hatası. Olası saldırısı,reklam engelleyici, içerik filtresi veya «AdGuard» gibi bir güvenlik duvarı uygulamanız varsa, lütfen Threema için devre dışı bırakın.</string>
+    <string name="pinning_failed">Sertifika Sabitleme Hatası. Olası ortadaki adam saldırısı. \"AdGuard\" gibi bir reklam engelleyici, içerik filtresi veya güvenlik duvarı uygulamanız varsa, lütfen Threema için devre dışı bırakın.</string>
     <string name="open_myid_popup">Hızlı erişim penceresini aç</string>
     <string name="logo">Logo / Yukarı kaydır</string>
     <string name="quote_subj_end">Alıntıyı bitir</string>
@@ -1061,7 +1061,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="edit_type_content_description">görüntüleyin veya düzenleyin %1$s %2$s öğesini görüntüleyin veya düzenleyin</string>
     <string name="group">Grup</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p> Gizlilik Politikamız aşağıdaki değişikliği yansıtacak şekilde güncellendi: </p> <p> %1$s artık harita ve İÇN verileri sağlamak için Google Play ve Google Haritalar\'a bağlı değil. </p> Lütfen gizlilik politikasının tamamını <a href="%2$s"> burada </a> inceleyin .]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Hizmetleri yüklü değil. «Push» konumuna geçilemiyor.</string>
+    <string name="play_services_not_installed_unable_to_use_push">Hizmetleri yüklenemedi. «Push» konumuna geçilemiyor.</string>
     <string name="unable_to_get_current_location">Mevcut konum belirlenemedi.</string>
     <string name="lp_search_place_min_chars">Bir yer aramak için lütfen en az üç karakter girin.</string>
     <string name="lp_search_place_no_matches">Eşleşen yer bulunamadı. Lütfen sorgunuzu değiştirin.</string>
@@ -1094,8 +1094,8 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="work_life_dnd_active">Çalışma saatleri dışında aktif</string>
     <string name="pencil">Kalem</string>
     <string name="warning">Uyarı</string>
-    <string name="password_remember_warning">Buraya girdiğiniz şeyi hatırlayın! Yana %s sunucularının herhangi şifreleri kaydetmez PIN veya şifreyi unuttuysanız, biz size yardım edemez.</string>
-    <string name="safe_backup_tap_to_restart">Uygulamayı şimdi yeniden başlatmak için bildirime dokunun.</string>
+    <string name="password_remember_warning">Buraya ne girdiğinizi unutmayın! %s sunucuları herhangi bir şekilde şifrelerinizi kayıt etmez. PIN veya şifre unutursanız bizde size yardım edemeyiz.</string>
+    <string name="safe_backup_tap_to_restart">Uygulamayı şimdi yeniden başlatmak için gösterilen sistem bildirimine dokunun. Bildirimi göremiyorsanız, lütfen telefonunuzun bildirim çubuğunu aşağı kaydırın.</string>
     <string name="send_to_support">Threema Desteğine Gönder</string>
     <string name="menu_legal">Yasal</string>
     <string name="tooltip_work_hint">Bu kişi Threema Work\'ü kullanıyor.</string>
@@ -1123,14 +1123,12 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="translators_thanks">Gönüllü çevirmenlerimize çok teşekkürler:\n%s</string>
     <string name="ballot_window_hide">Bu pencereyi gizle</string>
     <string name="ballot_window_show">Anketleri göster</string>
-    <string name="tooltip_video_call">Güvenli sesli aramalara ek olarak, Threema artık uçtan uca şifreli video görüşmeleri sunuyor.</string>
     <string name="tooltip_voip_other_party_video_on">Diğer taraf video görüşmesi başlattı. Kameranızı da açmak için buraya dokunun.</string>
-    <string name="tooltip_voip_other_party_video_disabled">Karşı taraf geçerli bir uygulama sürümü kullanmıyor veya video görüşmelerine izin vermiyor.</string>
-    <string name="video_calls_new">Yeni: Video Görüşmeleri</string>
+    <string name="tooltip_voip_other_party_video_disabled">Karşı taraf, güncel bir uygulama sürümünü kullanmıyor veya görüntülü görüşmelere izin vermiyor.</string>
     <string name="biometrics_not_enrolled">Sisteme hiçbir biyometri kaydedilmemiştir.</string>
     <string name="biometrics_not_avilable">Biyometri bu sistemde mevcut değildir.</string>
     <string name="biometrics_no_permission">Biyometri verilerine veya donanıma erişim izni yok.</string>
-    <string name="verification_settings_desc">Renkli noktalar kişinin doğrulama düzeyini gösterir.</string>
+    <string name="verification_settings_desc">Noktalar, kişinin doğrulama düzeyinin bir göstergesidir .</string>
     <string name="verification_levels_title">Doğrulama Seviyesi</string>
     <string name="work_verification_levels_title">Kuruluşunuzdaki kişiler</string>
     <string name="external_verification_levels_title">Diğer kişiler</string>
@@ -1139,7 +1137,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="insert_datetime">Tarih ve Saat ekleyin</string>
     <string name="prefs_sum_disable_smart_replies">Android Bildirimlerinde Akıllı Yanıtları Engelleme</string>
     <string name="prefs_title_disable_smart_replies">Akıllı Yanıtları Devre Dışı Bırak</string>
-    <string name="url_warning_body_alt">Açmak üzere olduğunuz bağlantının Ana bilgisayar adı Şüpheli.\n\nBu, sizi başka bir şeymiş gibi davranarak bir siteyi açmanız için kandırmaya yönelik bir girişim olabilir.\n\nYine de devam etmek ister misin?</string>
+    <string name="url_warning_body_alt">Açmak üzere olduğunuz bağlantının ana bilgisayar adı şüpheli.\nBu, başka bir şeymiş gibi davranan bir site açmanız için sizi kandırma girişimi olabilir.\nYine de devam etmek ister misin?</string>
     <string name="read_on">Okumaya devam et…</string>
     <string name="forward_text">Metni ilet</string>
     <string name="an_error_occurred_during_send">Bir veya daha fazla mesaj gönderilirken hata oluştu.</string>
@@ -1193,10 +1191,10 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="transcoder_unknown_audio_error">Bilinmeyen ses kod dönüştürme hatası oluştu.</string>
     <string name="video_size_explain">Bu ayardan bağımsız olarak çok büyük videolar sıkıştırılabilir.</string>
     <string name="status_create_notes">*Burada yalnızsınız*\nBu sohbeti metin, medya veya belgeler için güvenli bir not defteri olarak kullanın.</string>
-    <string name="status_create_notes_off">*Artık bu sohbette yalnız değilsiniz*\nTüm grup üyelerine yeni mesajlar gönderilecek.</string>
-    <string name="note_group_howto">İpucu: Herhangi bir grup üyesi eklemezseniz, bu gruba gelen mesajlar yerel kalacaktır. Bu, notları, medyayı veya belgeleri güvenli bir şekilde depolamak veya bunları masaüstüne aktarmak için idealdir.</string>
+    <string name="status_create_notes_off">*Artık bu sohbette yalnız değilsin *\nTüm grup üyelerine yeni mesajlar gönderilecek.</string>
+    <string name="note_group_howto">İpucu: Herhangi bir grup üyesi eklemezseniz, bu gruba gönderilen mesajlar yerel olarak kalacaktır. Bu, notları, medyayı veya belgeleri güvenli bir şekilde saklamak veya masaüstüne aktarmak için idealdir.</string>
     <string name="mark_unread">Okunmamış olarak işaretle</string>
-    <string name="mark_read_short">Okuyun</string>
+    <string name="mark_read_short">Okundu olarak işaretle</string>
     <string name="unread">Okunmamış</string>
     <string name="missing_app_licence">Uygulama mağazası satın alma işleminizi doğrulayamadı. Google Play kullanıyorsanız, lütfen Google Play Store Uygulamasının verilerini temizleyin ve cihazınızı yeniden başlatın.</string>
     <string name="set_backup_path">Yedekleme yolunu ayarlayın</string>
@@ -1208,11 +1206,12 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="group_link_default_name">Adsız bağlantı</string>
     <string name="group_link_share">Grup bağlantısını paylaş</string>
     <string name="group_request_incoming_dialog_title">%s\'den istek</string>
-    <string name="accept">Kabul etmek</string>
+    <string name="accept">Kabul et</string>
     <string name="reject">Reddetmek</string>
-    <string name="group_request_already_sent"><![CDATA[Bu bağlantı aracılığıyla <b> %s </b> için zaten bir grup isteği gönderdiniz . Yeniden göndermek için isteği tıklayın.]]></string>
+    <string name="group_request_already_sent"><![CDATA[Bu bağlantı aracılığıyla <b> %s </b> için zaten bir açık grup isteğiniz var ve grup yöneticisinden bir yanıt bekleniyor. Yeniden göndermeyi denemek istiyorsanız listedeki isteğe tıklayın.]]></string>
     <string name="group_link_none">Henüz bağlantı oluşturulmadı</string>
     <string name="group_request_confirm_send"><![CDATA[<b> %1$s </b> için <b> %2$s </b> yöneticisine bir grup isteği göndermek üzeresiniz . Bu bağlantı geçersiz kılınmadıysa, yöneticinin cihazı isteğinizi alır almaz otomatik olarak gruba eklenirsiniz.]]></string>
+    <string name="really_delete_outgoing_request">%d grup isteğini gerçekten silmek istiyor musunuz ? İstek(ler)in iptal edilmeyeceğini ve istek(ler) henüz grup yöneticisi tarafından yanıtlanmadıysa yine de kabul veya reddedilebileceğinizi unutmayın.</string>
     <string name="really_delete_group_request_title">Grup isteğini gerçekten sil</string>
     <string name="sent_to">Gönderildi: %s</string>
     <string name="sent_on">Gönderildi: %s</string>
@@ -1249,12 +1248,41 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="open_group_requests_show">Katılma isteklerini göster</string>
     <string name="open_group_requests_hide">Katılma isteklerini gizle</string>
     <string name="group_request_link_already_deleted">Grup bağlantısı bu arada silindi</string>
+    <string name="really_delete_incoming_request">%d grup isteğini gerçekten silmek istiyor musunuz ? Silindikten sonra isteklere cevap veremezsiniz.</string>
+    <string name="incoming_group_request_no_message">Açık bağlantı yoluyla gönderildi… Mesaj yok</string>
+    <string name="group_request_received_through">Bağlantı yoluyla: %s</string>
+    <string name="reaccept">Yeniden kabul et</string>
+    <string name="group_link_edit_expiration_date">Son kullanma tarihini düzenle</string>
+    <string name="group_link_show_qr">QR kodunu göster</string>
+    <string name="group_link_rename">Yeniden isimlendirmek</string>
+    <string name="group_link_rename_tag">Yeni isim</string>
     <string name="tap_here_for_more">Daha fazla bilgi için buraya dokunun</string>
-    <string name="another_connection_instructions">Sunucu, aynı Threema Kimliğine sahip farklı cihazlardan iki veya daha fazla bağlantı algıladı.\n\nAynı Threema ID\'yi aynı anda birkaç cihazda kullanmak mümkün değildir. Yeni mesajlar yalnızca sunucuda en son oturum açan cihaza iletilir.\n\nYeni bir cihaza geçiyorsanız, lütfen eski cihazda %s uygulamasını kaldırın veya devre dışı bırakın ve ardından yenisini yeniden başlatın.</string>
+    <string name="another_connection_instructions">Sunucu, aynı Threema Kimliğine sahip farklı cihazlardan iki veya daha fazla bağlantı algıladı .\nAynı Threema ID\'yi aynı anda birkaç cihazda kullanmak mümkün değildir . Yeni mesajlar yalnızca sunucuda en son oturum açan cihaza iletilir.\n\nYeni bir cihaza geçiyorsanız, lütfen eski cihazda %s uygulamasını kaldırın veya devre dışı bırakın ve ardından yenisini yeniden başlatın.</string>
     <string name="app_store_error_code">Uygulama mağazası hata kodu: %d</string>
+    <string name="backup_restore_type"><![CDATA[Ne tür bir yedeklemeyi geri yüklemek istiyorsunuz? <br/> <br/> <a href= %s > Threema\'daki yedeklemeler hakkında daha fazla bilgi edinin</a>]]></string>
+    <string name="data_backup_info">Sohbetler dahil her şeyi geri yükleyin.</string>
+    <string name="new_to_threema">%s için yeni misiniz ?</string>
+    <string name="back_to_threema">%s\'e geri dönelim mi?</string>
+    <string name="id_backup_info">Yalnızca kimliğinizi geri yükleyin</string>
+    <string name="restore_your_id_contacts_and_groups">Kimliğinizi, kişilerinizi ve gruplarınızı geri yükleyin</string>
+    <string name="threema_safe_backup">Threema Güvenli Yedekleme</string>
+    <string name="forgot_your_password"><![CDATA[<a href= %s >Şifrenizi mi unuttunuz?</a>]]></string>
     <string name="download_failed">İndirme başarısız. Hata kodu: %d</string>
     <string name="edit_answer">Cevabı düzenle</string>
     <string name="share_media">Başka bir uygulamayla paylaş…</string>
+    <string name="group_link_administered">Yönetilen</string>
+    <string name="group_link_open">Açık</string>
+    <string name="group_link_share_message">Aşağıdaki bağlantı aracılığıyla Threema grubuma katılın!: %s</string>
+    <string name="group_link_bottom_sheet_title">Grup Bağlantısı</string>
+    <string name="group_link_bottom_sheet_desc">Bu bağlantıyı gruba katılmak istediğiniz kişilerle paylaşın. Aşağıdaki seçenekleri göz önünde bulundurun.</string>
+    <string name="group_link_bottom_sheet_link_title">Bağlantı</string>
+    <string name="group_link_properties_title">Bağlantı Özellikleri</string>
+    <string name="group_link_property_administration_title">Manuel onay</string>
+    <string name="group_link_property_administration_desc">Aktifse, grup sohbetinde kabul edebileceğiniz veya reddedebileceğiniz istekler alacaksınız.</string>
+    <string name="group_link_property_expiration_title">Son Kullanma Tarihi</string>
+    <string name="group_link_property_expiration_desc">Bağlantı belirlenen tarihten sonra sona erer.</string>
+    <string name="group_image">Grup resmi</string>
+    <string name="add_group_link">Grup bağlantısı aracılığıyla üye ekleyin</string>
     <string name="miui_battery_optimization">Bu görevi gerçekleştirmek için lütfen %s için \"pil optimizasyonunu\" devre dışı bırakın. Xiaomi, uygulamaların bu ayarlar ekranını doğrudan aramasına izin vermediğinden, bunu telefonunuzun ayarlarından manuel olarak yapmanız gerekecektir. Pil optimizasyonunu devre dışı bırakma konusunda yardıma ihtiyacınız varsa lütfen Xiaomi desteği ile iletişime geçin.</string>
     <string name="forward_captions">Altyazıları dahil et</string>
     <string name="importing_files_failed">Yedek dosya içe aktarılamıyor. Dahili bellekte yeterli boş alan olduğundan emin olun.</string>
@@ -1270,4 +1298,38 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="prefs_title_reset_receipts">Bireysel ayarları temizle</string>
     <string name="prefs_sum_reset_receipts">Okundu bilgileri ve yazma göstergesi için kişiye özel ayarları varsayılana sıfırlayın</string>
     <string name="reset_successful">Varsayılanlara başarıyla sıfırlandı</string>
+    <string name="group_link_add">Grup Bağlantısı Ekle</string>
+    <string name="group_requests_show_menu_title">Açık katılma isteklerini göster</string>
+    <string name="group_request_show_all">Tüm grup isteklerini göster</string>
+    <string name="group_links_manage_menu">Grup bağlantılarını yönet</string>
+    <string name="group_request_sent_menu">Gönderilen grup istekleri</string>
+    <string name="really_delete_group_link_title">Grup Bağlantısını Sil</string>
+    <string name="qr_scan_result_dialog_title">QR Tarama Sonucu</string>
+    <string name="scan_failure_dialog_title">Tarama başarısız</string>
+    <string name="no_threema_qr_info">Bu, Threema\'ya özgü bir QR Kodu değildir. Çözülen Kod İçeriği:</string>
+    <string name="default_group_link">Varsayılan Grup Bağlantısı</string>
+    <string name="default_link_name">Varsayılan bağlantı</string>
+    <string name="reset_default_group_link">Varsayılan grup bağlantısını sıfırla</string>
+    <string name="resend">Yeniden gönder</string>
+    <string name="group_request_already_sent_title">İstek zaten gönderildi</string>
+    <string name="qr_scanner_id_hint">Kimliğini doğrulamak için kişinin QR kodunu tarayın. Kodu görüntülemek için, kişinizden Threema ana ekranının sol üst köşesindeki profil resmine dokunmasını isteyin.</string>
+    <string name="enable_storage_access_for_media">Cihazınızdaki resimleri ve videoları görmek için depolama erişimini etkinleştirin</string>
+    <string name="take_me_there">Beni oraya götür...</string>
+    <string name="notification_channel_group_join_request">Alınan grup istekleri için bildirim kanalı</string>
+    <string name="reset_default_group_link_title">Varsayılan Bağlantı Bilgilerini Sıfırla</string>
+    <string name="reset_default_group_link_desc">Daha önce paylaşılan bağlantı geçersiz olacak ve eski bağlantı üzerinden yapılan istekler süresi dolmuş bir yanıtla otomatik olarak reddedilecektir.</string>
+    <string name="other_group_links">diğerleri</string>
+    <string name="show_public_key">Genel anahtarı göster</string>
+    <string name="public_key_for">%s genel anahtarı</string>
+    <string name="copied">kopyalandı</string>
+    <string name="no_votes_yet">Şu ana kadar hiç oy kullanılmadı.</string>
+    <string name="permission_contacts_sync_required">Senkronize edebilmek için lütfen kişilerinize erişime izin verin.</string>
+    <string name="not_voted_user_list">Bu katılımcılar oy vermedi: %s</string>
+    <string name="invalid_onprem_id">Bu kimlik ya mevcut değil (artık) ya da kimliğiniz ile uyumlu değil.</string>
+    <string name="enable_unknown_sources">Yükleyemiyor. Lütfen %s için \"Bilinmeyen uygulamaları yükle\"nin etkinleştirildiğinden emin olun .</string>
+    <string name="add_shortcut_success">Kısayol başarıyla oluşturuldu</string>
+    <string name="add_shortcut_error">Başlatıcı ekranına kısayol eklenirken hata oluştu</string>
+    <string name="web_link">Bağlantı</string>
+    <string name="link_copied">%s kopyalandı</string>
+    <string name="invalid_onprem_id_title">Kimlik Eklenemiyor</string>
 </resources>

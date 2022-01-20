@@ -21,17 +21,16 @@
 
 package ch.threema.app.webrtc;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.saltyrtc.tasks.webrtc.exceptions.IllegalStateError;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.DataChannel;
 
 import java.util.concurrent.ExecutionException;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Function;
 
@@ -45,7 +44,7 @@ import java8.util.function.Function;
  */
 @AnyThread
 public class UnboundedFlowControlledDataChannel extends FlowControlledDataChannel {
-	@NonNull final private Logger logger = LoggerFactory.getLogger("UnboundedFlowControlledDataChannel");
+	@NonNull final private Logger logger = LoggingUtil.getThreemaLogger("UnboundedFlowControlledDataChannel");
 	@NonNull private CompletableFuture<Void> queue;
 
 	/**

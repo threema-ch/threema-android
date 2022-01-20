@@ -26,6 +26,7 @@ import android.content.Context;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 
 public class StringConversionUtil {
@@ -40,10 +41,10 @@ public class StringConversionUtil {
 		return new String(bytes);
 	}
 
-	public static String secondsToString(long fullSeconds, boolean longFormat) {
+	public static @NonNull String secondsToString(long fullSeconds, boolean longFormat) {
 		String[] pieces = secondsToPieces(fullSeconds);
 
-		if(longFormat || !pieces[0].equals("00")) {
+		if (longFormat || !pieces[0].equals("00")) {
 			return pieces[0] + ":" + pieces[1] + ":" + pieces[2];
 		}
 		else {
@@ -51,7 +52,7 @@ public class StringConversionUtil {
 		}
 	}
 
-	private static String[] secondsToPieces(long fullSeconds) {
+	private static @NonNull	String[] secondsToPieces(long fullSeconds) {
 		String[] pieces = new String[3];
 
 		pieces[0] = xDigit((int) ((float)fullSeconds / 3600), 2);

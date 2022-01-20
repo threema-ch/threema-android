@@ -42,7 +42,6 @@ import org.saltyrtc.tasks.webrtc.exceptions.UntiedException;
 import org.saltyrtc.tasks.webrtc.transport.SignalingTransportHandler;
 import org.saltyrtc.tasks.webrtc.transport.SignalingTransportLink;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.DataChannel;
 
 import java.io.IOException;
@@ -77,6 +76,7 @@ import ch.threema.app.webclient.webrtc.TemporaryDataChannelObserver;
 import ch.threema.app.webclient.webrtc.TemporaryTaskEventHandler;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 
 /**
@@ -96,7 +96,7 @@ class SessionConnectionContext {
 	static final int C2C_CONNECT_TIMEOUT_MS = 42000;
 
 	// Logger
-	private final Logger logger = LoggerFactory.getLogger(SessionConnectionContext.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("SessionConnectionContext");
 
 	// Session context
 	@NonNull final SessionContext ctx;
@@ -365,7 +365,7 @@ class SessionConnectionContext {
 		final UnboundedFlowControlledDataChannel ufcdc = new UnboundedFlowControlledDataChannel(logPrefix, this.sdc);
 
 		// Create signalling data channel logger
-		final Logger sdcLogger = LoggerFactory.getLogger("SignalingDataChannel");
+		final Logger sdcLogger = LoggingUtil.getThreemaLogger("SignalingDataChannel");
 		if (sdcLogger instanceof ThreemaLogger) {
 			((ThreemaLogger) sdcLogger).setPrefix(logPrefix + "." + this.sdc.label() + "/" + this.sdc.id());
 		}

@@ -24,7 +24,6 @@ package ch.threema.app.backuprestore.csv;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -38,9 +37,10 @@ import java.util.List;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.services.FileService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 
 public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
-	private static final Logger logger = LoggerFactory.getLogger("BackupRestoreDataServiceImpl");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupRestoreDataServiceImpl");
 
 	private final Context context;
 	private final FileService fileService;

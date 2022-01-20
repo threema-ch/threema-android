@@ -154,7 +154,7 @@
     <string name="backup_sum">匯出您的 Threema ID</string>
     <string name="backup_and_delete">備份和刪除</string>
     <string name="delete_id_title">刪除ID</string>
-    <string name="delete_id_message">除非您已建立備份或匯出並儲存了該ID的副本，否則您將永遠無法使用該ID再次傳送或接收訊息。\ n \ n如果您不想使用此ID，應該要刪除所有已連結的電子郵件地址/電話號碼。</string>
+    <string name="delete_id_message">除非您已建立備份或匯出並儲存了此ID的副本，否則您將永遠無法使用該ID再次傳送或接收訊息。\n\n如果您不想再使用此ID，建議在刪除ID之前，在 myid.threema.ch/revoke 上設定撤銷密碼並撤銷該ID。</string>
     <string name="delete_id_message2">最後警告：您確定要刪除此裝置上的ID嗎？</string>
     <string name="delete_id_sum">永久刪除您的ID和此裝置上的所有資料</string>
     <string name="backup_password_summary">您的ID匯出將使用密碼進行加密。使用字母，數字和符號的組合。千萬不能忘記這裡輸入的內容！</string>
@@ -221,7 +221,7 @@
     <string name="file_is_not_a_image">選定的檔案不是圖片</string>
     <string name="connection_error">連線錯誤，請稍後再試。</string>
     <string name="me_myself_and_i">我自己</string>
-    <string name="really_forward">轉寄至 %1$s？</string>
+    <string name="really_forward">轉寄至%1$s？</string>
     <string name="really_send">傳送至%1$s？</string>
     <string name="ringtone_none">靜音</string>
     <string name="no_camera_installed">沒有可用的攝影機</string>
@@ -354,7 +354,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no">否</string>
     <string name="yes">是</string>
     <string name="deleting_contact">正在刪除聯絡人</string>
-    <string name="prefs_contact_soring">排序中</string>
+    <string name="prefs_contact_soring">排序</string>
     <string name="prefs_sum_contact_soring">在聯絡人名單中設定條目的排序順序</string>
     <string name="prefs_contact_format">檢視聯絡人姓名</string>
     <string name="prefs_sum_contact_format">設定聯絡人姓名格式</string>
@@ -428,7 +428,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="media_gallery">多媒體庫</string>
     <string name="media_file_not_found">無法開啟媒體檔案。該檔案已被刪除或未從伺服器下載。</string>
     <string name="no_media_found">在此對話中找不到%s。</string>
-    <string name="media_gallery_all">所有</string>
+    <string name="media_gallery_all">所有媒體</string>
     <string name="media_gallery_pictures">圖片</string>
     <string name="media_gallery_videos">影片</string>
     <string name="group_membership_title">這些群組的成員</string>
@@ -846,7 +846,7 @@ Threema 支援的所有表情符號。</string>
     <string name="notification_priority_default">低</string>
     <string name="notification_priority_high">高</string>
     <string name="notification_priority_max">最高</string>
-    <string name="prefs_title_notification_priority">優先</string>
+    <string name="prefs_title_notification_priority">優先度</string>
     <string name="pin">置頂</string>
     <string name="unpin">取消置頂</string>
     <string name="location_services_disabled">定位服務已關閉。您想要現在開啟此服務嗎？</string>
@@ -1047,6 +1047,10 @@ Threema 支援的所有表情符號。</string>
     <string name="delete">刪除</string>
     <string name="num_archived_chats">%d個已封存的對話</string>
     <string name="continue_recording">繼續錄音</string>
+    <string name="whatsnew_title">(an empty phrase)</string>
+    <string name="whatsnew_headline">(an empty phrase)</string>
+    <string name="whatsnew2_title">(an empty phrase)</string>
+    <string name="whatsnew2_body">(an empty phrase)</string>
     <string name="tooltip_identity_popup">點擊這裡可快速顯示您的 Threema ID 或掃描其他人的 ID</string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
@@ -1129,10 +1133,8 @@ Threema 支援的所有表情符號。</string>
     <string name="translators_thanks">非常感謝我們的翻譯志工：\n%s</string>
     <string name="ballot_window_hide">隱藏公開的投票</string>
     <string name="ballot_window_show">顯示公開的投票</string>
-    <string name="tooltip_video_call">除了反竊聽的語音通話之外，Threema 現在還提供端到端加密的視訊通話。</string>
     <string name="tooltip_voip_other_party_video_on">對方已發起視訊通話，點擊這裡開啟攝影機。</string>
     <string name="tooltip_voip_other_party_video_disabled">對方使用的應用程式版本不支援或不允許進行視訊通話。</string>
-    <string name="video_calls_new">新增：視訊通話</string>
     <string name="biometrics_not_enrolled">系統中没有錄入生物辨識資料。</string>
     <string name="biometrics_not_avilable">生物辨識資料在此系統上不可用。</string>
     <string name="biometrics_no_permission">缺少訪問生物辨識資料或硬體的權限</string>
@@ -1290,7 +1292,7 @@ Threema 支援的所有表情符號。</string>
     <string name="group_link_property_expiration_desc">該連結在已設定的日期後過期。</string>
     <string name="group_image">群組圖示</string>
     <string name="add_group_link">透過群組連結新增成員</string>
-    <string name="miui_battery_optimization">請為 %1$s 停用「電池最佳化」以便 %1$s 順利執行。由於小米不允許第三方應用程式直接開啟設定畫面，因此您必須手動開啟電話的相關設定畫面。如果您在停用電池最佳化方面需要協助，請聯絡小米支援。</string>
+    <string name="miui_battery_optimization">請禁用電池優化器以使 %s 順利運行。由於小米不允許第三方應用程式直接開啟設定畫面，因此您必須手動開啟電話的相關設定畫面。如果您在停用電池最佳化方面需要協助，請聯絡小米支援。</string>
     <string name="forward_captions">包括描述</string>
     <string name="importing_files_failed">無法匯入備份檔案，請確保內部儲存有足夠的可用空間。</string>
     <string name="label_continue">繼續</string>
@@ -1319,7 +1321,7 @@ Threema 支援的所有表情符號。</string>
     <string name="reset_default_group_link">重設預設群組連結</string>
     <string name="resend">重新傳送</string>
     <string name="group_request_already_sent_title">要求已傳送</string>
-    <string name="qr_scanner_id_hint">掃描其他聯絡人的QR碼。您可以透過按下 Threema 主畫面左上角的大頭貼，檢視QR碼。</string>
+    <string name="qr_scanner_id_hint">您可以掃描聯絡人的QR碼以驗證其身份。如要顯示QR碼，請讓您的聯絡人按下 Threema 主畫面左上角的大頭貼。</string>
     <string name="enable_storage_access_for_media">啟用儲存取用權限以檢視裝置上的圖片和影片</string>
     <string name="take_me_there">帶我去…</string>
     <string name="notification_channel_group_join_request">收到群組加入要求的通知頻道</string>
@@ -1327,10 +1329,16 @@ Threema 支援的所有表情符號。</string>
     <string name="reset_default_group_link_desc">之前分享的連結將失效，透過舊鏈接提出的要求將自動被拒絕，並給出過期的回應。</string>
     <string name="other_group_links">其他</string>
     <string name="show_public_key">顯示公鑰</string>
-    <string name="public_key_for">%s 的公鑰</string>
+    <string name="public_key_for">%s的公鑰</string>
     <string name="copied">已複製</string>
     <string name="no_votes_yet">到目前為止，還沒有人投票。</string>
     <string name="permission_contacts_sync_required">請允許系統取用您的聯絡人，以便同步聯絡人清單。</string>
     <string name="not_voted_user_list">這些參與者沒有投票：%s</string>
-    <string name="invalid_onprem_id">不是有效的 Threema OnPrem-ID</string>
+    <string name="invalid_onprem_id">此ID(永久)不再存在，或者與您的ID不相容。</string>
+    <string name="enable_unknown_sources">無法安裝。請確保為 %s 啟用了「安裝未知應用程式」。</string>
+    <string name="add_shortcut_success">捷徑建立成功</string>
+    <string name="add_shortcut_error">將捷徑新增至主畫面時發生錯誤</string>
+    <string name="web_link">連結</string>
+    <string name="link_copied">%s 已複製</string>
+    <string name="invalid_onprem_id_title">無法新增ID</string>
 </resources>

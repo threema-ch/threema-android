@@ -150,7 +150,7 @@
     <string name="backup_sum">Záloha vašeho Threema ID</string>
     <string name="backup_and_delete">Záloha a odstranění</string>
     <string name="delete_id_title">Odstranit ID</string>
-    <string name="delete_id_message">Pokud jste nevytvořili zálohu tohoto ID, nebo jste ho neexportovali a neuložili, nebudete moci již nikdy v budoucnu odesílat ani přijímat zprávy s touto identitou.\n\nJestliže nehodláte toto ID nadále používat, měli byste u něj nejprve zrušit propojení e‑mailové adresy či telefonního čísla dříve, než ho odstraníte.</string>
+    <string name="delete_id_message">Pokud jste nevytvořili zálohu tohoto ID, nebo jste ho neexportovali a neuložili, nebudete moci již nikdy v budoucnu odesílat ani přijímat zprávy s touto identitou.\n\nJestliže nechcete toto ID nadále používat, doporučujeme nastavit heslo pro jeho zrušení/odvolání a zrušit/odvolat ID na myid.threema.ch/revoke dříve, než ho odstraníte.</string>
     <string name="delete_id_message2">Poslední varování: Skutečně si z tohoto zařízení přejete odstranit vaše ID?</string>
     <string name="delete_id_sum">Trvale z tohoto zařízení odstraní vaše ID a všechna data aplikace Threema</string>
     <string name="backup_password_summary">Záloha vašeho ID bude zašifrována a chráněna heslem. Použijte kombinaci písmen, čísel a symbolů. Toto heslo nesmíte zapomenout!</string>
@@ -1098,10 +1098,8 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="translators_thanks">Mnohokrát děkujeme našim dobrovolným překladatelům:\n%s</string>
     <string name="ballot_window_hide">Skrýt probíhající ankety</string>
     <string name="ballot_window_show">Zobr. probíhající ankety</string>
-    <string name="tooltip_video_call">Kromě hlasových hovorů odolných proti odposlechu nyní Threema nabízí i šifrované videohovory typu end‑to‑end.</string>
     <string name="tooltip_voip_other_party_video_on">Protistrana zahájila videohovor. Klepnutím sem zapnete fotoaparát.</string>
     <string name="tooltip_voip_other_party_video_disabled">Druhá strana nepoužívá aktuální verzi aplikace nebo nemá povolené videohovory.</string>
-    <string name="video_calls_new">Novinka: Videohovory</string>
     <string name="biometrics_not_enrolled">V systému nejsou zapsány žádné biometrické údaje.</string>
     <string name="biometrics_not_avilable">Biometrické údaje v tomto systému nejsou k dispozici.</string>
     <string name="biometrics_no_permission">Nebylo povoleno oprávnění k přístupu k biometrickým datům nebo hardwaru.</string>
@@ -1236,11 +1234,11 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="another_connection_instructions">Server detekoval dvě nebo více připojení z různých zařízení se stejným Threema ID.\n\nPoužívat dvě stejná Threema ID na více zařízeních současně není možné. Nové zprávy budou odesílány pouze na to zařízení, které se k serveru připojilo naposledy.\n\nJestliže přecházíte na nové zařízení, odinstalujte nebo deaktivujte aplikaci %s na starém zařízení a poté restartujte vaše současné zařízení.</string>
     <string name="app_store_error_code">Kód chyby obchodu s aplikacemi: %d</string>
     <string name="backup_restore_type"><![CDATA[Kterou zálohu si přejete obnovit? <br/><br/> <a href=%s>Přečtěte si více o zálohování v aplikaci Threema</a>]]></string>
-    <string name="data_backup_info">Obnoví vše, včetně konverzací</string>
+    <string name="data_backup_info">Obnovit vše, včetně konverzací</string>
     <string name="new_to_threema">Začínáte s aplikací %s?</string>
     <string name="back_to_threema">Vracíte se k aplikaci %s?</string>
-    <string name="id_backup_info">Obnoví pouze vaše ID</string>
-    <string name="restore_your_id_contacts_and_groups">Obnoví vaše ID, kontakty a skupiny</string>
+    <string name="id_backup_info">Obnovit pouze vaše ID</string>
+    <string name="restore_your_id_contacts_and_groups">Obnovit vaše ID, kontakty a skupiny</string>
     <string name="threema_safe_backup">Záloha Threema Safe</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Zapomněli jste heslo?</a>]]></string>
     <string name="download_failed">Stažení se nezdařilo. Kód chyby: %d</string>
@@ -1288,7 +1286,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="reset_default_group_link">Obnovit výchozí odkaz na skupinu</string>
     <string name="resend">Znovu odeslat</string>
     <string name="group_request_already_sent_title">Požadavek již byl odeslán</string>
-    <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu někoho jiného. Můžete jej zobrazit klepnutím na avatar v levém horním rohu domácí obrazovky aplikace Threema.</string>
+    <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu pro ověření jeho identity. Chcete‑li QR kód zobrazit, požádejte váš kontakt, aby klepl na profilový obrázek v levém horním rohu domácí obrazovky aplikace Threema.</string>
     <string name="enable_storage_access_for_media">Povolte přístup k úložišti, abyste na vašem zařízení mohli prohlížet obrázky a videa</string>
     <string name="take_me_there">Doveďte mě tam…</string>
     <string name="notification_channel_group_join_request">Kanál oznámení pro přijaté požadavky o připojení do skupiny</string>
@@ -1301,5 +1299,11 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="no_votes_yet">Zatím nebyly uděleny žádné hlasy.</string>
     <string name="permission_contacts_sync_required">Udělte prosím přístup k vašim kontaktům, aby je bylo možné synchronizovat.</string>
     <string name="not_voted_user_list">Tito účastníci nehlasovali: %s</string>
-    <string name="invalid_onprem_id">Neplatné Threema OnPrem‑ID</string>
+    <string name="invalid_onprem_id">ID buď (již) neexistuje, nebo není kompatibilní s vaším ID</string>
+    <string name="enable_unknown_sources">Nelze nainstalovat. Ujistěte se prosím, že je „Instalace neznámých aplikací“ pro aplikaci %s povolena.</string>
+    <string name="add_shortcut_success">Zástupce byl úspěšně vytvořen</string>
+    <string name="add_shortcut_error">Během přidání zástupce na plochu došlo k chybě</string>
+    <string name="web_link">Odkaz</string>
+    <string name="link_copied">%s zkopírován</string>
+    <string name="invalid_onprem_id_title">ID nelze přidat</string>
 </resources>

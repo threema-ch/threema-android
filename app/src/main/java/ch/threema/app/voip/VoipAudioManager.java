@@ -39,7 +39,6 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.ThreadUtils;
 
 import java.util.HashSet;
@@ -53,13 +52,14 @@ import ch.threema.app.notifications.BackgroundErrorNotification;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.util.AppRTCUtils;
+import ch.threema.base.utils.LoggingUtil;
 import java8.util.concurrent.CompletableFuture;
 
 /**
  * VoipAudioManager manages all audio related parts of the Threema VoIP calls.
  */
 public class VoipAudioManager {
-	private static final Logger logger = LoggerFactory.getLogger("VoipAudioManager");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipAudioManager");
 	private static final String TAG = "VoipAudioManager";
 
 	/**

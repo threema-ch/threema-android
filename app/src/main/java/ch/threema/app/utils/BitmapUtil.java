@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -368,8 +367,9 @@ public class BitmapUtil {
 	 * @param maxWidth maximum width of the image after scaling is applied
 	 * @param pos offset withing byte array
 	 * @param length the number of bytes, beginning at offset, to parse
-	 * @return compressed byte array of scaled bitmap in either PNG or JPG format - depending on source bitmap format
+	 * @return compressed byte array of scaled bitmap in either PNG or JPG format - depending on source bitmap format - or null in case of an error
 	 */
+	@Nullable
 	static public byte[] resizeBitmapByteArrayToMaxWidth(byte[] sourceBitmapFileBytes, int maxWidth, int pos, int length) {
 		try {
 			boolean isJpeg = ExifInterface.isJpegFormat(sourceBitmapFileBytes);
@@ -379,17 +379,18 @@ public class BitmapUtil {
 			o2.inScaled = true;
 			o2.inPreferredConfig = isJpeg ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
 
-			WeakReference<Bitmap> newPhoto = new WeakReference<>(BitmapFactory.decodeByteArray(sourceBitmapFileBytes, pos, length, o2));
-
-			if (isJpeg) {
-				return bitmapToJpegByteArray(newPhoto.get());
-			} else {
-				return bitmapToPngByteArray(newPhoto.get());
+			Bitmap newPhoto = BitmapFactory.decodeByteArray(sourceBitmapFileBytes, pos, length, o2);
+			if (newPhoto != null) {
+				if (isJpeg) {
+					return bitmapToJpegByteArray(newPhoto);
+				} else {
+					return bitmapToPngByteArray(newPhoto);
+				}
 			}
 		} catch (Exception x) {
 			logger.error("Exception", x);
-			return null;
 		}
+		return null;
 	}
 
 	/**

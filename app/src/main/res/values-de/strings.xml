@@ -1214,10 +1214,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="translators_thanks">Vielen Dank unseren ehrenamtlichen Übersetzern:\n%s</string>
 	<string name="ballot_window_hide">Offene Umfragen verbergen</string>
 	<string name="ballot_window_show">Offene Umfragen anzeigen</string>
-	<string name="tooltip_video_call">Neben abhörsicheren Sprachanrufen bietet Threema jetzt auch Ende-zu-Ende-verschlüsselte Videoanrufe.</string>
 	<string name="tooltip_voip_other_party_video_on">Ihr Gesprächspartner hat einen Videoanruf gestartet. Tippen Sie hier, um Ihre Kamera ebenfalls einzuschalten.</string>
 	<string name="tooltip_voip_other_party_video_disabled">Ihr Gesprächspartner verwendet keine aktuelle App-Version oder lässt keine Videoanrufe zu.</string>
-	<string name="video_calls_new">Neu: Videoanrufe</string>
 	<string name="biometrics_not_enrolled">Keine biometrischen Daten im System hinterlegt.</string>
 	<string name="biometrics_not_avilable">Die biometrische Authentisierung ist nicht verfügbar.</string>
 	<string name="biometrics_no_permission">Keine Berechtigung für den Zugriff auf die biometrischen Daten.</string>
@@ -1412,10 +1410,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="no_votes_yet">Bisher wurden noch keine Stimmen abgegeben.</string>
 	<string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
 	<string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
-	<string name="invalid_onprem_id">Keine gültige Threema OnPrem-ID</string>
+	<string name="invalid_onprem_id">Entweder existiert diese ID nicht (mehr), oder sie ist nicht mit Ihrer ID kompatibel.</string>
 	<string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie \"Unbekannte Apps installieren\" für %s.</string>
 	<string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
 	<string name="add_shortcut_error">Fehler beim Erstellen der Desktop-Verknüpfung</string>
 	<string name="web_link">Link</string>
 	<string name="link_copied">%s kopiert</string>
+	<string name="invalid_onprem_id_title">Hinzufügen nicht möglich</string>
 </resources>

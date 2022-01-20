@@ -235,32 +235,42 @@ public class FileDataModel implements MediaMessageDataInterface {
 		return null;
 	}
 
-	public String getDurationString() {
-		try {
-			Float durationF = getMetaDataFloat(METADATA_KEY_DURATION);
-			if (durationF != null) {
-				long duration = durationF.longValue();
-				if (duration > 0) {
-					return StringConversionUtil.secondsToString(duration, false);
-				}
-			}
-		} catch (Exception ignored) {}
-		return null;
+	/**
+	 * Return a formatted string representing the duration as provided by the respective metadata field
+	 * in the format of hours:minutes:seconds
+	 * @return Formatted duration string or 00:00 in case of error
+	 */
+	public @NonNull String getDurationString() {
+		return StringConversionUtil.secondsToString(getDurationSeconds(), false);
 	}
 
 	/**
 	 * Return the duration in SECONDS as set in the metadata field.
-	 *
-	 * Note: Floats are converted to long integers.
 	 */
-	public long getDuration() {
+	public long getDurationSeconds() {
 		try {
 			Float durationF = getMetaDataFloat(METADATA_KEY_DURATION);
 			if (durationF != null) {
+				return Math.round(durationF);
+			}
+		} catch (Exception ignored) {}
+		return 0L;
+	}
+
+	/**
+	 * Return the duration in MILLISECONDS as set in the metadata field.
+	 *
+	 * Note: Floats are converted to long integers. No rounding.
+	 */
+	public long getDurationMs() {
+		try {
+			Float durationF = getMetaDataFloat(METADATA_KEY_DURATION);
+			if (durationF != null) {
+				durationF *= 1000F;
 				return durationF.longValue();
 			}
 		} catch (Exception ignored) {}
-		return 0;
+		return 0L;
 	}
 
 	private void fromString(String s) {

@@ -46,7 +46,6 @@ import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
@@ -86,7 +85,6 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.BackgroundErrorNotification;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
-import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
@@ -116,7 +114,6 @@ import ch.threema.app.voip.util.VideoCapturerUtil;
 import ch.threema.app.voip.util.VoipStats;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
-import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -128,6 +125,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import ch.threema.storage.models.ContactModel;
 import java8.util.function.Supplier;
@@ -143,7 +141,7 @@ import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NO
  * The service keeping track of VoIP call state and the corresponding WebRTC peer connection.
  */
 public class VoipCallService extends LifecycleService implements PeerConnectionClient.Events {
-	private static final Logger logger = LoggerFactory.getLogger("VoipCallService");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallService");
 
 	// Intent extras
 	public static final String EXTRA_CALL_ID = "CALL_ID";
@@ -616,12 +614,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			return RESTART_BEHAVIOR;
 		}
 
-		// if the intent creation was initiated from the phone we additionally cancel a potentially already opened activity on the watch
-		final boolean cancelActivityOnWearable = intent.getBooleanExtra(EXTRA_CANCEL_WEAR, false);
-		if (cancelActivityOnWearable && PushService.playServicesInstalled(getAppContext())) {
-			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
-		}
-
 		final VoipICECandidatesData candidatesData =
 			(VoipICECandidatesData) intent.getSerializableExtra(EXTRA_CANDIDATES);
 
@@ -790,9 +782,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 					return null;
 				}
 			}.execute(new Pair<>(contact, callState.getCallId()));
-		}
-		if (PushService.playServicesInstalled(getAppContext())){
-			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 		disconnect();
 	}
@@ -1486,11 +1475,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 					}
 				});
 			}
-			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
-		}
-
-		if (PushService.playServicesInstalled(getAppContext())){
-			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
 		}
 
 		this.preDisconnect(callId);
@@ -1674,9 +1658,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@AnyThread
 	private synchronized void abortCall(@StringRes final int userMessage, @Nullable final String internalMessage, boolean showErrorNotification) {
 		this.abortCall(userMessage, internalMessage, null, showErrorNotification);
-		if (PushService.playServicesInstalled(getAppContext())){
-			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
-		}
 	}
 
 	//endregion

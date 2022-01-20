@@ -38,6 +38,7 @@ import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.utils.Base32;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
@@ -191,6 +192,10 @@ public class DistributionListServiceImpl implements DistributionListService {
 		if(!this.removeMembers(distributionListModel)) {
 			return false;
 		}
+
+		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(distributionListModel));
+		ShortcutUtil.deletePinnedShortcut(getUniqueIdString(distributionListModel));
+
 		//remove list
 		this.databaseServiceNew.getDistributionListModelFactory().delete(
 				distributionListModel

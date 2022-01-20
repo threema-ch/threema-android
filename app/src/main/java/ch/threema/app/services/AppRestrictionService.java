@@ -29,7 +29,6 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -39,6 +38,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.domain.protocol.api.work.WorkMDMSettings;
@@ -47,7 +47,7 @@ import ch.threema.domain.protocol.api.work.WorkMDMSettings;
  * Hold all Work App Restrictions
  */
 public class AppRestrictionService {
-	private static final Logger logger = LoggerFactory.getLogger(AppRestrictionService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AppRestrictionService");
 
 	private Bundle appRestrictions;
 	private volatile WorkMDMSettings workMDMSettings;

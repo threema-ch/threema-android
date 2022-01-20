@@ -27,7 +27,6 @@ import android.os.PowerManager;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,7 @@ import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.WebClientSessionModel;
 
 /**
@@ -45,7 +45,7 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @AnyThread
 public class WakeLockServiceImpl implements WakeLockService {
-	private static final Logger logger = LoggerFactory.getLogger("WakeLockService");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WakeLockService");
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":webClientWakeLock";
 	private static final String LIFETIME_SERVICE_TAG = "WakeLockService";
 	private final Context appContext;

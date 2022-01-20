@@ -1090,11 +1090,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="translators_thanks">Grazia fitg a noss translaturs en uffizi d\'onur:\n%s</string>
     <string name="ballot_window_hide">Zuppentar las enquistas avertas</string>
     <string name="ballot_window_show">Mussar las enquistas avertas</string>
-    <string name="tooltip_video_call">Ultra da telefonats segirs porscha Threema uss era videotelefonats cun codaziun end-to-end.</string>
     <string name="tooltip_voip_other_party_video_on">Tes partenari da discurs ha cumenzà in videotelefonat. Smatga qua per medemamain activar la camera.</string>
     <string name="tooltip_voip_other_party_video_disabled">Tes partenari da discurs utilisescha ina versiun da l\'app betg actuala u na permetta nagins videotelefonats.</string>
-    <string name="video_calls_new">Nov: videotelefonats</string>
-    <string name="biometrics_not_enrolled">Deponì naginas datas biometricas en il sistem.</string>
+	<string name="biometrics_not_enrolled">Deponì naginas datas biometricas en il sistem.</string>
     <string name="biometrics_not_avilable">L\'autentificaziun biometrica n\'è betg disponibla.</string>
     <string name="biometrics_no_permission">Nagin dretg d\'acceder a las datas biometricas.</string>
     <string name="verification_settings_desc">Ils puncts inditgeschan il stgalim da confidenza per in contact.</string>

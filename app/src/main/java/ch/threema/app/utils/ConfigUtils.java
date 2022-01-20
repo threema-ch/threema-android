@@ -28,8 +28,11 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -44,6 +47,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -68,6 +72,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -124,6 +130,7 @@ public class ConfigUtils {
 	public static final int THEME_DARK = 1;
 	public static final int THEME_SYSTEM = 2;
 	public static final int THEME_NONE = -1;
+	private static final int CONTENT_PROVIDER_BATCH_SIZE = 50;
 
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({THEME_LIGHT, THEME_DARK})
@@ -581,6 +588,10 @@ public class ConfigUtils {
 
 	public static boolean isOnPremBuild() {
 		return BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
+	}
+
+	public static boolean isDemoOPServer(@NonNull PreferenceService preferenceService) {
+		return preferenceService.getOnPremServer() != null && preferenceService.getOnPremServer().toLowerCase().contains(".3ma.ch/");
 	}
 
 	public static boolean isTestBuild() {
@@ -1373,5 +1384,21 @@ public class ConfigUtils {
 				}
 			}
 		} catch (Exception ignored) {}
+	}
+
+	/**
+	 * Apply operations to content provider in small batches preventing TransactionTooLargeException
+	 * @param authority Authority
+	 * @param contentProviderOperations Operations to apply in smaller batches
+	 * @throws OperationApplicationException
+	 * @throws RemoteException
+	 */
+	public static void applyToContentResolverInBatches(@NonNull String authority, ArrayList<ContentProviderOperation> contentProviderOperations) throws OperationApplicationException, RemoteException {
+		ContentResolver contentResolver = ThreemaApplication.getAppContext().getContentResolver();
+
+		for (int i = 0; i < contentProviderOperations.size(); i += CONTENT_PROVIDER_BATCH_SIZE) {
+			List<ContentProviderOperation> contentProviderOperationsBatch = contentProviderOperations.subList(i, Math.min(contentProviderOperations.size(), i + CONTENT_PROVIDER_BATCH_SIZE));
+			contentResolver.applyBatch(authority, new ArrayList<>(contentProviderOperationsBatch));
+		}
 	}
 }

@@ -58,14 +58,13 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implements CancelableHorizontalProgressDialog.ProgressDialogClickListener, GenericAlertDialog.DialogClickListener {
@@ -214,13 +213,6 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 			directSharePreference.setOnPreferenceChangeListener((preference, newValue) -> {
 				boolean newCheckedValue = newValue.equals(true);
 				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
-					ShortcutService shortcutService = null;
-					try {
-						shortcutService = serviceManager.getShortcutService();
-					} catch (ThreemaException e) {
-						logger.error("Exception, could not update or delete shortcuts upon changing direct share setting", e);
-						return false;
-					}
 					if (newCheckedValue) {
 						ThreemaApplication.scheduleShareTargetShortcutUpdate();
 					} else {
@@ -228,7 +220,7 @@ public class SettingsPrivacyFragment extends ThreemaPreferenceFragment implement
 						if (jobScheduler != null) {
 							jobScheduler.cancel(ThreemaApplication.SHORTCUTS_UPDATE_JOB_ID);
 						}
-						shortcutService.deleteAllShareTargetShortcuts();
+						ShortcutUtil.deleteAllShareTargetShortcuts();
 					}
 				}
 				return true;

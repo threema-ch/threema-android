@@ -37,7 +37,6 @@ import android.widget.TextView;
 import com.google.android.material.card.MaterialCardView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.LayoutRes;
@@ -58,10 +57,11 @@ import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class TextChatBubbleActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(TextChatBubbleActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("TextChatBubbleActivity");
 
 	private static final int CONTEXT_MENU_FORWARD = 600;
 	private static final int CONTEXT_MENU_GROUP = 22200;
@@ -229,7 +229,7 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 
 	private void setText(AbstractMessageModel messageModel) {
 		textView.setText(QuoteUtil.getMessageBody(messageModel, false));
-		LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, messageModel.getBody().length() < 80, false, null);
+		LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, true, false, null);
 	}
 
 	@Override

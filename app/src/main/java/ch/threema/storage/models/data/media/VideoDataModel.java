@@ -53,14 +53,10 @@ public class VideoDataModel implements MediaMessageDataInterface {
 		this.videoSize = videoSize;
 	}
 
-	public VideoDataModel(int duration, int videoSize, boolean isDownloaded) {
-		this.duration = duration;
-		this.videoSize = videoSize;
-		this.isDownloaded = isDownloaded;
-		this.videoBlobId = new byte[0];
-		this.encryptionKey = new byte[0];
-	}
-
+	/**
+	 * Get Duration of video in SECONDS
+	 * @return duration
+	 */
 	public int getDuration() {
 		return this.duration;
 	}
@@ -154,7 +150,7 @@ public class VideoDataModel implements MediaMessageDataInterface {
 	 * This method should only be used for backwards compatibility!
 	 */
 	public static VideoDataModel fromFileData(@NonNull FileDataModel fileDataModel) {
-		final int duration = (int) Math.min(fileDataModel.getDuration(), (long) Integer.MAX_VALUE);
+		final int duration = (int) Math.min(fileDataModel.getDurationSeconds(), (long) Integer.MAX_VALUE);
 		final int size = (int) Math.min(fileDataModel.getFileSize(), (long) Integer.MAX_VALUE);
 		return new VideoDataModel(duration, size, fileDataModel.getBlobId(), fileDataModel.getEncryptionKey());
 	}

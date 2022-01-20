@@ -33,10 +33,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.BadParcelableException;
 import android.os.BaseBundle;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -101,7 +103,6 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.ShortcutService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
@@ -115,6 +116,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -168,7 +170,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private DistributionListService distributionListService;
 	private MessageService messageService;
 	private FileService fileService;
-	private ShortcutService shortcutService;
 
 	private final Runnable copyFilesRunnable = new Runnable() {
 		@Override
@@ -246,7 +247,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			this.distributionListService = serviceManager.getDistributionListService();
 			this.messageService = serviceManager.getMessageService();
 			this.fileService = serviceManager.getFileService();
-			this.shortcutService = serviceManager.getShortcutService();
 			userService = serviceManager.getUserService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
@@ -412,7 +412,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				// maybe a shortcut?
 				String id = intent.getStringExtra(ShortcutManagerCompat.EXTRA_SHORTCUT_ID);
 				if (!TestUtil.empty(id)) {
-					BaseBundle bundle = shortcutService.getShareTargetExtrasFromShortcutId(id);
+					BaseBundle bundle = ShortcutUtil.getShareTargetExtrasFromShortcutId(id);
 					if (bundle != null) {
 						if (bundle.containsKey(ThreemaApplication.INTENT_DATA_CONTACT)) {
 							identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
@@ -721,7 +721,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			} catch (Exception e) {
 				logger.info("Unable to take persistable uri permission");
-				uri = FileUtil.getFileUri(uri);
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+					uri = FileUtil.getFileUri(uri);
+				}
 			}
 		}
 		mediaItems.add(new MediaItem(uri, mimeType, caption));
@@ -850,13 +852,13 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 					switch (messageModel.getType()) {
 						case IMAGE:
-							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null);
+							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_IMAGE, null, FileData.RENDERING_MEDIA, null, 0L);
 							break;
 						case VIDEO:
-							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null);
+							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_VIDEO, null, FileData.RENDERING_MEDIA, null, messageModel.getVideoData().getDuration() * DateUtils.SECOND_IN_MILLIS);
 							break;
 						case VOICEMESSAGE:
-							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_VOICEMESSAGE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_MEDIA, null);
+							sendForwardedMedia(messageReceivers, uri, caption, MediaItem.TYPE_VOICEMESSAGE, MimeUtil.MIME_TYPE_AUDIO_AAC, FileData.RENDERING_MEDIA, null, messageModel.getAudioData().getDuration() * DateUtils.SECOND_IN_MILLIS);
 							break;
 						case FILE:
 							int mediaType = MediaItem.TYPE_FILE;
@@ -866,7 +868,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							if (messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
 								mediaType = MimeUtil.getMediaTypeFromMimeType(mimeType);
 							}
-							sendForwardedMedia(messageReceivers, uri, caption, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName());
+							sendForwardedMedia(messageReceivers, uri, caption, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName(), messageModel.getFileData().getDurationMs());
 							break;
 						case LOCATION:
 							sendLocationMessage(messageReceivers, messageModel.getLocationData());
@@ -1172,7 +1174,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	 */
 
 	@AnyThread
-	private void sendForwardedMedia(final MessageReceiver[] messageReceivers, final Uri uri, final String caption, final int type, @Nullable final String mimeType, @FileData.RenderingType final int renderingType, final String filename) {
+	private void sendForwardedMedia(final MessageReceiver[] messageReceivers, final Uri uri, final String caption, final int type, @Nullable final String mimeType, @FileData.RenderingType final int renderingType, final String filename, long durationMs) {
 		final MediaItem mediaItem = new MediaItem(uri, type);
 		if (mimeType != null) {
 			mediaItem.setMimeType(mimeType);
@@ -1192,6 +1194,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			else if (type == MediaItem.TYPE_IMAGE) {
 				// do not scale forwarded images
 				mediaItem.setImageScale(PreferenceService.ImageScale_ORIGINAL);
+			}
+			else if (type == MediaItem.TYPE_VOICEMESSAGE) {
+				mediaItem.setDurationMs(durationMs);
 			}
 		}
 		messageService.sendMediaSingleThread(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));

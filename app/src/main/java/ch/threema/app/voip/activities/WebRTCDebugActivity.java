@@ -38,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
 import org.webrtc.SessionDescription;
@@ -69,6 +68,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.WebRTCUtil;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.WebRTCLoggable;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import ch.threema.storage.models.ContactModel;
@@ -79,7 +79,7 @@ import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_
  * An activity to debug problems with WebRTC (in the context of Threema Calls).
  */
 public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerConnectionClient.Events, TextEntryDialog.TextEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(WebRTCDebugActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WebRTCDebugActivity");
 	private static final String DIALOG_TAG_SEND_WEBRTC_DEBUG = "swd";
 
 	// Threema services
