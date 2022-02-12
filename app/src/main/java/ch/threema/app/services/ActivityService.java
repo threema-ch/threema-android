@@ -27,7 +27,6 @@ import android.content.Intent;
 import android.os.Build;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 
@@ -35,10 +34,11 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.PinLockActivity;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
 public class ActivityService {
-	private static final Logger logger = LoggerFactory.getLogger(ActivityService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ActivityService");
 	private final Context context;
 	private final LockAppService lockAppService;
 	private final PreferenceService preferenceService;

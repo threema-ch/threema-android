@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "artifactType": {
+    "type": "PACKAGED_MANIFESTS",
+    "kind": "Directory"
+  },
+  "applicationId": "ch.threema.app.hms",
+  "variantName": "hmsDebug",
+  "elements": [
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "arm64-v8a"
+        }
+      ],
+      "versionCode": 3000715,
+      "versionName": "4.64",
+      "outputFile": "arm64-v8a/AndroidManifest.xml"
+    }
+  ]
+}

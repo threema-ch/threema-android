@@ -24,7 +24,6 @@ package ch.threema.app.services;
 import net.sqlcipher.Cursor;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -57,7 +57,7 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.TagModel;
 
 public class ConversationServiceImpl implements ConversationService {
-	private static final Logger logger = LoggerFactory.getLogger(ConversationServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationServiceImpl");
 
 	private final List<ConversationModel> conversationCache;
 	private final ConversationTagService conversationTagService;

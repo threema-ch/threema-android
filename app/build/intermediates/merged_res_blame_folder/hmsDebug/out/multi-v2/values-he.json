@@ -1,0 +1,43 @@
+{
+    "logs": [
+        {
+            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-he/values-he.xml",
+            "map": [
+                {
+                    "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/002ec411f93617c682729380ecde5f78/jetified-android-sdk-9.5.2/res/values-he/values-he.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "55,177,266,382,485,637,751",
+                        "endColumns": "121,88,115,102,151,113,136",
+                        "endOffsets": "172,261,377,480,632,746,883"
+                    },
+                    "to": {
+                        "startLines": "10,11,12,13,14,15,16",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "585,707,796,912,1015,1167,1281",
+                        "endColumns": "121,88,115,102,151,113,136",
+                        "endOffsets": "702,791,907,1010,1162,1276,1413"
+                    }
+                },
+                {
+                    "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/6bb90630f42163c38a3923691216e713/jetified-android-image-cropper-2.8.0/res/values-he/values-he.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,146,193,247,301,375,446,523,585",
+                        "endColumns": "90,46,53,53,73,70,76,61,68",
+                        "endOffsets": "141,188,242,296,370,441,518,580,649"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9,17",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,146,193,247,301,375,446,523,1418",
+                        "endColumns": "90,46,53,53,73,70,76,61,68",
+                        "endOffsets": "141,188,242,296,370,441,518,580,1482"
+                    }
+                }
+            ]
+        }
+    ]
+}

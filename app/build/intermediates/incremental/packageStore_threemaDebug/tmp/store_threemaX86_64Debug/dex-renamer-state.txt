@@ -1,0 +1,16 @@
+#Sat Feb 12 10:11:03 CET 2022
+path.4=classes_0.dex
+path.3=classes3.dex
+path.2=classes2.dex
+path.1=classes.dex
+path.0=classes.dex
+base.4=/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/dex/store_threemaDebug/mergeLibDexStore_threemaDebug/classes_0.dex
+base.3=/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/dex/store_threemaDebug/mergeExtDexStore_threemaDebug/classes3.dex
+base.2=/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/dex/store_threemaDebug/mergeExtDexStore_threemaDebug/classes2.dex
+base.1=/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/dex/store_threemaDebug/mergeProjectDexStore_threemaDebug/classes.dex
+base.0=/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/dex/store_threemaDebug/mergeExtDexStore_threemaDebug/classes.dex
+renamed.3=classes4.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+renamed.4=classes5.dex

@@ -87,7 +87,8 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 		frameAnimation.start();
 
 		TextView privacyPolicyExplainText = findViewById(R.id.wizard_privacy_policy_explain);
-		if (TestUtil.empty(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url))) {
+		if (TestUtil.empty(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url)) ||
+			(ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(preferenceService))) {
 			privacyPolicyExplainText.setVisibility(View.GONE);
 		} else {
 			String privacyPolicy = getString(R.string.privacy_policy);

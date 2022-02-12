@@ -5,6 +5,22 @@
           android:testOnly="false">
 	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
+	<queries>
+		<package android:name="com.hisilicon.android.hiRMService" />
+		<intent>
+			<action android:name="com.apptouch.intent.action.update_hms" />
+		</intent>
+		<intent>
+			<action android:name="com.huawei.appmarket.intent.action.AppDetail" />
+		</intent>
+		<intent>
+			<action android:name="com.huawei.hms.core.aidlservice" />
+		</intent>
+		<intent>
+			<action android:name="com.huawei.hms.core" />
+		</intent>
+	</queries>
+
 	<application tools:ignore="GoogleAppIndexingWarning">
 
 		<activity

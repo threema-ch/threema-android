@@ -68,9 +68,11 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
@@ -101,7 +103,7 @@ import ch.threema.storage.models.access.GroupAccessModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 
 public class GroupServiceImpl implements GroupService {
-	private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupServiceImpl");
 	private static final String GROUP_UID_PREFIX = "g-";
 
 	private final ApiService apiService;
@@ -252,6 +254,9 @@ public class GroupServiceImpl implements GroupService {
 
 		this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupId(groupModel.getId());
 
+		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(groupModel));
+		ShortcutUtil.deletePinnedShortcut(getUniqueIdString(groupModel));
+
 		// save with "old" name
 		groupModel.setName(displayName);
 		this.save(groupModel);
@@ -324,6 +329,8 @@ public class GroupServiceImpl implements GroupService {
 		this.ringtoneService.removeCustomRingtone(uniqueIdString);
 		this.mutedChatsListService.remove(uniqueIdString);
 		this.hiddenChatsListService.remove(uniqueIdString);
+		ShortcutUtil.deleteShareTargetShortcut(uniqueIdString);
+		ShortcutUtil.deletePinnedShortcut(uniqueIdString);
 
 		groupModel.setDeleted(true);
 		this.databaseServiceNew.getGroupModelFactory().delete(

@@ -530,7 +530,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 			}
 		}
 
-		this.groupMessagingService.sendMessage(this.group, groupIdentities, createApiMessage, queuedGroupMessage -> {
+		int enqueuedMessagesCount = this.groupMessagingService.sendMessage(this.group, groupIdentities, createApiMessage, queuedGroupMessage -> {
 			// Set as queued (first)
 			groupService.setIsArchived(group, false);
 
@@ -545,7 +545,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 					.create(
 							new GroupMessagePendingMessageIdModel(messageModel.getId(), queuedGroupMessage.getMessageId().toString()));
 		});
-		return true;
+		return enqueuedMessagesCount > 0;
 	}
 
 	@Override

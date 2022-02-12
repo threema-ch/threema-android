@@ -153,8 +153,7 @@
     <string name="backup_sum">导出您的 Threema ID</string>
     <string name="backup_and_delete">备份和删除</string>
     <string name="delete_id_title">删除ID</string>
-    <string name="delete_id_message">除非您已创建备份或导出并保存了该ID的副本，否则您将永远无法使用该ID再次发送或接收
-消息。\ n \ n如果您不想使用此ID，则应删除所有已链接的电子邮件地址/电话号码。</string>
+    <string name="delete_id_message">除非您已创建备份或导出并保存了此ID的副本，否则您将永远无法使用该ID再次发送或接收消息。\n\n如果您不想再使用此ID，建议在删除ID之前，在 myid.threema.ch/revoke 上设置撤销密码并撤销该ID。</string>
     <string name="delete_id_message2">最后警告：您确定要删除此设备上的ID吗？</string>
     <string name="delete_id_sum">永久删除您的ID和此设备上的所有数据</string>
     <string name="backup_password_summary">您的ID导出将使用密码进行加密。使用字母，数字和符号的组合。请牢牢记住这里输入的内容！</string>
@@ -222,7 +221,7 @@
     <string name="file_is_not_a_image">所选文件不是图像</string>
     <string name="connection_error">连接错误，请稍后再试。</string>
     <string name="me_myself_and_i">我自己</string>
-    <string name="really_forward">转发到 %1$s？</string>
+    <string name="really_forward">转发到%1$s？</string>
     <string name="really_send">发送到%1$s？</string>
     <string name="ringtone_none">静音</string>
     <string name="no_camera_installed">没有可用的摄像头</string>
@@ -355,7 +354,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no">否</string>
     <string name="yes">是</string>
     <string name="deleting_contact">正在删除联系人</string>
-    <string name="prefs_contact_soring">排序中</string>
+    <string name="prefs_contact_soring">排序</string>
     <string name="prefs_sum_contact_soring">设置联系人列表中条目的排序顺序</string>
     <string name="prefs_contact_format">查看联系人姓名</string>
     <string name="prefs_sum_contact_format">设置联系人姓名格式</string>
@@ -429,7 +428,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="media_gallery">媒体库</string>
     <string name="media_file_not_found">无法打开媒体文件。它已被删除或未从服务器下载。</string>
     <string name="no_media_found">在此会话中找不到%s。</string>
-    <string name="media_gallery_all">所有</string>
+    <string name="media_gallery_all">所有媒体</string>
     <string name="media_gallery_pictures">图片</string>
     <string name="media_gallery_videos">影片</string>
     <string name="group_membership_title">这些群组的成员</string>
@@ -853,7 +852,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="notification_priority_default">低</string>
     <string name="notification_priority_high">高</string>
     <string name="notification_priority_max">最高</string>
-    <string name="prefs_title_notification_priority">优先</string>
+    <string name="prefs_title_notification_priority">优先级</string>
     <string name="pin">置顶</string>
     <string name="unpin">取消置顶</string>
     <string name="location_services_disabled">定位服务已禁用。您现在要启用吗？</string>
@@ -1054,6 +1053,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="num_archived_chats">%d个已封存的会话</string>
     <string name="continue_recording">继续录音</string>
+    <string name="whatsnew_title">(an empty phrase)</string>
+    <string name="whatsnew_headline">(an empty phrase)</string>
+    <string name="whatsnew2_title">(an empty phrase)</string>
+    <string name="whatsnew2_body">(an empty phrase)</string>
     <string name="tooltip_identity_popup">点击这里可快速显示您的 Threema ID 或扫描其他人的 ID</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
@@ -1137,10 +1140,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="translators_thanks">非常感谢我们的翻译志愿者：\n%s</string>
     <string name="ballot_window_hide">隐藏公开的投票</string>
     <string name="ballot_window_show">显示公开的投票</string>
-    <string name="tooltip_video_call">除了防窃听的语音通话之外，Threema 现在还提供端到端加密的视频通话。</string>
     <string name="tooltip_voip_other_party_video_on">对方已发起视频通话，点击这里打开摄像头。</string>
     <string name="tooltip_voip_other_party_video_disabled">对方使用的应用程序版本不支持或不允许进行视频通话。</string>
-    <string name="video_calls_new">新增：视频通话</string>
     <string name="biometrics_not_enrolled">系统未注册任何生物识别信息</string>
     <string name="biometrics_not_avilable">生物识别在此系统上不可用。</string>
     <string name="biometrics_no_permission">缺少访问生物识别数据或硬件的权限</string>
@@ -1298,7 +1299,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_link_property_expiration_desc">该链接在已设置的日期后过期。</string>
     <string name="group_image">群组图标</string>
     <string name="add_group_link">通过群组链接添加成员</string>
-    <string name="miui_battery_optimization">请为 %1$s 禁用 “电池优化” 以便 %1$s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
+    <string name="miui_battery_optimization">请禁用“电池优化”以使 %s 顺利运行。由于小米不允许第三方应用直接打开设置菜单，因此您必须手动打开手机的相关设置菜单。如果您在禁用电池优化方面需要帮助，请联系小米支持。</string>
     <string name="forward_captions">包含描述</string>
     <string name="importing_files_failed">无法导入备份文件，请确保内部存储有足够的可用空间。</string>
     <string name="label_continue">继续</string>
@@ -1327,7 +1328,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="reset_default_group_link">重置默认群组链接</string>
     <string name="resend">重新发送</string>
     <string name="group_request_already_sent_title">请求已发送</string>
-    <string name="qr_scanner_id_hint">扫描其他联系人的二维码。您可以通过点击 Threema 主屏幕左上角的头像，查看二维码。</string>
+    <string name="qr_scanner_id_hint">您可以扫描联系人的二维码以验证其身份。如要显示二维码，请让您的联系人点击 Threema 主屏幕左上角的头像。</string>
     <string name="enable_storage_access_for_media">启用存储访问权限以查看设备上的图片和视频</string>
     <string name="take_me_there">带我到…</string>
     <string name="notification_channel_group_join_request">收到群组加入请求的通知频道</string>
@@ -1335,10 +1336,16 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="reset_default_group_link_desc">之前分享的链接将失效，通过旧链接提出的请求将自动被拒绝，并给出过期的回应。</string>
     <string name="other_group_links">其他</string>
     <string name="show_public_key">显示公钥</string>
-    <string name="public_key_for">%s 的公钥</string>
+    <string name="public_key_for">%s的公钥</string>
     <string name="copied">已复制</string>
     <string name="no_votes_yet">到目前为止，还没有人投票。</string>
     <string name="permission_contacts_sync_required">请允许系统访问您的联系人，以便同步联系人列表。</string>
     <string name="not_voted_user_list">这些参与者没有投票：%s</string>
-    <string name="invalid_onprem_id">不是有效的 Threema OnPrem-ID</string>
+    <string name="invalid_onprem_id">此ID(永久)不再存在，或者与您的ID不兼容。</string>
+    <string name="enable_unknown_sources">无法安装。请确保为 %s 启用了 “安装未知应用程序” 。</string>
+    <string name="add_shortcut_success">快捷方式创建成功</string>
+    <string name="add_shortcut_error">将快捷方式添加到主屏幕时发生错误</string>
+    <string name="web_link">链接</string>
+    <string name="link_copied">%s 已复制</string>
+    <string name="invalid_onprem_id_title">无法添加ID</string>
 </resources>

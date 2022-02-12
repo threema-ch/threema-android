@@ -91,8 +91,6 @@ import ch.threema.app.services.SensorService;
 import ch.threema.app.services.SensorServiceImpl;
 import ch.threema.app.services.ServerAddressProviderService;
 import ch.threema.app.services.ServerAddressProviderServiceImpl;
-import ch.threema.app.services.ShortcutService;
-import ch.threema.app.services.ShortcutServiceImpl;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.SynchronizeContactsServiceImpl;
 import ch.threema.app.services.SystemScreenLockService;
@@ -181,7 +179,6 @@ public class ServiceManager {
 	private NotificationService notificationService;
 	private SynchronizeContactsService synchronizeContactsService;
 	private SystemScreenLockService systemScreenLockService;
-	private ShortcutService shortcutService;
 
 	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService, readReceiptsRecipientsService, isTypingRecipientsService;
 	private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
@@ -913,18 +910,6 @@ public class ServiceManager {
 			);
 		}
 		return this.systemScreenLockService;
-	}
-
-	public ShortcutService getShortcutService() throws ThreemaException {
-		if(this.shortcutService == null) {
-			this.shortcutService = new ShortcutServiceImpl(
-					this.getContext(),
-					this.getContactService(),
-					this.getConversationService(),
-					this.getPreferenceService()
-			);
-		}
-		return this.shortcutService;
 	}
 
 	public SensorService getSensorService() {

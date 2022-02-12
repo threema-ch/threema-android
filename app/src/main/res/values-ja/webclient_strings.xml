@@ -8,7 +8,7 @@
     <string name="webclient_active_since">%sから有効</string>
     <string name="webclient_enable">Threema Webを有効化</string>
     <string name="webclient_no_sessions_found">接続するために
-<b>https://web.threema.ch</b>
+<b>%s</b>
 をあなたのパソコンのブラウザで開き、下のボタンをタップして、コードをスキャンしてください。</string>
     <string name="webclient_session_rename">セッション名を編集</string>
     <string name="webclient_session_label">新しい名前</string>

@@ -28,7 +28,6 @@ import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
@@ -52,12 +51,13 @@ import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 
 public class VoipUtil {
-	private static final Logger logger = LoggerFactory.getLogger(VoipUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipUtil");
 
 	private static final String DIALOG_TAG_FETCHING_FEATURE_MASK = "fetchingFeatureMask";
 

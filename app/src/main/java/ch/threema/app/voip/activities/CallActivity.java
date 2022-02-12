@@ -71,7 +71,6 @@ import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
 
@@ -112,7 +111,6 @@ import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.SensorListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.push.PushService;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
@@ -139,7 +137,6 @@ import ch.threema.app.voip.services.VideoContext;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.app.wearable.WearableHandler;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -147,6 +144,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKey;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
@@ -165,7 +163,7 @@ public class CallActivity extends ThreemaActivity implements
 		SensorListener,
 		GenericAlertDialog.DialogClickListener,
 		LifecycleOwner {
-	private static final Logger logger = LoggerFactory.getLogger("CallActivity");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CallActivity");
 	private static final String LIFETIME_SERVICE_TAG = "CallActivity";
 	private static final String SENSOR_TAG_CALL = "voipcall";
 	public static final String EXTRA_CALL_FROM_SHORTCUT = "shortcut";
@@ -757,6 +755,7 @@ public class CallActivity extends ThreemaActivity implements
 		// Check master key
 		final MasterKey masterKey = ThreemaApplication.getMasterKey();
 		if (masterKey != null && masterKey.isLocked()) {
+			logger.warn("Cannot start call, master key is locked");
 			Toast.makeText(this, R.string.master_key_locked, Toast.LENGTH_LONG).show();
 			finish();
 			return;
@@ -789,22 +788,21 @@ public class CallActivity extends ThreemaActivity implements
 		ListenerManager.contactListeners.add(this.contactListener);
 		VoipListenerManager.audioManagerListener.add(this.audioManagerListener);
 
-		// restore PIP position from preferences
+		// Restore PIP position from preferences
 		pipPosition = preferenceService.getPipPosition();
 		if (pipPosition == 0x00) {
 			pipPosition = PIP_BOTTOM | PIP_LEFT;
 		}
-
 		adjustPipLayout();
 
 		if (!restoreState(getIntent(), savedInstanceState)) {
-			logger.info("Unable to init state. Finishing");
+			logger.warn("Unable to restore state. Finishing");
 			finish();
 			return;
 		}
 
 		// Check for mandatory permissions
-		logger.debug("Checking for audio permission...");
+		logger.info("Checking for audio permission...");
 		this.micPermissionResponse = new CompletableFuture<>();
 		if (ConfigUtils.requestAudioPermissions(this, null, PERMISSION_REQUEST_RECORD_AUDIO)) {
 			this.micPermissionResponse.complete(new PermissionRequestResult(true, true));
@@ -814,8 +812,10 @@ public class CallActivity extends ThreemaActivity implements
 		this.micPermissionResponse
 			.thenAccept((result) -> {
 				if (result.isGranted()) {
+					logger.info("Audio permission granted");
 					initializeActivity(getIntent());
 				} else {
+					logger.warn("Audio permission not granted");
 					Toast.makeText(CallActivity.this, R.string.permission_record_audio_required, Toast.LENGTH_LONG).show();
 					abortWithError(VoipCallAnswerData.RejectReason.DISABLED);
 				}
@@ -1207,7 +1207,7 @@ public class CallActivity extends ThreemaActivity implements
 	@SuppressLint("ClickableViewAccessibility")
 	@UiThread
 	private void initializeActivity(final Intent intent) {
-		logger.debug("initializeActivity");
+		logger.info("Initialize activity");
 
 		final long callId = this.voipStateService.getCallState().getCallId();
 		final Boolean isInitiator = this.voipStateService.isInitiator();
@@ -1436,6 +1436,7 @@ public class CallActivity extends ThreemaActivity implements
 		// Update UI depending on activity mode
 		switch (activityMode) {
 			case MODE_ACTIVE_CALL:
+				logger.info("Activity mode: Active call");
 				this.commonViews.toggleOutgoingVideoButton.setVisibility(ConfigUtils.isVideoCallsEnabled() ? View.VISIBLE : View.GONE);
 				if (this.voipStateService.getCallState().isCalling()) {
 					// Call is already connected
@@ -1454,6 +1455,7 @@ public class CallActivity extends ThreemaActivity implements
 				}
 				break;
 			case MODE_INCOMING_CALL:
+				logger.info("Activity mode: Incoming call");
 				setVolumeControlStream(AudioManager.STREAM_RING);
 				this.commonViews.callStatus.setText(getString(R.string.voip_notification_title));
 				this.commonViews.toggleOutgoingVideoButton.setVisibility(View.GONE);
@@ -1462,6 +1464,7 @@ public class CallActivity extends ThreemaActivity implements
 				}
 				break;
 			case MODE_OUTGOING_CALL:
+				logger.info("Activity mode: Outgoing call");
 				this.commonViews.toggleOutgoingVideoButton.setVisibility(ConfigUtils.isVideoCallsEnabled() ? View.VISIBLE : View.GONE);
 				this.commonViews.callStatus.setText(getString(R.string.voip_status_initializing));
 				// copy over extras from activity
@@ -1504,6 +1507,7 @@ public class CallActivity extends ThreemaActivity implements
 				}
 				break;
 			case MODE_ANSWERED_CALL:
+				logger.info("Activity mode: Answered call");
 				this.commonViews.toggleOutgoingVideoButton.setVisibility(ConfigUtils.isVideoCallsEnabled() ? View.VISIBLE : View.GONE);
 				break;
 			default:
@@ -1731,9 +1735,6 @@ public class CallActivity extends ThreemaActivity implements
 		final Intent answerIntent = new Intent(getIntent());
 		answerIntent.setClass(getApplicationContext(), VoipCallService.class);
 		ContextCompat.startForegroundService(this, answerIntent);
-		if (PushService.playServicesInstalled(getApplicationContext())){
-			WearableHandler.cancelOnWearable(VoipStateService.TYPE_ACTIVITY);
-		}
 	}
 
 	/**

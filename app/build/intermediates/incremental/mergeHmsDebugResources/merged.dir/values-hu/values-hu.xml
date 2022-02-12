@@ -1,0 +1,1738 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2" xmlns:ns2="http://schemas.android.com/tools">
+    <plurals name="exo_controls_fastforward_by_amount_description">
+    <item quantity="one">Előretekerés %d másodperccel</item>
+    <item quantity="other">Előretekerés %d másodperccel</item>
+  </plurals>
+    <plurals name="exo_controls_rewind_by_amount_description">
+    <item quantity="one">Visszatekerés %d másodperccel</item>
+    <item quantity="other">Visszatekerés %d másodperccel</item>
+  </plurals>
+    <plurals name="mtrl_badge_content_description">
+    <item quantity="one">%d új értesítés</item>
+    <item quantity="other">%d új értesítés</item>
+  </plurals>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Ugrás a főoldalra"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Fel"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"További lehetőségek"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Kész"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Az összes megtekintése"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Válasszon alkalmazást"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"KI"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"BE"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"Delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"Enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"Szóköz"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Keresés…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Lekérdezés törlése"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Keresési lekérdezés"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Keresés"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Lekérdezés küldése"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Hangalapú keresés"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Megosztás a következővel:"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Megosztás a következő alkalmazással: <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Összecsukás"</string>
+    <string name="accept">Elfogad</string>
+    <string name="account_links">Csatlakozások</string>
+    <string name="acknowledge">Megerősítés</string>
+    <string name="action_clone_group">Csoport klónozása</string>
+    <string name="action_delete_group">Csoport törlése</string>
+    <string name="action_leave_group">Csoport elhagyása</string>
+    <string name="add">Hozzáadás</string>
+    <string name="add_acount_from_within_threema">Hozzon létre egy új ID-t a Threema alkalmazásból.</string>
+    <string name="add_answer">Válasz hozzáadása</string>
+    <string name="add_attachment">Beillesztés</string>
+    <string name="add_caption_hint">Felirat hozzáadása</string>
+    <string name="add_contact_enter_id_hint">Kérjük, adja meg a hozzáadni kívánt kapcsolat Threema ID-ját.</string>
+    <string name="add_group_link">Tagok hozzáadása csoporthivatkozásokkal</string>
+    <string name="add_group_members">Új tag</string>
+    <string name="add_group_members_list">Csoporttagok</string>
+    <string name="add_group_owner">Létrehozó</string>
+    <string name="add_shortcut">Parancsikon létrehozása</string>
+    <string name="advanced_options">További lehetőségek</string>
+    <string name="all">Mind</string>
+    <string name="all_open_group_requests">Összes csoportkérelem</string>
+    <string name="already_licensed">Már engedélyezett</string>
+    <string name="an_error_occurred">Hiba történt</string>
+    <string name="an_error_occurred_during_send">Hiba történt egy vagy több üzenet küldése közben.</string>
+    <string name="an_error_occurred_more">Hiba történt: «%1$s»</string>
+    <string name="and">és</string>
+    <string name="android_backup_date">Utolsó biztonsági mentés</string>
+    <string name="android_backup_restart_threema">Kérem, várjon. Az alkalmazás hamarosan újraindul.</string>
+    <string name="android_emojis_warning">Megjegyzés: Előfordulhat, hogy a rendszer karakterkészlete nem képes
+		megjeleníteni a Threema által támogatott összes emojit.
+	</string>
+    <string name="another_connection_instructions">A kiszolgáló két vagy több különböző eszközről származó, azonos Threema ID-vel rendelkező kapcsolatot észlelt.\n\nEgy Threema ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.\n\nHa új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a régi eszközön, majd indítsa újra az új eszközt.</string>
+    <string name="app_store_error_code">App Store hibakód: %d</string>
+    <string name="archived">Archív</string>
+    <string name="archived_chats">Archivált csevegések</string>
+    <string name="attach_ballot">Szavazás</string>
+    <string name="attach_camera">Rendszerkamera</string>
+    <string name="attach_document">Fájl</string>
+    <string name="attach_gallery">Galéria</string>
+    <string name="attach_gif">Gif</string>
+    <string name="attach_location">Helyszín</string>
+    <string name="attach_picture">Kép</string>
+    <string name="attach_video">Videó</string>
+    <string name="audio_focus_loss_complete">A hívás a hangfókusz teljes elvesztése miatt véget ért.</string>
+    <string name="audio_mute_due_to_focus_loss">A hangfókusz elvesztése miatt átmenetileg elnémult a hang</string>
+    <string name="audio_placeholder">Hang</string>
+    <string name="auto_download_limit_explain">A %s-nál nagyobb videók és fájlok mindig igény szerint kerülnek letöltésre</string>
+    <string name="back">Vissza</string>
+    <string name="back_to_threema">Visszatért a %s-hoz?</string>
+    <string name="backup_and_delete">Mentés és törlés</string>
+    <string name="backup_data">Adatmentés</string>
+    <string name="backup_data_cancelled">A biztonsági mentés leállítása</string>
+    <string name="backup_data_media">Nagyméretű médiák (videók, fájlok, képek) mentése</string>
+    <string name="backup_data_media_confirm">A nagyméretű médiafájlok ZIP biztonsági mentése hosszú időt vehet igénybe, és meghaladhatja a készülék processzor- és memóriakapacitását. A biztonsági mentés során nem fogadhatók Threema üzenetek. Biztos, hogy folytatni akarod?</string>
+    <string name="backup_data_new">Adatmentés létrehozása</string>
+    <string name="backup_data_no_permission">Nincs író hozzáférés ehhez a könyvtárhoz. Kérjük, válasszon egy másikat.</string>
+    <string name="backup_data_password_msg">Az azonosító, a csevegések, a kapcsolatok és a beállítások az USB-meghajtón egy
+		ZIP-fájlban tárolódnak, és egy másik Android-eszközön visszaállíthatók. Adjon meg egy jelszót az adatmentéshez.
+	</string>
+    <string name="backup_data_title">Adatmentés</string>
+    <string name="backup_delete_confirm">Biztonsági mentés fájl törölve</string>
+    <string name="backup_explain_text">Ha lecseréli vagy elveszíti a készülékét, senki sem tudja visszaállítani a Threema azonosítóját és a csevegéseket biztonsági mentés nélkül. Ezért készítsen biztonsági másolatot az adatokról a rendelkezésre álló biztonsági mentési lehetőségekkel.</string>
+    <string name="backup_id">ID export</string>
+    <string name="backup_id_summary">A karakterlánc vagy a QR-kód a választott jelszóval együtt használható az ID
+		helyreállítására egy másik eszközön. Másolja &amp; és illessze be az adatokat egy megfelelő helyre, nyomtassa
+		ki, küldje el magának e-mailben a Megosztás funkció segítségével, vagy olvassa be a QR-kódot egy másik eszközzel.
+	</string>
+    <string name="backup_id_title">Az Ön ID exportja</string>
+    <string name="backup_in_progress">Biztonsági mentés készítése</string>
+    <string name="backup_or_restore_error">Threema biztonsági mentés</string>
+    <string name="backup_or_restore_error_body">A biztonsági mentés sikertelen</string>
+    <string name="backup_or_restore_progress">Biztonsági mentés/visszaállítás állapota</string>
+    <string name="backup_or_restore_success_body">Sikeresen létrehozott biztonsági mentés</string>
+    <string name="backup_other_restore_options">Egyéb helyreállítási lehetőségek</string>
+    <string name="backup_password_again_summary">Jelszó megismétlése</string>
+    <string name="backup_password_summary">Az Ön azonosítója jelszóval lesz titkosítva. Használjon betűk, számok és szimbólumok kombinációját. Ne feledje el mit írt be ide!</string>
+    <string name="backup_restore_in_progress">Biztonsági mentés vagy visszaállítás folyamatban. További információkért nézze meg az értesítést.</string>
+    <string name="backup_restore_type"><![CDATA[Milyen típusú másolatot szeretne visszaállítani? <br/><br/> <a href=%s>Tudjon meg többet a Threema biztonsági mentésekről</a>]]></string>
+    <string name="backup_share">Biztonsági mentés továbbítása</string>
+    <string name="backup_share_content">A következő karakterláncot a kiválasztott jelszóval együtt használja a
+		Threema azonosító visszaszerzéséhez.
+	</string>
+    <string name="backup_share_subject">Threema ID export a következőkhöz</string>
+    <string name="backup_started">Az adatmentés elindult</string>
+    <string name="backup_sum">Exportálja a Threema ID-t</string>
+    <string name="backup_title">ID exportálása</string>
+    <string name="ballot_add_choices">Válaszlehetőségek megadása</string>
+    <string name="ballot_answer_count_error">Kérjük, legalább két választ adjon meg.</string>
+    <string name="ballot_choice_add">válasz szövege</string>
+    <string name="ballot_close">A szavazás lezárása</string>
+    <string name="ballot_copy">Szavazás másolása</string>
+    <string name="ballot_create">Szavazás létrehozása</string>
+    <string name="ballot_created_successfully">A szavazás sikeresen elkészült.</string>
+    <string name="ballot_error_more_than_x_choices">Legalább két választási lehetőséget kell létrehoznia</string>
+    <string name="ballot_intermediate_results_show">Közbenső eredmények megjelenítése</string>
+    <string name="ballot_message_closed">Az eredmények készen állnak</string>
+    <string name="ballot_multiple_choice">Többszörös választás</string>
+    <string name="ballot_no_ballots_yet">Még nincsenek szavazások.</string>
+    <string name="ballot_not_connected">Kérjük, a szavazás kitöltése előtt győződjön meg arról, hogy a Threema online van.</string>
+    <string name="ballot_not_exist">A szavazás nem létezik</string>
+    <string name="ballot_one_contact_not_supported">Figyelem: %1$s még nem tud részt venni a szavazásokban.</string>
+    <string name="ballot_open">Nyílt szavazások</string>
+    <string name="ballot_overview">Összes szavazás</string>
+    <string name="ballot_placeholder">Szavazás</string>
+    <string name="ballot_really_close">Szeretné lezárni ezt a szavazást, és elérhetővé tenni az eredményeket?</string>
+    <string name="ballot_really_delete">Szavazás törlése</string>
+    <string name="ballot_really_delete_text">Tényleg törölni akarja a %1$d szavazatot? A szavazatokat nem lehet visszaállítani.
+	</string>
+    <string name="ballot_received_votes">Beérkezett szavazatok: %1$d/%2$d</string>
+    <string name="ballot_remove">Szavazás eltávolítása</string>
+    <string name="ballot_result_final">Végeredmény</string>
+    <string name="ballot_result_intermediate">Közbenső eredmények</string>
+    <string name="ballot_secret">titkos</string>
+    <string name="ballot_state_closed">zárva</string>
+    <string name="ballot_subject_hint">Szavazás címének megadása</string>
+    <string name="ballot_tap_to_view_results">Szavazás lezárva. Érintse meg az eredményekért</string>
+    <string name="ballot_tap_to_vote">Szavazás megérintéssel</string>
+    <string name="ballot_vote">Szavaz</string>
+    <string name="ballot_vote_posted_failed">A szavazás sikertelen</string>
+    <string name="ballot_vote_posted_successfully">Sikeresen leadott szavazat</string>
+    <string name="ballot_window_hide">Nyílt szavazások elrejtése</string>
+    <string name="ballot_window_show">Nyílt szavazások megjelenítése</string>
+    <string name="ballot_wizard0_explain">Gyorsan és egyszerűen hozhat létre szavazást közvetlenül a Threema programban.
+		Szervezzen időpontot, vagy végezzen szavazást barátai körében.
+	</string>
+    <string name="ballot_x_contact_not_supported">Figyelem: %1$d kapcsolat még nem tud részt venni a szavazásokban.
+	</string>
+    <string name="battery_optimizations_disable_confirm">Tényleg engedélyezve akarja hagyni az akkumulátor teljesítményének optimalizálását %1$s esetében? Ezáltal a %2$s használhatatlanná válhat.</string>
+    <string name="battery_optimizations_disable_guide">A legördülő menüben válassza az «Összes alkalmazás»-t</string>
+    <string name="battery_optimizations_disable_guide_ctd">Keresse a %s-t a listában és kikapcsolja ki az optimalizálást</string>
+    <string name="battery_optimizations_explain">Az akkumulátorteljesítmény optimalizálása megakadályozza, hogy a %1$s megfelelően működjön, amikor a telefon alvó üzemmódba kapcsol. Kérjük, tiltsa le az optimalizálást %2$s számára.</string>
+    <string name="battery_optimizations_title">Az akkumulátoroptimalizálás letiltása</string>
+    <string name="biometric_authentication_failed">A hitelesítés sikertelen</string>
+    <string name="biometric_authentication_successful">Önt sikeresen hitelesítették</string>
+    <string name="biometric_enter_authentication">Kérjük, hitelesítse magát a feloldáshoz</string>
+    <string name="biometrics_no_permission">Nincs felhatalmazás a biometrikus adatokhoz való hozzáférésre.</string>
+    <string name="biometrics_not_avilable">Biometrikus hitelesítés nem áll rendelkezésre.</string>
+    <string name="biometrics_not_enrolled">A rendszer nem tárol biometrikus adatokat.</string>
+    <string name="block_contact">Névjegy blokkolása</string>
+    <string name="blocked">blokkolt</string>
+    <string name="blocked_cannot_send">Nem küldhet üzeneteket blokkolt névjegytől</string>
+    <string name="blur">Elmosás</string>
+    <string name="blur_faces">Arcok elmosása</string>
+    <string name="bold">Vastag</string>
+    <string name="bottomsheet_action_expand_halfway">Kibontás félig</string>
+    <string name="brush">Ecset</string>
+    <string name="call_ongoing">Hívás folyamatban</string>
+    <string name="call_with">%s felhívása</string>
+    <string name="can_not_delete_contact">A névjegy nem törölhető</string>
+    <string name="can_not_delete_contact_until_in_group">A névjegy nem törölhető, amíg még egy csoportban van.</string>
+    <string name="can_not_delete_not_valid">Egy érvénytelen objektum nem távolítható el</string>
+    <string name="can_not_send_no_group_members">Üres csoportnak nem küldhető üzenet.
+	</string>
+    <string name="cancel">Mégsem</string>
+    <string name="cancel_recording">Felvétel törlése</string>
+    <string name="cancel_recording_message">Tényleg le akarja állítani és törölni a felvételt?</string>
+    <string name="cannot_open_file">A fájlt nem lehetett megnyitni </string>
+    <string name="change">Módosítás</string>
+    <string name="character_counter_content_description">Begépelt karakterszám: %2$d/%1$d</string>
+    <string name="character_counter_overflowed_content_description">Maximális karakterszám túllépve: %2$d/%1$d</string>
+    <string name="chat_deleted">%d csevegés törölve</string>
+    <string name="chat_hidden">A csevegés privátként jelölése</string>
+    <string name="chat_history_attached">A csevegési naplót csatoltuk.</string>
+    <string name="chat_updates">Csevegés frissítések</string>
+    <string name="chat_visible">A chat mostantól mindig látható</string>
+    <string name="chat_with">Csevegés %1$s</string>
+    <string name="chats">Csevegések</string>
+    <string name="check_incoming_sms">Bejövő SMS-re várás</string>
+    <string name="check_now">Ellenőrzés</string>
+    <string name="check_updates">Frissítések keresése</string>
+    <string name="checking_serial">Az licenc ellenőrzése</string>
+    <string name="city">Nagyváros</string>
+    <string name="city_block">Negyed</string>
+    <string name="clear_text_end_icon_content_description">Szöveg törlése</string>
+    <string name="click_here_to_change_passphrase">Kattintson ide a jelszó módosításához</string>
+    <string name="click_here_to_change_pin">PIN-kód beállítva. Kattintson ide a módosításhoz</string>
+    <string name="clone_group_message">Az aktuális csoport másolata jön létre Önnel mint rendszergazdával. Folytatja?</string>
+    <string name="close">Bezárás</string>
+    <string name="code_invalid">A megadott kód érvénytelen.</string>
+    <string name="color_blue">Kék</string>
+    <string name="color_cyan">Cián</string>
+    <string name="color_green">Zöld</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_none">Nincs</string>
+    <string name="color_orange">Narancssárga</string>
+    <string name="color_picker_default_title">Szín kiválasztása</string>
+    <string name="color_red">Piros</string>
+    <string name="color_swatch_description"><ns1:g id="color_index">%1$d</ns1:g> szín</string>
+    <string name="color_swatch_description_selected"><ns1:g id="color_index">%1$d</ns1:g> szín kiválasztva</string>
+    <string name="color_white">Fehér</string>
+    <string name="color_yellow">Sárga</string>
+    <string msgid="8585111718777012708" name="common_google_play_services_enable_button">"Engedélyezés"</string>
+    <string msgid="7045129128108380659" name="common_google_play_services_enable_text">"A(z) <ns1:g id="APP_NAME">%1$s</ns1:g> alkalmazás csak akkor működik, ha  engedélyezi a Google Play-szolgáltatásokat."</string>
+    <string msgid="3147157405986503375" name="common_google_play_services_enable_title">"Google Play-szolgáltatások engedélyezése"</string>
+    <string msgid="9115728400623041681" name="common_google_play_services_install_button">"Telepítés"</string>
+    <string msgid="8179894293032530091" name="common_google_play_services_install_text">"A(z) <ns1:g id="APP_NAME">%1$s</ns1:g> alkalmazás nem fut a Google Play-szolgáltatások nélkül, amelyek hiányoznak az eszközről."</string>
+    <string msgid="7442193194585196676" name="common_google_play_services_install_title">"A Google Play-szolgáltatások beszerzése"</string>
+    <string msgid="4293541511340436975" name="common_google_play_services_notification_channel_name">"Google Play-szolgáltatások elérhetősége"</string>
+    <string msgid="180394615667698242" name="common_google_play_services_notification_ticker">"Google Play-szolgáltatások – hiba"</string>
+    <string msgid="2518680582564677258" name="common_google_play_services_unknown_issue">"A(z) <ns1:g id="APP_NAME">%1$s</ns1:g> alkalmazás problémába ütközött a Google Play-szolgáltatások használata során. Próbálkozzon újra."</string>
+    <string msgid="5501187292256987189" name="common_google_play_services_unsupported_text">"A(z) <ns1:g id="APP_NAME">%1$s</ns1:g> alkalmazás nem fut a Google Play-szolgáltatások nélkül, amelyeket eszköze nem támogat."</string>
+    <string msgid="8172070149091615356" name="common_google_play_services_update_button">"Frissítés"</string>
+    <string msgid="7773943415006962566" name="common_google_play_services_update_text">"A(z) <ns1:g id="APP_NAME">%1$s</ns1:g> alkalmazás csak akkor fog működni, ha frissíti a Google Play-szolgáltatásokat."</string>
+    <string msgid="8706675115216073244" name="common_google_play_services_update_title">"A Google Play-szolgáltatások frissítése"</string>
+    <string msgid="7894275749778928941" name="common_google_play_services_updating_text">"A(z) <ns1:g id="APP_NAME">%1$s</ns1:g> alkalmazás nem fut a Google Play-szolgáltatások nélkül, amelyek frissítése folyamatban van."</string>
+    <string msgid="2804989272736383918" name="common_google_play_services_wear_update_text">"A Google Play-szolgáltatások új verziójára van szükség. A szolgáltatás hamarosan frissíti önmagát."</string>
+    <string msgid="5201977337835724196" name="common_open_on_phone">"Megnyitás a telefonon"</string>
+    <string msgid="3441753203274453993" name="common_signin_button_text">"Bejelentkezés"</string>
+    <string msgid="669893613918351210" name="common_signin_button_text_long">"Bejelentkezés Google-fiókkal"</string>
+    <string name="compose_message_and_enter">Üzenet beírása</string>
+    <string name="configure">Beállítás</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"Jelszó használata"</string>
+    <string name="confirm_your_pin">PIN-kód megerősítése</string>
+    <string name="connection_error">Kapcsolati hiba, kérjük, próbálja meg később újra.</string>
+    <string name="contact_add_confirm">Szeretné felvenni az új névjegyet «%1$s» a névjegyzékébe?</string>
+    <string name="contact_already_exists">A névjegy már létezik</string>
+    <string name="contact_format_first_name_last_name">Keresztnév Vezetéknév</string>
+    <string name="contact_format_last_name_first_name">Vezetéknév Keresztnév</string>
+    <string name="contact_not_found">Névjegy nem található</string>
+    <string name="contact_now_blocked">Névjegy blokkolva</string>
+    <string name="contact_now_unblocked">Névjegy feloldva</string>
+    <string name="contact_sorting_first_name">Keresztnév - Vezetéknév</string>
+    <string name="contact_sorting_last_name">Vezetéknév - Keresztnév</string>
+    <string name="contact_state_inactive">Inaktív</string>
+    <string name="contact_state_invalid">Érvénytelen</string>
+    <string name="contacts_deleted">A névjegyek törölve lettek</string>
+    <string name="continue_anyway">Folytassa</string>
+    <string name="continue_recording">Felvétel folytatása</string>
+    <string name="converting_video">A videó feldolgozása folyamatban van</string>
+    <string name="copied">Másolva</string>
+    <string msgid="3209159573327985035" name="copy">"Másolás"</string>
+    <string name="copy_message_action">Másolás</string>
+    <string name="could_not_download_message">Az üzenetet nem lehetett letölteni</string>
+    <string name="country">Ország</string>
+    <string name="creating_contact">Új névjegy hozzáadása</string>
+    <string name="creating_contact_successful">Névjegy sikeresen hozzáadva</string>
+    <string name="creating_group">Csoport létrehozása folyamatban</string>
+    <string name="credits">Köszönetnyilvánítás</string>
+    <string name="crop">Kivágás</string>
+    <string name="data_backup_explain">Az adatmentés a következőket menti:\n\n● ID és kulcspár\n● névjegyzék és bizalmi státusz\n● csoporttagságok\n● csevegések\n● médiák és fájlok (opcionális)\n\nAz adatok titkosított ZIP-ben kerülnek mentésre. A biztonsági másolatot ezután a készüléken kívül, megfelelő helyen kell tárolni.</string>
+    <string name="data_backup_headline">Hozzon létre biztonsági mentést az összes adat, csevegés és médiáról.</string>
+    <string name="data_backup_info">Mindent visszaállít, csevegésekkel</string>
+    <string name="data_backup_last_date">Utolsó sikeres biztonsági mentés</string>
+    <string name="data_backup_save_path">Biztonsági mentés útvonala</string>
+    <string name="database_migration_no_space">Az adatbázis migrációja nem lehetséges: Túl kevés a szabad hely.</string>
+    <string name="decline">Visszautasítás</string>
+    <string name="decoding_message">Az üzenet dekódolása</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"Ismeretlen hiba"</string>
+    <string name="default_group_link">Alapértelmezett csoporthivatkozás</string>
+    <string name="default_link_name">Alapértelmezett hivatkozás</string>
+    <string name="delete">Törlés</string>
+    <string name="delete_contact_action">Névjegy törlése</string>
+    <string name="delete_data">Adatok törlése most</string>
+    <string name="delete_date_confirm_message">A fájlok véglegesen törlődnek, és csak a miniatűrök maradnak meg.</string>
+    <string name="delete_everything">Minden törlése</string>
+    <string name="delete_group_message">Ki akarsz lépni ebből a csoportból, és teljesen törölni akarod? Minden üzenet törlődik.</string>
+    <string name="delete_id_message">Hacsak nem készített biztonsági másolatot az azonosítóról, akkor soha többé nem lesz
+		képes üzenetek küldése vagy fogadása ezzel az azonosítóval.\n\nHa nem kívánja tovább használni ezt az azonosítót,
+		törlés előtt távolítsa el a hivatkozásokat (e-mail/telefonszám).
+	</string>
+    <string name="delete_id_message2">Utolsó figyelmeztetés: valóban törölni szeretné az azonosítóját erről az eszközről?</string>
+    <string name="delete_id_sum">A Threema ID és a csevegések törlése ezen az eszközön.</string>
+    <string name="delete_id_title">ID törlése</string>
+    <string name="delete_left_group_message">Teljesen törölni szeretné ezt a csoportot? Minden üzenet törlődik.</string>
+    <string name="delete_media_files_time">Törölje a következőnél régebbi médiákat és fájlokat:</string>
+    <string name="delete_message">Üzenetek törlése</string>
+    <string name="delete_messages_explain">A következőnél régebbi üzenetek törlése:</string>
+    <string name="delete_my_group_message">Teljesen törölni szeretné ezt a csoportot? Minden üzenet törlésre kerül, és a megmaradt tagok többé nem használhatják a csoportot.</string>
+    <string name="deleting_contact">A névjegy törlésre kerül</string>
+    <string name="deleting_messages">Az üzenetek törlődnek</string>
+    <string name="deleting_thread">A csevegés törlődik</string>
+    <string name="disable">Kikapcsolás</string>
+    <string name="disable_autostart_explain">A következő képernyőn kérjük, aktiválja az automatikus indítást a «%s» számára! Kattintson a "Vissza" gombra, ha végzett.</string>
+    <string name="disable_autostart_title">Autom. indulás</string>
+    <string name="disable_powermanager_explain">A következő képernyőn győződjön meg arról, hogy a «%s» védve van mindenféle korlátozás alól, és aktív lehet a háttérben. Kattintson a vissza gombra, ha végzett.</string>
+    <string name="disable_powermanager_title">Akku-korlátozások</string>
+    <string name="disabled_by_policy">Egyes beállításokat a rendszergazda letiltott</string>
+    <string name="disabled_by_policy_short">A funkciót a rendszergazda letiltotta</string>
+    <string name="discard">Eldob</string>
+    <string name="discard_changes">El akarja vetni a változtatásokat?</string>
+    <string name="discard_changes_title">Változások elvetése</string>
+    <string name="distribution_list">Elosztási lista</string>
+    <string name="dnd">Ne zavarj</string>
+    <string name="do_choose_other_contact">Válasszon ki egy másik névjegyet</string>
+    <string name="do_unlink_contact">Összecsatolás eltávolítása</string>
+    <string name="dont_show_again">Ne mutassa újra</string>
+    <string name="download">Letöltés</string>
+    <string name="download_failed">Letöltés sikertelen. Hibakód: %d</string>
+    <string name="downloading">Letöltés</string>
+    <string name="draft">Vázlat</string>
+    <string name="draw">Rajzolás</string>
+    <string name="duration">Időtartam</string>
+    <string name="edit">Szerkesztés</string>
+    <string name="edit_name">Név és kép beállítása</string>
+    <string name="edit_name_only">Névváltoztatás</string>
+    <string name="edit_type_content_description">%1$s %2$s megjelenítése vagy szerkesztése</string>
+    <string name="email_already_linked">Az Ön Threema ID-je már társítva van ehhez az e-mail címhez.</string>
+    <string name="emoji_activities">Tevékenységek</string>
+    <string name="emoji_emotions">Érzelmek</string>
+    <string name="emoji_flags">Zászlók</string>
+    <string name="emoji_food">Étel és ital</string>
+    <string name="emoji_nature">Természet</string>
+    <string name="emoji_recent">Legutóbbi</string>
+    <string name="emoji_symbols">Szimbólumok</string>
+    <string name="emoji_things">Tárgyak</string>
+    <string name="emoji_traffic">Forgalom</string>
+    <string name="empty_chat_confirm">Ebben a csevegésben minden üzenet törlésre kerül. Folytassuk?</string>
+    <string name="empty_chat_title">Csevegés kiürítése</string>
+    <string name="emptying_chat">Csevegés ürítése</string>
+    <string name="enable_formatting">Formázás engedélyezése</string>
+    <string name="enable_picture_in_picture">Kép-a-képben üzemmód indítása</string>
+    <string name="enable_polling">Lekérdezés használata</string>
+    <string name="enable_storage_access_for_media">Aktiválja a tárhelyelérést a képek és videók megtekintéséhez</string>
+    <string name="enable_unknown_sources">Telepítés nem lehetséges. Kérjük, engedélyezze a \"Ismeretlen alkalmazások telepítése\" opciót a %s-hoz.</string>
+    <string name="enter_code_hint">Adja meg a kódot</string>
+    <string name="enter_code_sum">Kérjük, adja meg az SMS-ben vagy telefonhívásban kapott kódot.</string>
+    <string name="enter_description">Kérjük, írja le a problémát vagy hibát.</string>
+    <string name="enter_distribution_list_name">Válasszon nevet a listának</string>
+    <string name="enter_id_hint">Threema-ID megadása</string>
+    <string name="enter_serial_body">Kérjük, adja meg a boltban kapott licenckulcsát. Ha elfelejtette, kattintson ide:
+		https://shop.threema.ch/retrieve_keys
+	</string>
+    <string name="enter_serial_title">Threema feloldása</string>
+    <string name="enter_text_hint">Írja be</string>
+    <string name="enter_zip_password_body">A csevegés titkosított zip-fájlként kerül elküldésre. Kérjük, válasszon egy jelszót:</string>
+    <string name="error">Hiba</string>
+    <string name="error_attaching_files">Hiba fájlok hozzáadásakor.</string>
+    <string name="error_creating_group">Hiba a csoport létrehozásában/frissítésében</string>
+    <string name="error_detecting_faces">Hiba történt az arcfelismerés során</string>
+    <string name="error_icon_content_description">Hiba</string>
+    <string name="error_out_of_memory">Túl kevés a szabad memória a művelet végrehajtásához</string>
+    <string name="error_saving_file">Hiba mentés közben. Nincs engedélye?</string>
+    <string name="error_unable_loading_media_thumb">Az előnézet nem tölthető be</string>
+    <string name="error_video_conversion">Videókonverziós hiba.</string>
+    <string name="everything">mind</string>
+    <string name="exclude_contact">Szinkronizálásból kizárás.</string>
+    <string name="exo_controls_cc_disabled_description">Feliratok bekapcsolása</string>
+    <string name="exo_controls_cc_enabled_description">Feliratok kikapcsolása</string>
+    <string name="exo_controls_fastforward_description">Előretekerés</string>
+    <string name="exo_controls_fullscreen_enter_description">Teljes képernyő</string>
+    <string name="exo_controls_fullscreen_exit_description">Kilépés a teljes képernyős módból</string>
+    <string name="exo_controls_hide">Lejátszásvezérlők elrejtése</string>
+    <string name="exo_controls_next_description">Következő</string>
+    <string name="exo_controls_overflow_hide_description">További beállítások elrejtése</string>
+    <string name="exo_controls_overflow_show_description">További beállítások megjelenítése</string>
+    <string name="exo_controls_pause_description">Szüneteltetés</string>
+    <string name="exo_controls_play_description">Lejátszás</string>
+    <string name="exo_controls_playback_speed">Sebesség</string>
+    <string name="exo_controls_playback_speed_normal">Normál</string>
+    <string name="exo_controls_previous_description">Előző</string>
+    <string name="exo_controls_repeat_all_description">Összes szám ismétlése</string>
+    <string name="exo_controls_repeat_off_description">Nincs ismétlés</string>
+    <string name="exo_controls_repeat_one_description">Egy szám ismétlése</string>
+    <string name="exo_controls_rewind_description">Visszatekerés</string>
+    <string name="exo_controls_seek_bar_description">Lejátszási folyamat</string>
+    <string name="exo_controls_settings_description">Beállítások</string>
+    <string name="exo_controls_show">Lejátszásvezérlők mutatása</string>
+    <string name="exo_controls_shuffle_off_description">Keverés kikapcsolva</string>
+    <string name="exo_controls_shuffle_on_description">Keverés bekapcsolva</string>
+    <string name="exo_controls_stop_description">Leállítás</string>
+    <string name="exo_controls_vr_description">VR-mód</string>
+    <string name="exo_download_completed">A letöltés befejeződött</string>
+    <string name="exo_download_description">Letöltés</string>
+    <string name="exo_download_downloading">Letöltés folyamatban</string>
+    <string name="exo_download_failed">Nem sikerült a letöltés</string>
+    <string name="exo_download_notification_channel_name">Letöltések</string>
+    <string name="exo_download_removing">Letöltések törlése folyamatban</string>
+    <string name="exo_item_list">%1$s, %2$s</string>
+    <string name="exo_track_bitrate">%1$.2f Mbps</string>
+    <string name="exo_track_mono">Monó</string>
+    <string name="exo_track_resolution">%1$d × %2$d</string>
+    <string name="exo_track_role_alternate">Alternatív</string>
+    <string name="exo_track_role_closed_captions">Felirat</string>
+    <string name="exo_track_role_commentary">Kommentár</string>
+    <string name="exo_track_role_supplementary">Kiegészítő</string>
+    <string name="exo_track_selection_auto">Automatikus</string>
+    <string name="exo_track_selection_none">Nincs</string>
+    <string name="exo_track_selection_title_audio">Hang</string>
+    <string name="exo_track_selection_title_text">Szöveg</string>
+    <string name="exo_track_selection_title_video">Videó</string>
+    <string name="exo_track_stereo">Sztereó</string>
+    <string name="exo_track_surround">Térhatású hangzás</string>
+    <string name="exo_track_surround_5_point_1">5.1-es térhatású hangzás</string>
+    <string name="exo_track_surround_7_point_1">7.1-es térhatású hangzás</string>
+    <string name="exo_track_unknown">Ismeretlen</string>
+    <string msgid="1234962710353108940" name="expand_button_title">"Speciális"</string>
+    <string name="expired_barcode">Ez a kód lejárt. Kérjük, olvassa be újra közvetlenül a másik felhasználó alkalmazásából.</string>
+    <string name="exposed_dropdown_menu_content_description">Legördülő menü megjelenítése</string>
+    <string name="external_verification_levels_title">Egyéb névjegyek</string>
+    <string name="face_blur_tooltip_text">Keress arcokat a képen, és homályosítsd el őket, vagy fedd le egy smileyval.</string>
+    <string name="face_blur_tooltip_title">Új: Arcfelismerés</string>
+    <string name="farm">Tanya</string>
+    <string name="feedback">Visszajelzés</string>
+    <string name="file_is_not_a_image">A kiválasztott fájl nem képfájl.</string>
+    <string name="file_is_not_a_video">A kiválasztott fájl nem videó</string>
+    <string name="file_is_not_audio">Nincs hangfájl</string>
+    <string name="file_one_contact_not_supported">%1$s még nem tud fájlokat fogadni.</string>
+    <string name="file_placeholder">Fájl</string>
+    <string name="file_saved">%d fájl(ok) mentve.</string>
+    <string name="file_size">Fájlméret</string>
+    <string name="file_too_large">A fájl nagyobb, mint a megengedett 50 MB</string>
+    <string name="file_x_contact_not_supported">Figyelmeztetés: %1$d kapcsolat nem tud fájlokat fogadni.</string>
+    <string name="filter_by_album">Szűrés média album szerint</string>
+    <string name="filter_list">Lista szűrése</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"Érintse meg az ujjlenyomat-érzékelőt"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"Az ujjlenyomathoz szükséges hardverhez nem lehet hozzáférni."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"Ez az eszköz nem rendelkezik ujjlenyomat-érzékelővel"</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"Túl sok próbálkozás. Próbálja újra később."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"Nincsenek regisztrált ujjlenyomatok."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"Az ujjlenyomattal kapcsolatos műveletet a felhasználó megszakította."</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"Nem ismerhető fel"</string>
+    <string name="finish">Befejezés</string>
+    <string name="first_name">Keresztnév</string>
+    <string name="flip">Tükrözés</string>
+    <string name="fontsize_large">Nagy</string>
+    <string name="fontsize_normal">Normál</string>
+    <string name="fontsize_xlarge">Nagyon nagy</string>
+    <string name="forgot_your_id">Elfelejtette az ID-ját?</string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Elfelejtette a jelszót?</a>]]></string>
+    <string name="forward_captions">Küldje el a címkéket is</string>
+    <string name="forward_message">Előre</string>
+    <string name="forward_text">Szöveg továbbítása</string>
+    <string name="generating_backup_data">Az ID titkosítása</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"Nem állított be PIN-kódot, mintát vagy jelszót."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"Ez az eszköz nem támogatja PIN-kód, minta vagy jelszó használatát."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"A hitelesítést megszakította a felhasználó."</string>
+    <string name="global_search">Csevegések böngészése</string>
+    <string name="global_search_empty_view_text">Adjon meg legalább két karaktert az üzenetekben való kereséséhez</string>
+    <string name="google_assistant_verification_channel_name">Segéd-hitelesítő</string>
+    <string name="google_assistant_verification_notification_title">A Google Segéd üzenetet küld</string>
+    <string name="grace_five_minutes">5 perc</string>
+    <string name="grace_never">Soha (kézi)</string>
+    <string name="grace_one_minute">1 perc</string>
+    <string name="grace_ten_minutes">10 perc</string>
+    <string name="grace_thirty_minutes">30 perc</string>
+    <string name="grace_thirty_seconds">30 másodperc</string>
+    <string name="grace_two_minutes">2 perc</string>
+    <string name="group">Csoport</string>
+    <string name="group_create_no_members">Biztos, hogy üres csoportot szeretne létrehozni?</string>
+    <string name="group_created_confirm">Csoport sikeresen létrehozva</string>
+    <string name="group_edit_title">Csoport szerkesztése</string>
+    <string name="group_image">Csoportkép</string>
+    <string name="group_join_request">Csoportkérelem</string>
+    <string name="group_join_request_for">Csoportkérelem %s számára</string>
+    <string name="group_join_request_message_info"><![CDATA[Írjon egy rövid üzenetet <b>%1$s</b> adminnak, hogy miért szeretne csatlakozni az <b>%2$s</b>-hoz.]]></string>
+    <string name="group_link_add">Hivatkozás létrehozása</string>
+    <string name="group_link_administered">Adminisztrált</string>
+    <string name="group_link_bottom_sheet_desc">Ossza meg ezt a hivatkozást azokkal, akiket meg szeretne meghívni. Vegye figyelembe az alábbi beállításokat</string>
+    <string name="group_link_bottom_sheet_link_title">Hivatkozás</string>
+    <string name="group_link_bottom_sheet_title">Csoporthivatkozás</string>
+    <string name="group_link_default_name">Ismeretlen link</string>
+    <string name="group_link_edit_expiration_date">Lejárati idő megadása</string>
+    <string name="group_link_expiration_none">Korlátlan</string>
+    <string name="group_link_invalid">Lejárt</string>
+    <string name="group_link_none">Még nem generált linket</string>
+    <string name="group_link_open">Nyílt</string>
+    <string name="group_link_properties_title">Hivatkozás tulajdonságok</string>
+    <string name="group_link_property_administration_desc">Ha engedélyezve van, akkor a csoportban kapja meg a kérelmeket, és egyenként megerősítheti azokat.</string>
+    <string name="group_link_property_administration_title">Kézi megerősítés</string>
+    <string name="group_link_property_expiration_desc">A hivatkozás a megadott dátum után érvénytelenné válik.</string>
+    <string name="group_link_property_expiration_title">Lejárati idő</string>
+    <string name="group_link_qr_desc"><![CDATA[Ossza meg ezt a linket azokkal, akiket szeretne meghívni az <b>%s</b> csoportba.]]></string>
+    <string name="group_link_rename">Hivatkozás átnevezése</string>
+    <string name="group_link_rename_tag">Új név</string>
+    <string name="group_link_share">Csoport link megosztása</string>
+    <string name="group_link_share_message">Csatlakozz a Threema csoportomhoz az alábbi hivatkozáson keresztül: %s</string>
+    <string name="group_link_show_qr">QR-kód megjelenítése</string>
+    <string name="group_link_update_success">Link frissítés sikeres</string>
+    <string name="group_link_valid">Érvényes</string>
+    <string name="group_links_manage_menu">Csoporthivatkozások kezelése</string>
+    <string name="group_links_overview_title">Csoporthivatkozások %s számára</string>
+    <string name="group_membership_title">Ezeknek a csoportoknak a tagja</string>
+    <string name="group_not_found">A csoport nem található.</string>
+    <string name="group_qr_code_title">Csoport QR-kód</string>
+    <string name="group_request_already_sent"><![CDATA[Már van egy nyitott kérelme <b>%s</b> számára, és a csoportadminisztrátor válaszára vár. Kattintson a listában a kérelemre, ha újra el szeretné küldeni a kérelmet.]]></string>
+    <string name="group_request_already_sent_title">Csoportkérelem már elküldve</string>
+    <string name="group_request_confirm_send"><![CDATA[Csoportkérelmet készül küldeni <b>%1$s</b> számára <b>%2$s</b> adminisztrátornak. Ha ez a link időközben nem lett érvénytelenítve, akkor Önt hozzáadjuk a csoporthoz, amint az admin eszköze elérhetővé válik.]]></string>
+    <string name="group_request_hint">Szia, én vagyok…</string>
+    <string name="group_request_incoming_dialog_title">Kérelem %s-tól</string>
+    <string name="group_request_link_already_deleted">Csoporthivatkozás már törölve</string>
+    <string name="group_request_message_empty">Az adminisztrátornak küldött üzenet nem lehet üres!</string>
+    <string name="group_request_received_through">Hivatkozáson keresztül: %s</string>
+    <string name="group_request_send_title">Csoportkérelem küldése</string>
+    <string name="group_request_sent_menu">Elküldött csoportkérelem</string>
+    <string name="group_request_show_all">Összes csoportoskérelem megjelenítése</string>
+    <string name="group_request_state_accepted">Elfogadva</string>
+    <string name="group_request_state_expired">Lejárt</string>
+    <string name="group_request_state_full">Csoport teli</string>
+    <string name="group_request_state_pending">Függőben</string>
+    <string name="group_request_state_rejected">Visszautasítva</string>
+    <string name="group_requests_all_title">Összes csoportkérelem</string>
+    <string name="group_requests_none_outgoing">Nem küldött csoportkérelmet. A kérelmeket csoporthivatkozásokon keresztül lehet elküldeni.</string>
+    <string name="group_requests_show_menu_title">Nyitott csoportkérelmek megjelenítése</string>
+    <string name="group_response">Válasz a csoportkérelemre</string>
+    <string name="group_response_accepted">A %s csoportra vonatkozó kérelmét elfogadták.</string>
+    <string name="group_response_full">A %s csoportra vonatkozó kérelmét elutasították, mivel a csoport már megtelt.</string>
+    <string name="group_response_rejected">A %s csoportra vonatkozó kérelmét elutasították.</string>
+    <string name="group_select_at_least_two">Kérjük, válasszon legalább egy tagot</string>
+    <string name="group_select_max">A csoporthoz legfeljebb %1$d tag adható hozzá.</string>
+    <string name="group_was_synchronized">Csoport újraszinkronizálva</string>
+    <string name="hamlet">Kisfalu</string>
+    <string name="hide_chat">Privát csevegések</string>
+    <string name="hide_chat_enter_message_explain">Ez a csevegés privátnak van jelölve. A megtekintéshez először állítson be egy hozzáférés védelmet.</string>
+    <string name="hide_chat_message_explain">Bizonyos csevegésekhez való hozzáférést PIN-kóddal védheti, és átmenetileg elrejtheti a csevegéseket a csevegési listában. A funkció használatához először állítson be egy hozzáférési védelmet.</string>
+    <string name="hint_filter_list">Szűrő kifejezés megadása</string>
+    <string name="hint_search_keyword">Keresési kifejezés</string>
+    <string name="hms_abort" priority="translator">"Leállítás"</string>
+    <string name="hms_abort_message" priority="translator">"Leállítja a letöltést?"</string>
+    <string name="hms_bindfaildlg_message" priority="translator">"%1$s nem tudja használni a HMS Core-t. Indítsa el az Optimalizálót (Telefonkezelő), vagy lépjen a Beállításokba és engedélyezze a(z) %2$s összes jogosultságát (beleértve az automatikus indítást és másodlagos indítást), majd próbálja újra."</string>
+    <string name="hms_cancel" priority="translator">"Mégse"</string>
+    <string name="hms_check_failure" priority="translator">"Frissítések keresése sikertelen."</string>
+    <string name="hms_check_no_update" priority="translator">"A verziója naprakész."</string>
+    <string name="hms_checking" priority="translator">"Frissítések keresése..."</string>
+    <string name="hms_confirm" priority="translator">"OK"</string>
+    <string name="hms_download_failure" priority="translator">"A HMS Core csomag letöltése sikertelen."</string>
+    <string name="hms_download_no_space" priority="translator">"Nincs elég tárhely. A letöltés nem fejezhető be."</string>
+    <string name="hms_download_retry" priority="translator">"Letöltés sikertelen. Újrapróbálja?"</string>
+    <string name="hms_downloading" priority="translator">"HMS Core letöltése \nállapot: %d%%"</string>
+    <string name="hms_downloading_loading" priority="LT">"Letöltés"</string>
+    <string name="hms_downloading_new" priority="LT">"HMS Core letöltése"</string>
+    <string name="hms_gamebox_name" priority="LT">GameCenter</string>
+    <string name="hms_install" priority="translator">"Telepítés"</string>
+    <string name="hms_install_message" priority="translator">"A HMS Core telepítve kell legyen a funkció használatához. Telepíti?"</string>
+    <string name="hms_push_channel" priority="Original">"Alapértelmezett"</string>
+    <string name="hms_retry" priority="translator">"Újra"</string>
+    <string name="hms_update" priority="translator">"Frissítés"</string>
+    <string name="hms_update_continue" priority="LT">"Letöltés"</string>
+    <string name="hms_update_message" priority="translator">"A funkció használatához frissítsen a HMS Core legfrissebb verzióra. Frissíti most?"</string>
+    <string name="hms_update_message_new" priority="LT">"A szolgáltatásnak szüksége van az alábbi alkalmazás legfrissebb verziójára:\n\n%1$s"</string>
+    <string name="hms_update_nettype" priority="LT">"Nincs Wi-Fi kapcsolat. Letöltés mobil adatforgalommal?"</string>
+    <string name="hms_update_title" priority="translator">"HMS Core"</string>
+    <string name="icon_content_description">Párbeszédpanel ikonja</string>
+    <string name="id_backup_info">Csak az ID helyreállítása</string>
+    <string name="id_mismatch">A beolvasott nyilvános kulcs nem egyezik a kiszolgáló által használt kulccsal, amelyet
+		a kiszolgáló a névjegyhez rögzített. Ez olyan manipulációra utal, amely veszélyeztetheti a kommunikáció biztonságát.
+		Kérjük, ha lehetséges, jelezze ezt az esetet a security@threema.ch címen az ID és a körülmények feltüntetésével.
+	</string>
+    <string name="identity_already_exists">Ez az ID már szerepel a névjegyzékében</string>
+    <string name="image_already_added">Ez a kép már ki van választva.</string>
+    <string name="image_placeholder">Kép</string>
+    <string name="image_size_large">Nagy (1600x1600)</string>
+    <string name="image_size_medium">Közepes  (1024x1024)</string>
+    <string name="image_size_original">Eredeti méret</string>
+    <string name="image_size_small">Kicsi (640x640)</string>
+    <string name="image_size_xlarge">Óriási (2592x2592)</string>
+    <string name="importing_files">Fájlok importálása folyamatban</string>
+    <string name="importing_files_failed">A biztonsági mentési fájl importálása sikertelen. Győződjön meg róla, hogy elegendő szabad tárhely van.</string>
+    <string name="incoming_group_request_no_message">Nyitott hivatkozáson keresztül küldték… Nincs üzenet</string>
+    <string name="info">Információk</string>
+    <string name="insert_date">Dátum beillesztése</string>
+    <string name="insert_datetime">Dátum és idő beillesztése</string>
+    <string name="internal_storage">Tárhely</string>
+    <string name="internet_connection_required">Nincs internetkapcsolat.</string>
+    <string name="invalid_backup">A biztonsági másolat adatai érvénytelenek. Visszaállítás nem lehetséges.</string>
+    <string name="invalid_backup_path">Érvénytelen mentési útvonal</string>
+    <string name="invalid_barcode">Érvénytelen vonalkód</string>
+    <string name="invalid_cannot_send">Nem küldhet üzenetet érvénytelen kapcsolatnak</string>
+    <string name="invalid_data">Érvénytelen adat. Küldés nem lehetséges.</string>
+    <string name="invalid_input">Érvénytelen bevitel</string>
+    <string name="invalid_onprem_id">Nincs érvényes Threema OnPrem-ID</string>
+    <string name="invalid_passphrase">Érvénytelen jelszó</string>
+    <string name="invalid_threema_id">Érvénytelen Threema-ID</string>
+    <string name="invalid_threema_qr_code">Érvénytelen QR-kód</string>
+    <string name="invite_email_body">Szia!\n\nA %1$s-t használom, a biztonságos messengert, amely védi a privátszférát.\n\nA Threema azonosítóm: https://threema.id/%2$s\n\nBeszélgessünk a %1$s-n keresztül!\n\nÜdv!\n</string>
+    <string name="invite_email_subject">Threema. A biztonságos messenger, amely védi az én és a te privátszférádat.</string>
+    <string name="invite_sms_body">Szia! Beszéljünk biztonságosan és az adatvédelemnek megfelelően a %1$s-n keresztül! A Threema ID-m: https://threema.id/%2$s</string>
+    <string name="invite_via">Meghívás…</string>
+    <string name="ipv6_requires_restart">Ez a módosítás az alkalmazás újraindítását igényli.</string>
+    <string name="ipv6_restart_now">Újraindítás most</string>
+    <string name="is_typing">írja…</string>
+    <string name="island">Sziget</string>
+    <string name="islet">Szigetecske</string>
+    <string name="isolated_dwelling">Település</string>
+    <string name="italic">Kurzív</string>
+    <string name="item_view_role_description">Lap</string>
+    <string name="kick_user_from_group">%1$s eltávolítása a csoportból</string>
+    <string name="label_continue">Tovább</string>
+    <string name="last_name">Vezetéknév</string>
+    <string name="link_administration_off_explain">Ezt a linket már megosztották, és nyilvános. Az adminisztráció utólag nem módosítható. Egyszerűen hozzon létre egy új linket a kívánt opcióval.</string>
+    <string name="linked">összecsatolt</string>
+    <string name="linked_email">E-mail</string>
+    <string name="linked_mobile">Mobiltelefonszám</string>
+    <string name="list_theme_dark">Sötét</string>
+    <string name="list_theme_light">Világos (standard)</string>
+    <string name="listened_to">meghallgatva</string>
+    <string name="locality">Helyszín</string>
+    <string name="location_placeholder">Helyszín</string>
+    <string name="location_services_disabled">A helymeghatározási szolgáltatások ki vannak kapcsolva. Szeretné őket most aktiválni?</string>
+    <string name="lock_option_biometric">Biometrikus</string>
+    <string name="lock_option_none">Nincs</string>
+    <string name="lock_option_pin">PIN-kód</string>
+    <string name="lock_option_screenlock">Rendszer-zárolás</string>
+    <string name="logo">Logó / Görgessen a tetejére</string>
+    <string name="lp_no_nearby_places_found">Nem találtunk a közelben ilyen helyet</string>
+    <string name="lp_or_select_nearby">Vagy válasszon egy közeli helyszínt</string>
+    <string name="lp_search_place">Helyszín megadása</string>
+    <string name="lp_search_place_min_chars">Kérjük, legalább 3 karaktert adjon meg a helykereséshez.</string>
+    <string name="lp_search_place_no_matches">Nincs megfelelő helyszín. Kérjük, módosítsa a keresést.</string>
+    <string name="lp_select_this_place">Ez a helyszín kiválasztása</string>
+    <string name="lp_use_this_location">Helyszín elküldése?</string>
+    <string name="mapbox_attributionErrorNoBrowser">Nincs webböngésző telepítve a készüléken, nem lehet megnyitni weboldalt.</string>
+    <string name="mapbox_attributionsDialogTitle">MapLibre Maps SDK Androidhoz</string>
+    <string name="mapbox_mapActionDescription">Egy MapLibre-szal készült térkép megjelenítése. Húzd két ujjadat a görgetéshez. Csippentsd össze a nagyításhoz.</string>
+    <string name="mapbox_myLocationViewContentDescription">Hely nézet. Megmutatja, hol vagy a térképen.</string>
+    <string name="mapbox_offline_error_region_definition_invalid">A megadott OfflineRegionDefinition nem fér bele a világ kereteibe: %s</string>
+    <string name="mark_read">Elolvasottként megjelölés</string>
+    <string name="mark_read_short">Olvasva</string>
+    <string name="mark_unread">Olvasatlannak jelölni</string>
+    <string name="master_key_locked">A főkulcs zárolva van</string>
+    <string name="master_key_locked_notify_description">Jelszó megadása</string>
+    <string name="master_key_locked_want_exit">A főkulcs még mindig zárva van. Szeretné újra megpróbálni?</string>
+    <string name="masterkey_body">A főkulcsot egy jelszó védi. A feloldáshoz adja meg a jelszót.
+	</string>
+    <string name="masterkey_is_unlocked">A főkulcs nyitva van</string>
+    <string name="masterkey_lock_explain">A Threema a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót,
+		az lehet, hogy egy taskkiller vagy akkumulátorkímélő alkalmazás miatt van, amely eltávolítja a jelszót a memóriából.
+	</string>
+    <string name="masterkey_passphrase_again_summary">Jelszó ismétlése</string>
+    <string name="masterkey_passphrase_hint">Jelszó</string>
+    <string name="masterkey_passphrase_summary">A főkulcsot egy Ön által választott jelszóval tudja védeni.
+		Ha az alkalmazás be lett zárva, újra meg kell adnia a jelszót.
+	</string>
+    <string name="masterkey_passphrase_title">Jelszó a főkulcshoz</string>
+    <string name="masterkey_title">Jelszó megadása</string>
+    <string name="masterkey_unlocking">A főkulcs kinyitása</string>
+    <string name="material_clock_toggle_content_description">Válassza ki, hogy délelőtt vagy délután</string>
+    <string name="material_hour_selection">Óra kiválasztása</string>
+    <string name="material_hour_suffix">%1$s óra</string>
+    <string name="material_minute_selection">Perc kiválasztása</string>
+    <string name="material_minute_suffix">%1$s perc</string>
+    <string name="material_timepicker_am">de.</string>
+    <string name="material_timepicker_clock_mode_description">Időbevitelhez váltson óramódba.</string>
+    <string name="material_timepicker_hour">Óra</string>
+    <string name="material_timepicker_minute">Perc</string>
+    <string name="material_timepicker_pm">du.</string>
+    <string name="material_timepicker_select_time">Időpont kiválasztása</string>
+    <string name="material_timepicker_text_input_mode_description">Időbevitelhez váltson szövegbeviteli módba.</string>
+    <string name="max_images_reached">Egyszerre nem lehet több mint %d képet szerkeszteni</string>
+    <string name="max_selectable_media_exceeded">Egyszerre legfeljebb %d objektum küldhető.</string>
+    <string name="me_myself_and_i">Én</string>
+    <string name="media">Média</string>
+    <string name="media_date_added">Hozzáadás dátuma: %s</string>
+    <string name="media_date_modified">Módosítás dátuma: %s</string>
+    <string name="media_date_taken">Felvétel dátuma: %s</string>
+    <string name="media_date_unknown">Ismeretlen dátum</string>
+    <string name="media_file_not_found">A médiafájl nem nyitható meg. Törölték vagy nem töltötte le a szerverről.</string>
+    <string name="media_files">Fájlok</string>
+    <string name="media_files_deleted">%d Média/fájlok törölve.</string>
+    <string name="media_gallery">Média galéria</string>
+    <string name="media_gallery_all">Minden</string>
+    <string name="media_gallery_audio">Hangüzenetek</string>
+    <string name="media_gallery_files">Fájlok</string>
+    <string name="media_gallery_gifs">GIF-ek</string>
+    <string name="media_gallery_pictures">Képek</string>
+    <string name="media_gallery_videos">Videók</string>
+    <string name="menu_about">A Threema-ról</string>
+    <string name="menu_add_contact">Új névjegy</string>
+    <string name="menu_done">Kész</string>
+    <string name="menu_legal">Jogi</string>
+    <string name="menu_restore">Biztonsági mentés visszaállítása</string>
+    <string name="menu_send_profilpic">Profilkép címzett hozzáadás</string>
+    <string name="menu_send_profilpic_now">Profilkép küldése most</string>
+    <string name="menu_send_profilpic_off">Profilkép címzett eltávolítás</string>
+    <string name="menu_settings">Beállítások</string>
+    <string name="message_acknowledged">Üzenet megerősítve</string>
+    <string name="message_archived">%d csevegés archiválva</string>
+    <string name="message_copied">Üzenet másolva</string>
+    <string name="message_declined">Üzenet elutasítva</string>
+    <string name="message_delete_undo">Visszavonás</string>
+    <string name="message_deleted">Üzenet törölve</string>
+    <string name="message_id">Üzenet-ID</string>
+    <string name="message_log_title">Üzenet részletei</string>
+    <string name="message_not_found">Az üzenet nem található</string>
+    <string name="message_sent">Üzenetet elküldve</string>
+    <string name="message_too_long">Az üzenet túl hosszú és nem küldhető el.</string>
+    <string name="messages_delete_explain">A régi üzeneteket teljesen törölheti.</string>
+    <string name="mime_android_apk">Android csomag</string>
+    <string name="mime_audio">Hangfájl</string>
+    <string name="mime_certificate">Digitális tanúsítvány</string>
+    <string name="mime_codes">Programkód</string>
+    <string name="mime_compressed">Tömörített fájl</string>
+    <string name="mime_contact">Névjegy</string>
+    <string name="mime_event">Meghívó</string>
+    <string name="mime_font">Betűtípus fájl</string>
+    <string name="mime_image">Kép</string>
+    <string name="mime_pdf">PDF dokumentum</string>
+    <string name="mime_presentation">Prezentáció</string>
+    <string name="mime_spreadsheet">Táblázat</string>
+    <string name="mime_text">Szöveges fájl</string>
+    <string name="mime_type">MIME-Típus</string>
+    <string name="mime_video">Videó fájl</string>
+    <string name="mime_word">Szöveges dokumentum</string>
+    <string name="minus">Mínusz</string>
+    <string name="minutes">Perc</string>
+    <string name="missing_app_licence">Az App Store nem tudta ellenőrizni az alkalmazás licencét. Ha a Google Play alkalmazást használja, törölje a Google Play Store alkalmazás adatait, és indítsa újra a telefonját.</string>
+    <string name="miui12_notification_body">A MIUI alapértelmezetten kikapcsolja a hangokat, a LED-et és a felugró ablakokat (kivéve néhány nagyon népszerű alkalmazást, amelyeket a Xiaomi «fontosnak» tart). Ezért sajnos manuálisan kell aktiválnia ezeket a beállításokat a telefon Threema-specifikus értesítési beállításaiban, és minden alkalmazásfrissítés után meg kell ismételnie az eljárást. További információért forduljon a telefon gyártójához.</string>
+    <string name="miui_battery_optimization">Kérjük, kapcsolja ki az "Akkumulátor optimalizálás" opciót a %s-hoz, hogy lehetővé tegye ezt a funkciót. Mivel a Xiaomi nem tartja szükségesnek az Android szabványok betartását, ezt kézileg kell megtennie a telefon beállításaiban. Az akkumulátor-optimalizálás letiltásával kapcsolatos segítségért forduljon a Xiaomi ügyfélszolgálatához.</string>
+    <string name="miui_notification_body">A MIUI 10 alapértelmezetten letiltja a hangokat, a LED-et és a felugró ablakokat az újonnan létrehozott értesítési csatornákhoz (kivéve néhány, a Xiaomi által «fontosnak» tartott alkalmazás esetében). Ezért ezeket a paramétereket a telefon Threema-specifikus értesítési beállításaiban kell engedélyeznie az egyes csatornákhoz. További információért forduljon a telefon gyártójához.</string>
+    <string name="miui_notification_prefs">MIUI beállítások</string>
+    <string name="miui_notification_title">Fontos megjegyzés a MIUI felhasználók számára</string>
+    <string name="mobile_already_linked">Az Ön Threema ID-je már társítva van ehhez a mobilszámhoz.</string>
+    <string name="msg_camera_framework_bug">Az Android kamera blokkolva. Győződjön meg róla, hogy a hozzáférés engedélyezett, vagy indítsa újra a mobiltelefont.</string>
+    <string name="msg_default_status">A vonalkód beolvasásához tartsa a vonalkódot a keresőablakban.</string>
+    <string name="mtrl_badge_numberless_content_description">Új értesítés</string>
+    <string name="mtrl_chip_close_icon_content_description">Eltávolítás (%1$s)</string>
+    <string name="mtrl_exceed_max_badge_number_content_description">Több mint %1$d új értesítés</string>
+    <string name="mtrl_picker_a11y_next_month">Váltás a következő hónapra</string>
+    <string name="mtrl_picker_a11y_prev_month">Váltás az előző hónapra</string>
+    <string name="mtrl_picker_announce_current_selection">Jelenleg kiválasztva: %1$s</string>
+    <string name="mtrl_picker_confirm">@android:string/ok</string>
+    <string name="mtrl_picker_date_header_selected">%1$s</string>
+    <string name="mtrl_picker_date_header_title">Válasszon dátumot</string>
+    <string name="mtrl_picker_date_header_unselected">Kiválasztott dátum</string>
+    <string name="mtrl_picker_day_of_week_column_header">Napok oszlopa: %1$s</string>
+    <string name="mtrl_picker_invalid_format">Érvénytelen formátum.</string>
+    <string name="mtrl_picker_invalid_format_example">Példa: %1$s</string>
+    <string name="mtrl_picker_invalid_format_use">Használja ezt: %1$s</string>
+    <string name="mtrl_picker_invalid_range">Érvénytelen tartomány.</string>
+    <string name="mtrl_picker_navigate_to_year_description">Ugrás ehhez az évhez: %1$s</string>
+    <string name="mtrl_picker_out_of_range">Tartományon kívül: %1$s</string>
+    <string name="mtrl_picker_range_header_only_end_selected">Kezdés dátuma – %1$s</string>
+    <string name="mtrl_picker_range_header_only_start_selected">%1$s – Befejezés dátuma</string>
+    <string name="mtrl_picker_range_header_selected">%1$s – %2$s</string>
+    <string name="mtrl_picker_range_header_title">Válasszon dátumtartományt</string>
+    <string name="mtrl_picker_range_header_unselected">Kezdés dátuma – Befejezés dátuma</string>
+    <string name="mtrl_picker_save">Mentés</string>
+    <string name="mtrl_picker_text_input_date_hint">Dátum</string>
+    <string name="mtrl_picker_text_input_date_range_end_hint">Befejezés dátuma</string>
+    <string name="mtrl_picker_text_input_date_range_start_hint">Kezdés dátuma</string>
+    <string name="mtrl_picker_text_input_day_abbr">N</string>
+    <string name="mtrl_picker_text_input_month_abbr">H</string>
+    <string name="mtrl_picker_text_input_year_abbr">É</string>
+    <string name="mtrl_picker_toggle_to_calendar_input_mode">Váltás naptárbeviteli módra</string>
+    <string name="mtrl_picker_toggle_to_day_selection">Koppintson a nap kiválasztásához</string>
+    <string name="mtrl_picker_toggle_to_text_input_mode">Váltás szövegbeviteli módra</string>
+    <string name="mtrl_picker_toggle_to_year_selection">Koppintson az év kiválasztásához</string>
+    <string name="my_backups_title">Biztonsági mentések</string>
+    <string name="my_id">Az én ID-m</string>
+    <string name="my_profile">Profilom</string>
+    <string name="name">Név</string>
+    <string name="neighbourhood">Kerület</string>
+    <string name="network_blocked_body">%s nem tud üzeneteket fogadni a háttérben. A háttéradatok engedélyezéséhez kattintson ide.</string>
+    <string name="network_blocked_title">Háttéradatok letiltva</string>
+    <string name="never">Soha</string>
+    <string name="new_group_link_success">Új link hozzáadva</string>
+    <string name="new_message">1 új üzenet</string>
+    <string name="new_messages">új üzenetek</string>
+    <string name="new_messages_in_chats">%1$d új üzenet %2$d csevegésben</string>
+    <string name="new_messages_locked">Új üzenetek elérhetők</string>
+    <string name="new_messages_locked_description">Érintse meg a megjelenítéshez</string>
+    <string name="new_to_threema">Új a %s-nál?</string>
+    <string name="new_unprocessed_messages">Új üzenetek elérhetők</string>
+    <string name="new_unprocessed_messages_description">Érintse meg a letöltéshez és megtekintéshez</string>
+    <string name="new_wizard_anonymous_confirm">Nem adtál meg mobiltelefonszámot vagy e-mail címet összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Ön nem adott meg mobiltelefonszámot összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
+    <string name="new_wizard_choose_nickname">Válasszon becenevet</string>
+    <string name="new_wizard_done_title">Minden rendben?</string>
+    <string name="new_wizard_find_friends">Találd meg barátaidat Threema-n</string>
+    <string name="new_wizard_help_your_friends_find_you">Hogy az emberek könnyebben megtalálják Önt</string>
+    <string name="new_wizard_hint_email">Email (nem kötelező)</string>
+    <string name="new_wizard_hint_enter_nickname">Becenév megadása</string>
+    <string name="new_wizard_hint_mobile_number">Mobilszám (nem kötelező)</string>
+    <string name="new_wizard_info_fingerprint">Az ujjad mozgatásával véletlenszerű adatokat (úgynevezett entrópiát) generálsz, amelyekből a
+		kulcspár generálódik. Ez a kulcspár az új Threema ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid
+		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló
+		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.
+	</string>
+    <string name="new_wizard_info_id">A Threema ID-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre.
+		A privát kulcs soha nem hagyja el a készülékét. Ez biztosítja, hogy senki más ne tudja elolvasni az üzeneteit.
+	</string>
+    <string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a Threema segítségével barátai automatikusan
+		megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hash-elve) tároljuk a szerverünkön.
+		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.
+	</string>
+    <string name="new_wizard_info_link_phone_only">Ha megadja a saját mobilszámát, a Threema segítségével barátai automatikusan
+		megtalálják önt, ha benne vagy a címjegyzékükben. A számot egyirányú titkosítással (hash-elve) tároljuk a szerverünkön.
+		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.
+	</string>
+    <string name="new_wizard_info_nickname">A becenév egyes eszközökön megjelenik az értesítésekben, és további azonosító jelként
+		szolgál a névjegyzékben azon csevegőpartnerek számára, akik nem szerepelnek a névjegyzékben. Javasoljuk, hogy csak keresztnevet
+		vagy álnevet használjon. Ha nem állít be becenevet, a Threema ID lesz használva.
+	</string>
+    <string name="new_wizard_info_sync_contacts">Ha engedélyezi ezt a beállítást, a címjegyzékből származó e-mail címek és telefonszámok
+		egyirányú titkosításra (hash-elve) kerülnek, mielőtt elküldjük őket a kiszolgálónak a kapcsolattartás céljából.
+		Nem tárolunk semmilyen címjegyzékadatot.</string>
+    <string name="new_wizard_lets_get_started">Gyerünk!</string>
+    <string name="new_wizard_link_mobile">Csatolja össze mobilszámát és/vagy e-mail címét a Threema ID-jával.</string>
+    <string name="new_wizard_link_mobile_only">Csatolja össze mobilszámát a Threema ID-jával.</string>
+    <string name="new_wizard_linked_to">Összecsatolva:</string>
+    <string name="new_wizard_more_information">További információ</string>
+    <string name="new_wizard_move_finger">Mozgassa az ujját a mezőben, hogy új Threema ID-t hozzon létre.</string>
+    <string name="new_wizard_need_internet">Az egyedi Threema ID létrehozásához stabil internetkapcsolat szükséges. Kérjük, próbálja meg újra.</string>
+    <string name="new_wizard_nickname_explain">A becenév megjelenik a barátainak, amikor üzenetet kapnak.</string>
+    <string name="new_wizard_phone_email_invalid">A megadott mobilszám vagy e-mail cím érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
+    <string name="new_wizard_phone_invalid">Az Ön által megadott mobilszám érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
+    <string name="new_wizard_restore_id_backup">Exportált ID visszaállítása</string>
+    <string name="new_wizard_scan_id_backup">Vagy szkennelje be az ID export QR-kódját.</string>
+    <string name="new_wizard_select_country">Válasszon országot</string>
+    <string name="new_wizard_setup_threema">Beállítás</string>
+    <string name="new_wizard_sync_contacts_explain">Kapcsolja be, hogy lássa, mely barátai használják a Threema-t.</string>
+    <string name="new_wizard_this_is_your_id">Ez az Ön Threema ID-ja:</string>
+    <string name="new_wizard_use_id_as_nickname">Szeretné becenévként használni a Threema ID-t?</string>
+    <string name="new_wizard_welcome">Üdvözöljük a Threema-nál</string>
+    <string name="new_wizard_works_like_phone_number">A Threema ID úgy működik, mint egy telefonszám. Barátai ezen az ID-n keresztül érhetik el Önt.
+	</string>
+    <string name="next">Tovább</string>
+    <string name="no">Nem</string>
+    <string name="no_activity_for_mime_type">Nem találtunk megfelelő alkalmazást ehhez a fájlhoz.</string>
+    <string name="no_app_for_location">Ezen a készüléken nem található térképalkalmazás.</string>
+    <string name="no_archived_chats">Nincsenek archivált csevegések.\nHúzzon balra egy csevegést a csevegési listában az archiválásához.</string>
+    <string name="no_camera_installed">Nincs megfelelő kamera</string>
+    <string name="no_contacts">Önnek még nincsenek kapcsolatai. Szinkronizálás bekapcsolása (Beállítások -
+		Adatvédelem), vagy adjon hozzá manuálisan névjegyeket.
+	</string>
+    <string name="no_faces_detected">Nem találtunk arcokat</string>
+    <string name="no_filename"><![CDATA[<Nincs fájlnév>]]></string>
+    <string name="no_group_links">Nincsenek csoporthivatkozások. Csoporthivatkozások létrehozásához kattintson a "Link létrehozása" gombra, vagy aktiválja az alapértelmezett linket a csoport áttekintésében.</string>
+    <string name="no_incoming_group_requests">Még nincsenek bejövő csoportkérelmek. Ezeket csoporthivatkozásokként küldhetik el Önnek, amelyeket a csoport adatainak nézetében kezelhet, ha Ön az adminisztrátor.</string>
+    <string name="no_lockscreen_set">Nincs beállítva a rendszer kijelzőjének zárolása.</string>
+    <string name="no_matching_contacts">Nem találtunk névjegyet.</string>
+    <string name="no_matching_distribution_lists">Még nincsenek elosztási listák meghatározva.</string>
+    <string name="no_matching_groups">Nem találtunk csoportot</string>
+    <string name="no_matching_work_contacts">Nem találtunk olyan Threema Work névjegyet, amelyet a rendszergazda ellenőrzött.</string>
+    <string name="no_media_found">Ebben a csevegésben nem találtunk %s-t.</string>
+    <string name="no_media_found_generic">Nem találtunk médiát</string>
+    <string name="no_media_found_global">Nem találtunk médiát ezen az eszközön</string>
+    <string name="no_recent_conversations">Nem találtunk csevegést</string>
+    <string name="no_sms_received">Nem kapott SMS-t?</string>
+    <string name="no_threema_qr_info">Ez nem egy Threema QR-kód, a dekódolt tartalma:</string>
+    <string name="no_unread_messages">Nincsenek olvasatlan üzenetek vagy a PIN-zár aktív</string>
+    <string name="no_update_available">Nincs frissítés</string>
+    <string name="no_votes_yet">Még nem adtak le szavazatot.</string>
+    <string name="not_enough_disk_space_text">Legalább %1$s szükséges az üzenet fogadásához</string>
+    <string name="not_enough_disk_space_title">Túl kevés tárolóhely</string>
+    <string name="not_linked">nem összecsatolt</string>
+    <string name="not_now">Emlékeztess később</string>
+    <string msgid="478774118347071097" name="not_set">"Nincs beállítva"</string>
+    <string name="not_voted_user_list">Ezek a résztvevők nem szavaztak: %s</string>
+    <string name="note_group_howto">Tipp: Ha nem ad hozzá tagokat, a csoportba küldött üzenetek helyben maradnak. Ez ideális jegyzetek, médiatartalmak vagy dokumentumok biztonságos tárolására vagy az asztalra történő átvitelére.</string>
+    <string name="notes">Megjegyzések</string>
+    <string name="notification_channel_alerts">Figyelmeztetések és hibaüzenetek</string>
+    <string name="notification_channel_group_join_request">Értesítések a csoportkérelmekről</string>
+    <string name="notification_channel_group_join_response">Értesítés a csoportkérelmekre adott válaszokról</string>
+    <string name="notification_channel_new_contact">Új névjegyek</string>
+    <string name="notification_channel_new_contact_desc">Értesítés új névjegyekről</string>
+    <string name="notification_channel_notices">Megjegyzések</string>
+    <string name="notification_contact_has_joined">%1$s most %2$s-nél van. Kattintson ide egy üzenet elküldéséhez.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d kapcsolata most %2$s: %3$s-nél van. Kattintson ide egy üzenet küldéséhez.</string>
+    <string name="notification_hidden_text">Tartalom elrejtve</string>
+    <string name="notification_priority_default">Alacsony</string>
+    <string name="notification_priority_high">Magas</string>
+    <string name="notification_priority_max">Maximum</string>
+    <string name="notification_setting_ignored">A VÁLTOZTATÁSOK FIGYELMEN KÍVÜL LESZNEK HAGYVA!</string>
+    <string name="notifications_choose_sound">Hang kiválasztása</string>
+    <string name="notifications_default">Alapértelmezett beállítás</string>
+    <string name="notifications_disabled_settings">Rendszerbeállítások módosítása</string>
+    <string name="notifications_disabled_text">A Threema értesítéseit teljesen letiltották a rendszerben. Nem kap értesítést, ha új üzenetek érkeznek.</string>
+    <string name="notifications_disabled_title">Értesítések letiltva</string>
+    <string name="notifications_for_x_hours">%d órára</string>
+    <string name="notifications_mute">Néma</string>
+    <string name="notifications_settings">Értesítési beállítások</string>
+    <string name="notifications_until">%s-ig</string>
+    <string name="num_archived_chats">%d archivált csevegés</string>
+    <string name="num_items_sected">%s kiválasztott</string>
+    <string name="num_messages">Üzenetek száma</string>
+    <string name="number_of_days">%d nap</string>
+    <string name="off">ki</string>
+    <string name="off_cap">Ki</string>
+    <string name="off_unless_i_was_mentioned">Be, kivéve, ha említenek</string>
+    <string name="ok">OK</string>
+    <string name="on">be</string>
+    <string name="on_cap">Be</string>
+    <string name="one_month">1 hónap</string>
+    <string name="one_unread_message">1 olvasatlan üzenet</string>
+    <string name="one_week">1 hét</string>
+    <string name="one_year">1 év</string>
+    <string name="only_images_or_videos">Csak képek és videók választhatók ki</string>
+    <string name="open_from">Megnyitás</string>
+    <string name="open_group_requests_chips_title">Nyitott csoportkérelmek</string>
+    <string name="open_group_requests_hide">Csoportkérelmek elrejtése</string>
+    <string name="open_group_requests_show">Csoportkérelmek mutatása</string>
+    <string name="open_in_maps_app">Megnyitás a Térképalkalmazásban</string>
+    <string name="open_myid_popup">Felugró ablak megnyitása a gyorsválasztóhoz</string>
+    <string name="open_navdrawer">Oldalmenü megnyitása</string>
+    <string name="original_file_no_longer_avilable">Nincs többé hozzáférés az eredeti fájlhoz. Kérjük, küldje el újra ezt az üzenetet.</string>
+    <string name="os_licenses">Szoftverlicencek</string>
+    <string name="other_group_links">továbbiak</string>
+    <string name="palette">Paletta</string>
+    <string name="parent_directory">Felső könyvtár</string>
+    <string name="passphrase_locked">A jelszó blokkolva van</string>
+    <string name="passphrase_service_description">Értesítés ha a jelszó feloldva</string>
+    <string name="passphrase_service_name">Jelszó szolgáltatás</string>
+    <string name="password_bad">Nem biztonságos jelszó</string>
+    <string name="password_bad_explain">Az Ön által választott Threema Safe jelszó nagyon gyenge, ezért a támadók könnyen kitalálhatják. Kérjük, válasszon biztonságos jelszót. Tipp: Használjon több kifejezésből álló összetett szót.</string>
+    <string name="password_does_not_comply">A megadott jelszó nem felel meg az irányelveknek.</string>
+    <string name="password_hint">Jelszó</string>
+    <string name="password_remember_warning">Ne feledje, mit ír be ide! Mivel a %s nem tárolja a jelszavakat a kiszolgálón, nem tudunk segíteni, ha elfelejtette a PIN-kódot vagy a jelszót.</string>
+    <string name="password_toggle_content_description">Jelszó megjelenítése</string>
+    <string name="password_too_short">Legalább %d karakter</string>
+    <string name="password_too_short_generic">A jelszó túl rövid</string>
+    <string name="passwords_dont_match">Nem azonos</string>
+    <string name="pause">Szünet</string>
+    <string name="pencil">Ceruza</string>
+    <string name="pending">Felülvizsgálat alatt</string>
+    <string name="pending_sms_verification_notice">A mobilszámodat még nem ellenőriztük.</string>
+    <string name="permission_camera_photo_required">A fénykép készítéséhez kérjük, engedélyezze a kamerához való hozzáférést.</string>
+    <string name="permission_camera_qr_required">A QR-kódok beolvasásához kamerához való hozzáférés szükséges</string>
+    <string name="permission_camera_videocall_required">Aktiválja a kamera engedélyt a videóhívásokhoz</string>
+    <string name="permission_contacts_required">Aktiválja a kapcsolatok engedélyt egy névjegy elküldéséhez.
+	</string>
+    <string name="permission_contacts_sync_required">A szinkronizáláshoz engedélyezze a névjegyekhez való hozzáférést.</string>
+    <string name="permission_location_required">Aktiválja a helymeghatározási engedélyt a tartózkodási helye elküldéséhez.
+	</string>
+    <string name="permission_phone_required">A Threema-hívás közbeni hívások kezeléséhez kapcsolja be ezt az engedélyt.</string>
+    <string name="permission_record_audio_required">Engedélyezze a mikrofon használatát titkosított Threema-hívások kezdeményezéséhez és hangüzenetek rögzítéséhez.</string>
+    <string name="permission_record_video_audio_required">Kérjük, engedélyezze a mikrofon használatát a hanggal ellátott videó rögzítéséhez</string>
+    <string name="permission_storage_required">Aktiválja a mentési engedélyt a média mentéséhez vagy küldéséhez.</string>
+    <string name="picrelease_everyone">Mindenki, akinek írsz</string>
+    <string name="picrelease_nobody">Senki</string>
+    <string name="picrelease_selected">Kiválasztott névjegyek</string>
+    <string name="picture_in_picture_disabled_in_setting">A kép a képben funkciót kikapcsolták a %s-hoz. Kérjük, aktiválja a mobiltelefon beállításaiban.</string>
+    <string name="pin">Feltűzni</string>
+    <string name="pin_invalid_not_set">PIN-kód érvénytelen</string>
+    <string name="pin_locked_cannot_send">Alkalmazás zárolva. Küldés nem lehetséges.</string>
+    <string name="pinentry_enter_pin">A folytatáshoz adja meg a %s-PIN-kódot</string>
+    <string name="pinentry_wrong_pin">Rossz PIN-kód</string>
+    <string name="pinning_failed">A tanúsítvány nem ellenőrizhető. Lehetséges man-in-the-middle támadás. Ha telepítve van egy reklámblokkoló, tartalomszűrő vagy tűzfal alkalmazás, mint például az "AdGuard", tiltsa le a Threema számára.</string>
+    <string name="pinning_not_trusted">A tanúsítvány nem ellenőrizhető. Győződjön meg róla, hogy az «Entrust Root Certification Authority - G2» biztonsági tanúsítvány telepítve és aktiválva van a telefon tanúsítványtárolójában..</string>
+    <string name="play">Lejátszás</string>
+    <string name="play_services_not_installed_unable_to_use_push">A szolgáltatás nincs telepítve. Nem lehet «Push»-ra váltani.</string>
+    <string name="please_wait">Kérjük, várjon…</string>
+    <string name="plus">Plusz</string>
+    <string name="polling_interval_15">15 perc (alapértelmezett)</string>
+    <string name="polling_interval_30">30 perc</string>
+    <string name="polling_interval_5">5 perc</string>
+    <string msgid="7961817945132860002" name="preference_copied">"„<ns1:g id="SUMMARY">%1$s</ns1:g>” a vágólapra lett másolva."</string>
+    <string name="prefs_android_emojis">Rendszer emojik</string>
+    <string name="prefs_auto_download_mobile">A mobilhálózatokon</string>
+    <string name="prefs_auto_download_title">Médiák automatikus letöltése</string>
+    <string name="prefs_auto_download_wifi">WLAN-on</string>
+    <string name="prefs_bigger_single_emojis">Önálló emojik nagyítása</string>
+    <string name="prefs_chatdisplay">Csevegőablak</string>
+    <string name="prefs_contact_format">Névjegy nevének megjelenítése</string>
+    <string name="prefs_contact_list_title">Névjegylista</string>
+    <string name="prefs_contact_soring">Rendezés</string>
+    <string name="prefs_default_contact_picture_colored">Színes kontaktképek</string>
+    <string name="prefs_default_emojis">Threema-emojik (alapértelmezett)</string>
+    <string name="prefs_emoji_style">Emoji stílus</string>
+    <string name="prefs_fix_background_data">Háttéradatok engedélyezése</string>
+    <string name="prefs_fix_background_data_desc">Ha engedélyezni szeretné, hogy a Threema a háttérben fogadjon üzeneteket, engedélyezze a Háttéradatok és a Korlátlan adatforgalom funkciót</string>
+    <string name="prefs_fix_device">Az eszköz konfigurációs problémáinak javítása</string>
+    <string name="prefs_fix_powermanager_problems">A háttérben való futás engedélyezése</string>
+    <string name="prefs_fix_powermanager_problems_desc">Problémák javítása a telefonon, amelyek megakadályozzák, hogy a Threema a háttérben fusson és üzeneteket fogadjon</string>
+    <string name="prefs_gif_autoplay">Anim GIF-ek automatikus lejátszása</string>
+    <string name="prefs_group_notifications">Csoportos csevegés</string>
+    <string name="prefs_header_appearance">Megjelenés</string>
+    <string name="prefs_header_chat">Csevegés</string>
+    <string name="prefs_header_contacts">Névjegyek</string>
+    <string name="prefs_header_keyboard">Billentyűzet</string>
+    <string name="prefs_header_lists">Listák</string>
+    <string name="prefs_header_other">További</string>
+    <string name="prefs_header_receipts">Visszaigazolások</string>
+    <string name="prefs_header_reset">Visszaállítás</string>
+    <string name="prefs_image_size">Képméretek</string>
+    <string name="prefs_inapp">Az alkalmazásban</string>
+    <string name="prefs_inapp_sounds">Alkalmazáson belüli hangok</string>
+    <string name="prefs_inapp_sounds_off">Üzenetek küldésekor/fogadásakor ne szólaljon meg hang</string>
+    <string name="prefs_inapp_sounds_on">Hang lejátszása üzenetek küldésekor/fogadásakor</string>
+    <string name="prefs_inapp_vibrate">Alkalmazáson belüli rezgés</string>
+    <string name="prefs_inapp_vibrate_off">Nincs rezgés az üzenetek fogadásakor</string>
+    <string name="prefs_inapp_vibrate_on">Rezgés üzenetek fogadásakor</string>
+    <string name="prefs_ipv6_preferred_off">Csak IPv4 kapcsolatokat használjon</string>
+    <string name="prefs_ipv6_preferred_on">IPv6 előnyben részesítése</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Ne használja az IPv6-ot a Threema-hívásokhoz és a Threema Webhez.</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 engedélyezése a Threema-hívásokhoz és a Threema Webhez</string>
+    <string name="prefs_language_override">Nyelv</string>
+    <string name="prefs_light">Értesítési lámpa</string>
+    <string name="prefs_logging">Naplózás</string>
+    <string name="prefs_masterkey">A helyben tárolt adatok titkosítása</string>
+    <string name="prefs_masterkey_notification_newmsg_off">Nincs értesítés új üzenetekről, ha a főkulcs zárolva van</string>
+    <string name="prefs_masterkey_notification_newmsg_on">Értesítés (részletek nélkül) új üzenetekről, ha a főkulcs zárolva van</string>
+    <string name="prefs_masterkey_passphrase">Nincs megadva jelszó</string>
+    <string name="prefs_media_title">Média &amp; Tárolóhely</string>
+    <string name="prefs_notification_preview">Előnézet</string>
+    <string name="prefs_notification_sound">Értesítési hang</string>
+    <string name="prefs_notifications">Hangok  &amp; értesítések</string>
+    <string name="prefs_pin_grace">Idő a zárásig</string>
+    <string name="prefs_polling_interval">Lekérdezési időköz</string>
+    <string name="prefs_privacy">Adatvédelem</string>
+    <string name="prefs_proximity_sensor">Közelségérzékelő használata</string>
+    <string name="prefs_proximity_sensor_explain">Hangüzeneteket a fülhallgatón keresztül visszajátszani, ha a közelségérzékelő le van fedve</string>
+    <string name="prefs_reset_push">Push-token visszaállítása</string>
+    <string name="prefs_save_media">Mentés a galériába</string>
+    <string name="prefs_security">Biztonság</string>
+    <string name="prefs_sendlog">Naplófájl küldése</string>
+    <string name="prefs_sendlog_summary">Naplófájl elküldése a Threema számára a problémaelemzéshez.</string>
+    <string name="prefs_show_inactive_contacts">Inaktív azonosítók megjelenítése</string>
+    <string name="prefs_storage_mgmt_title">Fájlok és üzenetek tisztítása</string>
+    <string name="prefs_sum_black_list">Az itt felsorolt ID-k üzeneteit a rendszer figyelmen kívül hagyja.</string>
+    <string name="prefs_sum_block_unknown_off">Bárki küldhet neked üzeneteket. Az új névjegyek automatikusan hozzáadódnak az első üzenetküldéskor.</string>
+    <string name="prefs_sum_block_unknown_on">Csak a névjegyzékben szereplő személyek küldhetnek üzeneteket.</string>
+    <string name="prefs_sum_chatdisplay">Csevegőablak beállításai</string>
+    <string name="prefs_sum_contact_format">A névjegylista nevének megjelenítésére vonatkozó beállítás</string>
+    <string name="prefs_sum_contact_soring">A névjegyzék rendezésének beállítása</string>
+    <string name="prefs_sum_default_contact_picture_colored_off">Szürke helytartók megjelenítése, ha nincs kapcsolati kép.</string>
+    <string name="prefs_sum_default_contact_picture_colored_on">Különböző színű helytartók megjelenítése, ha nincs kapcsolati kép.</string>
+    <string name="prefs_sum_direct_share">Legutóbbi beszélgetések megjelenítése más alkalmazásokból történő megosztáskor</string>
+    <string name="prefs_sum_disable_smart_replies">Válaszjavaslatok letiltása az Android értesítésekben</string>
+    <string name="prefs_sum_enter_off">Az Enter billentyű új sort ad hozzá</string>
+    <string name="prefs_sum_enter_on">Az Enter billentyű azonnal elküldi az üzenetet</string>
+    <string name="prefs_sum_excluded_sync_identities">Az itt felsorolt ID-kat a kapcsolatok szinkronizálásakor figyelmen kívül hagyjuk.</string>
+    <string name="prefs_sum_fullscreen_ime_off">A billentyűzet felett megjelenik a csevegés egy szakasza</string>
+    <string name="prefs_sum_fullscreen_ime_on">A billentyűzet a teljes képernyőt kitölti fekvő módban</string>
+    <string name="prefs_sum_image_attach_previews">A legújabb képek listájának megjelenítése a Hozzáadás ablakban</string>
+    <string name="prefs_sum_incognito_keyboard">Az adatok gyűjtésének letiltása a személyre szabott javaslatokhoz (ha a billentyűzet támogatja)</string>
+    <string name="prefs_sum_light">Fehér</string>
+    <string name="prefs_sum_media_title">Média-, fájl- és tárolási beállítások</string>
+    <string name="prefs_sum_notification_sound">Rendszer alapértelmezett</string>
+    <string name="prefs_sum_notifications">Hangok és rezgés</string>
+    <string name="prefs_sum_passphrase">Jelszó megkövetelése a helyi titkosításhoz</string>
+    <string name="prefs_sum_pin_grace">Időtartam kiválasztása</string>
+    <string name="prefs_sum_polling_off">Új üzenetek keresése küldés közben</string>
+    <string name="prefs_sum_polling_on">Rendszeres ellenőrzés (több energiát igényel!)</string>
+    <string name="prefs_sum_privacy">Adatvédelemmel kapcsolatos beállítások</string>
+    <string name="prefs_sum_receive_profilepics_off">A névjegyek profilképeinek elrejtése</string>
+    <string name="prefs_sum_receive_profilepics_on">A névjegyek profilképeinek megjelenítése</string>
+    <string name="prefs_sum_receive_profilepics_recipients_list">Az ebben a listában kiválasztott névjegyek megkapják a profilképét, amikor ír nekik.</string>
+    <string name="prefs_sum_remove_wallpapers">Az összes egyedi háttérkép eltávolítása</string>
+    <string name="prefs_sum_reset_push">Az egység újbóli regisztrálása az FCM//HMS-ben</string>
+    <string name="prefs_sum_reset_receipts">Az olvasási bizonylatok és a «jelentés, amikor írok» kapcsolatspecifikus beállításainak alapértelmezettre állítása</string>
+    <string name="prefs_sum_reset_ringtones">Gyári beállítások visszaállítása</string>
+    <string name="prefs_sum_save_media">A bejövő képek és videók, valamint a kimenő kameraképek titkosítás nélküli mentése</string>
+    <string name="prefs_sum_security_pin">Az alkalmazáshoz való hozzáférés védelme</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Inaktív/visszavont Threema azonosítók elrejtése</string>
+    <string name="prefs_sum_show_inactive_contacts_on">Az összes Threema azonosító megjelenítése a névjegyzékben.</string>
+    <string name="prefs_sum_show_unread_badge">Jelvények megjelenítése a navigációs fülön</string>
+    <string name="prefs_sum_sync_contacts_off">Kapcsolat megszüntetve %s és a címjegyzék között</string>
+    <string name="prefs_sum_sync_contacts_on">%s-névjegyek csatlakoztatása a gép címjegyzékéhez</string>
+    <string name="prefs_sum_troubleshooting">Problémák elemzése és megoldása</string>
+    <string name="prefs_sum_vibrate">Rezgés bejövő üzenetre</string>
+    <string name="prefs_sum_voice_call_sound">Csengőhang kiválasztása Threema hanghívásokhoz</string>
+    <string name="prefs_sum_voice_call_vibrate">Rezgés a bejövő Threema hanghívásoknál</string>
+    <string name="prefs_sum_wallpaper">Kép kiválasztása a háttérhez</string>
+    <string name="prefs_summary_force_turn_off">Ha lehetséges, használjon közvetlen kapcsolatot, és csak nem ellenőrzött névjegyek hívásait irányítsa a Threema szerverein keresztül. Feltárhatja az IP-címét.</string>
+    <string name="prefs_summary_force_turn_on">Minden hívást a Threema szervereken keresztül irányít. Védi az IP-címet, de rosszabb hívásminőséget eredményezhet.</string>
+    <string name="prefs_summary_hide_screenshots">A miniatűrök elrejtése az alkalmazásváltóban és a képernyőképek készítésének megakadályozása</string>
+    <string name="prefs_summary_hide_screenshots_notice">Adatvédelmi okokból a miniatűrök és a képernyőképek mindig le vannak tiltva, ha az alkalmazászár engedélyezve van.</string>
+    <string name="prefs_system_notifications">Csevegés</string>
+    <string name="prefs_theme">Dizájn stílus</string>
+    <string name="prefs_title_accept_privacy_policy">Adatvédelmi irányelvek elfogadása</string>
+    <string name="prefs_title_access_protection">Hozzáférésvédelem</string>
+    <string name="prefs_title_black_list">Blokkolt névjegyek</string>
+    <string name="prefs_title_block_unknown">Az ismeretlenek blokkolása</string>
+    <string name="prefs_title_device_info">Eszköz információ</string>
+    <string name="prefs_title_direct_share">Közvetlen megosztás</string>
+    <string name="prefs_title_disable_smart_replies">Válaszjavaslatok letiltása</string>
+    <string name="prefs_title_enter">Közvetlen elküldés</string>
+    <string name="prefs_title_excluded_sync_identities">Kizárási lista</string>
+    <string name="prefs_title_fontsize">Betűméret</string>
+    <string name="prefs_title_force_turn">Hívások mindig a szerveren keresztül</string>
+    <string name="prefs_title_fullscreen_ime">Teljes képernyős billentyűzet</string>
+    <string name="prefs_title_hide_screenshots">Miniatűrök és képernyőképek rejt.</string>
+    <string name="prefs_title_image_attach_previews">Média gyorsválasztó</string>
+    <string name="prefs_title_incognito_keyboard">Inkognitó billentyűzet kérése</string>
+    <string name="prefs_title_ipv6_preferred">IPv6 üzenetekhez</string>
+    <string name="prefs_title_ipv6_webrtc_allowed">IPv6 hívásokhoz és webhez</string>
+    <string name="prefs_title_locking_mechanism">Védelmi mechanizmus</string>
+    <string name="prefs_title_masterkey_change_passphrase">Jelszó módosítása</string>
+    <string name="prefs_title_masterkey_notification_newmsg">Új üzenetek megjelenítése</string>
+    <string name="prefs_title_masterkey_passphrase">Jelszó</string>
+    <string name="prefs_title_message_log_switch">Fájlba naplózás</string>
+    <string name="prefs_title_network">Hálózat</string>
+    <string name="prefs_title_notification_priority">Prioritás</string>
+    <string name="prefs_title_pin_code">PIN-kód beállítása</string>
+    <string name="prefs_title_pin_switch">Alkalmazás zárolása</string>
+    <string name="prefs_title_polling_switch">Lekérdezés</string>
+    <string name="prefs_title_read_receipts">Olvasási visszaigazolások küldése</string>
+    <string name="prefs_title_receive_profilepics">Profilképek megjelenítése</string>
+    <string name="prefs_title_remove_wallpapers">Minden háttérkép eltávolítása</string>
+    <string name="prefs_title_reset_receipts">Egyedi beállítások visszaállítása</string>
+    <string name="prefs_title_reset_ringtones">Értesítési hangok visszaállítása</string>
+    <string name="prefs_title_show_unread_badge">Jelvények</string>
+    <string name="prefs_title_sum_message_log_off">Az események nem lesznek naplózva</string>
+    <string name="prefs_title_sum_message_log_on">Az események és a hálózati információk a debug_log.txt fájlba lesznek naplózva</string>
+    <string name="prefs_title_sync_contacts">Névjegyek szinkronizálása</string>
+    <string name="prefs_title_typing_indicator">Jelezd, ha írok</string>
+    <string name="prefs_title_voip">Threema hívások</string>
+    <string name="prefs_title_voip_enable">Threema-hívások engedélyezése</string>
+    <string name="prefs_title_voip_video_enable">Videóhívások engedélyezése</string>
+    <string name="prefs_title_wallpaper">Háttérkép kiválasztása</string>
+    <string name="prefs_title_wallpaper_switch">Háttérkép</string>
+    <string name="prefs_title_working_days">Munkanapok</string>
+    <string name="prefs_troubleshooting">Hibaelhárítás</string>
+    <string name="prefs_validate_contacts">Névjegy kapcsolat felülvizsgálása</string>
+    <string name="prefs_validate_contacts_loading">Névjegy kapcsolat felülvizsgálat alatt</string>
+    <string name="prefs_vibrate">Rezgés</string>
+    <string name="prefs_video_size">Videó tömörítés</string>
+    <string name="prefs_videocall_profile">Preferált képminőség</string>
+    <string name="prefs_videocall_profile_explain">A tényleges képminőség a hálózattól és a másik fél beállításaitól függ</string>
+    <string name="prefs_voice_call_notifications">Hanghívások</string>
+    <string name="prefs_voice_call_sound">Csengőhang</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Bejövő mobiltelefon-hívások elutasítása Threema-hívás közben.</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Mobiltelefon-hívások elutasítása</string>
+    <string name="prefs_work_life_balance">Ne zavarjanak</string>
+    <string name="prefs_work_time_end">Munka vége</string>
+    <string name="prefs_work_time_end_sum">Állítsa be a munka végét</string>
+    <string name="prefs_work_time_start">Munkakezdet</string>
+    <string name="prefs_work_time_start_sum">Állítsa be a munka kezdetét</string>
+    <string name="prefs_workarounds">Megoldások</string>
+    <string name="prefs_working_days_enable_sum">Ne jelenítsen meg értesítéseket és utasítsa el a Threema hívásokat munkaidőn kívül</string>
+    <string name="prefs_working_days_enable_title">Pihenőidő-politika</string>
+    <string name="prefs_working_days_sum">Válassza ki a munkanapokat</string>
+    <string name="prepare_call_message">Ha folytatja, azonnal megpróbáljuk felhívni Önt. Az ellenőrző kódot ezután
+		kétszer is felolvassák Önnek. Kérjük, vegye figyelembe: csak egy próbálkozása van.
+	</string>
+    <string name="preparing_messages">Üzenetek összeállítása</string>
+    <string name="preparing_threema_safe">Threema Safe előkészítése</string>
+    <string name="print">Nyomtatás</string>
+    <string name="privacy_policy">Adatvédelmi szabályzat</string>
+    <string name="privacy_policy_check_confirm">Kérjük, fogadja el az adatvédelmi nyilatkozatot, hogy használni tudja a %s-t.\n\n(Az EU 2016/679 rendelet szerinti követelmény)</string>
+    <string name="privacy_policy_explain">%1$s következetesebben védi az Ön privátszféráját, mint bármely más messenger. Nézze meg az %2$s-ot, hogy többet tudjon meg.</string>
+    <string name="private_chat_subject">Privát</string>
+    <string name="private_contact">Privát névjegy</string>
+    <string name="profile_picture">Profilkép</string>
+    <string name="profile_picture_and_nickname">Profilkép és becenév</string>
+    <string name="profile_picture_release">Ki láthatja a profilképét?</string>
+    <string name="profile_picture_sent">A profilkép elküldve</string>
+    <string name="public_key_for">%s nyilvános kulcsa</string>
+    <string name="public_nickname">Becenév</string>
+    <string name="push_disable_text">Ha folytatja, a push üzenetek letiltásra kerülnek, és
+		a Threema 15 percenként ellenőrzi az új üzeneteket.
+	</string>
+    <string name="push_not_available_text">Nincs push szolgáltatás a készüléken, mert a Google Play szolgáltatások hiányoznak vagy nem naprakészek. A Threema 15 percenként ellenőrzi az új üzeneteket.</string>
+    <string name="push_not_available_title">Push szolgáltatás nem elérhető</string>
+    <string name="push_reset_text">Új push tokent készítettünk</string>
+    <string name="push_reset_title">Új push token készítése</string>
+    <string name="push_token_cleared">A push token eltávolításra került</string>
+    <string name="qr_code">QR-kód</string>
+    <string name="qr_scan_result_dialog_title">QR beolvasás eredmény</string>
+    <string name="qr_scanner_id_hint">Egy másik névjegy QR-kódjának beolvasásával ellenőrizheti őt. A QR-kód a Threema főképernyő bal felső sarkában lévő profilképre kattintva tekinthető meg.</string>
+    <string name="quote">Idéz</string>
+    <string name="quote_not_found">Idézett üzenet nem található</string>
+    <string name="quote_subj">Idézet</string>
+    <string name="quote_subj_end">Idézet vége</string>
+    <string name="quoted_message_deleted">Az idézett üzenet már nem elérhető</string>
+    <string name="rate_error">Nem tudta elküldeni a véleményét. Kérjük, győződjön meg róla, hogy csatlakozik az internethez.</string>
+    <string name="rate_feedback_intro">Kérjük, mondja el, mit tehetnénk jobban (nem kötelező).</string>
+    <string name="rate_forward_to_play_store">Ön is szeretne értékelni minket a Google Play-en?</string>
+    <string name="rate_intro">Hogy tetszik a Threema?</string>
+    <string name="rate_positive">Értékelés küldése</string>
+    <string name="rate_thank_you">Köszönjük értékelését!</string>
+    <string name="rate_title">Threema értékelése</string>
+    <string name="reaccept">Újra elfogad</string>
+    <string name="read_on">Bővebben…</string>
+    <string name="really_block_contact">Többé nem fog üzeneteket kapni ettől a névjegytől. Folytatja?
+	</string>
+    <string name="really_cancel_verify">Tényleg megszakítod a mobilszámod hitelesítését? Ha megszakítod az ellenőrzést, a mobilszám nem lesz összecsatolva.</string>
+    <string name="really_delete_contact">Tényleg törölni szeretné ezt a névjegyet és az összes kapcsolódó csevegést?</string>
+    <string name="really_delete_contacts_message">Biztosan törölni szeretne %1$d névjegyet és az összes kapcsolódó csevegést?</string>
+    <string name="really_delete_distribution_list">Elosztási lista törlése</string>
+    <string name="really_delete_distribution_list_message">Biztos, hogy törölni szeretné ezt az elosztási listát?</string>
+    <string name="really_delete_group_link">Tényleg törölni szeretne %d csoporthivatkozást? A törlés után a felhasználók már nem küldhetnek érvényes kérelmeket. A már beérkezett kérelmeket azonban továbbra is el lehet fogadni vagy el lehet utasítani.</string>
+    <string name="really_delete_group_link_title">Csoporthivatkozások törlése</string>
+    <string name="really_delete_group_request_title">Tényleg törölné a csoportkérelmet?</string>
+    <string name="really_delete_incoming_request">Tényleg törölni akar %d csoportkérelmeket? A törlés után többé nem tudsz válaszolni rájuk.</string>
+    <string name="really_delete_media">Tényleg törölni szeretné ezt a(z) %d médiaüzenetet?</string>
+    <string name="really_delete_message_title">Üzenet(ek) törlése</string>
+    <string name="really_delete_messages">Az üzenetek teljesen törlődnek, és nem állíthatók vissza.</string>
+    <string name="really_delete_outgoing_request">Tényleg törölni akar %d csoportkérelmet? Ne feledje, hogy a nyitott kérelmet nem vonják vissza, és később is felvehetik a csoportba.</string>
+    <string name="really_delete_thread">Csevegés törlése</string>
+    <string name="really_delete_thread_message">Tényleg törölni szeretné a(z) %d csevegés(eke)t? Az üzeneteket nem lehet
+		visszaállítani.
+	</string>
+    <string name="really_forward">Továbbítás a «%1$s» címre?</string>
+    <string name="really_hide_chat_message">Tényleg magánbeszélgetésnek akarod jelölni ezt a csevegést? A privát beszélgetések elrejtéséhez vagy újra láthatóvá tételéhez használja a funkciót a menüben.</string>
+    <string name="really_leave_group_admin_message">Ön ennek a csoportnak az adminisztrátora. Ha most elhagyja, akkor elárvul. A többi tag folytathatja a csevegést, de módosítások már nem lehetségesek.</string>
+    <string name="really_leave_group_message">Biztos, hogy el akarod hagyni ezt a csoportot?</string>
+    <string name="really_leave_id_export">Győződjön meg róla, hogy az ID exportálási karakterláncot vagy
+		a QR-kódot elmentette egy biztonságos helyre vagy kinyomtatta.</string>
+    <string name="really_remove_wallpapers">Biztos, hogy az összes háttérképet el akarja távolítani?</string>
+    <string name="really_reset_ringtones">Értesítési hangok visszaállítása a gyári beállításokra?</string>
+    <string name="really_send">Küldés a «%1$s» címre?</string>
+    <string name="really_unlink_contact">Biztos, hogy el akarja távolítani a címjegyzéki kapcsolat összecsatolását?</string>
+    <string name="really_unlink_contact_title">Kapcsolat összecsatolás feloldása</string>
+    <string name="receipts_override_choice_default">Alapértelmezett (%s)</string>
+    <string name="receipts_override_choice_dont_send">Ne küldjön</string>
+    <string name="receipts_override_choice_send">Küldjön</string>
+    <string name="received_on">Beérkezett %s-kor</string>
+    <string name="recording">Hangüzenet felvétele folyamatban</string>
+    <string name="recording_canceled">A felvétel ismeretlen hiba miatt leállt.</string>
+    <string name="recording_stopped_message">Szeretné most elküldeni a rögzített hangüzenetet?</string>
+    <string name="recording_stopped_title">A felvétel szünetel</string>
+    <string name="reject">Elutasít</string>
+    <string name="remove">Eltávolítani</string>
+    <string name="reply_later">Később jelentkezem</string>
+    <string name="reply_on_my_way">Úton vagyok</string>
+    <string name="reply_thank_you">Köszönöm</string>
+    <string name="reply_youre_welcome">Szívesen</string>
+    <string name="resend">Újra elküldeni</string>
+    <string name="reset_default_group_link">Csoporthivatkozás visszaállítása</string>
+    <string name="reset_default_group_link_desc">A korábban megosztott hivatkozás érvénytelenné válik, és a régi linken keresztül érkező kérelmeket automatikusan elutasítjuk.</string>
+    <string name="reset_default_group_link_title">Visszaállítás-infó</string>
+    <string name="reset_ringtones_confirm">Értesítési hangok visszaállítva</string>
+    <string name="reset_successful">Alapértelmezett beállításokat sikeresen visszaállítva</string>
+    <string name="restore">Visszaállítás</string>
+    <string name="restore_data_backup_explain">Az adatmentés visszaállításához először törölje Threema ID-ját a «saját profil» oldalon.\n\nAmikor az alkalmazás újraindul, válassza a «Biztonsági mentés visszaállítása», «További visszaállítási lehetőségek», «Adatmentés» lehetőséget, és a fájlkeresőben kattintson a visszaállítani kívánt adatmentésre.</string>
+    <string name="restore_data_cancelled">Visszaállítás megszakítva</string>
+    <string name="restore_data_password_msg">Itt adja meg a biztonsági mentés létrehozásakor beállított jelszót.
+	</string>
+    <string name="restore_disable_energy_saving">A folytatás előtt csatlakoztassa készülékét a töltőhöz. Győződjön meg róla, hogy a telefon összes energiatakarékos üzemmódja ki van kapcsolva, hogy a biztonsági mentés/visszaállítás ne szakadjon meg.</string>
+    <string name="restore_error_body">A visszaállítás sikertelen</string>
+    <string name="restore_id_hint">Ide írja be az ID export karakterláncát</string>
+    <string name="restore_success_body">A visszaállítás sikeresen befejeződött.</string>
+    <string name="restore_your_id_contacts_and_groups">ID, kapcsolatok és csoportok visszaállítása</string>
+    <string name="restore_zip_invalid_file">A biztonsági mentési fájl érvénytelen.</string>
+    <string name="restoring_backup">Biztonsági mentés visszaállítása</string>
+    <string name="resync_group">Csoport újraszinkronizálás</string>
+    <string name="retry">Ismét</string>
+    <string name="revocation_explain">Az itt megadott jelszóval visszavonhatja ID-jét a
+		https://myid.threema.ch/revoke címen, ha elveszítette vagy ellopták.
+	</string>
+    <string name="revocation_key_not_set">Nincs visszavonási jelszó beállítva</string>
+    <string name="revocation_key_set_at">Jelszó megadva %1$s</string>
+    <string name="revocation_key_title">ID visszavonása</string>
+    <string name="ringtone_none">Néma</string>
+    <string name="ringtone_selection_default">Alapértelmezett (%s)</string>
+    <string name="rotate">Elforgatni</string>
+    <string name="safe_activated">A Threema Safe aktiválódott.</string>
+    <string name="safe_advanced_options">Szakértői beállítások</string>
+    <string name="safe_backup_now">Biztonsági mentés most</string>
+    <string name="safe_backup_tap_to_restart">Kattintson a megjelenő rendszerértesítésre az alkalmazás újraindításához. Ha nem látja az értesítést, kérjük húzza le a telefonján az értesítési sávot.</string>
+    <string name="safe_change_password">Jelszó módosítása</string>
+    <string name="safe_configure_choose_password">Válasszon egy biztonságos jelszót. Erre a jelszóra szüksége lesz a Threema Safe biztonsági mentés visszaállításához.</string>
+    <string name="safe_configure_choose_password_force">Állítson be egy erős jelszót, hogy a Threema Safe segítségével megvédje ID-jét. Ne felejtse el, hogy mit ír be ide!</string>
+    <string name="safe_configure_choose_password_title">Jelszó választása</string>
+    <string name="safe_configure_choose_server">Kiszolgáló kiválasztása</string>
+    <string name="safe_configure_server_credentials_title">Hitelesítés (opcionális)</string>
+    <string name="safe_configure_server_explain">Threema Safe biztonsági másolatának tárolása a Threema-nál vagy az Ön által választott szerveren.</string>
+    <string name="safe_connection_error">Csatlakozási hiba</string>
+    <string name="safe_deactivate">Threema Safe kikapcsolása</string>
+    <string name="safe_deactivate_explain">A meglévő Threema Safe biztonsági mentések visszavonhatatlanul törlődnek a kiszolgálón. Akarod folytatni?</string>
+    <string name="safe_delete_error">Törlési hiba: %s</string>
+    <string name="safe_delete_success">A biztonsági másolat sikeresen törlődött a kiszolgálóról</string>
+    <string name="safe_deleting">A Threema Safe biztonsági mentés törlődik</string>
+    <string name="safe_disable_confirm">A Threema Safe aktiválása nélkül szeretne folytatni? A Threema Safe lehetővé teszi a Threema ID, a névjegyek és a csoportok visszaállítását, ha elveszíti a készülékét.</string>
+    <string name="safe_enable_explain">A Threema-nál nincs központi felhasználói fiókja. Az Ön adatai csak az adott eszközön léteznek, és így a legjobban védettek a külső hozzáféréstől.\n\nA Threema Safe rendszeresen készít titkosított, anonim biztonsági másolatot az Ön <b>kulcsairól, névjegyeiről, csoportjairól és beállításairól</b> (de az üzenetek tartalmáról nem) egy Ön által választott szerveren. Az Ön azonosítója és a kiválasztott jelszó elegendő ahhoz, hogy visszaállítsa ezeket az adatokat egy másik eszközön.</string>
+    <string name="safe_enable_explain_short">Aktiválja a Threema Safe szolgáltatást a legfontosabb adatok automatikus, biztonságos és anonim mentéséhez</string>
+    <string name="safe_enter_password">Kérjük, adja meg a Threema Safe jelszavát</string>
+    <string name="safe_error_preparing">Hiba a Threema Safe biztonsági mentés elkészítése közben</string>
+    <string name="safe_failed_notification">A Threema Safe %d napja nem tud biztonsági mentést készíteni. Kérjük, kattintson ide az ellenőrzéshez.</string>
+    <string name="safe_id_lookup">Threema-ID keresése</string>
+    <string name="safe_learn_more_button">További információ</string>
+    <string name="safe_max_backup_size">Max. biztonsági mentés méret</string>
+    <string name="safe_no_backup_found">Nincs biztonsági mentés a kiszolgálón. Ellenőrizze az ID-t és a jelszót.</string>
+    <string name="safe_no_id_found">Nem találtunk Threema-ID-t</string>
+    <string name="safe_password_updated">A Threema Safe jelszó frissítve lett.</string>
+    <string name="safe_restore">Threema Safe visszaállítása</string>
+    <string name="safe_restore_enter_id">Kérjük, adja meg a helyreállítani kívánt Threema ID-t</string>
+    <string name="safe_restore_failed">A visszaállítás sikertelen</string>
+    <string name="safe_result">Eredmény</string>
+    <string name="safe_retention">Tárolási idő</string>
+    <string name="safe_search_id_title">Kérjük, adja meg a Threema ID-hoz csatolt mobilszámot vagy e-mail címet.</string>
+    <string name="safe_select_id">Több Threema ID-t találtunk. Válassza ki a kívánt ID-t:</string>
+    <string name="safe_server_name">Kiszolgáló</string>
+    <string name="safe_size">A mentés mérete</string>
+    <string name="safe_successful">Sikeres</string>
+    <string name="safe_test_server">Kiszolgáló tesztelése</string>
+    <string name="safe_threema_id">Az ön Threema ID-ja</string>
+    <string name="safe_unsuccessful">Sikertelen</string>
+    <string name="safe_upload_failed">A feltöltés sikertelen</string>
+    <string name="safe_upload_size_exceeded">A biztonsági mentés túlméretes</string>
+    <string name="safe_use_default_server">Alapkiszolgáló</string>
+    <string name="safe_version_mismatch">A biztonsági mentés verziója magasabb az alkalmazás által támogatottnál. Kérjük, frissítse az alkalmazást.</string>
+    <string name="save_changes">Mentés</string>
+    <string name="save_group_changes">Szeretné a csoportra alkalmazni a módosításokat?</string>
+    <string name="save_image">Kép mentése</string>
+    <string name="save_message_action">Mentés</string>
+    <string name="saving_media">A média mentése folyamatban van</string>
+    <string name="scan_duplicate">Ez az ID már be lett olvasva és ellenőrizve.</string>
+    <string name="scan_failure_dialog_title">Sikertelen beolvasás</string>
+    <string name="scan_id">ID (azonosító) beolvasása</string>
+    <string name="scan_id_mismatch_message">A beolvasott ID nem egyezik a mentett névjeggyel.
+	</string>
+    <string name="scan_id_mismatch_title">Az ID nem egyezik</string>
+    <string name="scan_successful">Az ID sikeresen beolvasva. A kapcsolat ellenőrzött.</string>
+    <string name="search">Keresés</string>
+    <string name="search_contact">Névjegy keresés</string>
+    <string name="search_group">Csoport keresése</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Keresés"</string>
+    <string name="search_no_matches">Keresési kifejezés nem található</string>
+    <string name="search_no_more_matches">Nincs több találat</string>
+    <string name="searching">Keressük…</string>
+    <string name="seconds">Másodperc</string>
+    <string name="select">Kiválaszt</string>
+    <string name="select_all">Minden kiválasztása</string>
+    <string name="select_date">Dátum kiválasztása</string>
+    <string name="select_directory_for_backup">Mentés ide</string>
+    <string name="select_emoji">emojik</string>
+    <string name="select_from_gallery">Galériából választás</string>
+    <string name="select_time">Idő kiválasztása</string>
+    <string name="selected_media">Az Ön választása</string>
+    <string name="selection_counter_label">%d kép kiválasztva</string>
+    <string name="send">Küldés</string>
+    <string name="send_as_files">Küldés fájlként</string>
+    <string name="send_as_files_warning">A tömörítetlen fájlok és képek továbbítása megnövekedett adatfogyasztáshoz vezet.
+		Ez további költségeket eredményezhet a mobiltelefon-szolgáltatónál. Javasoljuk a WLAN használatát.
+	</string>
+    <string name="send_location">Helyszín elküldése</string>
+    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Adatvédelmi szabályzatunk a következő változásnak megfelelően módosult:</p><p>%1$s már nem függ a Google Play és a Google Maps térkép- és OVI-adatoktól.</p>Kérjük, tekintse meg a teljes adatvédelmi szabályzatot <a href="%2$s">itt</a>.]]></string>
+    <string name="send_media">Média küldése</string>
+    <string name="send_to">Küldés ide: %s</string>
+    <string name="send_to_support">Küldés a Threema ügyfélszolgálatnak</string>
+    <string name="sending_images">Képek küldése</string>
+    <string name="sending_media">Médiá(k) elküldése</string>
+    <string name="sending_message_failed">%1$d üzenet nem küldhető</string>
+    <string name="sending_messages">Küldés…</string>
+    <string name="sent_on">Elküldve: %s</string>
+    <string name="sent_to">Ide küldve: %s</string>
+    <string name="serial_required_want_exit">A licenckulcs érvénytelen. Újra akarod próbálni, vagy kilépsz a Threemából?</string>
+    <string name="server_message_title">Üzenet a Threema szerverről</string>
+    <string name="service_manager_not_available">Az alkalmazás nem indítható. Kérjük, kapcsolja ki teljesen a készüléket, majd kapcsolja be újra.</string>
+    <string name="set_backup_path">Biztonsági mentés helyének beállítása</string>
+    <string name="set_backup_path_intro">A következő képernyőn válassza ki azt a mappát, ahová az adatmentéseket tenni kívánja.</string>
+    <string name="set_lock">Aktiválás</string>
+    <string name="set_nickname_title">Becenév beállítása</string>
+    <string name="set_pin_again_summary">Ismételje meg a PIN-kódot</string>
+    <string name="set_pin_hint">PIN-kód</string>
+    <string name="set_pin_menu_title">Új PIN-kód beállítása</string>
+    <string name="set_pin_summary_intro">Védje magánéletét az alkalmazás PIN-zárának beállításával. A zár
+		automatikusan aktiválódik a beállított várakozási idő után (csak számjegyek engedélyezettek).</string>
+    <string name="set_private">«Privát csevegés»-ként jelölés</string>
+    <string name="setting_masterkey_passphrase">Jelszó megadása a főkulcshoz</string>
+    <string name="share_chat">Csevegés megosztása</string>
+    <string name="share_contact">Kapcsolat megosztása</string>
+    <string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra
+		van szükség. pl. http://www.7-zip.org vagy https://itunes.apple.com/de/app/the-unarchiver/id425424353
+	</string>
+    <string name="share_image">Kép megosztása</string>
+    <string name="share_media">Megosztás más alkalmazással…</string>
+    <string name="share_subject">%s-csevegés</string>
+    <string name="share_via">Megosztás…</string>
+    <string name="shortcut_choice_title">Parancsikon készítése…</string>
+    <string name="show_as_qrcode">QR-kódként megjeleníteni</string>
+    <string name="show_contact">Névjegy megjelenítése</string>
+    <string name="show_in_chat">Megjelenítés a csevegésben</string>
+    <string name="show_public_key">Nyilvános kulcs megjelenítése</string>
+    <string name="show_text">Szöveg megjelenítése</string>
+    <string name="six_months">6 hónap</string>
+    <string name="smiley">Smiley</string>
+    <string name="some_contacts_not_deleted">%d névjegyet nem lehetett törölni, mert még mindig egy csoportban vannak.</string>
+    <string name="state">Megye</string>
+    <string name="state_ack">megerősítve</string>
+    <string name="state_dec">visszautasítva</string>
+    <string name="state_delivered">megkapva</string>
+    <string name="state_dialog_created">Létrehozva</string>
+    <string name="state_dialog_modified">Frissítve</string>
+    <string name="state_dialog_posted">Elküldve</string>
+    <string name="state_dialog_received">Fogadva</string>
+    <string name="state_dialog_status">Állapot</string>
+    <string name="state_failed">sikertelen</string>
+    <string name="state_pending">várakozás</string>
+    <string name="state_processing">feldolgozás alatt</string>
+    <string name="state_read">elolvasva</string>
+    <string name="state_sending">küldés</string>
+    <string name="state_sent">elküldve</string>
+    <string name="state_transcoding">átkódolás alatt</string>
+    <string name="status_ballot_all_votes">Szavazás «%1$s» befejeződött</string>
+    <string name="status_ballot_user_first_vote">«%1$s» szavazott «%2$s» mellett</string>
+    <string name="status_ballot_user_modified_vote">«%1$s» megváltoztatta szavazatát «%2$s»-hoz</string>
+    <string name="status_ballot_voting_changed">Új szavazat érkezett a «%1$s» szavazásra</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="status_create_group">Csoport létrehozva.</string>
+    <string name="status_create_notes">*Egyedül vagy itt*\nEzt a csevegést biztonságos jegyzetfüzetként használhatod szövegek, médiaanyagok és dokumentumok számára.</string>
+    <string name="status_create_notes_off">*Nem vagy többé egyedül ebben a csevegésben*\nAz új üzeneteket a csoport minden tagjának elküldjük.</string>
+    <string name="status_group_member_kicked">«%1$s» eltávolításra került a csoportból.</string>
+    <string name="status_group_member_left">«%1$s» elhagyta a csoportot.</string>
+    <string name="status_group_new_member">«%1$s» hozzá lett adva a csoporthoz.</string>
+    <string name="status_group_new_photo">Csoport frissítve.</string>
+    <string name="status_rename_group">Csoport átnevezve: «%1$s»</string>
+    <string name="stickers">Matricák</string>
+    <string name="stop">Leállítás</string>
+    <string name="storage_explain">Ha kifogyóban van a tárhelye, törölheti a titkosított formában tárolt régi
+		médiafájlokat, hogy helyet szabadítson fel. A miniatűrök megmaradnak. Vegye figyelembe, hogy ez nem
+		automatikus folyamat. Csak akkor törlődik, ha megérinti az alábbi gombok egyikét.
+	</string>
+    <string name="storage_management">Tároláskezelés</string>
+    <string name="storage_threema">Threema által használt</string>
+    <string name="storage_total">Belső tároló</string>
+    <string name="storage_total_free">Szabad tárhely</string>
+    <string name="storage_total_in_use">Felhasznált</string>
+    <string name="street" ns2:ignore="Typos">Utca</string>
+    <string name="strikethrough">Áthúzott</string>
+    <string name="suburb">Körzet</string>
+    <string msgid="5190123168583152844" name="summary_collapsed_preference_list">"<ns1:g id="CURRENT_ITEMS">%1$s</ns1:g>, <ns1:g id="ADDED_ITEMS">%2$s</ns1:g>"</string>
+    <string name="support">Súgó</string>
+    <string name="support_url">https://threema.ch/android/support/</string>
+    <string name="switch_flash">Vakumód váltása</string>
+    <string name="switched_off">Ki</string>
+    <string name="switched_on">Be</string>
+    <string name="synchronize_contact">Címjegyzék szinkronizálása</string>
+    <string name="system_default">Rendszer alapértelmezett</string>
+    <string name="take_me_there">Aktiváld most…</string>
+    <string name="take_photo">Fotózás</string>
+    <string name="tap_for_picture_hold_for_video">Fényképhez megérintés, videóhoz nyomva tartás</string>
+    <string name="tap_here_for_more">További információért kattintson ide</string>
+    <string name="tap_to_start">Kattintson ide a %s indításához.</string>
+    <string name="test_unsuccessful">A teszt sikertelen</string>
+    <string name="text">Szöveg</string>
+    <string name="thirty_days_abbrev">30n</string>
+    <string name="three_months">3 hónap</string>
+    <string name="threema_call">Threema hívás</string>
+    <string name="threema_call_with">%s hívása</string>
+    <string name="threema_channel_intro">A Threema Channel a Threema-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a
+		Threema Channelre és hozzáadni a névjegyzékbe? Ingyenes, és bármikor leiratkozhatsz róla.
+	</string>
+    <string name="threema_contact">Threema-Névjegy</string>
+    <string name="threema_message_from">Üzenet %s-től</string>
+    <string name="threema_message_to">Üzenet %s-nek</string>
+    <string name="threema_safe_backup">Threema Safe biztonsági mentés</string>
+    <string name="threema_safe_upload_successful">Threema-Safe biztonsági mentés sikeresen feltöltve</string>
+    <string name="threema_version">Verzió</string>
+    <string name="threema_work_contact">Threema Work névjegy</string>
+    <string name="time_remaining">még %s</string>
+    <string name="title_add_distribution_list">Új elosztási lista</string>
+    <string name="title_addgroup">Új csoport</string>
+    <string name="title_adduser">Névjegy hozzáadása</string>
+    <string name="title_cannot_be_empty">A szavazás címe nem lehet üres</string>
+    <string name="title_choose_recipient">Címzett kiválasztása</string>
+    <string name="title_compose_message">Csevegés indítása</string>
+    <string name="title_edit_distribution_list">Elosztási lista szerkesztése</string>
+    <string name="title_enter_id">Adja meg az ID-d</string>
+    <string name="title_hide_private_chats">Privát csevegések elrejtése</string>
+    <string name="title_invite_friend">Barátok meghívása</string>
+    <string name="title_keyfingerprint">Kulcs ujjlenyomat</string>
+    <string name="title_lock">Zárolás</string>
+    <string name="title_mythreemaid">Az én Threema ID-m</string>
+    <string name="title_public_nickname">Becenév</string>
+    <string name="title_remove_picture">Kép eltávolítása</string>
+    <string name="title_section1">Csevegések</string>
+    <string name="title_section2">Névjegyek</string>
+    <string name="title_select_contacts">Válassza ki a tagokat</string>
+    <string name="title_show_private_chats">Privát csevegések megjelenítése</string>
+    <string name="title_tab_distribution_list">Elosztási listák</string>
+    <string name="title_tab_groups">Csoportok</string>
+    <string name="title_tab_recent">Legutóbbi</string>
+    <string name="title_tab_users">Névjegyek</string>
+    <string name="title_tab_work_users">Threema Work felhasználók</string>
+    <string name="title_threemaid">Threema-ID</string>
+    <string name="to_archive">Archiválás</string>
+    <string name="to_front">Előre</string>
+    <string name="today">Ma</string>
+    <string name="token_register_failed">A push tokent nem sikerült frissíteni. Kérjük, próbálja meg később újra.</string>
+    <string name="too_many_incorrect_attempts">Túl sok hibás próbálkozás. Kérjük, próbálja meg újra %s másodperc múlva.</string>
+    <string name="tooltip_export_id">Kattintson ide a titkosított Threema ID megosztásához vagy kinyomtatásához.</string>
+    <string name="tooltip_identity_popup">Kattintson ide, ha meg szeretné tekinteni Threema ID-ját, vagy beolvasni mások ID-it</string>
+    <string name="tooltip_image_resolution_hint">A képfelbontás testreszabásához kattintson ide.</string>
+    <string name="tooltip_imagepaint">Légy kreatív! Érintse meg a varázspálcát, hogy firkáljon, vagy adjon matricákat és szöveget a képekhez elküldés előtt.</string>
+    <string name="tooltip_mentions">Érintse meg a @ jelet a billentyűzeten, hogy közvetlenül megszólítson vagy megemlítsen egy kapcsolatot ebben a csoportban.</string>
+    <string name="tooltip_voip_enable_speakerphone">Kattintson ide a beszélgetés kihangosításához</string>
+    <string name="tooltip_voip_other_party_video_disabled">Beszélgetőpartnere nem az aktuális alkalmazásverziót használja, vagy nem engedélyezi a videóhívásokat.</string>
+    <string name="tooltip_voip_other_party_video_on">Beszélgetőpartnere videóhívást indított. Kattintson ide a kamera bekapcsolásához is.</string>
+    <string name="tooltip_voip_turn_on_camera">Kattintson ide a kamera bekapcsolásához</string>
+    <string name="tooltip_work_hint">Ez a névjegy a Threema Work-ot használja.</string>
+    <string name="touch_to_link">(nincs)</string>
+    <string name="town">Város</string>
+    <string name="transcoder_unknown_audio_error">A hangformátum konvertálása ismeretlen hibával megszakadt.</string>
+    <string name="transcoder_unsupported_audio_format">A hangformátum konvertálása a rendszer támogatásának hiánya miatt nem sikerült.</string>
+    <string name="translators">Fordítók</string>
+    <string name="translators_thanks">Köszönet önkéntes fordítóinknak:\n%s</string>
+    <string name="try_again">Próbálja újra</string>
+    <string name="two_years">2 év</string>
+    <string name="unable_to_determine_recording_length">A felvétel üres vagy a hossza nem határozható meg</string>
+    <string name="unable_to_get_current_location">Nem tudjuk meghatározni az aktuális pozíciót.</string>
+    <string name="unable_to_play_video">A videó nem játszható le</string>
+    <string name="unarchive">Archívból törlés</string>
+    <string name="unblock_contact">Névjegy feloldása</string>
+    <string name="unchanged">változatlan</string>
+    <string name="undo">Vissza</string>
+    <string name="unhide_chats_confirm">Ha eltávolítja a hozzáférés-védelmet, a privát beszélgetések ismét láthatóvá válnak.</string>
+    <string name="unknown">Ismeretlen</string>
+    <string name="unknown_address">Ismeretlen cím</string>
+    <string name="unlink">Bontás</string>
+    <string name="unlinking_email">Az összekapcsolás bontása</string>
+    <string name="unpin">Levenni</string>
+    <string name="unread">Olvasatlan</string>
+    <string name="unread_messages">%d olvasatlan üzenet</string>
+    <string name="unset_private">«Privát csevegés» kikapcsolása</string>
+    <string name="update_available">Frissítés elérhető</string>
+    <string name="updating_group">Csoport frissítése</string>
+    <string name="updating_system">Rendszerfrissítés</string>
+    <string name="upsdk_app_dl_installing" priority="LT">"AppGallery letöltése"</string>
+    <string name="upsdk_app_download_info_new" priority="translator">"Telepítés"</string>
+    <string name="upsdk_app_download_installing" priority="translator">"%s letöltése…"</string>
+    <string name="upsdk_app_size" priority="translator">"Méret"</string>
+    <string name="upsdk_app_version" priority="translator">"Verzió"</string>
+    <string name="upsdk_appstore_install" priority="translator">"Az alkalmazás frissítéséhez a(z) %s szükséges. Telepíti most?"</string>
+    <string name="upsdk_cancel" priority="translator">"Mégse"</string>
+    <string name="upsdk_checking_update_prompt" priority="LT">"Frissítések keresése..."</string>
+    <string name="upsdk_choice_update" priority="LT">"Frissítés érhető el. Töltse le, és telepítse a legfrissebb verziót."</string>
+    <string name="upsdk_connect_server_fail_prompt_toast" priority="translator">"Nem lehet csatlakozni a szerverhez. Próbálja újra később."</string>
+    <string name="upsdk_detail" priority="translator">"Részletek"</string>
+    <string name="upsdk_getting_message_fail_prompt_toast" priority="translator">"Információ lekérése sikertelen. Próbálja újra később."</string>
+    <string name="upsdk_no_available_network_prompt_toast" priority="translator">"Nincs internetkapcsolat. Ellenőrizze a hálózati beállításait."</string>
+    <string name="upsdk_ota_app_name" priority="LT">"Alkalmazás"</string>
+    <string name="upsdk_ota_cancel" priority="translator">"Később"</string>
+    <string name="upsdk_ota_force_cancel_new" priority="LT">"Kilépés"</string>
+    <string name="upsdk_ota_notify_updatebtn" priority="translator">"Frissítés"</string>
+    <string name="upsdk_ota_title" priority="translator">"Új verzió"</string>
+    <string name="upsdk_storage_utils" priority="LT">"%1$s MB"</string>
+    <string name="upsdk_third_app_dl_cancel_download_prompt_ex" priority="translator">"Megszakítja a telepítést?"</string>
+    <string name="upsdk_third_app_dl_install_failed" priority="translator">"Telepítés sikertelen."</string>
+    <string name="upsdk_third_app_dl_sure_cancel_download" priority="translator">"Igen"</string>
+    <string name="upsdk_update_check_no_new_version" priority="Reviewed">"A verziója naprakész."</string>
+    <string name="url_warning_body">A megnyitni kívánt weboldal gyanús:\n\nMegjelenített hostnév: <b>%s</b>\nValódi hostnév: <b>%s</b>\n\nLehet, hogy egy hamis weboldalra próbálják átirányítani Önt.\n\nMégis folytatni akarja?</string>
+    <string name="url_warning_body_alt">A weboldal, amelyet megnyitni próbál, gyanús.\n\nLehet, hogy egy hamis weboldalra próbálják átirányítani Önt.\n\nMégis folytatni szeretné?</string>
+    <string name="url_warning_title">Adathalászat figyelmeztetés</string>
+    <string name="username_hint">Felhasználónév</string>
+    <string msgid="5138405918326871307" name="v7_preference_off">"KI"</string>
+    <string msgid="27351710992731591" name="v7_preference_on">"BE"</string>
+    <string name="verification_level1_explain">Ismeretlen kapcsolat; a kapcsolat ID-jéhez nem tartozik se telefonszám, se e-mail cím,
+		vagy a címjegyzék nem tartalmazza ezeket az információkat.</string>
+    <string name="verification_level2_explain">Olyan kapcsolat, amelynek telefonszáma és/vagy e-mail címe szerepel az Ön címjegyzékében.
+	</string>
+    <string name="verification_level2_work_explain">A szervezet által meghatározott belső kapcsolat.</string>
+    <string name="verification_level3_explain">Kapcsolat, amelynek személyazonosságát és nyilvános kulcsát személyesen ellenőrizte a QR-kód beolvasásával.
+	</string>
+    <string name="verification_level3_work_explain">Belső kapcsolat, akinek személyazonosságát és nyilvános kulcsát személyesen ellenőrizte a QR-kód beolvasásával.</string>
+    <string name="verification_levels_title">Bizalmi szintek</string>
+    <string name="verification_of">%s ellenőrzése</string>
+    <string name="verification_settings_desc">A pontok a kapcsolat bizalmi szintjét jelzik.</string>
+    <string name="verification_started">Ellenőrzés elkezdve</string>
+    <string name="verified">Ellenőrizve</string>
+    <string name="verify_failed">Sikertelen</string>
+    <string name="verify_failed_not_linked">A mobilszám ellenőrzése nem lehetséges, mert a folyamatot megszakította.</string>
+    <string name="verify_failed_summary">A mobilszám ellenőrzése sikertelen volt. Kérjük, ellenőrizze a szám
+		helyességét és a mobilhálózat kapcsolatot, mielőtt újra megpróbálná.
+	</string>
+    <string name="verify_phonecall_text">Híváskérés</string>
+    <string name="verify_success_text">A mobiltelefonszámát sikeresen ellenőriztük.</string>
+    <string name="verify_title">Mobilszám ellenőrzése</string>
+    <string name="video_calls">Videóhívások</string>
+    <string name="video_camera_off">Videokamera ki</string>
+    <string name="video_camera_on">Videokamera be</string>
+    <string name="video_placeholder">Videó</string>
+    <string name="video_size_explain">A nagyon nagyméretű videók tömörítésre kerülnek, így ettől a beállítástól függetlenül elküldhetők.</string>
+    <string name="video_size_large">Alacsony (közepes adatmennyiség)</string>
+    <string name="video_size_original">Nincs (nagy mennyiségű adat)</string>
+    <string name="video_size_small">Magas (kis mennyiségű adat)</string>
+    <string name="videocall_profile_auto">Kiegyensúlyozott (ajánlott)</string>
+    <string name="videocall_profile_low_bandwidth">Alacsony adatfogyasztás</string>
+    <string name="videocall_profile_max_quality">Maximális minőség</string>
+    <string name="view_in_gallery">Megtekintés a galériában</string>
+    <string name="village">Falu</string>
+    <string name="voice_action_body">A hangparancs feldolgozása</string>
+    <string name="voice_action_title">Hangparancsok</string>
+    <string name="voice_message_record">Hangüzenet felvétele</string>
+    <string name="voip_accept">Elfogadás</string>
+    <string name="voip_another_call">A kapcsolat nem lehetséges. Egy másik hívás már folyamatban van.</string>
+    <string name="voip_another_pstn_call">Hívás nem lehetséges. Egy telefonbeszélgetés már folyamatban van.</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_call_confirm">Szeretné felhívni %1$s-t?</string>
+    <string name="voip_call_finished">A Threema hívás befejeződött</string>
+    <string name="voip_call_finished_inbox">Bejövő hívás</string>
+    <string name="voip_call_finished_outbox">Kimenő hívás</string>
+    <string name="voip_call_status_aborted">Hívás megszakítva</string>
+    <string name="voip_call_status_busy">A hívás címzettje foglalt</string>
+    <string name="voip_call_status_busy_short">Foglalt</string>
+    <string name="voip_call_status_disabled">A Threema-hívások letiltva a célkészüléken</string>
+    <string name="voip_call_status_missed">Nem fogadott hívás</string>
+    <string name="voip_call_status_off_hours">Hívás munkaidőn kívül</string>
+    <string name="voip_call_status_rejected">Hívás elutasítva</string>
+    <string name="voip_call_status_unavailable">A hívás címzettje nem elérhető</string>
+    <string name="voip_checking_compatibility">Ellenőrzés, hogy a kapcsolat fogadhat-e Threema-hívásokat.</string>
+    <string name="voip_connection_failed">A kapcsolatot nem sikerült létrehozni.</string>
+    <string name="voip_connection_lost">A kapcsolat megszakadt</string>
+    <string name="voip_contact_not_found">A Threema nem talált elérhetőséget ehhez a számhoz.</string>
+    <string name="voip_disabled">Threema-hívások letiltva</string>
+    <string name="voip_earpiece">Telefon</string>
+    <string name="voip_error_call">Hiba a Threema hívás során</string>
+    <string name="voip_error_init_call">Híváshiba</string>
+    <string name="voip_hangup">Letevés</string>
+    <string name="voip_incompatible">Ez a kapcsolat még nem fogadhat Threema-hívásokat.</string>
+    <string name="voip_mic_disable">Némítás</string>
+    <string name="voip_mic_enable">Mikrofon bekapcsolása</string>
+    <string name="voip_none">Nem elérhető</string>
+    <string name="voip_notification_text">%1$s hívja</string>
+    <string name="voip_notification_title">Threema hívás</string>
+    <string name="voip_peer_video_disabled">A másik fél letiltotta a videohívásokat.</string>
+    <string name="voip_prefs_aec_hw">Hardveres visszhangszűrés</string>
+    <string name="voip_prefs_aec_sw">Szoftveres visszhangszűrés</string>
+    <string name="voip_prefs_title_aec">Visszhangszűrés</string>
+    <string name="voip_prefs_title_video_codec">Videó codec-ok</string>
+    <string name="voip_prefs_video_aec_hw">Hardveres gyorsítás</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-HiP letiltva</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8 letiltva</string>
+    <string name="voip_prefs_video_codec_sw">Szoftveres codec-ok</string>
+    <string name="voip_prefs_webrtc_debug">WebRTC diagnosztika</string>
+    <string name="voip_prefs_webrtc_debug_summary">Indítsa el ezt az eszközt a híváskapcsolati problémák diagnosztizálásához.</string>
+    <string name="voip_reject">Visszautasítás</string>
+    <string name="voip_return_call">Visszahívás</string>
+    <string name="voip_speakerphone">Kihangosító</string>
+    <string name="voip_status_connecting">Csatlakoztatás</string>
+    <string name="voip_status_disconnecting">Kapcsolat bontása</string>
+    <string name="voip_status_initializing">Hívás indítása</string>
+    <string name="voip_status_ringing">Csöng</string>
+    <string name="voip_switch_cam">Kamera átkapcsolása</string>
+    <string name="voip_switch_cam_front">Szelfi kamerára váltott</string>
+    <string name="voip_switch_cam_rear">Fő kamerára váltott</string>
+    <string name="voip_title">Threema hívás</string>
+    <string name="voip_toggle_mic">Mikrofon átkapcsolása</string>
+    <string name="voip_toggle_speaker">Hangszóró átkapcsolása</string>
+    <string name="voip_toggle_video">Videó üzemmód váltása</string>
+    <string name="voip_webrtc_debug">WebRTC diagnózis</string>
+    <string name="voip_webrtc_debug_copied">A szöveg a vágólapra lett másolva.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Másolás a vágólapra</string>
+    <string name="voip_webrtc_debug_done">Kész. Ha hívással problémái vannak, kérjük, küldje el ezt az üzenetet a Threema ügyfélszolgálatának.</string>
+    <string name="voip_webrtc_debug_intro">Nyomja meg az \"Indítás\" gombot a teszt elindításához.</string>
+    <string name="voip_webrtc_debug_start">Indítás</string>
+    <string name="voip_wired_headset">Fejhallgató</string>
+    <string name="wait_one_minute">Kérjük, várjon legalább 10 percet az SMS-re, mielőtt visszahívást kérne.</string>
+    <string name="wallpaper_default">Alapértelmezett háttérkép</string>
+    <string name="wallpaper_gallery">Galériából választ</string>
+    <string name="wallpaper_none">Nincs háttérkép</string>
+    <string name="wallpaper_threema">%s-háttérkép</string>
+    <string name="wallpapers_removed">Háttérképek eltávolítva</string>
+    <string name="want_to_add_to_exclude_list">Ez a kapcsolat egy a telefonos címjegyzék bejegyzéséhez kapcsolódik.
+		Ha törli a Threema rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben
+		ezt az azonosítót kizárni a szinkronizálásból?</string>
+    <string name="warning">Figyelmeztetés</string>
+    <string name="wearable_reply">Válasz</string>
+    <string name="wearable_reply_label">Válasz %s-nak</string>
+    <string name="webclient_active_since">Aktív: %s óta</string>
+    <string name="webclient_cannot_restore">Nem lehet folytatni a munkamenetet</string>
+    <string name="webclient_cannot_start">A Threema webes munkamenet nem indítható</string>
+    <string name="webclient_clear_all_sessions">Az összes munkamenet törlése</string>
+    <string name="webclient_clear_all_sessions_confirm">Tényleg törölni szeretné az összes Threema Web munkamenetet?</string>
+    <string name="webclient_constrained_by_mdm">A szervert a rendszergazda nem engedélyezte.</string>
+    <string name="webclient_created_at">Létrehozva: %1$s (%2$s)</string>
+    <string name="webclient_diagnostics">Threema Web diagnózis</string>
+    <string name="webclient_diagnostics_done">Befejezve. Ha problémái vannak a Threema webkapcsolat létrehozásával, kérjük küldje el ezt a naplót a Threema ügyfélszolgálatának.</string>
+    <string name="webclient_diagnostics_intro">A teszt elindításához kattintson az "Indítás" gombra.</string>
+    <string name="webclient_diagnostics_start">Indítás</string>
+    <string name="webclient_disabled">Asztal/Web letiltva</string>
+    <string name="webclient_disposable">nem mentve</string>
+    <string name="webclient_enable">Threema Webet aktiválás</string>
+    <string name="webclient_init_session">Új munkamenet kezdése</string>
+    <string name="webclient_invalid_push_token_message">Kézi indítás szükséges</string>
+    <string name="webclient_invalid_qr_code">Érvénytelen Threema Web QR-kód</string>
+    <string name="webclient_last_usage">Utoljára használva: %s</string>
+    <string name="webclient_launch">Threema Web indítása</string>
+    <string name="webclient_new_connection_toast">A Threema Web munkamenet elindult</string>
+    <string name="webclient_no_sessions_found">A csatlakozáshoz nyissa meg az internetböngészőt a számítógépén, és menjen a %s oldalra. Kattintson a lenti gombra a megjelenő kód beolvasásához.</string>
+    <string name="webclient_persistent">mentve</string>
+    <string name="webclient_prefs_debug_tool_summary">Eszköz a Threema webkapcsolat létrehozásával kapcsolatos problémák elemzésére</string>
+    <string name="webclient_protocol_error">Protokoll-hiba</string>
+    <string name="webclient_protocol_version_to_old">Az asztali alkalmazás / webes ügyfél nem kompatibilis ezzel az Android alkalmazással. Kérjük, frissítse a Threema-t a legújabb verzióra.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Az alkalmazás nem támogatja az asztali alkalmazás / Threema Web ezen verzióját. Kérje meg a Threema Web példányának rendszergazdáját, hogy frissítse a Threema Web legújabb verziójára.</string>
+    <string name="webclient_protocol_version_too_new_threema">Az Ön alkalmazása nem támogatja az asztali alkalmazás / a Threema Web ezen verzióját. Kérjük, használja a Threema Web / az asztali alkalmazás újabb verzióját.</string>
+    <string name="webclient_qr_scan_error">QR-kód érvénytelen</string>
+    <string name="webclient_qr_scan_message">Szkennelje be a számítógépen megjelenő QR-kódot.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">El akarja kezdeni ezt az munkamenetet most?</string>
+    <string name="webclient_running_sessions">%d futó munkamenet</string>
+    <string name="webclient_service_description">Értesítés, ha egy webes/asztalos munkamenet aktív</string>
+    <string name="webclient_session_already_exists">Ehhez a QR-kódhoz már létezik munkamenet. Kérjük, indítsa újra a böngészőjét / asztali alkalmazását.</string>
+    <string name="webclient_session_label">Új név</string>
+    <string name="webclient_session_remove">Munkamenet eltávolítása</string>
+    <string name="webclient_session_rename">Munkamenet átnevezése</string>
+    <string name="webclient_session_start">Munkamenet megkezdése</string>
+    <string name="webclient_session_stop">Munkamenet megállítása</string>
+    <string name="webclient_session_stop_all">Mind leállítása</string>
+    <string name="webclient_sessions_really_delete">Biztos, hogy törölni szeretné ezt a Threema webes munkamenetet?</string>
+    <string name="webclient_unnamed_session">Névtelen munkamenet</string>
+    <string name="webclient_welcome_explain">A Threema Web segítségével kényelmesen cseveghet számítógépéről vagy notebookjáról. Teljes körű hozzáférést biztosít az összes kapcsolatához, médiáihoz és beszélgetéseihez, beleértve a korábbi beszélgetéseket is.\n\n<b>A mobiltelefon és a számítógép közötti kommunikáció teljes mértékben végponttól végpontig titkosított</b> és közvetlen kapcsolatot használ, ha mindkét eszköz ugyanazon a hálózaton van.\n\nFigyelem: Ha a Threema Web aktív, az energiafogyasztás magasabb lehet. A funkciót azonban bármikor be- vagy kikapcsolhatja.</string>
+    <string name="webclient_welcome_title">Csevegés a számítógépről</string>
+    <string name="whoaaa">Megjegyzés</string>
+    <string name="wizard1_sync_contacts">A névjegyek szinkronizálása…</string>
+    <string name="wizard1_sync_work">Szinkronizálás folyamatban…</string>
+    <string name="wizard2_email_hint">Az Ön e-mail címe</string>
+    <string name="wizard2_email_linking">Összekapcsolás e-mail címmel</string>
+    <string name="wizard2_phone_hint">Az Ön mobiltelefonszáma</string>
+    <string name="wizard2_phone_linking">Mobilszám összekapcsolása az azonosítóval</string>
+    <string name="wizard2_phone_number_confirm">SMS-t küldünk a következő számra:\n\n%1$s\n\nHelyes a szám?</string>
+    <string name="wizard2_phone_number_confirm_title">Mobiltelefonszám megerősítése</string>
+    <string name="wizard3_nickname_hint">Becenév megadása</string>
+    <string name="wizard_first_create_id">A kulcspár generálása…</string>
+    <string name="work_data_sync">Adatok szinkronizálása</string>
+    <string name="work_data_sync_desc">Threema Work szinkronizálás</string>
+    <string name="work_life_dnd_active">Pihenőidő aktív</string>
+    <string name="work_safe_forced_explain">A rendszergazda engedélyezte a Threema Safe szolgáltatást az Ön készülékén.</string>
+    <string name="work_select_categories">Kategóriák kiválasztása</string>
+    <string name="work_verification_levels_title">Névjegyek az Ön szervezetében</string>
+    <string name="wrong_backupid_or_password_or_no_internet_connection">Nincs internetkapcsolat, érvénytelen azonosító exportálási karakterlánc
+		vagy rossz jelszó
+	</string>
+    <string name="yes">Igen</string>
+    <string name="you_are_not_a_member_of_this_group">Ön nem tagja ennek a csoportnak.</string>
+    <string name="your_location">Tartózkodási helye</string>
+</resources>

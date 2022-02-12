@@ -25,7 +25,6 @@ import android.content.Context;
 
 import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hms.aaid.HmsInstanceId;
-import com.huawei.hms.common.ApiException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,6 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import ch.threema.app.utils.PushUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushRegistrationWorker extends Worker {
@@ -64,8 +62,8 @@ public class PushRegistrationWorker extends Worker {
 		final boolean withCallback = workerFlags.getBoolean(PushUtil.EXTRA_WITH_CALLBACK, false);
 		logger.debug("doWork HMS token registration clear {} withCallback {}", clearToken, withCallback);
 
+		String error = null;
 		if (clearToken) {
-			String error = null;
 			try {
 				// Obtain the app ID from the agconnect-service.json file.
 				String appId = AGConnectServicesConfig.fromContext(appContext).getString(APP_ID_CONFIG_FIELD);
@@ -74,30 +72,29 @@ public class PushRegistrationWorker extends Worker {
 				HmsInstanceId.getInstance(appContext).deleteToken(appId, TOKEN_SCOPE);
 				PushUtil.sendTokenToServer(appContext,"", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
 				logger.info("HMS token successfully deleted");
-			} catch (ApiException | ThreemaException e) {
+			} catch (Exception e) {
+				logger.error("Exception", e);
+				error = e.getMessage();
+			}
+		}
+        else {
+			try {
+				String appId = AGConnectServicesConfig.fromContext(appContext).getString(APP_ID_CONFIG_FIELD);
+
+				String token = HmsInstanceId.getInstance(appContext).getToken(appId, TOKEN_SCOPE);
+				logger.info("Received HMS registration token");
+				PushUtil.sendTokenToServer(appContext, appId + '|' +token, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
+			} catch (Exception e) {
 				logger.error("Exception", e);
 				error = e.getMessage();
 			}
 
-			if (withCallback) {
-				PushUtil.signalRegistrationFinished(error, clearToken);
-			}
 		}
-        else {
-			String appId = AGConnectServicesConfig.fromContext(appContext).getString(APP_ID_CONFIG_FIELD);
-			String error = null;
-			try {
-				String token = HmsInstanceId.getInstance(appContext).getToken(appId, TOKEN_SCOPE);
-				logger.info("Received HMS registration token");
-				PushUtil.sendTokenToServer(appContext, appId + '|' +token, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
-			} catch (ThreemaException | ApiException e) {
-				logger.error("Exception", e);
-				error = e.getMessage();
-			}
-			if (withCallback) {
-				PushUtil.signalRegistrationFinished(error, clearToken);
-			}
+
+		if (withCallback) {
+			PushUtil.signalRegistrationFinished(error, clearToken);
 		}
+
 		// required by the Worker interface but is not used for any error handling in the push registration process
 		return Result.success();
 	}

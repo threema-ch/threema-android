@@ -46,7 +46,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.logging.LogLevel;
-import ch.threema.logging.LoggingUtil;
+import ch.threema.base.utils.LoggingUtil;
 import java8.util.concurrent.CompletableFuture;
 
 /**
@@ -73,6 +73,7 @@ public class DebugLogFileBackend implements LogBackend {
 		"ch.threema.app.",
 		"ch.threema.domain.",
 		"ch.threema.storage.",
+		"ch.threema.",
 	};
 
 	// Worker thread

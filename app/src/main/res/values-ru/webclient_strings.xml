@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Время создания: %1$s (%2$s)</string>
     <string name="webclient_active_since">Активно с: %s</string>
     <string name="webclient_enable">Включить приложение для ПК / веб-клиент</string>
-    <string name="webclient_no_sessions_found">Для подключения загрузите приложение для ПК (<b>https://threema.ch/download</b>) или откройте веб-клиент (<b>https://web.threema.ch</b>) на компьютере и нажмите кнопку ниже, чтобы сканировать QR-код на экране компьютера.</string>
+    <string name="webclient_no_sessions_found">Для подключения загрузите приложение для ПК (<b>https://threema.ch/download</b>) или откройте веб-клиент (<b>%s</b>) на компьютере и нажмите кнопку ниже, чтобы сканировать QR-код на экране компьютера.</string>
     <string name="webclient_session_rename">Переименовать сессию</string>
     <string name="webclient_session_label">Новое имя</string>
     <string name="webclient_session_start">Начать сессию</string>

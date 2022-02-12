@@ -25,7 +25,6 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +57,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceCounter;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.utils.AsyncResolver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
@@ -69,7 +69,7 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 
 @WorkerThread
 public class ThreemaConnection implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaConnection.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaConnection");
 
 	private static final int IDENTITY_LEN = 8;
 	private static final int COOKIE_LEN = 16;

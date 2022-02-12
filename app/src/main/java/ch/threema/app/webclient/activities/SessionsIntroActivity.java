@@ -23,10 +23,6 @@ package ch.threema.app.webclient.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
@@ -34,6 +30,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 
@@ -57,7 +56,7 @@ public class SessionsIntroActivity extends ThreemaToolbarActivity {
 		if (sharedPreferences.getBoolean(getString(R.string.preferences__web_client_welcome_shown), false)) {
 			launchButton.setText(R.string.ok);
 			linkText.setVisibility(View.VISIBLE);
-			linkText.setText(Html.fromHtml("<a href=\"" + getString(R.string.webclient_url)+ "\">" + getString(R.string.new_wizard_more_information) + "</a>"));
+			linkText.setText(Html.fromHtml("<a href=\"" + getString(R.string.webclient_info_url)+ "\">" + getString(R.string.new_wizard_more_information) + "</a>"));
 			linkText.setMovementMethod (LinkMovementMethod.getInstance());
 		} else {
 			linkText.setVisibility(View.GONE);

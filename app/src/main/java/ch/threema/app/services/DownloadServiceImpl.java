@@ -28,7 +28,6 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -42,12 +41,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.domain.protocol.blob.BlobLoader;
 import ch.threema.base.ProgressListener;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.blob.BlobLoader;
 
 public class DownloadServiceImpl implements DownloadService {
-	private static final Logger logger = LoggerFactory.getLogger(DownloadServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadServiceImpl");
 
 	private static final String TAG = "DownloadService";
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":" + TAG;
@@ -128,8 +128,7 @@ public class DownloadServiceImpl implements DownloadService {
 
 	@Override
 	@WorkerThread
-	@Nullable
-	public byte[] download(int messageModelId, final byte[] blobId, boolean markAsDown, ProgressListener progressListener) {
+	public @Nullable byte[] download(int messageModelId, final byte[] blobId, boolean markAsDown, @Nullable ProgressListener progressListener) {
 		PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
 		try {
 			if (wakeLock != null) {
@@ -142,10 +141,10 @@ public class DownloadServiceImpl implements DownloadService {
 				return null;
 			}
 
-			String blobIdHex = Utils.byteArrayToHexString(blobId);
+			final String blobIdHex = Utils.byteArrayToHexString(blobId);
 			logger.info("Blob {} for message {} download requested", blobIdHex, messageModelId);
 
-			byte[] imageBlob = null;
+			byte[] blobBytes = null;
 			File downloadFile = this.getTemporaryDownloadFile(blobId);
 			boolean downloadSuccess = false;
 
@@ -179,12 +178,11 @@ public class DownloadServiceImpl implements DownloadService {
 					blobLoader.setProgressListener(progressListener);
 				}
 
-
-				// load image from server
+				// Load blob from server
 				logger.info("Blob {} now fetching", blobIdHex);
-				imageBlob = blobLoader.load(false);
+				blobBytes = blobLoader.load(false);
 
-				if (imageBlob != null) {
+				if (blobBytes != null) {
 					synchronized (this.downloads) {
 						//check if loader already existing in array (otherwise its canceled)
 						if (getDownloadByBlobId(blobId) != null) {
@@ -193,11 +191,11 @@ public class DownloadServiceImpl implements DownloadService {
 							FileUtil.createNewFileOrLog(downloadFile, logger);
 							if (downloadFile.isFile()) {
 								try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(downloadFile))) {
-									bos.write(imageBlob);
+									bos.write(blobBytes);
 									bos.flush();
 								}
 
-								if (downloadFile.length() == imageBlob.length) {
+								if (downloadFile.length() == blobBytes.length) {
 									downloadSuccess = true;
 
 									//ok download saved, set as down if set
@@ -237,12 +235,12 @@ public class DownloadServiceImpl implements DownloadService {
 			}
 
 			if (downloadSuccess) {
-				logger.info("Blob {} successfully downloaded. Size = {}", blobIdHex, imageBlob.length);
+				logger.info("Blob {} successfully downloaded. Size = {}", blobIdHex, blobBytes.length);
 			} else {
 				logger.warn("Blob {} download failed.", blobIdHex);
 			}
 
-			if (imageBlob == null) {
+			if (blobBytes == null) {
 				synchronized (this.downloads) {
 					// download failed. remove loader
 					Download download = getDownloadByBlobId(blobId);
@@ -252,7 +250,7 @@ public class DownloadServiceImpl implements DownloadService {
 					}
 				}
 			}
-			return imageBlob;
+			return blobBytes;
 		} finally {
 			if (wakeLock != null && wakeLock.isHeld()) {
 				logger.info("Release download wakelock");

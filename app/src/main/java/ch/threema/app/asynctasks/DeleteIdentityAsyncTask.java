@@ -31,17 +31,17 @@ import java.io.File;
 import java.io.IOException;
 
 import androidx.fragment.app.FragmentManager;
-import ch.threema.app.push.PushService;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.push.PushService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.NonceDatabaseBlobService;
 
@@ -69,8 +69,6 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 
 	@Override
 	protected Exception doInBackground(Void... params) {
-		ThreemaConnection connection = serviceManager.getConnection();
-
 		try {
 			// clear push token
 			PushService.deleteToken(ThreemaApplication.getAppContext());
@@ -86,6 +84,8 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			serviceManager.getPreferenceService().clear();
 			serviceManager.getFileService().removeAllAvatars();
 			serviceManager.getWallpaperService().removeAll(ThreemaApplication.getAppContext(), true);
+			ShortcutUtil.deleteAllShareTargetShortcuts();
+			ShortcutUtil.deleteAllPinnedShortcuts();
 
 			boolean interrupted = false;
 

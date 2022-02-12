@@ -30,7 +30,6 @@ import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
@@ -44,6 +43,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactLookupUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -51,7 +51,7 @@ import ch.threema.storage.models.ContactModel;
  * start the call activity.
  */
 public class CallActionIntentActivity extends ThreemaActivity {
-	private static final Logger logger = LoggerFactory.getLogger(CallActionIntentActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CallActionIntentActivity");
 	private ServiceManager serviceManager;
 	private ContactService contactService;
 	private PreferenceService preferenceService;

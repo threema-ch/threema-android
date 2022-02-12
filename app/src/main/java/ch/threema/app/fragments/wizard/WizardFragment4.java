@@ -22,19 +22,19 @@
 package ch.threema.app.fragments.wizard;
 
 import android.os.Bundle;
-import androidx.appcompat.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import androidx.appcompat.widget.SwitchCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 
 public class WizardFragment4 extends WizardFragment {
-	private static final boolean defaultSwitchValue = WizardBaseActivity.DEFAULT_SYNC_CONTACTS;
+	private static boolean defaultSwitchValue = WizardBaseActivity.DEFAULT_SYNC_CONTACTS;
 	private SwitchCompat syncContactsSwitch;
 	public static final int PAGE_ID = 4;
 
@@ -50,6 +50,10 @@ public class WizardFragment4 extends WizardFragment {
 		contentViewStub.inflate();
 
 		syncContactsSwitch = rootView.findViewById(R.id.wizard_switch_sync_contacts);
+
+		if (ConfigUtils.isOnPremBuild() && ConfigUtils.isDemoOPServer(preferenceService)) {
+			defaultSwitchValue = false;
+		}
 
 		if (SynchronizeContactsUtil.isRestrictedProfile(getActivity()) &&
 				!ConfigUtils.isWorkRestricted()) {

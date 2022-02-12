@@ -1106,11 +1106,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="translators_thanks">以下のボランティアの翻訳者に多大な感謝を申し上げます。\n%s</string>
     <string name="ballot_window_hide">投票バーを隠す</string>
     <string name="ballot_window_show">投票バーを表示</string>
-    <string name="tooltip_video_call">タッププルーフの音声通話に加えて、Threemaはエンドツーエンドで暗号化されたビデオ通話を提供しています。</string>
     <string name="tooltip_voip_other_party_video_on">相手がビデオ通話を開始しました。ここをタップすると、あなたのカメラもオンになります。</string>
     <string name="tooltip_voip_other_party_video_disabled">相手が現在のアプリのバージョンを使用していない、またはビデオ通話を許可しません。</string>
-    <string name="video_calls_new">新規: ビデオ通話</string>
-    <string name="biometrics_not_enrolled">生体認証は登録されていません。</string>
+	<string name="biometrics_not_enrolled">生体認証は登録されていません。</string>
     <string name="biometrics_not_avilable">このシステムでは生体認証は利用できません。</string>
     <string name="biometrics_no_permission">生体認証またはハードウェアにアクセスするための許可がありません。</string>
     <string name="verification_settings_desc">3つの点は、連絡先の検証レベルを表しています。</string>

@@ -28,7 +28,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,9 +42,10 @@ import ch.threema.app.voip.VoipAudioManager.AudioDevice;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipCallService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class AudioSelectorButton extends AppCompatImageView implements View.OnClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(AudioSelectorButton.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioSelectorButton");
 
 	// Constants for Drawable.setAlpha()
 	private static final int HIDDEN = 0;

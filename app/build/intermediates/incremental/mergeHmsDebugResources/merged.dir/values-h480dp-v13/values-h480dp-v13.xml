@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="contact_detail_avatar_height">280dp</dimen>
+    <dimen name="min_emoji_keyboard_height">180dp</dimen>
+    <integer name="message_edittext_max_lines">6</integer>
+</resources>

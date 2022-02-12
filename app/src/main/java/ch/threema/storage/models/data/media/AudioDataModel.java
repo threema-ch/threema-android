@@ -49,12 +49,6 @@ public class AudioDataModel implements MediaMessageDataInterface {
 		this.encryptionKey = encryptedKey;
 		this.isDownloaded = false;
 	}
-	public AudioDataModel(int duration, boolean isDownloaded) {
-		this.duration = duration;
-		this.isDownloaded = isDownloaded;
-		this.audioBlobId = new byte[0];
-		this.encryptionKey = new byte[0];
-	}
 
 	public int getDuration() {
 		return this.duration;

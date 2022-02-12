@@ -27,9 +27,8 @@ import android.app.job.JobService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
-import ch.threema.app.services.ShortcutService;
+import ch.threema.app.utils.ShortcutUtil;
 
 public class ShareTargetShortcutUpdateJobService extends JobService {
 	private static final Logger logger = LoggerFactory.getLogger(ShareTargetShortcutUpdateJobService.class);
@@ -44,17 +43,7 @@ public class ShareTargetShortcutUpdateJobService extends JobService {
 
 		new Thread(() -> {
 			logger.info("Updating share target shortcuts");
-
-			ShortcutService shortcutService;
-			try {
-				shortcutService = ThreemaApplication.getServiceManager().getShortcutService();
-				if (shortcutService != null) {
-					shortcutService.deleteAllShareTargetShortcuts();
-					shortcutService.publishRecentChatsAsShareTargets();
-				}
-			} catch (Exception e) {
-				logger.error("Exception, failed to update share target shortcuts", e);
-			}
+			ShortcutUtil.publishRecentChatsAsShareTargets();
 
 			jobFinished(jobParameters, false);
 		}, "ShareTargetShortcutUpdateJobService").start();

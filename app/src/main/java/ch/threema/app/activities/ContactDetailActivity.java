@@ -44,7 +44,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Date;
@@ -98,6 +97,7 @@ import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -108,7 +108,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		implements LifecycleOwner,
 					GenericAlertDialog.DialogClickListener,
 		            ContactEditDialog.ContactEditDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(ContactDetailActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailActivity");
 
 	private static final String DIALOG_TAG_EDIT = "cedit";
 	private static final String DIALOG_TAG_DELETE_CONTACT = "deleteContact";
@@ -884,11 +884,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			case DIALOG_TAG_DELETE_CONTACT:
 				ContactModel contactModel = (ContactModel)data;
 				deleteContact(contactModel);
-				try {
-					serviceManager.getShortcutService().deletePinnedShortcut(contactService.createReceiver(contactModel));
-				} catch (ThreemaException e) {
-					logger.error("Exception, failed to delete direct share shortcut", e);
-				}
 				break;
 			case DIALOG_TAG_EXCLUDE_CONTACT:
 				removeContactConfirmed(true, (ContactModel) data);

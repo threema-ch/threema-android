@@ -33,7 +33,6 @@ import android.widget.Toast;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.HashSet;
@@ -54,6 +53,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
@@ -63,7 +63,7 @@ import ch.threema.localcrypto.MasterKey;
  * Helper class for activities that use the new toolbar
  */
 public abstract class ThreemaToolbarActivity extends ThreemaActivity implements ConnectionStateListener {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaToolbarActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaToolbarActivity");
 
 	private Toolbar toolbar;
 	private View connectionIndicator;

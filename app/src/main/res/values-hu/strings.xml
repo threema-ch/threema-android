@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 	<string name="title_section2">Névjegyek</string>
 	<string name="title_section1">Csevegések</string>
 	<string name="title_compose_message">Csevegés indítása</string>
@@ -146,7 +146,7 @@
 	<string name="verify_title">Mobilszám ellenőrzése</string>
 	<string name="verify_success_text">A mobiltelefonszámát sikeresen ellenőriztük.</string>
 	<string name="verify_failed">Sikertelen</string>
-	<string name="verify_failed_summary">A mobilszám ellenőrzése sikertelen volt. Kérjük, ellenőrizze a szám 
+	<string name="verify_failed_summary">A mobilszám ellenőrzése sikertelen volt. Kérjük, ellenőrizze a szám
 		helyességét és a mobilhálózat kapcsolatot, mielőtt újra megpróbálná.
 	</string>
 	<string name="verify_failed_not_linked">A mobilszám ellenőrzése nem lehetséges, mert a folyamatot megszakította.</string>
@@ -155,7 +155,7 @@
 	<string name="backup_sum">Exportálja a Threema ID-t</string>
 	<string name="backup_and_delete">Mentés és törlés</string>
 	<string name="delete_id_title">ID törlése</string>
-	<string name="delete_id_message">Hacsak nem készített biztonsági másolatot az azonosítóról, akkor soha többé nem lesz 
+	<string name="delete_id_message">Hacsak nem készített biztonsági másolatot az azonosítóról, akkor soha többé nem lesz
 		képes üzenetek küldése vagy fogadása ezzel az azonosítóval.\n\nHa nem kívánja tovább használni ezt az azonosítót,
 		törlés előtt távolítsa el a hivatkozásokat (e-mail/telefonszám).
 	</string>
@@ -167,12 +167,12 @@
 	<string name="generating_backup_data">Az ID titkosítása</string>
 	<string name="backup_id_title">Az Ön ID exportja</string>
 	<string name="backup_id_summary">A karakterlánc vagy a QR-kód a választott jelszóval együtt használható az ID
-		helyreállítására egy másik eszközön. Másolja &amp; és illessze be az adatokat egy megfelelő helyre, nyomtassa 
+		helyreállítására egy másik eszközön. Másolja &amp; és illessze be az adatokat egy megfelelő helyre, nyomtassa
 		ki, küldje el magának e-mailben a Megosztás funkció segítségével, vagy olvassa be a QR-kódot egy másik eszközzel.
 	</string>
 	<string name="support">Súgó</string>
 	<string name="support_url">https://threema.ch/android/support/</string>
-	<string name="backup_share_content">A következő karakterláncot a kiválasztott jelszóval együtt használja a 
+	<string name="backup_share_content">A következő karakterláncot a kiválasztott jelszóval együtt használja a
 		Threema azonosító visszaszerzéséhez.
 	</string>
 	<string name="backup_share_subject">Threema ID export a következőkhöz</string>
@@ -187,7 +187,7 @@
 	<string name="prefs_title_masterkey_passphrase">Jelszó</string>
 	<string name="setting_masterkey_passphrase">Jelszó megadása a főkulcshoz</string>
 	<string name="masterkey_passphrase_title">Jelszó a főkulcshoz</string>
-	<string name="masterkey_passphrase_summary">A főkulcsot egy Ön által választott jelszóval tudja védeni. 
+	<string name="masterkey_passphrase_summary">A főkulcsot egy Ön által választott jelszóval tudja védeni.
 		Ha az alkalmazás be lett zárva, újra meg kell adnia a jelszót.
 	</string>
 	<string name="masterkey_passphrase_again_summary">Jelszó ismétlése</string>
@@ -211,7 +211,7 @@
 	</string>
 	<string name="masterkey_unlocking">A főkulcs kinyitása</string>
 	<string name="verify_phonecall_text">Híváskérés</string>
-	<string name="prepare_call_message">Ha folytatja, azonnal megpróbáljuk felhívni Önt. Az ellenőrző kódot ezután 
+	<string name="prepare_call_message">Ha folytatja, azonnal megpróbáljuk felhívni Önt. Az ellenőrző kódot ezután
 		kétszer is felolvassák Önnek. Kérjük, vegye figyelembe: csak egy próbálkozása van.
 	</string>
 	<string name="enter_code_hint">Adja meg a kódot</string>
@@ -226,7 +226,7 @@
 	<string name="unlinking_email">Az összekapcsolás bontása</string>
 	<string name="unlink">Bontás</string>
 	<string name="threema_version">Verzió</string>
-	<string name="wrong_backupid_or_password_or_no_internet_connection">Nincs internetkapcsolat, érvénytelen azonosító exportálási karakterlánc 
+	<string name="wrong_backupid_or_password_or_no_internet_connection">Nincs internetkapcsolat, érvénytelen azonosító exportálási karakterlánc
 		vagy rossz jelszó
 	</string>
 	<string name="prefs_header_other">További</string>
@@ -248,7 +248,7 @@
 	<string name="masterkey_is_unlocked">A főkulcs nyitva van</string>
 	<string name="file_too_large">A fájl nagyobb, mint a megengedett 50 MB</string>
 	<string name="deleting_thread">A csevegés törlődik</string>
-	<string name="enter_serial_body">Kérjük, adja meg a boltban kapott licenckulcsát. Ha elfelejtette, kattintson ide: 
+	<string name="enter_serial_body">Kérjük, adja meg a boltban kapott licenckulcsát. Ha elfelejtette, kattintson ide:
 		https://shop.threema.ch/retrieve_keys
 	</string>
 	<string name="enter_serial_title">Threema feloldása</string>
@@ -283,7 +283,7 @@
 	<string name="new_message">1 új üzenet</string>
 	<string name="new_messages">új üzenetek</string>
 	<string name="backup_data_title">Adatmentés</string>
-	<string name="backup_data_password_msg">Az azonosító, a csevegések, a kapcsolatok és a beállítások az USB-meghajtón egy 
+	<string name="backup_data_password_msg">Az azonosító, a csevegések, a kapcsolatok és a beállítások az USB-meghajtón egy
 		ZIP-fájlban tárolódnak, és egy másik Android-eszközön visszaállíthatók. Adjon meg egy jelszót az adatmentéshez.
 	</string>
 	<string name="restore_data_password_msg">Itt adja meg a biztonsági mentés létrehozásakor beállított jelszót.
@@ -299,7 +299,7 @@
 	<string name="prefs_sum_pin_grace">Időtartam kiválasztása</string>
 	<string name="click_here_to_change_pin">PIN-kód beállítva. Kattintson ide a módosításhoz</string>
 	<string name="set_pin_menu_title">Új PIN-kód beállítása</string>
-	<string name="set_pin_summary_intro">Védje magánéletét az alkalmazás PIN-zárának beállításával. A zár 
+	<string name="set_pin_summary_intro">Védje magánéletét az alkalmazás PIN-zárának beállításával. A zár
 		automatikusan aktiválódik a beállított várakozási idő után (csak számjegyek engedélyezettek).</string>
 	<string name="set_pin_again_summary">Ismételje meg a PIN-kódot</string>
 	<string name="set_pin_hint">PIN-kód</string>
@@ -365,8 +365,8 @@
 	<string name="prefs_title_black_list">Blokkolt névjegyek</string>
 	<string name="prefs_sum_black_list">Az itt felsorolt ID-k üzeneteit a rendszer figyelmen kívül hagyja.</string>
 	<string name="verified">Ellenőrizve</string>
-	<string name="want_to_add_to_exclude_list">Ez a kapcsolat egy a telefonos címjegyzék bejegyzéséhez kapcsolódik. 
-		Ha törli a Threema rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben 
+	<string name="want_to_add_to_exclude_list">Ez a kapcsolat egy a telefonos címjegyzék bejegyzéséhez kapcsolódik.
+		Ha törli a Threema rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben
 		ezt az azonosítót kizárni a szinkronizálásból?</string>
 	<string name="no">Nem</string>
 	<string name="yes">Igen</string>
@@ -436,7 +436,7 @@
 	</string>
 	<string name="verification_level2_explain">Olyan kapcsolat, amelynek telefonszáma és/vagy e-mail címe szerepel az Ön címjegyzékében.
 	</string>
-	<string name="verification_level1_explain">Ismeretlen kapcsolat; a kapcsolat ID-jéhez nem tartozik se telefonszám, se e-mail cím, 
+	<string name="verification_level1_explain">Ismeretlen kapcsolat; a kapcsolat ID-jéhez nem tartozik se telefonszám, se e-mail cím,
 		vagy a címjegyzék nem tartalmazza ezeket az információkat.</string>
 	<string name="state_dialog_received">Fogadva</string>
 	<string name="prefs_title_hide_screenshots">Miniatűrök és képernyőképek rejt.</string>
@@ -451,7 +451,7 @@
 	<string name="num_items_sected">%s kiválasztott</string>
 	<string name="really_delete_media">Tényleg törölni szeretné ezt a(z) %d médiaüzenetet?</string>
 	<string name="check_updates">Frissítések keresése</string>
-	<string name="masterkey_lock_explain">A Threema a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót, 
+	<string name="masterkey_lock_explain">A Threema a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót,
 		az lehet, hogy egy taskkiller vagy akkumulátorkímélő alkalmazás miatt van, amely eltávolítja a jelszót a memóriából.
 	</string>
 	<string name="identity_already_exists">Ez az ID már szerepel a névjegyzékében</string>
@@ -464,7 +464,7 @@
 	<string name="not_enough_disk_space_title">Túl kevés tárolóhely</string>
 	<string name="not_enough_disk_space_text">Legalább %1$s szükséges az üzenet fogadásához</string>
 	<string name="sending_images">Képek küldése</string>
-	<string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra 
+	<string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra
 		van szükség. pl. http://www.7-zip.org vagy https://itunes.apple.com/de/app/the-unarchiver/id425424353
 	</string>
 	<string name="enter_zip_password_body">A csevegés titkosított zip-fájlként kerül elküldésre. Kérjük, válasszon egy jelszót:</string>
@@ -495,7 +495,7 @@
 	<string name="ballot_subject_hint">Szavazás címének megadása</string>
 	<string name="ballot_no_ballots_yet">Még nincsenek szavazások.</string>
 	<string name="print">Nyomtatás</string>
-	<string name="ballot_wizard0_explain">Gyorsan és egyszerűen hozhat létre szavazást közvetlenül a Threema programban. 
+	<string name="ballot_wizard0_explain">Gyorsan és egyszerűen hozhat létre szavazást közvetlenül a Threema programban.
 		Szervezzen időpontot, vagy végezzen szavazást barátai körében.
 	</string>
 	<string name="ballot_add_choices">Válaszlehetőségek megadása</string>
@@ -515,7 +515,7 @@
 	<string name="wearable_reply">Válasz</string>
 	<string name="wearable_reply_label">Válasz %s-nak</string>
 	<string name="message_acknowledged">Üzenet megerősítve</string>
-	<string name="push_disable_text">Ha folytatja, a push üzenetek letiltásra kerülnek, és 
+	<string name="push_disable_text">Ha folytatja, a push üzenetek letiltásra kerülnek, és
 		a Threema 15 percenként ellenőrzi az új üzeneteket.
 	</string>
 	<string name="ballot_intermediate_results_show">Közbenső eredmények megjelenítése</string>
@@ -529,7 +529,7 @@
 	<string name="kick_user_from_group">%1$s eltávolítása a csoportból</string>
 	<string name="show_as_qrcode">QR-kódként megjeleníteni</string>
 	<string name="qr_code">QR-kód</string>
-	<string name="really_leave_id_export">Győződjön meg róla, hogy az ID exportálási karakterláncot vagy 
+	<string name="really_leave_id_export">Győződjön meg róla, hogy az ID exportálási karakterláncot vagy
 		a QR-kódot elmentette egy biztonságos helyre vagy kinyomtatta.</string>
 	<string name="prefs_sum_remove_wallpapers">Az összes egyedi háttérkép eltávolítása</string>
 	<string name="prefs_title_remove_wallpapers">Minden háttérkép eltávolítása</string>
@@ -539,7 +539,7 @@
 	<string name="revocation_key_title">ID visszavonása</string>
 	<string name="revocation_key_not_set">Nincs visszavonási jelszó beállítva</string>
 	<string name="revocation_key_set_at">Jelszó megadva %1$s</string>
-	<string name="revocation_explain">Az itt megadott jelszóval visszavonhatja ID-jét a 
+	<string name="revocation_explain">Az itt megadott jelszóval visszavonhatja ID-jét a
 		https://myid.threema.ch/revoke címen, ha elveszítette vagy ellopták.
 	</string>
 	<string name="no_unread_messages">Nincsenek olvasatlan üzenetek vagy a PIN-zár aktív</string>
@@ -576,7 +576,7 @@
 	<string name="mime_word">Szöveges dokumentum</string>
 	<string name="no_filename"><![CDATA[<Nincs fájlnév>]]></string>
 	<string name="send_as_files">Küldés fájlként</string>
-	<string name="send_as_files_warning">A tömörítetlen fájlok és képek továbbítása megnövekedett adatfogyasztáshoz vezet. 
+	<string name="send_as_files_warning">A tömörítetlen fájlok és képek továbbítása megnövekedett adatfogyasztáshoz vezet.
 		Ez további költségeket eredményezhet a mobiltelefon-szolgáltatónál. Javasoljuk a WLAN használatát.
 	</string>
 	<string name="prefs_theme">Dizájn stílus</string>
@@ -596,8 +596,8 @@
 	<string name="one_week">1 hét</string>
 	<string name="everything">mind</string>
 	<string name="delete_media_files_time">Törölje a következőnél régebbi médiákat és fájlokat:</string>
-	<string name="storage_explain">Ha kifogyóban van a tárhelye, törölheti a titkosított formában tárolt régi 
-		médiafájlokat, hogy helyet szabadítson fel. A miniatűrök megmaradnak. Vegye figyelembe, hogy ez nem 
+	<string name="storage_explain">Ha kifogyóban van a tárhelye, törölheti a titkosított formában tárolt régi
+		médiafájlokat, hogy helyet szabadítson fel. A miniatűrök megmaradnak. Vegye figyelembe, hogy ez nem
 		automatikus folyamat. Csak akkor törlődik, ha megérinti az alábbi gombok egyikét.
 	</string>
 	<string name="delete_data">Adatok törlése most</string>
@@ -616,7 +616,7 @@
 	<string name="prefs_android_emojis">Rendszer emojik</string>
 	<string name="prefs_emoji_style">Emoji stílus</string>
 	<string name="prefs_default_emojis">Threema-emojik (alapértelmezett)</string>
-	<string name="android_emojis_warning">Megjegyzés: Előfordulhat, hogy a rendszer karakterkészlete nem képes 
+	<string name="android_emojis_warning">Megjegyzés: Előfordulhat, hogy a rendszer karakterkészlete nem képes
 		megjeleníteni a Threema által támogatott összes emojit.
 	</string>
 	<string name="crop">Kivágás</string>
@@ -684,27 +684,27 @@
 	<string name="new_wizard_use_id_as_nickname">Szeretné becenévként használni a Threema ID-t?</string>
 	<string name="new_wizard_phone_email_invalid">A megadott mobilszám vagy e-mail cím érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
 	<string name="new_wizard_phone_invalid">Az Ön által megadott mobilszám érvénytelen\nKérjük, a folytatás előtt javítsa ki vagy törölje a kiemelt adatokat.</string>
-	<string name="new_wizard_info_fingerprint">Az ujjad mozgatásával véletlenszerű adatokat (úgynevezett entrópiát) generálsz, amelyekből a 
-		kulcspár generálódik. Ez a kulcspár az új Threema ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid 
-		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló 
-		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.	
+	<string name="new_wizard_info_fingerprint">Az ujjad mozgatásával véletlenszerű adatokat (úgynevezett entrópiát) generálsz, amelyekből a
+		kulcspár generálódik. Ez a kulcspár az új Threema ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid
+		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló
+		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.
 	</string>
-	<string name="new_wizard_info_id">A Threema ID-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre. 
+	<string name="new_wizard_info_id">A Threema ID-val létrehozott egy kulcspárt. A nyilvános kulcsot elküldtük a szerverünkre.
 		A privát kulcs soha nem hagyja el a készülékét. Ez biztosítja, hogy senki más ne tudja elolvasni az üzeneteit.
 	</string>
-	<string name="new_wizard_info_sync_contacts">Ha engedélyezi ezt a beállítást, a címjegyzékből származó e-mail címek és telefonszámok 
-		egyirányú titkosításra (hash-elve) kerülnek, mielőtt elküldjük őket a kiszolgálónak a kapcsolattartás céljából. 
+	<string name="new_wizard_info_sync_contacts">Ha engedélyezi ezt a beállítást, a címjegyzékből származó e-mail címek és telefonszámok
+		egyirányú titkosításra (hash-elve) kerülnek, mielőtt elküldjük őket a kiszolgálónak a kapcsolattartás céljából.
 		Nem tárolunk semmilyen címjegyzékadatot.</string>
-	<string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a Threema segítségével barátai automatikusan 
-		megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hash-elve) tároljuk a szerverünkön. 
+	<string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a Threema segítségével barátai automatikusan
+		megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hash-elve) tároljuk a szerverünkön.
 		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.
 	</string>
-	<string name="new_wizard_info_link_phone_only">Ha megadja a saját mobilszámát, a Threema segítségével barátai automatikusan 
-		megtalálják önt, ha benne vagy a címjegyzékükben. A számot egyirányú titkosítással (hash-elve) tároljuk a szerverünkön. 
+	<string name="new_wizard_info_link_phone_only">Ha megadja a saját mobilszámát, a Threema segítségével barátai automatikusan
+		megtalálják önt, ha benne vagy a címjegyzékükben. A számot egyirányú titkosítással (hash-elve) tároljuk a szerverünkön.
 		Ha névtelenül szeretné használni a Threemát, akkor ezt a lépést egyszerűen kihagyhatja.
 	</string>
-	<string name="new_wizard_info_nickname">A becenév egyes eszközökön megjelenik az értesítésekben, és további azonosító jelként 
-		szolgál a névjegyzékben azon csevegőpartnerek számára, akik nem szerepelnek a névjegyzékben. Javasoljuk, hogy csak keresztnevet 
+	<string name="new_wizard_info_nickname">A becenév egyes eszközökön megjelenik az értesítésekben, és további azonosító jelként
+		szolgál a névjegyzékben azon csevegőpartnerek számára, akik nem szerepelnek a névjegyzékben. Javasoljuk, hogy csak keresztnevet
 		vagy álnevet használjon. Ha nem állít be becenevet, a Threema ID lesz használva.
 	</string>
 	<string name="new_wizard_anonymous_confirm">Nem adtál meg mobiltelefonszámot vagy e-mail címet összecsatoláshoz. Ezért nem fog automatikusan szerepelni a barátai névjegyzékében. Tényleg teljesen anonim módon szeretné használni a Threemát?</string>
@@ -791,7 +791,7 @@
 	<string name="prefs_title_reset_ringtones">Értesítési hangok visszaállítása</string>
 	<string name="prefs_sum_reset_ringtones">Gyári beállítások visszaállítása</string>
 	<string name="prefs_language_override">Nyelv</string>
-	<string name="threema_channel_intro">A Threema Channel a Threema-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a 
+	<string name="threema_channel_intro">A Threema Channel a Threema-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a
 		Threema Channelre és hozzáadni a névjegyzékbe? Ingyenes, és bármikor leiratkozhatsz róla.
 	</string>
 	<string name="quote">Idéz</string>
@@ -1171,10 +1171,8 @@
 	<string name="translators_thanks">Köszönet önkéntes fordítóinknak:\n%s</string>
 	<string name="ballot_window_hide">Nyílt szavazások elrejtése</string>
 	<string name="ballot_window_show">Nyílt szavazások megjelenítése</string>
-	<string name="tooltip_video_call">A lehallgatásbiztos hanghívások mellett a Threema mostantól végponttól végpontig titkosított videóhívásokat is kínál.</string>
 	<string name="tooltip_voip_other_party_video_on">Beszélgetőpartnere videóhívást indított. Kattintson ide a kamera bekapcsolásához is.</string>
 	<string name="tooltip_voip_other_party_video_disabled">Beszélgetőpartnere nem az aktuális alkalmazásverziót használja, vagy nem engedélyezi a videóhívásokat.</string>
-	<string name="video_calls_new">Újdonság: Videóhívások</string>
 	<string name="biometrics_not_enrolled">A rendszer nem tárol biometrikus adatokat.</string>
 	<string name="biometrics_not_avilable">Biometrikus hitelesítés nem áll rendelkezésre.</string>
 	<string name="biometrics_no_permission">Nincs felhatalmazás a biometrikus adatokhoz való hozzáférésre.</string>

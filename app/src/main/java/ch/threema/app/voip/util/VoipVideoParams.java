@@ -24,12 +24,12 @@ package ch.threema.app.voip.util;
 import com.google.protobuf.ByteString;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.RandomUtil;
 import ch.threema.app.voip.signaling.ToSignalingMessage;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import ch.threema.protobuf.callsignaling.CallSignaling.VideoQualityProfile.QualityProfile;
 
@@ -37,7 +37,7 @@ import ch.threema.protobuf.callsignaling.CallSignaling.VideoQualityProfile.Quali
  * Manage video quality profiles.
  */
 public class VoipVideoParams implements ToSignalingMessage {
-	private static final Logger logger = LoggerFactory.getLogger(VoipVideoParams.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipVideoParams");
 
 	private final @Nullable QualityProfile profile;
 	private final int maxBitrateKbps;

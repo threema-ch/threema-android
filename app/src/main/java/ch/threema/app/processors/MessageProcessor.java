@@ -46,6 +46,7 @@ import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageDiskSizeUtil;
 import ch.threema.app.voip.services.VoipStateService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -85,7 +86,7 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.ServerMessageModel;
 
 public class MessageProcessor implements MessageProcessorInterface {
-	private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageProcessor");
 	private static final Logger validationLogger = LoggerFactory.getLogger("Validation");
 
 	private final MessageService messageService;

@@ -325,7 +325,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 			if (contentProviderOperations.size() > 0) {
 				try {
-					context.getContentResolver().applyBatch(
+					ConfigUtils.applyToContentResolverInBatches(
 						ContactsContract.AUTHORITY,
 						contentProviderOperations);
 				} catch (Exception e) {

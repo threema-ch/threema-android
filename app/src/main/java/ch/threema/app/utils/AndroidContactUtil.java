@@ -559,9 +559,7 @@ public class AndroidContactUtil {
 		int operationCount = contentProviderOperations.size();
 		if (operationCount > 0) {
 			try {
-				ThreemaApplication.getAppContext().getContentResolver().applyBatch(
-					ContactsContract.AUTHORITY,
-					contentProviderOperations);
+				ConfigUtils.applyToContentResolverInBatches(ContactsContract.AUTHORITY, contentProviderOperations);
 			} catch (Exception e) {
 				logger.error("Error during raw contact deletion! ", e);
 			}

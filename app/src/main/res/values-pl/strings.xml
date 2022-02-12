@@ -150,7 +150,7 @@
     <string name="backup_sum">Eksportuj swój identyfikator Threema</string>
     <string name="backup_and_delete">Zrób backup i skasuj</string>
     <string name="delete_id_title">Skasuj identyfikator</string>
-    <string name="delete_id_message">Jeśli nie utworzyłeś kopii zapasowej lub nie wyeksportowałeś i nie zapisałeś kopii tego identyfikatora, nie będziesz mógł więcej wysyłać ani otrzymywać wiadomości za jego pomocą.\n\nJeśli nie zamierzasz więcej korzystać z tego identyfikatora, usuń wszelkie powiązane adresy e-mail i numery telefonu, zanim go usuniesz.</string>
+    <string name="delete_id_message">Jeśli nie utworzyłeś kopii zapasowej lub nie wyeksportowałeś i nie zapisałeś kopii tego identyfikatora, nie będziesz mógł więcej wysyłać ani otrzymywać wiadomości za jego pomocą.\n\nJeśli nie chcesz już korzystać z tego identyfikatora, zaleca się ustawienie hasła unieważnienia i unieważnienie identyfikatora na myid.threema.ch/revoke przed jego usunięciem.</string>
     <string name="delete_id_message2">Ostatnie ostrzeżenie: czy na pewno chcesz usunąć swój identyfikator?</string>
     <string name="delete_id_sum">Trwale usuń swój identyfikator i wszystkie dane na tym urządzeniu</string>
     <string name="backup_password_summary">Twój eksport identyfikatora zostanie zabezpieczony hasłem. Użyj kombinacji liter, cyfr i symboli. Nie zapomnij swojego hasła!</string>
@@ -1113,10 +1113,8 @@ anonimowo?</string>
     <string name="translators_thanks">Wielkie dzięki dla naszych ochotniczych tłumaczy: %s</string>
     <string name="ballot_window_hide">Ukryj otwarte ankiety</string>
     <string name="ballot_window_show">Pokaż otwarte ankiety</string>
-    <string name="tooltip_video_call">Oprócz połączeń głosowych zabezpieczonych przed podsłuchem Threema oferuje teraz pełne szyfrowane połączeń wideo.</string>
     <string name="tooltip_voip_other_party_video_on">Druga strona zainicjowała połączenie wideo. Dotknij tutaj, aby włączyć swoją kamerę.</string>
     <string name="tooltip_voip_other_party_video_disabled">Druga strona nie używa bieżącej wersji aplikacji lub nie zezwala na połączenia wideo</string>
-    <string name="video_calls_new">Nowość: połączenia wideo</string>
     <string name="biometrics_not_enrolled">W systemie nie zarejestrowano danych biometrycznych.</string>
     <string name="biometrics_not_avilable">Dane biometryczne nie są dostępne w tym systemie.</string>
     <string name="biometrics_no_permission">Brak dostępu do danych lub sprzętu biometrycznego.</string>
@@ -1303,7 +1301,7 @@ anonimowo?</string>
     <string name="reset_default_group_link">Zresetuj domyślne łącze grupy</string>
     <string name="resend">Ponów</string>
     <string name="group_request_already_sent_title">Prośba już wysłana</string>
-    <string name="qr_scanner_id_hint">Zeskanuj kod QR kontaktu innej osoby. Można go wyświetlić klikając na awatara w lewym górnym rogu ekranu głównego Threema.</string>
+    <string name="qr_scanner_id_hint">Zeskanuj kod, aby zweryfikować jego tożsamość. Aby wyświetlić kod, poproś osobę kontaktową, aby kliknęła obraz profilu w lewym górrnym rogu ekranu głównego Threema.</string>
     <string name="enable_storage_access_for_media">Włącz dostęp do pamięci masowej, aby zobaczyć zdjęcia i filmy w urządzeniu</string>
     <string name="take_me_there">Zabierz mnie tam...</string>
     <string name="notification_channel_group_join_request">Kanał powiadamiania o otrzymanych prośbach o dołączenie</string>
@@ -1316,5 +1314,11 @@ anonimowo?</string>
     <string name="no_votes_yet">Na razie nie oddano głosów.</string>
     <string name="permission_contacts_sync_required">Zezwól na dostęp do swoich kontaktów, aby móc je zsynchronizować.</string>
     <string name="not_voted_user_list">Ci uczestnicy nie głosowali: %s</string>
-    <string name="invalid_onprem_id">Nie jest prawidłowym ID Threema OnPrem</string>
+    <string name="invalid_onprem_id">Albo ten identyfikator (już) nie istnieje, albo nie jest zgodny z Twoim identyfikatorem.</string>
+    <string name="enable_unknown_sources">Nie można zainstalować. Sprawdź, czy jest włączona dla  %s opcja „Zainstaluj nieznane aplikacje”.</string>
+    <string name="add_shortcut_success">Pomyślnie utworzono skrót</string>
+    <string name="add_shortcut_error">Błąd przy dodaniu skrótu do ekranu uruchamiania</string>
+    <string name="web_link">Łącze</string>
+    <string name="link_copied">Skopiowano: %s</string>
+    <string name="invalid_onprem_id_title">Nie można dodać ID</string>
 </resources>

@@ -150,7 +150,7 @@
     <string name="backup_sum">Exportar sua ID do Threema</string>
     <string name="backup_and_delete">Backup e exclusão</string>
     <string name="delete_id_title">Excluir ID</string>
-    <string name="delete_id_message">A menos que tenha criado um backup ou exportado e salvo uma cópia desta ID, você nunca conseguirá enviar ou receber mensagens com esta ID novamente.\n\nSe não pretende usar esta ID novamente, você deve remover quaisquer números de telefone/endereços de e-mail vinculados antes de excluí-la.</string>
+    <string name="delete_id_message">A menos que tenha criado um backup ou exportado e salvo uma cópia desta ID, você nunca conseguirá enviar ou receber mensagens com esta ID novamente.\n\nSe não deseja usar mais esta ID, recomendamos que você crie uma senha de revogação e revogue a ID em myid.threema.ch/revoke antes de excluí-la.</string>
     <string name="delete_id_message2">Último aviso: você realmente deseja apagar sua ID?</string>
     <string name="delete_id_sum">Excluir permanentemente seu ID e todos os dados deste aparelho</string>
     <string name="backup_password_summary">A exportação da sua ID será criptografada com uma senha. Use uma combinação de letras, números e símbolos. Não se esqueça do que digitar aqui!</string>
@@ -1101,10 +1101,8 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="translators_thanks">Muito obrigado aos nossos tradutores voluntários:\n%s</string>
     <string name="ballot_window_hide">Ocultar enquetes abertas</string>
     <string name="ballot_window_show">Mostrar enquetes abertas</string>
-    <string name="tooltip_video_call">Além das chamadas de voz à prova de toque, Threema oferece agora chamadas de vídeo criptografadas de ponta a ponta.</string>
     <string name="tooltip_voip_other_party_video_on">O outro participante iniciou uma chamada de vídeo. Toque aqui para ligar a sua câmera também.</string>
     <string name="tooltip_voip_other_party_video_disabled">O outro participante não usa uma versão atualizada do aplicativo ou não permite chamadas de vídeo.</string>
-    <string name="video_calls_new">Novo: Chamadas de vídeo</string>
     <string name="biometrics_not_enrolled">Nenhuma biometria registrada no sistema.</string>
     <string name="biometrics_not_avilable">Biometria não está disponível neste sistema.</string>
     <string name="biometrics_no_permission">Permissão em falta para acessar os dados de biometria ou hardware.</string>
@@ -1291,7 +1289,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="reset_default_group_link">Restaurar link de grupo padrão</string>
     <string name="resend">Reenviar</string>
     <string name="group_request_already_sent_title">Pedido já enviado</string>
-    <string name="qr_scanner_id_hint">Leie o código QR de contato de alguém. Ele pode ser mostrado ao clicar no avatar no canto superior esquerdo na tela inicial do Threema.</string>
+    <string name="qr_scanner_id_hint">Leia o código QR de um contato para verificar sua identidade. Para exibir o código, peça para o seu contato tocar na foto de perfil no canto superior esquerdo na tela inicial do Threema.</string>
     <string name="enable_storage_access_for_media">Habilite o acesso ao armazenamento para ver fotos e vídeos no seu dispositivo</string>
     <string name="take_me_there">Leve-me lá...</string>
     <string name="notification_channel_group_join_request">Canal de notificação para pedidos recebidos para entrar em grupos</string>
@@ -1304,5 +1302,11 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="no_votes_yet">Nenhum voto enviado até agora.</string>
     <string name="permission_contacts_sync_required">Permita o acesso aos seus contatos para possibilitar a sincronização.</string>
     <string name="not_voted_user_list">Estes participantes não votaram: %s</string>
-    <string name="invalid_onprem_id">Não é uma Threema OnPrem-ID válida</string>
+    <string name="invalid_onprem_id">Esta ID não existe (mais) ou não é compatível com a sua ID.</string>
+    <string name="enable_unknown_sources">Não foi possível instalar. Confirme se a opção \"instalar apps desconhecidos\" está disponível para o %s.</string>
+    <string name="add_shortcut_success">Atalho criado com sucesso</string>
+    <string name="add_shortcut_error">Erro ao adicionar o atalho à tela do launcher</string>
+    <string name="web_link">Link</string>
+    <string name="link_copied">%s copiado</string>
+    <string name="invalid_onprem_id_title">ID não adicionada</string>
 </resources>

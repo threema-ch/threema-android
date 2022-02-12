@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -58,6 +59,7 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
@@ -76,6 +78,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 	private FileService fileService;
 	private MessageService messageService;
 	private ConversationService conversationService;
+	private UserService userService;
 	private TextView totalView, usageView, freeView, messageView, inuseView;
 	private MaterialAutoCompleteTextView timeSpinner, messageTimeSpinner;
 	private Button deleteButton, messageDeleteButton;
@@ -100,8 +103,15 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			this.fileService = serviceManager.getFileService();
 			this.messageService = serviceManager.getMessageService();
 			this.conversationService = serviceManager.getConversationService();
+			this.userService = serviceManager.getUserService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
+			finish();
+			return;
+		}
+
+		if (!this.userService.hasIdentity()) {
+			Toast.makeText(this, "Nothing to delete!", Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}

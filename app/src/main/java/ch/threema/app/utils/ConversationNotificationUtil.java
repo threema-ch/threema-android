@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.HashMap;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
 import ch.threema.app.R;
@@ -86,7 +87,7 @@ public class ConversationNotificationUtil {
 		}
 	}
 
-	private static Person getSenderPerson(AbstractMessageModel messageModel) {
+	private static @Nullable Person getSenderPerson(AbstractMessageModel messageModel) {
 		//load lazy
 		try {
 			final ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
@@ -99,7 +100,11 @@ public class ConversationNotificationUtil {
 		}
 	}
 
-	public static Person getPerson(ContactService contactService, ContactModel contactModel, String name) {
+	public static @Nullable Person getPerson(@Nullable ContactService contactService, ContactModel contactModel, String name) {
+		if (contactService == null) {
+			return null;
+		}
+
 		Person.Builder builder = new Person.Builder()
 			.setKey(contactService.getUniqueIdString(contactModel))
 			.setName(name);

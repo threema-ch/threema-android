@@ -39,9 +39,10 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 public class LifetimeServiceImpl implements LifetimeService {
-	private static final Logger logger = LoggerFactory.getLogger(LifetimeServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LifetimeServiceImpl");
 
 	public static final String REQUEST_CODE_KEY = "requestCode";
 	public static final int REQUEST_CODE_RELEASE = 1;

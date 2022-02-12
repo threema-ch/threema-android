@@ -218,8 +218,7 @@ public class MessageSectionFragment extends MainFragment
 	private int cornerRadius;
 	private TagModel unreadTagModel;
 
-	private int archiveCount = 0;
-	private Snackbar archiveSnackbar;
+	private ArchiveSnackbar archiveSnackbar;
 
 	private ConversationModel selectedConversation;
 	private ExtendedFloatingActionButton floatingButtonView;
@@ -875,28 +874,10 @@ public class MessageSectionFragment extends MainFragment
 							}
 						});
 					} else if (direction == ItemTouchHelper.LEFT) {
-						archiveCount++;
 						ConversationModel archiveableConversation = holder.getConversationModel();
 						conversationService.archive(archiveableConversation);
 
-						String snackText = String.format(getString(R.string.message_archived), archiveCount);
-
-						if (archiveSnackbar != null && archiveSnackbar.isShown()) {
-							archiveSnackbar.dismiss();
-						}
-
-						if (getView() != null) {
-							archiveSnackbar = Snackbar.make(getView(), snackText, 7 * (int) DateUtils.SECOND_IN_MILLIS);
-							archiveSnackbar.setAction(R.string.undo, v -> conversationService.unarchive(Collections.singletonList(archiveableConversation)));
-							archiveSnackbar.addCallback(new Snackbar.Callback() {
-								@Override
-								public void onDismissed(Snackbar snackbar, int event) {
-									super.onDismissed(snackbar, event);
-									archiveCount = 0;
-								}
-							});
-							archiveSnackbar.show();
-						}
+						archiveSnackbar = new ArchiveSnackbar(archiveSnackbar, archiveableConversation);
 					}
  				}
 
@@ -1653,5 +1634,55 @@ public class MessageSectionFragment extends MainFragment
 			this.recyclerView.stopScroll();
 			this.recyclerView.scrollToPosition(0);
 		}
+	}
+
+	/**
+	 * Keeps track of the last archive chats. This class is used for the undo action.
+	 */
+	private class ArchiveSnackbar {
+		private final Snackbar snackbar;
+		private final List<ConversationModel> conversationModels;
+
+		/**
+		 * Creates an updated archive snackbar, dismisses the old snackbar (if available), and shows
+		 * the updated snackbar.
+		 * @param archiveSnackbar the currently shown archive snackbar (if available)
+		 * @param archivedConversation the conversation that just has been archived
+		 */
+		ArchiveSnackbar(@Nullable ArchiveSnackbar archiveSnackbar, ConversationModel archivedConversation) {
+			this.conversationModels = new ArrayList<>();
+			this.conversationModels.add(archivedConversation);
+
+			if (archiveSnackbar != null) {
+				this.conversationModels.addAll(archiveSnackbar.conversationModels);
+				archiveSnackbar.dismiss();
+			}
+
+			if (getView() != null) {
+				String snackText = String.format(getString(R.string.message_archived), this.conversationModels.size());
+				this.snackbar = Snackbar.make(getView(), snackText, 7 * (int) DateUtils.SECOND_IN_MILLIS);
+
+				this.snackbar.setAction(R.string.undo, v -> conversationService.unarchive(conversationModels));
+				this.snackbar.addCallback(new Snackbar.Callback() {
+					@Override
+					public void onDismissed(Snackbar snackbar, int event) {
+						super.onDismissed(snackbar, event);
+						if (MessageSectionFragment.this.archiveSnackbar == ArchiveSnackbar.this) {
+							MessageSectionFragment.this.archiveSnackbar = null;
+						}
+					}
+				});
+				this.snackbar.show();
+			} else {
+				this.snackbar = null;
+			}
+		}
+
+		void dismiss() {
+			if (this.snackbar != null) {
+				this.snackbar.dismiss();
+			}
+		}
+
 	}
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="about_copyright" translatable="false">Copyright © 2013–2021 Threema GmbH</string>
+	<string name="about_copyright" translatable="false">Copyright © 2013–2022 Threema GmbH</string>
 	<string name="enter_serial_hint" translatable="false">XXXXX-XXXXX</string>
 	<string name="threema_channel" translatable="false">Threema Channel</string>
 	<string name="default_notification_sound" translatable="false">content://settings/system/notification_sound</string>
-	<string name="webclient_url" translatable="false">https://threema.ch/threema-web</string>
+	<string name="webclient_info_url" translatable="false">https://threema.ch/threema-web</string>
 	<string name="privacy_policy_url" translatable="false">https://threema.ch/privacy_policy/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
 	<string name="threema_safe" translatable="false">Threema Safe</string>
 	<string name="safe_enter_server_address_explain" translatable="false">server.example.com</string>
-	<string name="lp_map_copyright" translatable="false">© Threema © MapTiler © Mapbox © OpenStreetMap contributors</string>
+	<string name="lp_map_copyright" translatable="false">© Threema © MapTiler © OpenStreetMap contributors</string>
 	<string name="lp_poi_copyright" translatable="false">Data © Threema © OpenStreetMap contributors</string>
 	<string name="capture_name" translatable="false">Threema QR Code Scanner</string>
 	<string name="prefs_work_time_start_sum_time" translatable="false">%s</string>

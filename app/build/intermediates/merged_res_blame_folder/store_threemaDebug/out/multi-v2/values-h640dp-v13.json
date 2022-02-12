@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeStore_threemaDebugResources/merged.dir/values-h640dp-v13/values-h640dp-v13.xml",
+            "map": [
+                {
+                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-h640dp/dimens.xml",
+                    "from": {
+                        "startLines": "10,7,8,11,9,18,17,16,20,22,13,2,3,12,5,15,6,14,4",
+                        "startColumns": "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",
+                        "startOffsets": "474,318,367,540,419,929,877,823,1053,1171,654,52,104,603,213,765,267,706,162",
+                        "endColumns": "65,48,51,62,54,55,51,53,57,62,51,51,57,50,53,57,50,58,50",
+                        "endOffsets": "538,365,417,601,472,983,927,875,1109,1232,704,102,160,652,265,821,316,763,211"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,124,176,231,297,355,414,469,526,587,653,708,763,824,878,935,996,1050,1112",
+                        "endColumns": "68,51,54,65,57,58,54,56,60,65,54,54,60,53,56,60,53,61,53",
+                        "endOffsets": "119,171,226,292,350,409,464,521,582,648,703,758,819,873,930,991,1045,1107,1161"
+                    }
+                }
+            ]
+        }
+    ]
+}

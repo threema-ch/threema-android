@@ -35,7 +35,6 @@ import com.neilalexander.jnacl.NaCl;
 import net.sqlcipher.Cursor;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -86,9 +85,11 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -111,7 +112,7 @@ import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
 
 public class ContactServiceImpl implements ContactService {
-	private static final Logger logger = LoggerFactory.getLogger(ContactServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactServiceImpl");
 
 	private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.MINUTE_IN_MILLIS;
 	private static final String CONTACT_UID_PREFIX = "c-";
@@ -754,6 +755,9 @@ public class ContactServiceImpl implements ContactService {
 			this.profilePicRecipientsService.remove(model.getIdentity());
 			this.wallpaperService.removeWallpaper(uniqueIdString);
 			this.fileService.removeAndroidContactAvatar(model);
+			ShortcutUtil.deleteShareTargetShortcut(uniqueIdString);
+			ShortcutUtil.deletePinnedShortcut(uniqueIdString);
+
 		} else {
 			// hide contact
 			setIsHidden(model.getIdentity(),true);

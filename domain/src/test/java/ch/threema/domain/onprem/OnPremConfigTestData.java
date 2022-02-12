@@ -41,6 +41,7 @@ public class OnPremConfigTestData {
 		"        \"downloadUrl\": \"https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}\",\n" +
 		"        \"doneUrl\": \"https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done\"\n" +
 		"    },\n" +
+		"    \"web\": {\"url\": \"https://web.threemaonprem.initrode.com/\"},\n" +
 		"    \"chat\": {\n" +
 		"        \"hostname\": \"chat.threemaonprem.initrode.com\",\n" +
 		"        \"publicKey\": \"r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=\",\n" +
@@ -65,7 +66,7 @@ public class OnPremConfigTestData {
 		"    \"version\": \"1.0\",\n" +
 		"    \"directory\": {\"url\": \"https://dir.threemaonprem.initrode.com/directory\"}\n" +
 		"}\n" +
-		"oq6Z5le4wVmThTQTx2IMPJ+CsvSATFsfGQEbYJD0nfZTPDUKpwWk8VfLShX7cT2HLwWyWp9CY8d/pDn/9Vs3Ag==";
+		"M7wDC1VmFZZ72vcKlKdoywN7ok7ZAfsUP1QQ6tIUxRUbj83kxS+AFpglpsYOgHNsLUi8wtXvIbADEnYEwJD4DQ==";
 
 	// An OPPF that is expired but has a good signature
 	protected static final String TEST_EXPIRED_OPPF = "{\n" +
@@ -79,6 +80,7 @@ public class OnPremConfigTestData {
 		"        \"downloadUrl\": \"https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}\",\n" +
 		"        \"doneUrl\": \"https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done\"\n" +
 		"    },\n" +
+		"    \"web\": {\"url\": \"https://web.threemaonprem.initrode.com/\"},\n" +
 		"    \"chat\": {\n" +
 		"        \"hostname\": \"chat.threemaonprem.initrode.com\",\n" +
 		"        \"publicKey\": \"r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=\",\n" +
@@ -103,5 +105,5 @@ public class OnPremConfigTestData {
 		"    \"version\": \"1.0\",\n" +
 		"    \"directory\": {\"url\": \"https://dir.threemaonprem.initrode.com/directory\"}\n" +
 		"}\n" +
-		"oo0gLBRSi7148KbPqF9KkVL2KLzNIOzvEuoGQ2otlT0gk6d/b/gxYAWyoKHj78YtkwY/2OS/pT1pH/GVqZ02DQ==";
+		"QgT5dACFuMyezF3feHIIwxWwnT88yUAmi9eJ+3Ao/GoKMDmQkBMrfUX6zAvLtE8WsS8SRE0c/MDsK2+kCwA0BA==";
 }

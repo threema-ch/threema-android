@@ -20,7 +20,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.63"
+def app_version = "1.2"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -99,10 +99,10 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 712
+        versionCode 715
         versionName "${app_version}${beta_suffix}"
-        resValue "string", "app_name", "LeOS-Massenger"
-        // package name used for sync adapter
+        resValue "string", "app_name", "LeOS-Messenger"
+        // package name used for sync adapter - needs to match mime types below
         resValue "string", "package_name", applicationId
         resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.profile"
         resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.call"
@@ -130,6 +130,7 @@ android {
         buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "\"https://ds-blobp-upload.threema.ch/upload\""
         buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.threema.ch/\""
         buildConfigField "String", "SAFE_SERVER_URL", "\"https://safe-%h.threema.ch/\""
+        buildConfigField "String", "WEB_SERVER_URL", "\"https://web.threema.ch/\""
         buildConfigField "String", "ONPREM_ID_PREFIX", "\"O\""
 
         buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "null"
@@ -188,8 +189,8 @@ android {
             versionName "${app_version}k${beta_suffix}"
             applicationId "ch.threema.app.work"
             testApplicationId 'ch.threema.app.work.test'
-            resValue "string", "app_name", "Threema Work"
-
+            resValue "string", "app_name", "LeOS-Messenger Work"
+            resValue "string", "package_name", applicationId
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
@@ -210,8 +211,10 @@ android {
         sandbox {
             applicationId "ch.threema.app.sandbox"
             testApplicationId 'ch.threema.app.sandbox.test'
-            resValue "string", "app_name", "Threema Sandbox"
-
+            resValue "string", "app_name", "LeOS-Messenger Sandbox"
+            resValue "string", "package_name", applicationId
+            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.profile"
+            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.call"
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaSandbox\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
@@ -224,10 +227,10 @@ android {
             versionName "${app_version}k${beta_suffix}"
             applicationId "ch.threema.app.sandbox.work"
             testApplicationId 'ch.threema.app.sandbox.work.test'
-            resValue "string", "app_name", "Threema Sandbox Work"
-
-            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
-            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
+            resValue "string", "app_name", "LeOS-Messemger Sandbox Work"
+            resValue "string", "package_name", applicationId
+            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.work.profile"
+            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.work.call"
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
             buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
@@ -254,8 +257,8 @@ android {
             versionName "${app_version}o${beta_suffix}"
             applicationId "ch.threema.app.onprem"
             testApplicationId 'ch.threema.app.onprem.test'
-            resValue "string", "app_name", "Threema OnPrem"
-
+            resValue "string", "app_name", "LeOS-Messenger OnPrem"
+            resValue "string", "package_name", applicationId
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call"
             buildConfigField "int", "MAX_GROUP_SIZE", "256"
@@ -291,10 +294,10 @@ android {
             versionName "${app_version}r${beta_suffix}"
             applicationId "ch.threema.app.red"
             testApplicationId 'ch.threema.app.red.test'
-            resValue "string", "app_name", "Threema Red"
-
-            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.profile"
-            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.redwork.call"
+            resValue "string", "app_name", "LeOS-Messenger Red"
+            resValue "string", "package_name", applicationId
+            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.red.profile"
+            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.red.call"
 
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
             buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
@@ -326,8 +329,8 @@ android {
             versionName "${app_version}k${beta_suffix}"
             applicationId "ch.threema.app.work.hms"
             testApplicationId 'ch.threema.app.work.test.hms'
-            resValue "string", "app_name", "Threema Work"
-
+            resValue "string", "app_name", "LeOS-Messenger Work"
+            resValue "string", "package_name", "ch.threema.app.work"
             resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.profile"
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.work.call"
             buildConfigField "String", "CHAT_SERVER_PREFIX", "\"w-\""
@@ -617,13 +620,13 @@ dependencies {
 
     implementation project(':domain')
 
-    implementation 'net.zetetic:android-database-sqlcipher:4.4.3'
+    implementation 'net.zetetic:android-database-sqlcipher:4.5.0'
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
-    implementation 'net.lingala.zip4j:zip4j:2.9.0'
+    implementation 'net.lingala.zip4j:zip4j:2.9.1'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.2'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.1'
+    implementation 'org.maplibre.gl:android-sdk:9.5.2'
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
@@ -668,7 +671,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.15.1'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.15.1'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on kitkat
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.37'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.41' // make sure to update this in domain's build.gradle as well
 
     // webclient dependencies
     implementation 'org.msgpack:msgpack-core:0.8.22!!'
@@ -746,9 +749,6 @@ dependencies {
     def googleDependencies = [
         // Play services
         'com.google.android.gms:play-services-base:16.1.0': [],
-
-        // Support for wearables
-        'com.google.android.gms:play-services-wearable:17.0.0': [],
 
         // Firebase push
         //

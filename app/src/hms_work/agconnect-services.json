@@ -1,19 +1,19 @@
 {
 	"agcgw":{
-		"backurl":"connect-dre.dbankcloud.cn",
-		"url":"connect-dre.hispace.hicloud.com",
-		"websocketbackurl":"connect-ws-dre.hispace.dbankcloud.cn",
-		"websocketurl":"connect-ws-dre.hispace.dbankcloud.com"
+		"backurl":"connect-dre.hispace.hicloud.com",
+		"url":"connect-dre.dbankcloud.cn",
+		"websocketbackurl":"connect-ws-dre.hispace.dbankcloud.com",
+		"websocketurl":"connect-ws-dre.hispace.dbankcloud.cn"
 	},
 	"agcgw_all":{
-		"CN":"connect-drcn.hispace.hicloud.com",
-		"CN_back":"connect-drcn.dbankcloud.cn",
-		"DE":"connect-dre.hispace.hicloud.com",
-		"DE_back":"connect-dre.dbankcloud.cn",
-		"RU":"connect-drru.hispace.hicloud.com",
-		"RU_back":"connect-drru.dbankcloud.cn",
-		"SG":"connect-dra.hispace.hicloud.com",
-		"SG_back":"connect-dra.dbankcloud.cn"
+		"CN":"connect-drcn.dbankcloud.cn",
+		"CN_back":"connect-drcn.hispace.hicloud.com",
+		"DE":"connect-dre.dbankcloud.cn",
+		"DE_back":"connect-dre.hispace.hicloud.com",
+		"RU":"connect-drru.dbankcloud.cn",
+		"RU_back":"connect-drru.hispace.hicloud.com",
+		"SG":"connect-dra.dbankcloud.cn",
+		"SG_back":"connect-dra.hispace.hicloud.com"
 	},
 	"client":{
 		"cp_id":"5190041000024384032",
@@ -30,10 +30,10 @@
 		{
 			"package_name":"ch.threema.app.hms",
 			"app_id":"103713829"
-		},
+			},
 		{
-			"package_name":"ch.threema.app.work.hms",
-			"app_id":"103858571"
+				"package_name":"ch.threema.app.work.hms",
+				"app_id":"103858571"
 		}
 	]
 }

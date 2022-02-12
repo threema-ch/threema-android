@@ -24,7 +24,6 @@ package ch.threema.app.workers;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,12 +38,13 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 
 public class IdentityStatesWorker extends Worker {
-	private static final Logger logger = LoggerFactory.getLogger(IdentityStatesWorker.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IdentityStatesWorker");
 
 	private ContactService contactService;
 	private APIConnector apiConnector;

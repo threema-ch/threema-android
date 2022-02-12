@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="79808691-4fb1-4a2a-97ed-7143809546fd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LeOS-Messenger.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/assets/.~lock.license.html#" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/google_services_based/java/ch/threema/app/wearable/WearableHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/hms/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/hms/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/hms/agconnect-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/hms/agconnect-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/hms_services_based/java/ch/threema/app/push/PushRegistrationWorker.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/hms_services_based/java/ch/threema/app/push/PushRegistrationWorker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/hms_services_based/java/ch/threema/app/wearable/WearableHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/hms_work/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/hms_work/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/hms_work/agconnect-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/hms_work/agconnect-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/ic_launcher-playstore.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/ThreemaApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/ThreemaApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/BackupAdminActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/BackupAdminActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/ContactDetailActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/ContactDetailActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/DirectoryActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/DirectoryActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/DisableBatteryOptimizationsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/DisableBatteryOptimizationsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/GroupDetailActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/GroupDetailActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/MapActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/MapActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/RecipientListBaseActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/RecipientListBaseActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/SendMediaActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/SendMediaActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/StorageManagementActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/StorageManagementActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/TextChatBubbleActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/TextChatBubbleActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/ThreemaActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/ThreemaActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/ThreemaToolbarActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/ThreemaToolbarActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/wizard/WizardIntroActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/activities/wizard/WizardIntroActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/MediaGalleryAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/MediaGalleryAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/AudioChatAdapterDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/AudioChatAdapterDecorator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/FileChatAdapterDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/FileChatAdapterDecorator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/ImageChatAdapterDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/ImageChatAdapterDecorator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/TextChatAdapterDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/TextChatAdapterDecorator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/VideoChatAdapterDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/adapters/decorators/VideoChatAdapterDecorator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/asynctasks/DeleteIdentityAsyncTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/asynctasks/DeleteIdentityAsyncTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/backuprestore/csv/BackupRestoreDataServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/backuprestore/csv/BackupRestoreDataServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/backuprestore/csv/RestoreService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/backuprestore/csv/RestoreService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/fragments/ComposeMessageFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/fragments/ComposeMessageFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/fragments/MessageSectionFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/fragments/MessageSectionFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/fragments/wizard/WizardFragment4.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/fragments/wizard/WizardFragment4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/jobs/ShareTargetShortcutUpdateJobService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/jobs/ShareTargetShortcutUpdateJobService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/managers/ServiceManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/managers/ServiceManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/messagereceiver/ContactMessageReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/messagereceiver/ContactMessageReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/messagereceiver/GroupMessageReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/messagereceiver/GroupMessageReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/preference/SettingsAboutFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/preference/SettingsAboutFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/preference/SettingsPrivacyFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/preference/SettingsPrivacyFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/processors/MessageProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/processors/MessageProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/routines/SynchronizeContactsRoutine.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/routines/SynchronizeContactsRoutine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ActivityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ActivityService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/AppRestrictionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/AppRestrictionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/AvatarCacheServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/AvatarCacheServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ContactServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ContactServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ConversationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ConversationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/DistributionListServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/DistributionListServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/DownloadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/DownloadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/DownloadServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/DownloadServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/FileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/FileServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/GroupMessagingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/GroupMessagingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/GroupServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/GroupServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/LifetimeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/LifetimeServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/MessageServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/MessageServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ServerAddressProviderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ServerAddressProviderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ShortcutService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/ShortcutServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/messageplayer/AudioMessagePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/services/messageplayer/AudioMessagePlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/AndroidContactUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/AndroidContactUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/BitmapUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/BitmapUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/ConfigUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/ConfigUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/ConversationNotificationUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/ConversationNotificationUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/MessageUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/MessageUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/StringConversionUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/utils/StringConversionUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/AudioSelectorButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/AudioSelectorButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/CallAnswerIndicatorLayout.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/CallAnswerIndicatorLayout.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/CallState.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/CallState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/PeerConnectionClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/PeerConnectionClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/VoipAudioManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/VoipAudioManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/VoipBluetoothManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/VoipBluetoothManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/activities/CallActionIntentActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/activities/CallActionIntentActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/activities/CallActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/activities/CallActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/activities/WebRTCDebugActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/activities/WebRTCDebugActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/receivers/IncomingMobileCallReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/receivers/IncomingMobileCallReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/receivers/VoipMediaButtonReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/receivers/VoipMediaButtonReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/CallRejectService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/CallRejectService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/VideoContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/VideoContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/VoipCallService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/VoipCallService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/VoipStateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/services/VoipStateService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/util/VideoCapturerUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/util/VideoCapturerUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/util/VoipUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/util/VoipUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/util/VoipVideoParams.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/voip/util/VoipVideoParams.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/activities/SessionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/activities/SessionsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/activities/SessionsIntroActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/activities/SessionsIntroActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/services/WakeLockServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/services/WakeLockServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/services/instance/state/SessionConnectionContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webclient/services/instance/state/SessionConnectionContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webrtc/FlowControlledDataChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webrtc/FlowControlledDataChannel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webrtc/UnboundedFlowControlledDataChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/webrtc/UnboundedFlowControlledDataChannel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/workers/IdentityStatesWorker.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/app/workers/IdentityStatesWorker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/LoggerManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/LoggerManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/LoggingUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/backend/DebugLogFileBackend.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/backend/DebugLogFileBackend.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/backend/LogcatBackend.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/logging/backend/LogcatBackend.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/storage/models/data/media/AudioDataModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/storage/models/data/media/AudioDataModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/storage/models/data/media/FileDataModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/storage/models/data/media/FileDataModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/ch/threema/storage/models/data/media/VideoDataModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/ch/threema/storage/models/data/media/VideoDataModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ca/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ca/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ca/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ca/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-cs/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-cs/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-cs/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-cs/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-de/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-de/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-de/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-de/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-es/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-es/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-es/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-es/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-fr/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-fr/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-fr/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-fr/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-hu/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-hu/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-hu/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-hu/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-it/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-it/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ja/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ja/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ja/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ja/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-nl-rNL/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-nl-rNL/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-nl-rNL/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-nl-rNL/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-pl/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-pl/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-pl/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-pl/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-pt-rBR/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-pt-rBR/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-pt-rBR/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-pt-rBR/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-rm/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-rm/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-rm/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-rm/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ru/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ru/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-ru/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-ru/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-sk/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-sk/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-sk/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-sk/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-tr/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-tr/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-tr/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-tr/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rCN/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rCN/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rCN/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rCN/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rTW/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rTW/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rTW/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rTW/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/untranslatable_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/untranslatable_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/webclient_strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/webclient_strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/onprem/res.tar.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/onprem/res/values/untranslatable_strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/testNoneDebug/java/ch/threema/architecture/LayerDependenciesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/testNoneDebug/java/ch/threema/architecture/LayerDependenciesTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/domain/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/onprem/OnPremConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/onprem/OnPremConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/onprem/OnPremConfigParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/onprem/OnPremConfigParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/onprem/ServerAddressProviderOnPrem.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/onprem/ServerAddressProviderOnPrem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/protocol/ServerAddressProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/protocol/ServerAddressProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/protocol/api/APIConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/protocol/api/APIConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/protocol/csp/connection/ThreemaConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/java/ch/threema/domain/protocol/csp/connection/ThreemaConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/test/java/ch/threema/domain/onprem/OnPremConfigParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/test/java/ch/threema/domain/onprem/OnPremConfigParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/src/test/java/ch/threema/domain/onprem/OnPremConfigTestData.java" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/test/java/ch/threema/domain/onprem/OnPremConfigTestData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logo_main_white.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logo_old.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wallpaper_light.png" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[d099c4b1]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="LeOS-Messenger" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="250JSK3eiovLVw9SbpwKr0OR8MJ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="cidr.known.project.marker" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="LeOS-Messenger.app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="INSPECTION_WITHOUT_ACTIVITY_RESTART" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Hybrid>
+      <Java />
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="79808691-4fb1-4a2a-97ed-7143809546fd" name="Changes" comment="" />
+      <created>1644658068332</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1644658068332</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

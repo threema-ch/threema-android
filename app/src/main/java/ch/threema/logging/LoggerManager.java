@@ -40,7 +40,7 @@ import ch.threema.logging.backend.LogcatBackend;
  *
  * Do not use this manager directly, instead log through SLF4J! For example:
  *
- *     private static final Logger logger = LoggerFactory.getLogger("ThreemaApplication");
+ *     private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaApplication");
  *     ...
  *     logger.debug("This is a debug log");
  */
@@ -63,6 +63,9 @@ public class LoggerManager {
 			return Log.INFO;
 		}
 		if (name.startsWith("SaltyRTC.") || name.startsWith("org.saltyrtc")) {
+			return Log.INFO;
+		}
+		if (name.startsWith("libwebrtc") || name.startsWith("org.webrtc")) {
 			return Log.INFO;
 		}
 		return Log.WARN;

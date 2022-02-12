@@ -150,7 +150,7 @@
     <string name="backup_sum">Exporter votre ID Threema</string>
     <string name="backup_and_delete">Sauvegarder et supprimer</string>
     <string name="delete_id_title">Supprimer l\'ID</string>
-    <string name="delete_id_message">À moins de disposer d\'une sauvegarde et d\'une copie enregistrée de cet ID, vous ne pourrez plus envoyer ou recevoir de messages avec cet ID.\n\nSi vous ne souhaitez plus utiliser cet ID, vous devez supprimer tout numéro de téléphone/adresse e-mail lié avant de le supprimer.</string>
+    <string name="delete_id_message">À moins de disposer d\'une sauvegarde et d\'une copie enregistrée de cet ID, vous ne pourrez plus envoyer ou recevoir de messages avec cet ID.\n\nSi vous ne souhaitez plus utiliser cet ID, nous vous conseillons de définir un mot de passe de révocation et révoquer cet ID sur myid.threema.ch/revoke avant de le supprimer.</string>
     <string name="delete_id_message2">Dernier avertissement : confirmez-vous la suppression de votre ID ?</string>
     <string name="delete_id_sum">Supprime de manière permanente votre ID et toutes les données de cet appareil</string>
     <string name="backup_password_summary">L\'exportation de votre ID sera chiffrée par mot de passe. Utilisez une combinaison de lettres, chiffres et symboles. N\'oubliez pas votre saisie !</string>
@@ -1096,10 +1096,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="translators_thanks">Un grand merci à nos traducteurs bénévoles :\n%s</string>
     <string name="ballot_window_hide">Masquer les sondage ouverts</string>
     <string name="ballot_window_show">Afficher les sondages ouverts</string>
-    <string name="tooltip_video_call">En plus des appels vocaux protégés contre toute mise sur écoute, Threema offre désormais des appels vidéo chiffrés de bout en bout.</string>
     <string name="tooltip_voip_other_party_video_on">L\'autre partie a commencé un appel vidéo. Touchez ici pour activer aussi votre caméra.</string>
     <string name="tooltip_voip_other_party_video_disabled">L\'autre partie n\'a pas une version actuelle de l\'application ou n\'autorise pas les appels vidéo.</string>
-    <string name="video_calls_new">Nouveauté : Appels vidéo</string>
     <string name="biometrics_not_enrolled">Aucune donnée biométrique n\'est inscrite dans le système.</string>
     <string name="biometrics_not_avilable">Les données biométriques ne sont pas enregistrées dans ce système.</string>
     <string name="biometrics_no_permission">Permission manquante pour accéder aux données biométriques ou au matériel.</string>
@@ -1286,7 +1284,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="reset_default_group_link">Réinitialiser le lien de groupe par défaut</string>
     <string name="resend">Envoyer de nouveau</string>
     <string name="group_request_already_sent_title">Demande déjà envoyée</string>
-    <string name="qr_scanner_id_hint">Scannez le code QR d\'un autre contact. Vous pouvez l\'afficher en cliquant sur l\'avatar en haut à gauche de l\'écran d\'accueil de Threema.</string>
+    <string name="qr_scanner_id_hint">Scannez le code QR d\'un contact pour vérifier son identité. Pour afficher le code, demandez à votre contact de toucher l\'image de profil en haut à gauche de l\'écran d\'accueil de Threema.</string>
     <string name="enable_storage_access_for_media">Activez l\'accès au stockage pour voir les photos et vidéos de votre appareil</string>
     <string name="take_me_there">Emmenez-moi là-bas…</string>
     <string name="notification_channel_group_join_request">Canal de notifications pour les demandes d\'adhésion à un groupe reçues</string>
@@ -1299,5 +1297,11 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="no_votes_yet">Aucun vote n\'a été accordé pour l\'instant.</string>
     <string name="permission_contacts_sync_required">Veuillez accorder l\'accès à vos contacts pour les synchroniser.</string>
     <string name="not_voted_user_list">Ces participants n\'ont pas voté : %s</string>
-    <string name="invalid_onprem_id">N\'est pas un ID Threema OnPrem valide</string>
+    <string name="invalid_onprem_id">Cet ID n\'existe pas (ou plus) ou il n\'est pas compatible avec votre ID.</string>
+    <string name="enable_unknown_sources">Impossible d\'installer. Veuillez vous assurer que le paramètre « Installer les applications de sources inconnues » est activé pour %s.</string>
+    <string name="add_shortcut_success">Raccourci bien créé</string>
+    <string name="add_shortcut_error">Erreur lors de l\'ajout du raccourci à l\'écran du lanceur</string>
+    <string name="web_link">Lien</string>
+    <string name="link_copied">%s copié</string>
+    <string name="invalid_onprem_id_title">Impossible d\'ajouter l\'ID</string>
 </resources>

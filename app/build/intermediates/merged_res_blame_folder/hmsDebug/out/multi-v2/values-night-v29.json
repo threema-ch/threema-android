@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-night-v29/values-night-v29.xml",
+            "map": [
+                {
+                    "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/e91ac1163a5728776b64d1ac9a5a6e1d/jetified-ui-5.0.4.301/res/values-night-v29/values-night-v29.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,107,160",
+                        "endColumns": "51,52,51",
+                        "endOffsets": "102,155,207"
+                    }
+                },
+                {
+                    "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/7c239a6de68967c1232e8b81bc946cf5/jetified-update-2.0.7.302/res/values-night-v29/values-night-v29.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,108,162",
+                        "endColumns": "52,53,52",
+                        "endOffsets": "103,157,210"
+                    },
+                    "to": {
+                        "startLines": "5,6,7",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "212,265,319",
+                        "endColumns": "52,53,52",
+                        "endOffsets": "260,314,367"
+                    }
+                }
+            ]
+        }
+    ]
+}

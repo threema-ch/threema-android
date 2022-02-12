@@ -192,7 +192,7 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 									holder.imageView.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
 									holder.topTextView.setText(StringConversionUtil.secondsToString(
 										messageModel.getType() == MessageType.FILE ?
-											messageModel.getFileData().getDuration():
+											messageModel.getFileData().getDurationSeconds():
 											messageModel.getAudioData().getDuration(), false));
 									holder.textContainerView.setVisibility(View.VISIBLE);
 								} else if (messageModel.getType() == MessageType.FILE) {

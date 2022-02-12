@@ -27,9 +27,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import ch.threema.app.BuildConfig;
-import ch.threema.domain.onprem.OnPremConfigFetcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.ThreemaException;
+import ch.threema.domain.onprem.OnPremConfigFetcher;
 import ch.threema.domain.onprem.ServerAddressProviderOnPrem;
 import ch.threema.domain.protocol.ServerAddressProvider;
 
@@ -124,6 +124,11 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 			@Override
 			public String getSafeServerUrl(boolean ipv6) throws ThreemaException {
 				return BuildConfig.SAFE_SERVER_URL;
+			}
+
+			@Override
+			public String getWebServerUrl() throws ThreemaException {
+				return BuildConfig.WEB_SERVER_URL;
 			}
 		};
 	}

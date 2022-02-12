@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package csp_e2e;
+
+option java_package = "ch.threema.protobuf.csp.e2e";
+option java_multiple_files = true;
+
+import "common.proto";
+
+// ## End-to-End Encrypted Messages (Supplementary)
+//
+// This is a supplementary section to the corresponding structbuf section
+// with newer messages that use protobuf instead of structbuf. All defined
+// messages here follow the same logic.
+
+// Metadata sent within a CSP payload `message-with-meta` struct.
+message MessageMetadata {
+  // Random amount of padding ignored by the receiver. Recommended to be
+  // between 0 and 32 bytes.
+  bytes padding = 1;
+
+  // The nickname associated to the sender's Threema ID. Recommended to not
+  // exceed 32 graphemes.
+  string nickname = 2;
+
+  // Unique message ID. Must match the message ID of the outer struct
+  // (i.e. `message-with-metadata-box.message-id`).
+  fixed64 message_id = 3;
+
+  // Unix-ish timestamp in milliseconds for when the message has been created
+  uint64 created_at = 4;
+}
+
+// Request joining a group.
+//
+// This message is sent to the administrator of a group. The required
+// information is provided by a `GroupInvite` URL payload.
+//
+// When receiving this message:
+//
+// 1. Look up the corresponding group invitation by the token.
+// 2. If the group invitation could not be found, discard the message and abort
+//    these steps.
+// 3. If the sender is already part of the group, send an accept response and
+//    then respond as if the sender had sent a `group-sync-request` (i.e. send
+//    a `group-setup`, `group-name`, etc.). Finally, abort these steps.
+// 4. If the group name does not match the name in the originally sent group
+//    invitation, discard the message and abort these steps.
+// 5. If the group invitation has expired, send the respective response and
+//    abort these steps.
+// 6. If the group invitation requires the admin to accept the request, show
+//    this information in the user interface and pause these steps until the
+//    admin manually confirmed of rejected the request. Note that the date of
+//    the decision is allowed to extend beyond the expiration date of the
+//    group invitation. Continue with the following sub-steps once the admin
+//    made a decision on the request:
+//     1. If the admin manually rejected the request, send the respective
+//        response and abort these steps.
+// 7. If the group is full, send the respective response and abort these steps.
+// 8. Send an accept response.
+// 9. Add the sender of the group invitation request to the group and follow
+//    the group protocol from there.
+message GroupJoinRequest {
+  // The group invite token, 16 bytes
+  bytes token = 1;
+
+  // The group name from the group invite URL
+  string group_name = 2;
+
+  // A message for the group administrator, e.g. for identification purposes
+  //
+  // The message helps the administrator to decide whether or not to accept a
+  // join request.
+  //
+  // Should be requested by the user interface for invitations that require
+  // manual confirmation by the administrator. Should not be requested in case
+  // the invitation will be automatically accepted.
+  string message = 3;
+}
+
+// Response sent by the admin of a group towards a sender of a valid group join request.
+//
+// When receiving this message:
+//
+// 1. Look up the corresponding group join request by the token and the
+//    sender's Threema ID as the administrator's Threema ID.
+// 2. If the group join request could not be found, discard the message and
+//    abort these steps.
+// 3. Mark the group join request as accepted or (automatically) rejected by
+//    the given response type.
+// 4. If the group join request has been accepted, remember the group id in
+//    order to be able to map an incoming `group-setup` to the group.
+message GroupJoinResponse {
+  // The group invite token, 16 bytes
+  bytes token = 1;
+
+  // Response of the admin
+  message Response {
+    // Accept a group invite request
+    message Accept {
+      // Group ID (little-endian) as chosen by the group creator
+      // Note: Combined with the Threema ID of the administrator, this forms
+      //       the `GroupIdentity`.
+      fixed64 group_id = 1;
+    }
+
+    oneof response {
+      // Accept a group invite request
+      Accept accept = 1;
+      // Token of a group invitation expired
+      common.Unit expired = 2;
+      // Group invitation cannot be accepted due to the group being full
+      common.Unit group_full = 3;
+      // The administrator explicitly rejects the invitation request
+      common.Unit reject = 4;
+    }
+  }
+  Response response = 2;
+}

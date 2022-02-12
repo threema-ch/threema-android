@@ -7,7 +7,7 @@
 	<string name="webclient_active_since">Aktiv seit: %s</string>
 	<string name="webclient_created_at">Erstellt am: %1$s (%2$s)</string>
 	<string name="webclient_enable">Desktop-App/Web-Client aktivieren</string>
-	<string name="webclient_no_sessions_found">Laden Sie am Computer die Desktop-App herunter (https://threema.ch/download), oder öffnen Sie den Web-Client (https://web.threema.ch/). Tippen Sie anschliessend auf den untenstehenden Button, um den angezeigten QR-Code zu scannen.</string>
+	<string name="webclient_no_sessions_found">Laden Sie am Computer die Desktop-App herunter (https://threema.ch/download), oder öffnen Sie den Web-Client (%s). Tippen Sie anschliessend auf den untenstehenden Button, um den angezeigten QR-Code zu scannen.</string>
 	<string name="webclient_session_rename">Sitzung umbenennen</string>
 	<string name="webclient_session_label">Neuer Name</string>
 	<string name="webclient_session_start">Sitzung starten</string>

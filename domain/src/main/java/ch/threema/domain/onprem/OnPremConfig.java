@@ -31,6 +31,7 @@ public class OnPremConfig {
 	private final OnPremConfigWork workConfig;
 	private final OnPremConfigAvatar avatarConfig;
 	private final OnPremConfigSafe safeConfig;
+	private final OnPremConfigWeb webConfig;
 	private final OnPremConfigMediator mediatorConfig;
 
 	public OnPremConfig(int refresh,
@@ -41,6 +42,7 @@ public class OnPremConfig {
 	                    OnPremConfigWork workConfig,
 	                    OnPremConfigAvatar avatarConfig,
 	                    OnPremConfigSafe safeConfig,
+	                    OnPremConfigWeb webConfig,
 	                    OnPremConfigMediator mediatorConfig) {
 		this.refresh = refresh;
 		this.chatConfig = chatConfig;
@@ -50,6 +52,7 @@ public class OnPremConfig {
 		this.workConfig = workConfig;
 		this.avatarConfig = avatarConfig;
 		this.safeConfig = safeConfig;
+		this.webConfig = webConfig;
 		this.mediatorConfig = mediatorConfig;
 	}
 
@@ -83,6 +86,10 @@ public class OnPremConfig {
 
 	public OnPremConfigSafe getSafeConfig() {
 		return safeConfig;
+	}
+
+	public OnPremConfigWeb getWebConfig() {
+		return webConfig;
 	}
 
 	public OnPremConfigMediator getMediatorConfig() {

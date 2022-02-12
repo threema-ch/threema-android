@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.FixedJobIntentService;
@@ -36,6 +35,7 @@ import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -45,7 +45,7 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTIT
  * A small intent service that rejects an incoming call.
  */
 public class CallRejectService extends FixedJobIntentService {
-	private static final Logger logger = LoggerFactory.getLogger(CallRejectService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CallRejectService");
 	public static final String EXTRA_REJECT_REASON = "REJECT_REASON";
 
 	private VoipStateService voipStateService = null;

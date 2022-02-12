@@ -1,0 +1,38 @@
+{
+    "logs": [
+        {
+            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeStore_threemaDebugResources/merged.dir/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/b068d31dc442c6658af62baad53bd9ee/appcompat-1.3.1/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "121",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "289"
+                    }
+                },
+                {
+                    "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/c44189d4c9f4a75f95af7f08f87cca53/core-1.6.0/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}

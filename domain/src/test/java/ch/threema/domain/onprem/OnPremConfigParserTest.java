@@ -30,7 +30,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.text.ParseException;
 
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 
 public class OnPremConfigParserTest {
@@ -93,6 +92,12 @@ public class OnPremConfigParserTest {
 	public void testSafeConfig() {
 		OnPremConfigSafe safeConfig = config.getSafeConfig();
 		Assert.assertEquals("https://safe.threemaonprem.initrode.com/", safeConfig.getUrl());
+	}
+
+	@Test
+	public void testWebConfig() {
+		OnPremConfigWeb webConfig = config.getWebConfig();
+		Assert.assertEquals("https://web.threemaonprem.initrode.com/", webConfig.getUrl());
 	}
 
 	@Test

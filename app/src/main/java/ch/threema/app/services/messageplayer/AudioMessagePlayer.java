@@ -224,7 +224,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 			if (d instanceof AudioDataModel) {
 				duration = ((AudioDataModel) d).getDuration();
 			} else if (d instanceof FileDataModel) {
-				duration = (int) ((FileDataModel) d).getDuration();
+				duration = (int) ((FileDataModel) d).getDurationSeconds();
 			}
 		}
 		logger.debug("duration = {}", duration);

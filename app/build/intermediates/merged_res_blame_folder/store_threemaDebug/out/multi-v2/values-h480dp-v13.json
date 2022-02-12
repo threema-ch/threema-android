@@ -1,0 +1,43 @@
+{
+    "logs": [
+        {
+            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeStore_threemaDebugResources/merged.dir/values-h480dp-v13/values-h480dp-v13.xml",
+            "map": [
+                {
+                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-h480dp/dimens.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "1,1",
+                        "startOffsets": "52,110",
+                        "endColumns": "57,54",
+                        "endOffsets": "108,163"
+                    },
+                    "to": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,116",
+                        "endColumns": "60,57",
+                        "endOffsets": "111,169"
+                    }
+                },
+                {
+                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-h480dp/integers.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "1",
+                        "startOffsets": "52",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    },
+                    "to": {
+                        "startLines": "4",
+                        "startColumns": "4",
+                        "startOffsets": "174",
+                        "endColumns": "58",
+                        "endOffsets": "228"
+                    }
+                }
+            ]
+        }
+    ]
+}
