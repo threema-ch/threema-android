@@ -41,7 +41,6 @@ import android.os.Build;
 import android.util.Pair;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -83,6 +82,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.base.utils.Utils.byteArrayToHexString;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -95,7 +95,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
  * Attribute mutation is supported for JPEG image files.
  */
 public class ExifInterface {
-	private static final Logger logger = LoggerFactory.getLogger(ExifInterface.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ExifInterface");
 
 	private static final boolean DEBUG = false;
 

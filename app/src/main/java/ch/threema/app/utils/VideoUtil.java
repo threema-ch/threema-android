@@ -29,10 +29,11 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import ch.threema.base.utils.LoggingUtil;
 
 public class VideoUtil {
-	private static final Logger logger = LoggerFactory.getLogger(VideoUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoUtil");
 
 	/**
 	 * Get duration of a video represented by uri in Milliseconds

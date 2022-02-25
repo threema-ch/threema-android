@@ -29,9 +29,6 @@ import android.graphics.drawable.Drawable;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -41,8 +38,6 @@ import ch.threema.app.locationpicker.Poi;
 import ch.threema.app.services.PreferenceService;
 
 public class LocationUtil {
-	private static final Logger logger = LoggerFactory.getLogger(LocationUtil.class);
-
 	public static int getPlaceDrawableRes(@NonNull Context context, @NonNull Poi poi, boolean returnDefault) {
 		int id = 0;
 		String defPackage = context.getPackageName();

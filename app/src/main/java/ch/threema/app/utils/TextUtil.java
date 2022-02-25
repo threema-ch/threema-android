@@ -29,7 +29,6 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,9 +41,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiParser;
+import ch.threema.base.utils.LoggingUtil;
 
 public class TextUtil {
-	private static final Logger logger = LoggerFactory.getLogger(TextUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("TextUtil");
 
 	public static String trim(String string, int maxLength, String postFix) {
 		if ((maxLength > 0) && (string.length() > maxLength)) {

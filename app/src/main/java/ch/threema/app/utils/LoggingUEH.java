@@ -24,10 +24,11 @@ package ch.threema.app.utils;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import ch.threema.base.utils.LoggingUtil;
 
 public class LoggingUEH implements Thread.UncaughtExceptionHandler {
-	private static final Logger logger = LoggerFactory.getLogger(LoggingUEH.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LoggingUEH");
 
 	private final Thread.UncaughtExceptionHandler defaultUEH;
 	private Context context;

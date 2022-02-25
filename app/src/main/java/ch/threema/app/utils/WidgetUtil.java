@@ -26,13 +26,13 @@ import android.content.ComponentName;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.receivers.WidgetProvider;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WidgetUtil {
-	private static final Logger logger = LoggerFactory.getLogger(WidgetUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetUtil");
 
 	public static void updateWidgets(Context context) {
 		logger.debug("Update Widgets");

@@ -22,15 +22,16 @@
 package ch.threema.app.utils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import ch.threema.base.utils.LoggingUtil;
+
 public class ExponentialBackOffUtil {
-	private static final Logger logger = LoggerFactory.getLogger(ExponentialBackOffUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ExponentialBackOffUtil");
 	protected final static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 	private Random random;
 

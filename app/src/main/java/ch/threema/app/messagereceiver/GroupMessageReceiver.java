@@ -77,6 +77,7 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.access.GroupAccessModel;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -156,14 +157,16 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 	@Override
-	public boolean createBoxedLocationMessage(final double lat, final double lng, final float acc, final String poiName, GroupMessageModel messageModel) throws ThreemaException {
+	public boolean createBoxedLocationMessage(GroupMessageModel messageModel) throws ThreemaException {
 		return this.sendMessage(messageId -> {
+			final LocationDataModel locationDataModel = messageModel.getLocationData();
 			final GroupLocationMessage msg = new GroupLocationMessage();
 			msg.setMessageId(messageId);
-			msg.setLatitude(lat);
-			msg.setLongitude(lng);
-			msg.setAccuracy(acc);
-			msg.setPoiName(poiName);
+			msg.setLatitude(locationDataModel.getLatitude());
+			msg.setLongitude(locationDataModel.getLongitude());
+			msg.setAccuracy(locationDataModel.getAccuracy());
+			msg.setPoiName(locationDataModel.getPoi());
+			msg.setPoiAddress(locationDataModel.getAddress());
 
 			if (messageId != null) {
 				messageModel.setApiMessageId(messageId.toString());

@@ -67,7 +67,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -112,6 +111,7 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
@@ -124,7 +124,7 @@ import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_A
 import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
 
 public class ConfigUtils {
-	private static final Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConfigUtils");
 
 	public static final int THEME_LIGHT = 0;
 	public static final int THEME_DARK = 1;

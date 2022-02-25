@@ -26,7 +26,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,9 +33,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import ch.threema.app.ThreemaApplication;
+import ch.threema.base.utils.LoggingUtil;
 
 public class StreamUtil {
-	private static final Logger logger = LoggerFactory.getLogger(StreamUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("StreamUtil");
 
 	public static InputStream getFromUri(Context context, Uri uri) throws FileNotFoundException {
 		InputStream inputStream = null;

@@ -131,7 +131,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	}
 
 	@Override
-	public boolean createBoxedLocationMessage(final double lat, final double lng, final float acc, String poiName, final DistributionListMessageModel messageModel) throws ThreemaException {
+	public boolean createBoxedLocationMessage(final DistributionListMessageModel messageModel) throws ThreemaException {
 		return this.handleSendImage(messageModel);
 	}
 

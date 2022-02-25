@@ -22,14 +22,15 @@
 package ch.threema.app.utils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import ch.threema.base.utils.LoggingUtil;
+
 public class SecureDeleteUtil {
-	private static final Logger logger = LoggerFactory.getLogger(SecureDeleteUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SecureDeleteUtil");
 
     public static void secureDelete(File file) throws IOException {
         if (file != null && file.exists()) {

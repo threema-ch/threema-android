@@ -44,7 +44,6 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -121,6 +120,7 @@ import ch.threema.app.video.transcoder.VideoConfig;
 import ch.threema.app.video.transcoder.VideoTranscoder;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.blob.BlobUploader;
@@ -195,7 +195,7 @@ import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_STICKER;
 
 public class MessageServiceImpl implements MessageService {
-	private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageServiceImpl");
 
 	private final MessageQueue messageQueue;
 	public static final String MESSAGE_QUEUE_SAVE_FILE = "msgqueue.ser";
@@ -480,13 +480,7 @@ public class MessageServiceImpl implements MessageService {
 
 		this.fireOnCreatedMessage(messageModel);
 
-		receiver.createBoxedLocationMessage(
-				location.getLatitude(),
-				location.getLongitude(),
-				location.getAccuracy(),
-				poiName,
-				messageModel);
-
+		receiver.createBoxedLocationMessage(messageModel);
 
 		messageModel.setState(receiver.sendMediaData() ? MessageState.SENDING : MessageState.SENT);
 		receiver.saveLocalModel(messageModel);
@@ -2092,6 +2086,7 @@ public class MessageServiceImpl implements MessageService {
 				messageModel);
 	}
 
+	@WorkerThread
 	private GroupMessageModel saveGroupMessage(GroupLocationMessage message, GroupMessageModel messageModel) throws SQLException {
 		GroupModel groupModel = this.groupService.getGroup(message);
 		boolean isNewMessage = false;
@@ -2114,14 +2109,15 @@ public class MessageServiceImpl implements MessageService {
 			isNewMessage = true;
 		}
 
-		String address = null;
-		try {
-			address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
-		} catch (IOException e) {
-			logger.error("Exception", e);
-			//do not show this error!
+		String address = message.getPoiAddress();
+		if (TestUtil.empty(address)) {
+			try {
+				address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
+			} catch (IOException e) {
+				logger.error("Exception", e);
+				//do not show this error!
+			}
 		}
-
 
 		messageModel.setLocationData(new LocationDataModel(
 				message.getLatitude(),
@@ -2314,6 +2310,7 @@ public class MessageServiceImpl implements MessageService {
 		return success;
 	}
 
+	@WorkerThread
 	private MessageModel saveBoxMessage(BoxLocationMessage message, MessageModel messageModel) {
 		ContactModel contactModel = this.contactService.getByIdentity(message.getFromIdentity());
 		ContactMessageReceiver r = this.contactService.createReceiver(contactModel);
@@ -2325,12 +2322,14 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setOutbox(false);
 		}
 
-		String address = null;
-		try {
-			address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
-		} catch (IOException e) {
-			logger.error("Exception", e);
-			//do not show this error!
+		String address = message.getPoiAddress();
+		if (TestUtil.empty(address)) {
+			try {
+				address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
+			} catch (IOException e) {
+				logger.error("Exception", e);
+				//do not show this error!
+			}
 		}
 
 		messageModel.setLocationData(new LocationDataModel(

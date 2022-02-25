@@ -26,7 +26,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +40,7 @@ import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -52,7 +52,7 @@ import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_L
 import static ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP;
 
 public class QuoteUtil {
-	private static final Logger logger = LoggerFactory.getLogger(QuoteUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("QuoteUtil");
 
 	private static final Pattern bodyMatchPattern = Pattern.compile("(?sm)(\\A> .*?)^(?!> ).+");
 	private static final Pattern quoteV1MatchPattern = Pattern.compile("(?sm)\\A> ([A-Z0-9*]{8}): (.*?)^(?!> ).+");

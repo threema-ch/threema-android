@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -47,16 +48,16 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.blob.BlobUploader;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
 import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
-import ch.threema.domain.protocol.csp.coders.MessageBox;
-import ch.threema.domain.models.MessageId;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
@@ -70,6 +71,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -83,8 +85,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private final DatabaseServiceNew databaseServiceNew;
 	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
-	private IdListService blackListIdentityService;
-	private ApiService apiService;
+	private final IdListService blackListIdentityService;
+	private final ApiService apiService;
 
 	public ContactMessageReceiver(ContactModel contactModel,
 								  ContactService contactService,
@@ -181,14 +183,17 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, MessageModel messageModel) throws ThreemaException {
+	public boolean createBoxedLocationMessage(@NonNull MessageModel messageModel) throws ThreemaException {
+
+		LocationDataModel locationDataModel = messageModel.getLocationData();
 
 		BoxLocationMessage msg = new BoxLocationMessage();
-		msg.setLatitude(lat);
-		msg.setLongitude(lng);
-		msg.setAccuracy(acc);
+		msg.setLatitude(locationDataModel.getLatitude());
+		msg.setLongitude(locationDataModel.getLongitude());
+		msg.setAccuracy(locationDataModel.getAccuracy());
 		msg.setToIdentity(this.contactModel.getIdentity());
-		msg.setPoiName(poiName);
+		msg.setPoiName(locationDataModel.getPoi());
+		msg.setPoiAddress(locationDataModel.getAddress());
 
 		//fix #ANDR-512
 		//save model after receiving a new message id

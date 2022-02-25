@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -48,6 +47,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -56,7 +56,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 
 @SuppressWarnings("rawtypes")
 public class BallotUtil {
-	private static final Logger logger = LoggerFactory.getLogger(BallotUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotUtil");
 
 	public static boolean canVote(BallotModel model, String identity) {
 		return model != null

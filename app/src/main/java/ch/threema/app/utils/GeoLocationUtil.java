@@ -32,7 +32,6 @@ import android.os.Message;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -41,13 +40,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.services.MessageService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 
 public class GeoLocationUtil {
-	private static final Logger logger = LoggerFactory.getLogger(GeoLocationUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GeoLocationUtil");
 
 	private TextView targetView;
 
@@ -57,6 +58,7 @@ public class GeoLocationUtil {
 		this.targetView = targetView;
 	}
 
+	@WorkerThread
 	public static String getAddressFromLocation(Context context, double latitude, double longitude) throws IOException {
 		String addressString = context.getString(R.string.unknown_address);
 		String key = String.valueOf(latitude) + '|' + String.valueOf(longitude);

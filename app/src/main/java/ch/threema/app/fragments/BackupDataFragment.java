@@ -239,7 +239,17 @@ public class BackupDataFragment extends Fragment implements
 			if (backupUri == null) {
 				showPathSelectionIntro();
 			} else {
-				checkBatteryOptimizations();
+				DocumentFile documentFile = null;
+				try {
+					documentFile = DocumentFile.fromTreeUri(ThreemaApplication.getAppContext(), backupUri);
+				} catch (IllegalArgumentException e) {
+					logger.error("DocumentFile.fromTreeUri failed", e);
+				}
+				if (documentFile == null || !documentFile.exists()) {
+					showPathSelectionIntro();
+				} else {
+					checkBatteryOptimizations();
+				}
 			}
 		}
 	}

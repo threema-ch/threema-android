@@ -36,7 +36,7 @@ dependencies {
     api 'androidx.annotation:annotation:1.3.0'
     api 'net.sourceforge.streamsupport:streamsupport-flow:1.7.0'
 
-    api 'com.google.protobuf:protobuf-javalite:3.11.4'
+    api 'com.google.protobuf:protobuf-javalite:3.19.4'
 
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     // commons-io >2.6 requires android 8
@@ -61,7 +61,7 @@ sourceCompatibility = '1.8'
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.16.0'
+        artifact = 'com.google.protobuf:protoc:3.19.4'
     }
     generateProtoTasks {
         all().each { task ->

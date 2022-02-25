@@ -190,7 +190,11 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 						if (ConfigUtils.isWorkBuild()) {
 							needConfirm = TestUtil.empty(number) && TestUtil.empty(email) && TestUtil.empty(getPresetEmail()) && TestUtil.empty(getPresetPhone());
 						} else {
-							needConfirm = TestUtil.empty(number) && TestUtil.empty(getPresetPhone());
+							if (ConfigUtils.isOnPremBuild()) {
+								needConfirm = false;
+							} else {
+								needConfirm = TestUtil.empty(number) && TestUtil.empty(getPresetPhone());
+							}
 						}
 						if (needConfirm) {
 							WizardDialog wizardDialog = WizardDialog.newInstance(

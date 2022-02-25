@@ -23,6 +23,8 @@
 		one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use Threema OnPrem
 		anonymously.
 	</string>
+	<string name="new_wizard_info_sync_contacts">If you enable this option, Threema OnPrem one-way encrypts (hashes) email addresses and phone numbers
+		before sending them to the server to look for matching contacts. The data is kept in memory only and never stored on the server.</string>
 	<string name="threema_contact">Threema OnPrem Contact</string>
 	<string name="menu_about">About Threema OnPrem</string>
 	<string name="list_theme_light">Light</string>

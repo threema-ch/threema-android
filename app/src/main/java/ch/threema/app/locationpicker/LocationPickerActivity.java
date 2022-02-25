@@ -335,7 +335,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 					public void onStyleLoaded(@NonNull Style style) {
 						// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
 						setupLocationComponent(style);
-						zoomToCenter();
+						// hack: delay location query
+						mapView.postDelayed(() -> zoomToCenter(), 500);
 					}
 				});
 				mapboxMap.getUiSettings().setAttributionEnabled(false);

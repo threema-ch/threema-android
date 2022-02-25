@@ -21,6 +21,8 @@
 
 package ch.threema.domain.onprem;
 
+import androidx.annotation.Nullable;
+
 public class OnPremConfig {
 
 	private final int refresh;
@@ -42,8 +44,8 @@ public class OnPremConfig {
 	                    OnPremConfigWork workConfig,
 	                    OnPremConfigAvatar avatarConfig,
 	                    OnPremConfigSafe safeConfig,
-	                    OnPremConfigWeb webConfig,
-	                    OnPremConfigMediator mediatorConfig) {
+	                    @Nullable OnPremConfigWeb webConfig,
+	                    @Nullable OnPremConfigMediator mediatorConfig) {
 		this.refresh = refresh;
 		this.chatConfig = chatConfig;
 		this.license = license;
@@ -88,11 +90,11 @@ public class OnPremConfig {
 		return safeConfig;
 	}
 
-	public OnPremConfigWeb getWebConfig() {
+	public @Nullable OnPremConfigWeb getWebConfig() {
 		return webConfig;
 	}
 
-	public OnPremConfigMediator getMediatorConfig() {
+	public @Nullable OnPremConfigMediator getMediatorConfig() {
 		return mediatorConfig;
 	}
 }

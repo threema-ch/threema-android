@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Creato in: %1$s (%2$s)</string>
     <string name="webclient_active_since">Attivo da: %s</string>
     <string name="webclient_enable">Abilita Threema Web</string>
-    <string name="webclient_no_sessions_found">Per connetterti apri <b>https://web.threema.ch</b> nel browser del tuo PC e tocca il pulsante sotto per lo scan del codice.</string>
+    <string name="webclient_no_sessions_found">Per connetterti apri <b>%s</b> nel browser del tuo PC e tocca il pulsante sotto per lo scan del codice.</string>
     <string name="webclient_session_rename">Rinomina sessione</string>
     <string name="webclient_session_label">Nuovo nome</string>
     <string name="webclient_session_start">Avvia sessione</string>

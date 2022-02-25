@@ -24,7 +24,6 @@ package ch.threema.app.utils;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +39,7 @@ import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageUtil {
-	private static final Logger logger = LoggerFactory.getLogger(MessageUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageUtil");
 
 	private final static java.util.Set<MessageType> fileMessageModelTypes = EnumSet.of(
 			MessageType.IMAGE,

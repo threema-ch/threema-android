@@ -29,7 +29,6 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -41,10 +40,11 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactUtil {
-	private static final Logger logger = LoggerFactory.getLogger(ContactUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
 
 	public static final int CHANNEL_NAME_MAX_LENGTH_BYTES = 256;
 

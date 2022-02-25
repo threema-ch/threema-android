@@ -30,12 +30,12 @@ import android.net.Uri;
 import android.os.Build;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
 import androidx.annotation.RequiresApi;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * A wrapper class for {@link android.media.MediaPlayer}.
@@ -45,7 +45,7 @@ import androidx.annotation.RequiresApi;
  * </p>
  */
 public class MediaPlayerStateWrapper {
-	private static final Logger logger = LoggerFactory.getLogger(MediaPlayerStateWrapper.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerStateWrapper");
 
 	private MediaPlayer mediaPlayer;
 	private State currentState;

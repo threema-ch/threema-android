@@ -43,7 +43,6 @@ import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,6 +65,7 @@ import ch.threema.app.camera.CameraActivity;
 import ch.threema.app.filepicker.FilePickerActivity;
 import ch.threema.app.services.FileService;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -73,7 +73,7 @@ import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_PATH;
 
 public class FileUtil {
-	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FileUtil");
 
 	private FileUtil() {
 

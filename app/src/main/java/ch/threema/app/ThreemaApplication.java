@@ -24,6 +24,8 @@ package ch.threema.app;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ApplicationExitInfo;
 import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -53,8 +55,11 @@ import net.sqlcipher.database.SQLiteException;
 
 import org.slf4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.util.Date;
@@ -263,6 +268,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int SHORTCUTS_UPDATE_JOB_ID = 63340;
 
 	private static final String WORKER_IDENTITY_STATES_PERIODIC_NAME = "IdentityStates";
+	private static final String EXIT_REASON_LOGGING_TIMESTAMP = "exit_reason_timestamp";
 
 	private static Context context;
 
@@ -701,9 +707,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	}
 
 	@SuppressLint("ApplySharedPref")
-	private static void resetPreferences() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getAppContext());
-
+	private static void resetPreferences(SharedPreferences prefs) {
 		// Fix master key preference state if necessary (could be wrong if user kills app
 		// while disabling master key passphrase).
 		if (masterKey.isProtected() && prefs != null && !prefs.getBoolean(getAppContext().getString(R.string.preferences__masterkey_switch), false)) {
@@ -779,7 +783,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static synchronized void reset() {
 
 		//set default preferences
-		resetPreferences();
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getAppContext());
+		resetPreferences(sharedPreferences);
 
 		// init state bitmap cache singleton
 		StateBitmapUtil.init(getAppContext());
@@ -835,6 +840,43 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				BuildConfig.VERSION_NAME,
 				ConfigUtils.getBuildNumber(getAppContext())
 			);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				ActivityManager activityManager = (ActivityManager) getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
+				List<ApplicationExitInfo> applicationExitInfos = activityManager.getHistoricalProcessExitReasons(null, 0, 0);
+
+				if (applicationExitInfos.size() > 0) {
+					for (ApplicationExitInfo exitInfo : applicationExitInfos) {
+						long timestampOfLastLog = 0L;
+						if (sharedPreferences != null) {
+							timestampOfLastLog = sharedPreferences.getLong(EXIT_REASON_LOGGING_TIMESTAMP, timestampOfLastLog);
+						}
+
+						if (exitInfo.getTimestamp() > timestampOfLastLog) {
+							logger.info(String.format(Locale.US, "*** App last exited at %s with reason: %d, description: %s", DateUtils.formatDateTime(getAppContext(), exitInfo.getTimestamp(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME), exitInfo.getReason(), exitInfo.getDescription()));
+							if (exitInfo.getReason() == ApplicationExitInfo.REASON_ANR) {
+								try {
+									InputStream traceInputStream = exitInfo.getTraceInputStream();
+									if (traceInputStream != null) {
+										BufferedReader r = new BufferedReader(new InputStreamReader(traceInputStream));
+										StringBuilder s = new StringBuilder();
+										for (String line; (line = r.readLine()) != null; ) {
+											s.append(line).append('\n');
+										}
+										logger.info(s.toString());
+									}
+								} catch (IOException e) {
+									logger.error("Error getting ANR trace", e);
+								}
+							}
+						}
+					}
+
+					if (sharedPreferences != null) {
+						sharedPreferences.edit().putLong(EXIT_REASON_LOGGING_TIMESTAMP, System.currentTimeMillis()).apply();
+					}
+				}
+			}
 
 			// Set up logging
 			setupLogging(preferenceStore);

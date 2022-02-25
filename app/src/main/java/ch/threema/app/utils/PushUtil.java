@@ -33,7 +33,6 @@ import android.net.Uri;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -63,10 +62,11 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class PushUtil {
-	private static final Logger logger = LoggerFactory.getLogger(PushUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PushUtil");
 
 	public static final String EXTRA_CLEAR_TOKEN = "clear";
 	public static final String EXTRA_WITH_CALLBACK = "cb";

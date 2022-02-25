@@ -475,7 +475,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									type = guessedType;
 								}
 
-								addMediaItem(type, uri, textIntent);
+								addMediaItemSharedFromOtherApp(type, uri, textIntent);
 								if (textIntent != null) {
 									captionText = textIntent;
 								}
@@ -496,7 +496,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									captionText = textIntent;
 									mediaItems.add(new MediaItem(uri, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_ZIP, textIntent));
 								} else { // if text was shared along with the media item, add that too
-									addMediaItem(type, uri, textIntent);
+									addMediaItemSharedFromOtherApp(type, uri, textIntent);
 								}
 							}
 						}
@@ -509,7 +509,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								CharSequence text = clipData.getItemAt(i).getText();
 
 								if (uri1 != null) {
-									addMediaItem(type, uri1, null);
+									addMediaItemSharedFromOtherApp(type, uri1, null);
 								} else if (!TestUtil.empty(text)) {
 									mediaItems.add(new MediaItem(uri, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, text.toString()));
 								}
@@ -617,7 +617,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									if (mimeType == null) {
 										mimeType = type;
 									}
-									addMediaItem(mimeType, uri, null);
+									addMediaItemSharedFromOtherApp(mimeType, uri, null);
 								}
 							} else {
 								Toast.makeText(getApplicationContext(), getString(R.string.max_selectable_media_exceeded, MAX_SELECTABLE_IMAGES), Toast.LENGTH_LONG).show();
@@ -698,7 +698,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		return subject + " - " + text;
 	}
 
-	private void addMediaItem(String mimeType, @NonNull Uri uri, @Nullable String caption) {
+	private void addMediaItemSharedFromOtherApp(String mimeType, @NonNull Uri uri, @Nullable String caption) {
 		if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) {
 			String path = uri.getPath();
 			File applicationDir = new File(getApplicationInfo().dataDir);
@@ -726,7 +726,15 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				}
 			}
 		}
-		mediaItems.add(new MediaItem(uri, mimeType, caption));
+		MediaItem mediaItem = new MediaItem(uri, mimeType, caption);
+
+		// never create a voice message out of a shared audio file - fix default
+		if (mediaItem.getType() == MediaItem.TYPE_VOICEMESSAGE) {
+			mediaItem.setType(MediaItem.TYPE_FILE);
+			mediaItem.setRenderingType(FileData.RENDERING_DEFAULT);
+		}
+
+		mediaItems.add(mediaItem);
 	}
 
 	@SuppressLint("StaticFieldLeak")

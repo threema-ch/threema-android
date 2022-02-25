@@ -54,13 +54,13 @@ public class CallRejectService extends FixedJobIntentService {
 	public static final int JOB_ID = 344339;
 
 	public static void enqueueWork(Context context, Intent work) {
-		logger.debug("enqueWork entered");
+		logger.info("enqueueWork");
 		enqueueWork(context, CallRejectService.class, JOB_ID, work);
 	}
 
 	@Override
 	protected void onHandleWork(@NonNull Intent intent) {
-		logger.debug("CallRejectService onHandle work");
+		logger.info("onHandleWork");
 
 		// Intent parameters
 		final String contactIdentity = intent.getStringExtra(EXTRA_CONTACT_IDENTITY);

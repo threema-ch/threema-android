@@ -22,13 +22,13 @@
 package ch.threema.app.utils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.base.utils.LoggingUtil;
 
 public class LoadingUtil {
-	private static final Logger logger = LoggerFactory.getLogger(LocaleUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LocaleUtil");
 
 	private static String DIALOG_TAG_PROGRESS_LOADINGUTIL = "lou";
 

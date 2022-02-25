@@ -129,15 +129,11 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * send a location message
 	 *
-	 * @param lat
-	 * @param lng
-	 * @param acc
-	 * @param poiName
 	 * @param messageModel
 	 * @return
 	 * @throws ThreemaException
 	 */
-	boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, M messageModel) throws ThreemaException;
+	boolean createBoxedLocationMessage(M messageModel) throws ThreemaException;
 
 	/**
 	 * send a file message

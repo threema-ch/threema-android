@@ -260,11 +260,16 @@ public class MessageCoder {
 					locationmsg.setAccuracy(Double.parseDouble(locArr[2]));
 				}
 
-				if (lines.length >= 2) {
+				String address = null;
+				if (lines.length == 2) {
+					address = lines[1];
+				} else if (lines.length >= 3) {
 					locationmsg.setPoiName(lines[1]);
-					if (lines.length >= 3) {
-						locationmsg.setPoiAddress(lines[2].replace("\\n", "\n"));
-					}
+					address = lines[2];
+				}
+
+				if (address != null) {
+					locationmsg.setPoiAddress(address.replace("\\n", "\n"));
 				}
 
 				if (locationmsg.getLatitude() < -90.0 || locationmsg.getLatitude() > 90.0 ||

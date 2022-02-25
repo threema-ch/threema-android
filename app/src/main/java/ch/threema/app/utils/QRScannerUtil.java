@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,9 +35,10 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.qrscanner.activity.CaptureActivity;
 import ch.threema.app.services.QRCodeService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class QRScannerUtil {
-	private static final Logger logger = LoggerFactory.getLogger(QRScannerUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("QRScannerUtil");
 
 	private static boolean scanAnyCode;
 	public static final int REQUEST_CODE_QR_SCANNER = 26657;

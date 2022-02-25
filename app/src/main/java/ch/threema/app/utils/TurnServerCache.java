@@ -22,18 +22,18 @@
 package ch.threema.app.utils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.ThreemaLogger;
 
 public class TurnServerCache {
 	// Logger
-	private final Logger logger = LoggerFactory.getLogger(TurnServerCache.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("TurnServerCache");
 
 	private final String type;
 	private final int minSpareValidity;

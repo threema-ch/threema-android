@@ -21,6 +21,7 @@
 
 package ch.threema.domain.onprem;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.ServerAddressProvider;
 
@@ -103,8 +104,14 @@ public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 	}
 
 	@Override
+	@Nullable
 	public String getWebServerUrl() throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getWebConfig().getUrl();
+		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+
+		if (onPremConfigWeb != null) {
+			return onPremConfigWeb.getUrl();
+		}
+		throw new ThreemaException("Unable to fetch Threema Web server url");
 	}
 
 	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {

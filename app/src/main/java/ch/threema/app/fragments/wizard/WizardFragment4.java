@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 import ch.threema.app.R;
@@ -53,6 +54,10 @@ public class WizardFragment4 extends WizardFragment {
 
 		if (ConfigUtils.isOnPremBuild() && ConfigUtils.isDemoOPServer(preferenceService)) {
 			defaultSwitchValue = false;
+			// Add another warning for dull-witted G**gle reviewers
+			TextView textView = rootView.findViewById(R.id.disabled_by_policy);
+			textView.setText(R.string.new_wizard_info_sync_contacts);
+			textView.setVisibility(View.VISIBLE);
 		}
 
 		if (SynchronizeContactsUtil.isRestrictedProfile(getActivity()) &&

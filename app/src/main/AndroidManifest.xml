@@ -130,6 +130,10 @@
 		<package android:name="com.asus.mobilemanager" />
 		<package android:name="com.transsion.phonemanager" />
 
+		<!-- provider for xperia home icon badge counters -->
+		<provider android:authorities="com.sonymobile.home.resourceprovider"
+			android:exported="false" />
+
 		<intent>
 			<action android:name="miui.intent.action.POWER_HIDE_MODE_APP_LIST"/>
 			<category android:name="android.intent.category.DEFAULT"/>
@@ -561,6 +565,7 @@
 			android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|touchscreen|keyboard|keyboardHidden|uiMode"
 			android:supportsPictureInPicture="true"
 			android:launchMode="singleTask"
+			android:taskAffinity=".voip.activities.CallActivity"
 			android:excludeFromRecents="true"
 			android:screenOrientation="sensorPortrait"
 			android:theme="@style/Theme.Threema.TransparentStatusbar"
@@ -847,6 +852,7 @@
 			android:exported="false"/>
 		<service
 			android:name=".voip.services.VoipCallService"
+			android:foregroundServiceType="phoneCall|camera|microphone"
 			android:exported="false"/>
 		<service
 			android:name=".voip.services.CallRejectService"

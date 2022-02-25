@@ -33,7 +33,6 @@ import android.os.SystemClock;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,6 +63,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -71,7 +71,7 @@ import ch.threema.storage.models.ConversationModel;
 import static androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED;
 
 public final class ShortcutUtil {
-	private static final Logger logger = LoggerFactory.getLogger(ShortcutUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ShortcutUtil");
 
 	private static final int MAX_SHARE_TARGETS = 100; // we recommend that you publish only four distinct shortcuts to improve their visual appearance in the launcher. https://developer.android.com/guide/topics/ui/shortcuts/best-practices
 

@@ -42,7 +42,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.IDN;
 import java.util.regex.Pattern;
@@ -61,13 +60,13 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.MentionClickableSpan;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
-
 public class LinkifyUtil {
-	private static final Logger logger = LoggerFactory.getLogger(LinkifyUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LinkifyUtil");
 	public static final String DIALOG_TAG_CONFIRM_LINK = "cnfl";
 	private final Pattern compose, add, license;
 	private GestureDetectorCompat gestureDetector;
@@ -141,9 +140,9 @@ public class LinkifyUtil {
 		// do not linkify phone numbers in longer texts because things can get messy on samsung devices
 		// which linkify every kind of number combination imaginable
 		if (includePhoneNumbers) {
-			LinkifyCompat.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES | Linkify.PHONE_NUMBERS);
+			LinkifyCompatUtil.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES | Linkify.PHONE_NUMBERS);
 		} else {
-			LinkifyCompat.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+			LinkifyCompatUtil.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 		}
 		LinkifyCompat.addLinks(bodyTextView, this.add, null);
 		LinkifyCompat.addLinks(bodyTextView, this.compose, null);

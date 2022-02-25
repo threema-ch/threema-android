@@ -171,7 +171,7 @@ public class BackupService extends Service {
 				config = (BackupRestoreDataConfig) intent.getSerializableExtra(EXTRA_BACKUP_RESTORE_DATA_CONFIG);
 
 				if (config == null || userService.getIdentity() == null || userService.getIdentity().length() == 0) {
-					stopSelf();
+					safeStopSelf();
 					return START_NOT_STICKY;
 				}
 
@@ -191,15 +191,6 @@ public class BackupService extends Service {
 					}
 				}
 
-				//first of all, close connection
-				try {
-					serviceManager.stopConnection();
-				} catch (InterruptedException e) {
-					showBackupErrorNotification("BackupService interrupted");
-					stopSelf();
-					return START_NOT_STICKY;
-				}
-
 				boolean success = false;
 				Date now = new Date();
 				DocumentFile zipFile = null;
@@ -207,7 +198,7 @@ public class BackupService extends Service {
 
 				if (backupUri == null) {
 					showBackupErrorNotification("Destination directory has not been selected yet");
-					stopSelf();
+					safeStopSelf();
 					return START_NOT_STICKY;
 				}
 
@@ -232,11 +223,22 @@ public class BackupService extends Service {
 
 				if (zipFile == null || !success) {
 					showBackupErrorNotification(getString(R.string.backup_data_no_permission));
-					stopSelf();
+					safeStopSelf();
 					return START_NOT_STICKY;
 				}
 
 				backupFile = zipFile;
+
+				showPersistentNotification();
+
+				// close connection
+				try {
+					serviceManager.stopConnection();
+				} catch (InterruptedException e) {
+					showBackupErrorNotification("BackupService interrupted");
+					stopSelf();
+					return START_NOT_STICKY;
+				}
 
 				new AsyncTask<Void, Void, Boolean>() {
 					@Override
@@ -272,7 +274,7 @@ public class BackupService extends Service {
 
 		serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
-			stopSelf();
+			safeStopSelf();
 			return;
 		}
 
@@ -287,7 +289,7 @@ public class BackupService extends Service {
 			preferenceService = serviceManager.getPreferenceService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
-			stopSelf();
+			safeStopSelf();
 			return;
 		}
 
@@ -302,7 +304,6 @@ public class BackupService extends Service {
 		if (isCanceled) {
 			onFinished(getString(R.string.backup_data_cancelled));
 		}
-
 		super.onDestroy();
 	}
 
@@ -329,9 +330,6 @@ public class BackupService extends Service {
 
 	private boolean backup() {
 		String identity = userService.getIdentity();
-
-		showPersistentNotification();
-
 		try(final ZipOutputStream zipOutputStream = ZipUtil.initializeZipOutputStream(getContentResolver(), backupFile.getUri(), config.getPassword())) {
 			logger.debug("Creating zip file {}", backupFile.getUri());
 
@@ -1393,4 +1391,21 @@ public class BackupService extends Service {
 			});
 		}
 	}
+
+	/**
+	 * Show a fake notification before stopping service in order to prevent Context.startForegroundService() did not then call Service.startForeground() crash
+	 */
+	private void safeStopSelf() {
+		Notification notification = new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS, null)
+			.setContentTitle("")
+			.setContentText("").
+				build();
+
+		startForeground(BACKUP_NOTIFICATION_ID, notification);
+		stopForeground(true);
+		isRunning = false;
+		stopSelf();
+	}
 }
+
+

@@ -25,14 +25,15 @@ import android.content.Context;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import ch.threema.base.utils.LoggingUtil;
+
 public class DeviceIdUtil {
-	private static final Logger logger = LoggerFactory.getLogger(DeviceIdUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DeviceIdUtil");
 
 	private static final String DEVICE_ID_FILENAME = "device_id";
 

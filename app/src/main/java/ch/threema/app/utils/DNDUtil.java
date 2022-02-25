@@ -33,7 +33,6 @@ import android.os.Build;
 import android.provider.ContactsContract;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Set;
@@ -51,11 +50,11 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.stores.IdentityStore;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
-
 public class DNDUtil {
-	private static final Logger logger = LoggerFactory.getLogger(DNDUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DNDUtil");
 	private DeadlineListService mutedChatsListService;
 	private DeadlineListService mentionOnlyChatsListService;
 	private final IdentityStore identityStore;
