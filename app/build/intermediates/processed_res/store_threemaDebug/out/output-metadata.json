@@ -11,44 +11,8 @@
       "type": "UNIVERSAL",
       "filters": [],
       "versionCode": 715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "resources-store_threemaUniversalDebug.ap_"
-    },
-    {
-      "type": "ONE_OF_MANY",
-      "filters": [
-        {
-          "filterType": "ABI",
-          "value": "x86_64"
-        }
-      ],
-      "versionCode": 9000715,
-      "versionName": "4.64",
-      "outputFile": "resources-store_threemaX86_64Debug.ap_"
-    },
-    {
-      "type": "ONE_OF_MANY",
-      "filters": [
-        {
-          "filterType": "ABI",
-          "value": "x86"
-        }
-      ],
-      "versionCode": 8000715,
-      "versionName": "4.64",
-      "outputFile": "resources-store_threemaX86Debug.ap_"
-    },
-    {
-      "type": "ONE_OF_MANY",
-      "filters": [
-        {
-          "filterType": "ABI",
-          "value": "arm64-v8a"
-        }
-      ],
-      "versionCode": 3000715,
-      "versionName": "4.64",
-      "outputFile": "resources-store_threemaArm64-v8aDebug.ap_"
     },
     {
       "type": "ONE_OF_MANY",
@@ -59,8 +23,44 @@
         }
       ],
       "versionCode": 2000715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "resources-store_threemaArmeabi-v7aDebug.ap_"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "x86"
+        }
+      ],
+      "versionCode": 8000715,
+      "versionName": "12.1",
+      "outputFile": "resources-store_threemaX86Debug.ap_"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "x86_64"
+        }
+      ],
+      "versionCode": 9000715,
+      "versionName": "12.1",
+      "outputFile": "resources-store_threemaX86_64Debug.ap_"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "arm64-v8a"
+        }
+      ],
+      "versionCode": 3000715,
+      "versionName": "12.1",
+      "outputFile": "resources-store_threemaArm64-v8aDebug.ap_"
     }
   ]
 }

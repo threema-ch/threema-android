@@ -11,7 +11,7 @@
       "type": "UNIVERSAL",
       "filters": [],
       "versionCode": 715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "universal/AndroidManifest.xml"
     },
     {
@@ -23,7 +23,7 @@
         }
       ],
       "versionCode": 9000715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "x86_64/AndroidManifest.xml"
     },
     {
@@ -35,7 +35,7 @@
         }
       ],
       "versionCode": 8000715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "x86/AndroidManifest.xml"
     },
     {
@@ -47,7 +47,7 @@
         }
       ],
       "versionCode": 2000715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "armeabi-v7a/AndroidManifest.xml"
     },
     {
@@ -59,7 +59,7 @@
         }
       ],
       "versionCode": 3000715,
-      "versionName": "4.64",
+      "versionName": "12.1",
       "outputFile": "arm64-v8a/AndroidManifest.xml"
     }
   ]

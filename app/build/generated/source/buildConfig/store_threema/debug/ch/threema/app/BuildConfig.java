@@ -9,7 +9,7 @@ public final class BuildConfig {
   public static final String BUILD_TYPE = "debug";
   public static final String FLAVOR = "store_threema";
   public static final int VERSION_CODE = 715;
-  public static final String VERSION_NAME = "4.64";
+  public static final String VERSION_NAME = "12.1";
   // Field from default config.
   public static final String AVATAR_FETCH_URL = "https://avatar.threema.ch/";
   // Field from default config.
@@ -41,7 +41,7 @@ public final class BuildConfig {
   // Field from default config.
   public static final boolean DISABLE_CERT_PINNING = false;
   // Field from default config.
-  public static final String GIT_HASH = "dafa388";
+  public static final String GIT_HASH = "9eff65c0";
   // Field from default config.
   public static final int MAX_GROUP_SIZE = 256;
   // Field from default config.

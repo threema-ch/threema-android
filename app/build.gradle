@@ -20,7 +20,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "1.2"
+def app_version = "12.1"
 def beta_suffix = "" // with leading dash
 
 /**

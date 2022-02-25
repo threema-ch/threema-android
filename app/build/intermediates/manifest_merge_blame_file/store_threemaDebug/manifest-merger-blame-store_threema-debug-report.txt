@@ -4,7 +4,7 @@
 4    android:installLocation="internalOnly"
 5    android:testOnly="false"
 6    android:versionCode="715"
-7    android:versionName="4.64" >
+7    android:versionName="12.1" >
 8
 9    <uses-sdk
 9-->/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/AndroidManifest.xml:153:2-154:87

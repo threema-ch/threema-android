@@ -13,31 +13,25 @@
   },
   {
     "level": "INFO",
-    "message": "- expected json /media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/store_threemaDebug/x86_64/android_gradle_build.json file is not present, will remove stale json folder",
+    "message": "- a dependent build file changed",
     "file": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
     "tag": "store_threemaDebug|x86_64"
   },
   {
     "level": "INFO",
-    "message": "- missing previous command file /media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/store_threemaDebug/x86_64/build_command.txt, will remove stale json folder",
+    "message": "  - /media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
     "file": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
     "tag": "store_threemaDebug|x86_64"
   },
   {
     "level": "INFO",
-    "message": "- command changed from previous, will remove stale json folder",
+    "message": "  - /media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Application.mk",
     "file": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
     "tag": "store_threemaDebug|x86_64"
   },
   {
     "level": "INFO",
-    "message": "removing stale contents from \u0027/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/store_threemaDebug/x86_64\u0027",
-    "file": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
-    "tag": "store_threemaDebug|x86_64"
-  },
-  {
-    "level": "INFO",
-    "message": "created folder \u0027/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/store_threemaDebug/x86_64\u0027",
+    "message": "keeping json folder \u0027/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/store_threemaDebug/x86_64\u0027 but regenerating project",
     "file": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
     "tag": "store_threemaDebug|x86_64"
   },

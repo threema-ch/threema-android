@@ -236,6 +236,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/anim/fast_fade_in.xml"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-hdpi_wallpaper_dark1.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-hdpi/wallpaper_dark1.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_color_picker_swatch.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/color_picker_swatch.xml"
     },
@@ -278,6 +282,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_ic_places_synagogue.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable/ic_places_synagogue.xml"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-nodpi_background_pic_xxx.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-nodpi/background_pic_xxx.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-xhdpi_anim_93_40ms.png.flat",
@@ -1100,6 +1108,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable/ic_places_highway.xml"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-nodpi_background_pic3.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-nodpi/background_pic3.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-mdpi_ic_doc_audio.png.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-mdpi/ic_doc_audio.png"
     },
@@ -1216,6 +1228,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable/bubble_fade_send_selector.xml"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-hdpi_background2.jpg.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-hdpi/background2.jpg"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_item_contact_list_recently_added.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/item_contact_list_recently_added.xml"
     },
@@ -1290,6 +1306,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_ripple_call_button.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable/ripple_call_button.xml"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-xxhdpi_ic_launcher_leos.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xxhdpi/ic_launcher_leos.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_ic_places_travel_agency.xml.flat",
@@ -1550,6 +1570,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/raw_received_message.ogg.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/raw/received_message.ogg"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-nodpi_background_pic_key.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-nodpi/background_pic_key.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_view_ongoing_call_notice.xml.flat",
@@ -2040,6 +2064,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/conversation_list_item_voip_status_recv.xml"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_activity_export_id.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/activity_export_id.xml"
     },
@@ -2104,12 +2132,12 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/row_cell_ballot_matrix_choice_label.xml"
     },
     {
-        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_view_avatar_edit.xml.flat",
-        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/view_avatar_edit.xml"
-    },
-    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_ic_baseline_hearing_24.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable/ic_baseline_hearing_24.xml"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_view_avatar_edit.xml.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/view_avatar_edit.xml"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_bubble_fade_recv_selector.xml.flat",
@@ -2226,6 +2254,14 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-xhdpi_anim_92_40ms.png.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-xhdpi/anim_92_40ms.png"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-xhdpi_ic_launcher_leos.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xhdpi/ic_launcher_leos.png"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-hdpi_ic_launcher_leos1.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-hdpi/ic_launcher_leos1.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-mdpi_ic_volume_up_24dp.png.flat",
@@ -2442,6 +2478,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/anim_slow_fade_out.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/anim/slow_fade_out.xml"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-xxxhdpi_ic_launcher_leos.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xxxhdpi/ic_launcher_leos.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_ic_outline_reorder_24.xml.flat",
@@ -2912,6 +2952,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/dialog_message_detail.xml"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-hdpi_ic_launcher_foreground1.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-hdpi/ic_launcher_foreground1.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-xxxhdpi_ic_notification_small.png.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-xxxhdpi/ic_notification_small.png"
     },
@@ -3088,6 +3132,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xxhdpi/ic_shortcut_qr.png"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-mdpi_ic_launcher_leos.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-mdpi/ic_launcher_leos.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_popup_paint_selection.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/popup_paint_selection.xml"
     },
@@ -3256,12 +3304,24 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-xhdpi/ic_next_alpha.png"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-hdpi_ic_launcher_leos.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-hdpi/ic_launcher_leos.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable_ic_vote_outline.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable/ic_vote_outline.xml"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_header_filepicker.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/header_filepicker.xml"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-mdpi/ic_launcher_round.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-xhdpi_ic_doc_certificate.png.flat",
@@ -3294,6 +3354,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-mdpi_ic_call_end_grey600_24dp.png.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-mdpi/ic_call_end_grey600_24dp.png"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-hdpi/ic_launcher_round.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout-land_camerax_ui_container.xml.flat",
@@ -3560,6 +3624,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/menu/navdrawer_filepicker.xml"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-hdpi_wallpaper_light1.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-hdpi/wallpaper_light1.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-xxxhdpi_ic_doc_audio.png.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-xxxhdpi/ic_doc_audio.png"
     },
@@ -3586,6 +3654,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_conversation_list_item_animgif_send.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/layout/conversation_list_item_animgif_send.xml"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-nodpi_background_pic2.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-nodpi/background_pic2.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/layout_conversation_list_item_controller_view.xml.flat",
@@ -3908,6 +3980,10 @@
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-xhdpi/ic_doc_presentation.png"
     },
     {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-nodpi_background_pic1.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-nodpi/background_pic1.png"
+    },
+    {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/menu_activity_group_link_qrcode.xml.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/menu/activity_group_link_qrcode.xml"
     },
@@ -4146,6 +4222,10 @@
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-hdpi_fastscroll_thumb_mtrl.png.flat",
         "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/drawable-hdpi/fastscroll_thumb_mtrl.png"
+    },
+    {
+        "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"
     },
     {
         "merged": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/res/merged/hms/debug/drawable-xxhdpi_ic_done_white_24dp.png.flat",

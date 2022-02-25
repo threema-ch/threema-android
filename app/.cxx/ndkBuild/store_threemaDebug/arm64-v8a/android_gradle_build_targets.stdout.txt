@@ -1,2 +1,10 @@
-make: Nothing to be done for 'nacl-jni'.
-make: Nothing to be done for 'scrypt'.
+[arm64-v8a] Compile        : nacl-jni <= salsa20-jni.c
+[arm64-v8a] Compile        : nacl-jni <= poly1305-jni.c
+[arm64-v8a] Compile        : nacl-jni <= curve25519-jni.c
+[arm64-v8a] Compile        : nacl-jni <= smult_donna.c
+[arm64-v8a] Compile        : nacl-jni <= smult_donna-c64.c
+[arm64-v8a] SharedLibrary  : libnacl-jni.so
+[arm64-v8a] Compile        : scrypt <= scrypt_jni.c
+[arm64-v8a] Compile        : scrypt <= crypto_scrypt-nosse.c
+[arm64-v8a] Compile        : scrypt <= sha256.c
+[arm64-v8a] SharedLibrary  : libscrypt.so
