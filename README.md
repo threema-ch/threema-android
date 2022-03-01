@@ -16,4 +16,4 @@ This repository contains the complete source code of LeOS-Messenger a fork of
 
 ### Wallpaper lite / dark
 | <img src="screenshots/WallpaperLite.jpg" width="200"/>| <img src="screenshots/WallpaperDark.jpg" width="200"/>
-|:---:|:---:|:---:|:---:|:---:|
+
