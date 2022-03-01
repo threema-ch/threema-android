@@ -4,153 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79808691-4fb1-4a2a-97ed-7143809546fd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hms_workRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/noneRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/onpremRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/redRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandboxDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/sandbox_workDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_googleRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workDebug/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_google_workRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/android_gradle_build.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/build_command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/build_model.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/build_output.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/json_generation_record.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaRelease/x86/prefab_config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndk_locator_record_3e41706a.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndk_locator_record_3e41706a.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/.cxx/ndk_locator_record_3e41706a_key.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/jarAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/javaCompile/taskHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+    <list default="true" id="79808691-4fb1-4a2a-97ed-7143809546fd" name="Changes" comment="upgrade version number">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/arm64-v8a/android_gradle_build_targets.stdout.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/arm64-v8a/android_gradle_build_targets.stdout.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/armeabi-v7a/json_generation_record.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/armeabi-v7a/json_generation_record.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaDebug/x86/json_generation_record.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/store_threemaDebug/x86/json_generation_record.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/generated/source/buildConfig/hms/debug/ch/threema/app/BuildConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/generated/source/buildConfig/hms/debug/ch/threema/app/BuildConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeHmsDebugResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeHmsDebugResources/compile-file-map.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeHmsDebugResources/merger.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/incremental/mergeHmsDebugResources/merger.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/incremental/processHmsDebugResources/resources-list-for-resources-hmsArm64-v8aDebug.ap_.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/manifest_merge_blame_file/hmsDebug/manifest-merger-blame-hms-debug-report.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/manifest_merge_blame_file/hmsDebug/manifest-merger-blame-hms-debug-report.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_manifest/hmsDebug/out/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_manifest/hmsDebug/out/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_manifests/hmsDebug/arm64-v8a/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_manifests/hmsDebug/arm64-v8a/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_manifests/hmsDebug/output-metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_manifests/hmsDebug/output-metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/merged_res_blame_folder/hmsDebug/out/single/debug.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/merged_res_blame_folder/hmsDebug/out/single/debug.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/packaged_manifests/hmsDebug/arm64-v8a/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/packaged_manifests/hmsDebug/arm64-v8a/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/packaged_manifests/hmsDebug/output-metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/packaged_manifests/hmsDebug/output-metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/processed_res/hmsDebug/out/resources-hmsArm64-v8aDebug.ap_" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/processed_res/hmsDebug/out/resources-hmsArm64-v8aDebug.ap_" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/res/merged/hms/debug/drawable-v24_ic_thumbscroller.xml.flat" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/res/merged/hms/debug/drawable-v24_ic_thumbscroller.xml.flat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/res/merged/hms/debug/drawable_ic_thumbscroller.xml.flat" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/res/merged/hms/debug/drawable_ic_thumbscroller.xml.flat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-arm64-v8a-debug.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-armeabi-v7a-debug.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-x86-debug.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-x86_64-debug.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger.apk" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -276,6 +136,14 @@
       <option name="presentableId" value="Default" />
       <updated>1644658068332</updated>
     </task>
+    <task id="LOCAL-00001" summary="upgrade version number">
+      <created>1645790464095</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1645790464095</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -292,5 +160,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="upgrade version number" />
+    <option name="LAST_COMMIT_MESSAGE" value="upgrade version number" />
   </component>
 </project>

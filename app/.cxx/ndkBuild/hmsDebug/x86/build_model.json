@@ -4,14 +4,14 @@
   "buildSettings": {
     "environmentVariables": []
   },
-  "cxxBuildFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/x86",
+  "cxxBuildFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/x86",
   "info": {
     "abi": "X86",
     "bitness": 32,
     "deprecated": false,
     "default": true
   },
-  "originalCxxBuildFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/x86",
+  "originalCxxBuildFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/x86",
   "variant": {
     "buildSystemArgumentList": [],
     "buildTargetSet": [],
@@ -23,12 +23,12 @@
     "module": {
       "buildSystem": "NDK_BUILD",
       "cmakeToolchainFile": "/home/ich/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-      "cxxFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx",
+      "cxxFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app/.cxx",
       "gradleModulePathName": ":app",
-      "intermediatesFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates",
-      "makeFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
-      "moduleBuildFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build.gradle",
-      "moduleRootFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app",
+      "intermediatesFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates",
+      "makeFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Android.mk",
+      "moduleBuildFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build.gradle",
+      "moduleRootFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app",
       "ndkDefaultAbiList": [
         "ARMEABI_V7A",
         "ARM64_V8A",
@@ -92,12 +92,12 @@
       "ndkDefaultStl": "SYSTEM",
       "ndkVersion": "21.1.6352462",
       "project": {
-        "compilerSettingsCacheFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/.cxx",
-        "cxxFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/.cxx",
+        "compilerSettingsCacheFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/.cxx",
+        "cxxFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/.cxx",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,
-        "rootBuildGradleFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger",
+        "rootBuildGradleFolder": "/media/ich/data/AndroidApks/LeOS-Messenger",
         "sdkFolder": "/home/ich/Android/Sdk",
         "isPrefabEnabled": false
       },
@@ -119,7 +119,7 @@
         "SYSTEM": {}
       }
     },
-    "objFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local",
+    "objFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local",
     "variantName": "hmsDebug",
     "validAbiList": [
       "ARMEABI_V7A",
@@ -127,8 +127,8 @@
       "X86",
       "X86_64"
     ],
-    "prefabDirectory": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/prefab",
+    "prefabDirectory": "/media/ich/data/AndroidApks/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/prefab",
     "prefabPackageDirectoryList": []
   },
-  "prefabFolder": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/prefab/x86"
+  "prefabFolder": "/media/ich/data/AndroidApks/LeOS-Messenger/app/.cxx/ndkBuild/hmsDebug/prefab/x86"
 }
