@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="exo_controls_fastforward_by_amount_description">
+    <item quantity="one">ເລື່ອນໄປໜ້າ %d ວິນາທີ</item>
+    <item quantity="other">ເລື່ອນໄປໜ້າ %d ວິນາທີ</item>
+  </plurals>
+    <plurals name="exo_controls_rewind_by_amount_description">
+    <item quantity="one">ຖອຍຫຼັງ %d ວິນາທີ</item>
+    <item quantity="other">ຖອຍຫຼັງ %d ວິນາທີ</item>
+  </plurals>
+    <plurals name="mtrl_badge_content_description">
+    <item quantity="one">%d ການແຈ້ງເຕືອນໃໝ່</item>
+    <item quantity="other">%d ການແຈ້ງເຕືອນໃໝ່</item>
+  </plurals>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"ກັບໄປໜ້າຫຼັກ"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"ເລື່ອນຂຶ້ນເທິງ"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"ຕົວເລືອກເພີ່ມເຕີມ"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"ແລ້ວໆ"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"ເບິ່ງທັງໝົດ"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"ເລືອກແອັບ"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"ປິດ"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"ເປີດ"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"ລຶບ"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"ຍະຫວ່າງ"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"ຊອກຫາ…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"ລຶບຂໍ້ຄວາມຊອກຫາ"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"ຄຳສຳລັບຄົ້ນຫາ"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"ຊອກຫາ"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"ສົ່ງຂໍ້ມູນ"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"ຊອກຫາດ້ວຍສຽງ"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"ແບ່ງປັນກັບ"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"ແບ່ງປັນດ້ວຍ <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"ຫຍໍ້ລົງ"</string>
+    <string name="bottomsheet_action_expand_halfway">ຂະຫຍາຍອອກເຄິ່ງໜຶ່ງ</string>
+    <string name="character_counter_content_description">ຕົວອັກສອນທີ່ປ້ອນເຂົ້າ %1$d ຕົວຈາກທັງໝົດ %2$d ຕົວ</string>
+    <string name="character_counter_overflowed_content_description">ຂີດຈຳກັດຕົວອັກສອນເກີນ %1$d ຈາກທັງໝົດ %2$d</string>
+    <string name="clear_text_end_icon_content_description">ລຶບລ້າງຂໍ້ຄວາມ</string>
+    <string msgid="8585111718777012708" name="common_google_play_services_enable_button">"ເປີດນຳໃຊ້"</string>
+    <string msgid="7045129128108380659" name="common_google_play_services_enable_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> ຈະບໍ່ສາມາດໃຊ້ງານໄດ້ຈົນກວ່າທ່ານຈະເປີດໃຊ້ງານ​ການ​ບໍ​ລິ​ການ Google Play."</string>
+    <string msgid="3147157405986503375" name="common_google_play_services_enable_title">"ເປີດໃຊ້ການ​ບໍ​ລິ​ການ Google Play"</string>
+    <string msgid="9115728400623041681" name="common_google_play_services_install_button">"ຕິດຕັ້ງ"</string>
+    <string msgid="8179894293032530091" name="common_google_play_services_install_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> ຈະບໍ່ສາມາດເປີດໃຊ້ໄດ້ຫາກບໍ່ມີການບໍລິການ Google Play ເຊິ່ງແທັບເລັດຂອງທ່ານບໍ່ມີ."</string>
+    <string msgid="7442193194585196676" name="common_google_play_services_install_title">"ຕິດຕັ້ງບໍລິການ Google Play"</string>
+    <string msgid="4293541511340436975" name="common_google_play_services_notification_channel_name">"ສະຖານະບໍລິການ Google Play"</string>
+    <string msgid="180394615667698242" name="common_google_play_services_notification_ticker">"Google Play Services ​ເກີດ​ຄວາມ​ຜິດ​ພາດ"</string>
+    <string msgid="2518680582564677258" name="common_google_play_services_unknown_issue">"<ns1:g id="APP_NAME">%1$s</ns1:g> ກຳລັງມີບັນຫາກັບບໍລິການ Google Play. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."</string>
+    <string msgid="5501187292256987189" name="common_google_play_services_unsupported_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> ຈະບໍ່ສາມາດໃຊ້ໄດ້ຫາກບໍ່ມີບໍລິການ Google Play ເຊິ່ງອຸປະກອນຂອງທ່ານບໍ່ຮອງຮັບ."</string>
+    <string msgid="8172070149091615356" name="common_google_play_services_update_button">"ອັບເດດ"</string>
+    <string msgid="7773943415006962566" name="common_google_play_services_update_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> ຈະບໍ່ສາມາດເຮັດວຽກໄດ້ຈົນກວ່າທ່ານຈະອັບເດດການ​ບໍ​ລິ​ການ Google Play"</string>
+    <string msgid="8706675115216073244" name="common_google_play_services_update_title">"ອັບເດດການ​ບໍ​ລິ​ການ Google Play"</string>
+    <string msgid="7894275749778928941" name="common_google_play_services_updating_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> ຈະບໍ່ສາມາດໃຊ້ງານໄດ້ໂດຍທີ່ບໍ່ມີການ​ບໍ​ລິ​ການ Google Play, ເຊິ່ງ​ກຳ​ລັງ​ອັບ​ເດດ​ຢູ່​ໃນ​ປະ​ຈຸ​ບັນ."</string>
+    <string msgid="2804989272736383918" name="common_google_play_services_wear_update_text">"ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ກາ​ນ​ບໍ​ລິ​ການ Google Play ເວີ​ຊັນ​ໃໝ່. ມັນ​ຈະ​ອັບ​ເດດ​ຕົວ​ເອງ​ໄວໆ​ນີ້."</string>
+    <string msgid="5201977337835724196" name="common_open_on_phone">"​ເປີດ​ໃນ​ໂທ​ລະ​ສັບ"</string>
+    <string msgid="3441753203274453993" name="common_signin_button_text">"ລົງຊື່ເຂົ້າໃຊ້"</string>
+    <string msgid="669893613918351210" name="common_signin_button_text_long">"ລົງຊື່ເຂົ້າໃຊ້ດ້ວຍ Google"</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"ໃຊ້ລະຫັດຜ່ານ"</string>
+    <string msgid="3209159573327985035" name="copy">"ສຳເນົາ"</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ"</string>
+    <string name="error_icon_content_description">ຜິດພາດ</string>
+    <string name="exo_controls_cc_disabled_description">ເປີດການນຳໃຊ້ຄຳແປ</string>
+    <string name="exo_controls_cc_enabled_description">ປິດການນຳໃຊ້ຄຳແປ</string>
+    <string name="exo_controls_fastforward_description">ເລື່ອນໄປໜ້າ</string>
+    <string name="exo_controls_fullscreen_enter_description">ເຂົ້າສູ່ໂໝດເຕັມຈໍ</string>
+    <string name="exo_controls_fullscreen_exit_description">ອອກຈາກເຕັມຈໍ</string>
+    <string name="exo_controls_hide">ເຊື່ອງຕົວຄວບ​ຄຸມ​ເຄື່ອງ​ຫຼິ້ນ</string>
+    <string name="exo_controls_next_description">ຕໍ່ໄປ</string>
+    <string name="exo_controls_overflow_hide_description">ເຊື່ອງການຕັ້ງຄ່າເພີ່ມເຕີມ</string>
+    <string name="exo_controls_overflow_show_description">ສະແດງການຕັ້ງຄ່າເພີ່ມເຕີມ</string>
+    <string name="exo_controls_pause_description">ຢຸດຊົ່ວຄາວ</string>
+    <string name="exo_controls_play_description">ຫຼິ້ນ</string>
+    <string name="exo_controls_playback_speed">ຄວາມໄວ</string>
+    <string name="exo_controls_playback_speed_normal">ທົ່ວໄປ</string>
+    <string name="exo_controls_previous_description">ກ່ອນໜ້າ</string>
+    <string name="exo_controls_repeat_all_description">ຫຼິ້ນຊ້ຳທັງໝົດ</string>
+    <string name="exo_controls_repeat_off_description">ບໍ່ຫຼິ້ນຊ້ຳ</string>
+    <string name="exo_controls_repeat_one_description">ຫຼິ້ນຊໍ້າ</string>
+    <string name="exo_controls_rewind_description">ຍ້ອນກັບ</string>
+    <string name="exo_controls_seek_bar_description">ສະຖານະການຫຼິ້ນ</string>
+    <string name="exo_controls_settings_description">ຕັ້ງຄ່າ</string>
+    <string name="exo_controls_show">ສະ​ແດງຕົວຄວບ​ຄຸມ​ເຄື່ອງ​ຫຼິ້ນ</string>
+    <string name="exo_controls_shuffle_off_description">ປິດການສຸ່ມເພງແລ້ວ</string>
+    <string name="exo_controls_shuffle_on_description">ເປີດການສຸ່ມເພງແລ້ວ</string>
+    <string name="exo_controls_stop_description">ຢຸດ</string>
+    <string name="exo_controls_vr_description">ໂໝດ VR</string>
+    <string name="exo_download_completed">ດາວໂຫລດສຳເລັດແລ້ວ</string>
+    <string name="exo_download_description">ດາວໂຫລດ</string>
+    <string name="exo_download_downloading">ກຳລັງດາວໂຫລດ</string>
+    <string name="exo_download_failed">ດາວໂຫຼດບໍ່ສຳເລັດ</string>
+    <string name="exo_download_notification_channel_name">ດາວໂຫລດ</string>
+    <string name="exo_download_removing">ກຳລັງລຶບການດາວໂຫລດອອກ</string>
+    <string name="exo_item_list">%1$s, %2$s</string>
+    <string name="exo_track_bitrate">%1$.2f Mbps</string>
+    <string name="exo_track_mono">ໂມໂນ</string>
+    <string name="exo_track_resolution">%1$d × %2$d</string>
+    <string name="exo_track_role_alternate">ສຳຮອງ</string>
+    <string name="exo_track_role_closed_captions">ຄຳບັນຍາຍ</string>
+    <string name="exo_track_role_commentary">ຄຳເຫັນ</string>
+    <string name="exo_track_role_supplementary">ສ່ວນເສີມ</string>
+    <string name="exo_track_selection_auto">ອັດຕະໂນມັດ</string>
+    <string name="exo_track_selection_none">ບໍ່ມີ</string>
+    <string name="exo_track_selection_title_audio">ສຽງ</string>
+    <string name="exo_track_selection_title_text">ຂໍ້ຄວາມ</string>
+    <string name="exo_track_selection_title_video">ວິດີໂອ</string>
+    <string name="exo_track_stereo">ສະເຕຣິໂອ</string>
+    <string name="exo_track_surround">ສຽງຮອບທິດທາງ</string>
+    <string name="exo_track_surround_5_point_1">ສຽງຮອບທິດທາງ 5.1</string>
+    <string name="exo_track_surround_7_point_1">ສຽງຮອບທິດທາງ 7.1</string>
+    <string name="exo_track_unknown">ບໍ່ຮູ້ຈັກ</string>
+    <string msgid="1234962710353108940" name="expand_button_title">"ຂັ້ນສູງ"</string>
+    <string name="exposed_dropdown_menu_content_description">ສະແດງເມນູເລື່ອນລົງ</string>
+    <string msgid="4133737464567140336" name="fcm_fallback_notification_channel_label">"ອື່ນໆ"</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"ແຕະເຊັນເຊີລາຍນິ້ວມື"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"ບໍ່​ມີ​ຮາດ​ແວລາຍ​ນີ້ວ​ມື​ທີ່ສາມາດໃຊ້ໄດ້."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"ອຸປະກອນນີ້ບໍ່ມີເຊັນເຊີລາຍນິ້ວມື"</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"ມີຄວາມພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"ບໍ່ມີການລົງທະບຽນລາຍນິ້ວມື."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"ຜູ້ໃຊ້ໄດ້ຍົກເລີກຄຳສັ່ງລາຍນິ້ວມືແລ້ວ."</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"ບໍ່ຮັບຮູ້"</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"ບໍ່ໄດ້ຕັ້ງ PIN, ຮູບແບບປົດລັອກ ຫຼື ລະຫັດຜ່ານ."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"ອຸປະກອນນີ້ບໍ່ຮອງຮັບ PIN, ຮູບແບບ ຫຼື ລະຫັດຜ່ານ."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"ຜູ້ໃຊ້ຍົກເລີກການພິສູດຢືນຢັນແລ້ວ."</string>
+    <string name="google_assistant_verification_channel_name">ຕົວກວດຢັ້ງຢືນຜູ້ຊ່ວຍ</string>
+    <string name="google_assistant_verification_notification_title">ຜູ້ຊ່ວຍ Google ກຳລັງສົ່ງຂໍ້ຄວາມ</string>
+    <string name="icon_content_description">ໄອຄອນກ່ອງໂຕ້ຕອບ</string>
+    <string name="item_view_role_description">ແຖບ</string>
+    <string name="material_clock_toggle_content_description">ເລືອກຕອນເຊົ້າ ຫຼື ຕອນແລງ</string>
+    <string name="material_hour_selection">ເລືອກຊົ່ວໂມງ</string>
+    <string name="material_hour_suffix">%1$s ໂມງ</string>
+    <string name="material_minute_selection">ເລືອກນາ​ທີ</string>
+    <string name="material_minute_suffix">%1$s ນາທີ</string>
+    <string name="material_timepicker_am">ໂມງເຊົ້າ</string>
+    <string name="material_timepicker_clock_mode_description">ສະຫຼັບໄປໃຊ້ໂໝດໂມງສຳລັບການປ້ອນເວລາ.</string>
+    <string name="material_timepicker_hour">ຊົ່ວໂມງ</string>
+    <string name="material_timepicker_minute">ນາທີ</string>
+    <string name="material_timepicker_pm">ໂມງແລງ</string>
+    <string name="material_timepicker_select_time">ເລືອກເວ​ລາ</string>
+    <string name="material_timepicker_text_input_mode_description">ສະຫຼັບໄປໃຊ້ໂໝດປ້ອນຂໍ້ຄວາມສຳລັບການປ້ອນເວລາ.</string>
+    <string name="mtrl_badge_numberless_content_description">ການແຈ້ງເຕືອນໃໝ່</string>
+    <string name="mtrl_chip_close_icon_content_description">ລຶບ %1$s ອອກ</string>
+    <string name="mtrl_exceed_max_badge_number_content_description">ການແຈ້ງເຕືອນໃໝ່ຫຼາຍກວ່າ %1$d ລາຍການ</string>
+    <string name="mtrl_picker_a11y_next_month">ປ່ຽນເປັນເດືອນຕໍ່ໄປ</string>
+    <string name="mtrl_picker_a11y_prev_month">ປ່ຽນເປັນເດືອນຜ່ານມາ</string>
+    <string name="mtrl_picker_announce_current_selection">ການເລືອກປັດຈຸບັນ: %1$s</string>
+    <string name="mtrl_picker_confirm">@android:string/ok</string>
+    <string name="mtrl_picker_date_header_selected">%1$s</string>
+    <string name="mtrl_picker_date_header_title">ເລືອກວັນທີ</string>
+    <string name="mtrl_picker_date_header_unselected">ເລືອກວັນທີ</string>
+    <string name="mtrl_picker_day_of_week_column_header">ຖັນມື້: %1$s</string>
+    <string name="mtrl_picker_invalid_format">ຮູບແບບບໍ່ຖືກຕ້ອງ.</string>
+    <string name="mtrl_picker_invalid_format_example">ຕົວຢ່າງ: %1$s</string>
+    <string name="mtrl_picker_invalid_format_use">ໃຊ້: %1$s</string>
+    <string name="mtrl_picker_invalid_range">ໄລຍະບໍ່ຖືກຕ້ອງ.</string>
+    <string name="mtrl_picker_navigate_to_year_description">ເລື່ອນໄປປີ %1$s</string>
+    <string name="mtrl_picker_out_of_range">ຢູ່ນອກຊ່ວງວັນທີ: %1$s</string>
+    <string name="mtrl_picker_range_header_only_end_selected">ວັນທີເລີ່ມຕົ້ນ – %1$s</string>
+    <string name="mtrl_picker_range_header_only_start_selected">%1$s – ວັນທີສິ້ນສຸດ</string>
+    <string name="mtrl_picker_range_header_selected">%1$s – %2$s</string>
+    <string name="mtrl_picker_range_header_title">ເລືອກຊ່ວງ</string>
+    <string name="mtrl_picker_range_header_unselected">ວັນທີເລີ່ມຕົ້ນ – ວັນທີສິ້ນສຸດ</string>
+    <string name="mtrl_picker_save">ບັນທຶກ</string>
+    <string name="mtrl_picker_text_input_date_hint">ວັນທີ</string>
+    <string name="mtrl_picker_text_input_date_range_end_hint">ວັນທີສິ້ນສຸດ</string>
+    <string name="mtrl_picker_text_input_date_range_start_hint">ວັນທີເລີ່ມ</string>
+    <string name="mtrl_picker_text_input_day_abbr">ວ</string>
+    <string name="mtrl_picker_text_input_month_abbr">ດ</string>
+    <string name="mtrl_picker_text_input_year_abbr">ປ</string>
+    <string name="mtrl_picker_toggle_to_calendar_input_mode">ປ່ຽນເປັນໂໝດປ້ອນຂໍ້ມູນປະຕິທິນ</string>
+    <string name="mtrl_picker_toggle_to_day_selection">ແຕະເພື່ອປ່ຽນເປັນການເລືອກມື້</string>
+    <string name="mtrl_picker_toggle_to_text_input_mode">ປ່ຽນເປັນໂໝດປ້ອນຂໍ້ມູນຂໍ້ຄວາມ</string>
+    <string name="mtrl_picker_toggle_to_year_selection">ແຕະເພື່ອປ່ຽນເປັນການເລືອກປີ</string>
+    <string msgid="478774118347071097" name="not_set">"ບໍ່ໄດ້ຕັ້ງຄ່າ"</string>
+    <string name="password_toggle_content_description">ສະແດງລະຫັດຜ່ານ</string>
+    <string msgid="7961817945132860002" name="preference_copied">"ສຳເນົາ \"<ns1:g id="SUMMARY">%1$s</ns1:g>\" ໄປໃສ່ຄລິບບອດແລ້ວ."</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"ຊອກຫາ"</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string msgid="5190123168583152844" name="summary_collapsed_preference_list">"<ns1:g id="CURRENT_ITEMS">%1$s</ns1:g>, <ns1:g id="ADDED_ITEMS">%2$s</ns1:g>"</string>
+    <string msgid="5138405918326871307" name="v7_preference_off">"ປິດ"</string>
+    <string msgid="27351710992731591" name="v7_preference_on">"ເປີດ"</string>
+</resources>

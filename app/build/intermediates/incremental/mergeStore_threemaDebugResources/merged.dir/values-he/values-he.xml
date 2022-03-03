@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="crop_image_activity_no_permissions">ההרשאות הנדרשות חסרות, מבטל</string>
+    <string name="crop_image_activity_title"/>
+    <string name="crop_image_menu_crop">חתוך</string>
+    <string name="crop_image_menu_flip">הפוך</string>
+    <string name="crop_image_menu_flip_horizontally">הפוך אופקית</string>
+    <string name="crop_image_menu_flip_vertically">הפוך אנכית</string>
+    <string name="crop_image_menu_rotate_left">סובב נגד כיוון השעון</string>
+    <string name="crop_image_menu_rotate_right">סובב</string>
+    <string name="mapbox_attributionErrorNoBrowser">לא מותקן דפדפן אינטרנט במכשיר, לא ניתן לפתוח את דף האינטרנט.</string>
+    <string name="mapbox_attributionsDialogTitle">MapLibre Maps SDK for Android</string>
+    <string name="mapbox_attributionsIconContentDescription">סמל שיוך. הפעל כדי להציג תיבת דו-שיח של שיוך.</string>
+    <string name="mapbox_compassContentDescription">מצפן. הפעל בכדי לקבע את כיוון המפה צפונה.</string>
+    <string name="mapbox_mapActionDescription">מציג מפה שנוצרה עם MapLibre. גלול באמצעות גרירה עם שתי אצבעות, זום באמצעות צביטה עם שתי אצבעות.</string>
+    <string name="mapbox_myLocationViewContentDescription">סמן מיקום. מציג את המיקום הנוכחי שלך על המפה.</string>
+    <string name="mapbox_offline_error_region_definition_invalid">בתנאי ש- OfflineRegionDefinition אינו מתאים לגבולות העולם: %s</string>
+    <string name="pick_image_intent_chooser_title">בחר מקור</string>
+</resources>

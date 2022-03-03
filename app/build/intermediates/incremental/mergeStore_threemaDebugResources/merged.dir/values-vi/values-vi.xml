@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="exo_controls_fastforward_by_amount_description">
+    <item quantity="one">Tua nhanh %d giây</item>
+    <item quantity="other">Tua nhanh %d giây</item>
+  </plurals>
+    <plurals name="exo_controls_rewind_by_amount_description">
+    <item quantity="one">Tua lại %d giây</item>
+    <item quantity="other">Tua lại %d giây</item>
+  </plurals>
+    <plurals name="mtrl_badge_content_description">
+    <item quantity="one">%d thông báo mới</item>
+    <item quantity="other">%d thông báo mới</item>
+  </plurals>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Chỉ đường về nhà"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Di chuyển lên"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Tùy chọn khác"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Xong"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Xem tất cả"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Chọn một ứng dụng"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"TẮT"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"BẬT"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"space"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Tìm kiếm…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Xóa truy vấn"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Truy vấn tìm kiếm"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Tìm kiếm"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Gửi truy vấn"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Tìm kiếm bằng giọng nói"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Chia sẻ với"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Chia sẻ với <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Thu gọn"</string>
+    <string name="bottomsheet_action_expand_halfway">Mở rộng một nửa</string>
+    <string name="character_counter_content_description">Đã nhập %1$d trong số %2$d ký tự</string>
+    <string name="character_counter_overflowed_content_description">Đã vượt quá giới hạn ký tự %1$d/%2$d</string>
+    <string name="clear_text_end_icon_content_description">Xóa văn bản</string>
+    <string msgid="8585111718777012708" name="common_google_play_services_enable_button">"Bật"</string>
+    <string msgid="7045129128108380659" name="common_google_play_services_enable_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> sẽ không hoạt động nếu bạn không bật dịch vụ của Google Play."</string>
+    <string msgid="3147157405986503375" name="common_google_play_services_enable_title">"Bật dịch vụ của Google Play"</string>
+    <string msgid="9115728400623041681" name="common_google_play_services_install_button">"Cài đặt"</string>
+    <string msgid="8179894293032530091" name="common_google_play_services_install_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> sẽ không chạy nếu không có dịch vụ của Google Play. Thiết bị của bạn bị thiếu dịch vụ này."</string>
+    <string msgid="7442193194585196676" name="common_google_play_services_install_title">"Cài đặt dịch vụ của Google Play"</string>
+    <string msgid="4293541511340436975" name="common_google_play_services_notification_channel_name">"Phạm vi cung cấp các dịch vụ của Google Play"</string>
+    <string msgid="180394615667698242" name="common_google_play_services_notification_ticker">"Lỗi dịch vụ của Google Play"</string>
+    <string msgid="2518680582564677258" name="common_google_play_services_unknown_issue">"<ns1:g id="APP_NAME">%1$s</ns1:g> đang gặp sự cố với các dịch vụ của Google Play. Hãy thử lại."</string>
+    <string msgid="5501187292256987189" name="common_google_play_services_unsupported_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> sẽ không chạy nếu không có các dịch vụ của Google Play. Thiết bị của bạn không hỗ trợ các dịch vụ này."</string>
+    <string msgid="8172070149091615356" name="common_google_play_services_update_button">"Cập nhật"</string>
+    <string msgid="7773943415006962566" name="common_google_play_services_update_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> sẽ không chạy trừ khi bạn cập nhật Dịch vụ của Google Play."</string>
+    <string msgid="8706675115216073244" name="common_google_play_services_update_title">"Cập nhật dịch vụ của Google Play"</string>
+    <string msgid="7894275749778928941" name="common_google_play_services_updating_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> sẽ không chạy nếu không có dịch vụ của Google Play. Dịch vụ này hiện đang cập nhật."</string>
+    <string msgid="2804989272736383918" name="common_google_play_services_wear_update_text">"Cần phiên bản mới của dịch vụ Google Play. Dịch vụ sẽ sớm tự động cập nhật."</string>
+    <string msgid="5201977337835724196" name="common_open_on_phone">"Mở trên điện thoại"</string>
+    <string msgid="3441753203274453993" name="common_signin_button_text">"Đăng nhập"</string>
+    <string msgid="669893613918351210" name="common_signin_button_text_long">"Đăng nhập bằng Google"</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"Dùng mật khẩu"</string>
+    <string msgid="3209159573327985035" name="copy">"Sao chép"</string>
+    <string name="crop_image_activity_no_permissions">Đang hủy, các quyền đã yêu cầu không được cấp</string>
+    <string name="crop_image_activity_title"/>
+    <string name="crop_image_menu_crop">Cắt</string>
+    <string name="crop_image_menu_flip">Lật</string>
+    <string name="crop_image_menu_flip_horizontally">Lật theo chiều ngang</string>
+    <string name="crop_image_menu_flip_vertically">Lật theo chiều dọc</string>
+    <string name="crop_image_menu_rotate_left">Xoay theo chiều kim đồng hồ</string>
+    <string name="crop_image_menu_rotate_right">Xoay</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"Lỗi không xác định"</string>
+    <string name="error_icon_content_description">Lỗi</string>
+    <string name="exo_controls_cc_disabled_description">Bật phụ đề</string>
+    <string name="exo_controls_cc_enabled_description">Tắt phụ đề</string>
+    <string name="exo_controls_fastforward_description">Tua đi</string>
+    <string name="exo_controls_fullscreen_enter_description">Chuyển sang chế độ toàn màn hình</string>
+    <string name="exo_controls_fullscreen_exit_description">Thoát khỏi chế độ toàn màn hình</string>
+    <string name="exo_controls_hide">Ẩn các nút điều khiển trình phát</string>
+    <string name="exo_controls_next_description">Tiếp theo</string>
+    <string name="exo_controls_overflow_hide_description">Ẩn các tùy chọn cài đặt bổ sung</string>
+    <string name="exo_controls_overflow_show_description">Hiện các tùy chọn cài đặt bổ sung</string>
+    <string name="exo_controls_pause_description">Tạm dừng</string>
+    <string name="exo_controls_play_description">Phát</string>
+    <string name="exo_controls_playback_speed">Tốc độ</string>
+    <string name="exo_controls_playback_speed_normal">Bình thường</string>
+    <string name="exo_controls_previous_description">Trước</string>
+    <string name="exo_controls_repeat_all_description">Lặp lại tất cả</string>
+    <string name="exo_controls_repeat_off_description">Không lặp lại</string>
+    <string name="exo_controls_repeat_one_description">Lặp lại một</string>
+    <string name="exo_controls_rewind_description">Tua lại</string>
+    <string name="exo_controls_seek_bar_description">Tiến trình phát</string>
+    <string name="exo_controls_settings_description">Cài đặt</string>
+    <string name="exo_controls_show">Hiển thị các nút điều khiển trình phát</string>
+    <string name="exo_controls_shuffle_off_description">Chế độ trộn bài đang tắt</string>
+    <string name="exo_controls_shuffle_on_description">Chế độ trộn bài đang bật</string>
+    <string name="exo_controls_stop_description">Dừng</string>
+    <string name="exo_controls_vr_description">Chế độ thực tế ảo</string>
+    <string name="exo_download_completed">Đã hoàn tất tải xuống</string>
+    <string name="exo_download_description">Tải xuống</string>
+    <string name="exo_download_downloading">Đang tải xuống</string>
+    <string name="exo_download_failed">Không tải xuống được</string>
+    <string name="exo_download_notification_channel_name">Tài nguyên đã tải xuống</string>
+    <string name="exo_download_removing">Đang xóa các mục đã tải xuống</string>
+    <string name="exo_item_list">%1$s, %2$s</string>
+    <string name="exo_track_bitrate">%1$.2f Mb/giây</string>
+    <string name="exo_track_mono">Đơn âm</string>
+    <string name="exo_track_resolution">%1$d × %2$d</string>
+    <string name="exo_track_role_alternate">Thay thế</string>
+    <string name="exo_track_role_closed_captions">Phụ đề</string>
+    <string name="exo_track_role_commentary">Bình luận</string>
+    <string name="exo_track_role_supplementary">Bổ sung</string>
+    <string name="exo_track_selection_auto">Tự động</string>
+    <string name="exo_track_selection_none">Không</string>
+    <string name="exo_track_selection_title_audio">Âm thanh</string>
+    <string name="exo_track_selection_title_text">Văn bản</string>
+    <string name="exo_track_selection_title_video">Video</string>
+    <string name="exo_track_stereo">Âm thanh nổi</string>
+    <string name="exo_track_surround">Âm thanh vòm</string>
+    <string name="exo_track_surround_5_point_1">Âm thanh vòm 5.1</string>
+    <string name="exo_track_surround_7_point_1">Âm thanh vòm 7.1</string>
+    <string name="exo_track_unknown">Không xác định</string>
+    <string msgid="1234962710353108940" name="expand_button_title">"Nâng cao"</string>
+    <string name="exposed_dropdown_menu_content_description">Hiển thị menu thả xuống</string>
+    <string msgid="4133737464567140336" name="fcm_fallback_notification_channel_label">"Khác"</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"Chạm vào cảm biến vân tay"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"Không dùng được phần cứng vân tay."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"Thiết bị này không có cảm biến vân tay"</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"Bạn đã thử quá nhiều lần. Vui lòng thử lại sau."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"Chưa đăng ký vân tay."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"Người dùng đã hủy thao tác dùng dấu vân tay."</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"Không nhận dạng được"</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"Chưa đặt mã PIN, hình mở khóa hoặc mật khẩu."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"Thiết bị này không hỗ trợ mã PIN, hình mở khóa hoặc mật khẩu."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"Người dùng đã hủy thao tác xác thực."</string>
+    <string name="google_assistant_verification_channel_name">Trình xác minh của Trợ lý</string>
+    <string name="google_assistant_verification_notification_title">Trợ lý Google đang gửi thông báo</string>
+    <string name="icon_content_description">Biểu tượng hộp thoại</string>
+    <string name="item_view_role_description">Thẻ</string>
+    <string name="mapbox_attributionErrorNoBrowser">Không thể mở trang Web vì thiết bị thiếu trình duyệt.</string>
+    <string name="mapbox_attributionsDialogTitle">MapLibre Maps SDK cho Android</string>
+    <string name="mapbox_attributionsIconContentDescription">Biểu tượng ghi công. Kích hoạt để xem hộp thoại ghi công.</string>
+    <string name="mapbox_compassContentDescription">La bàn bản đồ. Kích hoạt để quay bản đồ lại hướng bắc.</string>
+    <string name="mapbox_mapActionDescription">Đang xem bản đồ được xây dựng dùng MapLibre. Kéo hai ngón tay để cuộn. Chụm các ngón tay lại để phóng to. Tách các ngón tay ra để thu nhỏ.</string>
+    <string name="mapbox_myLocationViewContentDescription">Cái chỉ vị trí. Cái này chỉ vị trí của bạn trên bản đồ.</string>
+    <string name="mapbox_offline_error_region_definition_invalid">OfflineRegionDefinition được cung cấp không vừa thế giới: %s</string>
+    <string name="material_clock_toggle_content_description">Chọn SA hoặc CH</string>
+    <string name="material_hour_selection">Chọn giờ</string>
+    <string name="material_hour_suffix">%1$s giờ</string>
+    <string name="material_minute_selection">Chọn phút</string>
+    <string name="material_minute_suffix">%1$s phút</string>
+    <string name="material_timepicker_am">SA</string>
+    <string name="material_timepicker_clock_mode_description">Chuyển sang chế độ đồng hồ để nhập thời gian.</string>
+    <string name="material_timepicker_hour">Giờ</string>
+    <string name="material_timepicker_minute">Phút</string>
+    <string name="material_timepicker_pm">CH</string>
+    <string name="material_timepicker_select_time">Chọn thời gian</string>
+    <string name="material_timepicker_text_input_mode_description">Chuyển sang chế độ nhập văn bản để nhập thời gian.</string>
+    <string name="mtrl_badge_numberless_content_description">Thông báo mới</string>
+    <string name="mtrl_chip_close_icon_content_description">Xóa %1$s</string>
+    <string name="mtrl_exceed_max_badge_number_content_description">Hơn %1$d thông báo mới</string>
+    <string name="mtrl_picker_a11y_next_month">Chuyển sang tháng tiếp theo</string>
+    <string name="mtrl_picker_a11y_prev_month">Chuyển về tháng trước</string>
+    <string name="mtrl_picker_announce_current_selection">Lựa chọn hiện tại: %1$s</string>
+    <string name="mtrl_picker_confirm">@android:string/ok</string>
+    <string name="mtrl_picker_date_header_selected">%1$s</string>
+    <string name="mtrl_picker_date_header_title">Chọn ngày</string>
+    <string name="mtrl_picker_date_header_unselected">Ngày đã chọn</string>
+    <string name="mtrl_picker_day_of_week_column_header">Cột ngày: %1$s</string>
+    <string name="mtrl_picker_invalid_format">Định dạng không hợp lệ.</string>
+    <string name="mtrl_picker_invalid_format_example">Ví dụ: %1$s</string>
+    <string name="mtrl_picker_invalid_format_use">Sử dụng: %1$s</string>
+    <string name="mtrl_picker_invalid_range">Phạm vi không hợp lệ.</string>
+    <string name="mtrl_picker_navigate_to_year_description">Chuyển tới năm %1$s</string>
+    <string name="mtrl_picker_out_of_range">Nằm ngoài phạm vi: %1$s</string>
+    <string name="mtrl_picker_range_header_only_end_selected">Ngày bắt đầu – %1$s</string>
+    <string name="mtrl_picker_range_header_only_start_selected">%1$s – Ngày kết thúc</string>
+    <string name="mtrl_picker_range_header_selected">%1$s – %2$s</string>
+    <string name="mtrl_picker_range_header_title">Chọn dải ô</string>
+    <string name="mtrl_picker_range_header_unselected">Ngày bắt đầu – Ngày kết thúc</string>
+    <string name="mtrl_picker_save">Lưu</string>
+    <string name="mtrl_picker_text_input_date_hint">Ngày</string>
+    <string name="mtrl_picker_text_input_date_range_end_hint">Ngày kết thúc</string>
+    <string name="mtrl_picker_text_input_date_range_start_hint">Ngày bắt đầu</string>
+    <string name="mtrl_picker_text_input_day_abbr">d</string>
+    <string name="mtrl_picker_text_input_month_abbr">m</string>
+    <string name="mtrl_picker_text_input_year_abbr">y</string>
+    <string name="mtrl_picker_toggle_to_calendar_input_mode">Chuyển sang chế độ nhập lịch</string>
+    <string name="mtrl_picker_toggle_to_day_selection">Nhấn để chuyển sang chế độ chọn một ngày</string>
+    <string name="mtrl_picker_toggle_to_text_input_mode">Chuyển sang chế độ nhập văn bản</string>
+    <string name="mtrl_picker_toggle_to_year_selection">Nhấn để chuyển sang chế độ chọn một năm</string>
+    <string msgid="478774118347071097" name="not_set">"Chưa đặt"</string>
+    <string name="password_toggle_content_description">Hiển thị mật khẩu</string>
+    <string name="pick_image_intent_chooser_title">Chọn nguồn</string>
+    <string msgid="7961817945132860002" name="preference_copied">"Đã sao chép \"<ns1:g id="SUMMARY">%1$s</ns1:g>\" vào khay nhớ tạm."</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Tìm kiếm"</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string msgid="5190123168583152844" name="summary_collapsed_preference_list">"<ns1:g id="CURRENT_ITEMS">%1$s</ns1:g>, <ns1:g id="ADDED_ITEMS">%2$s</ns1:g>"</string>
+    <string msgid="5138405918326871307" name="v7_preference_off">"TẮT"</string>
+    <string msgid="27351710992731591" name="v7_preference_on">"BẬT"</string>
+</resources>

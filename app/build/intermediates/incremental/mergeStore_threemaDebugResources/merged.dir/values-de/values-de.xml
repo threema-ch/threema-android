@@ -1,0 +1,1743 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2" xmlns:ns2="http://schemas.android.com/tools">
+    <plurals name="exo_controls_fastforward_by_amount_description">
+    <item quantity="one">%d Sekunde vorspulen</item>
+    <item quantity="other">%d Sekunden vorspulen</item>
+  </plurals>
+    <plurals name="exo_controls_rewind_by_amount_description">
+    <item quantity="one">%d Sekunde zurückspulen</item>
+    <item quantity="other">%d Sekunden zurückspulen</item>
+  </plurals>
+    <plurals name="mtrl_badge_content_description">
+    <item quantity="one">%d neue Benachrichtigung</item>
+    <item quantity="other">%d neue Benachrichtigungen</item>
+  </plurals>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Zur Startseite"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Nach oben"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Weitere Optionen"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Fertig"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Alle anzeigen"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"App auswählen"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"AUS"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"AN"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt +"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Strg +"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"Löschen"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"Eingabetaste"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Funktionstaste +"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta-Taste +"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Umschalttaste +"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"Leertaste"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym-Taste +"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menütaste +"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Suchen…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Suchanfrage löschen"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Suchanfrage"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Suche"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Anfrage senden"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Sprachsuche"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Teilen mit"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Mit <ns1:g id="APPLICATION_NAME">%s</ns1:g> teilen"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Minimieren"</string>
+    <string name="accept">Akzeptieren</string>
+    <string name="account_links">Verknüpfungen</string>
+    <string name="acknowledge">Bestätigen</string>
+    <string name="action_clone_group">Gruppe klonen</string>
+    <string name="action_delete_group">Gruppe löschen</string>
+    <string name="action_leave_group">Gruppe verlassen</string>
+    <string name="add">Hinzufügen</string>
+    <string name="add_acount_from_within_threema">Erstellen Sie eine neue ID von der Threema-App aus.</string>
+    <string name="add_answer">Antwort hinzufügen</string>
+    <string name="add_attachment">Einfügen</string>
+    <string name="add_caption_hint">Beschriftung hinzufügen</string>
+    <string name="add_contact_enter_id_hint">Bitte geben Sie die Threema-ID des Kontakts ein, den Sie hinzufügen möchten</string>
+    <string name="add_group_link">Mitglieder mit Gruppen-Link hinzufügen</string>
+    <string name="add_group_members">Neues Mitglied</string>
+    <string name="add_group_members_list">Gruppenmitglieder</string>
+    <string name="add_group_owner">Ersteller</string>
+    <string name="add_shortcut">Desktop-Verkn. erstellen</string>
+    <string name="add_shortcut_error">Fehler beim Erstellen der Desktop-Verknüpfung</string>
+    <string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
+    <string name="advanced_options">Weitere Optionen</string>
+    <string name="all">Alle</string>
+    <string name="all_open_group_requests">Alle Gruppenanfragen</string>
+    <string name="already_licensed">Bereits lizenziert</string>
+    <string name="an_error_occurred">Es ist ein Fehler aufgetreten</string>
+    <string name="an_error_occurred_during_send">Beim Versand einer oder mehrerer Nachrichten ist ein Fehler aufgetreten.</string>
+    <string name="an_error_occurred_more">Es ist ein Fehler aufgetreten: «%1$s»</string>
+    <string name="and">und</string>
+    <string name="android_backup_date">Letztes Backup</string>
+    <string name="android_backup_restart_threema">Bitte warten. Die App wird in Kürze neu gestartet.</string>
+    <string name="android_emojis_warning">Hinweis: Der System-Zeichensatz kann unter Umständen nicht alle von Threema
+		unterstützten Emojis darstellen.
+	</string>
+    <string name="another_connection_instructions">Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.\n\nEs ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.\n\nFalls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.</string>
+    <string name="app_store_error_code">App Store Fehlercode: %d</string>
+    <string name="archived">Archiviert</string>
+    <string name="archived_chats">Archivierte Chats</string>
+    <string name="attach_ballot">Umfrage</string>
+    <string name="attach_camera">System-Kamera</string>
+    <string name="attach_document">Datei</string>
+    <string name="attach_gallery">Galerie</string>
+    <string name="attach_gif">Gif</string>
+    <string name="attach_location">Ort</string>
+    <string name="attach_picture">Bild</string>
+    <string name="attach_video">Video</string>
+    <string name="audio_focus_loss_complete">Anruf beendet aufgrund vollständigen Verlusts des Audio-Fokus.</string>
+    <string name="audio_mute_due_to_focus_loss">Ton temporär stummgeschaltet wegen Verlust des Audio-Fokus</string>
+    <string name="audio_placeholder">Audio</string>
+    <string name="auto_download_limit_explain">Videos und Dateien mit mehr als %s werden immer auf Verlangen heruntergeladen</string>
+    <string name="back">Zurück</string>
+    <string name="back_to_threema">Zurück bei %s?</string>
+    <string name="backup_and_delete">Sichern und Löschen</string>
+    <string name="backup_data">Daten-Backup</string>
+    <string name="backup_data_cancelled">Backup angehalten</string>
+    <string name="backup_data_media" ns2:ignore="Typos">Grosse Medien (Videos, Dateien, Bilder) mitsichern</string>
+    <string name="backup_data_media_confirm" ns2:ignore="Typos">Das Sichern von grossen Mediendateien in ein ZIP-Backup kann sehr lange dauern und die Prozessor- und Speicherkapazität Ihres Geräts überschreiten. Während des Backups können keine Threema-Nachrichten empfangen werden. Wollen Sie wirklich fortfahren?</string>
+    <string name="backup_data_new">Daten-Backup erstellen</string>
+    <string name="backup_data_no_permission">Kein Schreibzugriff auf dieses Verzeichnis. Bitte wählen Sie ein anderes.</string>
+    <string name="backup_data_password_msg">Ihre ID, Chats, Kontakte und Einstellungen werden im USB-Speicher in einer
+		ZIP-Datei abgelegt und können auf einem anderen Android-Gerät wiederhergestellt werden. Geben Sie ein Passwort
+		für Ihr Daten-Backup ein.
+	</string>
+    <string name="backup_data_title">Daten-Backup</string>
+    <string name="backup_delete_confirm">Backup-Datei gelöscht</string>
+    <string name="backup_explain_text">Wenn Sie Ihr Gerät wechseln oder verlieren, kann ohne ein Backup niemand Ihre Threema-ID und Chats wiederherstellen. Sichern Sie deshalb Ihre Daten mit den vorliegenden Backup-Möglichkeiten.</string>
+    <string name="backup_id">ID-Export</string>
+    <string name="backup_id_summary">Die Zeichenfolge oder der QR-Code können zusammen mit dem gewählten Passwort zum
+		Wiederherstellen Ihrer ID auf einem anderen Gerät verwendet werden. Sie können die Daten mittels Kopieren &amp;
+		Einfügen an einem geeigneten Ort ablegen, drucken, sich selber über die Teilen-Funktion per E-Mail senden oder den
+		QR-Code mit einem anderen Gerät scannen.
+	</string>
+    <string name="backup_id_title">Ihr ID-Export</string>
+    <string name="backup_in_progress">Datensicherung wird erstellt</string>
+    <string name="backup_or_restore_error">Threema-Datensicherung</string>
+    <string name="backup_or_restore_error_body">Datensicherung fehlgeschlagen</string>
+    <string name="backup_or_restore_progress">Backup-/Wiederherst.-Fortschritt</string>
+    <string name="backup_or_restore_success_body">Datensicherung erfolgreich erstellt</string>
+    <string name="backup_other_restore_options">Weitere Wiederherst.-Optionen</string>
+    <string name="backup_password_again_summary">Passwortwiederholung</string>
+    <string name="backup_password_summary">Ihre ID wird mit einem Passwort verschlüsselt. Benutzen Sie eine Kombination aus Buchstaben, Ziffern und Symbolen. Merken Sie sich, was Sie hier eingeben!</string>
+    <string name="backup_restore_in_progress">Backup oder Wiederherstellen im Gange. Überprüfen Sie die Benachrichtigung für weitere Informationen.</string>
+    <string name="backup_restore_type"><![CDATA[Welche Art von Backup möchten Sie wiederherstellen? <br/><br/> <a href=%s>Mehr über Backups in Threema erfahren</a>]]></string>
+    <string name="backup_share">Backup weiterleiten</string>
+    <string name="backup_share_content">Die folgende Zeichenfolge kann zusammen mit dem gewählten Passwort zum
+		Wiederherstellen Ihrer Threema-ID verwendet werden.
+	</string>
+    <string name="backup_share_subject">Threema ID-Export für</string>
+    <string name="backup_started">Daten-Backup wurde gestartet</string>
+    <string name="backup_sum">Exportieren Sie Ihre Threema-ID</string>
+    <string name="backup_title">ID exportieren</string>
+    <string name="ballot_add_choices">Antwortmöglichkeiten eingeben</string>
+    <string name="ballot_answer_count_error">Bitte mindestens zwei Antworten festlegen.</string>
+    <string name="ballot_choice_add">Antworttext</string>
+    <string name="ballot_close" ns2:ignore="Typos">Umfrage abschliessen</string>
+    <string name="ballot_copy">Umfrage kopieren</string>
+    <string name="ballot_create">Umfrage erstellen</string>
+    <string name="ballot_created_successfully">Die Umfrage wurde erfolgreich erstellt.</string>
+    <string name="ballot_error_more_than_x_choices">Sie müssen mindestens zwei Auswahlmöglichkeiten erstellen</string>
+    <string name="ballot_intermediate_results_show">Zwischenresultate zeigen</string>
+    <string name="ballot_message_closed">Resultate verfügbar</string>
+    <string name="ballot_multiple_choice">Mehrfachauswahl</string>
+    <string name="ballot_no_ballots_yet">Noch keine Umfragen vorhanden.</string>
+    <string name="ballot_not_connected">Bitte stellen Sie sicher, dass Threema online ist, bevor Sie eine Umfrage abschliessen.</string>
+    <string name="ballot_not_exist">Umfrage existiert nicht</string>
+    <string name="ballot_one_contact_not_supported">Achtung: %1$s kann noch nicht an Umfragen teilnehmen.</string>
+    <string name="ballot_open">Offene Umfragen</string>
+    <string name="ballot_overview">Alle Umfragen</string>
+    <string name="ballot_placeholder">Umfrage</string>
+    <string name="ballot_really_close" ns2:ignore="Typos">Möchten Sie diese Umfrage abschliessen und die Resultate verfügbar machen?
+	</string>
+    <string name="ballot_really_delete">Umfrage löschen</string>
+    <string name="ballot_really_delete_text">Möchten Sie wirklich %1$d Abstimmungen löschen? Die Stimmen können nicht
+		wiederhergestellt werden.
+	</string>
+    <string name="ballot_received_votes">Eingegangene Stimmen: %1$d/%2$d</string>
+    <string name="ballot_remove">Umfrage entfernen</string>
+    <string name="ballot_result_final">Endresultat</string>
+    <string name="ballot_result_intermediate">Zwischenresultate</string>
+    <string name="ballot_secret">geheim</string>
+    <string name="ballot_state_closed">geschlossen</string>
+    <string name="ballot_subject_hint">Titel der Umfrage eingeben</string>
+    <string name="ballot_tap_to_view_results">Umfrage beendet. Tippen für Resultate</string>
+    <string name="ballot_tap_to_vote">Zum Abstimmen tippen</string>
+    <string name="ballot_vote">Abstimmen</string>
+    <string name="ballot_vote_posted_failed">Stimmabgabe fehlgeschlagen</string>
+    <string name="ballot_vote_posted_successfully">Stimme erfolgreich abgegeben</string>
+    <string name="ballot_window_hide">Offene Umfragen verbergen</string>
+    <string name="ballot_window_show">Offene Umfragen anzeigen</string>
+    <string name="ballot_wizard0_explain">Erstellen Sie schnell und einfach eine Umfrage direkt innerhalb von
+		Threema. Vereinbaren Sie einen Termin oder machen Sie eine Umfrage unter Ihren Freunden.
+	</string>
+    <string name="ballot_x_contact_not_supported">Achtung: %1$d Kontakte können noch nicht an Umfragen teilnehmen.
+	</string>
+    <string name="battery_optimizations_disable_confirm">Möchten Sie die Akku-Leistungsoptimierung für %1$s wirklich aktiviert lassen? Dadurch ist %2$s nicht sinnvoll nutzbar.</string>
+    <string name="battery_optimizations_disable_guide">Wählen Sie «Alle Apps» im Ausklappmenü</string>
+    <string name="battery_optimizations_disable_guide_ctd">Suchen Sie nach %s in der Liste und deaktivieren Sie die Optimierung</string>
+    <string name="battery_optimizations_explain">Die Akku-Leistungsoptimierung verhindert, dass %1$s korrekt funktioniert, wenn Ihr Handy in den Schlafmodus fällt. Bitte deaktivieren Sie die Optimierung für %2$s.</string>
+    <string name="battery_optimizations_title">Akku-Leistungsoptimierung deaktivieren</string>
+    <string name="biometric_authentication_failed">Die Authentisierung ist fehlgeschlagen</string>
+    <string name="biometric_authentication_successful">Sie wurden erfolgreich authentisiert</string>
+    <string name="biometric_enter_authentication">Zum Entsperren bitte authentisieren</string>
+    <string name="biometrics_no_permission">Keine Berechtigung für den Zugriff auf die biometrischen Daten.</string>
+    <string name="biometrics_not_avilable">Die biometrische Authentisierung ist nicht verfügbar.</string>
+    <string name="biometrics_not_enrolled">Keine biometrischen Daten im System hinterlegt.</string>
+    <string name="block_contact">Kontakt blockieren</string>
+    <string name="blocked">blockiert</string>
+    <string name="blocked_cannot_send">Sie können keine Nachrichten an blockierte Kontakte senden</string>
+    <string name="blur">Verwischen</string>
+    <string name="blur_faces">Gesichter verwischen</string>
+    <string name="bold">Fett</string>
+    <string name="bottomsheet_action_expand_halfway">Zur Hälfte maximieren</string>
+    <string name="brush">Pinsel</string>
+    <string name="call_ongoing">Anruf läuft</string>
+    <string name="call_with">%s anrufen</string>
+    <string name="can_not_delete_contact">Der Kontakt kann nicht gelöscht werden</string>
+    <string name="can_not_delete_contact_until_in_group">Der Kontakt kann nicht gelöscht werden, solange er sich noch in
+		einer Gruppe befindet
+	</string>
+    <string name="can_not_delete_not_valid">Ein ungültiges Objekt kann nicht entfernt werden</string>
+    <string name="can_not_send_no_group_members">Es können keine Nachrichten an eine leere Gruppe gesendet werden.
+	</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="cancel_recording">Aufnahme löschen</string>
+    <string name="cancel_recording_message">Möchten Sie die Aufnahme wirklich abbrechen und löschen?</string>
+    <string name="cannot_open_file">Konnte Datei nicht öffnen</string>
+    <string name="change">Ändern</string>
+    <string name="character_counter_content_description">Eingegebene Zeichen: %1$d von %2$d</string>
+    <string name="character_counter_overflowed_content_description">Zeichenbeschränkung überschritten: %1$d/%2$d</string>
+    <string name="chat_deleted">%d Chat(s) gelöscht</string>
+    <string name="chat_hidden">Chat als privat markiert</string>
+    <string name="chat_history_attached">Das Chatprotokoll liegt als Anhang bei.</string>
+    <string name="chat_updates">Chat-Aktualisierungen</string>
+    <string name="chat_visible">Der Chat ist nun immer sichtbar</string>
+    <string name="chat_with">Chat mit %1$s</string>
+    <string name="chats">Chats</string>
+    <string name="check_incoming_sms">Warte auf eingehende SMS</string>
+    <string name="check_now">Jetzt prüfen</string>
+    <string name="check_updates">Auf Updates prüfen</string>
+    <string name="checking_serial">Lizenz wird überprüft</string>
+    <string name="city">Grosstadt</string>
+    <string name="city_block">Stadtblock</string>
+    <string name="clear_text_end_icon_content_description">Text löschen</string>
+    <string name="click_here_to_change_passphrase">Hier klicken, um die Passphrase zu ändern</string>
+    <string name="click_here_to_change_pin">PIN gesetzt. Hier tippen zum Ändern</string>
+    <string name="clone_group_message">Es wird eine Kopie der aktuellen Gruppe mit Ihnen als Administrator erstellt. Fortfahren?</string>
+    <string name="close" ns2:ignore="Typos">Schliessen</string>
+    <string name="code_invalid">Der eingegebene Code ist ungültig.</string>
+    <string name="color_blue">Blau</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_green">Grün</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_none">Keine</string>
+    <string name="color_orange">Orange</string>
+    <string msgid="1248663997452044787" name="color_picker_default_title">"Farbe auswählen"</string>
+    <string name="color_red">Rot</string>
+    <string msgid="2883438431173736180" name="color_swatch_description">"Farbe <ns1:g id="COLOR_INDEX">%1$d</ns1:g>"</string>
+    <string msgid="5020921249944943124" name="color_swatch_description_selected">"Farbe <ns1:g id="COLOR_INDEX">%1$d</ns1:g> ausgewählt"</string>
+    <string name="color_white" ns2:ignore="Typos">Weiss</string>
+    <string name="color_yellow">Gelb</string>
+    <string msgid="8585111718777012708" name="common_google_play_services_enable_button">"Aktivieren"</string>
+    <string msgid="7045129128108380659" name="common_google_play_services_enable_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> funktioniert erst nach der Aktivierung der Google Play-Dienste."</string>
+    <string msgid="3147157405986503375" name="common_google_play_services_enable_title">"Google Play-Dienste aktivieren"</string>
+    <string msgid="9115728400623041681" name="common_google_play_services_install_button">"Installieren"</string>
+    <string msgid="8179894293032530091" name="common_google_play_services_install_text">"Zur Nutzung von <ns1:g id="APP_NAME">%1$s</ns1:g> sind die Google Play-Dienste erforderlich, die auf deinem Gerät nicht installiert sind."</string>
+    <string msgid="7442193194585196676" name="common_google_play_services_install_title">"Google Play-Dienste installieren"</string>
+    <string msgid="4293541511340436975" name="common_google_play_services_notification_channel_name">"Verfügbarkeit von Google Play-Diensten"</string>
+    <string msgid="180394615667698242" name="common_google_play_services_notification_ticker">"Fehler bei Zugriff auf Google Play-Dienste"</string>
+    <string msgid="2518680582564677258" name="common_google_play_services_unknown_issue">"<ns1:g id="APP_NAME">%1$s</ns1:g> hat Probleme mit Google Play-Diensten. Bitte versuche es noch einmal."</string>
+    <string msgid="5501187292256987189" name="common_google_play_services_unsupported_text">"Zur Nutzung von <ns1:g id="APP_NAME">%1$s</ns1:g> sind Google Play-Dienste erforderlich, die auf deinem Gerät nicht unterstützt werden."</string>
+    <string msgid="8172070149091615356" name="common_google_play_services_update_button">"Aktualisieren"</string>
+    <string msgid="7773943415006962566" name="common_google_play_services_update_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> wird nur ausgeführt, wenn du die Google Play-Dienste aktualisierst."</string>
+    <string msgid="8706675115216073244" name="common_google_play_services_update_title">"Google Play-Dienste aktualisieren"</string>
+    <string msgid="7894275749778928941" name="common_google_play_services_updating_text">"Zur Nutzung von <ns1:g id="APP_NAME">%1$s</ns1:g> sind Google Play-Dienste erforderlich, die gerade aktualisiert werden."</string>
+    <string msgid="2804989272736383918" name="common_google_play_services_wear_update_text">"Eine neue Version der Google Play-Dienste wird benötigt. Diese wird in Kürze automatisch aktualisiert."</string>
+    <string msgid="5201977337835724196" name="common_open_on_phone">"Auf Smartphone öffnen"</string>
+    <string msgid="3441753203274453993" name="common_signin_button_text">"Anmelden"</string>
+    <string msgid="669893613918351210" name="common_signin_button_text_long">"Über Google anmelden"</string>
+    <string name="compose_message_and_enter">Nachricht eingeben</string>
+    <string name="configure">Konfigurieren</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"Passwort nutzen"</string>
+    <string name="confirm_your_pin">PIN bestätigen</string>
+    <string name="connection_error">Verbindungsfehler, bitte versuchen Sie es später nochmals.</string>
+    <string name="contact_add_confirm">Möchten Sie den neuen Kontakt «%1$s» zu Ihrer Kontaktliste hinzufügen?</string>
+    <string name="contact_already_exists">Kontakt existiert bereits</string>
+    <string name="contact_format_first_name_last_name">Vorname Nachname</string>
+    <string name="contact_format_last_name_first_name">Nachname Vorname</string>
+    <string name="contact_not_found">Kontakt nicht gefunden</string>
+    <string name="contact_now_blocked">Kontakt blockiert</string>
+    <string name="contact_now_unblocked">Kontakt deblockiert</string>
+    <string name="contact_sorting_first_name">Vorname - Nachname</string>
+    <string name="contact_sorting_last_name">Nachname - Vorname</string>
+    <string name="contact_state_inactive">Inaktiv</string>
+    <string name="contact_state_invalid">Ungültig</string>
+    <string name="contacts_deleted">Kontakte wurden gelöscht</string>
+    <string name="continue_anyway">Trotzdem fortfahren</string>
+    <string name="continue_recording">Weiter aufnehmen</string>
+    <string name="converting_video">Video wird bearbeitet</string>
+    <string name="copied">Kopiert</string>
+    <string msgid="3209159573327985035" name="copy">"Kopieren"</string>
+    <string name="copy_message_action">Kopieren</string>
+    <string name="could_not_download_message">Nachricht konnte nicht heruntergeladen werden</string>
+    <string name="country">Land</string>
+    <string name="creating_contact">Neuen Kontakt hinzufügen</string>
+    <string name="creating_contact_successful">Kontakt erfolgreich hinzugefügt</string>
+    <string name="creating_group">Gruppe wird erstellt</string>
+    <string name="credits">Danksagungen</string>
+    <string name="crop">Zuschneiden</string>
+    <string name="crop_image_activity_no_permissions">Vorgang wird abgebrochen, benötigte Berechtigungen wurden nicht erteilt.</string>
+    <string name="crop_image_activity_title"/>
+    <string name="crop_image_menu_crop">zuschneiden</string>
+    <string name="crop_image_menu_flip">spiegeln</string>
+    <string name="crop_image_menu_flip_horizontally">horizontal spiegeln</string>
+    <string name="crop_image_menu_flip_vertically">vertikal spiegeln</string>
+    <string name="crop_image_menu_rotate_left">gegen den Uhrzeigersinn drehen</string>
+    <string name="crop_image_menu_rotate_right">drehen</string>
+    <string name="data_backup_explain" ns2:ignore="Typos">Ein Daten-Backup sichert:\n\n● ID und Schlüsselpaar\n● Kontakte und Vertrauensstatus\n● Gruppenmitgliedschaften\n● Chats\n● Medien und Dateien (optional)\n\nDie Daten werden in ein verschlüsseltes ZIP gesichert. Das Backup sollte anschliessend an einem geeigneten Ort ausserhalb des Geräts gespeichert werden.</string>
+    <string name="data_backup_headline">Erstellen Sie ein Daten-Backup um alle Daten, einschliesslich Ihrer Chats und Medien zu sichern.</string>
+    <string name="data_backup_info">Alles wiederherstellen inkl. Chats</string>
+    <string name="data_backup_last_date">Letztes erfolgreiches Backup</string>
+    <string name="data_backup_save_path">Sicherungs-Pfad</string>
+    <string name="database_migration_no_space">Databankmigration nicht möglich: Zuwenig freier Speicherplatz.</string>
+    <string name="decline">Ablehnen</string>
+    <string name="decoding_message">Nachricht wird entschlüsselt</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"Unbekannter Fehler"</string>
+    <string name="default_group_link">Default Gruppen-Link</string>
+    <string name="default_link_name">Default Link</string>
+    <string name="delete">Löschen</string>
+    <string name="delete_contact_action">Kontakt löschen</string>
+    <string name="delete_data">Daten jetzt löschen</string>
+    <string name="delete_date_confirm_message">Die Dateien werden endgültig gelöscht und nur noch Vorschaubilder
+		behalten.
+	</string>
+    <string name="delete_everything">Alles löschen</string>
+    <string name="delete_group_message">Möchten Sie diese Gruppe verlassen und vollständig löschen? Alle Nachrichten werden entfernt.</string>
+    <string name="delete_id_message">Sofern Sie die ID nicht gesichert haben und kein Backup erstellt haben, werden Sie nie mehr in der Lage sein, mit dieser ID Nachrichten zu versenden oder zu empfangen.\n\nFalls Sie diese ID nicht mehr verwenden möchten, empfiehlt es sich, vor dem Löschen ein ID-Widerrufspasswort zu setzen und die ID auf myid.threema.ch/revoke zu widerrufen.</string>
+    <string name="delete_id_message2">Letzte Warnung: wollen Sie Ihre ID wirklich von diesem Gerät löschen?</string>
+    <string name="delete_id_sum">Threema-ID und Chats auf diesem Gerät löschen</string>
+    <string name="delete_id_title">ID löschen</string>
+    <string name="delete_left_group_message">Möchten Sie diese Gruppe vollständig löschen? Alle Nachrichten werden entfernt.</string>
+    <string name="delete_media_files_time">Medien und Dateien löschen die älter sind als:</string>
+    <string name="delete_message">Nachrichten jetzt löschen</string>
+    <string name="delete_messages_explain">Nachrichten löschen, die älter sind als:</string>
+    <string name="delete_my_group_message">Möchten Sie diese Gruppe vollständig löschen? Alle Nachrichten werden entfernt und die verbleibenden Mitglieder können die Gruppe nicht mehr weiter nutzen.</string>
+    <string name="deleting_contact">Kontakt wird gelöscht</string>
+    <string name="deleting_messages">Nachrichten werden gelöscht</string>
+    <string name="deleting_thread">Chat wird gelöscht</string>
+    <string name="disable">Deaktivieren</string>
+    <string name="disable_autostart_explain">Im folgenden Bildschirm aktvieren Sie bitte Autostart für «%s». Tippen Sie auf den «Zurück»-Button, wenn Sie fertig sind.</string>
+    <string name="disable_autostart_title">Autostart</string>
+    <string name="disable_powermanager_explain">Bitte stellen Sie im folgenden Bildschirm sicher, dass «%s» von sämtlichen Einschränkungen geschützt ist und im Hintergrund aktiv sein kann. Tippen Sie auf den Zurück-Knopf, wenn Sie fertig sind.</string>
+    <string name="disable_powermanager_title">Akku-Einschränkungen</string>
+    <string name="disabled_by_policy">Einige Einstellungen wurden durch den Administrator deaktiviert</string>
+    <string name="disabled_by_policy_short">Funktion wurde durch den Administrator deaktiviert</string>
+    <string name="discard">Verwerfen</string>
+    <string name="discard_changes">Möchten Sie die Änderungen verwerfen?</string>
+    <string name="discard_changes_title">Änderungen verwerfen</string>
+    <string name="distribution_list">Verteilerliste</string>
+    <string name="dnd">Nicht stören</string>
+    <string name="do_choose_other_contact">Anderen Kontakt wählen</string>
+    <string name="do_unlink_contact">Verknüpfung aufheben</string>
+    <string name="dont_show_again">Nicht mehr anzeigen</string>
+    <string name="download">Herunterladen</string>
+    <string name="download_failed">Download fehlgeschlagen. Fehlercode: %d</string>
+    <string name="downloading">Wird heruntergeladen</string>
+    <string name="draft">Entwurf</string>
+    <string name="draw">Zeichnen</string>
+    <string name="duration">Dauer</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="edit_name">Name und Bild festlegen</string>
+    <string name="edit_name_only">Name ändern</string>
+    <string name="edit_type_content_description">%1$s %2$s anzeigen oder bearbeiten</string>
+    <string name="email_already_linked">Ihre Threema-ID ist bereits mit dieser E-Mail-Adresse verknüpft</string>
+    <string name="emoji_activities">Aktivitäten</string>
+    <string name="emoji_emotions">Emotionen</string>
+    <string name="emoji_flags">Flaggen</string>
+    <string name="emoji_food">Essen und Trinken</string>
+    <string name="emoji_nature">Natur</string>
+    <string name="emoji_recent">Zuletzt</string>
+    <string name="emoji_symbols">Symbole</string>
+    <string name="emoji_things">Objekte</string>
+    <string name="emoji_traffic">Verkehr</string>
+    <string name="empty_chat_confirm">Alle Nachrichten in diesem Chat werden gelöscht. Fortfahren?</string>
+    <string name="empty_chat_title">Chat leeren</string>
+    <string name="emptying_chat">Chat wird geleert</string>
+    <string name="enable_formatting">Formatierung aktivieren</string>
+    <string name="enable_picture_in_picture">Bild-im-Bild-Modus starten</string>
+    <string name="enable_polling">Polling nutzen</string>
+    <string name="enable_storage_access_for_media">Aktivieren Sie den Speicherzugriff, um Bilder und Videos auf Ihrem Gerät zu sehen</string>
+    <string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie \"Unbekannte Apps installieren\" für %s.</string>
+    <string name="enter_code_hint">Code eingeben</string>
+    <string name="enter_code_sum">Bitte geben Sie den Code ein, den Sie per SMS oder Telefonanruf erhalten haben.</string>
+    <string name="enter_description">Bitte beschreiben Sie das Problem oder den Fehler hier.</string>
+    <string name="enter_distribution_list_name">Wählen Sie einen Namen für die Liste</string>
+    <string name="enter_id_hint">Threema-ID eingeben</string>
+    <string name="enter_serial_body">Bitte geben Sie Ihren Shop-Lizenzschlüssel ein. Falls Sie diesen vergessen haben,
+		klicken Sie hier: https://shop.threema.ch/retrieve_keys
+	</string>
+    <string name="enter_serial_title">Threema freischalten</string>
+    <string name="enter_text_hint">Text eingeben</string>
+    <string name="enter_zip_password_body">Der Chat wird als verschlüsselte Zip-Datei versendet. Bitte wählen Sie ein
+		Passwort:
+	</string>
+    <string name="error">Fehler</string>
+    <string name="error_attaching_files">Fehler beim Hinzufügen von Dateien.</string>
+    <string name="error_creating_group">Fehler beim Erstellen/Aktualisieren der Gruppe</string>
+    <string name="error_detecting_faces">Bei der Gesichtserkennung ist ein Fehler aufgetreten</string>
+    <string name="error_icon_content_description">Fehler</string>
+    <string name="error_out_of_memory">Zuwenig freier Speicher, um diese Aktion durchzuführen</string>
+    <string name="error_saving_file">Fehler beim Speichern. Keine Berechtigung?</string>
+    <string name="error_unable_loading_media_thumb">Vorschau kann nicht geladen werden</string>
+    <string name="error_video_conversion">Fehler bei der Videokonvertierung.</string>
+    <string name="everything">alles</string>
+    <string name="exclude_contact" ns2:ignore="Typos">Von autom. Synchr. ausschliessen</string>
+    <string name="exo_controls_cc_disabled_description">Untertitel aktivieren</string>
+    <string name="exo_controls_cc_enabled_description">Untertitel deaktivieren</string>
+    <string name="exo_controls_fastforward_description">Vorspulen</string>
+    <string name="exo_controls_fullscreen_enter_description">Vollbild aktivieren</string>
+    <string name="exo_controls_fullscreen_exit_description">Vollbild beenden</string>
+    <string name="exo_controls_hide">Player-Steuerelemente ausblenden</string>
+    <string name="exo_controls_next_description">Weiter</string>
+    <string name="exo_controls_overflow_hide_description">Zusätzliche Einstellungen ausblenden</string>
+    <string name="exo_controls_overflow_show_description">Zusätzliche Einstellungen einblenden</string>
+    <string name="exo_controls_pause_description">Pausieren</string>
+    <string name="exo_controls_play_description">Wiedergeben</string>
+    <string name="exo_controls_playback_speed">Geschwindigkeit</string>
+    <string name="exo_controls_playback_speed_normal">Normal</string>
+    <string name="exo_controls_previous_description">Zurück</string>
+    <string name="exo_controls_repeat_all_description">Alle wiederholen</string>
+    <string name="exo_controls_repeat_off_description">Keinen wiederholen</string>
+    <string name="exo_controls_repeat_one_description">Einen wiederholen</string>
+    <string name="exo_controls_rewind_description">Zurückspulen</string>
+    <string name="exo_controls_seek_bar_description">Wiedergabefortschritt</string>
+    <string name="exo_controls_settings_description">Einstellungen</string>
+    <string name="exo_controls_show">Player-Steuerelemente anzeigen</string>
+    <string name="exo_controls_shuffle_off_description">Zufallsmix aus</string>
+    <string name="exo_controls_shuffle_on_description">Zufallsmix an</string>
+    <string name="exo_controls_stop_description">Beenden</string>
+    <string name="exo_controls_vr_description">VR-Modus</string>
+    <string name="exo_download_completed">Download abgeschlossen</string>
+    <string name="exo_download_description">Herunterladen</string>
+    <string name="exo_download_downloading">Wird heruntergeladen</string>
+    <string name="exo_download_failed">Download fehlgeschlagen</string>
+    <string name="exo_download_notification_channel_name">Downloads</string>
+    <string name="exo_download_removing">Downloads werden entfernt</string>
+    <string name="exo_item_list">%1$s, %2$s</string>
+    <string name="exo_track_bitrate">%1$.2f Mbit/s</string>
+    <string name="exo_track_mono">Mono</string>
+    <string name="exo_track_resolution">%1$d × %2$d</string>
+    <string name="exo_track_role_alternate">Alternativer Track</string>
+    <string name="exo_track_role_closed_captions">Untertitel</string>
+    <string name="exo_track_role_commentary">Kommentare</string>
+    <string name="exo_track_role_supplementary">Zusatzinhalte</string>
+    <string name="exo_track_selection_auto">Automatisch</string>
+    <string name="exo_track_selection_none">Ohne</string>
+    <string name="exo_track_selection_title_audio">Audio</string>
+    <string name="exo_track_selection_title_text">Text</string>
+    <string name="exo_track_selection_title_video">Video</string>
+    <string name="exo_track_stereo">Stereo</string>
+    <string name="exo_track_surround">Surround-Sound</string>
+    <string name="exo_track_surround_5_point_1">5.1-Surround-Sound</string>
+    <string name="exo_track_surround_7_point_1">7.1-Surround-Sound</string>
+    <string name="exo_track_unknown">Unbekannt</string>
+    <string msgid="1234962710353108940" name="expand_button_title">"Erweitert"</string>
+    <string name="expired_barcode">Dieser Code ist abgelaufen. Bitte scannen Sie ihn erneut direkt aus der App des
+		anderen Benutzers.
+	</string>
+    <string name="exposed_dropdown_menu_content_description">Drop-down-Menü anzeigen</string>
+    <string name="external_verification_levels_title">Andere Kontakte</string>
+    <string name="face_blur_tooltip_text">Finden Sie Gesichter im Bild und lassen Sie sie verwischen oder mit einem Smiley überdecken.</string>
+    <string name="face_blur_tooltip_title">Neu: Gesichtserkennung</string>
+    <string name="farm">Bauernhof</string>
+    <string msgid="4133737464567140336" name="fcm_fallback_notification_channel_label">"Sonstiges"</string>
+    <string name="feedback">Feedback</string>
+    <string name="file_is_not_a_image">Die selektierte Datei ist keine Bilddatei.</string>
+    <string name="file_is_not_a_video">Selektierte Datei ist kein Video</string>
+    <string name="file_is_not_audio">Keine Audio-Datei</string>
+    <string name="file_one_contact_not_supported">%1$s kann noch keine Dateien erhalten.</string>
+    <string name="file_placeholder">Datei</string>
+    <string name="file_saved">%d Datei(en) gespeichert.</string>
+    <string name="file_size">Dateigrösse</string>
+    <string name="file_too_large" ns2:ignore="Typos">Die Datei ist grösser als die erlaubten 50 MB</string>
+    <string name="file_x_contact_not_supported">Warnung: %1$d Kontakte können keine Dateien erhalten.</string>
+    <string name="filter_by_album">Filtern nach Medienordner</string>
+    <string name="filter_list">Liste filtern</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"Fingerabdrucksensor berühren"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"Fingerabdruckhardware nicht verfügbar."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"Dieses Gerät hat keinen Fingerabdrucksensor"</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"Zu viele Versuche. Versuche es bitte später noch einmal."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"Keine Fingerabdrücke erfasst."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"Vorgang der Fingerabdruckauthentifizierung vom Nutzer abgebrochen."</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"Nicht erkannt"</string>
+    <string name="finish" ns2:ignore="Typos">Abschliessen</string>
+    <string name="first_name">Vorname</string>
+    <string name="flip">Spiegeln</string>
+    <string name="fontsize_large">Gross</string>
+    <string name="fontsize_normal">Normal</string>
+    <string name="fontsize_xlarge">Sehr gross</string>
+    <string name="forgot_your_id">ID vergessen?</string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Passwort vergessen?</a>]]></string>
+    <string name="forward_captions">Beschriftungen mitsenden</string>
+    <string name="forward_message">Weiterleiten</string>
+    <string name="forward_text">Text weiterleiten</string>
+    <string name="generating_backup_data">ID wird verschlüsselt</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"Keine PIN, kein Muster und kein Passwort festgelegt."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"Dieses Gerät kann nicht mit einer PIN, einem Muster oder einem Passwort gesperrt bzw. entsperrt werden."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"Authentifizierung vom Nutzer abgebrochen."</string>
+    <string name="global_search">Chats durchsuchen</string>
+    <string name="global_search_empty_view_text">Geben Sie mindestens zwei Zeichen ein, um in Nachrichten zu suchen</string>
+    <string name="google_assistant_verification_channel_name">Assistant-Prüfung</string>
+    <string name="google_assistant_verification_notification_title">Google Assistant sendet eine Nachricht</string>
+    <string name="grace_five_minutes">5 Minuten</string>
+    <string name="grace_never">Nie (manuell)</string>
+    <string name="grace_one_minute">1 Minute</string>
+    <string name="grace_ten_minutes">10 Minuten</string>
+    <string name="grace_thirty_minutes">30 Minuten</string>
+    <string name="grace_thirty_seconds">30 Sekunden</string>
+    <string name="grace_two_minutes">2 Minuten</string>
+    <string name="group">Gruppe</string>
+    <string name="group_create_no_members">Sind Sie sicher, dass Sie eine leere Gruppe erstellen möchten?</string>
+    <string name="group_created_confirm">Gruppe erfolgreich erstellt</string>
+    <string name="group_edit_title">Gruppe bearbeiten</string>
+    <string name="group_image">Gruppenbild</string>
+    <string name="group_join_request">Gruppenanfrage</string>
+    <string name="group_join_request_for">Gruppenanfrage für %s</string>
+    <string name="group_join_request_message_info"><![CDATA[Schreiben Sie eine kurze Nachricht and den Admin <b>%1$s</b> warum Sie <b>%2$s</b> beitreten möchten.]]></string>
+    <string name="group_link_add">Link erstellen</string>
+    <string name="group_link_administered">Administriert</string>
+    <string name="group_link_bottom_sheet_desc">Teilen Sie diesen Link mit Kontakten, welche Sie gerne einladen möchten. Erwägen Sie die untenstehenden Optionen.</string>
+    <string name="group_link_bottom_sheet_link_title">Link</string>
+    <string name="group_link_bottom_sheet_title">Gruppen-Link</string>
+    <string name="group_link_default_name">Unbenannter Link</string>
+    <string name="group_link_edit_expiration_date">Ablaufdatum anpassen</string>
+    <string name="group_link_expiration_none">Unbeschränkt</string>
+    <string name="group_link_invalid">Abgelaufen</string>
+    <string name="group_link_none">Noch keinen Link generiert</string>
+    <string name="group_link_open">Offen</string>
+    <string name="group_link_properties_title">Link Eigenschaften</string>
+    <string name="group_link_property_administration_desc">Falls aktiviert, erhalten Sie Anfragen im dazugehörigen Gruppenchat und können diese individuell bestätigen.</string>
+    <string name="group_link_property_administration_title">Manuell bestätigen</string>
+    <string name="group_link_property_expiration_desc">Der Link wird nach dem gesetzten Datum ungültig.</string>
+    <string name="group_link_property_expiration_title">Ablaufdatum</string>
+    <string name="group_link_qr_desc"><![CDATA[Teilen Sie diesen Link mit Kontakten welche Sie in die Gruppe <b>%s</b> einladen möchten.]]></string>
+    <string name="group_link_rename">Link umbenennen</string>
+    <string name="group_link_rename_tag">Neuer Name</string>
+    <string name="group_link_share">Gruppen-Link teilen</string>
+    <string name="group_link_share_message">Trete meiner Threema Gruppe über folgenden Link bei: %s</string>
+    <string name="group_link_show_qr">QR-code anzeigen</string>
+    <string name="group_link_update_success">Link update erfolgreich</string>
+    <string name="group_link_valid">Gültig</string>
+    <string name="group_links_manage_menu">Gruppen-Links managen</string>
+    <string name="group_links_overview_title">Gruppen-Links für %s</string>
+    <string name="group_membership_title">Mitglied in diesen Gruppen</string>
+    <string name="group_not_found">Gruppe nicht gefunden.</string>
+    <string name="group_qr_code_title">Gruppen QR-Code</string>
+    <string name="group_request_already_sent"><![CDATA[Sie haben bereits eine offene Anfrage für <b>%s</b> und es wird auf eine Antwort des Gruppen Administrators gewartet. Klicken Sie auf die Anfrage in der Liste, falls Sie die Anfrage erneut senden möchten.]]></string>
+    <string name="group_request_already_sent_title">Gruppenanfrage bereits gesendet</string>
+    <string name="group_request_confirm_send"><![CDATA[Sie sind dabei eine Gruppenanfrage für <b>%1$s</b> an Admin <b>%2$s</b> zu senden. Falls dieser Link in der Zwischenzeit nicht invalidiert wurde, werden Sie zur Gruppe hinzugefügt, sobald das Gerät des Admin erreichbar ist.]]></string>
+    <string name="group_request_hint">Hallo! Ich bins…</string>
+    <string name="group_request_incoming_dialog_title">Anfrage von %s</string>
+    <string name="group_request_link_already_deleted">Gruppen-Link bereits gelöscht</string>
+    <string name="group_request_message_empty">Nachricht an den Admin kann nicht leer sein!</string>
+    <string name="group_request_received_through">Durch Link: %s</string>
+    <string name="group_request_send_title">Gruppenanfrage Senden</string>
+    <string name="group_request_sent_menu">Gesendete Gruppenanfrage</string>
+    <string name="group_request_show_all">Alle Gruppenanfragen anzeigen</string>
+    <string name="group_request_state_accepted">Angenommen</string>
+    <string name="group_request_state_expired">Abgelaufen</string>
+    <string name="group_request_state_full">Gruppe voll</string>
+    <string name="group_request_state_pending">Ausstehend</string>
+    <string name="group_request_state_rejected">Abgelehnt</string>
+    <string name="group_requests_all_title">Alle Gruppenanfragen</string>
+    <string name="group_requests_none_outgoing">Keine versendeten Gruppenanfragen. Anfragen können über Gruppen-Links versendet werden.</string>
+    <string name="group_requests_show_menu_title">Offene Gruppenanfragen anzeigen</string>
+    <string name="group_response">Antwort auf Gruppenanfrage</string>
+    <string name="group_response_accepted">Ihre Gruppenanfrage für %s wurde akzeptiert.</string>
+    <string name="group_response_full">Ihre Gruppenanfrage für %s wurde abgelehnt weil die Gruppe bereits voll ist.</string>
+    <string name="group_response_rejected">Ihre Gruppenanfrage für %s wurde abgelehnt.</string>
+    <string name="group_select_at_least_two">Bitte mindestens ein Mitglied wählen</string>
+    <string name="group_select_max">Es können maximal %1$d Mitglieder zur Gruppe hinzugefügt werden</string>
+    <string name="group_was_synchronized">Gruppe wurde neu synchronisiert</string>
+    <string name="hamlet">Weiler</string>
+    <string name="hide_chat">Private Chats</string>
+    <string name="hide_chat_enter_message_explain">Dieser Chat ist als privat markiert. Um ihn anzuzeigen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
+    <string name="hide_chat_message_explain">Sie können den Zugriff auf bestimmte Chats mittels PIN schützen und die Chats temporär in der Chatliste ausblenden. Um diese Funktion zu nutzen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
+    <string name="hint_filter_list">Filtertext eingeben</string>
+    <string name="hint_search_keyword">Suchbegriff</string>
+    <string name="icon_content_description">Dialogfeldsymbol</string>
+    <string name="id_backup_info">Nur Ihre ID wiederherstellen</string>
+    <string name="id_mismatch">Der öffentliche Schlüssel, den Sie eingescannt haben, stimmt nicht mit dem Schlüssel
+		überein, den der Server für diesen Kontakt verzeichnet hat. Dies deutet auf Manipulationen hin, welche die
+		Sicherheit der Kommunikation gefährden. Bitte melden Sie dieses Vorkommnis an security@threema.ch, wenn möglich
+		unter Angabe der ID und Umstände.
+	</string>
+    <string name="identity_already_exists">Diese ID ist bereits in Ihrer Kontaktliste</string>
+    <string name="image_already_added">Dieses Bild ist bereits ausgewählt.</string>
+    <string name="image_placeholder">Bild</string>
+    <string name="image_size_large">Gross (1600x1600)</string>
+    <string name="image_size_medium">Mittel (1024x1024)</string>
+    <string name="image_size_original">Originalgrösse</string>
+    <string name="image_size_small">Klein (640x640)</string>
+    <string name="image_size_xlarge">Extragross (2592x2592)</string>
+    <string name="importing_files">Dateien werden importiert</string>
+    <string name="importing_files_failed">Importieren der Backup-Datei fehlgeschlagen. Stellen Sie sicher, dass genügend freier Platz im internen Speicher vorhanden ist.</string>
+    <string name="incoming_group_request_no_message">Über einen offenen Link gesendet… Keine Nachricht</string>
+    <string name="info">Informationen</string>
+    <string name="insert_date">Datum einfügen</string>
+    <string name="insert_datetime">Datum und Zeit einfügen</string>
+    <string name="internal_storage">Int. Speicher</string>
+    <string name="internet_connection_required">Keine Internet-Verbindung.</string>
+    <string name="invalid_backup">Die Backup-Daten sind ungültig. Wiederherstellen nicht möglich.</string>
+    <string name="invalid_backup_path">Ungültiger Backup-Pfad</string>
+    <string name="invalid_barcode">Ungültiger Barcode</string>
+    <string name="invalid_cannot_send">Sie können keine Nachrichten an einen ungültigen Kontakt senden</string>
+    <string name="invalid_data">Ungültige Daten. Senden nicht möglich.</string>
+    <string name="invalid_input">Ungültige Eingabe</string>
+    <string name="invalid_onprem_id">Entweder existiert diese ID nicht (mehr), oder sie ist nicht mit Ihrer ID kompatibel.</string>
+    <string name="invalid_onprem_id_title">Hinzufügen nicht möglich</string>
+    <string name="invalid_passphrase">Ungültige Passphrase</string>
+    <string name="invalid_threema_id">Ungültige Threema-ID</string>
+    <string name="invalid_threema_qr_code">Ungültiger QR-Code</string>
+    <string name="invite_email_body">Hallo\n\nIch nutze %1$s, den sicheren Instant Messenger, der die Privatsphäre schützt.\n\nMeine Threema-ID: https://threema.id/%2$s\n\nLass uns über %1$s kommunizieren!\n\nLiebe Grüsse\n</string>
+    <string name="invite_email_subject">Threema. Der sichere Messenger, der Deine und meine Privatsphäre schützt</string>
+    <string name="invite_sms_body">Hallo! Lass uns sicher und datenschutzkonform über %1$s kommunizieren! Meine Threema-ID: https://threema.id/%2$s</string>
+    <string name="invite_via">Einladen mittels…</string>
+    <string name="ipv6_requires_restart">Diese Änderung benötigt einen Neustart der App.</string>
+    <string name="ipv6_restart_now">Jetzt neustarten</string>
+    <string name="is_typing">schreibt gerade…</string>
+    <string name="island">Insel</string>
+    <string name="islet">Inselchen</string>
+    <string name="isolated_dwelling">Einzelsiedlung</string>
+    <string name="italic">Kursiv</string>
+    <string name="item_view_role_description">Tab</string>
+    <string name="kick_user_from_group">%1$s aus Gruppe entfernen</string>
+    <string name="label_continue">Weiter</string>
+    <string name="last_name">Nachname</string>
+    <string name="link_administration_off_explain">Dieser Link wurde bereits geteilt und ist öffentlich. Die Administration kann nicht nachträglich verändert werden. Generieren Sie einfach einen neuen Link mit der gwünschten Option.</string>
+    <string name="link_copied">%s kopiert</string>
+    <string name="linked">verknüpft</string>
+    <string name="linked_email">E-Mail</string>
+    <string name="linked_mobile">Handynummer</string>
+    <string name="list_theme_dark">Dunkel</string>
+    <string name="list_theme_light">Hell (standard)</string>
+    <string name="listened_to">angehört</string>
+    <string name="locality">Örtlichkeit</string>
+    <string name="location_placeholder">Ort</string>
+    <string name="location_services_disabled">Die Standortdienste sind ausgeschaltet. Möchten Sie sie jetzt aktivieren?</string>
+    <string name="lock_option_biometric">Biometrisch</string>
+    <string name="lock_option_none">Keiner</string>
+    <string name="lock_option_pin">PIN</string>
+    <string name="lock_option_screenlock">System-Displaysperre</string>
+    <string name="logo">Logo / Ganz nach oben scrollen</string>
+    <string name="lp_no_nearby_places_found">Keine Orte in der Nähe gefunden</string>
+    <string name="lp_or_select_nearby">Oder wählen Sie einen Ort in der Nähe</string>
+    <string name="lp_search_place">Ortschaft eingeben</string>
+    <string name="lp_search_place_min_chars">Bitte geben Sie mindestens 3 Zeichen ein, um nach einem Ort zu suchen.</string>
+    <string name="lp_search_place_no_matches">Keine übereinstimmenden Orte gefunden. Bitte ändern Sie Ihre Abfrage.</string>
+    <string name="lp_select_this_place">Diesen Ort auswählen</string>
+    <string name="lp_use_this_location">Diesen Ort senden?</string>
+    <string name="mark_read">Als gelesen markieren</string>
+    <string name="mark_read_short">Gelesen</string>
+    <string name="mark_unread">Als ungelesen markieren</string>
+    <string name="master_key_locked">Hauptschlüssel ist gesperrt</string>
+    <string name="master_key_locked_notify_description">Passphrase eingeben</string>
+    <string name="master_key_locked_want_exit">Der Hauptschlüssel ist immer noch gesperrt. Möchten Sie es nochmals versuchen?</string>
+    <string name="masterkey_body">Ihr Hauptschlüssel ist mit einer Passphrase geschützt. Geben Sie zum Entsperren Ihre
+		Passphrase ein.
+	</string>
+    <string name="masterkey_is_unlocked">Hauptschlüssel ist entsperrt</string>
+    <string name="masterkey_lock_explain">Threema hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der
+		Passphrase gefragt werden, kann dies an einer Taskkiller- oder Batterie-Spar-App liegen, welche die Passphrase
+		aus dem Speicher entfernt.
+	</string>
+    <string name="masterkey_passphrase_again_summary">Passphrase wiederholen</string>
+    <string name="masterkey_passphrase_hint">Passphrase</string>
+    <string name="masterkey_passphrase_summary">Ihr Hauptschlüssel kann durch eine von Ihnen gewählte Passphrase geschützt werden. Wenn die App beendet wurde, müssen Sie diese erneut eingeben.
+	</string>
+    <string name="masterkey_passphrase_title">Passphrase für Hauptschlüssel</string>
+    <string name="masterkey_title">Passphrase eingeben</string>
+    <string name="masterkey_unlocking">Hauptschlüssel wird entsperrt</string>
+    <string name="material_clock_toggle_content_description">Vormittags oder Nachmittags auswählen</string>
+    <string name="material_hour_selection">Stunde auswählen</string>
+    <string name="material_hour_suffix">%1$s Uhr</string>
+    <string name="material_minute_selection">Minuten auswählen</string>
+    <string name="material_minute_suffix">%1$s Minuten</string>
+    <string name="material_timepicker_am">AM</string>
+    <string name="material_timepicker_clock_mode_description">In den Uhrzeitmodus wechseln, um die Uhrzeit einzugeben.</string>
+    <string name="material_timepicker_hour">Stunde</string>
+    <string name="material_timepicker_minute">Minute</string>
+    <string name="material_timepicker_pm">PM</string>
+    <string name="material_timepicker_select_time">Uhrzeit auswählen</string>
+    <string name="material_timepicker_text_input_mode_description">In den Texteingabemodus wechseln, um die Uhrzeit einzugeben.</string>
+    <string name="max_images_reached">Es können nicht mehr als %d Bilder aufs Mal bearbeitet werden</string>
+    <string name="max_selectable_media_exceeded">Es können maximal %d Objekte aufs Mal versendet werden.</string>
+    <string name="me_myself_and_i">Ich</string>
+    <string name="media">Medien</string>
+    <string name="media_date_added">Datum hinzugefügt: %s</string>
+    <string name="media_date_modified">Datum geändert: %s</string>
+    <string name="media_date_taken">Aufnahmedatum: %s</string>
+    <string name="media_date_unknown">Unbekanntes Datum</string>
+    <string name="media_file_not_found">Mediendatei kann nicht geöffnet werden. Sie wurde gelöscht oder nicht vom Server
+		heruntergeladen.
+	</string>
+    <string name="media_files">Dateien</string>
+    <string name="media_files_deleted">%d Medien/Dateien gelöscht.</string>
+    <string name="media_gallery">Medienübersicht</string>
+    <string name="media_gallery_all">Alles</string>
+    <string name="media_gallery_audio">Sprachnachrichten</string>
+    <string name="media_gallery_files">Dateien</string>
+    <string name="media_gallery_gifs">GIFs</string>
+    <string name="media_gallery_pictures">Bilder</string>
+    <string name="media_gallery_videos">Videos</string>
+    <string name="menu_about">Über Threema</string>
+    <string name="menu_add_contact">Neuer Kontakt</string>
+    <string name="menu_done">Fertig</string>
+    <string name="menu_legal">Rechtliches</string>
+    <string name="menu_restore">Backup wiederherstellen</string>
+    <string name="menu_send_profilpic">Als Profilbild-Empfänger hinzuf.</string>
+    <string name="menu_send_profilpic_now">Profilbild jetzt senden</string>
+    <string name="menu_send_profilpic_off">Als Profilbild-Empf. entfernen</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="message_acknowledged">Nachricht bestätigt</string>
+    <string name="message_archived">%d Chat(s) archiviert</string>
+    <string name="message_copied">Nachricht kopiert</string>
+    <string name="message_declined">Nachricht abgelehnt</string>
+    <string name="message_delete_undo">Rückgängig</string>
+    <string name="message_deleted">Nachricht(en) gelöscht</string>
+    <string name="message_id">Nachrichten-ID</string>
+    <string name="message_log_title">Nachrichtendetails</string>
+    <string name="message_not_found">Nachricht nicht gefunden</string>
+    <string name="message_sent">Nachricht wurde gesendet</string>
+    <string name="message_too_long">Die Nachricht ist zu lange und kann nicht gesendet werden.</string>
+    <string name="messages_delete_explain">Sie können auch ältere Nachrichten vollständig löschen.</string>
+    <string name="mime_android_apk">Android-Paket</string>
+    <string name="mime_audio">Audio-Datei</string>
+    <string name="mime_certificate">Digitales Zertifikat</string>
+    <string name="mime_codes">Programmcode</string>
+    <string name="mime_compressed">Archiv</string>
+    <string name="mime_contact">Kontakt</string>
+    <string name="mime_event">Termineinladung</string>
+    <string name="mime_font">Schrift-Datei</string>
+    <string name="mime_image">Bild</string>
+    <string name="mime_pdf">PDF-Dokument</string>
+    <string name="mime_presentation">Präsentation</string>
+    <string name="mime_spreadsheet">Tabellendokument</string>
+    <string name="mime_text">Textdatei</string>
+    <string name="mime_type">MIME-Typ</string>
+    <string name="mime_video">Video-Datei</string>
+    <string name="mime_word">Textdokument</string>
+    <string name="minus">Minus</string>
+    <string name="minutes">Minuten</string>
+    <string name="missing_app_licence">Der App Store konnte Ihre App-Lizenz nicht überprüfen. Falls Sie Google Play verwenden, löschen Sie die Daten der Google Play Store-App und starten Sie Ihr Handy neu.</string>
+    <string name="miui12_notification_body">MIUI unterbindet standardmässig Töne, LED und Popups (ausser für einige sehr populäre Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb leider diese Optionen in den Threema-spezifischen Benachrichtigungseinstellungen Ihres Handys manuell aktivieren und die Prozedur nach jedem App-Update wiederholen. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+    <string name="miui_battery_optimization">Bitte deaktivieren Sie die «Akkuoptimierung» für %s, um diese Funktion zu ermöglichen. Da es Xiaomi nicht als notwendig erachtet, sich an die Android-Standards zu halten, müssen Sie dies manuell in den Einstellungen Ihres Handys vornehmen. Für Unterstützung bei der Deaktivierung der Akkuoptimierung kontaktieren Sie bitte den Xiaomi-Support.</string>
+    <string name="miui_notification_body">MIUI 10 unterbindet standardmässig Töne, LED und Popups für neu erstellte Benachrichtigungskanäle (ausser für einige Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb diese Parameter in den Threema-spezifischen Benachrichtigungseinstellungen Ihres Handys für jeden Kanal aktivieren. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+    <string name="miui_notification_prefs">MIUI-Einstellungen</string>
+    <string name="miui_notification_title">Wichtiger Hinweis für MIUI-Nutzer</string>
+    <string name="mobile_already_linked">Ihre Threema-ID ist bereits mit dieser Handynummer verknüpft</string>
+    <string name="msg_camera_framework_bug">Android-Kamera blockiert. Stellen Sie sicher, dass der Zugriff gewährleistet ist oder starten Sie das Handy neu.</string>
+    <string name="msg_default_status">Erfassen Sie den Barcode mit dem Sucherfenster, um ihn einzuscannen.</string>
+    <string name="mtrl_badge_numberless_content_description">Neue Benachrichtigung</string>
+    <string name="mtrl_chip_close_icon_content_description">%1$s entfernen</string>
+    <string name="mtrl_exceed_max_badge_number_content_description">Mehr als %1$d neue Benachrichtigungen</string>
+    <string name="mtrl_picker_a11y_next_month">Zum nächsten Monat wechseln</string>
+    <string name="mtrl_picker_a11y_prev_month">Zum vorherigen Monat wechseln</string>
+    <string name="mtrl_picker_announce_current_selection">Aktuelle Auswahl: %1$s</string>
+    <string name="mtrl_picker_confirm">@android:string/ok</string>
+    <string name="mtrl_picker_date_header_selected">%1$s</string>
+    <string name="mtrl_picker_date_header_title">Datum auswählen</string>
+    <string name="mtrl_picker_date_header_unselected">Ausgewähltes Datum</string>
+    <string name="mtrl_picker_day_of_week_column_header">Spalte \"Wochentag\": %1$s</string>
+    <string name="mtrl_picker_invalid_format">Ungültiges Format.</string>
+    <string name="mtrl_picker_invalid_format_example">Beispiel: %1$s</string>
+    <string name="mtrl_picker_invalid_format_use">Format: %1$s</string>
+    <string name="mtrl_picker_invalid_range">Ungültiger Bereich.</string>
+    <string name="mtrl_picker_navigate_to_year_description">Zum Jahr %1$s wechseln</string>
+    <string name="mtrl_picker_out_of_range">Außerhalb des Bereichs: %1$s</string>
+    <string name="mtrl_picker_range_header_only_end_selected">Startdatum – %1$s</string>
+    <string name="mtrl_picker_range_header_only_start_selected">%1$s – Enddatum</string>
+    <string name="mtrl_picker_range_header_selected">%1$s – %2$s</string>
+    <string name="mtrl_picker_range_header_title">Zeitraum auswählen</string>
+    <string name="mtrl_picker_range_header_unselected">Startdatum – Enddatum</string>
+    <string name="mtrl_picker_save">Speichern</string>
+    <string name="mtrl_picker_text_input_date_hint">Datum</string>
+    <string name="mtrl_picker_text_input_date_range_end_hint">Enddatum</string>
+    <string name="mtrl_picker_text_input_date_range_start_hint">Startdatum</string>
+    <string name="mtrl_picker_text_input_day_abbr">T</string>
+    <string name="mtrl_picker_text_input_month_abbr">M</string>
+    <string name="mtrl_picker_text_input_year_abbr">J</string>
+    <string name="mtrl_picker_toggle_to_calendar_input_mode">In den Kalendereingabemodus wechseln</string>
+    <string name="mtrl_picker_toggle_to_day_selection">Tippen, um zur Tagesauswahl zu wechseln</string>
+    <string name="mtrl_picker_toggle_to_text_input_mode">In den Texteingabemodus wechseln</string>
+    <string name="mtrl_picker_toggle_to_year_selection">Tippen, um zur Jahresauswahl zu wechseln</string>
+    <string name="my_backups_title">Backups</string>
+    <string name="my_id">Meine ID</string>
+    <string name="my_profile">Mein Profil</string>
+    <string name="name">Name</string>
+    <string name="neighbourhood">Stadtviertel</string>
+    <string name="network_blocked_body">%s kann im Hintergrund keine Nachrichten erhalten. Tippen Sie hier, um Hintergrunddaten zu aktivieren.</string>
+    <string name="network_blocked_title">Hintergrunddaten deaktiviert</string>
+    <string name="never">Nie</string>
+    <string name="new_group_link_success">Neuer Link hinzugefügt</string>
+    <string name="new_message">1 neue Nachricht</string>
+    <string name="new_messages">neue Nachrichten</string>
+    <string name="new_messages_in_chats">%1$d neue Nachrichten in %2$d Chats</string>
+    <string name="new_messages_locked">Neue Nachrichten verfügbar</string>
+    <string name="new_messages_locked_description">Zum Anzeigen berühren</string>
+    <string name="new_to_threema">Neu bei %s?</string>
+    <string name="new_unprocessed_messages">Neue Nachrichten verfügbar</string>
+    <string name="new_unprocessed_messages_description">Zum Herunterladen und Anzeigen bitte berühren</string>
+    <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in der Kontaktliste Ihrer Freunde gelistet. Möchten Sie Threema wirklich komplett anonym nutzen?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in der Kontaktliste Ihrer Freunde gelistet. Möchten Sie Threema wirklich komplett anonym nutzen?</string>
+    <string name="new_wizard_choose_nickname">Nickname wählen</string>
+    <string name="new_wizard_done_title">Alles korrekt?</string>
+    <string name="new_wizard_find_friends">Finden Sie Ihre Freunde auf Threema</string>
+    <string name="new_wizard_help_your_friends_find_you">Damit Sie einfacher gefunden werden</string>
+    <string name="new_wizard_hint_email">E-Mail (optional)</string>
+    <string name="new_wizard_hint_enter_nickname">Nickname eingeben</string>
+    <string name="new_wizard_hint_mobile_number">Handynummer (optional)</string>
+    <string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie),
+		die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen Threema-ID verbunden. Es besteht aus einem
+		<b>öffentlichen Schlüssel</b>, der an Ihre Freunde verteilt wird und einem <b>privaten Schlüssel</b>, der auf Ihrem Gerät verbleibt. Bei Ihren
+		Freunden wird der öffentliche Schlüssel genutzt, um Nachrichten an Sie zu verschlüsseln. Nur der Inhaber des privaten Schlüssels und niemand
+		anderes kann die Nachrichten wieder entschlüsseln.
+	</string>
+    <string name="new_wizard_info_id">Sie haben mit der Threema-ID ein Schlüsselpaar erzeugt. Der öffentliche Schlüssel wurde an unseren Server gesendet.
+		Der private Schlüssel verlässt Ihr Gerät nie. Dies stellt sicher, dass niemand anderes Ihre Nachrichten lesen kann.
+	</string>
+    <string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann Threema Ihren Freunden helfen, Sie
+		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form
+		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema anonym benutzen möchten.
+	</string>
+    <string name="new_wizard_info_link_phone_only">Wenn Sie Ihre eigene Handynummer angeben, kann Threema Ihren Freunden helfen, Sie
+		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Nummer wird dazu in einwegverschlüsselter (gehashter) Form
+		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema anonym benutzen möchten.
+	</string>
+    <string name="new_wizard_info_nickname">Der Nickname wird auf einigen Geräten in Benachrichtigungen angezeigt und dient in der Kontaktliste als zusätzliche
+		Identifikationsmöglichkeit für Chatpartner, die Sie nicht in ihrer Kontaktliste haben. Wir empfehlen, nur einen Vornamen oder ein Pseudonym zu verwenden.
+		Wenn Sie keinen Nickname festlegen, wird Ihre Threema-ID verwendet.
+	</string>
+    <string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch einwegverschlüsselt (gehasht), bevor sie zum
+		Kontaktabgleich an der Server geschickt werden. Wir speichern keinerlei Adressbuchdaten.
+	</string>
+    <string name="new_wizard_lets_get_started">Los geht\'s!</string>
+    <string name="new_wizard_link_mobile">Verknüpfen Sie Ihre Handynummer und/oder E-Mail-Adresse mit Ihrer Threema-ID.</string>
+    <string name="new_wizard_link_mobile_only">Verknüpfen Sie Ihre Handynummer mit Ihrer Threema-ID.</string>
+    <string name="new_wizard_linked_to">Verknüpft mit</string>
+    <string name="new_wizard_more_information">Mehr Informationen</string>
+    <string name="new_wizard_move_finger">Bewegen Sie Ihren Finger im Feld, um eine neue Threema-ID zu generieren.</string>
+    <string name="new_wizard_need_internet">Eine stabile Internet-Verbindung wird benötigt, um Ihre eindeutige Threema ID erzeugen zu können.
+		Bitte versuchen Sie es erneut.
+	</string>
+    <string name="new_wizard_nickname_explain">Der Nickname wird bei Ihren Freunden angezeigt, wenn sie eine Nachricht empfangen.</string>
+    <string name="new_wizard_phone_email_invalid">Die angegebene Handynummer oder die E-Mail-Adresse sind ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
+    <string name="new_wizard_phone_invalid">Die angegebene Handynummer ist ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
+    <string name="new_wizard_restore_id_backup">Exportierte ID wiederherstellen</string>
+    <string name="new_wizard_scan_id_backup">Oder scannen Sie den QR-Code Ihres ID-Exports</string>
+    <string name="new_wizard_select_country">Land auswählen</string>
+    <string name="new_wizard_setup_threema">Jetzt einrichten</string>
+    <string name="new_wizard_sync_contacts_explain">Einschalten, um zu sehen, welche Ihrer Freunde Threema nutzen.</string>
+    <string name="new_wizard_this_is_your_id">Das ist Ihre Threema-ID:</string>
+    <string name="new_wizard_use_id_as_nickname">Möchten Sie Ihre Threema-ID als Nickname verwenden?</string>
+    <string name="new_wizard_welcome">Willkommen bei Threema</string>
+    <string name="new_wizard_works_like_phone_number">Ihre Threema-ID funktioniert wie eine Telefonnummer. Ihre Freunde können Sie über diese ID erreichen.
+	</string>
+    <string name="next">Weiter</string>
+    <string name="no">Nein</string>
+    <string name="no_activity_for_mime_type">Keine passende App für diese Datei gefunden.</string>
+    <string name="no_app_for_location">Keine Karten-App auf diesem Gerät gefunden.</string>
+    <string name="no_archived_chats">Keine archivierten Chats.\nUm einen Chat zu archivieren, wischen Sie ihn in der Chat-Liste nach links</string>
+    <string name="no_camera_installed">Keine geeignete Kamera verfügbar</string>
+    <string name="no_contacts">Sie haben noch keine Kontakte. Schalten Sie die Synchronisierung ein (Einstellungen -
+		Privatsphäre) oder fügen Sie Kontakte manuell hinzu.
+	</string>
+    <string name="no_faces_detected">Keine Gesichter gefunden</string>
+    <string name="no_filename"><![CDATA[<Kein Dateiname>]]></string>
+    <string name="no_group_links">Keine Gruppen-Links. Um einen Gruppen-Link zu kreieren, klicken Sie auf den "Link erstellen"-Knopf oder aktivieren Sie den default Link in der Gruppenübersicht.</string>
+    <string name="no_incoming_group_requests">Noch keine eingehenden Gruppenanfragen. Diese können Ihnen über Gruppen-Links gesendet werden, welche Sie in der Gruppendetail-Ansicht administrieren können falls Sie der Admin sind.  </string>
+    <string name="no_lockscreen_set">Keine System-Displaysperre festgelegt.</string>
+    <string name="no_matching_contacts">Keine Kontakte gefunden.</string>
+    <string name="no_matching_distribution_lists">Noch keine Verteilerlisten definiert.</string>
+    <string name="no_matching_groups">Keine Gruppen gefunden</string>
+    <string name="no_matching_work_contacts">Keine vom Administrator überprüften Threema Work-Kontakte gefunden</string>
+    <string name="no_media_found">In diesem Chat wurden keine %s gefunden.</string>
+    <string name="no_media_found_generic">Keine Medien gefunden</string>
+    <string name="no_media_found_global">Auf diesem Gerät wurden keine Medien gefunden</string>
+    <string name="no_recent_conversations">Keine Chats gefunden</string>
+    <string name="no_sms_received">Keine SMS erhalten?</string>
+    <string name="no_threema_qr_info">Dies ist kein Threema QR-Code, der decodierte Inhalt ist:</string>
+    <string name="no_unread_messages">Keine ungelesenen Nachrichten oder PIN-Sperre aktiv</string>
+    <string name="no_update_available">Kein Update verfügbar</string>
+    <string name="no_votes_yet">Bisher wurden noch keine Stimmen abgegeben.</string>
+    <string name="not_enough_disk_space_text">Es werden mindestens %1$s benötigt, um die Nachricht zu empfangen</string>
+    <string name="not_enough_disk_space_title">Zu wenig Speicherplatz</string>
+    <string name="not_linked">nicht verknüpft</string>
+    <string name="not_now">Später erinnern</string>
+    <string msgid="478774118347071097" name="not_set">"Nicht festgelegt"</string>
+    <string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
+    <string name="note_group_howto">Tipp: Wenn Sie keine Mitglieder hinzufügen, bleiben Nachrichten an diese Gruppe lokal. Das ist ideal, um Notizen, Medien oder Dokumente sicher zu speichern oder auf den Desktop zu übertragen.</string>
+    <string name="notes">Notizen</string>
+    <string name="notification_channel_alerts">Warnungen und Fehlermeldungen</string>
+    <string name="notification_channel_group_join_request">Benachrichtigung für Gruppenanfragen</string>
+    <string name="notification_channel_group_join_response">Benachrichtigung über Antworten auf Gruppenanfragen</string>
+    <string name="notification_channel_new_contact">Neue Kontakte</string>
+    <string name="notification_channel_new_contact_desc">Benachrichtigung über neue Kontakte</string>
+    <string name="notification_channel_notices">Hinweise</string>
+    <string name="notification_contact_has_joined">%1$s ist jetzt bei %2$s. Tippen Sie hier, um eine Nachricht zu senden.</string>
+    <string name="notification_contact_has_joined_multiple">%1$d Ihrer Kontakte sind jetzt bei %2$s: %3$s. Tippen Sie hier, um eine Nachricht zu senden.</string>
+    <string name="notification_hidden_text">Inhalte ausgeblendet</string>
+    <string name="notification_priority_default">Niedrig</string>
+    <string name="notification_priority_high">Hoch</string>
+    <string name="notification_priority_max">Maximum</string>
+    <string name="notification_setting_ignored">ÄNDERUNGEN WERDEN IGNORIERT!</string>
+    <string name="notifications_choose_sound">Ton wählen</string>
+    <string name="notifications_default">Standardeinstellung</string>
+    <string name="notifications_disabled_settings">System-Einstellungen bearbeiten</string>
+    <string name="notifications_disabled_text">Benachrichtigungen für Threema wurden im System vollständig deaktiviert. Sie werden nicht über den Eingang neuer Nachrichten informiert.</string>
+    <string name="notifications_disabled_title">Benachrichtigungen deaktiviert</string>
+    <string name="notifications_for_x_hours">Für %d Stunde(n)</string>
+    <string name="notifications_mute">Stumm</string>
+    <string name="notifications_settings">Benachrichtigungseinstellungen</string>
+    <string name="notifications_until">Bis %s</string>
+    <string name="num_archived_chats">%d archivierte Chats</string>
+    <string name="num_items_sected">%s ausgewählt</string>
+    <string name="num_messages">Anzahl der Nachrichten</string>
+    <string name="number_of_days">%d Tage</string>
+    <string name="off">aus</string>
+    <string name="off_cap">Aus</string>
+    <string name="off_unless_i_was_mentioned" ns2:ignore="Typos">Ein, ausser bei Erwähnung</string>
+    <string name="ok">OK</string>
+    <string name="on">ein</string>
+    <string name="on_cap">An</string>
+    <string name="one_month">1 Monat</string>
+    <string name="one_unread_message">1 ungelesene Nachricht</string>
+    <string name="one_week">1 Woche</string>
+    <string name="one_year">1 Jahr</string>
+    <string name="only_images_or_videos">Nur Bilder und Videos können ausgewählt werden</string>
+    <string name="open_from">Öffnen von</string>
+    <string name="open_group_requests_chips_title">Offene Gruppenanfragen</string>
+    <string name="open_group_requests_hide">Gruppenanfragen verbergen</string>
+    <string name="open_group_requests_show">Gruppenanfragen anzeigen</string>
+    <string name="open_in_maps_app">In Maps-App öffnen</string>
+    <string name="open_myid_popup">Popup-Fenster für Schnellzugriff öffnen</string>
+    <string name="open_navdrawer">Seitenmenü öffnen</string>
+    <string name="original_file_no_longer_avilable">Kein Zugriff mehr auf die Original-Datei. Bitte senden Sie diese Nachricht erneut.</string>
+    <string name="os_licenses">Software-Lizenzen</string>
+    <string name="other_group_links">weitere</string>
+    <string name="palette">Palette</string>
+    <string name="parent_directory">Übergeordnetes Verzeichnis</string>
+    <string name="passphrase_locked">Die Passphrase ist gesperrt</string>
+    <string name="passphrase_service_description">Benachrichtigung, wenn die Passphrase entsperrt ist</string>
+    <string name="passphrase_service_name">Passphrase-Dienst</string>
+    <string name="password_bad">Unsicheres Passwort</string>
+    <string name="password_bad_explain">Das gewählte Threema Safe-Passwort ist sehr unsicher und kann deshalb leicht von Angreifern erraten werden. Bitte wählen Sie ein sicheres Passwort. Tipp: Benutzen Sie ein zusammengesetztes Wort aus mehreren Begriffen.</string>
+    <string name="password_does_not_comply">Das eingegebene Passwort entspricht nicht den Richtlinien.</string>
+    <string name="password_hint">Passwort</string>
+    <string name="password_remember_warning">Merken Sie sich, was Sie hier eingeben! Da %s keine Passwörter auf Servern speichert, können wir Ihnen nicht helfen, wenn Sie die PIN oder die Passphrase vergessen haben.</string>
+    <string name="password_toggle_content_description">Passwort anzeigen</string>
+    <string name="password_too_short">Mindestens %d Zeichen</string>
+    <string name="password_too_short_generic">Passwort zu kurz</string>
+    <string name="passwords_dont_match">Keine Übereinstimmung</string>
+    <string name="pause">Pause</string>
+    <string name="pencil">Bleistift</string>
+    <string name="pending">In Prüfung</string>
+    <string name="pending_sms_verification_notice">Ihre Handynummer ist noch nicht überprüft.</string>
+    <string name="permission_camera_photo_required">Um ein Foto zu machen, bitte Zugriff auf die Kamera erlauben</string>
+    <string name="permission_camera_qr_required">Um QR-Codes zu scannen wird Zugriff auf die Kamera benötigt</string>
+    <string name="permission_camera_videocall_required">Aktivieren Sie die Kamera-Berechtigung, um Videoanrufe zu tätigen</string>
+    <string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung, um einen Kontakt zu senden.
+	</string>
+    <string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
+    <string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.
+	</string>
+    <string name="permission_phone_required">Um Anrufe zu verwalten, während Sie mit Threema telefonieren, erlauben Sie diese Berechtigung</string>
+    <string name="permission_record_audio_required">Aktivieren Sie die Mikrofon-Berechtigung, um verschlüsselte Threema-Anrufe zu tätigen und Sprachnachrichten aufzunehmen.</string>
+    <string name="permission_record_video_audio_required">Bitte aktivieren Sie die Mikrofon-Berechtigung, um Videos mit Ton aufnehmen zu können</string>
+    <string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
+    <string name="pick_image_intent_chooser_title">Quelle wählen</string>
+    <string name="picrelease_everyone">Alle, denen Sie schreiben</string>
+    <string name="picrelease_nobody">Niemand</string>
+    <string name="picrelease_selected">Ausgewählte Kontakte</string>
+    <string name="picture_in_picture_disabled_in_setting">Die Bild-im-Bild-Funktion wurde für %s deaktiviert. Bitte aktivieren sie ihn in den Handy-Einstellungen.</string>
+    <string name="pin">Anpinnen</string>
+    <string name="pin_invalid_not_set">PIN ungültig</string>
+    <string name="pin_locked_cannot_send">App gesperrt. Senden nicht möglich.</string>
+    <string name="pinentry_enter_pin">%s-PIN eingeben um fortzufahren</string>
+    <string name="pinentry_wrong_pin">Falsche PIN</string>
+    <string name="pinning_failed">Zertifikat kann nicht überprüft werden. Möglicher Man-in-the-Middle-Angriff. Wenn Sie eine Werbeblocker-, Inhaltsfilter- oder Firewall-App wie «AdGuard» installiert haben, deaktivieren Sie diese für Threema.</string>
+    <string name="pinning_not_trusted">Zertifikat kann nicht überprüft werden. Stellen Sie sicher, dass das «Entrust Root Certification Authority - G2»-Sicherheitszertifikat im Zertifikatsspeicher Ihres Handys installiert und aktiviert ist.</string>
+    <string name="play">Abspielen</string>
+    <string name="play_services_not_installed_unable_to_use_push">Dienste nicht installiert. Kann nicht auf «Push» umschalten.</string>
+    <string name="please_wait">Bitte warten…</string>
+    <string name="plus">Plus</string>
+    <string name="polling_interval_15">15 Minuten (Standard)</string>
+    <string name="polling_interval_30">30 Minuten</string>
+    <string name="polling_interval_5">5 Minuten</string>
+    <string msgid="7961817945132860002" name="preference_copied">"\"<ns1:g id="SUMMARY">%1$s</ns1:g>\" in Zwischenablage kopiert."</string>
+    <string name="prefs_android_emojis">System-Emojis</string>
+    <string name="prefs_auto_download_mobile">In Mobilnetzwerken</string>
+    <string name="prefs_auto_download_title">Medien automatisch herunterladen</string>
+    <string name="prefs_auto_download_wifi">Im WLAN</string>
+    <string name="prefs_bigger_single_emojis" ns2:ignore="Typos">Einzelne Emojis vergrössern</string>
+    <string name="prefs_chatdisplay">Chat</string>
+    <string name="prefs_contact_format">Kontaktnamen anzeigen</string>
+    <string name="prefs_contact_list_title">Kontaktliste</string>
+    <string name="prefs_contact_soring">Sortierung</string>
+    <string name="prefs_default_contact_picture_colored">Farbige Kontaktbilder</string>
+    <string name="prefs_default_emojis">Threema-Emojis (standard)</string>
+    <string name="prefs_emoji_style">Emoji-Stil</string>
+    <string name="prefs_fix_background_data">Hintergrunddaten aktivieren</string>
+    <string name="prefs_fix_background_data_desc">Damit Threema im Hintergrund Nachrichten erhalten kann, aktivieren Sie Hintergrunddaten und Uneingeschränkte Datennutzung</string>
+    <string name="prefs_fix_device">Probleme der Gerätekonfiguration beheben</string>
+    <string name="prefs_fix_powermanager_problems">Hintergrundausführung ermöglichen</string>
+    <string name="prefs_fix_powermanager_problems_desc">Probleme mit Handys beheben, welche die Ausführung von Threema im Hintergrund unterbinden und den Empfang von Nachrichten verhindern</string>
+    <string name="prefs_gif_autoplay">Anim-GIFs autom. abspielen</string>
+    <string name="prefs_group_notifications">Gruppenchat</string>
+    <string name="prefs_header_appearance">Erscheinungsbild</string>
+    <string name="prefs_header_chat">Chat</string>
+    <string name="prefs_header_contacts">Kontakte</string>
+    <string name="prefs_header_keyboard">Tastatur</string>
+    <string name="prefs_header_lists">Listen</string>
+    <string name="prefs_header_other">Weitere</string>
+    <string name="prefs_header_receipts">Bestätigungen</string>
+    <string name="prefs_header_reset">Zurücksetzen</string>
+    <string name="prefs_image_size">Bild-Abmessungen</string>
+    <string name="prefs_inapp">In App</string>
+    <string name="prefs_inapp_sounds">In App-Töne</string>
+    <string name="prefs_inapp_sounds_off">Kein Ton beim Versand/Empfang abspielen</string>
+    <string name="prefs_inapp_sounds_on">Ton abspielen beim Versand/Empfang von Nachrichten</string>
+    <string name="prefs_inapp_vibrate">In App-Vibration</string>
+    <string name="prefs_inapp_vibrate_off">Keine Vibration beim Empfang von Nachrichten</string>
+    <string name="prefs_inapp_vibrate_on">Vibrieren beim Empfang von Nachrichten</string>
+    <string name="prefs_ipv6_preferred_off">Nur IPv4-Verbindungen verwenden</string>
+    <string name="prefs_ipv6_preferred_on">IPv6 bevorzugen</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Kein IPv6 für Threema-Anrufe und Threema Web verwenden</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 für Threema-Anrufe und Threema Web zulassen</string>
+    <string name="prefs_language_override">Sprache</string>
+    <string name="prefs_light">Benachrichtigungslicht</string>
+    <string name="prefs_logging">Logging</string>
+    <string name="prefs_masterkey">Verschlüsselung lokal gespeicherter Daten</string>
+    <string name="prefs_masterkey_notification_newmsg_off">Keine Benachrichtigung bei neuen Nachrichten wenn
+		Hauptschlüssel gesperrt ist
+	</string>
+    <string name="prefs_masterkey_notification_newmsg_on">Benachrichtigung (ohne Details) bei neuen Nachrichten wenn
+		Hauptschlüssel gesperrt ist
+	</string>
+    <string name="prefs_masterkey_passphrase">Keine Passphrase festgelegt</string>
+    <string name="prefs_media_title">Medien &amp; Speicher</string>
+    <string name="prefs_notification_preview">Vorschau anzeigen</string>
+    <string name="prefs_notification_sound">Benachrichtigungston</string>
+    <string name="prefs_notifications">Töne &amp; Benachrichtigungen</string>
+    <string name="prefs_pin_grace">Zeit bis zum Sperren</string>
+    <string name="prefs_polling_interval">Polling-Intervall</string>
+    <string name="prefs_privacy">Privatsphäre</string>
+    <string name="prefs_proximity_sensor">Näherungssensor benutzen</string>
+    <string name="prefs_proximity_sensor_explain">Ton der Sprachnachrichten über Hörmuschel ausgeben, wenn Näherungssensor abgedeckt</string>
+    <string name="prefs_reset_push">Push-Token zurücksetzen</string>
+    <string name="prefs_save_media">In Galerie speichern</string>
+    <string name="prefs_security">Sicherheit</string>
+    <string name="prefs_sendlog">Logdatei versenden</string>
+    <string name="prefs_sendlog_summary">Logdatei für Problemanalyse an Threema senden</string>
+    <string name="prefs_show_inactive_contacts">Inaktive IDs anzeigen</string>
+    <string name="prefs_storage_mgmt_title">Dateien und Nachrichten aufräumen</string>
+    <string name="prefs_sum_black_list">Nachrichten von IDs, die hier aufgelistet sind, werden ignoriert.</string>
+    <string name="prefs_sum_block_unknown_off">Jeder kann Ihnen Nachrichten senden. Neue Kontakte werden bei der ersten
+		Nachricht automatisch hinzugefügt.
+	</string>
+    <string name="prefs_sum_block_unknown_on">Nur Personen in Ihrer Kontaktliste können Ihnen Nachrichten schicken.
+	</string>
+    <string name="prefs_sum_chatdisplay">Einstellungen zum Chat-Fenster</string>
+    <string name="prefs_sum_contact_format">Einstellung zur Anzeige der Kontaktnamen</string>
+    <string name="prefs_sum_contact_soring">Einstellung zur Sortierung der Kontaktliste</string>
+    <string name="prefs_sum_default_contact_picture_colored_off">Graue Platzhalter anzeigen, wenn kein Kontaktbild
+		vorhanden ist.
+	</string>
+    <string name="prefs_sum_default_contact_picture_colored_on">Verschiedenfarbige Platzhalter anzeigen, wenn kein
+		Kontaktbild vorhanden ist.
+	</string>
+    <string name="prefs_sum_direct_share">Beim Teilen aus anderen Apps letzte Chats anzeigen</string>
+    <string name="prefs_sum_disable_smart_replies">Antwortvorschläge in Android-Benachrichtigungen unterbinden</string>
+    <string name="prefs_sum_enter_off">Eingabetaste fügt eine neue Zeile hinzu</string>
+    <string name="prefs_sum_enter_on">Eingabetaste sendet Nachricht sofort</string>
+    <string name="prefs_sum_excluded_sync_identities">Die IDs, die hier aufgelistet sind, werden beim Synchronisieren
+		von Kontakten ignoriert.
+	</string>
+    <string name="prefs_sum_fullscreen_ime_off">Oberhalb der Tastatur wird ein Ausschnitt des Chats angezeigt</string>
+    <string name="prefs_sum_fullscreen_ime_on">Die Tastatur füllt im Querformat den ganzen Bildschirm</string>
+    <string name="prefs_sum_image_attach_previews">Eine Liste der neuesten Bilder im Hinzufügen-Popup anzeigen</string>
+    <string name="prefs_sum_incognito_keyboard">Sammeln von Daten für personalisierte Vorschläge deaktivieren (falls von der Tastatur unterstützt)</string>
+    <string name="prefs_sum_light" ns2:ignore="Typos">Weiss</string>
+    <string name="prefs_sum_media_title">Einstellungen zu Medien, Dateien und Speicherplatz</string>
+    <string name="prefs_sum_notification_sound">System-Standard</string>
+    <string name="prefs_sum_notifications">Töne und Vibration</string>
+    <string name="prefs_sum_passphrase">Passphrase für lokale Verschlüsselung verlangen</string>
+    <string name="prefs_sum_pin_grace">Zeitspanne wählen</string>
+    <string name="prefs_sum_polling_off">Bei Push auf neue Nachrichten prüfen</string>
+    <string name="prefs_sum_polling_on">Periodisch auf neue Nachrichten prüfen (braucht mehr Akku!)</string>
+    <string name="prefs_sum_privacy">Privatsphären-relevante Einstellungen</string>
+    <string name="prefs_sum_receive_profilepics_off">Profilbilder Ihrer Kontakte ausblenden</string>
+    <string name="prefs_sum_receive_profilepics_on">Profilbilder Ihrer Kontakte anzeigen</string>
+    <string name="prefs_sum_receive_profilepics_recipients_list">Selektierte Kontakte in dieser Liste erhalten Ihr Profilbild, wenn Sie ihnen schreiben.</string>
+    <string name="prefs_sum_remove_wallpapers">Entfernt alle individuellen Hintergrundbilder</string>
+    <string name="prefs_sum_reset_push">Gerät neu bei FCM//HMS registrieren</string>
+    <string name="prefs_sum_reset_receipts">Kontaktspezifische Einstellungen für Lesebestätigungen und «Melden wenn ich tippe» auf Standard zurücksetzen</string>
+    <string name="prefs_sum_reset_ringtones">Werkseinstellungen wiederherstellen</string>
+    <string name="prefs_sum_save_media">Eingehende Bilder und Videos sowie ausgehende Kamerabilder unverschlüsselt sichern</string>
+    <string name="prefs_sum_security_pin">Zugriff auf App schützen</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Inaktive/widerrufene Threema-IDs ausblenden</string>
+    <string name="prefs_sum_show_inactive_contacts_on">Alle Threema-IDs in der Kontaktliste anzeigen</string>
+    <string name="prefs_sum_show_unread_badge">Plaketten in den Navigations-Tabs anzeigen</string>
+    <string name="prefs_sum_sync_contacts_off">Verbindung zwischen %s und Adressbuch entfernt</string>
+    <string name="prefs_sum_sync_contacts_on">%s-Kontakte mit dem Adressbuch des Systems verbinden</string>
+    <string name="prefs_sum_troubleshooting">Probleme analysieren und beheben</string>
+    <string name="prefs_sum_vibrate">Bei eingehender Nachricht vibrieren</string>
+    <string name="prefs_sum_voice_call_sound">Klingelton für Threema-Sprachanrufe auswählen</string>
+    <string name="prefs_sum_voice_call_vibrate">Bei eingehenden Threema-Sprachanrufen vibrieren</string>
+    <string name="prefs_sum_wallpaper">Bild für Hintergrund wählen</string>
+    <string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
+    <string name="prefs_summary_force_turn_on">Alle Anrufe über Threema-Server leiten. Schützt Ihre IP-Adresse, kann aber zu schlechterer Anrufqualität führen.</string>
+    <string name="prefs_summary_hide_screenshots">Miniaturen im App-Switcher verstecken und Screenshots verhindern
+	</string>
+    <string name="prefs_summary_hide_screenshots_notice">Aus Privatsphäre-Gründen werden Miniaturansichten und Screenshots bei aktivierter App-Sperre immer verhindert.</string>
+    <string name="prefs_system_notifications">Einzelchat</string>
+    <string name="prefs_theme">Designstil</string>
+    <string name="prefs_title_accept_privacy_policy">Datenschutzerklärung akzeptieren</string>
+    <string name="prefs_title_access_protection">Zugriffsschutz</string>
+    <string name="prefs_title_black_list">Blockierte Kontakte</string>
+    <string name="prefs_title_block_unknown">Unbekannte blockieren</string>
+    <string name="prefs_title_device_info">Geräte-Info</string>
+    <string name="prefs_title_direct_share">Direct Share</string>
+    <string name="prefs_title_disable_smart_replies">Antwortvorschläge deaktivieren</string>
+    <string name="prefs_title_enter">Direkt versenden</string>
+    <string name="prefs_title_excluded_sync_identities">Ausschlussliste</string>
+    <string name="prefs_title_fontsize">Schriftgrösse</string>
+    <string name="prefs_title_force_turn">Anrufe immer über Server</string>
+    <string name="prefs_title_fullscreen_ime">Bildschirmfüllende Tastatur</string>
+    <string name="prefs_title_hide_screenshots">Miniaturen und Screenshots verhindern</string>
+    <string name="prefs_title_image_attach_previews">Medien-Schnellauswahl</string>
+    <string name="prefs_title_incognito_keyboard">Inkognito-Tastatur anfordern</string>
+    <string name="prefs_title_ipv6_preferred">IPv6 für Nachrichten</string>
+    <string name="prefs_title_ipv6_webrtc_allowed">IPv6 für Anrufe und Web</string>
+    <string name="prefs_title_locking_mechanism">Schutzmechanismus</string>
+    <string name="prefs_title_masterkey_change_passphrase">Passphrase ändern</string>
+    <string name="prefs_title_masterkey_notification_newmsg">Neue Nachrichten anzeigen</string>
+    <string name="prefs_title_masterkey_passphrase">Passphrase</string>
+    <string name="prefs_title_message_log_switch">In Datei loggen</string>
+    <string name="prefs_title_network">Netzwerk</string>
+    <string name="prefs_title_notification_priority">Priorität</string>
+    <string name="prefs_title_pin_code">PIN festlegen</string>
+    <string name="prefs_title_pin_switch">App-Sperre</string>
+    <string name="prefs_title_polling_switch">Polling</string>
+    <string name="prefs_title_read_receipts">Lesebestätigungen senden</string>
+    <string name="prefs_title_receive_profilepics">Profilbilder anzeigen</string>
+    <string name="prefs_title_remove_wallpapers">Alle Hintergrundbilder löschen</string>
+    <string name="prefs_title_reset_receipts">Individuelle Einstellungen zurücksetzen</string>
+    <string name="prefs_title_reset_ringtones">Benachrichtigungstöne zurücksetzen</string>
+    <string name="prefs_title_show_unread_badge">Plaketten</string>
+    <string name="prefs_title_sum_message_log_off">Ereignisse werden nicht geloggt</string>
+    <string name="prefs_title_sum_message_log_on">Ereignisse und Netzwerkinformationen werden in die Datei debug_log.txt geloggt</string>
+    <string name="prefs_title_sync_contacts">Kontakte synchronisieren</string>
+    <string name="prefs_title_typing_indicator">Melden, wenn ich tippe</string>
+    <string name="prefs_title_voip">Threema-Anrufe</string>
+    <string name="prefs_title_voip_enable">Threema-Anrufe aktivieren</string>
+    <string name="prefs_title_voip_video_enable">Videoanrufe ermöglichen</string>
+    <string name="prefs_title_wallpaper">Hintergrundbild auswählen</string>
+    <string name="prefs_title_wallpaper_switch">Hintergrundbild</string>
+    <string name="prefs_title_working_days">Arbeitstage</string>
+    <string name="prefs_troubleshooting">Fehlerbehebung</string>
+    <string name="prefs_validate_contacts">Kontaktverbindung überprüfen</string>
+    <string name="prefs_validate_contacts_loading">Kontaktverbindung in Überprüfung</string>
+    <string name="prefs_vibrate">Vibrieren</string>
+    <string name="prefs_video_size">Video-Komprimierung</string>
+    <string name="prefs_videocall_profile">Bevorzugte Bildqualität</string>
+    <string name="prefs_videocall_profile_explain">Die tatsächliche Bildqualität ist abhängig vom Netz sowie den Einstellungen des Gesprächspartners</string>
+    <string name="prefs_voice_call_notifications">Sprachanrufe</string>
+    <string name="prefs_voice_call_sound">Klingelton</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Eingehende Mobiltelefon-Anrufe zurückweisen, während ein Threema-Anruf läuft.</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Mobiltelefon-Anrufe zurückweisen</string>
+    <string name="prefs_work_life_balance">Nicht stören</string>
+    <string name="prefs_work_time_end">Arbeitsende</string>
+    <string name="prefs_work_time_end_sum">Legen Sie das Arbeitsende fest</string>
+    <string name="prefs_work_time_start">Arbeitsbeginn</string>
+    <string name="prefs_work_time_start_sum">Legen Sie den Arbeitsbeginn fest</string>
+    <string name="prefs_workarounds">Workarounds</string>
+    <string name="prefs_working_days_enable_sum">Ausserhalb der Arbeitszeit keine Benachrichtigungen anzeigen und Threema-Anrufe ablehnen</string>
+    <string name="prefs_working_days_enable_title">Ruhezeit-Regelung</string>
+    <string name="prefs_working_days_sum">Wählen Sie Ihre Arbeitstage</string>
+    <string name="prepare_call_message">Wenn Sie fortfahren, werden wir unverzüglich versuchen, Sie anzurufen. Ihr
+		Überprüfungscode wird Ihnen dann zweimal vorgelesen. Achtung: es gibt nur einen Versuch.
+	</string>
+    <string name="preparing_messages">Nachrichten zusammenstellen</string>
+    <string name="preparing_threema_safe">Threema Safe wird vorbereitet</string>
+    <string name="print">Drucken</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
+    <string name="privacy_policy_check_confirm">Bitte akzeptieren Sie die Datenschutzerklärung, um %s nutzen zu können.\n\n(Anforderung gemäss EU-Verordnung 2016/679)</string>
+    <string name="privacy_policy_explain">%1$s schützt Ihre Privatsphäre so konsequent wie kein anderer Messenger. In unserer %2$s erfahren Sie mehr.</string>
+    <string name="private_chat_subject">Privat</string>
+    <string name="private_contact">Privater Kontakt</string>
+    <string name="profile_picture">Profilbild</string>
+    <string name="profile_picture_and_nickname">Profilbild und Nickname</string>
+    <string name="profile_picture_release">Wer kann Ihr Profilbild sehen?</string>
+    <string name="profile_picture_sent">Profilbild wurde gesendet</string>
+    <string name="public_key_for">Öffentlicher Schlüssel von %s</string>
+    <string name="public_nickname">Nickname</string>
+    <string name="push_disable_text">Wenn Sie fortfahren, werden Push-Nachrichten deaktiviert und Threema wird alle 15
+		Minuten nach neuen Nachrichten prüfen.
+	</string>
+    <string name="push_not_available_text">Kein Push-Dienst auf Ihrem Gerät gefunden, da die Google Play-Dienste fehlen oder nicht aktuell sind. Threema wird alle 15 Minuten nach neuen Nachrichten prüfen.</string>
+    <string name="push_not_available_title">Push-Dienst nicht verfügbar</string>
+    <string name="push_reset_text">Das Push-Token wurde zurückgesetzt</string>
+    <string name="push_reset_title">Push-Token zurücksetzen</string>
+    <string name="push_token_cleared">Das Push-Token wurde entfernt</string>
+    <string name="qr_code">QR-Code</string>
+    <string name="qr_scan_result_dialog_title">QR Scan Resultat</string>
+    <string name="qr_scanner_id_hint">Scannen Sie den QR-Code eines anderen Kontakts, um ihn zu verifizieren. Der QR-Code kann durch Tippen auf das Profilbild oben links im Threema-Hauptbildschirm angezeigt werden.</string>
+    <string name="quote">Zitieren</string>
+    <string name="quote_not_found">Zitierte Nachricht nicht gefunden</string>
+    <string name="quote_subj">Zitat</string>
+    <string name="quote_subj_end">Zitat Ende</string>
+    <string name="quoted_message_deleted">Zitierte Nachricht ist nicht mehr verfügbar</string>
+    <string name="rate_error">Konnte Ihre Rezension nicht senden. Bitte stellen Sie sicher, dass Sie mit dem Internet verbunden sind.</string>
+    <string name="rate_feedback_intro">Bitte sagen Sie uns, was wir besser machen können (optional).</string>
+    <string name="rate_forward_to_play_store">Möchten Sie uns auch auf Google Play bewerten?</string>
+    <string name="rate_intro">Wie gefällt Ihnen Threema?</string>
+    <string name="rate_positive">Rezension senden</string>
+    <string name="rate_thank_you">Vielen Dank für Ihre Bewertung!</string>
+    <string name="rate_title">Threema bewerten</string>
+    <string name="reaccept">Nochmal annehmen</string>
+    <string name="read_on">Weiterlesen…</string>
+    <string name="really_block_contact">Sie werden keine Nachrichten von diesem Kontakt mehr erhalten. Fortfahren?
+	</string>
+    <string name="really_cancel_verify">Möchten Sie die Überprüfung Ihrer Handynummer wirklich abbrechen? Wenn Sie die Überprüfung abbrechen, wird die Handynummer nicht verknüpft.</string>
+    <string name="really_delete_contact">Möchten Sie diesen Kontakt und alle dazugehörigen Chats wirklich löschen?
+	</string>
+    <string name="really_delete_contacts_message">Möchten Sie wirklich %1$d Kontakte und alle dazugehörigen Chats löschen?</string>
+    <string name="really_delete_distribution_list">Verteilerliste löschen</string>
+    <string name="really_delete_distribution_list_message">Möchten Sie diese Verteilerliste wirklich löschen?</string>
+    <string name="really_delete_group_link">Möchten Sie wirklich %d Gruppen-Link(s) löschen? Einmal gelöscht, können Nutzer keine gültigen Anfragen mehr schicken. Bereits erhaltene Anfragen können jedoch noch angenommen oder abgelehnt werden.</string>
+    <string name="really_delete_group_link_title">Gruppen-Links löschen</string>
+    <string name="really_delete_group_request_title">Gruppenanfrage wirklich löschen?</string>
+    <string name="really_delete_incoming_request">Möchten Sie wirklich %d Gruppenanfragen löschen? Einmal gelöscht, können Sie nicht mehr auf diese Anfragen antworten. </string>
+    <string name="really_delete_media">Möchten Sie diese %d Medien-Nachricht(en) wirklich löschen?</string>
+    <string name="really_delete_message_title">Nachricht(en) löschen</string>
+    <string name="really_delete_messages">Die Nachrichten werden vollständig gelöscht und können nicht wiederhergestellt
+		werden.
+	</string>
+    <string name="really_delete_outgoing_request">Möchten Sie wirklich %d Gruppenanfragen(n) löschen? Seien Sie sich bewusst, dass die offene Anfrage nicht zurückgezogen wird und Sie später trotzdem noch in die Gruppe aufgenommen werden können.</string>
+    <string name="really_delete_thread">Chat löschen</string>
+    <string name="really_delete_thread_message">Möchten Sie wirklich %d Chat(s) löschen? Die Nachrichten können nicht
+		wiederhergestellt werden.
+	</string>
+    <string name="really_forward">Weiterleiten an «%1$s»?</string>
+    <string name="really_hide_chat_message">Möchten Sie diesen Chat wirklich als privaten Chat markieren? Um private Chats in der Chatliste zu verstecken oder wieder sichtbar zu machen, nutzen Sie die entsprechende Funktion im Menü.</string>
+    <string name="really_leave_group_admin_message">Sie sind Administrator dieser Gruppe. Wenn Sie sie jetzt verlassen, wird sie verwaist. Die anderen Mitglieder können weiter chatten, aber Änderungen sind nicht mehr möglich.</string>
+    <string name="really_leave_group_message">Möchten Sie diese Gruppe wirklich verlassen?</string>
+    <string name="really_leave_id_export">Vergewissern Sie sich, dass Sie die Zeichenfolge des ID-Exports oder den QR-Code an einen
+sicheren Ort gesichert oder ausgedruckt haben.</string>
+    <string name="really_remove_wallpapers">Möchten Sie wirklich alle Hintergrundbilder entfernen?</string>
+    <string name="really_reset_ringtones">Benachrichtigungstöne auf Werkseinstellung zurücksetzen?</string>
+    <string name="really_send">Senden an «%1$s»?</string>
+    <string name="really_unlink_contact">Möchten Sie die Verknüpfung zum Adressbuch-Kontakt wirklich aufheben?</string>
+    <string name="really_unlink_contact_title">Verknüpfung aufheben</string>
+    <string name="receipts_override_choice_default">Standard (%s)</string>
+    <string name="receipts_override_choice_dont_send">Nicht senden</string>
+    <string name="receipts_override_choice_send">Senden</string>
+    <string name="received_on">Empfangen am %s</string>
+    <string name="recording">Sprachmitteilung wird aufgenommen</string>
+    <string name="recording_canceled">Aufnahme aufgrund eines unbekannten Fehlers abgebrochen.</string>
+    <string name="recording_stopped_message">Möchten Sie die aufgenommene Sprachnachricht jetzt senden?</string>
+    <string name="recording_stopped_title">Aufnahme angehalten</string>
+    <string name="reject">Ablehnen</string>
+    <string name="remove">Entfernen</string>
+    <string name="reply_later">Melde mich später</string>
+    <string name="reply_on_my_way">Bin auf dem Weg</string>
+    <string name="reply_thank_you">Danke</string>
+    <string name="reply_youre_welcome">Bitte</string>
+    <string name="resend">Nochmal senden</string>
+    <string name="reset_default_group_link">Gruppen-Link zurücksetzen</string>
+    <string name="reset_default_group_link_desc">Der zuvor geteilte Link wird somit ungültig und Anfragen über den alten Link werden automatisch abgelehnt.</string>
+    <string name="reset_default_group_link_title">Zurücksetzen Info</string>
+    <string name="reset_ringtones_confirm">Benachrichtigungstöne wurden zurückgesetzt</string>
+    <string name="reset_successful">Erfolgreich auf Standardeinstellungen zurückgesetzt</string>
+    <string name="restore">Wiederherstellen</string>
+    <string name="restore_data_backup_explain">Um ein Datenbackup wiederherzustellen, löschen Sie zuerst Ihre Threema-ID im «Mein Profil»-Bildschirm.\n\nWenn die App neu startet, wählen Sie «Backup wiederherstellen», «Weitere Wiederherst.-Optionen», «Daten-Backup» und tippen Sie in der Dateiauswahl auf das gewünschte Datenbackup, das Sie wiederherstellen möchten.</string>
+    <string name="restore_data_cancelled">Wiederherstellen angehalten</string>
+    <string name="restore_data_password_msg">Geben Sie hier das Passwort ein, das Sie beim Erstellen des Backups gesetzt
+		haben
+	</string>
+    <string name="restore_disable_energy_saving">Bitte verbinden Sie Ihr Gerät mit dem Ladegerät, bevor Sie fortfahren. Stellen Sie sicher, dass alle Energiesparmodi Ihres Handys ausgeschaltet sind, damit das Backup bzw. die Wiederherstellung nicht unterbrochen wird.</string>
+    <string name="restore_error_body">Wiederherstellung fehlgeschlagen</string>
+    <string name="restore_id_hint">Fügen Sie hier die Zeichenfolge Ihres ID-Exports ein</string>
+    <string name="restore_success_body">Wiederherstellen erfolgreich abgeschlossen.</string>
+    <string name="restore_your_id_contacts_and_groups">Ihre ID, Kontakte und Gruppen wiederherstellen</string>
+    <string name="restore_zip_invalid_file">Backup-Datei ungültig.</string>
+    <string name="restoring_backup">Backup wiederherstellen</string>
+    <string name="resync_group">Gruppe neu synchronisieren</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="revocation_explain">Das Passwort, das Sie hier eingeben, erlaubt Ihnen, Ihre ID unter
+		https://myid.threema.ch/revoke zu widerrufen, falls Sie sie verloren haben oder sie gestohlen wurde.
+	</string>
+    <string name="revocation_key_not_set">Kein Widerrufspasswort gesetzt</string>
+    <string name="revocation_key_set_at">Passwort gesetzt %1$s</string>
+    <string name="revocation_key_title">ID-Widerruf</string>
+    <string name="ringtone_none">Stumm</string>
+    <string name="ringtone_selection_default">Standard (%s)</string>
+    <string name="rotate">Drehen</string>
+    <string name="safe_activated">Threema Safe wurde aktiviert.</string>
+    <string name="safe_advanced_options">Experten-Einstellungen</string>
+    <string name="safe_backup_now">Jetzt sichern</string>
+    <string name="safe_backup_tap_to_restart">Tippen Sie auf die angezeigte System-Benachrichtigung, um die App jetzt neu zu starten. Wenn Sie die Benachrichtigung nicht sehen, ziehen Sie bitte die Benachrichtigungsleiste Ihres Handys herunter.</string>
+    <string name="safe_change_password">Passwort ändern</string>
+    <string name="safe_configure_choose_password">Wählen Sie ein sicheres Passwort. Sie benötigen dieses Passwort, um Ihr Threema Safe-Backup wiederherzustellen.</string>
+    <string name="safe_configure_choose_password_force">Setzen Sie ein starkes Passwort, um Ihre ID mit Threema Safe abzusichern. Vergessen Sie nicht, was Sie hier eingeben!</string>
+    <string name="safe_configure_choose_password_title">Passwort wählen</string>
+    <string name="safe_configure_choose_server">Server auswählen</string>
+    <string name="safe_configure_server_credentials_title">Authentifizierung (optional)</string>
+    <string name="safe_configure_server_explain">Speichern Sie Ihr Threema Safe-Backup bei Threema oder auf einem beliebigen Server Ihrer Wahl.</string>
+    <string name="safe_connection_error">Verbindungsfehler</string>
+    <string name="safe_deactivate">Threema Safe deaktivieren</string>
+    <string name="safe_deactivate_explain">Ihre bestehenden Threema Safe-Backups werden auf dem Server unwiderruflich gelöscht. Möchten Sie fortfahren?</string>
+    <string name="safe_delete_error">Fehler beim Löschen: %s</string>
+    <string name="safe_delete_success">Backup wurde erfolgreich vom Server gelöscht</string>
+    <string name="safe_deleting">Threema Safe-Sicherung wird gelöscht</string>
+    <string name="safe_disable_confirm">Wollen Sie fortfahren, ohne Threema Safe zu aktivieren? Threema Safe erlaubt, Ihre Threema-ID, Kontakte und Gruppen wiederherzustellen, falls Sie Ihr Gerät verlieren.</string>
+    <string name="safe_enable_explain">Bei Threema haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\nThreema Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
+    <string name="safe_enable_explain_short">Aktivieren Sie Threema Safe für automatische, sichere und anonyme Backups Ihrer wichtigsten Daten.</string>
+    <string name="safe_enter_password">Bitte geben Sie Ihr Threema Safe-Passwort ein</string>
+    <string name="safe_error_preparing">Fehler beim Vorbereiten des Threema Safe-Backups</string>
+    <string name="safe_failed_notification">Threema Safe konnte seit %d Tagen kein Backup erstellen. Bitte tippen Sie hier zum Überprüfen.</string>
+    <string name="safe_id_lookup">Threema-ID wird gesucht</string>
+    <string name="safe_learn_more_button">Mehr erfahren</string>
+    <string name="safe_max_backup_size">Max. Backup-Grösse</string>
+    <string name="safe_no_backup_found">Kein Backup auf dem Server gefunden. Überprüfen Sie ID und Passwort.</string>
+    <string name="safe_no_id_found">Keine Threema-ID gefunden</string>
+    <string name="safe_password_updated">Das Threema Safe-Passwort wurde aktualisiert.</string>
+    <string name="safe_restore">Threema Safe wiederherstellen</string>
+    <string name="safe_restore_enter_id">Bitte geben Sie die Threema-ID ein, die Sie wiederherstellen möchten</string>
+    <string name="safe_restore_failed">Wiederherstellen fehlgeschlagen</string>
+    <string name="safe_result">Ergebnis</string>
+    <string name="safe_retention">Speicherdauer</string>
+    <string name="safe_search_id_title">Bitte geben Sie die mit Ihrer Threema-ID verknüpfte Handynummer oder E-Mail-Adresse ein</string>
+    <string name="safe_select_id">Mehrere Threema IDs gefunden. Wählen Sie die gewünschte ID:</string>
+    <string name="safe_server_name">Server</string>
+    <string name="safe_size">Backup-Grösse</string>
+    <string name="safe_successful">Erfolgreich</string>
+    <string name="safe_test_server">Server testen</string>
+    <string name="safe_threema_id">Ihre Threema-ID</string>
+    <string name="safe_unsuccessful">Fehlgeschlagen</string>
+    <string name="safe_upload_failed">Upload fehlgeschlagen</string>
+    <string name="safe_upload_size_exceeded">Backup-Grösse überschritten</string>
+    <string name="safe_use_default_server">Standardserver</string>
+    <string name="safe_version_mismatch">Die Version des Backups ist höher als von der App unterstützt. Bitte aktualisieren Sie die App.</string>
+    <string name="save_changes">Sichern</string>
+    <string name="save_group_changes">Möchten Sie Änderungen an der Gruppe übernehmen?</string>
+    <string name="save_image">Bild speichern</string>
+    <string name="save_message_action">Speichern</string>
+    <string name="saving_media">Medium wird gespeichert</string>
+    <string name="scan_duplicate">Diese ID wurde bereits eingescannt und verifiziert.</string>
+    <string name="scan_failure_dialog_title">Scan fehlgeschlagen</string>
+    <string name="scan_id">ID scannen</string>
+    <string name="scan_id_mismatch_message">Die ID, die Sie gescannt haben, stimmt nicht mit dem gespeicherten Kontakt
+		überein.
+	</string>
+    <string name="scan_id_mismatch_title">ID stimmt nicht überein</string>
+    <string name="scan_successful">Die ID wurde erfolgreich eingescannt. Der Kontakt ist nun verifiziert.</string>
+    <string name="search">Suche</string>
+    <string name="search_contact">Kontakt suchen</string>
+    <string name="search_group">Gruppe suchen</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Suche"</string>
+    <string name="search_no_matches">Suchbegriff nicht gefunden</string>
+    <string name="search_no_more_matches">Keine weiteren Treffer</string>
+    <string name="searching">Wird gesucht…</string>
+    <string name="seconds">Sekunden</string>
+    <string name="select">Auswählen</string>
+    <string name="select_all">Alle auswählen</string>
+    <string name="select_date">Datum auswälen</string>
+    <string name="select_directory_for_backup">Hier sichern</string>
+    <string name="select_emoji">emojis</string>
+    <string name="select_from_gallery">Aus Galerie auswählen</string>
+    <string name="select_time">Zeit auswählen</string>
+    <string name="selected_media">Ihre Auswahl</string>
+    <string name="selection_counter_label">%d Bild(er) ausgewählt</string>
+    <string name="send">Absenden</string>
+    <string name="send_as_files">Als Datei senden</string>
+    <string name="send_as_files_warning">Die Übertragung von unkomprimierten Dateien und Bildern führt zu erhöhtem
+		Datenverbrauch. Dadurch können zusätzliche Kosten durch den Mobilfunkanbieter entstehen. Wir empfehlen deshalb
+		die Nutzung im WLAN.
+	</string>
+    <string name="send_location">Standort senden</string>
+    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Unsere Datenschutzerklärung wurde angepasst, um die folgende Änderung widerzuspiegeln:</p><p>%1$s ist nicht mehr von Google Play und Google Maps abhängig, um Karten- und OVI-Daten bereitzustellen.</p>Bitte überprüfen Sie die vollständige Datenschutzerklärung <a href="%2$s">hier</a>.]]></string>
+    <string name="send_media">Medien senden</string>
+    <string name="send_to">Senden an %s</string>
+    <string name="send_to_support">An Threema-Support senden</string>
+    <string name="sending_images">Bilder senden</string>
+    <string name="sending_media">Medien werden gesendet</string>
+    <string name="sending_message_failed">%1$d Nachricht(en) konnte(n) nicht gesendet werden</string>
+    <string name="sending_messages">Wird gesendet…</string>
+    <string name="sent_on">Gesendet am: %s</string>
+    <string name="sent_to">Gesendet an: %s</string>
+    <string name="serial_required_want_exit">Der Lizenzschlüssel ist ungültig. Möchten Sie es nochmals versuchen oder
+		Threema verlassen?
+	</string>
+    <string name="server_message_title">Nachricht vom Threema-Server</string>
+    <string name="service_manager_not_available">App kann nicht gestartet werden. Bitte schalten Sie Ihr Gerät vollständig aus und wieder ein.</string>
+    <string name="set_backup_path">Backup-Pfad festlegen</string>
+    <string name="set_backup_path_intro">Bitte wählen Sie im folgenden Bildschirm den Ordner aus, in dem Daten-Backups gesichert werden sollen.</string>
+    <string name="set_lock">Jetzt aktivieren</string>
+    <string name="set_nickname_title">Nickname festlegen</string>
+    <string name="set_pin_again_summary">PIN wiederholen</string>
+    <string name="set_pin_hint">PIN</string>
+    <string name="set_pin_menu_title">Neue PIN setzen</string>
+    <string name="set_pin_summary_intro">Schützen Sie Ihre Privatsphäre, indem Sie die App mit einer PIN-Sperre
+		versehen. Die Sperre wird nach einer festgelegten Wartezeit automatisch aktiviert (Nur Ziffern erlaubt)
+	</string>
+    <string name="set_private">Als «privater Chat» markieren</string>
+    <string name="setting_masterkey_passphrase">Passphrase für Hauptschlüssel festlegen</string>
+    <string name="share_chat">Chat teilen</string>
+    <string name="share_contact">Kontakt teilen</string>
+    <string name="share_conversation_body">Ein modernes ZIP Tool mit AES Unterstützung wird benötigt um die Datei zu
+		öffnen, z.B. http://www.7-zip.org oder https://itunes.apple.com/de/app/the-unarchiver/id425424353
+	</string>
+    <string name="share_image">Bild teilen</string>
+    <string name="share_media">Mit anderer App teilen…</string>
+    <string name="share_subject">%s-Chat</string>
+    <string name="share_via">Teilen mittels…</string>
+    <string name="shortcut_choice_title">Verknüpfung erstellen für…</string>
+    <string name="show_as_qrcode">Als QR-Code anzeigen</string>
+    <string name="show_contact">Kontakt anzeigen</string>
+    <string name="show_in_chat">In Chat zeigen</string>
+    <string name="show_public_key">Öffentlichen Schlüssel anzeigen</string>
+    <string name="show_text">Text anzeigen</string>
+    <string name="six_months">6 Monate</string>
+    <string name="smiley">Smiley</string>
+    <string name="some_contacts_not_deleted">%d Kontakte konnten nicht gelöscht werden, da sie sich noch in einer Gruppe befinden</string>
+    <string name="state">Bundesland/Kanton</string>
+    <string name="state_ack">bestätigt</string>
+    <string name="state_dec">abgelehnt</string>
+    <string name="state_delivered">erhalten</string>
+    <string name="state_dialog_created">Erstellt</string>
+    <string name="state_dialog_modified">Aktualisiert</string>
+    <string name="state_dialog_posted">Gesendet</string>
+    <string name="state_dialog_received">Empfangen</string>
+    <string name="state_dialog_status">Status</string>
+    <string name="state_failed">fehlgeschlagen</string>
+    <string name="state_pending">wartend</string>
+    <string name="state_processing">wird verarbeitet</string>
+    <string name="state_read">gelesen</string>
+    <string name="state_sending">wird gesendet</string>
+    <string name="state_sent">gesendet</string>
+    <string name="state_transcoding">wird transcodiert</string>
+    <string name="status_ballot_all_votes">Umfrage «%1$s» vollständig</string>
+    <string name="status_ballot_user_first_vote">«%1$s» hat eine Stimme für «%2$s» abgegeben</string>
+    <string name="status_ballot_user_modified_vote">«%1$s» hat die Stimme für «%2$s» geändert</string>
+    <string name="status_ballot_voting_changed">Neue Stimme bei Umfrage «%1$s» erhalten</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="status_create_group">Gruppe erstellt.</string>
+    <string name="status_create_notes">*Sie sind alleine hier*\nVerwenden Sie diesen Chat als sicheres Notizbuch für Texte, Medien oder Dokumente.</string>
+    <string name="status_create_notes_off">*Sie sind nicht mehr alleine in diesem Chat*\nNeue Nachrichten werden an alle Gruppenmitglieder gesendet.</string>
+    <string name="status_group_member_kicked">«%1$s» wurde aus der Gruppe entfernt.</string>
+    <string name="status_group_member_left">«%1$s» hat die Gruppe verlassen.</string>
+    <string name="status_group_new_member">«%1$s» wurde zur Gruppe hinzugefügt.</string>
+    <string name="status_group_new_photo">Gruppe aktualisiert.</string>
+    <string name="status_rename_group">Gruppe umbenannt zu «%1$s»</string>
+    <string name="stickers">Stickers</string>
+    <string name="stop">Stopp</string>
+    <string name="storage_explain">Falls der Speicherplatz knapp wird, können Sie alte, verschlüsselt gespeicherte
+		Medien-Dateien löschen, um Platz zu schaffen. Die Vorschaubilder bleiben dabei erhalten. Beachten Sie, dass dies kein automatischer Prozess ist. Gelöscht wird nur, wenn Sie einen der untenstehenden Buttons antippen.
+	</string>
+    <string name="storage_management">Speichermanagement</string>
+    <string name="storage_threema">Von Threema genutzt</string>
+    <string name="storage_total">Interner Speicherplatz</string>
+    <string name="storage_total_free">Freier Speicher</string>
+    <string name="storage_total_in_use">In Benutzung</string>
+    <string name="street" ns2:ignore="Typos">Strasse</string>
+    <string name="strikethrough">Durchgestrichen</string>
+    <string name="suburb">Stadtteil</string>
+    <string msgid="5190123168583152844" name="summary_collapsed_preference_list">"<ns1:g id="CURRENT_ITEMS">%1$s</ns1:g>, <ns1:g id="ADDED_ITEMS">%2$s</ns1:g>"</string>
+    <string name="support">Hilfe</string>
+    <string name="support_url">https://threema.ch/android/support/</string>
+    <string name="switch_flash">Biltzmodus umschalten</string>
+    <string name="switched_off">Aus</string>
+    <string name="switched_on">Ein</string>
+    <string name="synchronize_contact">Adressbuch-Synchronisation</string>
+    <string name="system_default">Systemstandard</string>
+    <string name="take_me_there">Jetzt aktivieren…</string>
+    <string name="take_photo">Foto aufnehmen</string>
+    <string name="tap_for_picture_hold_for_video">Tippen für Foto, halten für Video</string>
+    <string name="tap_here_for_more">Hier tippen für mehr Informationen</string>
+    <string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
+    <string name="test_unsuccessful">Test fehlgeschlagen</string>
+    <string name="text">Text</string>
+    <string name="thirty_days_abbrev">30d</string>
+    <string name="three_months">3 Monate</string>
+    <string name="threema_call">Threema-Anruf</string>
+    <string name="threema_call_with">Anruf an %s</string>
+    <string name="threema_channel_intro">Der Threema Channel versorgt Sie mit Neuigkeiten zu Threema. Möchten Sie Threema Channel abonnieren und zu Ihren Kontakten hinzufügen? Es ist kostenlos und Sie können sich jederzeit abmelden.</string>
+    <string name="threema_contact">Threema-Kontakt</string>
+    <string name="threema_message_from">Nachricht von %s</string>
+    <string name="threema_message_to">Nachricht an %s</string>
+    <string name="threema_safe_backup">Threema Safe Backup</string>
+    <string name="threema_safe_upload_successful">Threema Safe-Backup erfolgreich hochgeladen</string>
+    <string name="threema_version">Version</string>
+    <string name="threema_work_contact">Threema Work-Kontakt</string>
+    <string name="time_remaining">noch %s</string>
+    <string name="title_add_distribution_list">Neue Verteilerliste</string>
+    <string name="title_addgroup">Neue Gruppe</string>
+    <string name="title_adduser">Kontakt hinzufügen</string>
+    <string name="title_cannot_be_empty">Der Umfrage-Titel darf nicht leer sein</string>
+    <string name="title_choose_recipient">Empfänger auswählen</string>
+    <string name="title_compose_message">Chat starten</string>
+    <string name="title_edit_distribution_list">Verteilerliste bearbeiten</string>
+    <string name="title_enter_id">ID eingeben</string>
+    <string name="title_hide_private_chats">Private Chats verstecken</string>
+    <string name="title_invite_friend">Freunde einladen</string>
+    <string name="title_keyfingerprint">Schlüssel-Fingerabdruck</string>
+    <string name="title_lock">Sperren</string>
+    <string name="title_mythreemaid">Meine Threema-ID</string>
+    <string name="title_public_nickname">Nickname</string>
+    <string name="title_remove_picture">Bild entfernen</string>
+    <string name="title_section1">Chats</string>
+    <string name="title_section2">Kontakte</string>
+    <string name="title_select_contacts">Mitglieder auswählen</string>
+    <string name="title_show_private_chats">Private Chats anzeigen</string>
+    <string name="title_tab_distribution_list">Verteilerlisten</string>
+    <string name="title_tab_groups">Gruppen</string>
+    <string name="title_tab_recent">Zuletzt</string>
+    <string name="title_tab_users">Kontakte</string>
+    <string name="title_tab_work_users">Threema Work-Nutzer</string>
+    <string name="title_threemaid">Threema-ID</string>
+    <string name="to_archive">Archivieren</string>
+    <string name="to_front">Nach vorne</string>
+    <string name="today">Heute</string>
+    <string name="token_register_failed">Push-Token konnte nicht aktualisiert werden. Bitte versuchen Sie es später
+		erneut.
+	</string>
+    <string name="too_many_incorrect_attempts">Zu viele fehlerhafte Versuche. Bitte versuchen Sie es in %s Sekunden
+		erneut.
+	</string>
+    <string name="tooltip_export_id">Tippen Sie hier, um Ihre verschlüsselte Threema-ID jetzt zu teilen oder zu drucken</string>
+    <string name="tooltip_identity_popup">Tippen Sie hier, um schnell Ihre Threema-ID anzuzeigen oder die IDs von anderen Personen zu scannen</string>
+    <string name="tooltip_image_resolution_hint">Hier tippen, um die Bildauflösung individuell anzupassen.</string>
+    <string name="tooltip_imagepaint">Werden Sie kreativ! Tippen Sie auf den Zauberstab, um zu kritzeln oder um Ihren Bildern vor dem Senden Sticker und Text hinzuzufügen.</string>
+    <string name="tooltip_mentions">Tippen Sie in der Tastatur auf das @-Zeichen, um einen Kontakt in dieser Gruppe direkt anzusprechen oder zu erwähnen.</string>
+    <string name="tooltip_voip_enable_speakerphone">Hier tippen, um Freisprechen zu aktivieren</string>
+    <string name="tooltip_voip_other_party_video_disabled">Ihr Gesprächspartner verwendet keine aktuelle App-Version oder lässt keine Videoanrufe zu.</string>
+    <string name="tooltip_voip_other_party_video_on">Ihr Gesprächspartner hat einen Videoanruf gestartet. Tippen Sie hier, um Ihre Kamera ebenfalls einzuschalten.</string>
+    <string name="tooltip_voip_turn_on_camera">Hier tippen, um die Kamera einzuschalten</string>
+    <string name="tooltip_work_hint">Dieser Kontakt verwendet Threema Work.</string>
+    <string name="touch_to_link">(keiner)</string>
+    <string name="town">Stadt</string>
+    <string name="transcoder_unknown_audio_error">Audio-Formatkonvertierung mit unbekantem Fehler fehlgeschlagen.</string>
+    <string name="transcoder_unsupported_audio_format">Audio-Formatkonvertierung aufgrund fehlender Systemunterstützung fehlgeschlagen.</string>
+    <string name="translators">Übersetzer</string>
+    <string name="translators_thanks">Vielen Dank unseren ehrenamtlichen Übersetzern:\n%s</string>
+    <string name="try_again">Nochmals versuchen</string>
+    <string name="two_years">2 Jahre</string>
+    <string name="unable_to_determine_recording_length">Aufnahme leer oder Länge kann nicht bestimmt werden</string>
+    <string name="unable_to_get_current_location">Der aktuelle Standort kann nicht ermittelt werden.</string>
+    <string name="unable_to_play_video">Video kann nicht abgespielt werden</string>
+    <string name="unarchive">Unarchivieren</string>
+    <string name="unblock_contact">Kontakt deblockieren</string>
+    <string name="unchanged">unverändert</string>
+    <string name="undo">Rückgängig</string>
+    <string name="unhide_chats_confirm">Wenn Sie den Zugriffsschutz entfernen, werden Ihre privaten Chats wieder sichtbar.</string>
+    <string name="unknown">Unbekannt</string>
+    <string name="unknown_address">Unbekannte Adresse</string>
+    <string name="unlink">Entfernen</string>
+    <string name="unlinking_email">Verknüpfung wird entfernt</string>
+    <string name="unpin">Entpinnen</string>
+    <string name="unread">Ungelesen</string>
+    <string name="unread_messages">%d ungelesene Nachrichten</string>
+    <string name="unset_private">«Privater Chat» deaktivieren</string>
+    <string name="update_available">Update verfügbar</string>
+    <string name="updating_group">Gruppe aktualisieren</string>
+    <string name="updating_system">System-Update</string>
+    <string name="url_warning_body">Die Website, die Sie öffnen möchten ist verdächtig:\n\nAngezeigter Hostname: <b>%s</b>\nTatsächlicher Hostname: <b>%s</b>\n\nEs könnte sich um einen Versuch handeln, Sie auf eine gefälschte Website umzuleiten.\n\nMöchten Sie trotzdem fortfahren?</string>
+    <string name="url_warning_body_alt">Die Website, die Sie öffnen möchten ist verdächtig.\n\nEs könnte sich um einen Versuch handeln, Sie auf eine gefälschte Website umzuleiten.\n\nMöchten Sie trotzdem fortfahren?</string>
+    <string name="url_warning_title">Phishing-Warnung</string>
+    <string name="username_hint">Username</string>
+    <string msgid="5138405918326871307" name="v7_preference_off">"AUS"</string>
+    <string msgid="27351710992731591" name="v7_preference_on">"AN"</string>
+    <string name="verification_level1_explain">Unbekannter Kontakt; dieser Kontakt hat seine ID weder mit einer Rufnummer noch mit einer E-Mail-Adresse verknüpft, oder Ihr Adressbuch enthält diese Angaben nicht.
+	</string>
+    <string name="verification_level2_explain">Kontakt, dessen Rufnummer und/oder E-Mail-Adresse in Ihrem Adressbuch enthalten ist.
+	</string>
+    <string name="verification_level2_work_explain">Interner Kontakt, durch Ihre Organisation vorgegeben.</string>
+    <string name="verification_level3_explain">Kontakt, dessen Identität und öffentlichen Schlüssel Sie durch Scannen des QR-Codes persönlich verifiziert haben.
+	</string>
+    <string name="verification_level3_work_explain">Interner Kontakt, dessen Identität und öffentlichen Schlüssel Sie durch Scannen des QR-Codes persönlich verifiziert haben.</string>
+    <string name="verification_levels_title">Vertrauensstufen</string>
+    <string name="verification_of">Überprüfung von %s</string>
+    <string name="verification_settings_desc">Die Punkte sind ein Indikator für die Vertrauensstufe eines Kontakts.</string>
+    <string name="verification_started">Überprüfung gestartet</string>
+    <string name="verified">Überprüft</string>
+    <string name="verify_failed">Fehlgeschlagen</string>
+    <string name="verify_failed_not_linked">Die Prüfung der Mobilnummer ist nicht möglich, da der Prozess von Ihnen abgeborchen wurde.</string>
+    <string name="verify_failed_summary">Die Prüfung der Mobilnummer ist fehlgeschlagen. Bitte stellen Sie sicher, dass die Nummer korrekt ist und Sie mit dem
+		Mobilfunknetz verbunden sind, bevor Sie es nochmals versuchen.
+	</string>
+    <string name="verify_phonecall_text">Anruf anfordern</string>
+    <string name="verify_success_text">Ihre Handynummer wurde erfolgreich überprüft.</string>
+    <string name="verify_title">Handynummer wird geprüft</string>
+    <string name="video_calls">Videoanrufe</string>
+    <string name="video_camera_off">Videokamera aus</string>
+    <string name="video_camera_on">Videokamera ein</string>
+    <string name="video_placeholder">Video</string>
+    <string name="video_size_explain">Sehr grosse Videos werden unabhängig von dieser Einstellung komprimiert, damit sie versendet werden können.</string>
+    <string name="video_size_large">Gering (mittlere Datenmenge)</string>
+    <string name="video_size_original" ns2:ignore="Typos">Keine (grosse Datenmenge)</string>
+    <string name="video_size_small">Hoch (kleine Datenmenge)</string>
+    <string name="videocall_profile_auto">Ausgewogen (empfohlen)</string>
+    <string name="videocall_profile_low_bandwidth">Niedriger Datenverbrauch</string>
+    <string name="videocall_profile_max_quality">Maximale Qualität</string>
+    <string name="view_in_gallery">In Galerie ansehen</string>
+    <string name="village">Dorf</string>
+    <string name="voice_action_body">Sprachbefehl wird verarbeitet</string>
+    <string name="voice_action_title">Sprachbefehle</string>
+    <string name="voice_message_record">Sprachnachricht aufnehmen</string>
+    <string name="voip_accept">Annehmen</string>
+    <string name="voip_another_call">Verbindung nicht möglich. Ein anderer Anruf läuft bereits.</string>
+    <string name="voip_another_pstn_call">Anruf nicht möglich. Ein gewöhnlicher Telefonanruf läuft bereits.</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_call_confirm">Möchten Sie %1$s anrufen?</string>
+    <string name="voip_call_finished">Threema-Anruf wurde beendet</string>
+    <string name="voip_call_finished_inbox">Eingehender Anruf</string>
+    <string name="voip_call_finished_outbox">Ausgehender Anruf</string>
+    <string name="voip_call_status_aborted">Anruf abgebrochen</string>
+    <string name="voip_call_status_busy">Anrufempfänger ist besetzt</string>
+    <string name="voip_call_status_busy_short">Besetzt</string>
+    <string name="voip_call_status_disabled">Threema-Anrufe sind auf dem Zielgerät deaktiviert</string>
+    <string name="voip_call_status_missed">Verpasster Anruf</string>
+    <string name="voip_call_status_off_hours">Anruf ausserhalb der Arbeitszeit</string>
+    <string name="voip_call_status_rejected">Anruf abgelehnt</string>
+    <string name="voip_call_status_unavailable">Anrufempfänger nicht verfügbar</string>
+    <string name="voip_checking_compatibility">Es wird geprüft, ob der Kontakt Threema-Anrufe erhalten kann</string>
+    <string name="voip_connection_failed">Verbindung konnte nicht aufgebaut werden.</string>
+    <string name="voip_connection_lost">Verbindung wurde unterbrochen</string>
+    <string name="voip_contact_not_found">Für diese Nummer wurde kein Threema-Kontakt gefunden.</string>
+    <string name="voip_disabled">Threema-Anrufe sind deaktiviert</string>
+    <string name="voip_earpiece">Telefon</string>
+    <string name="voip_error_call">Fehler während Threema-Anruf</string>
+    <string name="voip_error_init_call">Fehler beim Rufaufbau</string>
+    <string name="voip_hangup">Auflegen</string>
+    <string name="voip_incompatible">Dieser Kontakt kann noch keine Threema-Anrufe erhalten.</string>
+    <string name="voip_mic_disable">Stummschalten</string>
+    <string name="voip_mic_enable">Mikrofon einschalten</string>
+    <string name="voip_none">Nicht verfügbar</string>
+    <string name="voip_notification_text">%1$s ruft an</string>
+    <string name="voip_notification_title">Threema-Anruf</string>
+    <string name="voip_peer_video_disabled">Video-Anrufe wurden durch den Gesprächspartner deaktiviert.</string>
+    <string name="voip_prefs_aec_hw">Hardware Echo-Unterdrückung</string>
+    <string name="voip_prefs_aec_sw">Software Echo-Unterdrückung</string>
+    <string name="voip_prefs_title_aec">Echo-Unterdrückung</string>
+    <string name="voip_prefs_title_video_codec">Video-Codecs</string>
+    <string name="voip_prefs_video_aec_hw">Hardwarebeschleunigt</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-HiP deaktiviert</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8 deaktiviert</string>
+    <string name="voip_prefs_video_codec_sw">Software-Codecs</string>
+    <string name="voip_prefs_webrtc_debug">WebRTC Diagnose</string>
+    <string name="voip_prefs_webrtc_debug_summary">Starten Sie dieses Tool, um Probleme mit dem Anruf-Verbindungsaufbau zu diagnostizieren</string>
+    <string name="voip_reject">Ablehnen</string>
+    <string name="voip_return_call">Zurückrufen</string>
+    <string name="voip_speakerphone">Freisprechen</string>
+    <string name="voip_status_connecting">Wird verbunden</string>
+    <string name="voip_status_disconnecting">Verbindung wird getrennt</string>
+    <string name="voip_status_initializing">Rufaufbau</string>
+    <string name="voip_status_ringing">Es klingelt</string>
+    <string name="voip_switch_cam">Kamera umschalten</string>
+    <string name="voip_switch_cam_front">Zur Selfie-Kamera gewechselt</string>
+    <string name="voip_switch_cam_rear">Zur Hauptkamera gewechselt</string>
+    <string name="voip_title">Threema-Anruf</string>
+    <string name="voip_toggle_mic">Mikrofon umschalten</string>
+    <string name="voip_toggle_speaker">Lautsprecher umschalten</string>
+    <string name="voip_toggle_video">Video-Modus umschalten</string>
+    <string name="voip_webrtc_debug">WebRTC Diagnose</string>
+    <string name="voip_webrtc_debug_copied">Text wurde in Zwischenablage kopiert.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">In Zwischenablage kopieren</string>
+    <string name="voip_webrtc_debug_done">Fertig. Wenn Sie von Problemen mit dem Anruf-Verbindungsaufbau betroffen sind, senden Sie bitte diesen Ouput an den Threema-Support.</string>
+    <string name="voip_webrtc_debug_intro">Drücken Sie den \"Start\" Button um den Test zu starten.</string>
+    <string name="voip_webrtc_debug_start">Start</string>
+    <string name="voip_wired_headset">Kopfhörer</string>
+    <string name="wait_one_minute">Bitte warten Sie mindestens 10 Minuten auf die SMS, bevor Sie einen Anruf anfordern.</string>
+    <string name="wallpaper_default">Standard-Hintergrundbild</string>
+    <string name="wallpaper_gallery">Aus Galerie auswählen</string>
+    <string name="wallpaper_none">Kein Hintergrund</string>
+    <string name="wallpaper_threema">%s-Hintergrundbild</string>
+    <string name="wallpapers_removed">Hintergrundbilder entfernt</string>
+    <string name="want_to_add_to_exclude_list" ns2:ignore="Typos">Dieser Kontakt ist mit einem Eintrag in Ihrem Telefon-Adressbuch
+		verknüpft. Wenn Sie ihn in Threema löschen, taucht er nach einer Kontaktsynchronisation wieder auf.\nMöchten sie
+		diese ID zukünftig aus der Synchronisation ausschliessen?
+	</string>
+    <string name="warning">Warnung</string>
+    <string name="wearable_reply">Antworten</string>
+    <string name="wearable_reply_label">Antwort an %s</string>
+    <string name="web_link">Link</string>
+    <string name="webclient_active_since">Aktiv seit: %s</string>
+    <string name="webclient_cannot_restore">Kann die Sitzung nicht wieder aufnehmen</string>
+    <string name="webclient_cannot_start">Desktop-/Web-Sitzung kann nicht gestartet werden</string>
+    <string name="webclient_clear_all_sessions">Alle Sitzungen löschen</string>
+    <string name="webclient_clear_all_sessions_confirm">Möchten Sie wirklich alle Sitzungen löschen?</string>
+    <string name="webclient_constrained_by_mdm">Server wurde nicht durch den Administrator freigegeben.</string>
+    <string name="webclient_created_at">Erstellt am: %1$s (%2$s)</string>
+    <string name="webclient_diagnostics">Desktop-/Web-Diagnose</string>
+    <string name="webclient_diagnostics_done">Beendet. Falls Probleme beim Aufbau der Desktop-/Web-Verbindung auftreten, senden Sie dieses Log bitte an den Threema-Support.</string>
+    <string name="webclient_diagnostics_intro">Tippen Sie auf den «Start»-Button, um den Test zu starten.</string>
+    <string name="webclient_diagnostics_start">Start</string>
+    <string name="webclient_disabled">Desktop/Web ist deaktiviert</string>
+    <string name="webclient_disposable">nicht gespeichert</string>
+    <string name="webclient_enable">Desktop-App/Web-Client aktivieren</string>
+    <string name="webclient_init_session">Neue Sitzung einleiten</string>
+    <string name="webclient_invalid_push_token_message">Manuelles Starten erforderlich</string>
+    <string name="webclient_invalid_qr_code">Ungültiger QR-Code</string>
+    <string name="webclient_last_usage">Zuletzt genutzt: %s</string>
+    <string name="webclient_launch">Desktop-App/Web-Client starten</string>
+    <string name="webclient_new_connection_toast">Desktop-/Web-Sitzung gestartet</string>
+    <string name="webclient_no_sessions_found">Laden Sie am Computer die Desktop-App herunter (https://threema.ch/download), oder öffnen Sie den Web-Client (%s). Tippen Sie anschliessend auf den untenstehenden Button, um den angezeigten QR-Code zu scannen.</string>
+    <string name="webclient_persistent">gespeichert</string>
+    <string name="webclient_prefs_debug_tool_summary">Werkzeug, um Probleme beim Aufbau der Desktop-/Web-Verbindung zu analysieren</string>
+    <string name="webclient_protocol_error">Protokoll-Fehler</string>
+    <string name="webclient_protocol_version_to_old">Die Desktop-App / der Web-Client ist nicht kompatibel mit dieser Android-App. Bitte aktualisieren Sie Threema für Android auf die neueste Version.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Ihre App unterstützt diese Version der Desktop-App / von Threema Web nicht. Bitten Sie den Administrator Ihrer Threema-Web-Instanz, auf die neuesten Version von Threema Web zu aktualisieren.</string>
+    <string name="webclient_protocol_version_too_new_threema">Ihre App unterstützt diese Version diese Version der Desktop-App / von Threema Web nicht. Bitte benutzen Sie eine neuere Version von Threema Web / der Desktop-App.</string>
+    <string name="webclient_qr_scan_error">QR-Code ungültig</string>
+    <string name="webclient_qr_scan_message">Scannen Sie den QR-Code, der auf dem PC angezeigt wird.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Möchten Sie diese Sitzung jetzt starten?</string>
+    <string name="webclient_running_sessions">%d laufende Sitzung(en)</string>
+    <string name="webclient_service_description">Benachrichtigung, wenn eine Web-/Desktop-Sitzung aktiv ist</string>
+    <string name="webclient_session_already_exists">Eine Sitzung für diesen QR-Code existiert bereits. Bitte starten Sie Ihren Browser / Ihre Desktop-App neu.</string>
+    <string name="webclient_session_label">Neuer Name</string>
+    <string name="webclient_session_remove">Sitzung entfernen</string>
+    <string name="webclient_session_rename">Sitzung umbenennen</string>
+    <string name="webclient_session_start">Sitzung starten</string>
+    <string name="webclient_session_stop">Sitzung stoppen</string>
+    <string name="webclient_session_stop_all">Alle beenden</string>
+    <string name="webclient_sessions_really_delete">Möchten Sie diese Sitzung wirklich löschen?</string>
+    <string name="webclient_unnamed_session">Unbenannte Sitzung</string>
+    <string name="webclient_welcome_explain">Mit der Desktop-App und dem Web-Client können Sie bequem von Ihrem PC oder Notebook aus chatten. Dabei haben Sie vollen Zugriff auf alle Kontakte, Medien und Chats, auch auf frühere Unterhaltungen.\n\n<b>Die gesamte Kommunikation zwischen Handy und PC ist vollständig Ende-zu-Ende-verschlüsselt</b> und benutzt eine direkte Verbindung, wenn sich beide Geräte in demselben Netzwerk befinden.\n\nHinweis: Wenn die Desktop-App bzw. der Web-Client aktiv ist, kann der Batterieverbrauch höher sein. Sie können die Funktion jederzeit ein- oder ausschalten.</string>
+    <string name="webclient_welcome_title">Vom PC aus chatten</string>
+    <string name="whoaaa">Hinweis</string>
+    <string name="wizard1_sync_contacts">Kontakte werden synchronisiert…</string>
+    <string name="wizard1_sync_work">Synchronisierung läuft…</string>
+    <string name="wizard2_email_hint">Ihre E-Mail-Adresse</string>
+    <string name="wizard2_email_linking">E-Mail verknüpfen</string>
+    <string name="wizard2_phone_hint">Ihre Handynummer</string>
+    <string name="wizard2_phone_linking">Handynummer mit ID verknüpfen</string>
+    <string name="wizard2_phone_number_confirm">Es wird eine SMS an folgende Nummer gesendet:\n\n%1$s\n\nIst diese
+		Nummer korrekt?
+	</string>
+    <string name="wizard2_phone_number_confirm_title">Handynummer bestätigen</string>
+    <string name="wizard3_nickname_hint">Nickname eingeben</string>
+    <string name="wizard_first_create_id">Schlüsselpaar wird erzeugt…</string>
+    <string name="work_data_sync">Datensynchronisation</string>
+    <string name="work_data_sync_desc">Threema Work-Synchronisation</string>
+    <string name="work_life_dnd_active">Ruhezeit aktiv</string>
+    <string name="work_safe_forced_explain">Ihr Administrator hat Threema Safe für Ihr Gerät aktiviert.</string>
+    <string name="work_select_categories">Kategorien auswählen</string>
+    <string name="work_verification_levels_title">Kontakte in Ihrer Organisation</string>
+    <string name="wrong_backupid_or_password_or_no_internet_connection">Keine Internetverbindung, ungültige ID-Export-Zeichenfolge
+		oder falsches Passwort
+	</string>
+    <string name="yes">Ja</string>
+    <string name="you_are_not_a_member_of_this_group">Sie sind kein Mitglied dieser Gruppe.</string>
+    <string name="your_location">Ihr Standort</string>
+</resources>

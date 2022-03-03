@@ -4,42 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79808691-4fb1-4a2a-97ed-7143809546fd" name="Changes" comment="screenshot added">
-      <change afterPath="$PROJECT_DIR$/.idea/LeOS-Messenger.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/1.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/3.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/4.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/5.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/6.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/7.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/8.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/9.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/WallpaperDark.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screenshots/WallpaperLite.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/android_gradle_build.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/android_gradle_build.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/android_gradle_build_mini.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/android_gradle_build_mini.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/build_command.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/build_command.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/build_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/build_model.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/build_output.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/build_output.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/json_generation_record.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/.cxx/ndkBuild/hmsDebug/x86/json_generation_record.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/ndkBuild/hmsDebug/obj/local/x86/android_gradle_generate_ndk_build_json_x86.command.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/ndkBuild/hmsDebug/obj/local/x86/android_gradle_generate_ndk_build_json_x86.command.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/intermediates/ndkBuild/hmsDebug/obj/local/x86/android_gradle_generate_ndk_build_json_x86.stdout.txt" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/intermediates/ndkBuild/hmsDebug/obj/local/x86/android_gradle_generate_ndk_build_json_x86.stdout.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-arm64-v8a-debug.apk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-armeabi-v7a-debug.apk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-x86-debug.apk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger-x86_64-debug.apk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/outputs/apk/store_threema/debug/LeOS-Messenger.apk" afterDir="false" />
-    </list>
+    <list default="true" id="79808691-4fb1-4a2a-97ed-7143809546fd" name="Changes" comment="screenshot added" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -87,7 +52,7 @@
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cidr.known.project.marker" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../LeOS-Files" />
     <property name="project.structure.last.edited" value="Build Variants" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2018503" />
@@ -178,7 +143,21 @@
       <option name="project" value="LOCAL" />
       <updated>1646126230408</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="screenshot added">
+      <created>1646126328145</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1646126328145</updated>
+    </task>
+    <task id="LOCAL-00004" summary="screenshot added">
+      <created>1646126360601</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1646126360601</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
