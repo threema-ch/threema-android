@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-ug/values-ug.xml",
+            "outputFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-ug/values-ug.xml",
             "map": [
                 {
                     "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/e91ac1163a5728776b64d1ac9a5a6e1d/jetified-ui-5.0.4.301/res/values-ug/values-ug.xml",

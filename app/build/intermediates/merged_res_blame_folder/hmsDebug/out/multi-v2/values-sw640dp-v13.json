@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-sw640dp-v13/values-sw640dp-v13.xml",
+            "outputFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-sw640dp-v13/values-sw640dp-v13.xml",
             "map": [
                 {
-                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-sw640dp/bool.xml",
+                    "source": "/media/ich/data/AndroidApks/LeOS-Messenger/app/src/main/res/values-sw640dp/bool.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "1",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-sw640dp/dimens.xml",
+                    "source": "/media/ich/data/AndroidApks/LeOS-Messenger/app/src/main/res/values-sw640dp/dimens.xml",
                     "from": {
                         "startLines": "8,4,3,7,5,6,10,9",
                         "startColumns": "1,1,1,1,1,1,1,1",

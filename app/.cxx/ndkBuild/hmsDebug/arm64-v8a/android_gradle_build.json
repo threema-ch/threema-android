@@ -1,62 +1,62 @@
 {
   "buildFiles": [
-    "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk",
-    "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Application.mk"
+    "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Android.mk",
+    "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Application.mk"
   ],
   "cleanCommands": [
-    "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib clean"
+    "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib clean"
   ],
-  "buildTargetsCommand": "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib {LIST_OF_TARGETS_TO_BUILD}",
+  "buildTargetsCommand": "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "nacl-jni-hmsDebug-arm64-v8a": {
-      "buildCommand": "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib /media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libnacl-jni.so",
+      "buildCommand": "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib /media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libnacl-jni.so",
       "toolchain": "toolchain-arm64-v8a",
       "abi": "arm64-v8a",
       "artifactName": "nacl-jni",
       "files": [
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/nacl/curve25519-jni.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/nacl/curve25519-jni.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
         },
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/nacl/poly1305-jni.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/nacl/poly1305-jni.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
         },
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/nacl/salsa20-jni.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/nacl/salsa20-jni.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
         },
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/nacl/smult_donna-c64.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/nacl/smult_donna-c64.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
         },
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/nacl/smult_donna.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/nacl/smult_donna.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -Wformat -Werror\u003dformat-security"
         }
       ],
-      "output": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libnacl-jni.so"
+      "output": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libnacl-jni.so"
     },
     "scrypt-hmsDebug-arm64-v8a": {
-      "buildCommand": "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib /media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libscrypt.so",
+      "buildCommand": "/home/ich/Android/Sdk/ndk/21.1.6352462/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Android.mk NDK_APPLICATION_MK\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/Application.mk APP_ABI\u003darm64-v8a NDK_ALL_ABIS\u003darm64-v8a NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-21 NDK_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj NDK_LIBS_OUT\u003d/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/lib /media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libscrypt.so",
       "toolchain": "toolchain-arm64-v8a",
       "abi": "arm64-v8a",
       "artifactName": "scrypt",
       "files": [
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/scrypt/c/crypto_scrypt-nosse.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/scrypt/include -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH\u003d\"arm64\" -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/scrypt/c/crypto_scrypt-nosse.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/scrypt/include -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH\u003d\"arm64\" -Wformat -Werror\u003dformat-security"
         },
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/scrypt/c/scrypt_jni.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/scrypt/include -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH\u003d\"arm64\" -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/scrypt/c/scrypt_jni.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/scrypt/include -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH\u003d\"arm64\" -Wformat -Werror\u003dformat-security"
         },
         {
-          "src": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/scrypt/c/sha256.c",
-          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni/scrypt/include -I/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/jni -DANDROID -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH\u003d\"arm64\" -Wformat -Werror\u003dformat-security"
+          "src": "/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/scrypt/c/sha256.c",
+          "flags": "-target aarch64-none-linux-android21 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes --sysroot /home/ich/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -D_FORTIFY_SOURCE\u003d2 -fpic -O2 -DNDEBUG -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni/scrypt/include -I/media/ich/data/AndroidApks/LeOS-Messenger/app/jni -DANDROID -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH\u003d\"arm64\" -Wformat -Werror\u003dformat-security"
         }
       ],
-      "output": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libscrypt.so"
+      "output": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/ndkBuild/hmsDebug/obj/local/arm64-v8a/libscrypt.so"
     }
   },
   "toolchains": {

@@ -41,7 +41,7 @@ public final class BuildConfig {
   // Field from default config.
   public static final boolean DISABLE_CERT_PINNING = false;
   // Field from default config.
-  public static final String GIT_HASH = "9eff65c0";
+  public static final String GIT_HASH = "5eef6e30";
   // Field from default config.
   public static final int MAX_GROUP_SIZE = 256;
   // Field from default config.

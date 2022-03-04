@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-en-rXC/values-en-rXC.xml",
+            "outputFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-en-rXC/values-en-rXC.xml",
             "map": [
                 {
                     "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/e7e451c774d29df4fa53afc6a844b1c8/biometric-1.1.0/res/values-en-rXC/values-en-rXC.xml",

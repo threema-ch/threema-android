@@ -12,12 +12,12 @@
       "filters": [
         {
           "filterType": "ABI",
-          "value": "arm64-v8a"
+          "value": "x86_64"
         }
       ],
-      "versionCode": 3000715,
+      "versionCode": 9000715,
       "versionName": "12.1",
-      "outputFile": "resources-hmsArm64-v8aDebug.ap_"
+      "outputFile": "resources-hmsX86_64Debug.ap_"
     }
   ]
 }

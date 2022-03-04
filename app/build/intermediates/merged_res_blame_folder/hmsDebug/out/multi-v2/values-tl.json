@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-tl/values-tl.xml",
+            "outputFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-tl/values-tl.xml",
             "map": [
                 {
                     "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/bae244fae168e7e740564ab1b742b417/preference-1.1.1/res/values-tl/values-tl.xml",

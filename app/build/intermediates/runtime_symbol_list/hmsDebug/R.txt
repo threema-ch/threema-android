@@ -5592,7 +5592,7 @@ int menu view_avatar_edit 0x7f0e0020
 int menu view_image_settings 0x7f0e0021
 int mipmap background2 0x7f0f0000
 int mipmap ic_launcher 0x7f0f0001
-int mipmap ic_launcher_foreground 0x7f0f0002
+int mipmap ic_launcher_2 0x7f0f0002
 int mipmap ic_launcher_foreground1 0x7f0f0003
 int mipmap ic_launcher_leos 0x7f0f0004
 int mipmap ic_launcher_leos1 0x7f0f0005

@@ -5593,7 +5593,7 @@ menu view_avatar_edit
 menu view_image_settings
 mipmap background2
 mipmap ic_launcher
-mipmap ic_launcher_foreground
+mipmap ic_launcher_2
 mipmap ic_launcher_foreground1
 mipmap ic_launcher_leos
 mipmap ic_launcher_leos1

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-h560dp-v13/values-h560dp-v13.xml",
+            "outputFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-h560dp-v13/values-h560dp-v13.xml",
             "map": [
                 {
-                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-h560dp/dimens.xml",
+                    "source": "/media/ich/data/AndroidApks/LeOS-Messenger/app/src/main/res/values-h560dp/dimens.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "1",

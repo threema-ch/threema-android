@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="google_assistant_verification_channel_name">Assistent-bekrefter</string>
-    <string name="google_assistant_verification_notification_title">Google-assistenten sender meldinger</string>
-</resources>

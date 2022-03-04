@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-land/values-land.xml",
+            "outputFile": "/media/ich/data/AndroidApks/LeOS-Messenger/app/build/intermediates/incremental/mergeHmsDebugResources/merged.dir/values-land/values-land.xml",
             "map": [
                 {
                     "source": "/home/ich/.gradle/caches/transforms-2/files-2.1/0d06374fcbb8403d90570f35e165f9d6/material-1.4.0/res/values-land/values-land.xml",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-land/bool.xml",
+                    "source": "/media/ich/data/AndroidApks/LeOS-Messenger/app/src/main/res/values-land/bool.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "1",
@@ -57,7 +57,7 @@
                     }
                 },
                 {
-                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-land/dimens.xml",
+                    "source": "/media/ich/data/AndroidApks/LeOS-Messenger/app/src/main/res/values-land/dimens.xml",
                     "from": {
                         "startLines": "2,4,3",
                         "startColumns": "1,1,1",
@@ -74,7 +74,7 @@
                     }
                 },
                 {
-                    "source": "/media/ich/data/AndroidApks/temp/LeOS-Messenger/app/src/main/res/values-land/integers.xml",
+                    "source": "/media/ich/data/AndroidApks/LeOS-Messenger/app/src/main/res/values-land/integers.xml",
                     "from": {
                         "startLines": "3",
                         "startColumns": "1",
