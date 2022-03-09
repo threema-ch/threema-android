@@ -843,38 +843,42 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 				ActivityManager activityManager = (ActivityManager) getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
-				List<ApplicationExitInfo> applicationExitInfos = activityManager.getHistoricalProcessExitReasons(null, 0, 0);
+				try {
+					List<ApplicationExitInfo> applicationExitInfos = activityManager.getHistoricalProcessExitReasons(null, 0, 0);
 
-				if (applicationExitInfos.size() > 0) {
-					for (ApplicationExitInfo exitInfo : applicationExitInfos) {
-						long timestampOfLastLog = 0L;
-						if (sharedPreferences != null) {
-							timestampOfLastLog = sharedPreferences.getLong(EXIT_REASON_LOGGING_TIMESTAMP, timestampOfLastLog);
-						}
+					if (applicationExitInfos.size() > 0) {
+						for (ApplicationExitInfo exitInfo : applicationExitInfos) {
+							long timestampOfLastLog = 0L;
+							if (sharedPreferences != null) {
+								timestampOfLastLog = sharedPreferences.getLong(EXIT_REASON_LOGGING_TIMESTAMP, timestampOfLastLog);
+							}
 
-						if (exitInfo.getTimestamp() > timestampOfLastLog) {
-							logger.info(String.format(Locale.US, "*** App last exited at %s with reason: %d, description: %s", DateUtils.formatDateTime(getAppContext(), exitInfo.getTimestamp(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME), exitInfo.getReason(), exitInfo.getDescription()));
-							if (exitInfo.getReason() == ApplicationExitInfo.REASON_ANR) {
-								try {
-									InputStream traceInputStream = exitInfo.getTraceInputStream();
-									if (traceInputStream != null) {
-										BufferedReader r = new BufferedReader(new InputStreamReader(traceInputStream));
-										StringBuilder s = new StringBuilder();
-										for (String line; (line = r.readLine()) != null; ) {
-											s.append(line).append('\n');
+							if (exitInfo.getTimestamp() > timestampOfLastLog) {
+								logger.info(String.format(Locale.US, "*** App last exited at %s with reason: %d, description: %s", DateUtils.formatDateTime(getAppContext(), exitInfo.getTimestamp(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME), exitInfo.getReason(), exitInfo.getDescription()));
+								if (exitInfo.getReason() == ApplicationExitInfo.REASON_ANR) {
+									try {
+										InputStream traceInputStream = exitInfo.getTraceInputStream();
+										if (traceInputStream != null) {
+											BufferedReader r = new BufferedReader(new InputStreamReader(traceInputStream));
+											StringBuilder s = new StringBuilder();
+											for (String line; (line = r.readLine()) != null; ) {
+												s.append(line).append('\n');
+											}
+											logger.info(s.toString());
 										}
-										logger.info(s.toString());
+									} catch (IOException e) {
+										logger.error("Error getting ANR trace", e);
 									}
-								} catch (IOException e) {
-									logger.error("Error getting ANR trace", e);
 								}
 							}
 						}
-					}
 
-					if (sharedPreferences != null) {
-						sharedPreferences.edit().putLong(EXIT_REASON_LOGGING_TIMESTAMP, System.currentTimeMillis()).apply();
+						if (sharedPreferences != null) {
+							sharedPreferences.edit().putLong(EXIT_REASON_LOGGING_TIMESTAMP, System.currentTimeMillis()).apply();
+						}
 					}
+				} catch (IllegalArgumentException e) {
+					logger.error("Unable to get reason of last exit", e);
 				}
 			}
 
