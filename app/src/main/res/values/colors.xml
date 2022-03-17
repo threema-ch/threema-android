@@ -194,6 +194,7 @@
 	<color name="imagepaint_overlay_select_color">#FFFFFFFF</color>
 	<color name="gallery_background">#ff1a1a1a</color>
 	<color name="status_bar_detail">#3000</color>
+	<color name="mediaviewer_caption_background_color">#77000000</color>
 
 	<!--**********************************************************************************************************-->
 	<!-- material colors for reference -->

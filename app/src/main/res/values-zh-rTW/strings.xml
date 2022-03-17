@@ -1199,8 +1199,8 @@ Threema 支援的所有表情符號。</string>
     <string name="transcoder_unsupported_audio_format">由於缺少系統支援，音訊無法轉碼。</string>
     <string name="transcoder_unknown_audio_error">發生未知的音訊轉碼錯誤。</string>
     <string name="video_size_explain">就算設定為未壓縮，體積非常大的影片都有可能被壓縮。</string>
-    <string name="status_create_notes">*在此對話中只有您一個人*\n將此對話作為儲存文字、媒體和檔案的安全筆記本。</string>
-    <string name="status_create_notes_off">*在此對話中不再只有您一個人*\n新訊息將被傳送至所有成員。</string>
+    <string name="status_create_notes">*在此對話中只有您一個人能存取*\n將此對話作為儲存文字、媒體和檔案的安全筆記本。</string>
+    <string name="status_create_notes_off">*在此對話中不再只有您一個人能存取*\n新訊息將被傳送至所有群組成員。</string>
     <string name="note_group_howto">提示：如果您不新增任何群組成員，傳送至這個群組的訊息將保留在本地。這樣能方便您安全地儲存筆記、媒體和檔案，或將檔案轉移至桌面。</string>
     <string name="mark_unread">標示為未讀</string>
     <string name="mark_read_short">標示為已讀</string>

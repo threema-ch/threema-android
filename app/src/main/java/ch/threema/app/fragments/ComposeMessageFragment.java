@@ -1085,8 +1085,8 @@ public class ComposeMessageFragment extends Fragment implements
 							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_ITALIC, 201, R.string.italic);
 							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_STRIKETHRU, 203, R.string.strikethrough);
 						}
-					} catch (StringIndexOutOfBoundsException e) {
-						// do not add menus
+					} catch (Exception e) {
+						// do not add menus if an error occurs
 					}
 				}
 			}

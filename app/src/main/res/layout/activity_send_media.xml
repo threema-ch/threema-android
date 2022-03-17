@@ -70,6 +70,33 @@
 		</FrameLayout>
 
 		<FrameLayout
+			android:id="@+id/recipient_container"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_above="@+id/bottom_panel"
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="8dp"
+			android:layout_marginBottom="8dp"
+			android:layout_alignParentRight="true"
+			android:background="@drawable/shape_mediaviewer_caption_background"
+			android:paddingBottom="4dp"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:paddingTop="4dp">
+
+			<TextView
+				android:id="@+id/recipient_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:textColor="@android:color/white"
+				android:maxLines="1"
+				android:ellipsize="end"
+				android:textSize="12sp"/>
+
+		</FrameLayout>
+
+		<FrameLayout
 			android:id="@+id/bottom_panel"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

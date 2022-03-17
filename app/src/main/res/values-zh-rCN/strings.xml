@@ -1206,8 +1206,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="transcoder_unsupported_audio_format">由于缺少系统支持，音频无法转码。</string>
     <string name="transcoder_unknown_audio_error">发生未知的音频转码错误。</string>
     <string name="video_size_explain">就算设置为未压缩，体积非常大的视频都有可能被压缩。</string>
-    <string name="status_create_notes">*在此会话中只有您一个人*\n将此会话作为保存文本、媒体和文件的安全笔记本。</string>
-    <string name="status_create_notes_off">*在此会话中不再只有您一个人*\n新消息将被发送到所有成员。</string>
+    <string name="status_create_notes">*在此会话中只有您一个人能访问*\n将此会话作为保存文本、媒体和文件的安全笔记本。</string>
+    <string name="status_create_notes_off">*在此会话中不再只有您一个人能访问*\n新消息将被发送到所有群组成员。</string>
     <string name="note_group_howto">提示：如果您不添加任何群组成员，发送到这个群组的信息将保留在本地。这样能方便您安全地存储笔记、媒体和文件，或将文件转移到桌面。</string>
     <string name="mark_unread">标记为未读</string>
     <string name="mark_read_short">标记为已读</string>

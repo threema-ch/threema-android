@@ -171,6 +171,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private VideoEditView videoEditView;
 	private MenuItem settingsItem;
 	private MediaFilterQuery lastMediaFilter;
+	private TextView recipientText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -306,6 +307,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				}
 			}
 		});
+
+		this.recipientText = findViewById(R.id.recipient_text);
 
 		this.cameraButton = findViewById(R.id.camera_button);
 		this.cameraButton.setOnClickListener(v -> launchCamera());
@@ -450,7 +453,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		String recipients = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
 		if (!TestUtil.empty(recipients)) {
-			this.captionEditText.setHint(getString(R.string.send_to, recipients));
+			this.captionEditText.setHint(R.string.add_caption_hint);
 			this.captionEditText.addTextChangedListener(new TextWatcher() {
 				@Override
 				public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -461,10 +464,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				@Override
 				public void afterTextChanged(Editable s) {
 					if (s == null || s.length() == 0) {
-						captionEditText.setHint(getString(R.string.send_to, recipients));
+						captionEditText.setHint(R.string.add_caption_hint);
 					}
 				}
 			});
+			this.recipientText.setText(getString(R.string.send_to, recipients));
+		} else {
+			findViewById(R.id.recipient_container).setVisibility(View.GONE);
 		}
 
 		SendButton sendButton = findViewById(R.id.send_button);

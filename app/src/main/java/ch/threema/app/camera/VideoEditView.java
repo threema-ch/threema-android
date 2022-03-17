@@ -58,10 +58,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.core.view.ViewCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
@@ -97,7 +100,8 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private MediaSource videoSource;
 	private TextView startTimeTextView, endTimeTextView, sizeTextView;
 	private Thread thumbnailThread;
-	private Handler progressHandler = new Handler();
+	private final Handler progressHandler = new Handler();
+	private final List<Rect> exclusionRects = new ArrayList<>();
 
 	public VideoEditView(Context context) {
 		this(context, null);
@@ -192,6 +196,22 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				return onTouchEvent(event);
 			}
 		});
+	}
+
+	@SuppressLint("DrawAllocation")
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+
+		final int timelineMarginTop = this.timelineGridLayout.getTop();
+		final int timelineMarginBottom = this.timelineGridLayout.getBottom();
+		final int timelineMarginLeft = this.timelineGridLayout.getLeft();
+		final int timelineMarginRight = this.timelineGridLayout.getRight();
+
+		exclusionRects.add(new Rect(0, timelineMarginTop - arrowHeight, timelineMarginLeft + touchTargetWidth, timelineMarginBottom + arrowHeight));
+		exclusionRects.add(new Rect(timelineMarginRight - touchTargetWidth, timelineMarginTop - arrowHeight, right, timelineMarginBottom + arrowHeight));
+
+		ViewCompat.setSystemGestureExclusionRects(this, exclusionRects);
 	}
 
 	@Override
@@ -614,7 +634,6 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		}
 		return 0;
 	}
-
 
 	@Override
 	public void onDestroy(@NonNull LifecycleOwner owner) {
