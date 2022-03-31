@@ -34,24 +34,26 @@ public class BallotModel {
 	public static final String COLUMN_ASSESSMENT= "assessment";
 	public static final String COLUMN_TYPE= "type";
 	public static final String COLUMN_CHOICE_TYPE= "choiceType";
+	public static final String COLUMN_DISPLAY_TYPE= "displayType";
 	public static final String COLUMN_CREATED_AT= "createdAt";
 	public static final String COLUMN_MODIFIED_AT= "modifiedAt";
 	public static final String COLUMN_LAST_VIEWED_AT= "lastViewedAt";
 
 	public enum State {
 		TEMPORARY, OPEN, CLOSED
-	};
-
+	}
 	public enum Assessment {
 		SINGLE_CHOICE, MULTIPLE_CHOICE
-	};
-
+	}
 	public enum Type {
 		RESULT_ON_CLOSE, INTERMEDIATE
-	};
+	}
 	public enum ChoiceType {
 		TEXT
-	};
+	}
+	public enum DisplayType {
+		LIST_MODE, SUMMARY_MODE
+	}
 
 	private int id;
 	private String apiBallotId;
@@ -61,6 +63,7 @@ public class BallotModel {
 	private Assessment assessment;
 	private Type type;
 	private ChoiceType choiceType;
+	private DisplayType displayType;
 	private Date createdAt;
 	private Date modifiedAt;
 	private Date lastViewedAt;
@@ -134,6 +137,15 @@ public class BallotModel {
 
 	public BallotModel setChoiceType(ChoiceType choiceType) {
 		this.choiceType = choiceType;
+		return this;
+	}
+
+	public DisplayType getDisplayType() {
+		return displayType;
+	}
+
+	public BallotModel setDisplayType(DisplayType displayType) {
+		this.displayType = displayType;
 		return this;
 	}
 

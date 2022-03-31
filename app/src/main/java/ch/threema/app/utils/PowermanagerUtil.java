@@ -129,6 +129,6 @@ public class PowermanagerUtil {
 	}
 
 	public static boolean needsFixing(Context context) {
-		return !DisableBatteryOptimizationsActivity.isWhitelisted(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
+		return !DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
 	}
 }

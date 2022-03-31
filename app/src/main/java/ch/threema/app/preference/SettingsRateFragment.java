@@ -24,15 +24,8 @@ package ch.threema.app.preference;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -42,24 +35,15 @@ import ch.threema.app.dialogs.RateDialog;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 
 public class SettingsRateFragment extends ThreemaPreferenceFragment implements RateDialog.RateDialogClickListener, GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(SettingsRateFragment.class);
 
 	private static final String DIALOG_TAG_RATE = "rate";
 	private static final String DIALOG_TAG_RATE_ON_GOOGLE_PLAY = "ratep";
 
 	@Override
-	public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
-		addPreferencesFromResource(R.xml.preference_rate);
-
+	protected void initializePreferences() {
 		RateDialog rateDialog = RateDialog.newInstance(getString(R.string.rate_title));
 		rateDialog.setTargetFragment(SettingsRateFragment.this, 0);
 		rateDialog.show(getFragmentManager(), DIALOG_TAG_RATE);
-	}
-
-	@Override
-	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-		preferenceFragmentCallbackInterface.setToolbarTitle(R.string.rate_title);
-		super.onViewCreated(view, savedInstanceState);
 	}
 
 	private boolean startRating(Uri uri) throws ActivityNotFoundException {
@@ -82,10 +66,10 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 					R.string.yes,
 					R.string.no);
 			dialog.setTargetFragment(this);
-			dialog.show(getFragmentManager(), DIALOG_TAG_RATE_ON_GOOGLE_PLAY);
+			dialog.show(getParentFragmentManager(), DIALOG_TAG_RATE_ON_GOOGLE_PLAY);
 		} else {
 			Toast.makeText(getAppContext(), getString(R.string.rate_thank_you), Toast.LENGTH_LONG).show();
-			getActivity().onBackPressed();
+			requireActivity().onBackPressed();
 		}
 	}
 
@@ -96,7 +80,7 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 				if (!startRating(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID))) {
 					startRating(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID));
 				}
-				getActivity().onBackPressed();
+				requireActivity().onBackPressed();
 				break;
 			default:
 				break;
@@ -105,12 +89,16 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 
 	@Override
 	public void onNo(String tag, Object data) {
-		getActivity().onBackPressed();
+		requireActivity().onBackPressed();
 	}
-
 
 	@Override
 	public void onCancel(String tag) {
-		getActivity().onBackPressed();
+		requireActivity().onBackPressed();
+	}
+
+	@Override
+	public int getPreferenceResource() {
+		return R.xml.preference_rate;
 	}
 }

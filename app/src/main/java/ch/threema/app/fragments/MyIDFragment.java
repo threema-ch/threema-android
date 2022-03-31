@@ -40,7 +40,6 @@ import android.widget.Toast;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -73,6 +72,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ImagePopup;
@@ -88,6 +88,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -101,7 +102,7 @@ public class MyIDFragment extends MainFragment
 		GenericAlertDialog.DialogClickListener,
 		TextEntryDialog.TextEntryDialogClickListener,
 		PasswordEntryDialog.PasswordEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(MyIDFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MyIDFragment");
 
 	private static final int MAX_REVOCATION_PASSWORD_LENGTH = 256;
 	private static final int LOCK_CHECK_REVOCATION = 33;
@@ -603,7 +604,7 @@ public class MyIDFragment extends MainFragment
 				nicknameEditDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_NICKNAME);
 				break;
 			case R.id.my_id_qr:
-				new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null);
+				new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
 				break;
 			case R.id.avatar:
 				launchContactImageZoom(v);

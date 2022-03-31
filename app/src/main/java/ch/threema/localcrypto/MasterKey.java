@@ -24,7 +24,6 @@ package ch.threema.localcrypto;
 import com.lambdaworks.crypto.SCrypt;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -53,6 +52,7 @@ import javax.crypto.spec.SecretKeySpec;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.AtomicFile;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * This class wraps the master key used to encrypt locally stored application data.
@@ -78,7 +78,7 @@ import androidx.core.util.AtomicFile;
  * </ul>
  */
 public class MasterKey {
-	private static final Logger logger = LoggerFactory.getLogger(MasterKey.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MasterKey");
 
 	public static final int KEY_LENGTH = 32;
 

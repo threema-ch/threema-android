@@ -25,18 +25,18 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.storage.models.ContactModel;
 
 public class AddContactAsyncTask extends AsyncTask<Void, Void, Boolean> {
-	private static final Logger logger = LoggerFactory.getLogger(AddContactAsyncTask.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AddContactAsyncTask");
 
 	private ContactService contactService;
 	private final Runnable runOnCompletion;

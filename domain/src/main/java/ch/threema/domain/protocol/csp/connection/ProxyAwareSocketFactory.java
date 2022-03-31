@@ -22,7 +22,6 @@
 package ch.threema.domain.protocol.csp.connection;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -31,10 +30,11 @@ import java.net.Socket;
 import java.net.URI;
 import java.util.List;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.HttpProxySocket;
 
 public class ProxyAwareSocketFactory {
-	private static final Logger logger = LoggerFactory.getLogger(ProxyAwareSocketFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyAwareSocketFactory");
 
 	public static boolean shouldUseProxy(String hostname, int port) {
 		List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + hostname + ":" + port + "/"));

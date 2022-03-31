@@ -31,9 +31,6 @@ import android.text.style.RelativeSizeSpan;
 import android.util.Pair;
 import android.widget.TextView;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,9 +44,9 @@ import ch.threema.app.ui.MentionClickableSpan;
 import ch.threema.app.ui.MentionSpan;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.TestUtil;
 
 public class EmojiMarkupUtil {
-	private static final Logger logger = LoggerFactory.getLogger(EmojiMarkupUtil.class);
 
 	private static final int LARGE_EMOJI_SCALE_FACTOR = 2;
 	private static final int LARGE_EMOJI_THRESHOLD = 3;
@@ -223,8 +220,14 @@ public class EmojiMarkupUtil {
 		while (matcher.find()) {
 			match = matcher.group();
 			identity = match.substring(2, match.length() - 1);
-			outputText = TextUtils.replace(outputText, new String[] {match}, new CharSequence[] {MENTION_INDICATOR +
-					NameUtil.getQuoteName(identity, getContactService(), getUserService())});
+			String quoteName = NameUtil.getQuoteName(identity, getContactService(), getUserService());
+
+			if (TestUtil.empty(quoteName)) {
+				outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{""});
+			} else {
+				outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{MENTION_INDICATOR +
+					quoteName});
+			}
 			matcher = this.mention.matcher(outputText);
 		}
 

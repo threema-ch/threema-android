@@ -27,32 +27,38 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.QRCodePopup;
+
+import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY;
 
 /***
  * Activity displaying QR Code popup. Used by Launcher shortcut
  */
 public class QRCodeZoomActivity extends AppCompatActivity {
 	QRCodePopup qrPopup = null;
+	private static final String EXTRA_COLOR = "color";
 
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		final View rootView = getWindow().getDecorView().getRootView();
 
+		@QRCodeServiceImpl.QRCodeColor int qrCodeColor = getIntent().getIntExtra(EXTRA_COLOR, QR_TYPE_ANY);
+
 		ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
-			showPopup(v);
+			showPopup(v, qrCodeColor);
 			return insets;
 		});
 	}
 
-	private void showPopup(final View v) {
+	private void showPopup(final View v, @QRCodeServiceImpl.QRCodeColor int borderColor) {
 		v.post(() -> {
 			if (qrPopup == null || !qrPopup.isShowing()) {
 				qrPopup = new QRCodePopup(this, v, this);
 				qrPopup.setOnDismissListener(QRCodeZoomActivity.this::finish);
 				if (!isDestroyed() && !isFinishing()) {
-					qrPopup.show(v, null);
+					qrPopup.show(v, null, borderColor);
 				}
 			}
 		});

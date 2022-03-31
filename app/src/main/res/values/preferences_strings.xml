@@ -21,7 +21,7 @@
     <string name="preferences__masterkey_switch" translatable="false">pref_key_masterkey_switch</string>
 	<string name="preferences__masterkey_notification_newmsg" translatable="false">pref_key_masterkey_notification_newmsg</string>
 	<string name="preferences__serial_number" translatable="false">pref_serial_number</string>
-    <string name="preferences__polling_switch" translatable="false">pref_key_polling_switch</string>
+    <string name="preferences__threema_push_switch" translatable="false">pref_key_polling_switch</string>
     <string name="preferences__message_log_switch" translatable="false">pref_key_message_log_switch</string>
     <string name="preferences__reset_push" translatable="false">pref_key_resetpush</string>
     <string name="preferences__recent_emojis" translatable="false">pref_key_recent_emojis</string>
@@ -49,8 +49,6 @@
 	<string name="preferences__storage_management" translatable="false">pref_key_storage_mgmt</string>
 	<string name="preferences__emoji_style" translatable="false">pref_key_emoji_style</string>
 	<string name="preferences__fontstyle" translatable="false">pref_key_font_style</string>
-	<string name="preferences__polling_interval" translatable="false">pref_key_polling_interval</string>
-	<string name="preferences__polling_last_success" translatable="false">pref_key_polling_last_success</string>
 	<string name="preferences__sendlog" translatable="false">pref_key_sendlog</string>
 	<string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
 	<string name="preferences__lockout_timeout" translatable="false">pref_key_lock_timeout</string>
@@ -80,6 +78,8 @@
 	<string name="preferences__work_license_name" translatable="false">pref_work_license_name</string>
 	<string name="preferences__licenses" translatable="false">pref_licenses</string>
 	<string name="preferences__privacy_policy" translatable="false">pref_privacy_policy</string>
+	<string name="preferences__terms_of_service" translatable="false">pref_terms_of_service</string>
+	<string name="preferences__eula" translatable="false">pref_eula</string>
 	<string name="preferences__check_updates" translatable="false">pref_check_updates</string>
 	<string name="preferences__plugins" translatable="false">pref_plugins</string>
 	<string name="preferences__diverse_emojis" translatable="false">pref_diverse_emojis</string>
@@ -179,4 +179,5 @@
 	<string name="preferences__video_size_explain" translatable="false">pref_video_size_explain</string>
 	<string name="preferences__voicerecorder_bluetooth_disabled" translatable="false">pref_voicerecorder_bluetooth_disabled</string>
 	<string name="preferences__audio_playback_speed" translatable="false">pref_audio_playback_speed</string>
+	<string name="preferences__use_system_ringtone" translatable="false">pref_use_system_ringtone</string>
 </resources>

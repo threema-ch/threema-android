@@ -21,6 +21,7 @@
 
 package ch.threema.domain.models;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -38,6 +39,18 @@ import java.util.Arrays;
 public class MessageId implements Serializable {
 
 	private final byte[] messageId;
+
+	/**
+	 * Create a MessageId from a String
+	 *
+	 * @throws ThreemaException If the message id is {@code null} or has an invalid length
+	 */
+	public static MessageId fromString(@Nullable String messageId) throws ThreemaException {
+		if (messageId == null) {
+			throw new ThreemaException("Message id is null");
+		}
+		return new MessageId(Utils.hexStringToByteArray(messageId));
+	}
 
 	/**
 	 * Create a new random MessageId.

@@ -33,8 +33,7 @@ public class SettingsMediaDummyActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		Intent intent = new Intent(this, SettingsActivity.class);
-		intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsMediaFragment.class.getName());
-		intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+		intent.putExtra(SettingsActivity.EXTRA_SHOW_MEDIA_FRAGMENT, true);
 		startActivity(intent);
 		finish();
 	}

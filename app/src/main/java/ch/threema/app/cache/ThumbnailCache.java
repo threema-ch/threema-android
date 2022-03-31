@@ -25,12 +25,12 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ThumbnailCache<T> {
-	private static final Logger logger = LoggerFactory.getLogger(ThumbnailCache.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailCache");
 	private final Object lock = new Object();
 	private final LruCache<T, Bitmap> thumbnails;
 

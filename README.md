@@ -103,21 +103,48 @@ Threema employee.
 
 ## <a name="build-variants"></a>Build Variants
 
-There are currently nine product flavors:
+**Consumer**
 
-| Flavor              | Description                                   | License Checks |
-| ------------------- | --------------------------------------------- | -------------- |
-| `none`              | Used for development                          | Allowlist      |
-| `store_google`      | Google Play Store version (regular, paid app) | Google Play    |
-| `store_google_work` | Google Play Store version (work, free app)    | Threema Work   |
-| `store_threema`     | Threema Store version                         | Threema Shop   |
-| `hms`               | Huawei AppGallery version (regular, paid app) | Huawei HMS     |
-| `hms_work`          | Huawei AppGallery version (work, free app)    | Threema Work   |
-| `sandbox`           | Uses sandbox test environment¹                | Allowlist      |
-| `sandbox_work`      | Uses sandbox test environment¹                | Threema Work   |
-| `red`               | Uses sandbox test environment¹                | Threema Work   |
+There are currently the following product flavors relevant for the consumer
+version of Threema:
 
-For local testing, we recommend building the `store_google` or `store_threema` build variants.
+| Flavor                 | Description                                    | License Checks |
+| ---------------------- | ---------------------------------------------- | -------------- |
+| `store_google`         | Google Play Store version (regular, paid app)  | Google Play    |
+| `hms`                  | Huawei AppGallery version (regular, paid app)  | Huawei HMS     |
+| `store_threema`¹       | Threema Shop version (with play services)      | Threema Shop   |
+| `fdroid`¹              | F-Droid version (no proprietary code)          | Threema Shop   |
+
+For local testing, we recommend building the `store_google` or `store_threema`
+build variants.
+
+¹ The main difference between `store_threema` and `fdroid` is that the former
+  contains proprietary push services and a self-updater while the latter does
+  not. Additionally, the `fdroid` version will use your system emoji, instead
+  of bundling emoji graphics.
+
+
+**Threema Work / OnPrem**
+
+Additionally, these build variants are only relevant for Threema Work or
+Threema OnPrem customers:
+
+| Flavor               | Description                                    | License Checks |
+| -------------------- | ---------------------------------------------- | -------------- |
+| `store_google_work`  | Google Play Store version (work, free app)     | Threema Work   |
+| `hms_work`           | Huawei AppGallery version (work, free app)     | Threema Work   |
+| `onprem`             | Threema OnPremises version                     | Threema Work   |
+
+**Internal Development**
+
+The following variants are only used for development and testing within Threema:
+
+| Flavor               | Description                                    | License Checks |
+| -------------------- | ---------------------------------------------- | -------------- |
+| `none`               | Used for development                           | Allowlist      |
+| `sandbox`            | Uses sandbox test environment¹                 | Allowlist      |
+| `sandbox_work`       | Uses sandbox test environment¹                 | Threema Work   |
+| `red`                | Uses sandbox test environment¹                 | Threema Work   |
 
 ¹ *The "sandbox" is a backend test environment that is used for internal testing
   at Threema. The sandbox backend can currently not be accessed from the public

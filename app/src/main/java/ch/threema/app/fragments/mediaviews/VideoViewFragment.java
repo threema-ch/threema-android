@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -43,7 +44,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -54,9 +54,10 @@ import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.ui.ZoomableExoPlayerView;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener {
-	private static final Logger logger = LoggerFactory.getLogger(VideoViewFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoViewFragment");
 
 	private WeakReference<ImageView> previewImageViewRef;
 	private WeakReference<ProgressBar> progressBarRef;
@@ -196,7 +197,7 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 
 		if (this.videoPlayer != null) {
 			DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), getContext().getString(R.string.app_name)));
-			MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
+			MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(videoUri));
 
 			this.videoPlayer.setPlayWhenReady(this.isImmediatePlay);
 

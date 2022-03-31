@@ -115,6 +115,7 @@ import ch.threema.app.voip.util.VoipStats;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -125,7 +126,6 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import ch.threema.storage.models.ContactModel;
 import java8.util.function.Supplier;
@@ -2140,7 +2140,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * @param elapsedTimeMs Timestamp at which the call was started (elapsed monotonic time since boot).
 	 */
 	private synchronized void showInCallNotification(long callStartedTimeMs, long elapsedTimeMs) {
-		logger.info("Show onging in-call notification");
+		logger.info("Show ongoing in-call notification");
 
 		// Prepare hangup action
 		final Intent hangupIntent = new Intent(this, VoipCallService.class);

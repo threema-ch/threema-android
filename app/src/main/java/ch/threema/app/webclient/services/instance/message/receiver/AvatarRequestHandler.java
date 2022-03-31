@@ -27,7 +27,6 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -37,10 +36,11 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 @WorkerThread
 public class AvatarRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(AvatarRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarRequestHandler");
 
 	private final MessageDispatcher dispatcher;
 

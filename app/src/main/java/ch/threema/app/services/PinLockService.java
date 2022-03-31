@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,9 +35,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.utils.WidgetUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class PinLockService implements LockAppService {
-	private static final Logger logger = LoggerFactory.getLogger(PinLockService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockService");
 
 	private final Context context;
 	private final PreferenceService preferencesService;

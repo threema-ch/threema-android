@@ -29,6 +29,8 @@ import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.KeyguardManager;
 import android.app.PictureInPictureParams;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -137,6 +139,7 @@ import ch.threema.app.voip.services.VideoContext;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -144,7 +147,6 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKey;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
@@ -215,7 +217,8 @@ public class CallActivity extends ThreemaActivity implements
 	// Permissions
 	private final static int PERMISSION_REQUEST_RECORD_AUDIO = 9001;
 	private final static int PERMISSION_REQUEST_CAMERA = 9002;
-	@IntDef({PERMISSION_REQUEST_RECORD_AUDIO, PERMISSION_REQUEST_CAMERA})
+	private final static int PERMISSION_REQUEST_BLUETOOTH_CONNECT = 9003;
+	@IntDef({PERMISSION_REQUEST_RECORD_AUDIO, PERMISSION_REQUEST_CAMERA, PERMISSION_REQUEST_BLUETOOTH_CONNECT})
 	private @interface PermissionRequest {}
 	/**
 	 * This future resolves as soon as the microphone permission request has been answered.
@@ -227,6 +230,11 @@ public class CallActivity extends ThreemaActivity implements
 	 * It resolves to a boolean that indicates whether the permission was granted or not.
 	 */
 	private @Nullable CompletableFuture<PermissionRequestResult> camPermissionResponse;
+	/**
+	 * This future resolves as soon as the bluetooth connect permission request has been answered.
+	 * It resolves to a boolean that indicates whether the permission was granted or not.
+	 */
+	private @Nullable CompletableFuture<PermissionRequestResult> bluetoothConnectPermissionResponse;
 
 	private static final String DIALOG_TAG_SELECT_AUDIO_DEVICE = "saud";
 
@@ -569,6 +577,17 @@ public class CallActivity extends ThreemaActivity implements
 						updateVideoButton(true);
 						updateVideoViews();
 						setPreferredAudioDevice(VoipAudioManager.AudioDevice.SPEAKER_PHONE);
+
+						// autohide navigation
+						commonViews.parentLayout.postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								if (voipStateService != null && (voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
+									hideNavigation(true);
+								}
+							}
+						}, 5000);
+
 						break;
 					case ACTION_OUTGOING_VIDEO_STOPPED:
 						logger.debug("Outgoing video stopped");
@@ -813,7 +832,7 @@ public class CallActivity extends ThreemaActivity implements
 			.thenAccept((result) -> {
 				if (result.isGranted()) {
 					logger.info("Audio permission granted");
-					initializeActivity(getIntent());
+					checkBluetoothPermission();
 				} else {
 					logger.warn("Audio permission not granted");
 					Toast.makeText(CallActivity.this, R.string.permission_record_audio_required, Toast.LENGTH_LONG).show();
@@ -840,6 +859,50 @@ public class CallActivity extends ThreemaActivity implements
 		keepAliveHandler.removeCallbacksAndMessages(null);
 		keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
 	}
+
+	private void checkBluetoothPermission() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+			initializeActivity(getIntent());
+			return;
+		}
+
+		try {
+			// simple check for connected headset - this still works with legacy BT permissions
+			BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			if (bluetoothAdapter == null || BluetoothProfile.STATE_CONNECTED != bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)) {
+				initializeActivity(getIntent());
+				return;
+			}
+		} catch (Exception e) {
+			logger.error("Unable to get BT connection state. Android >12?", e);
+		}
+
+		this.bluetoothConnectPermissionResponse = new CompletableFuture<>();
+		if (ConfigUtils.requestBluetoothConnectPermissions(this, null, PERMISSION_REQUEST_BLUETOOTH_CONNECT)) {
+			this.bluetoothConnectPermissionResponse.complete(new PermissionRequestResult(true, true));
+		}
+
+		// Initialize activity once all permissions are granted
+		this.bluetoothConnectPermissionResponse
+			.thenAccept((result) -> {
+				if (result.isGranted()) {
+					logger.info("BLUETOOTH_CONNECT permission granted");
+				} else {
+					Toast.makeText(CallActivity.this, R.string.permission_bluetooth_connect_required, Toast.LENGTH_LONG).show();
+					logger.warn("BLUETOOTH_CONNECT permission not granted");
+					// simply continue without bluetooth support
+				}
+				initializeActivity(getIntent());
+			})
+			.exceptionally((e) -> {
+				if (e != null) {
+					logger.error("Error in checkBluetoothConnect", e);
+					abortWithError();
+				}
+				return null;
+			});
+	}
+
 
 	private boolean restoreState(@NonNull Intent intent, Bundle savedInstanceState) {
 		// Every valid intent must either be a call action intent,
@@ -1866,7 +1929,7 @@ public class CallActivity extends ThreemaActivity implements
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_USER);
 	}
 
-	@TargetApi(Build.VERSION_CODES.M)
+	@TargetApi(Build.VERSION_CODES.S)
 	@Override
 	public void onRequestPermissionsResult(
 		@PermissionRequest int requestCode,
@@ -1885,6 +1948,9 @@ public class CallActivity extends ThreemaActivity implements
 				case PERMISSION_REQUEST_CAMERA:
 					future = this.camPermissionResponse;
 					break;
+				case PERMISSION_REQUEST_BLUETOOTH_CONNECT:
+					future = this.bluetoothConnectPermissionResponse;
+					break;
 				default:
 					future = null;
 			}
@@ -1902,6 +1968,10 @@ public class CallActivity extends ThreemaActivity implements
 				case PERMISSION_REQUEST_CAMERA:
 					permission = Manifest.permission.CAMERA;
 					future = this.camPermissionResponse;
+					break;
+				case PERMISSION_REQUEST_BLUETOOTH_CONNECT:
+					permission = Manifest.permission.BLUETOOTH_CONNECT;
+					future = this.bluetoothConnectPermissionResponse;
 					break;
 				default:
 					logger.warn("Invalid permission request code: {}", requestCode);

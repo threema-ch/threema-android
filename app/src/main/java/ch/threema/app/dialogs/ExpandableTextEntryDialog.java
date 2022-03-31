@@ -78,6 +78,21 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		return dialog;
 	}
 
+	public static ExpandableTextEntryDialog newInstance(String title, String subtitle, int hint, String preset, int positive, int negative, boolean expandable) {
+		ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
+		Bundle args = new Bundle();
+		args.putString("title", title);
+		args.putString("subtitle", subtitle);
+		args.putString("preset", preset);
+		args.putInt("message", hint);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putBoolean("expandable", expandable);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
 	public interface ExpandableTextEntryDialogClickListener {
 		void onYes(String tag, Object data, String text);
 		void onNo(String tag);
@@ -114,6 +129,7 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		String title = getArguments().getString("title");
+		String subtitle = getArguments().getString("subtitle");
 		String preset = getArguments().getString("preset", null);
 		int message = getArguments().getInt("message");
 		int positive = getArguments().getInt("positive");
@@ -127,6 +143,7 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		final ComposeEditText editText = dialogView.findViewById(R.id.caption_edittext);
 		final TextInputLayout editTextContainer = dialogView.findViewById(R.id.edittext_container);
 		final TextView addCaptionText = dialogView.findViewById(R.id.add_caption_text);
+		final TextView subtitleText = dialogView.findViewById(R.id.subtitle_text);
 		final ImageView expandButton = dialogView.findViewById(R.id.expand_button);
 		final LinearLayout addCaptionLayout = dialogView.findViewById(R.id.add_caption_intro);
 
@@ -156,6 +173,12 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 
 		if (!TestUtil.empty(title)) {
 			builder.setTitle(title);
+		}
+
+		if (!TestUtil.empty(subtitle)) {
+			subtitleText.setText(subtitle);
+		} else {
+			subtitleText.setVisibility(View.GONE);
 		}
 
 		if (message != 0) {

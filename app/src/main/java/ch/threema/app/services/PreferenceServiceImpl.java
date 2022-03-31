@@ -21,18 +21,14 @@
 
 package ch.threema.app.services;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
-
-import com.google.android.vending.licensing.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -49,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.notifications.NotificationUtil;
@@ -58,11 +55,13 @@ import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public class PreferenceServiceImpl implements PreferenceService {
-	private static final Logger logger = LoggerFactory.getLogger(PreferenceServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PreferenceServiceImpl");
 
 	private static final String CONTACT_PHOTO_BLOB_ID = "id";
 	private static final String CONTACT_PHOTO_ENCRYPTION_KEY = "key";
@@ -347,13 +346,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public boolean isPolling() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__polling_switch));
+	public boolean useThreemaPush() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__threema_push_switch));
 	}
 
 	@Override
-	public void setPolling(boolean value) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__polling_switch), value);
+	public void setUseThreemaPush(boolean value) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_push_switch), value);
 	}
 
 	@Override
@@ -529,20 +528,25 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	@NonNull
 	public String[] getList(String listName) {
-		String[] res = this.preferenceStore.getStringArray(listName);
+		String[] res = this.preferenceStore.getStringArray(listName, true);
 		if (res == null) {
-			return new String[0];
+			res = this.preferenceStore.getStringArray(listName);
+			if (res == null) {
+				return new String[0];
+			}
 		}
 
 		return res;
 	}
 
 	@Override
-	public void setList(String listName, String[] identities) {
+	public void setList(String listName, String[] elements) {
 		this.preferenceStore.save(
 			listName,
-			identities
+			elements,
+			true
 		);
 	}
 
@@ -709,6 +713,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public int getEmojiStyle() {
+		if (BuildFlavor.isLibre()) {
+			return EmojiStyle_ANDROID;
+		}
+
 		String theme = this.preferenceStore.getString(this.getKeyName(R.string.preferences__emoji_style));
 		if (theme != null && theme.length() > 0) {
 			if (Integer.valueOf(theme) == 1) {
@@ -716,34 +724,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 			}
 		}
 		return EmojiStyle_DEFAULT;
-	}
-
-	@Override
-	public long getPollingInterval() {
-		String interval = this.preferenceStore.getString(this.getKeyName(R.string.preferences__polling_interval));
-		if (interval != null) {
-			switch (interval) {
-				case "0":
-					return 5 * 60 * 1000;
-				case "2":
-					return AlarmManager.INTERVAL_HALF_HOUR;
-				default:
-					break;
-			}
-		}
-		return AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-	}
-
-	@Nullable
-	@Override
-	public Long getLastSuccessfulPollTimestamp() {
-		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__polling_last_success));
-
-	}
-
-	@Override
-	public void setLastSuccessfulPollTimestamp(long timestamp) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__polling_last_success), timestamp);
 	}
 
 	@Override
@@ -990,8 +970,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 		JSONObject toStore = new JSONObject();
 
 		try {
-			toStore.put(CONTACT_PHOTO_BLOB_ID, Base64.encode(result.blobId));
-			toStore.put(CONTACT_PHOTO_ENCRYPTION_KEY, Base64.encode(result.encryptionKey));
+			toStore.put(CONTACT_PHOTO_BLOB_ID, Base64.encodeBytes(result.blobId));
+			toStore.put(CONTACT_PHOTO_ENCRYPTION_KEY, Base64.encodeBytes(result.encryptionKey));
 			toStore.put(CONTACT_PHOTO_SIZE, result.size);
 		} catch (Exception e) {
 			logger.error("Exception", e);

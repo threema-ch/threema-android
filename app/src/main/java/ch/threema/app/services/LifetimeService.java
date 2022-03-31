@@ -23,54 +23,105 @@ package ch.threema.app.services;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
+/**
+ * The Lifetime Service is responsible for opening and closing a connection to the Threema
+ * chat server. Every part of the code that needs a connection can acquire a "connection slot".
+ * If there are 1 or more slots open, then a connection is kept open, otherwise it is closed.
+ *
+ * In some situations we want to stop the connection even if the counter is >0,
+ * for example when the device is going to deep sleep. For this, the {@link #pause()}
+ * and {@link #unpause()} methods can be used.
+ *
+ * If you want to acquire a connection that should not be pauseable (e.g. for the Threema Push
+ * service), then set the `unpauseable` flag (or use {@link #acquireUnpauseableConnection(String)})
+ * when acquiring the connection.
+ */
 public interface LifetimeService {
-
 	interface LifetimeServiceListener {
+		/**
+		 * The connection was stopped.
+		 * Return `true` to deregister this listener, `false` to keep it registered.
+		 */
 		boolean connectionStopped();
-
 	}
-    /**
-     * Acquire the connection. If not already connected, the connection will be started immediately,
-     * and kept active until releaseConnection() is called. A call to acquireConnection() must always
-     * be balanced with a call to releaseConnection().
-     *
-     * Note: The source is used purely for diagnostic purposes and not for deduplication.
-     * If you call this method twice with the same source string, then two connection counters
-     * will be acquired.
-     *
-     * @param source identifier of the calling object (for debugging)
-     */
-    void acquireConnection(String source);
+
+	/**
+	 * Acquire a connection. If not already connected, the connection will be started immediately,
+	 * and kept active until releaseConnection() is called. A call to acquireConnection() must always
+	 * be balanced with a call to releaseConnection() with the same tag.
+	 *
+	 * @param sourceTag identifier of the connection slot
+	 * @param unpauseable if set to true, then the connection will not be paused in deep sleep
+	 */
+	void acquireConnection(@NonNull String sourceTag, boolean unpauseable);
+
+	/**
+	 * Shortcut for {@link #acquireConnection(String, boolean)} with unpauseable=false.
+	 */
+	default void acquireConnection(@NonNull String source) {
+		acquireConnection(source, false);
+	}
+
+	/**
+	 * Shortcut for {@link #acquireConnection(String, boolean)} with unpauseable=true.
+	 */
+	default void acquireUnpauseableConnection(@NonNull String source) {
+		acquireConnection(source, true);
+	}
 
     /**
      * Release the connection. If no other callers have acquired the connection anymore, it will
      * be closed.
      *
-     * @param source identifier of the calling object (for debugging)
+     * @param sourceTag identifier of the connection slot
      */
-    void releaseConnection(String source);
+    void releaseConnection(@NonNull String sourceTag);
 
     /**
      * Release the connection, but keep it active ("linger") for the given amount of milliseconds
      *
-     * @param source identifier of the calling object (for debugging)
+     * @param sourceTag identifier of the connection slot
      * @param timeoutMs time in milliseconds that the connection should linger
      */
-    void releaseConnectionLinger(String source, long timeoutMs);
+    void releaseConnectionLinger(@NonNull String sourceTag, long timeoutMs);
 
-    /**
-     * Set polling interval.
-     *
-     * @param intervalMs polling interval in milliseconds, or 0 to disable
-     */
-    void setPollingInterval(long intervalMs);
+	/**
+	 * If the connection is not active but there are connection slots registered,
+	 * establish a connection. If the connection is already active, or if no connection
+	 * slots are registered, nothing will happen.
+	 *
+	 * Note: Sometimes when acquiring a connection, the connection cannot be established
+	 * (e.g. if the identity is not yet set up). In this case, this method can be called
+	 * to trigger a reconnect attempt.
+	 */
+	void ensureConnection();
 
 	/**
 	 * Alarm elapsed (for use by AlarmManagerBroadcastReceiver)
 	 */
     void alarm(Intent intent);
 
+	/**
+	 * Return whether a connection is active (connected).
+	 */
 	boolean isActive();
+
+	/**
+	 * Pause (close) the connection, even if the slotCount is >0.
+	 */
+	void pause();
+
+	/**
+	 * Restore (reconnect) the connection if it was previously paused.
+	 */
+	void unpause();
+
+	/**
+	 * Return whether the lifetime service is currently paused.
+	 */
+	boolean isPaused();
 
 	void addListener(LifetimeServiceListener listener);
 	void removeListener(LifetimeServiceListener listener);

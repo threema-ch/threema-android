@@ -25,6 +25,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -32,7 +33,7 @@ import java.util.Arrays;
  * Wrapper class for group IDs (consisting of 8 bytes, chosen by the group creator and not guaranteed
  * to be unique across multiple group creators).
  */
-public class GroupId {
+public class GroupId implements Serializable {
 
 	private final byte[] value;
 

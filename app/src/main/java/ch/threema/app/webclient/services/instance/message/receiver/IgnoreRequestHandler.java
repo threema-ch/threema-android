@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -33,13 +32,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * A handler that logs and ignores incoming messages for the specified subtype.
  */
 @WorkerThread
 public class IgnoreRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(IgnoreRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IgnoreRequestHandler");
 
 	private final @NonNull String type;
 

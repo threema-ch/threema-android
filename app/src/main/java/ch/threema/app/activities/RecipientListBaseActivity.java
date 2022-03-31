@@ -28,6 +28,8 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,7 +53,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -118,6 +119,7 @@ import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -127,7 +129,8 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.LocationDataModel;
 import java8.util.concurrent.CompletableFuture;
 
-import static ch.threema.app.activities.SendMediaActivity.MAX_SELECTABLE_IMAGES;
+import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_IMAGES;
+import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
@@ -136,7 +139,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
 	SearchView.OnQueryTextListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(RecipientListBaseActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListBaseActivity");
 
 	private final static int FRAGMENT_RECENT = 0;
 	private final static int FRAGMENT_USERS = 1;
@@ -370,14 +373,25 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		} else {
 			if (actionBar != null) {
 				actionBar.setDisplayHomeAsUpEnabled(false);
-				actionBar.setTitle(R.string.please_wait);
+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+					ColorDrawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+					actionBar.setTitle(null);
+					actionBar.setBackgroundDrawable(transparentDrawable);
+					getToolbar().setVisibility(View.GONE);
+					getWindow().setBackgroundDrawable(transparentDrawable);
+					getWindow().setStatusBarColor(Color.TRANSPARENT);
+					setTranslucent(true);
+				} else {
+					actionBar.setTitle(R.string.app_name);
+					if (progressBar != null) {
+						progressBar.setVisibility(View.VISIBLE);
+					}
+				}
 			}
-			if (tabLayout != null) {
-				tabLayout.setVisibility(View.GONE);
-			}
-			if (progressBar != null) {
-				progressBar.setVisibility(View.VISIBLE);
-			}
+
+			tabLayout.setVisibility(View.GONE);
+
 			if (searchMenuItem != null) {
 				searchMenuItem.setVisible(false);
 			}
@@ -610,7 +624,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 					if (uris != null) {
 						for (int i = 0; i < uris.size(); i++) {
-							if (i < MAX_SELECTABLE_IMAGES) {
+							if (i < MAX_FORWARDABLE_ITEMS) {
 								Uri uri = uris.get(i);
 								if (uri != null) {
 									String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
@@ -620,7 +634,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									addMediaItemSharedFromOtherApp(mimeType, uri, null);
 								}
 							} else {
-								Toast.makeText(getApplicationContext(), getString(R.string.max_selectable_media_exceeded, MAX_SELECTABLE_IMAGES), Toast.LENGTH_LONG).show();
+								Toast.makeText(getApplicationContext(), getString(R.string.max_selectable_media_exceeded, MAX_FORWARDABLE_ITEMS), Toast.LENGTH_LONG).show();
 								break;
 							}
 						}
@@ -665,7 +679,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 			try (Cursor cursor = getContentResolver().query(uri, proj, null, null, null)) {
 				if (cursor != null && cursor.moveToFirst()) {
-					String mimeType = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE));
+					String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_MIME_TYPE));
 					if (!TestUtil.empty(mimeType)) {
 						return mimeType;
 					}
@@ -1007,7 +1021,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
 
-								if (numEditableMedia == mediaItems.size()) { // all files are images or videos
+								if (numEditableMedia == mediaItems.size() && mediaItems.size() <= MAX_EDITABLE_IMAGES) { // all files are images or videos
 									// all files are either images or videos => redirect to SendMediaActivity
 									recipientMessageReceivers.clear();
 									for (Object model : recipients) {
@@ -1025,7 +1039,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									}
 								} else {
 									// mixed media
-									ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+									ExpandableTextEntryDialog alertDialog;
+									if (hideUi) {
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+									} else {
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+									}
 									alertDialog.setData(recipients);
 									alertDialog.show(getSupportFragmentManager(), null);
 								}

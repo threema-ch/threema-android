@@ -33,7 +33,6 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -41,9 +40,10 @@ import java.lang.ref.WeakReference;
 import ch.threema.app.R;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ImageViewFragment extends MediaViewFragment {
-	private static final Logger logger = LoggerFactory.getLogger(ImageViewFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageViewFragment");
 
 	private WeakReference<SubsamplingScaleImageView> imageViewReference;
 	private WeakReference<ImageView> previewViewReference;

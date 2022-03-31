@@ -36,17 +36,17 @@ import androidx.annotation.Nullable;
 
 public interface PreferenceStoreInterface {
 
-	public void remove(String key);
+	void remove(String key);
 
-	public void remove(List<String> keys);
+	void remove(List<String> keys);
 
 	void remove(String key, boolean crypt);
 
-	public void save(String key, String thing);
+	void save(String key, String thing);
 
-	public void save(String key, String thing, boolean crypt);
+	void save(String key, String thing, boolean crypt);
 
-	public void save(String key, String[] things);
+	void save(String key, String[] things);
 
 	void save(String key, HashMap<Integer, String> things);
 
@@ -56,33 +56,33 @@ public interface PreferenceStoreInterface {
 
 	void saveIntegerHashMap(String key, HashMap<Integer, Integer> things);
 
-	public void save(String key, String[] things, boolean crypt);
+	void save(String key, String[] things, boolean crypt);
 
-	public void save(String key, long thing);
+	void save(String key, long thing);
 
-	public void save(String key, long thing, boolean crypt);
+	void save(String key, long thing, boolean crypt);
 
-	public void save(String key, int thing);
+	void save(String key, int thing);
 
-	public void save(String key, int thing, boolean crypt);
+	void save(String key, int thing, boolean crypt);
 
-	public void save(String key, boolean thing);
+	void save(String key, boolean thing);
 
-	public void save(String key, byte[] thing);
+	void save(String key, byte[] thing);
 
-	public void save(String key, byte[] thing, boolean crypt);
+	void save(String key, byte[] thing, boolean crypt);
 
-	public void save(String key, Date date);
+	void save(String key, Date date);
 
-	public void save(String key, Date date, boolean crypt);
+	void save(String key, Date date, boolean crypt);
 
-	public void save(String key, Long thing);
+	void save(String key, Long thing);
 
-	public void save(String key, Long thing, boolean crypt);
+	void save(String key, Long thing, boolean crypt);
 
-	public void save(String key, JSONArray thing, boolean crypt);
+	void save(String key, JSONArray thing, boolean crypt);
 
-	public void save(String key, float thing);
+	void save(String key, float thing);
 
 	void save(String key, JSONArray array);
 
@@ -94,41 +94,41 @@ public interface PreferenceStoreInterface {
 
 	@Nullable String getString(String key, boolean crypt);
 
-	public String getHexString(String key, boolean crypt);
+	String getHexString(String key, boolean crypt);
 
-	public Long getLong(String key);
+	Long getLong(String key);
 
-	public Long getLong(String key, boolean crypt);
+	Long getLong(String key, boolean crypt);
 
-	public Date getDate(String key);
+	Date getDate(String key);
 
-	public Date getDate(String key, boolean crypt);
+	Date getDate(String key, boolean crypt);
 
 	long getDateAsLong(String key);
 
-	public Integer getInt(String key);
+	Integer getInt(String key);
 
-	public Integer getInt(String key, boolean crypt);
+	Integer getInt(String key, boolean crypt);
 
-	public float getFloat(String key, float defValue);
+	float getFloat(String key, float defValue);
 
-	public boolean getBoolean(String key);
+	boolean getBoolean(String key);
 
-	public boolean getBoolean(String key, boolean defValue);
+	boolean getBoolean(String key, boolean defValue);
 
-	public byte[] getBytes(String key);
+	byte[] getBytes(String key);
 
-	public byte[] getBytes(String key, boolean crypted);
+	byte[] getBytes(String key, boolean crypted);
 
-	public String[] getStringArray(String key);
+	String[] getStringArray(String key);
 
-	public String[] getStringArray(String key, boolean crypted);
+	String[] getStringArray(String key, boolean crypted);
 
-	public HashMap<Integer, String> getHashMap(String key, boolean encrypted);
+	HashMap<Integer, String> getHashMap(String key, boolean encrypted);
 
-	public HashMap<String, String> getStringHashMap(String key, boolean encrypted);
+	HashMap<String, String> getStringHashMap(String key, boolean encrypted);
 
-	public HashMap<Integer, Integer> getHashMap(String key);
+	HashMap<Integer, Integer> getHashMap(String key);
 
 	JSONArray getJSONArray(String key, boolean crypt);
 
@@ -136,9 +136,9 @@ public interface PreferenceStoreInterface {
 
 	<T> T getRealObject(String key, boolean crypt);
 
-	public void clear();
+	void clear();
 
-	public Map<String, ?> getAllNonCrypted();
+	Map<String, ?> getAllNonCrypted();
 
 	Set<String> getStringSet(String key, int defaultRes);
 }

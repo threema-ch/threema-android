@@ -22,7 +22,6 @@
 package ch.threema.app.actions;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -32,10 +31,11 @@ import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class TextMessageSendAction extends SendAction {
-	private static final Logger logger = LoggerFactory.getLogger(TextMessageSendAction.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("TextMessageSendAction");
 
 	protected static volatile TextMessageSendAction instance;
 	private static final Object instanceLock = new Object();

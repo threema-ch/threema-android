@@ -34,11 +34,13 @@ public class BallotDataChoice {
 	private final static String KEY_CHOICES_NAME = "n";
 	private final static String KEY_CHOICES_ORDER = "o";
 	private final static String KEY_RESULT = "r";
+	private final static String KEY_TOTAL_VOTES = "t";
 
 	int id;
 	String name;
 	int order;
 	final int[] ballotDataChoiceResults;
+	int totalVotes;
 
 	public BallotDataChoice(int resultSize) {
 		this.ballotDataChoiceResults = new int[resultSize];
@@ -99,6 +101,14 @@ public class BallotDataChoice {
 		return null;
 	}
 
+	public int getTotalVotes() {
+		return this.totalVotes;
+	}
+
+	public void setTotalVotes(int totalVotes) {
+		this.totalVotes = totalVotes;
+	}
+
 	public static BallotDataChoice parse(String jsonObjectString) throws BadMessageException {
 		try {
 			JSONObject o = new JSONObject(jsonObjectString);
@@ -116,7 +126,7 @@ public class BallotDataChoice {
 			}
 
 			final JSONArray resultArray;
-			if(o.has(KEY_RESULT)) {
+			if (o.has(KEY_RESULT)) {
 				resultArray = o.getJSONArray(KEY_RESULT);
 			}
 			else {
@@ -127,6 +137,10 @@ public class BallotDataChoice {
 			ballotDataChoice.setId(o.getInt(KEY_CHOICES_ID));
 			ballotDataChoice.setName(o.getString(KEY_CHOICES_NAME));
 			ballotDataChoice.setOrder(o.getInt(KEY_CHOICES_ORDER));
+
+			if (o.has(KEY_TOTAL_VOTES)) {
+				ballotDataChoice.setTotalVotes(o.getInt(KEY_TOTAL_VOTES));
+			}
 
 			if(resultArray != null) {
 				for(int n = 0; n < resultArray.length(); n++) {
@@ -153,6 +167,7 @@ public class BallotDataChoice {
 				resultArray.put(r);
 			}
 			o.put(KEY_RESULT, resultArray);
+			o.put(KEY_TOTAL_VOTES, this.getTotalVotes());
 		}
 		catch (Exception e) {
 			throw new BadMessageException("TM033");

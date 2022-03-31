@@ -62,6 +62,7 @@
 	<!-- Access to audio settings and bluetooth for voice calls -->
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 	<uses-permission android:name="android.permission.BLUETOOTH"/>
+	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
 	<!-- Permissions for biometric unlocking  -->
 	<uses-permission android:name="android.permission.USE_BIOMETRIC"/>
@@ -190,7 +191,8 @@
 			android:label="@string/app_name"
 			android:launchMode="singleTop"
 			android:theme="@style/SplashTheme"
-			android:configChanges="uiMode">
+			android:configChanges="uiMode"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
@@ -215,7 +217,8 @@
 			android:parentActivityName=".activities.HomeActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:windowSoftInputMode="stateUnchanged">
+			android:windowSoftInputMode="stateUnchanged"
+			android:exported="true">
 			<intent-filter android:label="@string/threema_contact"
 					tools:ignore="AppLinkUrlError">
 				<action android:name="android.intent.action.VIEW"/>
@@ -230,7 +233,8 @@
 			android:taskAffinity=""
 			android:launchMode="singleTask"
 			android:theme="@style/Theme.Threema.WithToolbar"
-			android:configChanges="uiMode">
+			android:configChanges="uiMode"
+			android:exported="true">
 			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.SEND"/>
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -335,6 +339,14 @@
 		</activity>
 		<activity
 			android:name=".activities.LicenseActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:configChanges="uiMode" />
+		<activity
+			android:name=".activities.TermsOfServiceActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:configChanges="uiMode" />
+		<activity
+			android:name=".activities.EulaActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode" />
 		<activity
@@ -702,6 +714,12 @@
 			android:windowSoftInputMode="adjustNothing"
 			android:configChanges="uiMode" />
 		<activity
+			android:name=".activities.EditSendContactActivity"
+			android:theme="@style/Theme.Threema.Translucent"
+			android:resizeableActivity="true"
+			android:windowSoftInputMode="adjustResize"
+			android:configChanges="uiMode" />
+		<activity
 			android:name=".threemasafe.ThreemaSafeConfigureActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:theme="@style/Theme.Threema.WithToolbar"
@@ -742,14 +760,6 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".qrscanner.activity.CaptureActivity"
-			android:label="@string/capture_name"
-			android:clearTaskOnLaunch="true"
-			android:stateNotNeeded="true"
-			android:configChanges="orientation|keyboardHidden"
-			android:theme="@style/Theme.Threema.Translucent"
-			android:windowSoftInputMode="stateAlwaysHidden"/>
-		<activity
 			android:name=".camera.CameraActivity"
 			android:screenOrientation="fullSensor"
 			android:autoRemoveFromRecents="true"
@@ -788,6 +798,18 @@
 			android:name=".activities.TextChatBubbleActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:launchMode="singleTop"/>
+		<activity
+			android:name=".camera.QRScannerActivity"
+			android:clearTaskOnLaunch="true"
+			android:stateNotNeeded="true"
+			android:configChanges="orientation|keyboardHidden"
+			android:theme="@style/Theme.Threema.Camera"
+			android:windowSoftInputMode="stateAlwaysHidden" />
+		<activity
+			android:name=".activities.ThreemaPushNotificationInfoActivity"
+			android:launchMode="singleTask"
+			android:taskAffinity=""
+			android:excludeFromRecents="true" />
 
 		<!-- services -->
 		<service
@@ -889,10 +911,9 @@
 			android:exported="false"
 			android:permission="android.permission.BIND_JOB_SERVICE"/>
 		<service
-			android:name=".jobs.ShareTargetShortcutUpdateJobService"
-			android:enabled="true"
+			android:name=".services.ThreemaPushService"
 			android:exported="false"
-			android:permission="android.permission.BIND_JOB_SERVICE"/>
+			android:label="ThreemaPushService"/>
 
 		<!-- broadcast receivers -->
 		<receiver
@@ -955,6 +976,16 @@
 			<meta-data
 				android:name="android.support.FILE_PROVIDER_PATHS"
 				android:resource="@xml/file_paths"/>
+		</provider>
+
+		<!-- disable emoji2 because we use our own emoji parsing -->
+		<provider
+			android:name="androidx.startup.InitializationProvider"
+			android:authorities="${applicationId}.androidx-startup"
+			android:exported="false"
+			tools:node="merge">
+			<meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer"
+				tools:node="remove" />
 		</provider>
 
 		<!-- samsung multiwindow -->

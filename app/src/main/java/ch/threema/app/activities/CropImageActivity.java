@@ -28,7 +28,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 
-import com.theartofdev.edmodo.cropper.CropImageView;
+import com.canhub.cropper.CropImageView;
 
 import androidx.appcompat.widget.Toolbar;
 import ch.threema.app.R;
@@ -183,9 +183,9 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 		isSaving = true;
 
 		if (maxX != 0 && maxY != 0) {
-			imageView.saveCroppedImageAsync(saveUri, Bitmap.CompressFormat.PNG, 100, maxX, maxY);
+			imageView.croppedImageAsync(Bitmap.CompressFormat.PNG, 100, maxX, maxY, CropImageView.RequestSizeOptions.NONE, saveUri);
 		} else {
-			imageView.saveCroppedImageAsync(saveUri, Bitmap.CompressFormat.PNG, 100);
+			imageView.croppedImageAsync(Bitmap.CompressFormat.PNG, 100, 0, 0, CropImageView.RequestSizeOptions.NONE, saveUri);
 		}
 	}
 }

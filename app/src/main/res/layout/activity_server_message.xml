@@ -30,7 +30,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"
-					android:text="todo"
+					android:text="[server message]"
 					android:id="@+id/server_message_text"
 					android:textAppearance="@style/Threema.TextAppearance.Emptyview"
 					/>

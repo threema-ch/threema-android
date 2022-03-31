@@ -50,7 +50,6 @@ import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.preference.SettingsNotificationsFragment;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
@@ -352,8 +351,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 				break;
 			case R.id.prefs_button:
 				Intent intent = new Intent(this, SettingsActivity.class);
-				intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsNotificationsFragment.class.getName());
-				intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true );
+				intent.putExtra(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT, true);
 				ringtoneSettingsLauncher.launch(intent);
 				overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 				break;

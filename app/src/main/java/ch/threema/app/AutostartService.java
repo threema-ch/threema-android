@@ -29,7 +29,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.FixedJobIntentService;
@@ -41,12 +40,13 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_NOTICE;
 
 public class AutostartService extends FixedJobIntentService {
-	private static final Logger logger = LoggerFactory.getLogger(AutostartService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AutostartService");
 	private static final int JOB_ID = 2000;
 
 	public static void enqueueWork(Context context, Intent work) {

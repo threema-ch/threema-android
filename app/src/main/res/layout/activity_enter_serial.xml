@@ -42,21 +42,17 @@
 				/>
 
 		<TextView
-				android:id="@+id/layout_top"
-				android:layout_below="@id/enter_serial_welcome_title"
-				style="@style/WizardMediumText"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:layout_centerHorizontal="true"
-				android:linksClickable="true"
-				android:autoLink="web"
-				android:textColorLink="@color/wizard_color_accent"
-				android:text="@string/enter_serial_body"
-				android:textColor="?attr/textColorPrimary"
-				android:layout_marginTop="@dimen/wizard_paragraph_height"
-				android:layout_marginBottom="5dp">
-		</TextView>
+			android:id="@+id/layout_top"
+			style="@style/WizardMediumText"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/enter_serial_welcome_title"
+			android:layout_centerHorizontal="true"
+			android:layout_marginBottom="5dp"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"
+			android:gravity="center_horizontal"
+			android:textColor="?attr/textColorPrimary"
+			android:textColorLink="@color/wizard_color_accent" />
 
 		<LinearLayout android:id="@+id/unlock_layout"
 					  android:layout_width="match_parent"

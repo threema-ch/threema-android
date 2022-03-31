@@ -46,7 +46,6 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -85,6 +84,7 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -95,7 +95,7 @@ import ch.threema.storage.models.data.MessageContentsType;
 import static ch.threema.app.fragments.ComposeMessageFragment.SCROLLBUTTON_VIEW_TIMEOUT;
 
 public class MediaGalleryActivity extends ThreemaToolbarActivity implements AdapterView.OnItemClickListener, ActionBar.OnNavigationListener, GenericAlertDialog.DialogClickListener, FastScrollGridView.ScrollListener {
-	private static final Logger logger = LoggerFactory.getLogger(MediaGalleryActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaGalleryActivity");
 
 	private ThumbnailCache<?> thumbnailCache = null;
 	private MediaGalleryAdapter mediaGalleryAdapter;
@@ -512,7 +512,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 					final Date createdAt = messageModel.getCreatedAt();
 					if (createdAt != null) {
 						dateView.post(() -> {
-							dateTextView.setText(LocaleUtil.formatDateRelative(this, createdAt.getTime()));
+							dateTextView.setText(LocaleUtil.formatDateRelative(createdAt.getTime()));
 						});
 					}
 				}

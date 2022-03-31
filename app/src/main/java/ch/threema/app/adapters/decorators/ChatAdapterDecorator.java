@@ -33,7 +33,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,13 +60,14 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageType;
 
 abstract public class ChatAdapterDecorator extends AdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(ChatAdapterDecorator.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ChatAdapterDecorator");
 
 	public interface OnClickRetry {
 		void onClick(AbstractMessageModel messageModel);
@@ -100,13 +100,13 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	protected ActionModeStatus actionModeStatus = null;
 
 	private CharSequence datePrefix = "";
-	protected String dateContentDescriptionPreifx = "";
+	protected String dateContentDescriptionPrefix = "";
 
 	private int groupId = 0;
 	protected Map<String, Integer> identityColors = null;
 	protected String filterString;
 
-	public class ContactCache {
+	public static class ContactCache {
 		public String identity;
 		public String displayName;
 		public Bitmap avatar;
@@ -174,47 +174,47 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		}
 
 		public Fragment getFragment() {
-			return this.fragment;
+			return fragment;
 		}
 
 		public int getThumbnailWidth() {
-			return this.thumbnailWidth;
+			return thumbnailWidth;
 		}
 
 		public ThumbnailCache getThumbnailCache() {
-			return this.thumbnailCache;
+			return thumbnailCache;
 		}
 
 		public MessagePlayerService getMessagePlayerService() {
-			return this.messagePlayerService;
+			return messagePlayerService;
 		}
 
 		public FileService getFileService() {
-			return this.fileService;
+			return fileService;
 		}
 
 		public UserService getUserService() {
-			return this.userService;
+			return userService;
 		}
 
 		public ContactService getContactService() {
-			return this.contactService;
+			return contactService;
 		}
 
 		public MessageService getMessageService() {
-			return this.messageService;
+			return messageService;
 		}
 
 		public PreferenceService getPreferenceService() {
-			return this.preferenceService;
+			return preferenceService;
 		}
 
 		public DownloadService getDownloadService() {
-			return this.downloadService;
+			return downloadService;
 		}
 
 		public LicenseService getLicenseService() {
-			return this.licenseService;
+			return licenseService;
 		}
 
 		public String getMyIdentity() {
@@ -222,19 +222,19 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		}
 
 		public BallotService getBallotService() {
-			return this.ballotService;
+			return ballotService;
 		}
 
 		public Map<String, ContactCache> getContactCache() {
-			return this.contacts;
+			return contacts;
 		}
 
 		public MessageReceiver getMessageReceiver() {
-			return this.messageReceiver;
+			return messageReceiver;
 		}
 
 		public void setThumbnailWidth(int preferredThumbnailWidth) {
-			this.thumbnailWidth = preferredThumbnailWidth;
+			thumbnailWidth = preferredThumbnailWidth;
 		}
 
 		public Drawable getStopwatchIcon() {
@@ -260,9 +260,9 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		super(context);
 		this.messageModel = messageModel;
 		this.helper = helper;
-		this.stateBitmapUtil = StateBitmapUtil.getInstance();
+		stateBitmapUtil = StateBitmapUtil.getInstance();
 		try {
-			this.actionModeStatus = (ActionModeStatus) helper.getFragment();
+			actionModeStatus = (ActionModeStatus) helper.getFragment();
 		} catch (ClassCastException e) {
 			throw new ClassCastException(context.toString()
 				+ " must implement ActionModeStatus");
@@ -274,74 +274,67 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		this.identityColors = identityColors;
 	}
 
-	public ChatAdapterDecorator setOnClickRetry(OnClickRetry onClickRetry) {
+	public void setOnClickRetry(OnClickRetry onClickRetry) {
 		this.onClickRetry = onClickRetry;
-		return this;
 	}
 
-	public ChatAdapterDecorator setOnClickElement(OnClickElement onClickElement) {
+	public void setOnClickElement(OnClickElement onClickElement) {
 		this.onClickElement = onClickElement;
-		return this;
 	}
 
-	public ChatAdapterDecorator setOnLongClickElement(OnLongClickElement onClickElement) {
-		this.onLongClickElement = onClickElement;
-		return this;
+	public void setOnLongClickElement(OnLongClickElement onClickElement) {
+		onLongClickElement = onClickElement;
 	}
 
-	public ChatAdapterDecorator setOnTouchElement(OnTouchElement onTouchElement) {
+	public void setOnTouchElement(OnTouchElement onTouchElement) {
 		this.onTouchElement = onTouchElement;
-		return this;
 	}
 
-	final public ChatAdapterDecorator setFilter(String filterString) {
+	final public void setFilter(String filterString) {
 		this.filterString = filterString;
-		return this;
 	}
 
 	@Override
 	final protected void configure(final AbstractListItemHolder h, int position) {
-		if (h == null || !(h instanceof ComposeMessageHolder) || h.position != position) {
+		if (!(h instanceof ComposeMessageHolder) || h.position != position) {
 			return;
 		}
 
-		boolean isUserMessage = !this.getMessageModel().isStatusMessage()
-			&& this.getMessageModel().getType() != MessageType.STATUS;
+		boolean isUserMessage = !getMessageModel().isStatusMessage()
+			&& getMessageModel().getType() != MessageType.STATUS;
 
 		String identity = (
 			messageModel.isOutbox() ?
-				this.helper.getMyIdentity() :
+				helper.getMyIdentity() :
 				messageModel.getIdentity());
 
 		final ComposeMessageHolder holder = (ComposeMessageHolder) h;
 
 		//configure the chat message
-		this.configureChatMessage(holder, position);
+		configureChatMessage(holder, position);
 
 		if (isUserMessage) {
 			if (!messageModel.isOutbox() && groupId > 0) {
-				ContactCache c = null;
 
-				c = this.helper.getContactCache().get(identity);
-				ContactModel contactModel = null;
+				ContactCache c = helper.getContactCache().get(identity);
 				if (c == null) {
-					contactModel = this.helper.getContactService().getByIdentity(messageModel.getIdentity());
+					ContactModel contactModel = helper.getContactService().getByIdentity(messageModel.getIdentity());
 					c = new ContactCache();
 					c.displayName = NameUtil.getDisplayNameOrNickname(contactModel, true);
-					c.avatar = this.helper.getContactService().getAvatar(contactModel, false);
+					c.avatar = helper.getContactService().getAvatar(contactModel, false);
 
 					c.contactModel = contactModel;
-					this.helper.getContactCache().put(identity, c);
+					helper.getContactCache().put(identity, c);
 				}
 
 				if (holder.senderView != null) {
 					holder.senderView.setVisibility(View.VISIBLE);
 					holder.senderName.setText(c.displayName);
 
-					if (this.identityColors != null && this.identityColors.containsKey(identity)) {
-						holder.senderName.setTextColor(this.identityColors.get(identity));
+					if (identityColors != null && identityColors.containsKey(identity)) {
+						holder.senderName.setTextColor(identityColors.get(identity));
 					} else {
-						holder.senderName.setTextColor(this.helper.regularColor);
+						holder.senderName.setTextColor(helper.regularColor);
 					}
 				}
 
@@ -349,7 +342,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 					holder.avatarView.setImageBitmap(c.avatar);
 					holder.avatarView.setVisibility(View.VISIBLE);
 					if (c.contactModel != null) {
-						holder.avatarView.setBadgeVisible(this.helper.getContactService().showBadge(c.contactModel));
+						holder.avatarView.setBadgeVisible(helper.getContactService().showBadge(c.contactModel));
 					}
 				}
 			} else {
@@ -361,21 +354,21 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 				}
 			}
 
-			CharSequence s = MessageUtil.getDisplayDate(this.getContext(), messageModel, true);
+			CharSequence s = MessageUtil.getDisplayDate(getContext(), messageModel, true);
 			if (s == null) {
 				s = "";
 			}
 
 			CharSequence contentDescription;
 
-			if (!TestUtil.empty(this.datePrefix)) {
-				contentDescription = this.dateContentDescriptionPreifx + ". "
+			if (!TestUtil.empty(datePrefix)) {
+				contentDescription = dateContentDescriptionPrefix + ". "
 						+ getContext().getString(R.string.state_dialog_modified) + ": "
 						+ s;
 				if (messageModel.isOutbox()) {
-					s = TextUtils.concat(this.datePrefix, " | " + s);
+					s = TextUtils.concat(datePrefix, " | " + s);
 				} else {
-					s = TextUtils.concat(s + " | ", this.datePrefix);
+					s = TextUtils.concat(s + " | ", datePrefix);
 				}
 			} else {
 				contentDescription = s;
@@ -390,7 +383,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	}
 
 	public Spannable highlightMatches(CharSequence fullText, String filterText) {
-		return TextUtil.highlightMatches(this.getContext(), fullText, filterText, true, false);
+		return TextUtil.highlightMatches(getContext(), fullText, filterText, true, false);
 	}
 
 	CharSequence formatTextString(@Nullable String string, String filterString) {
@@ -410,83 +403,76 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 	abstract protected void configureChatMessage(final ComposeMessageHolder holder, final int position);
 
-	protected ChatAdapterDecorator setDatePrefix(String prefix, float textSize) {
+	protected void setDatePrefix(String prefix, float textSize) {
 		if (!TestUtil.empty(prefix) && textSize > 0) {
-			Drawable icon = this.helper.getStopwatchIcon();
+			Drawable icon = helper.getStopwatchIcon();
 			icon.setBounds(0, 0, (int) (textSize * 0.8), (int) (textSize * 0.8));
 
 			SpannableStringBuilder spannableString = new SpannableStringBuilder("  " + prefix);
 			spannableString.setSpan(new ImageSpan(icon, ImageSpan.ALIGN_BASELINE),
 				0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-			this.datePrefix = spannableString;
+			datePrefix = spannableString;
 		} else {
-			this.datePrefix = prefix;
+			datePrefix = prefix;
 		}
-		return this;
 	}
 
 	protected MessageService getMessageService() {
-		return this.helper.getMessageService();
+		return helper.getMessageService();
 	}
 
 	protected MessagePlayerService getMessagePlayerService() {
-		return this.helper.getMessagePlayerService();
+		return helper.getMessagePlayerService();
 	}
 
 	protected FileService getFileService() {
-		return this.helper.getFileService();
+		return helper.getFileService();
 	}
 
 	protected int getThumbnailWidth() {
-		return this.helper.getThumbnailWidth();
+		return helper.getThumbnailWidth();
 	}
 
 	protected ThumbnailCache getThumbnailCache() {
-		return this.helper.getThumbnailCache();
+		return helper.getThumbnailCache();
 	}
 
 	protected AbstractMessageModel getMessageModel() {
-		return this.messageModel;
+		return messageModel;
 	}
 
 	protected PreferenceService getPreferenceService() {
-		return this.helper.getPreferenceService();
+		return helper.getPreferenceService();
 	}
 
 	protected LicenseService getLicenseService() {
-		return this.helper.getLicenseService();
+		return helper.getLicenseService();
 	}
 
 	protected UserService getUserService() {
-		return this.helper.getUserService();
+		return helper.getUserService();
 	}
 
 	protected void setOnClickListener(final View.OnClickListener onViewClickListener, View view) {
 		if (view != null) {
-			view.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					if (onViewClickListener != null && !actionModeStatus.getActionModeEnabled()) {
-						// do not propagate click if actionMode (selection mode) is enabled in parent
-						onViewClickListener.onClick(view);
-					}
-					if (onClickElement != null) {
-						//propagate event to parents
-						onClickElement.onClick(getMessageModel());
-					}
+			view.setOnClickListener(v -> {
+				if (onViewClickListener != null && !actionModeStatus.getActionModeEnabled()) {
+					// do not propagate click if actionMode (selection mode) is enabled in parent
+					onViewClickListener.onClick(v);
+				}
+				if (onClickElement != null) {
+					//propagate event to parents
+					onClickElement.onClick(getMessageModel());
 				}
 			});
 
 //			propagate long click listener
-			view.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					if (onLongClickElement != null) {
-						onLongClickElement.onLongClick(getMessageModel());
-					}
-					return false;
+			view.setOnLongClickListener(v -> {
+				if (onLongClickElement != null) {
+					onLongClickElement.onLongClick(getMessageModel());
 				}
+				return false;
 			});
 
 //			propagate touch listener
@@ -506,7 +492,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		if (holder.messageBlockView.getBackground() == null) {
 			@DrawableRes int drawableRes;
 
-			if (this.getMessageModel().isOutbox() && !(this.getMessageModel() instanceof DistributionListMessageModel)) {
+			if (getMessageModel().isOutbox() && !(getMessageModel() instanceof DistributionListMessageModel)) {
 				// outgoing
 				drawableRes = R.drawable.bubble_send_selector;
 			} else {

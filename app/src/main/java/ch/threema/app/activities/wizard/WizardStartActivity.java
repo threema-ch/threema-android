@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
@@ -37,9 +36,10 @@ import ch.threema.app.R;
 import ch.threema.app.ui.AnimationDrawableCallback;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WizardStartActivity extends WizardBackgroundActivity {
-	private static final Logger logger = LoggerFactory.getLogger(WizardStartActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardStartActivity");
 
 	boolean doFinish = false;
 

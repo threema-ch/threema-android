@@ -24,17 +24,17 @@ package ch.threema.app.services.systemupdate;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * add contact restore state field to contact models
  */
 public class SystemUpdateToVersion56 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion56.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion56");
 
 	private final SQLiteDatabase sqLiteDatabase;
 

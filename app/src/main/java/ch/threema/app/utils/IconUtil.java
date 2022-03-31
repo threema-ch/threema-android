@@ -221,7 +221,7 @@ public class IconUtil {
 		add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
 	}
 
-	public static int getMimeIcon(String mimeType) {
+	public static int getMimeIcon(@Nullable String mimeType) {
 		if (mimeType == null) {
 			return R.drawable.ic_doc_generic_am;
 		}

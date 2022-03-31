@@ -27,7 +27,6 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,6 +39,7 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
@@ -98,7 +98,7 @@ import ch.threema.protobuf.csp.e2e.MessageMetadata;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MessageCoder {
-	private static final Logger logger = LoggerFactory.getLogger(MessageCoder.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCoder");
 
 	private final @NonNull ContactStore contactStore;
 	private final @NonNull IdentityStoreInterface identityStore;
@@ -568,7 +568,6 @@ public class MessageCoder {
 				groupBallotCreateMessage.setBallotCreator(boxmsg.getFromIdentity());
 				groupBallotCreateMessage.setBallotId(new BallotId(data, pos));
 				pos += ProtocolDefines.BALLOT_ID_LEN;
-
 				groupBallotCreateMessage.setData(BallotData.parse(new String(data, pos, realDataLength - pos, UTF_8)));
 				msg = groupBallotCreateMessage;
 				break;

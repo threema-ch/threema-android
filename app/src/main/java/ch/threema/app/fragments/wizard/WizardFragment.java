@@ -26,28 +26,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
+import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public abstract class WizardFragment extends Fragment {
-	private static final Logger logger = LoggerFactory.getLogger(WizardFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment");
+
+	private static final String DIALOG_TAG_ADDITIONAL_INFO = "ai";
 
 	protected PreferenceService preferenceService;
 	protected UserService userService;
@@ -58,46 +59,38 @@ public abstract class WizardFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		if (!requiredInstances()) {
-			getActivity().finish();
+			requireActivity().finish();
 		}
 		super.onCreate(savedInstanceState);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+	public View onCreateView(
+		LayoutInflater inflater,
+		ViewGroup container,
+		Bundle savedInstanceState
+	) {
 		View rootView = inflater.inflate(R.layout.fragment_wizard, container, false);
 
 		contentViewStub = rootView.findViewById(R.id.stub_content);
 		appBarLayout = rootView.findViewById(R.id.appbar_layout);
 
-		LinearLayout moreInfoTabLayout = rootView.findViewById(R.id.more_info_tab);
-		moreInfoTabLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				appBarLayout.setExpanded(appBarLayout.getTop() != 0, false);
-			}
-		});
-
-		Button infoDoneButton = rootView.findViewById(R.id.wizard_info_done);
-		infoDoneButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				appBarLayout.setExpanded(true, false);
-			}
-		});
-
-		TextView infoText = rootView.findViewById(R.id.wizard_more_info_text);
-		int infoStringRes = getAdditionalInfoText();
-		if (infoStringRes != 0) {
-			infoText.setText(getAdditionalInfoText());
-		}
+		ImageView infoIcon = rootView.findViewById(R.id.wizard_icon_info);
+		infoIcon.setOnClickListener(v -> showAdditionalInfo());
 
 		return rootView;
 	}
 
+	private void showAdditionalInfo() {
+		int infoStringRes = getAdditionalInfoText();
+		if (infoStringRes != 0) {
+			WizardDialog wizardDialog = WizardDialog.newInstance(infoStringRes, R.string.ok);
+			wizardDialog.show(getParentFragmentManager(), DIALOG_TAG_ADDITIONAL_INFO);
+		}
+	}
+
 	private boolean requiredInstances() {
-		if(!this.checkInstances()) {
+		if (!this.checkInstances()) {
 			this.instantiate();
 		}
 		return this.checkInstances();
@@ -105,9 +98,9 @@ public abstract class WizardFragment extends Fragment {
 
 	private boolean checkInstances() {
 		return TestUtil.required(
-				this.preferenceService,
-				this.userService,
-				this.localeService
+			this.preferenceService,
+			this.userService,
+			this.localeService
 		);
 	}
 
@@ -125,7 +118,8 @@ public abstract class WizardFragment extends Fragment {
 	}
 
 	protected void setPage(int page) {
-		((WizardBaseActivity) getActivity()).setPage(page);
+		((WizardBaseActivity) requireActivity()).setPage(page);
 	}
+
 	protected abstract @StringRes int getAdditionalInfoText();
 }

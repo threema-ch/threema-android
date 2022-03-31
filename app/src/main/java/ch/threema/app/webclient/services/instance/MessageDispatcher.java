@@ -51,14 +51,14 @@ import ch.threema.domain.protocol.csp.connection.MessageQueue;
  */
 @WorkerThread
 public class MessageDispatcher {
-	@NonNull private final static String TAG = "WebClientMessageDispatcher";
-
 	@NonNull protected final SessionInstanceService service;
 	@NonNull protected final Logger logger;
 	@NonNull protected final MessageQueue messageQueue;
 	@NonNull protected final LifetimeService lifetimeService;
 	@NonNull protected final String type;
 	@NonNull protected final Map<String, MessageReceiver> receivers = new ConcurrentHashMap<>();
+
+	private static final @NonNull String LIFETIME_SERVICE_TAG = "wcMessageDispatcher";
 
 	@AnyThread
 	public MessageDispatcher(
@@ -99,8 +99,8 @@ public class MessageDispatcher {
 		if (receiver.maybeNeedsConnection()) {
 			if (this.messageQueue.getQueueSize() > 0) {
 				int timeoutMs = Math.min(30000, 5000 + 100 * this.messageQueue.getQueueSize());
-				this.lifetimeService.acquireConnection(TAG);
-				this.lifetimeService.releaseConnectionLinger(TAG, timeoutMs);
+				this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+				this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, timeoutMs);
 			}
 		}
 	}

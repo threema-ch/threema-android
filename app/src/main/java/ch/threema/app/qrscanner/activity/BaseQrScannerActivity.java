@@ -27,7 +27,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -49,6 +48,7 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
+import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.qrscanner.dialog.GenericScanResultDialog;
@@ -56,7 +56,6 @@ import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.ShareUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.services.QRCodeParser;
 import ch.threema.app.webclient.services.QRCodeParserImpl;
 import ch.threema.base.utils.Base64;
@@ -93,17 +92,13 @@ public class BaseQrScannerActivity extends AppCompatActivity implements
 	}
 
 	private void launchScanner() {
-		Intent intent = new Intent(this, CaptureActivity.class);
-		if (!TestUtil.empty(getIntent().getStringExtra(CaptureActivity.KEY_NEED_SCAN_HINT_TEXT))) {
-			intent.putExtra(CaptureActivity.KEY_NEED_SCAN_HINT_TEXT, getIntent().getStringExtra(CaptureActivity.KEY_NEED_SCAN_HINT_TEXT));
-		}
+		Intent intent = new Intent(this, QRScannerActivity.class);
+		intent.putExtras(getIntent());
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		// lock orientation before launching scanner
 		scanResultLauncher.launch(intent);
 	}
 
 	public void handleActivityResult(Intent intent) {
-		ConfigUtils.setRequestedOrientation(this, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
 		if (intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_QRCODE_TYPE_OK, false)) {
 			final String resultRaw = intent.getStringExtra(ThreemaApplication.INTENT_DATA_QRCODE);

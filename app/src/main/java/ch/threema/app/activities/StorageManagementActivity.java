@@ -39,7 +39,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,12 +60,13 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageType;
 
 public class StorageManagementActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(StorageManagementActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("StorageManagementActivity");
 
 	private final static String DELETE_CONFIRM_TAG = "delconf";
 	private final static String DELETE_PROGRESS_TAG = "delprog";

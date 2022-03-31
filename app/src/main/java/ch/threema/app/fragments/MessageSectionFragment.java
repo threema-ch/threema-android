@@ -51,7 +51,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -135,6 +134,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -156,7 +156,7 @@ public class MessageSectionFragment extends MainFragment
 			CancelableGenericProgressDialog.ProgressDialogClickListener,
 			MessageListAdapter.ItemClickListener,
 			SelectorDialog.SelectorDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(MessageSectionFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageSectionFragment");
 
 	private static final int PERMISSION_REQUEST_SHARE_THREAD = 1;
 	private static final int ID_RETURN_FROM_SECURITY_SETTINGS = 33211;
@@ -167,8 +167,8 @@ public class MessageSectionFragment extends MainFragment
 	private static final String DIALOG_TAG_REALLY_HIDE_THREAD = "lockC";
 	private static final String DIALOG_TAG_HIDE_THREAD_EXPLAIN = "hideEx";
 	private static final String DIALOG_TAG_SELECT_DELETE_ACTION = "sel";
-	private static final String DIALOG_TAG_REALLY_LEAVE_GROUP = "rlg" ;
-	private static final String DIALOG_TAG_REALLY_DELETE_MY_GROUP = "rdmg" ;
+	private static final String DIALOG_TAG_REALLY_LEAVE_GROUP = "rlg";
+	private static final String DIALOG_TAG_REALLY_DELETE_MY_GROUP = "rdmg";
 	private static final String DIALOG_TAG_REALLY_DELETE_GROUP = "rdgcc";
 	private static final String DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST = "rddl";
 	private static final String DIALOG_TAG_REALLY_EMPTY_CHAT = "rdec";
@@ -257,7 +257,7 @@ public class MessageSectionFragment extends MainFragment
 		@Override
 		public void onNew(final ConversationModel conversationModel) {
 			logger.debug("on new conversation");
-			if(messageListAdapter != null && recyclerView != null) {
+			if (messageListAdapter != null && recyclerView != null) {
 				updateList(0, null, null);
 			}
 		}
@@ -265,7 +265,7 @@ public class MessageSectionFragment extends MainFragment
 		@Override
 		public void onModified(final ConversationModel modifiedConversationModel, final Integer oldPosition) {
 			logger.debug("on modified conversation. old position = {}", oldPosition);
-			if(messageListAdapter != null && recyclerView != null) {
+			if (messageListAdapter != null && recyclerView != null) {
 				//scroll if position changed (to top)
 				List<ConversationModel> l = new ArrayList<>();
 				l.add(modifiedConversationModel);
@@ -279,7 +279,7 @@ public class MessageSectionFragment extends MainFragment
 
 		@Override
 		public void onRemoved(final ConversationModel conversationModel) {
-			if(messageListAdapter != null) {
+			if (messageListAdapter != null) {
 				updateList();
 			}
 		}
@@ -287,15 +287,15 @@ public class MessageSectionFragment extends MainFragment
 		@Override
 		public void onModifiedAll() {
 			logger.debug("on modified all");
-			if(messageListAdapter != null && recyclerView != null) {
+			if (messageListAdapter != null && recyclerView != null) {
 				updateList(0, null, new Runnable() {
 					@Override
 					public void run() {
 						RuntimeUtil.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-									messageListAdapter.notifyDataSetChanged();
-								}
+								messageListAdapter.notifyDataSetChanged();
+							}
 						});
 					}
 				});
@@ -456,7 +456,7 @@ public class MessageSectionFragment extends MainFragment
 			//show loading first
 			ViewUtil.show(loadingView, true);
 
-			updateList(null,null, new Runnable() {
+			updateList(null, null, new Runnable() {
 				@Override
 				public void run() {
 					//hide loading
@@ -832,7 +832,7 @@ public class MessageSectionFragment extends MainFragment
 				public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 					// disable swiping and dragging for footer views
 					if (viewHolder.getItemViewType() == MessageListAdapter.TYPE_FOOTER) {
-						return makeMovementFlags(0 , 0);
+						return makeMovementFlags(0, 0);
 					}
 					return super.getMovementFlags(recyclerView, viewHolder);
 				}
@@ -988,7 +988,7 @@ public class MessageSectionFragment extends MainFragment
 			recyclerView.setEmptyView(emptyView);
 			recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 				@Override
-				public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy){
+				public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
 					super.onScrolled(recyclerView, dx, dy);
 
 					if (linearLayoutManager.findFirstVisibleItemPosition() == 0) {
@@ -1019,7 +1019,7 @@ public class MessageSectionFragment extends MainFragment
 
 			//instantiate fragment
 			//
-			if(!this.requiredInstances()) {
+			if (!this.requiredInstances()) {
 				logger.error("could not instantiate required objects");
 			} else {
 				this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
@@ -1202,7 +1202,7 @@ public class MessageSectionFragment extends MainFragment
 			labels.add(new SelectorDialogItem(getString(R.string.mark_read), R.drawable.ic_outline_visibility));
 			tags.add(TAG_MARK_READ);
 		} else {
-			labels.add(new SelectorDialogItem(getString(R.string.mark_unread), R.drawable.ic_outline_visibility_off ));
+			labels.add(new SelectorDialogItem(getString(R.string.mark_unread), R.drawable.ic_outline_visibility_off));
 			tags.add(TAG_MARK_UNREAD);
 		}
 
@@ -1367,15 +1367,14 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onYes(String tag, Object data) {
-		switch(tag) {
+		switch (tag) {
 			case DIALOG_TAG_REALLY_HIDE_THREAD:
 				reallyHideChat((ConversationModel) data);
 				break;
 			case DIALOG_TAG_HIDE_THREAD_EXPLAIN:
 				selectedConversation = (ConversationModel) data;
 				Intent intent = new Intent(activity, SettingsActivity.class);
-				intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsSecurityFragment.class.getName());
-				intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+				intent.putExtra(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT, true);
 				startActivityForResult(intent, ID_RETURN_FROM_SECURITY_SETTINGS);
 				break;
 			case DIALOG_TAG_REALLY_DELETE_MY_GROUP:
@@ -1430,7 +1429,7 @@ public class MessageSectionFragment extends MainFragment
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 					prepareShareChat(selectedConversation);
 				} else if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-					ConfigUtils.showPermissionRationale(getContext(), getView(),  R.string.permission_storage_required);
+					ConfigUtils.showPermissionRationale(getContext(), getView(), R.string.permission_storage_required);
 				}
 				break;
 		}
@@ -1595,15 +1594,14 @@ public class MessageSectionFragment extends MainFragment
 	}
 
 	private void fireReceiverUpdate(final MessageReceiver receiver) {
-		if(receiver instanceof GroupMessageReceiver) {
+		if (receiver instanceof GroupMessageReceiver) {
 			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
 				@Override
 				public void handle(GroupListener listener) {
 					listener.onUpdate(((GroupMessageReceiver) receiver).getGroup());
 				}
 			});
-		}
-		else if(receiver instanceof ContactMessageReceiver) {
+		} else if (receiver instanceof ContactMessageReceiver) {
 			ListenerManager.contactListeners.handle(new ListenerManager.HandleListener<ContactListener>() {
 				@Override
 				public void handle(ContactListener listener) {
@@ -1617,7 +1615,7 @@ public class MessageSectionFragment extends MainFragment
 	@WorkerThread
 	private void fireSecretReceiverUpdate() {
 		//fire a update for every secret receiver (to update webclient data)
-		for(ConversationModel c: Functional.filter(this.conversationService.getAll(false, null), new IPredicateNonNull<ConversationModel>() {
+		for (ConversationModel c : Functional.filter(this.conversationService.getAll(false, null), new IPredicateNonNull<ConversationModel>() {
 			@Override
 			public boolean apply(ConversationModel conversationModel) {
 				return conversationModel != null && hiddenChatsListService.has(conversationModel.getReceiver().getUniqueIdString());

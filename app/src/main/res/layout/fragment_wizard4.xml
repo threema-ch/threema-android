@@ -2,23 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:paddingTop="@dimen/wizard_contents_padding"
 				android:paddingBottom="@dimen/wizard_contents_padding">
-
-	<TextView
-			style="@style/WizardTitleText"
-			android:id="@+id/wizard_welcome"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_find_friends"
-			android:layout_marginTop="8dp"/>
 
 	<TextView
 			style="@style/WizardSubTitleText"
 			android:id="@+id/scooter"
-			android:layout_below="@id/wizard_welcome"
+			android:layout_alignParentTop="true"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"

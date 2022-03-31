@@ -25,7 +25,6 @@ package ch.threema.app.services.ballot;
 import android.util.SparseArray;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -54,11 +53,12 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
@@ -81,7 +81,7 @@ import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 
 public class BallotServiceImpl implements BallotService {
-	private static final Logger logger = LoggerFactory.getLogger(BallotServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotServiceImpl");
 
 	private static final int REQUIRED_CHOICE_COUNT = 2;
 
@@ -231,6 +231,7 @@ public class BallotServiceImpl implements BallotService {
 			ballotModel.setAssessment(assessment);
 			ballotModel.setType(type);
 			ballotModel.setChoiceType(choiceType);
+			ballotModel.setDisplayType(BallotModel.DisplayType.LIST_MODE); // default display type for ballots created on mobile client.
 			ballotModel.setLastViewedAt(new Date());
 
 			this.databaseServiceNew.getBallotModelFactory().create(
@@ -353,10 +354,14 @@ public class BallotServiceImpl implements BallotService {
 		BallotModel existingModel = this.get(createMessage.getBallotId().toString(), createMessage.getBallotCreator());
 
 		if (existingModel != null) {
+			if (data.getDisplayType().ordinal() != existingModel.getDisplayType().ordinal()) {
+				throw new BadMessageException("Ballot display mode not allowed to change. Discarding message", true);
+			}
 			if (data.getState() == BallotData.State.CLOSED) {
 				ballotModel = existingModel;
 				toState = BallotModel.State.CLOSED;
-			} else {
+			}
+			else {
 				throw new BadMessageException("Ballot with same ID already exists. Discarding message.", true);
 			}
 		} else {
@@ -399,6 +404,17 @@ public class BallotServiceImpl implements BallotService {
 				break;
 		}
 
+		switch (data.getDisplayType()) {
+			case SUMMARY_MODE:
+				ballotModel.setDisplayType(BallotModel.DisplayType.SUMMARY_MODE);
+				break;
+			case LIST_MODE:
+			default:
+				ballotModel.setDisplayType(BallotModel.DisplayType.LIST_MODE);
+				break;
+
+		}
+
 		ballotModel.setState(toState);
 
 		if (toState == BallotModel.State.OPEN) {
@@ -438,22 +454,26 @@ public class BallotServiceImpl implements BallotService {
 			throw new ThreemaException("invalid");
 		}
 
-		if (toState == BallotModel.State.CLOSED) {
-			//remove all votes
+		if (toState == BallotModel.State.CLOSED && ballotModel.getDisplayType() == BallotModel.DisplayType.LIST_MODE) {
+			//first remove all previously known votes if result should be shown in list mode to ensure a common result for all participants
 			this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotId(
 					ballotModel.getId()
 			);
 		}
 
 		//create choices of ballot
-		for(BallotDataChoice apiChoice: data.getChoiceList()) {
+		for (BallotDataChoice apiChoice: data.getChoiceList()) {
 			//check if choice already exist
-
 			BallotChoiceModel ballotChoiceModel = this.getChoiceByApiId(ballotModel, apiChoice.getId());
 			if(ballotChoiceModel == null) {
 				ballotChoiceModel = new BallotChoiceModel();
 				ballotChoiceModel.setBallotId(ballotModel.getId());
 				ballotChoiceModel.setApiBallotChoiceId(apiChoice.getId());
+			}
+
+			// save returned total vote count if ballot is in summary mode (case broadcast poll)
+			if (ballotModel.getDisplayType() == BallotModel.DisplayType.SUMMARY_MODE) {
+				ballotChoiceModel.setVoteCount(apiChoice.getTotalVotes());
 			}
 
 			ballotChoiceModel.setName(apiChoice.getName());
@@ -469,22 +489,24 @@ public class BallotServiceImpl implements BallotService {
 					ballotChoiceModel
 			);
 
-			//check if a list of voters set
-			int participantPos = 0;
-			for(String p: data.getParticipants()) {
-				BallotVoteModel voteModel = new BallotVoteModel();
-				voteModel.setBallotId(ballotModel.getId());
-				voteModel.setBallotChoiceId(ballotChoiceModel.getId());
-				voteModel.setVotingIdentity(p);
-				voteModel.setChoice(apiChoice.getResult(participantPos));
-				voteModel.setModifiedAt(new Date());
-				voteModel.setCreatedAt(new Date());
+			//save individual votes received in case result should be shown in list mode for each participant (case mobile client user poll)
+			if (ballotModel.getDisplayType() == BallotModel.DisplayType.LIST_MODE && !data.getParticipants().isEmpty()) {
+				int participantPos = 0;
+				for(String p: data.getParticipants()) {
+					BallotVoteModel voteModel = new BallotVoteModel();
+					voteModel.setBallotId(ballotModel.getId());
+					voteModel.setBallotChoiceId(ballotChoiceModel.getId());
+					voteModel.setVotingIdentity(p);
+					voteModel.setChoice(apiChoice.getResult(participantPos));
+					voteModel.setModifiedAt(new Date());
+					voteModel.setCreatedAt(new Date());
 
-				this.databaseServiceNew.getBallotVoteModelFactory().create(
+					this.databaseServiceNew.getBallotVoteModelFactory().create(
 						voteModel
-				);
+					);
 
-				participantPos++;
+					participantPos++;
+				}
 			}
 		}
 
@@ -627,7 +649,6 @@ public class BallotServiceImpl implements BallotService {
 	@NonNull
 	public List<String> getVotedParticipants(Integer ballotModelId) {
 		List<String> identities = new ArrayList<>();
-
 
 		if(ballotModelId !=null) {
 			List<BallotVoteModel> ballotVotes = this.getBallotVotes(ballotModelId);
@@ -833,36 +854,39 @@ public class BallotServiceImpl implements BallotService {
 				ballotData.setState(BallotData.State.OPEN);
 		}
 
-		HashMap<String, Integer> participantPositions = new HashMap<>();
+		switch (ballotModel.getDisplayType()) {
+			case SUMMARY_MODE:
+				ballotData.setDisplayType(BallotData.DisplayType.SUMMARY_MODE);
+				break;
+			case LIST_MODE:
+			default:
+				ballotData.setDisplayType(BallotData.DisplayType.LIST_MODE);
+				break;
+		}
+
+		HashMap<String, Integer> votersPositions = new HashMap<>();
 		List<BallotVoteModel> voteModels = null;
-		int participantCount = 0;
+		int votersCount = 0;
 		if(isClosing || receivingIdentity != null) {
-			// load a list of participants
-			String[] participants = null;
+			// load a list of voters
+			String[] voters = this.getVotedParticipants(ballotModel.getId()).toArray(new String[0]);
 
-			if (isClosing) {
-				participants = this.getParticipants(ballotModel.getId());
-			} else {
-				List<String> votedParticipants = this.getVotedParticipants(ballotModel.getId());
-				participants = votedParticipants.toArray(new String[0]);
-			}
-
-			for (String s : participants) {
+			for (String s : voters) {
 				ballotData.addParticipant(s);
-				participantPositions.put(s, participantCount);
-				participantCount++;
+				votersPositions.put(s, votersCount);
+				votersCount++;
 			}
 
 			voteModels = this.getBallotVotes(ballotModel.getId());
 		}
 		// if closing, add result!
 		for(final BallotChoiceModel c: choices) {
-			BallotDataChoice choice = new BallotDataChoice(participantCount);
+			BallotDataChoice choice = new BallotDataChoice(votersCount);
 			choice.setId(c.getApiBallotChoiceId());
 			choice.setName(c.getName());
 			choice.setOrder(c.getOrder());
 
-			if((isClosing || receivingIdentity != null) && TestUtil.required(voteModels, participantPositions)) {
+			if((isClosing || receivingIdentity != null) && TestUtil.required(voteModels, votersPositions)) {
 
 				for(BallotVoteModel v: Functional.filter(voteModels, new IPredicateNonNull<BallotVoteModel>() {
 					@Override
@@ -870,7 +894,7 @@ public class BallotServiceImpl implements BallotService {
 						return type.getBallotChoiceId() == c.getId();
 					}
 				})){
-					int pos = participantPositions.get(v.getVotingIdentity());
+					int pos = votersPositions.get(v.getVotingIdentity());
 					if(pos >= 0) {
 						choice.addResult(pos, v.getChoice());
 					}
@@ -1477,10 +1501,5 @@ public class BallotServiceImpl implements BallotService {
 				}
 			});
 		}
-	}
-
-	@Override
-	public boolean isComplete(BallotModel model) {
-		return (getParticipants(model.getId()).length == getVotedParticipants(model.getId()).size());
 	}
 }

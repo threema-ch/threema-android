@@ -25,12 +25,12 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
+import ch.threema.base.utils.LoggingUtil;
 
 public class MentionClickableSpan extends ClickableSpan {
-	private static final Logger logger = LoggerFactory.getLogger(MentionClickableSpan.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MentionClickableSpan");
 	private String text;
 
 	public MentionClickableSpan(String text){

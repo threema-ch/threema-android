@@ -26,7 +26,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -48,13 +47,15 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.ProgressListener;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
 
 public abstract class MessagePlayer {
-	private static final Logger logger = LoggerFactory.getLogger(MessagePlayer.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayer");
+
 	public static final int SOURCE_UNDEFINED = 0;
 	public static final int SOURCE_UI_TOGGLE = 1;
 	public static final int SOURCE_LIFECYCLE = 2;

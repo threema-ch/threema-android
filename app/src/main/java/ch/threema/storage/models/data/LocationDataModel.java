@@ -27,15 +27,14 @@ import android.util.JsonToken;
 import android.util.JsonWriter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
 public class LocationDataModel implements MessageDataInterface {
-	private static final Logger logger = LoggerFactory.getLogger(LocationDataModel.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationDataModel");
 
 	private double latitude;
 	private double longitude;

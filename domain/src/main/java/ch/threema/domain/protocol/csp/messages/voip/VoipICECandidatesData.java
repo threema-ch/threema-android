@@ -27,20 +27,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.base.utils.JSONUtil;
 
 import static java.nio.charset.StandardCharsets.*;
 
 public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> implements Serializable {
-	private static final Logger logger = LoggerFactory.getLogger(VoipICECandidatesData.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipICECandidatesData");
 
 	// Keys
 	private final static String KEY_REMOVED = "removed";

@@ -26,7 +26,6 @@ import android.os.Parcel;
 import android.view.View;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -38,6 +37,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.BallotUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
@@ -45,7 +45,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.media.BallotDataModel;
 
 public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(BallotChatAdapterDecorator.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotChatAdapterDecorator");
 
 	private final static int ACTION_VOTE = 0, ACTION_RESULTS = 1, ACTION_CLOSE = 2;
 

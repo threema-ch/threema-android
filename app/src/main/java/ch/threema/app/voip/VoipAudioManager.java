@@ -84,7 +84,7 @@ public class VoipAudioManager {
 	}
 
 	private final Context apprtcContext;
-	private CompletableFuture<AudioManager> audioManagerFuture;
+	private final CompletableFuture<AudioManager> audioManagerFuture;
 	private AudioManager audioManager;
 
 	private AudioManagerState amState;

@@ -22,8 +22,6 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import org.apache.commons.io.EndianUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,8 +42,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  * Thumbnail: 0x000000000000000000000000000000000000000000000002
  */
 public class GroupVideoMessage extends AbstractGroupMessage {
-
-	private static final Logger logger = LoggerFactory.getLogger(GroupVideoMessage.class);
 
 	private int duration;
 	private byte[] videoBlobId;

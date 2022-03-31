@@ -30,10 +30,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -61,10 +61,11 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implements GenericAlertDialog.DialogClickListener,
 	PasswordEntryDialog.PasswordEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(WizardBackupRestoreActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackupRestoreActivity");
 
 	private static final String DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM = "de";
 	private static final String DIALOG_TAG_DOWNLOADING_BACKUP = "dwnldBkp";
@@ -141,7 +142,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
 		if (ConfigUtils.isWorkRestricted()) {
 			if (safeMDMConfig.isRestoreDisabled()) {
-				findViewById(R.id.safe_backup).setEnabled(false);
+				findViewById(R.id.safe_backup).setVisibility(View.GONE);
 			}
 		}
 	}

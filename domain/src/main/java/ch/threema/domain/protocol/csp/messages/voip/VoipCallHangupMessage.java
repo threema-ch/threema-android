@@ -24,9 +24,9 @@ package ch.threema.domain.protocol.csp.messages.voip;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
@@ -34,7 +34,7 @@ import java.io.ByteArrayOutputStream;
  * This packet is sent to indicate that one of the call participants has ended the call.
  */
 public class VoipCallHangupMessage extends VoipMessage {
-	private static final Logger logger = LoggerFactory.getLogger(VoipCallHangupMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallHangupMessage");
 
 	private @Nullable VoipCallHangupData callHangupData;
 

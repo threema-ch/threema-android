@@ -43,7 +43,6 @@ import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -85,6 +84,7 @@ import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.identitybackup.IdentityBackupGenerator;
 import ch.threema.storage.DatabaseServiceNew;
@@ -110,7 +110,7 @@ import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_A
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
 
 public class BackupService extends Service {
-	private static final Logger logger = LoggerFactory.getLogger(BackupService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupService");
 
 	private static final int MEDIA_STEP_FACTOR = 9;
 	private static final int MEDIA_STEP_FACTOR_VIDEOS_AND_FILES = 12;

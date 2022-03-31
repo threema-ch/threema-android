@@ -24,7 +24,6 @@ package ch.threema.app.receivers;
 import android.content.BroadcastReceiver;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -35,10 +34,11 @@ import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ActionBroadcastReceiver.class);
 	protected static final String TAG = "ActionBroadcastReceiver";
+	private static final Logger logger = LoggingUtil.getThreemaLogger(TAG);
 
 	protected static final int WEARABLE_CONNECTION_LINGER = 1000 * 5;
 

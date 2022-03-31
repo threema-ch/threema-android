@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 
@@ -312,27 +311,42 @@ public class MediaPlayerStateWrapper {
 	}
 
 	/**
-	 * Set playback parameters of MediaPlayer instance
-	 * @param playbackParams PlaybackParams to set
-	 * @return true if setting parameters was successful, false if MediaPlayer was in an invalid state or setting PlaybackParams failed.
+	 * Set desired playback speed of MediaPlayer instance (without affecting pitch)
+	 * @param audioPlaybackSpeed desired playback speed
+	 * @return new playback speed. also returns 1f if setting playback speed was unsuccessful
 	 */
 	@RequiresApi(Build.VERSION_CODES.M)
-	public boolean setPlaybackParams(PlaybackParams playbackParams) {
-		// will not work with states Idle or Stopped
+	public float setPlaybackSpeed(float audioPlaybackSpeed) throws IllegalStateException {
 		if (EnumSet.of(State.INITIALIZED, State.PREPARED, State.STARTED, State.PAUSED, State.PLAYBACK_COMPLETE, State.ERROR).contains(
 			currentState)) {
-			try {
-				mediaPlayer.setPlaybackParams(playbackParams);
-				return true;
-			} catch (IllegalArgumentException e) {
-				logger.info("Unable to set playback params {}", e.getMessage());
+			if (setPlaybackParamsForSpeed(audioPlaybackSpeed)) {
+				return audioPlaybackSpeed;
 			}
+
+			// fall back to regular speed if setting the desired speed failed
+			setPlaybackParamsForSpeed(1f);
+		}
+		return 1f;
+	}
+
+	@RequiresApi(Build.VERSION_CODES.M)
+	private boolean setPlaybackParamsForSpeed(float audioPlaybackSpeed) {
+		try {
+			mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(audioPlaybackSpeed).setPitch(1f));
+			return true;
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to set playback speed to {}", audioPlaybackSpeed, e);
 		}
 		return false;
 	}
 
 	@RequiresApi(Build.VERSION_CODES.M)
-	public PlaybackParams getPlaybackParams() {
-		return mediaPlayer.getPlaybackParams();
+	public float getPlaybackSpeed() {
+		try {
+			return mediaPlayer.getPlaybackParams().getSpeed();
+		} catch (IllegalStateException e) {
+			logger.error("Unable to get current playback speed", e);
+			return 1f;
+		}
 	}
 }

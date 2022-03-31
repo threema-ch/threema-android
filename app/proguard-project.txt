@@ -35,20 +35,6 @@
 -dontnote org.apache.commons.codec.**
 -dontnote org.apache.http.**
 
-# Fix bug on Samsung, Wiko (and other) devices running Android 4.2
-# See also: https://code.google.com/p/android/issues/detail?id=78377
-# http://stackoverflow.com/questions/24809580/noclassdeffounderror-android-support-v7-internal-view-menu-menubuilder/26641388#26641388
-# new version for appcompat >=23.1.1
-#-keep class !android.support.v7.view.menu.*MenuBuilder*, android.support.v7.** { *; }
-#-keep interface android.support.v7.** { *; }
-#-dontwarn android.support.v7.**
-
-# See: https://stackoverflow.com/questions/30562330/using-appcompat-layout-behavior-with-string-appbar-scrolling-view-behavior
-#-keep class com.google.android.material.** { *; }
-#-keep interface com.google.android.material.** { *; }
-#-dontwarn android.support.design.**
-
-
 # For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
 -keepclasseswithmembernames class * {
     native <methods>;
@@ -166,15 +152,6 @@ public static <fields>;
    *** get*();
 }
 
-# Jackson
--keepattributes Signature,*Annotation*,EnclosingMethod
--keep class com.fasterxml.jackson.databind.ObjectMapper {
-    public <methods>;
-    protected <methods>;
-}
--keep class com.fasterxml.jackson.databind.ObjectWriter {
-    public ** writeValueAsString(**);
-}
 -keepnames class com.fasterxml.jackson.** { *; }
 -keepnames interface com.fasterxml.jackson.** { *; }
 -keep class org.codehaus.** { *; }
@@ -217,13 +194,6 @@ public static <fields>;
 # keep camera classes - 1.0.0-alpha03 causes VerifyError in Android 4.4
 -keep class androidx.camera.** { *; }
 
-# respect DoNotOptimize annotations in soloader used by mapbox - causes VerifyError in Android 4.4
--keep,allowobfuscation @interface com.facebook.soloader.DoNotOptimize
--keep @com.facebook.soloader.DoNotOptimize class *
--keepclassmembers class * {
-    @com.facebook.soloader.DoNotOptimize *;
-}
-
 # protobuf uses reflection
 -keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
   <fields>;
@@ -253,3 +223,11 @@ public static <fields>;
 # that's triggered by this file, the NonceFactory wasn't modified since 2017...
 # Maybe we can remove this again with a future build toolchain.
 -keep class ch.threema.base.crypto.NonceFactory { *; }
+
+-dontwarn build.IgnoreJava8API
+-dontwarn sun.security.x509.X509Key
+
+# https://issuetracker.google.com/issues/159595260
+-keep class * extends androidx.startup.Initializer {
+   <init>();
+}

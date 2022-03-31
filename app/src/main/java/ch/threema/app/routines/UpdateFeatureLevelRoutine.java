@@ -22,7 +22,6 @@
 package ch.threema.app.routines;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,11 +37,12 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 
 public class UpdateFeatureLevelRoutine implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(UpdateFeatureLevelRoutine.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateFeatureLevelRoutine");
 
 	private static final Map<String, Long> checkedIdentities = new HashMap<>();
 

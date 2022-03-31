@@ -340,7 +340,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 					backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
 				} else {
 					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
-					backgroundColor = foregroundColor.withAlpha(0x1A);
+					backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
 				}
 
 				chip.setTextColor(foregroundColor);

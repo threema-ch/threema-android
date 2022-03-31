@@ -30,7 +30,6 @@ import android.widget.Toast;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,12 +54,13 @@ import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.LoadingUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public class BallotVoteDialog extends ThreemaDialogFragment {
-	private static final Logger logger = LoggerFactory.getLogger(BallotVoteDialog.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotVoteDialog");
 
 	private Activity activity;
 	private AlertDialog alertDialog;

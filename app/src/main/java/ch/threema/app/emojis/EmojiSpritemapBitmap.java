@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -36,9 +35,10 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.base.utils.LoggingUtil;
 
 public class EmojiSpritemapBitmap {
-	private static final Logger logger = LoggerFactory.getLogger(EmojiSpritemapBitmap.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiSpritemapBitmap");
 
 	private final Context context;
 	private final EmojiGroup emojiGroup;

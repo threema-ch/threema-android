@@ -21,17 +21,17 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
 public class FileMessage extends AbstractMessage
 	implements FileMessageInterface {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FileMessage");
 
 	private FileData fileData;
 

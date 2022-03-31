@@ -22,12 +22,12 @@
 package ch.threema.app.services.systemupdate;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UpdateSystemService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
@@ -36,7 +36,7 @@ import ch.threema.storage.models.ContactModel;
  * Update all Contacts with Feature Level < current Feature Level
  */
 public class SystemUpdateToVersion39 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion39.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion39");
 
 	public SystemUpdateToVersion39() {
 	}

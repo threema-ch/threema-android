@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Build;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +38,7 @@ import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -50,7 +50,7 @@ import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 public interface NotificationService {
-	Logger logger = LoggerFactory.getLogger(NotificationService.class);
+	Logger logger = LoggingUtil.getThreemaLogger("NotificationService");
 
 	String NOTIFICATION_CHANNEL_PASSPHRASE = "ps";
 	String NOTIFICATION_CHANNEL_WEBCLIENT =  "wc";
@@ -60,11 +60,13 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_ALERT =  "al";
 	String NOTIFICATION_CHANNEL_NOTICE =  "no";
 	String NOTIFICATION_CHANNEL_WORK_SYNC =  "ws";
+	String NOTIFICATION_CHANNEL_IDENTITY_SYNC =  "is";
 	String NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS =  "bk";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE =  "cu";
 	String NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS = "nc";
 	String NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE = "jres";
 	String NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST = "jreq";
+	String NOTIFICATION_CHANNEL_THREEMA_PUSH = "tpush";
 
 	String NOTIFICATION_CHANNELGROUP_CHAT = "group";
 	String NOTIFICATION_CHANNELGROUP_VOIP = "vgroup";
@@ -347,6 +349,9 @@ public interface NotificationService {
 
 	void showWorkSyncProgress();
 	void cancelWorkSyncProgress();
+
+	void showIdentityStatesSyncProgress();
+	void cancelIdentityStatesSyncProgress();
 
 	void showNewSyncedContactsNotification(List<ContactModel> contactModels);
 

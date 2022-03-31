@@ -26,7 +26,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -35,12 +34,13 @@ import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.stores.PreferenceStore;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  *  rename account manager accounts
  */
 public class SystemUpdateToVersion48 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion48.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion48");
 
 	private final Context context;
 

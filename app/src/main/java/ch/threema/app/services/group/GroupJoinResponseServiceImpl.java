@@ -23,13 +23,13 @@ package ch.threema.app.services.group;
 
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.processors.MessageProcessor;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
@@ -43,7 +43,7 @@ import java8.util.Optional;
 
 @WorkerThread
 public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
-	private static final Logger logger = LoggerFactory.getLogger(GroupJoinResponseServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupJoinResponseServiceImpl");
 
 	private final @NonNull OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
 	private final @NonNull MessageQueue messageQueue;
@@ -75,8 +75,10 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 			return MessageProcessor.ProcessingResult.IGNORED;
 		}
 
+		OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel = joinRequest.get();
+
 		final @NonNull String sender = message.getFromIdentity();
-		if (!joinRequest.get().getAdminIdentity().equals(sender)) {
+		if (!outgoingGroupJoinRequestModel.getAdminIdentity().equals(sender)) {
 			logger.info("Group Join Response: Ignore with invalid sender {}", sender);
 			return MessageProcessor.ProcessingResult.IGNORED;
 		}
@@ -84,13 +86,13 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 		final GroupJoinResponseData.Response response = responseData.getResponse();
 		final OutgoingGroupJoinRequestModel.Status status;
 
+		OutgoingGroupJoinRequestModel.Builder updatedRequestBuilder = new OutgoingGroupJoinRequestModel.Builder(outgoingGroupJoinRequestModel);
+
 		if (response instanceof GroupJoinResponseData.Accept) {
 			status = OutgoingGroupJoinRequestModel.Status.ACCEPTED;
 			final long groupId = ((GroupJoinResponseData.Accept)response).getGroupId();
-			outgoingGroupJoinRequestModelFactory.updateGroupApiId(
-				joinRequest.get(),
-				new GroupId(groupId)
-			);
+			updatedRequestBuilder
+				.withGroupApiId(new GroupId(groupId)).build();
 		} else if (response instanceof GroupJoinResponseData.Reject) {
 			status = OutgoingGroupJoinRequestModel.Status.REJECTED;
 		} else if (response instanceof GroupJoinResponseData.GroupFull) {
@@ -100,11 +102,14 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 		} else {
 			throw new IllegalStateException("Invalid response: " + responseData.getResponse());
 		}
+		updatedRequestBuilder.withResponseStatus(status);
 
-		logger.info("Group Join Response: update group request with status {}", status);
-		outgoingGroupJoinRequestModelFactory.updateStatus(joinRequest.get(), status);
+		OutgoingGroupJoinRequestModel updateModel = updatedRequestBuilder.build();
+		outgoingGroupJoinRequestModelFactory.update(
+			updateModel
+		);
 
-		ListenerManager.groupJoinResponseListener.handle(listener -> listener.onReceived(joinRequest.get(), status));
+		ListenerManager.groupJoinResponseListener.handle(listener -> listener.onReceived(updateModel, status));
 
 		return MessageProcessor.ProcessingResult.SUCCESS;
 	}

@@ -24,7 +24,6 @@ package ch.threema.app.stores;
 import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,11 +33,12 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class IdentityStore implements IdentityStoreInterface {
-	private static final Logger logger = LoggerFactory.getLogger(IdentityStore.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IdentityStore");
 
 	private String identity;
 	private String serverGroup;

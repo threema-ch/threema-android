@@ -36,8 +36,7 @@ public class SettingsNotificationsDummyActivity extends AppCompatActivity {
 
 		if (ThreemaApplication.getServiceManager() != null && ThreemaApplication.getServiceManager().getUserService() != null && ThreemaApplication.getServiceManager().getUserService().getIdentity() != null) {
 			Intent intent = new Intent(this, SettingsActivity.class);
-			intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsNotificationsFragment.class.getName());
-			intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+			intent.putExtra(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT, true);
 			startActivity(intent);
 		}
 		finish();

@@ -25,18 +25,17 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 
 
 public class SystemUpdateToVersion38 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion38.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion38");
 
 	private final DatabaseServiceNew databaseService;
 	private final SQLiteDatabase sqLiteDatabase;

@@ -32,7 +32,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,9 +46,10 @@ import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class BiometricLockActivity extends ThreemaAppCompatActivity {
-	private static final Logger logger = LoggerFactory.getLogger(BiometricLockActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BiometricLockActivity");
 
 	private static final int REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK = 551;
 	public static final String INTENT_DATA_AUTHENTICATION_TYPE = "auth_type";

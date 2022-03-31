@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -83,6 +84,7 @@ public class FileUtil {
 		return filename != null && filename.exists() && filename.length() > 0;
 	}
 
+	@Deprecated
 	public static void selectFile(Activity activity, Fragment fragment, String[] mimeTypes, int ID, boolean multi, int sizeLimit, String initialPath) {
 		Intent intent;
 		final Context context;
@@ -97,8 +99,7 @@ public class FileUtil {
 
 		if (useOpenDocument) {
 			intent = getOpenDocumentIntent(mimeTypes);
-		}
-		else {
+		} else {
 			intent = getGetContentIntent(context, mimeTypes, initialPath);
 		}
 
@@ -126,6 +127,42 @@ public class FileUtil {
 		}
 	}
 
+	public static void selectFile(@NonNull Context context, @NonNull ActivityResultLauncher<Intent> launcher, @NonNull String[] mimeTypes, boolean multi, int sizeLimit, String initialPath) {
+		Intent intent;
+
+		final boolean useOpenDocument = (isMediaProviderSupported(context) && initialPath == null) || ConfigUtils.hasScopedStorage();
+
+		if (useOpenDocument) {
+			intent = getOpenDocumentIntent(mimeTypes);
+		} else {
+			intent = getGetContentIntent(context, mimeTypes, initialPath);
+		}
+
+		addExtras(intent, multi, sizeLimit);
+
+		try {
+			launcher.launch(intent);
+		} catch (ActivityNotFoundException e) {
+			if (useOpenDocument) {
+				if (!ConfigUtils.hasScopedStorage()) {
+					// fallback to ACTION_GET_CONTENT on broken devices
+					intent = getGetContentIntent(context, mimeTypes, initialPath);
+					addExtras(intent, multi, sizeLimit);
+					try {
+						launcher.launch(intent);
+					} catch (ActivityNotFoundException ignored) {
+					}
+				} else {
+					// device is missing DocumentsUI - impossible to get access to the backup file
+					Toast.makeText(context, String.format("Broken device. DocumentsUI is disabled or missing. Please fix or contact %s.", Build.MANUFACTURER), Toast.LENGTH_LONG).show();
+				}
+			} else {
+				Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	@Deprecated
 	private static void startAction(Activity activity, Fragment fragment, int ID, Intent intent) throws ActivityNotFoundException {
 		if (fragment != null) {
 			fragment.startActivityForResult(intent, ID);
@@ -528,12 +565,16 @@ public class FileUtil {
 		return fileDataModel != null && (MimeUtil.isVideoFile(fileDataModel.getMimeType()));
 	}
 
+	public static boolean isImageOrVideoFile(FileDataModel fileDataModel) {
+		return isImageFile(fileDataModel) || isVideoFile(fileDataModel);
+	}
+
 	public static boolean isAudioFile(FileDataModel fileDataModel) {
 		return fileDataModel != null && (MimeUtil.isAudioFile(fileDataModel.getMimeType()));
 	}
 
 	public static String getFileMessageDatePrefix(Context context, AbstractMessageModel messageModel, String fileType) {
-		if (messageModel.getFileData() == null || messageModel.getFileData().getFileSize() == 0) {
+		if (messageModel.getFileData().getFileSize() == 0) {
 			return "";
 		}
 

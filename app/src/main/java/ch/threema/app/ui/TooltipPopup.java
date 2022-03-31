@@ -35,9 +35,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -48,8 +45,6 @@ import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.utils.ConfigUtils;
 
 public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserver {
-
-	private static final Logger logger = LoggerFactory.getLogger(TooltipPopup.class);
 
 	public static final int ALIGN_ABOVE_ANCHOR_ARROW_LEFT = 1;
 	public static final int ALIGN_BELOW_ANCHOR_ARROW_RIGHT = 2;

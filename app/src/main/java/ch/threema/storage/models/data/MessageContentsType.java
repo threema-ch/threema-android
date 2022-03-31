@@ -38,7 +38,8 @@ import androidx.annotation.IntDef;
 	MessageContentsType.BALLOT,
 	MessageContentsType.FILE,
 	MessageContentsType.VOIP_STATUS,
-	MessageContentsType.GIF
+	MessageContentsType.GIF,
+	MessageContentsType.CONTACT
 })
 
 @Retention(RetentionPolicy.SOURCE)

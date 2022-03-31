@@ -22,6 +22,7 @@
 package ch.threema.storage.models;
 
 import java.util.Date;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,5 +123,18 @@ public class GroupModel implements ReceiverModel {
 	public GroupModel setArchived(boolean archived) {
 		isArchived = archived;
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof GroupModel)) return false;
+		GroupModel that = (GroupModel) o;
+		return id == that.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

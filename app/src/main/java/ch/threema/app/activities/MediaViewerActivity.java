@@ -45,7 +45,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -90,6 +89,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -99,7 +99,7 @@ import ch.threema.storage.models.MessageType;
 public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(MediaViewerActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewerActivity");
 
 	private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 1;
 	private static final long LOADING_DELAY = 600;
@@ -437,13 +437,17 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void shareMedia() {
-		AbstractMessageModel messageModel = this.getCurrentMessageModel();
-		ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
-			getString(R.string.share_media),
-			R.string.add_caption_hint, messageModel.getCaption(),
-			R.string.next, R.string.cancel, true);
-		alertDialog.setData(messageModel);
-		alertDialog.show(getSupportFragmentManager(), null);
+		final AbstractMessageModel messageModel = this.getCurrentMessageModel();
+		if (messageModel != null) {
+			final ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
+				getString(R.string.share_media),
+				R.string.add_caption_hint, messageModel.getCaption(),
+				R.string.next, R.string.cancel, true);
+			alertDialog.setData(messageModel);
+			alertDialog.show(getSupportFragmentManager(), null);
+		} else {
+			logger.error("shareMedia: messageModel is null");
+		}
 	}
 
 	@Override

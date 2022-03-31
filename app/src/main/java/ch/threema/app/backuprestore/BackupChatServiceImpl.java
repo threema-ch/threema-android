@@ -28,7 +28,6 @@ import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -47,6 +46,7 @@ import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.data.media.AudioDataModel;
@@ -54,7 +54,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
 public class BackupChatServiceImpl implements BackupChatService {
-	private static final Logger logger = LoggerFactory.getLogger(BackupChatServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupChatServiceImpl");
 
 	private final Context context;
 	private final FileService fileService;

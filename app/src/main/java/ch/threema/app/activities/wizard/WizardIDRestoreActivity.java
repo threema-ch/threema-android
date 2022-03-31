@@ -40,21 +40,22 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.QRScannerUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class WizardIDRestoreActivity extends WizardBackgroundActivity {
-	private static final Logger logger = LoggerFactory.getLogger(WizardIDRestoreActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIDRestoreActivity");
 	private static final String DIALOG_TAG_RESTORE_PROGRESS = "rp";
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -135,7 +136,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 	}
 
 	public void scanQR() {
-		QRScannerUtil.getInstance().initiateScan(this, false, null);
+		QRScannerUtil.getInstance().initiateScan(this, null, QRCodeServiceImpl.QR_TYPE_ID_EXPORT);
 	}
 
 	@SuppressLint("StaticFieldLeak")

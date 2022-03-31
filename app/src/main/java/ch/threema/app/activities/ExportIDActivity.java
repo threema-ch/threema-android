@@ -27,7 +27,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -42,10 +41,11 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.identitybackup.IdentityBackupGenerator;
 
 public class ExportIDActivity extends AppCompatActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(AppCompatActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ExportIDActivity");
 
 	private static final String DIALOG_TAG_SET_ID_BACKUP_PW = "setIDBackupPW";
 	private static final String DIALOG_PROGRESS_ID = "idBackup";

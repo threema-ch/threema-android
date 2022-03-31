@@ -4,14 +4,6 @@ plugins {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-// rules to allow test running with a real android jar implementation of URI, Uri.Builder for group link encoding
-apply plugin: 'de.mobilej.unmock'
-unMock {
-    keepStartingWith "android.net.Uri"
-    keep "android.net.Uri"
-    keepAndRename "java.nio.charset.Charsets" to "xjava.nio.charset.Charsets"
-    keepStartingWith "libcore."
-}
 
 // only apply the plugin if we are dealing with a AppGallery build
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")) {
@@ -20,7 +12,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.67"
+def app_version = "4.7"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -82,14 +74,15 @@ def keystores = [
     hms_release: findKeystore("threema_hms"),
     onprem_release: findKeystore("onprem"),
     red_release: findKeystore("red"),
+    fdroid_release: findKeystore("threema_fdroid"),
 ]
 
 android {
     // NOTE: When adjusting compileSdkVersion, buildToolsVersion or ndkVersion,
     //       make sure to adjust them in `scripts/Dockerfile` and
     //       `.gitlab-ci.yml` as well!
-    compileSdkVersion 30
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
     ndkVersion '21.1.6352462'
 
     defaultConfig {
@@ -99,7 +92,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 721
+        versionCode 735
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -348,6 +341,13 @@ android {
                 actionUrl: "work.threema.ch",
             ]
         }
+        fdroid {
+            versionName "${app_version}f${beta_suffix}"
+            applicationId "ch.threema.app.fdroid"
+            testApplicationId 'ch.threema.app.fdroid.test'
+            resValue "string", "app_name", "Threema Libre"
+            buildConfigField "String", "MEDIA_PATH", "\"ThreemaLibre\""
+        }
     }
 
     signingConfigs {
@@ -407,6 +407,18 @@ android {
         } else {
             logger.warn("No red keystore found. Falling back to locally generated keystore.")
         }
+
+        // F-Droid release config
+        if (keystores.fdroid_release != null) {
+            fdroid_release {
+                storeFile file(keystores.fdroid_release.storeFile)
+                storePassword keystores.fdroid_release.storePassword
+                keyAlias keystores.fdroid_release.keyAlias
+                keyPassword keystores.fdroid_release.keyPassword
+            }
+        } else {
+            logger.warn("No fdroid keystore found. Falling back to locally generated keystore.")
+        }
     }
 
     sourceSets {
@@ -414,6 +426,8 @@ android {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
+
+        // Based on Google services
         none {
             java.srcDir 'src/google_services_based/java'
         }
@@ -426,12 +440,9 @@ android {
         store_threema {
             java.srcDir 'src/google_services_based/java'
         }
-        hms {
-            java.srcDir 'src/hms_services_based/java'
-        }
-        hms_work {
-            java.srcDir 'src/hms_services_based/java'
-            res.srcDir 'src/store_google_work/res'
+        fdroid {
+            assets.srcDirs = ['src/foss_based/assets']
+            java.srcDir 'src/foss_based/java'
         }
         onprem {
             java.srcDir 'src/google_services_based/java'
@@ -448,6 +459,21 @@ android {
         red {
             java.srcDir 'src/google_services_based/java'
             res.srcDir 'src/red/res'
+        }
+
+        // Based on Huawei services
+        hms {
+            java.srcDir 'src/hms_services_based/java'
+        }
+        hms_work {
+            java.srcDir 'src/hms_services_based/java'
+            res.srcDir 'src/store_google_work/res'
+        }
+
+        // FOSS, no proprietary services
+        fdroid {
+            assets.srcDirs = ['src/foss_based/assets']
+            java.srcDir 'src/foss_based/java'
         }
     }
 
@@ -494,6 +520,10 @@ android {
             if (keystores['red_release'] != null) {
                 productFlavors.red.signingConfig signingConfigs.red_release
             }
+
+            if (keystores['fdroid_release'] != null) {
+                productFlavors.fdroid.signingConfig signingConfigs.fdroid_release
+            }
         }
     }
 
@@ -521,6 +551,8 @@ android {
         // set to true to have all release builds run lint on issues with severity=fatal
         // and abort the build (controlled by abortOnError above) if fatal issues are found
         checkReleaseBuilds true
+        // check dependencies
+        checkDependencies true
         // set to true to turn off analysis progress reporting by lint
         // quiet true
         // if true, stop the gradle build if errors are found
@@ -599,8 +631,14 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(11))
+        }
     }
 
     aaptOptions {
@@ -620,58 +658,56 @@ dependencies {
 
     implementation project(':domain')
 
-    implementation 'net.zetetic:android-database-sqlcipher:4.5.0'
+    implementation 'net.zetetic:android-database-sqlcipher:4.5.1'
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
     implementation 'net.lingala.zip4j:zip4j:2.9.1'
-    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.2'
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
     implementation 'org.maplibre.gl:android-sdk:9.5.2'
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23'
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
+    implementation 'com.github.CanHub:Android-Image-Cropper:4.1.0'
     implementation 'com.datatheorem.android.trustkit:trustkit:1.1.5'
-    implementation 'com.takisoft.preferencex:preferencex:1.1.0'
-    implementation 'me.zhanghai.android.fastscroll:library:1.1.5'
+    implementation 'me.zhanghai.android.fastscroll:library:1.1.7'
+    implementation 'com.googlecode.ez-vcard:ez-vcard:0.11.3'
 
     // AndroidX / Jetpack support libraries
-    implementation "androidx.core:core:1.6.0"
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.core:core-ktx:1.7.0"
+    implementation "androidx.preference:preference-ktx:1.2.0"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.palette:palette:1.0.0'
+    implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.biometric:biometric:1.1.0'
-    implementation "androidx.work:work-runtime:2.6.0"
-    implementation 'androidx.fragment:fragment:1.3.6'
-    implementation 'androidx.activity:activity:1.3.1'
+    implementation "androidx.work:work-runtime:2.7.1"
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
+    implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
-    implementation "androidx.camera:camera-camera2:1.0.2"
-    implementation "androidx.camera:camera-lifecycle:1.0.2"
-    // camera-view >1.0.0-alpha25 requires compileSDK 30
-    implementation "androidx.camera:camera-view:1.0.0-alpha25"
+    implementation "androidx.camera:camera-camera2:1.1.0-beta02"
+    implementation "androidx.camera:camera-lifecycle:1.1.0-beta02"
+    implementation "androidx.camera:camera-view:1.1.0-beta02"
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-livedata:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-runtime:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-service:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-process:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-service:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-process:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.4.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.paging:paging-runtime:3.0.1"
+    implementation "androidx.paging:paging-runtime:3.1.1"
     implementation "androidx.sharetarget:sharetarget:1.1.0"
 
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.15.1'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.15.1'
-    implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on kitkat
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.41' // make sure to update this in domain's build.gradle as well
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.17.1'
+    implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.45' // make sure to update this in domain's build.gradle as well
 
     // webclient dependencies
     implementation 'org.msgpack:msgpack-core:0.8.22!!'
@@ -679,9 +715,6 @@ dependencies {
 
     // Backport of Streams and CompletableFuture. Remove once API level 24 is supported.
     implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.2'
-
-    // Google Assistant Voice Action verification library
-    implementation(name: 'libgsaverification-client', ext: 'aar')
 
     implementation('org.saltyrtc:saltyrtc-client:0.14.2') {
         exclude group: 'org.json'
@@ -698,31 +731,31 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     // kotlin
-    implementation "androidx.core:core-ktx:1.3.2"
+    implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     // use leak canary in debug builds
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
     // test dependencies
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:$junit_version"
     testImplementation(testFixtures(project(":domain")))
 
     // use powermock instead of mockito. it support mocking static classes.
-    def mockitoVersion = '2.0.7'
+    def mockitoVersion = '2.0.9'
     testImplementation "org.powermock:powermock-api-mockito2:${mockitoVersion}"
     testImplementation "org.powermock:powermock-module-junit4-rule-agent:${mockitoVersion}"
     testImplementation "org.powermock:powermock-module-junit4-rule:${mockitoVersion}"
     testImplementation "org.powermock:powermock-module-junit4:${mockitoVersion}"
 
     // add JSON support to tests without mocking
-    testImplementation 'org.json:json:20160212'
+    testImplementation 'org.json:json:20190722'
 
     testImplementation 'com.tngtech.archunit:archunit-junit4:0.18.0'
 
     androidTestImplementation(testFixtures(project(":domain")))
-    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
     }
@@ -732,7 +765,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
     }
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
         exclude group: 'androidx.appcompat', module: 'appcompat'
@@ -767,11 +800,23 @@ dependencies {
         store_googleImplementation(dependency) { excludes.each { exclude it } }
         store_google_workImplementation(dependency) { excludes.each { exclude it } }
         store_threemaImplementation(dependency) { excludes.each { exclude it } }
+        fdroidImplementation(dependency) { excludes.each { exclude it } }
         onpremImplementation(dependency) { excludes.each { exclude it } }
         sandboxImplementation(dependency) { excludes.each { exclude it } }
         sandbox_workImplementation(dependency) { excludes.each { exclude it } }
         redImplementation(dependency) { excludes.each { exclude it } }
     }
+
+    // Google Assistant Voice Action verification library
+    noneImplementation(name: 'libgsaverification-client', ext: 'aar')
+    store_googleImplementation(name: 'libgsaverification-client', ext: 'aar')
+    store_google_workImplementation(name: 'libgsaverification-client', ext: 'aar')
+    onpremImplementation(name: 'libgsaverification-client', ext: 'aar')
+    store_threemaImplementation(name: 'libgsaverification-client', ext: 'aar')
+    fdroidImplementation(name: 'libgsaverification-client', ext: 'aar')
+    sandboxImplementation(name: 'libgsaverification-client', ext: 'aar')
+    sandbox_workImplementation(name: 'libgsaverification-client', ext: 'aar')
+    redImplementation(name: 'libgsaverification-client', ext: 'aar')
 
     // Huawei related libraries (only for hms* build variants)
     def huaweiDependencies = [
@@ -795,7 +840,7 @@ sonarqube {
     properties {
         property "sonar.sources", "src/main/, ../scripts/, ../scripts-internal/"
         property "sonar.exclusions", "src/main/java/ch/threema/localcrypto/**, src/test/java/ch/threema/localcrypto/**"
-        property "sonar.tests", "src/testNoneDebug/"
+        property "sonar.tests", "src/test/"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.verbose", "true"
         property 'sonar.projectKey', 'android-client'

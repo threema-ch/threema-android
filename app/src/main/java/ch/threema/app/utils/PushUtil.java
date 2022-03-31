@@ -178,7 +178,7 @@ public class PushUtil {
 	private static void sendNotification() {
 		logger.info("sendNotification");
 		Context appContext = ThreemaApplication.getAppContext();
-		PollingHelper pollingHelper = new PollingHelper(appContext, "FCM");
+		PollingHelper pollingHelper = new PollingHelper(appContext, "fcm");
 
 		ConnectivityManager mgr = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = mgr.getActiveNetworkInfo();
@@ -463,7 +463,7 @@ public class PushUtil {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 		if (sharedPreferences != null) {
-			return !sharedPreferences.getBoolean(context.getString(R.string.preferences__polling_switch), false);
+			return !sharedPreferences.getBoolean(context.getString(R.string.preferences__threema_push_switch), false);
 		}
 		return true;
 	}

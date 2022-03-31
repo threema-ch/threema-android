@@ -27,9 +27,6 @@ import android.content.Intent;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.activities.TextChatBubbleActivity;
@@ -46,7 +43,6 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
 
 public class TextChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(ChatAdapterDecorator.class);
 
 	private final int quoteType;
 

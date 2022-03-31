@@ -23,6 +23,7 @@ package ch.threema.app.webclient.crypto;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import ch.threema.base.utils.LoggingUtil;
 
 import com.neilalexander.jnacl.NaCl;
 
@@ -30,11 +31,10 @@ import org.saltyrtc.client.crypto.CryptoException;
 import org.saltyrtc.client.crypto.CryptoInstance;
 import org.saltyrtc.client.crypto.CryptoProvider;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @AnyThread
 public class NativeJnaclCryptoProvider implements CryptoProvider {
-	private static final Logger logger = LoggerFactory.getLogger(NativeJnaclCryptoProvider.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NativeJnaclCryptoProvider");
 
 	/**
 	 * @see CryptoProvider#generateKeypair(byte[], byte[])

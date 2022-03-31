@@ -28,11 +28,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class HintedImageView extends androidx.appcompat.widget.AppCompatImageView implements View.OnClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(HintedImageView.class);
 
 	private OnClickListener onClickListener;
 

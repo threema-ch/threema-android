@@ -37,6 +37,7 @@ import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.base.Result;
+import ch.threema.domain.models.GroupId;
 import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
@@ -45,9 +46,11 @@ public class IncomingGroupRequestViewModel extends ViewModel {
 	private MutableLiveData<List<IncomingGroupJoinRequestModel>> groupJoinRequestModels;
 	private IncomingGroupJoinRequestModelFactory repository;
 	private final SparseBooleanArray checkedItems = new SparseBooleanArray();
+	GroupId groupId;
 
-	public IncomingGroupRequestViewModel(int groupId) {
+	public IncomingGroupRequestViewModel(GroupId groupId) {
 		super();
+		this.groupId = groupId;
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
 			this.repository = serviceManager.getDatabaseServiceNew().getIncomingGroupJoinRequestModelFactory();
@@ -90,7 +93,7 @@ public class IncomingGroupRequestViewModel extends ViewModel {
 	}
 
 	public void onDataChanged() {
-		getRequests().postValue(repository.getAll());
+		getRequests().postValue(repository.getAllRequestsForGroup(this.groupId));
 	}
 
 	void toggleChecked(int pos) {

@@ -26,18 +26,18 @@ import android.content.ContentValues;
 import net.sqlcipher.Cursor;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ConversationTagModel;
 
 public class ConversationTagFactory extends ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(ConversationTagFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationTagFactory");
 
 	public ConversationTagFactory(DatabaseServiceNew databaseService) {
 		super(databaseService, ConversationTagModel.TABLE);

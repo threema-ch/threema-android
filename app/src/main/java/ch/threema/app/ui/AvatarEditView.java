@@ -43,7 +43,6 @@ import android.widget.ImageView;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -83,6 +82,7 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -91,7 +91,7 @@ import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
 import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_WIDTH_PX;
 
 public class AvatarEditView extends FrameLayout implements DefaultLifecycleObserver, View.OnClickListener, View.OnLongClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(AvatarEditView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarEditView");
 	private static final int REQUEST_CODE_FILE_SELECTOR_ID = 43320;
 	private static final int REQUEST_CODE_CAMERA_PERMISSION = 43321;
 	private static final int REQUEST_CODE_CAMERA = 43322;

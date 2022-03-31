@@ -43,6 +43,8 @@
 		<item name="bubble_status">@color/bubble_status</item>
 		<item name="bubble_selected_overlay">@color/bubble_selected_overlay</item>
 		<item name="bubble_pressed_overlay">@color/bubble_pressed_overlay</item>
+		<item name="bubble_thumbnail_placeholder_tint">@color/bubble_thumbnail_placeholder_tint</item>
+		<item name="bubble_thumbnail_placeholder_background">@color/bubble_thumbnail_placeholder_background</item>
 		<item name="unread_messages_text_color">#88000000</item>
 		<item name="unread_messages_bg_color">#fff7f8f9</item>
 		<item name="date_separator_bg_color">#ffbababa</item>
@@ -96,7 +98,7 @@
 		<item name="colorOnBackground">#212121</item>
 	</style>
 
-	<style name="Theme.Threema.Settings" parent="Theme.MaterialComponents.Light">
+	<style name="Theme.Threema.Settings" parent="Theme.MaterialComponents.Light.NoActionBar">
 		<item name="android:windowBackground">@color/preference_background_color</item>
 		<item name="colorPrimary">@color/accent_light</item>
 		<item name="colorAccent">@color/accent_light</item>
@@ -107,6 +109,7 @@
 		<item name="background_secondary">@color/activity_background_secondary</item>
 		<item name="settings_multipane_selection_bg">@color/settings_multipane_selection_bg</item>
 		<item name="material_toolbar_color">@color/material_primary</item>
+		<item name="android:tint">@color/text_color_secondary</item>
 
 		<!-- Status bar and navigation bar color -->
 		<item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
@@ -317,6 +320,8 @@
 		<item name="bubble_status">@color/dark_bubble_status</item>
 		<item name="bubble_selected_overlay">@color/dark_bubble_selected_overlay</item>
 		<item name="bubble_pressed_overlay">@color/dark_bubble_pressed_overlay</item>
+		<item name="bubble_thumbnail_placeholder_tint">@color/dark_bubble_thumbnail_placeholder_tint</item>
+		<item name="bubble_thumbnail_placeholder_background">@color/dark_bubble_thumbnail_placeholder_background</item>
 		<item name="unread_messages_text_color">#FFFFFFFF</item>
 		<item name="unread_messages_bg_color">#ff7090B0</item>
 		<item name="date_separator_bg_color">#ff404040</item>
@@ -448,7 +453,7 @@
 		<item name="dialogCornerRadius">@dimen/dialog_corner_radius</item>
 	</style>
 
-	<style name="Theme.Threema.Settings.Dark" parent="Theme.MaterialComponents">
+	<style name="Theme.Threema.Settings.Dark" parent="Theme.MaterialComponents.NoActionBar">
 		<item name="android:windowBackground">@color/dark_preference_background_color</item>
 		<item name="colorPrimary">@color/dark_accent</item>
 		<item name="colorAccent">@color/dark_accent</item>
@@ -459,6 +464,7 @@
 		<item name="background_secondary">@color/dark_activity_background_secondary</item>
 		<item name="settings_multipane_selection_bg">@color/dark_settings_multipane_selection_bg</item>
 		<item name="material_toolbar_color">@color/dark_toolbar_color</item>
+		<item name="android:tint">@color/dark_text_color_secondary</item>
 
 		<!-- Status bar and navigation bar color -->
 		<item name="android:windowLightStatusBar" tools:targetApi="23">false</item>

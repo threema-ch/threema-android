@@ -50,7 +50,6 @@ import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -89,11 +88,12 @@ import ch.threema.app.utils.BitmapWorkerTaskParams;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(ImagePaintActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintActivity");
 
 	private static final String DIALOG_TAG_COLOR_PICKER = "colp";
 	private static final String KEY_PEN_COLOR = "pc";

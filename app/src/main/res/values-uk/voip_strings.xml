@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Виклик Threema</string>
+    <string name="voip_hangup">Завершити</string>
+    <string name="voip_toggle_mic">Увімкнути або вимкнути мікрофон</string>
+    <string name="voip_toggle_speaker">Увімкнути або вимкнути гучний зв\'язок</string>
+    <string name="voip_switch_cam">Змінити камеру</string>
+    <string name="voip_switch_cam_front">Увімкнено фронтальну камеру</string>
+    <string name="voip_switch_cam_rear">Увімкнено основну камеру</string>
+    <string name="voip_toggle_video">Увімкнути або вимкнути відео</string>
+    <string name="voip_call_confirm">Справді подзвонити контакту \"%1$s\"?</string>
+    <string name="voip_error_call">Помилка під час виклику Threema</string>
+    <string name="voip_error_init_call">Помилка під час підготовки виклику</string>
+    <string name="voip_notification_title">Вхідний виклик Threema</string>
+    <string name="voip_notification_text">Дзвонить \"%1$s\"</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Підготовка</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">З\'єднання</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Роз\'єднання</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Виклик</string>
+    <string name="voip_mic_enable">Увімкнути мікрофон</string>
+    <string name="voip_mic_disable">Вимкнути мікрофон</string>
+    <string name="voip_checking_compatibility">Перевіряємо, чи може цей контакт приймати виклики Threema</string>
+    <string name="voip_incompatible">Цей контакт ще не може приймати виклики Threema.</string>
+    <string name="voip_call_status_unavailable">Контакт недоступний</string>
+    <string name="voip_call_status_rejected">Виклик відхилено</string>
+    <string name="voip_call_status_busy">Контакт зайнятий</string>
+    <string name="voip_call_status_busy_short">Зайнято</string>
+    <string name="voip_call_status_disabled">Контакт вимкнув виклики Threema</string>
+    <string name="voip_call_status_missed">Пропущений виклик</string>
+    <string name="voip_call_finished_outbox">Вихідний виклик</string>
+    <string name="voip_call_finished_inbox">Вхідний виклик</string>
+    <string name="voip_call_status_aborted">Виклик скасовано</string>
+    <string name="voip_return_call">Зворотній виклик</string>
+    <string name="voip_accept">Прийняти</string>
+    <string name="voip_reject">Відхилити</string>
+    <string name="voip_speakerphone">Гучний зв\'язок</string>
+    <string name="voip_wired_headset">Гарнітура</string>
+    <string name="voip_earpiece">Телефон</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Недоступно</string>
+    <string name="voip_call_finished">Виклик Threema завершено</string>
+    <string name="voip_another_call">Неможливо встановити з\'єднання, поки триває інший виклик Threema.</string>
+    <string name="voip_prefs_title_aec">Усунення відлуння</string>
+    <string name="voip_prefs_aec_sw">Програмне усунення відлуння</string>
+    <string name="voip_prefs_aec_hw">Апаратне усунення відлуння</string>
+    <string name="voip_prefs_title_video_codec">Відеокодеки</string>
+    <string name="voip_prefs_video_aec_hw">З апаратним прискоренням</string>
+    <string name="voip_prefs_video_codec_no_vp8">Вимкнути VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Вимкнути H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Програмні кодеки</string>
+    <string name="voip_connection_failed">Не вдалося встановити з\'єднання</string>
+    <string name="voip_connection_lost">З\'єднання втрачено</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Відхиляти телефонні виклики</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Відхиляти вхідні дзвінки на телефон, коли триває виклик Threema.</string>
+    <string name="voip_contact_not_found">Не знайдено контакта Threema за цим номером.</string>
+    <string name="voip_another_pstn_call">Неможливо почати виклик Threema, поки триває звичайний телефонний виклик.</string>
+    <string name="voip_call_status_off_hours">Виклик у неробочий час</string>
+    <string name="voip_peer_video_disabled">Контакт вимкнув відеовиклики.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">Діагностика WebRTC</string>
+    <string name="voip_prefs_webrtc_debug_summary">Скористайтеся цим інструментом, щоб виявити проблеми зі з\'єднанням під час голосового виклику</string>
+    <string name="voip_webrtc_debug">Діагностика WebRTC</string>
+    <string name="voip_webrtc_debug_intro">Натисніть \"Почати\", щоб запустити перевірку.</string>
+    <string name="voip_webrtc_debug_start">Почати</string>
+    <string name="voip_webrtc_debug_done">Перевірку завершено. Якщо вам не вдається встановити з\'єднання під час голосового виклику, надішліть ці результати службі підтримки Threema.</string>
+    <string name="voip_webrtc_debug_copied">Скопійовано в буфер обміну.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Копіювати в буфер обміну</string>
+</resources>

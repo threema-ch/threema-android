@@ -31,7 +31,6 @@ import android.security.keystore.KeyProperties;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -53,9 +52,10 @@ import javax.crypto.SecretKey;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 public class SystemScreenLockServiceImpl implements SystemScreenLockService {
-	private static final Logger logger = LoggerFactory.getLogger(SystemScreenLockServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemScreenLockServiceImpl");
 
 	/* Alias for our key in the Android Key Store. */
 	private static final String ANDROID_KEY_STORE = "AndroidKeyStore";

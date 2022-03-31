@@ -26,17 +26,17 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
 import ch.threema.app.video.transcoder.VideoTranscoder;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Keep audio input track and return it unchanged to the muxer
  */
 public class AudioNullTranscoder extends AbstractAudioTranscoder {
-	private static final Logger logger = LoggerFactory.getLogger(AudioNullTranscoder.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioNullTranscoder");
 
 	/**
 	 * Time of the previously muxed sample.

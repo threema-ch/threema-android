@@ -142,7 +142,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	public static final String EXTRA_MEDIA_ITEMS = "mediaitems";
 	public static final String EXTRA_USE_EXTERNAL_CAMERA = "extcam";
 
-	public static final int MAX_SELECTABLE_IMAGES = 10;
+	public static final int MAX_EDITABLE_IMAGES = 10; // Max number of images/videos that can be edited here at once
 
 	private static final String DIALOG_TAG_QUIT_CONFIRM = "qc";
 	private static final long IMAGE_ANIMATION_DURATION_MS = 180;
@@ -843,8 +843,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 				@Override
 				protected void onPreExecute() {
-					if (mediaItems.size() + uriList.size() > MAX_SELECTABLE_IMAGES) {
-						Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
+					if (mediaItems.size() + uriList.size() > MAX_EDITABLE_IMAGES) {
+						Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 					}
 				}
 
@@ -859,7 +859,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 								continue;
 							}
 
-							if (numExistingItems + itemList.size() >= MAX_SELECTABLE_IMAGES) {
+							if (numExistingItems + itemList.size() >= MAX_EDITABLE_IMAGES) {
 								capacityExceeded = true;
 								break;
 							}
@@ -908,7 +908,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					mediaItems.addAll(itemList);
 
 					if (capacityExceeded) {
-						Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
+						Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 					}
 
 					updateMenu();
@@ -948,8 +948,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 				@Override
 				protected void onPostExecute(List<MediaItem> itemList) {
-					if (mediaItems.size() + itemList.size() > MAX_SELECTABLE_IMAGES) {
-						Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
+					if (mediaItems.size() + itemList.size() > MAX_EDITABLE_IMAGES) {
+						Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 					} else {
 						if (sendMediaGridAdapter != null) {
 							sendMediaGridAdapter.add(itemList);
@@ -1006,10 +1006,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 						if (!TestUtil.empty(this.cameraFilePath)) {
 							final Uri cameraUri = Uri.fromFile(new File(this.cameraFilePath));
 							if (cameraUri != null) {
-								BitmapUtil.ExifOrientation exifOrientation = null;
-								if (requestCode == ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
-									exifOrientation =  BitmapUtil.getExifOrientation(this, cameraUri);
-								} else {
+								BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(this, cameraUri);
+								if (requestCode != ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
 									if (bigImageView != null) {
 										bigImageView.setVisibility(View.GONE);
 									}
@@ -1083,8 +1081,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 	@UiThread
 	private int addItemFromCamera(int type, @NonNull Uri imageUri, BitmapUtil.ExifOrientation exifOrientation) {
-		if (mediaItems.size() >= MAX_SELECTABLE_IMAGES) {
-			Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_SELECTABLE_IMAGES), Snackbar.LENGTH_LONG).show();
+		if (mediaItems.size() >= MAX_EDITABLE_IMAGES) {
+			Snackbar.make((View) gridView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_IMAGES), Snackbar.LENGTH_LONG).show();
 		}
 
 		MediaItem item = new MediaItem(imageUri, type);
@@ -1167,7 +1165,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 	private void updateMenu() {
 		if (this.cameraButton != null) {
-			this.cameraButton.setVisibility(this.mediaItems.size() < MAX_SELECTABLE_IMAGES ? View.VISIBLE : View.GONE);
+			this.cameraButton.setVisibility(this.mediaItems.size() < MAX_EDITABLE_IMAGES ? View.VISIBLE : View.GONE);
 		}
 
 		if (mediaItems.size() > 0) {

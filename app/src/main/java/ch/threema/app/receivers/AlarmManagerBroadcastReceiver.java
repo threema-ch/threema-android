@@ -30,7 +30,6 @@ import android.os.PowerManager;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -39,18 +38,22 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PollingHelper;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
-
-	private static final Logger logger = LoggerFactory.getLogger(AlarmManagerBroadcastReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AlarmManagerBroadcastReceiver");
 
 	private static PendingIntent requireLoggedInConnectionIntent = null;
 
+	public final static String EXTRA_REQUEST_CODE = "requestCode";
+	public final static String EXTRA_REQUIRE_LOGGED_IN_CONNECTION = "requireLoggedInConnection";
+	public final static String EXTRA_NEXT_CHECK = "nextCheck";
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		int requestCode = intent.getIntExtra("requestCode", 0);
+		int requestCode = intent.getIntExtra(EXTRA_REQUEST_CODE, 0);
 
 		logger.info("Alarm type {} received", requestCode);
 
@@ -64,18 +67,19 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 					} catch (Exception ignore) {
 					}
 
-					if (intent.hasExtra("requireLoggedInConnection") && intent.getBooleanExtra("requireLoggedInConnection", false)) {
-						PollingHelper p = new PollingHelper(context, "require");
+					if (intent.hasExtra(EXTRA_REQUIRE_LOGGED_IN_CONNECTION) && intent.getBooleanExtra(EXTRA_REQUIRE_LOGGED_IN_CONNECTION, false)) {
+						final PollingHelper p = new PollingHelper(context, "requireLoggedInConnection");
 						cancelLoggedInConnection(context);
 						if (p.poll(true)) {
 							//recheck!
-							requireLoggedInConnection(context, intent.getIntExtra("nextCheck", (int) DateUtils.MINUTE_IN_MILLIS) * 2);
+							requireLoggedInConnection(context, intent.getIntExtra(EXTRA_NEXT_CHECK, (int) DateUtils.MINUTE_IN_MILLIS) * 2);
 						}
 					} else {
 						long time = System.currentTimeMillis();
-						logger.info("Alarm type " + requestCode + " dispatch to LifetimeService START");
+						logger.info("Alarm type {} dispatch to LifetimeService START", requestCode);
 						ThreemaApplication.getServiceManager().getLifetimeService().alarm(intent);
-						logger.info("Alarm type " + requestCode + " dispatch to LifetimeService STOP. Duration = " + (System.currentTimeMillis() - time) + "ms");
+						logger.info("Alarm type {} dispatch to LifetimeService STOP. Duration = {}ms",
+							requestCode, System.currentTimeMillis() - time);
 					}
 
 					if (wakeLock != null && wakeLock.isHeld()) {
@@ -126,8 +130,8 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 								//set alarm
 								AlarmManager alarmManager = getAlarmManager(context);
 								Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-								intent.putExtra("requireLoggedInConnection", true);
-								intent.putExtra("nextCheck", milliseconds*2);
+								intent.putExtra(EXTRA_REQUIRE_LOGGED_IN_CONNECTION, true);
+								intent.putExtra(EXTRA_NEXT_CHECK, milliseconds*2);
 
 								requireLoggedInConnectionIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 								alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + milliseconds, requireLoggedInConnectionIntent);

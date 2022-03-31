@@ -34,7 +34,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -45,12 +44,14 @@ import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.QRCodeService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
-	private static final Logger logger = LoggerFactory.getLogger(GroupLinkQrCodeActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkQrCodeActivity");
 
 	private FileService fileService;
 	private QRCodeService qrCodeService;
@@ -104,7 +105,7 @@ public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
 		getSupportActionBar().setDisplayShowHomeEnabled(true);
 		actionBar.setTitle(getString(R.string.group_qr_code_title));
 
-		Bitmap qrBitmap = qrCodeService.getRawQR(groupLink, true);
+		Bitmap qrBitmap = qrCodeService.getRawQR(groupLink, true, QRCodeServiceImpl.QR_TYPE_GROUP_LINK);
 		final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), qrBitmap);
 		bitmapDrawable.setFilterBitmap(false);
 

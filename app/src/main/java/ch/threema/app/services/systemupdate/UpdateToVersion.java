@@ -27,16 +27,15 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 abstract class UpdateToVersion {
-	private static final Logger logger = LoggerFactory.getLogger(UpdateToVersion.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateToVersion");
 
 	protected boolean fieldExist(SQLiteDatabase sqLiteDatabase, final String table, final String fieldName)
 	{

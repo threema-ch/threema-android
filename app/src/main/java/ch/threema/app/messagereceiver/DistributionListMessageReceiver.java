@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
@@ -72,7 +74,8 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 		this.distributionListService = distributionListService;
 
 		for(ContactModel c: this.distributionListService.getMembers(this.distributionListModel)) {
-			this.affectedMessageReceivers.add(this.contactService.createReceiver(c));
+			ContactMessageReceiver contactMessageReceiver = this.contactService.createReceiver(c);
+			this.affectedMessageReceivers.add(new DistributionListContactMessageReceiver(contactMessageReceiver));
 		}
 	}
 
@@ -126,7 +129,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	}
 
 	@Override
-	public boolean createBoxedTextMessage(final String text, final DistributionListMessageModel messageModel) throws ThreemaException {
+	public boolean createBoxedTextMessage(final String text, final DistributionListMessageModel messageModel) {
 		return this.handleSendImage(messageModel);
 	}
 
@@ -142,9 +145,19 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	}
 
 	@Override
-	public boolean createBoxedFileMessage(byte[] thumbnailBlobId,
-										  byte[] fileBlobId, EncryptResult fileResult,
-										  DistributionListMessageModel messageModel) throws ThreemaException {	//disabled
+	public boolean createBoxedFileMessage(
+		byte[] thumbnailBlobId,
+		byte[] fileBlobId,
+		SymmetricEncryptionResult encryptionResult,
+		DistributionListMessageModel messageModel
+	) {	//disabled
+		for (ContactMessageReceiver receiver : affectedMessageReceivers) {
+			if (receiver instanceof DistributionListContactMessageReceiver) {
+				((DistributionListContactMessageReceiver) receiver).setFileMessageParameters(
+					thumbnailBlobId, fileBlobId, encryptionResult
+				);
+			}
+		}
 		return this.handleSendImage(messageModel);
 	}
 
@@ -223,16 +236,6 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	}
 
 	@Override
-	public EncryptResult encryptFileData(byte[] fileData) {
-		return null;
-	}
-
-	@Override
-	public EncryptResult encryptFileThumbnailData(byte[] fileData, byte[] encryptionKey)  {
-		return null;
-	}
-
-	@Override
 	public boolean isMessageBelongsToMe(AbstractMessageModel message) {
 		return
 				message instanceof DistributionListMessageModel
@@ -241,7 +244,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
 	@Override
 	public boolean sendMediaData() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -281,5 +284,18 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 			identities[p] = members.get(p).getIdentity();
 		}
 		return identities;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof DistributionListMessageReceiver)) return false;
+		DistributionListMessageReceiver that = (DistributionListMessageReceiver) o;
+		return Objects.equals(affectedMessageReceivers, that.affectedMessageReceivers) && Objects.equals(distributionListModel, that.distributionListModel);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(affectedMessageReceivers, distributionListModel);
 	}
 }

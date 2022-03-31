@@ -167,11 +167,17 @@ public interface PreferenceService {
 
 	void setRecentEmojis2(LinkedList<String> list);
 
-	boolean isPolling();
+	/**
+	 * Whether to use Threema Push instead of another push service.
+	 */
+	boolean useThreemaPush();
 
-	public void setPolling(boolean value);
+	/**
+	 * Whether to use Threema Push instead of another push service.
+	 */
+	void setUseThreemaPush(boolean enabled);
 
-	public boolean isSaveMedia();
+	boolean isSaveMedia();
 
 	boolean isMasterKeyNewMessageNotifications();
 
@@ -187,7 +193,7 @@ public interface PreferenceService {
 
 	String[] getList(String listName);
 
-	void setList(String listName, String[] identities);
+	void setList(String listName, String[] elements);
 
 	HashMap<Integer, String> getHashMap(String listName, boolean encrypted);
 
@@ -257,21 +263,6 @@ public interface PreferenceService {
 	int getTheme();
 
 	int getEmojiStyle();
-
-	/**
-	 * Return the polling interval in milliseconds.
-	 */
-	long getPollingInterval();
-
-	/**
-	 * Return the timestamp of the last successful polling in milliseconds.
-	 */
-	Long getLastSuccessfulPollTimestamp();
-
-	/**
-	 * Set the timestamp of the last successful polling in milliseconds.
-	 */
-	void setLastSuccessfulPollTimestamp(long timestamp);
 
 	void setLockoutDeadline(long deadline);
 

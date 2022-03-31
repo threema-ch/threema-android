@@ -31,7 +31,6 @@ import android.util.SparseArray;
 import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -123,7 +122,7 @@ public class GroupServiceImpl implements GroupService {
 	private final SparseArray<String[]> groupIdentityCache;
 	private final List<AbstractGroupMessage> pendingGroupMessages = new ArrayList<>();
 
-	class GroupPhotoUploadResult {
+	static class GroupPhotoUploadResult {
 		public byte[] bitmapArray;
 		public byte[] blobId;
 		public byte[] encryptionKey;
@@ -311,7 +310,7 @@ public class GroupServiceImpl implements GroupService {
 		// remove all group invite links and requests
 		final GroupInviteModelFactory groupInviteModelFactory = this.databaseServiceNew.getGroupInviteModelFactory();
 		final IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
-		for (GroupInviteModel groupInviteModel : groupInviteModelFactory.getByGroupId(groupModel.getId())) {
+		for (GroupInviteModel groupInviteModel : groupInviteModelFactory.getByGroupApiId(groupModel.getApiGroupId())) {
 			incomingGroupJoinRequestModelFactory.deleteAllForGroupInvite(groupInviteModel.getId());
 			groupInviteModelFactory.delete(groupInviteModel);
 		}
@@ -1344,13 +1343,13 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public GroupMessageReceiver createReceiver(GroupModel groupModel) {
-//		logger.debug("MessageReceiver", "create group receiver");
-		return new GroupMessageReceiver(groupModel,
-				this,
-				this.databaseServiceNew,
-				this.groupMessagingService,
-				this.contactService,
-				this.apiService);
+		return new GroupMessageReceiver(
+			groupModel,
+			this,
+			this.databaseServiceNew,
+			this.groupMessagingService,
+			this.contactService
+		);
 	}
 
 	@Override

@@ -31,7 +31,6 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -49,11 +48,12 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
 
 @WorkerThread
 public class ModifyGroupHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ModifyGroupHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyGroupHandler");
 
 	private final MessageDispatcher dispatcher;
 	private final GroupService groupService;

@@ -22,11 +22,11 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 /**
@@ -34,7 +34,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  */
 public class GroupTextMessage extends AbstractGroupMessage {
 
-	private static final Logger logger = LoggerFactory.getLogger(GroupTextMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupTextMessage");
 
 	private String text;
 

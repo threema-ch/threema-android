@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,6 +53,7 @@ import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -61,7 +61,7 @@ import ch.threema.storage.models.group.GroupInviteModel;
 import java8.util.Optional;
 
 public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(GroupDetailAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailAdapter");
 
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
@@ -228,6 +228,8 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		}
 		else {
 			headerHolder.linkString.setText(R.string.group_link_none);
+			headerHolder.linkResetButton.setVisibility(View.INVISIBLE);
+			headerHolder.linkShareButton.setVisibility(View.INVISIBLE);
 		}
 
 		headerHolder.linkEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -236,6 +238,8 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 				try {
 					GroupDetailAdapter.this.defaultGroupInviteModel = groupInviteService.createOrEnableDefaultLink(groupModel);
 					encodeAndDisplayDefaultLink();
+					headerHolder.linkResetButton.setVisibility(View.VISIBLE);
+					headerHolder.linkShareButton.setVisibility(View.VISIBLE);
 				} catch (GroupInviteToken.InvalidGroupInviteTokenException | IOException | GroupInviteModel.MissingRequiredArgumentsException e) {
 					logger.error("Exception, failed to create or get default group link", e);
 				}
@@ -262,7 +266,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		});
 
 		headerHolder.groupLinkTitle.setText(context.getString(R.string.default_group_link) +
-			" (" + groupInviteService.getCustomLinksCount() + " " + context.getString(R.string.other_group_links) + ")" );
+			" (" + groupInviteService.getCustomLinksCount(groupModel.getApiGroupId()) + " " + context.getString(R.string.custom) + ")" );
 	}
 
 	private void encodeAndDisplayDefaultLink() {

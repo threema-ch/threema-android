@@ -33,9 +33,6 @@ import android.widget.TextView;
 
 import com.google.android.material.chip.Chip;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +70,6 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.TagModel;
 
 public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationModel, RecyclerView.ViewHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(MessageListAdapter.class);
 
 	private static final int MAX_SELECTED_ITEMS = 0;
 

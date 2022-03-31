@@ -22,7 +22,6 @@
 package ch.threema.app.routines;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +40,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
@@ -49,7 +49,7 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
  * Update avatars of the business account
  */
 public class UpdateBusinessAvatarRoutine implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(UpdateBusinessAvatarRoutine.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateBusinessAvatarRoutine");
 
 	private final ContactService contactService;
 	private FileService fileService;

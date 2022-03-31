@@ -23,8 +23,6 @@ package ch.threema.domain.protocol.csp.messages;
 
 import com.neilalexander.jnacl.NaCl;
 import org.apache.commons.io.EndianUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
@@ -35,8 +33,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  * and the nonce to be used when decrypting the image blob.
  */
 public class BoxImageMessage extends AbstractMessage {
-
-	private static final Logger logger = LoggerFactory.getLogger(BoxImageMessage.class);
 
 	private byte[] blobId;
 	private int size;

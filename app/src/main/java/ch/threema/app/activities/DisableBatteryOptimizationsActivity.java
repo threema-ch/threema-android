@@ -21,7 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +37,7 @@ import android.widget.Toast;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +52,9 @@ import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BAT
 
 /**
  * Guides user through the process of disabling battery optimization energy saving option.
+ *
+ * If the app has the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission, then the
+ * ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS intent is used instead.
  */
 public class DisableBatteryOptimizationsActivity extends AppCompatActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DisableBatteryOptimizationsActivity");
@@ -59,12 +62,25 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	private static final int REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS = 778;
 	private static final String DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS = "des";
 	private static final String DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER = "esr";
-
-	public static final String EXTRA_NAME = "name";
-	public static final String EXTRA_CONFIRM = "confirm";
-	public static final String EXTRA_CANCEL_LABEL = "cancel";
-	public static final String EXTRA_WIZARD = "wizard";
 	private static final String DIALOG_TAG_MIUI_WARNING = "miui";
+
+	/**
+	 * The name of the affected system (e.g. "Threema Web").
+	 */
+	public static final String EXTRA_NAME = "name";
+	/**
+	 * If set to true, then a "do you really want to keep battery optimizations enabled"
+	 * confirmation dialog will be shown. Default false.
+	 */
+	public static final String EXTRA_CONFIRM = "confirm";
+	/**
+	 * Set this to a string resource ID in order to override the "continue anyways" text.
+	 */
+	public static final String EXTRA_CANCEL_LABEL = "cancel";
+	/**
+	 * Set this to true if the activity is called from the wizard. Default false.
+	 */
+	public static final String EXTRA_WIZARD = "wizard";
 
 	private String name;
 	@StringRes private int cancelLabel;
@@ -77,7 +93,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || isWhitelisted(this)) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || isIgnoringBatteryOptimizations(this)) {
 			setResult(RESULT_OK);
 			finish();
 			return;
@@ -95,26 +111,13 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 			return;
 		}
 
-		if (ConfigUtils.checkManifestPermission(this, getPackageName(), "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) {
-			@SuppressLint("BatteryLife") Intent newIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+		// Get extras
+		this.name = intent.getStringExtra(EXTRA_NAME);
+		this.confirm = intent.getBooleanExtra(EXTRA_CONFIRM, false);
+		this.cancelLabel = intent.getIntExtra(EXTRA_CANCEL_LABEL, R.string.continue_anyway);
 
-			try {
-				startActivityForResult(newIntent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
-				return;
-			} catch (Exception e) {
-				// Some Samsung devices don't bother implementing this API
-				logger.error("Exception", e);
-				setResult(RESULT_OK);
-				finish();
-				return;
-			}
-		}
-
-		name = intent.getStringExtra(EXTRA_NAME);
-		confirm = intent.getBooleanExtra(EXTRA_CONFIRM, false);
-		cancelLabel = intent.getIntExtra(EXTRA_CANCEL_LABEL, R.string.continue_anyway);
-
-		actionBarSize = ConfigUtils.getActionBarSize(this);
+		// Determine action bar size
+		this.actionBarSize = ConfigUtils.getActionBarSize(this);
 
 		showDisableDialog();
 	}
@@ -125,17 +128,26 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	}
 
 	private void showDisableDialog() {
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.battery_optimizations_title, String.format(getString(R.string.battery_optimizations_explain), name, getString(R.string.app_name)), R.string.disable, cancelLabel);
+		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
+			R.string.battery_optimizations_title,
+			String.format(getString(R.string.battery_optimizations_explain), name, getString(R.string.app_name)),
+			R.string.disable,
+			cancelLabel
+		);
 		dialog.show(getSupportFragmentManager(), DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS);
 	}
 
-	public static boolean isWhitelisted(Context context) {
-		// app is always whitelisted in unit tests
+	/**
+	 * Try to find out whether battery optimizations are already disabled for our app.
+	 * If this fails (e.g. on devices older than Android M), `true` will be returned.
+	 */
+	public static boolean isIgnoringBatteryOptimizations(@NonNull Context context) {
+		// App is always whitelisted in unit tests
 		if (RuntimeUtil.isInTest()) {
 			return true;
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
+			final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
 			try {
 				return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
 			} catch (Exception e) {
@@ -152,30 +164,47 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	public void onYes(String tag, Object data) {
 		switch (tag) {
 			case DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS:
-				Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-				// Samsuck Galaxy S5 with API 23 does not know this intent
-				if (intent.resolveActivity(getPackageManager()) != null) {
-					startActivityForResult(intent, REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS);
+				// If the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission is granted (versions that
+				// aren't distributed through Google Play), then a permission can be requested directly.
+				if (ConfigUtils.checkManifestPermission(this, getPackageName(), "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) {
+					final Uri appUri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
+					final Intent newIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, appUri);
+					try {
+						startActivityForResult(newIntent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
+					} catch (Exception e) {
+						// Some Samsung devices don't bother implementing this API
+						logger.error("Could not request battery optimization exemption", e);
+						setResult(RESULT_OK);
+						finish();
+					}
 
-					dropDownHandler = new Handler();
-					dropDownHandler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							Toast toast = Toast.makeText(getApplicationContext(), R.string.battery_optimizations_disable_guide, Toast.LENGTH_LONG);
-							toast.setGravity(Gravity.TOP| Gravity.LEFT, 0, actionBarSize * 2);
-							toast.show();
-						}
-					}, 2 * DateUtils.SECOND_IN_MILLIS);
+				// Otherwise we need to guide the user through the battery optimization settings.
+				} else {
+					final Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+					// Samsung Galaxy S5 with API 23 does not know this intent
+					if (intent.resolveActivity(getPackageManager()) != null) {
+						startActivityForResult(intent, REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS);
 
-					listSelectHandler = new Handler();
-					listSelectHandler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							Toast ctdToast = Toast.makeText(getApplicationContext(), String.format(getString(R.string.battery_optimizations_disable_guide_ctd), getString(R.string.app_name)), Toast.LENGTH_LONG);
-							ctdToast.setGravity(Gravity.CENTER, 0, 0);
-							ctdToast.show();
-						}
-					}, 8 * DateUtils.SECOND_IN_MILLIS);
+						dropDownHandler = new Handler();
+						dropDownHandler.postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								Toast toast = Toast.makeText(getApplicationContext(), R.string.battery_optimizations_disable_guide, Toast.LENGTH_LONG);
+								toast.setGravity(Gravity.TOP | Gravity.LEFT, 0, actionBarSize * 2);
+								toast.show();
+							}
+						}, 2 * DateUtils.SECOND_IN_MILLIS);
+
+						listSelectHandler = new Handler();
+						listSelectHandler.postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								Toast ctdToast = Toast.makeText(getApplicationContext(), String.format(getString(R.string.battery_optimizations_disable_guide_ctd), getString(R.string.app_name)), Toast.LENGTH_LONG);
+								ctdToast.setGravity(Gravity.CENTER, 0, 0);
+								ctdToast.show();
+							}
+						}, 8 * DateUtils.SECOND_IN_MILLIS);
+					}
 				}
 				break;
 			case DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER:
@@ -186,6 +215,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 			case DIALOG_TAG_MIUI_WARNING:
 				setResult(RESULT_CANCELED);
 				finish();
+				break;
 		}
 	}
 
@@ -194,7 +224,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 		switch (tag) {
 			case DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS:
 				if (confirm) {
-					GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.battery_optimizations_title, String.format(getString(R.string.battery_optimizations_disable_confirm), getString(R.string.app_name), name), R.string.yes, R.string.no);
+					final GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.battery_optimizations_title, String.format(getString(R.string.battery_optimizations_disable_confirm), getString(R.string.app_name), name), R.string.yes, R.string.no);
 					dialog.show(getSupportFragmentManager(), DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER);
 				} else {
 					setResult(RESULT_CANCELED);
@@ -223,7 +253,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 		switch (requestCode) {
 			case REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS:
 				// back from system dialog
-				if (isWhitelisted(this)) {
+				if (isIgnoringBatteryOptimizations(this)) {
 					setResult(RESULT_OK);
 				} else {
 					setResult(RESULT_CANCELED);
@@ -233,7 +263,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 			case REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS:
 				// backup from overlay hack
 				removeHandlers();
-				if (isWhitelisted(this)) {
+				if (isIgnoringBatteryOptimizations(this)) {
 					setResult(RESULT_OK);
 					finish();
 				} else {

@@ -56,20 +56,13 @@
 		<CheckBoxPreference
 			android:defaultValue="false"
 			android:disableDependentsState="true"
-			android:key="@string/preferences__polling_switch"
-			android:summaryOff="@string/prefs_sum_polling_off"
-			android:summaryOn="@string/prefs_sum_polling_on"
-			android:title="@string/prefs_title_polling_switch"
+			android:key="@string/preferences__threema_push_switch"
+			android:summaryOff="@string/prefs_sum_threema_push_off"
+			android:summaryOn="@string/prefs_sum_threema_push_on"
+			android:title="@string/prefs_title_threema_push_switch"
 			android:widgetLayout="@layout/preference_switch_layout"/>
-		<DropDownPreference
-			android:defaultValue="1"
-			android:entries="@array/list_polling_interval"
-			android:entryValues="@array/list_polling_interval_values"
-			android:key="@string/preferences__polling_interval"
-			android:title="@string/prefs_polling_interval"
-			android:summary="%s"/>
 		<Preference
-			android:dependency="@string/preferences__polling_switch"
+			android:dependency="@string/preferences__threema_push_switch"
 			android:key="@string/preferences__reset_push"
 			android:summary="@string/prefs_sum_reset_push"
 			android:title="@string/prefs_reset_push"/>

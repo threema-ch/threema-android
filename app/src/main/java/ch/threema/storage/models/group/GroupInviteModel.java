@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.domain.models.GroupId;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
@@ -44,7 +45,7 @@ public class GroupInviteModel {
 		COLUMN_IS_INVALIDATED = "is_invalidated"; //flag to mark as deleted in UI
 
 	private int id;
-	private final int groupId;
+	private final GroupId groupApiId;
 	private final @NonNull GroupInviteToken token;
 	private final @NonNull String originalGroupName;
 	private final @NonNull String inviteName;
@@ -55,7 +56,7 @@ public class GroupInviteModel {
 
 	private GroupInviteModel(Builder builder) {
 		this.id = builder.id;
-		this.groupId = builder.groupId;
+		this.groupApiId = builder.groupApiId;
 		this.token = builder.token;
 		this.inviteName = builder.inviteName;
 		this.originalGroupName = builder.originalGroupName;
@@ -71,8 +72,8 @@ public class GroupInviteModel {
 
 	public void setId(int id) { this.id = id; }
 
-	public int getGroupId() {
-		return this.groupId;
+	public GroupId getGroupApiId() {
+		return this.groupApiId;
 	}
 
 	public @NonNull	GroupInviteToken getToken() {
@@ -107,7 +108,7 @@ public class GroupInviteModel {
 		if (o == null || this.getClass() != o.getClass()) return false;
 		final GroupInviteModel that = (GroupInviteModel) o;
 		return this.id == that.id &&
-			this.groupId == that.groupId &&
+			this.groupApiId == that.groupApiId &&
 			this.manualConfirmation == that.manualConfirmation &&
 			this.token.equals(that.token) &&
 			this.originalGroupName.equals(that.originalGroupName) &&
@@ -118,26 +119,26 @@ public class GroupInviteModel {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.id, this.groupId, this.token, this.originalGroupName,
+		return Objects.hash(this.id, this.groupApiId, this.token, this.originalGroupName,
 			this.manualConfirmation, this.expirationDate, this.isInvalidated);
 	}
 
 	public static class Builder {
-		int id;
-		int groupId;
-		boolean isDefault;
-		GroupInviteToken token;
-		String originalGroupName;
-		String inviteName;
-		boolean manualConfirmation;
-		Date expirationDate;
-		boolean isInvalidated;
+		private int id;
+		private GroupId groupApiId;
+		private boolean isDefault;
+		private GroupInviteToken token;
+		private String originalGroupName;
+		private String inviteName;
+		private boolean manualConfirmation;
+		private Date expirationDate;
+		private boolean isInvalidated;
 
 		public Builder() { }
 
 		public Builder(GroupInviteModel model) {
 			this.id = model.id;
-			this.groupId = model.groupId;
+			this.groupApiId = model.groupApiId;
 			this.isDefault = model.isDefault;
 			this.token = model.token;
 			this.originalGroupName = model.originalGroupName;
@@ -152,8 +153,8 @@ public class GroupInviteModel {
 			return this;
 		}
 
-		public Builder withGroupId(int groupId) {
-			this.groupId = groupId;
+		public Builder withGroupApiId(GroupId groupId) {
+			this.groupApiId = groupId;
 			return this;
 		}
 

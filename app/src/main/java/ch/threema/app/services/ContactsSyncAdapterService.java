@@ -25,13 +25,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.threema.app.adapters.ContactsSyncAdapter;
 
 public class ContactsSyncAdapterService extends Service {
-	private static final Logger logger = LoggerFactory.getLogger(ContactsSyncAdapterService.class);
 
 	private ContactsSyncAdapter contactsSyncAdapter = null;
 	private static final Object syncAdapterLock = new Object();

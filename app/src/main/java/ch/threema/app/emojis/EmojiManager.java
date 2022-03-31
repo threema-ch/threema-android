@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
 
@@ -35,12 +34,13 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import ch.threema.app.R;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Consumer;
 import java8.util.function.Supplier;
 
 public class EmojiManager {
-	private static final Logger logger = LoggerFactory.getLogger(EmojiManager.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiManager");
 
 	// Singleton
 	private static volatile EmojiManager instance = null;

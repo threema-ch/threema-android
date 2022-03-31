@@ -3,24 +3,12 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:paddingTop="@dimen/wizard_contents_padding"
-				android:paddingBottom="@dimen/wizard_contents_padding">
-
-	<TextView
-			style="@style/WizardTitleText"
-			android:id="@+id/wizard_welcome"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center_horizontal"
-			android:layout_centerHorizontal="true"
-			android:text="@string/new_wizard_choose_nickname"
-			android:layout_marginTop="8dp"/>
+				android:gravity="center_horizontal">
 
 	<TextView
 			style="@style/WizardSubTitleText"
 			android:id="@+id/scooter"
-			android:layout_below="@id/wizard_welcome"
+			android:layout_alignParentTop="true"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"

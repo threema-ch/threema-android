@@ -87,7 +87,7 @@ public class APIConnector {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("APIConnector");
 
-	/* HMAC-SHA256 keys for contact matching */
+	// HMAC-SHA256 keys for contact matching
 	private static final byte[] EMAIL_HMAC_KEY = new byte[]{(byte) 0x30, (byte) 0xa5, (byte) 0x50, (byte) 0x0f, (byte) 0xed, (byte) 0x97, (byte) 0x01, (byte) 0xfa, (byte) 0x6d, (byte) 0xef, (byte) 0xdb, (byte) 0x61, (byte) 0x08, (byte) 0x41, (byte) 0x90, (byte) 0x0f, (byte) 0xeb, (byte) 0xb8, (byte) 0xe4, (byte) 0x30, (byte) 0x88, (byte) 0x1f, (byte) 0x7a, (byte) 0xd8, (byte) 0x16, (byte) 0x82, (byte) 0x62, (byte) 0x64, (byte) 0xec, (byte) 0x09, (byte) 0xba, (byte) 0xd7};
 	private static final byte[] MOBILENO_HMAC_KEY = new byte[]{(byte) 0x85, (byte) 0xad, (byte) 0xf8, (byte) 0x22, (byte) 0x69, (byte) 0x53, (byte) 0xf3, (byte) 0xd9, (byte) 0x6c, (byte) 0xfd, (byte) 0x5d, (byte) 0x09, (byte) 0xbf, (byte) 0x29, (byte) 0x55, (byte) 0x5e, (byte) 0xb9, (byte) 0x55, (byte) 0xfc, (byte) 0xd8, (byte) 0xaa, (byte) 0x5e, (byte) 0xc4, (byte) 0xf9, (byte) 0xfc, (byte) 0xd8, (byte) 0x69, (byte) 0xe2, (byte) 0x58, (byte) 0x37, (byte) 0x07, (byte) 0x23};
 
@@ -153,27 +153,27 @@ public class APIConnector {
 	) throws Exception {
 		String url = getServerUrl() + "identity/create";
 
-		/* generate new key pair and store */
+		// Generate new key pair and store
 		logger.debug("Generating new key pair");
 		byte[] publicKey = new byte[NaCl.PUBLICKEYBYTES];
 		byte[] privateKey = new byte[NaCl.SECRETKEYBYTES];
 
-		/* seed available? */
+		// Seed available?
 		byte[] hashedSeed = null;
 		if (seed != null) {
-			/* hash the seed to ensure it is unbiased and has the right length */
+			// Hash the seed to ensure it is unbiased and has the right length
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			hashedSeed = md.digest(seed);
 		}
 
 		NaCl.genkeypair(publicKey, privateKey, hashedSeed);
 
-		/* phase 1: send public key to server */
+		// Phase 1: send public key to server
 		logger.debug("Sending public key to server");
 		JSONObject p1Body = new JSONObject();
 		p1Body.put("publicKey", Base64.encodeBytes(publicKey));
 
-		String p1ResultString = doPost(url, p1Body.toString());
+		String p1ResultString = this.postJson(url, p1Body);
 		JSONObject p1Result = new JSONObject(p1ResultString);
 
 		String tokenString = p1Result.getString("token");
@@ -186,7 +186,7 @@ public class APIConnector {
 
 		logger.debug("Got token from server; sending response");
 
-		/* phase 2: encrypt token and send response to server */
+		// Phase 2: encrypt token and send response to server
 		String nonceStr = "createIdentity response.";
 		NaCl nacl = new NaCl(privateKey, tokenRespKeyPub);
 		byte[] clientResponse = nacl.encrypt(token, nonceStr.getBytes());
@@ -196,12 +196,14 @@ public class APIConnector {
 		p2Body.put("token", tokenString);
 		p2Body.put("response", Base64.encodeBytes(clientResponse));
 
-		String p2ResultString = doPost(url, p2Body.toString());
+		String p2ResultString = this.postJson(url, p2Body);
 		JSONObject p2Result = new JSONObject(p2ResultString);
 
 		boolean success = p2Result.getBoolean("success");
-		if (!success)
-			throw new ThreemaException("TA001: " + p2Result.getString("error"));    /* Create identity phase 2 not successful; error: */
+		if (!success) {
+			// Create identity phase 2 not successful; error
+			throw new ThreemaException("TA001: " + p2Result.getString("error"));
+		}
 
 		String identity = p2Result.getString("identity");
 		String serverGroup = p2Result.getString("serverGroup");
@@ -250,7 +252,7 @@ public class APIConnector {
 
 		JSONObject postObject = new JSONObject();
 		postObject.put("identities", new JSONArray(identities));
-		String postResponse = doPost(getServerUrl() + "identity/fetch_bulk", postObject.toString());
+		String postResponse = this.postJson(getServerUrl() + "identity/fetch_bulk", postObject);
 
 		if (postResponse == null) {
 			throw new ThreemaException("no valid response or network error");
@@ -285,12 +287,12 @@ public class APIConnector {
 
 		String url = getServerUrl() + "identity/fetch_priv";
 
-		/* phase 1: send identity */
+		// Phase 1: send identity
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
 
 		logger.debug("Fetch identity private phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Fetch identity private phase 1: response from server: {}", p1Result);
 
 		if (p1Result.has("success") && !p1Result.getBoolean("success")) {
@@ -299,9 +301,9 @@ public class APIConnector {
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("Fetch identity private: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Fetch identity private: response from server: {}", p2Result);
 
 		if (!p2Result.getBoolean("success")) {
@@ -310,12 +312,15 @@ public class APIConnector {
 
 		FetchIdentityPrivateResult result = new FetchIdentityPrivateResult();
 		result.serverGroup = p2Result.getString("serverGroup");
-		if (p2Result.has("email"))
+		if (p2Result.has("email")) {
 			result.email = p2Result.getString("email");
-		if (p2Result.has("mobileNo"))
+		}
+		if (p2Result.has("mobileNo")) {
 			result.mobileNo = p2Result.getString("mobileNo");
+		}
 		return result;
 	}
+
 	/**
 	 * Link an e-mail address with the identity from the given store. The user gets a verification
 	 * e-mail with a link. {@link #linkEmailCheckStatus(String, IdentityStoreInterface)} should be called
@@ -335,31 +340,34 @@ public class APIConnector {
 
 		String url = getServerUrl() + "identity/link_email";
 
-		/* phase 1: send identity and e-mail */
+		// Phase 1: send identity and e-mail
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
 		request.put("email", email);
 		request.put("lang", language);
 
 		logger.debug("Link e-mail phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Link e-mail phase 1: response from server: {}", p1Result);
 
-		if (!p1Result.has("linked"))
+		if (!p1Result.has("linked")) {
 			throw new LinkEmailException(p1Result.getString("error"));
+		}
 
-		if (p1Result.getBoolean("linked"))
-			return false;    /* already linked */
+		if (p1Result.getBoolean("linked")) {
+			return false; // Already linked
+		}
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("Link e-mail phase 2: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Link e-mail phase 2: response from server: {}", p2Result);
 
-		if (!p2Result.getBoolean("success"))
+		if (!p2Result.getBoolean("success")) {
 			throw new LinkEmailException(p2Result.getString("error"));
+		}
 
 		return true;
 	}
@@ -381,7 +389,7 @@ public class APIConnector {
 		request.put("email", email);
 
 		logger.debug("Link e-mail check: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Link e-mail check: response from server: {}", p1Result);
 
 		return p1Result.getBoolean("linked");
@@ -423,7 +431,7 @@ public class APIConnector {
 	public String linkMobileNo(String mobileNo, String language, IdentityStoreInterface identityStore, String urlScheme) throws LinkMobileNoException, Exception {
 		String url = getServerUrl() + "identity/link_mobileno";
 
-		/* phase 1: send identity and mobile no */
+		// Phase 1: send identity and mobile no
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
 		request.put("mobileNo", mobileNo);
@@ -434,29 +442,33 @@ public class APIConnector {
 		}
 
 		logger.debug("Link mobile number phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Link mobile number phase 1: response from server: {}", p1Result);
 
-		if (!p1Result.has("linked"))
+		if (!p1Result.has("linked")) {
 			throw new LinkMobileNoException(p1Result.getString("error"));
+		}
 
-		if (p1Result.getBoolean("linked"))
-			return null;    /* already linked */
+		if (p1Result.getBoolean("linked")) {
+			return null; // Already linked
+		}
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("Link mobile number phase 2: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Link mobile number phase 2: response from server: {}", p2Result);
 
-		if (!p2Result.getBoolean("success"))
+		if (!p2Result.getBoolean("success")) {
 			throw new LinkMobileNoException(p2Result.getString("error"));
+		}
 
-		if (mobileNo.length() > 0)
+		if (mobileNo.length() > 0) {
 			return p2Result.getString("verificationId");
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -474,10 +486,11 @@ public class APIConnector {
 		request.put("verificationId", verificationId);
 		request.put("code", code);
 
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 
-		if (!result.getBoolean("success"))
+		if (!result.getBoolean("success")) {
 			throw new LinkMobileNoException(result.getString("error"));
+		}
 	}
 
 	/**
@@ -495,10 +508,11 @@ public class APIConnector {
 		JSONObject request = new JSONObject();
 		request.put("verificationId", verificationId);
 
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 
-		if (!result.getBoolean("success"))
+		if (!result.getBoolean("success")) {
 			throw new LinkMobileNoException(result.getString("error"));
+		}
 	}
 
 	/**
@@ -521,8 +535,15 @@ public class APIConnector {
 	 * will be returned in {@code refObject}.
 	 */
 	@SuppressLint("DefaultLocale")
-	public Map<String, MatchIdentityResult> matchIdentities(Map<String, ?> emails, Map<String, ?> mobileNos, String userCountry, boolean includeInactive, IdentityStoreInterface identityStore, TokenStoreInterface matchTokenStore) throws Exception {
-		/* normalize and hash e-mail addresses */
+	public Map<String, MatchIdentityResult> matchIdentities(
+		Map<String, ?> emails,
+		Map<String, ?> mobileNos,
+		String userCountry,
+		boolean includeInactive,
+		IdentityStoreInterface identityStore,
+		TokenStoreInterface matchTokenStore
+	) throws Exception {
+		// Normalize and hash e-mail addresses
 		Map<String, Object> emailHashes = new HashMap<>();
 
 		Mac emailMac = Mac.getInstance("HmacSHA256");
@@ -533,12 +554,13 @@ public class APIConnector {
 			byte[] emailHash = emailMac.doFinal(normalizedEmail.getBytes(StandardCharsets.US_ASCII));
 			emailHashes.put(Base64.encodeBytes(emailHash), entry.getValue());
 
-			/* Gmail address? If so, hash with the other domain as well */
+			// Gmail address? If so, hash with the other domain as well
 			String normalizedEmailAlt = null;
-			if (normalizedEmail.endsWith("@gmail.com"))
+			if (normalizedEmail.endsWith("@gmail.com")) {
 				normalizedEmailAlt = normalizedEmail.replace("@gmail.com", "@googlemail.com");
-			else if (normalizedEmail.endsWith("@googlemail.com"))
+			} else if (normalizedEmail.endsWith("@googlemail.com")) {
 				normalizedEmailAlt = normalizedEmail.replace("@googlemail.com", "@gmail.com");
+			}
 
 			if (normalizedEmailAlt != null) {
 				byte[] emailHashAlt = emailMac.doFinal(normalizedEmailAlt.getBytes(StandardCharsets.US_ASCII));
@@ -546,15 +568,16 @@ public class APIConnector {
 			}
 		}
 
-		/* normalize and hash phone numbers */
+		// Normalize and hash phone numbers
 		Map<String, Object> mobileNoHashes = new HashMap<>();
 
 		Mac mobileNoMac = Mac.getInstance("HmacSHA256");
 		mobileNoMac.init(new SecretKeySpec(MOBILENO_HMAC_KEY, "HmacSHA256"));
 		PhoneNumberUtil phoneNumberUtil = null;
 
-		if (userCountry != null)
+		if (userCountry != null) {
 			phoneNumberUtil = PhoneNumberUtil.getInstance();
+		}
 
 		for (Map.Entry<String, ?> entry : mobileNos.entrySet()) {
 			try {
@@ -570,7 +593,7 @@ public class APIConnector {
 				byte[] mobileNoHash = mobileNoMac.doFinal(normalizedMobileNo.getBytes(StandardCharsets.US_ASCII));
 				mobileNoHashes.put(Base64.encodeBytes(mobileNoHash), entry.getValue());
 			} catch (NumberParseException e) {
-				/* skip/ignore this number */
+				// Skip/ignore this number
 				logger.debug("Failed to parse phone number {}: {}", entry.getKey(), e.getMessage());
 			}
 		}
@@ -578,9 +601,14 @@ public class APIConnector {
 		return matchIdentitiesHashed(emailHashes, mobileNoHashes, includeInactive, identityStore, matchTokenStore);
 	}
 
-	public Map<String, MatchIdentityResult> matchIdentitiesHashed(Map<String, ?> emailHashes, Map<String, ?> mobileNoHashes, boolean includeInactive, IdentityStoreInterface identityStore, TokenStoreInterface matchTokenStore) throws Exception {
+	public Map<String, MatchIdentityResult> matchIdentitiesHashed(
+		@NonNull Map<String, ?> emailHashes,
+		@NonNull Map<String, ?> mobileNoHashes,
+		boolean includeInactive,
+		@Nullable IdentityStoreInterface identityStore,
+		TokenStoreInterface matchTokenStore
+	) throws Exception {
 		String matchToken = obtainMatchToken(identityStore, matchTokenStore, false);
-
 		try {
 			return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive, matchToken);
 		} catch (Exception e) {
@@ -591,22 +619,28 @@ public class APIConnector {
 		}
 	}
 
-	private Map<String, MatchIdentityResult> matchIdentitiesHashedToken(Map<String, ?> emailHashes, Map<String, ?> mobileNoHashes, boolean includeInactive, String matchToken) throws Exception {
+	private Map<String, MatchIdentityResult> matchIdentitiesHashedToken(
+		@NonNull Map<String, ?> emailHashes,
+		@NonNull Map<String, ?> mobileNoHashes,
+		boolean includeInactive,
+		String matchToken
+	) throws Exception {
 		String url = getServerUrl() + "identity/match";
 
-		/* send hashes to server */
+		// Send hashes to server
 		JSONObject request = new JSONObject();
 		if (matchToken != null) {
 			request.put("matchToken", matchToken);
 		}
 		request.put("emailHashes", new JSONArray(emailHashes.keySet()));
 		request.put("mobileNoHashes", new JSONArray(mobileNoHashes.keySet()));
-		if (includeInactive)
+		if (includeInactive) {
 			request.put("includeInactive", Boolean.TRUE);
+		}
 
 		logger.debug(String.format("Match identities: sending to server: %s", request.toString()));
 
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(postJson(url, request));
 		logger.debug(String.format("Match identities: response from server: %s", result.toString()));
 
 		matchCheckInterval = result.getInt("checkInterval");
@@ -636,41 +670,53 @@ public class APIConnector {
 		return returnMap;
 	}
 
-	private String obtainMatchToken(IdentityStoreInterface identityStore, TokenStoreInterface matchTokenStore, boolean forceRefresh) throws Exception {
+	/**
+	 * Obtain a match token, used to authenticate "match identites" requests.
+	 *
+	 * @param identityStore Obtain a match token for the identity stored in this identity store.
+	 * @param matchTokenStore Optional cache used to store match tokens after lookup.
+	 * @param forceRefresh If set to true, then a match token will always be re-fetched.
+	 *   The `matchTokenStore` cache will be ignored.
+	 * @return The match token as string
+	 */
+	private String obtainMatchToken(
+		@Nullable IdentityStoreInterface identityStore,
+		@Nullable TokenStoreInterface matchTokenStore,
+		boolean forceRefresh
+	) throws Exception {
 		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
 			return null;
 		}
 
 		// Cached token?
 		String token = null;
-		if (matchTokenStore != null) {
+		if (!forceRefresh && matchTokenStore != null) {
 			token = matchTokenStore.getToken();
 		}
-		if (token != null && !forceRefresh) {
+		if (token != null) {
 			return token;
 		}
 
-		String url = getServerUrl() + "identity/match_token";
+		final String url = getServerUrl() + "identity/match_token";
 
-		/* phase 1: send identity */
-		JSONObject request = new JSONObject();
+		// Phase 1: Send identity
+		final JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
-
 		logger.debug("Fetch match token phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		final JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Fetch match token phase 1: response from server: {}", p1Result);
-
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: Send token response
 		logger.debug("Fetch match token: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		final JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Fetch match token: response from server: {}", p2Result);
-
-		if (!p2Result.getBoolean("success"))
+		if (!p2Result.getBoolean("success")) {
 			throw new ThreemaException(p2Result.getString("error"));
-
+		}
 		token = p2Result.getString("matchToken");
+
+		// Store token in token store
 		if (matchTokenStore != null) {
 			matchTokenStore.storeToken(token);
 		}
@@ -685,7 +731,10 @@ public class APIConnector {
 	 * @param forceRefresh if true, a new token is always requested even if one is currently cached
 	 * @return The authentication token
 	 */
-	public String obtainAuthToken(TokenStoreInterface authTokenStore, boolean forceRefresh) throws JSONException, IOException, ThreemaException {
+	public String obtainAuthToken(
+		@Nullable TokenStoreInterface authTokenStore,
+		boolean forceRefresh
+	) throws JSONException, IOException, ThreemaException {
 		String token = null;
 		if (authTokenStore != null) {
 			token = authTokenStore.getToken();
@@ -706,6 +755,62 @@ public class APIConnector {
 	}
 
 	/**
+	 * Obtain a Threema Push token.
+	 *
+	 * The token will be prefixed with `3ma;`.
+	 *
+	 * @param identityStore Obtain a Threema Push token for the identity stored in this identity store.
+	 * @return The match token as string
+	 */
+	public @NonNull String obtainThreemaPushToken(
+		@NonNull IdentityStoreInterface identityStore,
+		@Nullable TokenStoreInterface pushTokenStore,
+		boolean forceRefresh
+	) throws Exception {
+		if (identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
+			throw new RuntimeException("Identity not defined");
+		}
+
+		// Cached token?
+		String token = null;
+		if (!forceRefresh && pushTokenStore != null) {
+			token = pushTokenStore.getToken();
+		}
+		if (token != null) {
+			return "3ma;" + token;
+		}
+
+		final String url = this.getServerUrl() + "identity/threema_push_token";
+
+		// Phase 1: Send identity
+		final JSONObject request = new JSONObject();
+		request.put("identity", identityStore.getIdentity());
+		logger.debug("Fetch threema push token phase 1: sending to server: {}", request);
+		final JSONObject p1Result = new JSONObject(this.postJson(url, request));
+		logger.debug("Fetch threema push token phase 1: response from server: {}", p1Result);
+		makeTokenResponse(p1Result, request, identityStore);
+
+		// Phase 2: Send token response
+		logger.debug("Fetch threema push token: sending to server: {}", request);
+		final JSONObject p2Result = new JSONObject(this.postJson(url, request));
+		logger.debug("Fetch threema push token: response from server: {}", p2Result);
+		if (!p2Result.getBoolean("success")) {
+			throw new ThreemaException(p2Result.getString("error"));
+		}
+		token = p2Result.getString("threemaPushToken");
+		if (token.length() == 0) {
+			throw new ThreemaException("Received empty Threema Push token");
+		}
+
+		// Store token in token store
+		if (pushTokenStore != null) {
+			pushTokenStore.storeToken(token);
+		}
+
+		return "3ma;" + token;
+	}
+
+	/**
 	 * Set the group chat flag for the identity in the given store.
 	 *
 	 * @param featureBuilder feature mask builder of the current identity
@@ -716,20 +821,20 @@ public class APIConnector {
 	public void setFeatureMask(ThreemaFeature.Builder featureBuilder, IdentityStoreInterface identityStore) throws Exception {
 		String url = getServerUrl() + "identity/set_featuremask";
 
-//        /* phase 1: send identity */
+		// Phase 1: send identity
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
 		request.put("featureMask", featureBuilder.build());
 
 		logger.debug("Set feature mask phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Set feature mask phase 1: response from server: {}", p1Result);
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("Set feature mask phase 2: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Set feature mask  phase 2: response from server: {}", p2Result);
 
 		if (!p2Result.getBoolean("success")) {
@@ -754,7 +859,7 @@ public class APIConnector {
 			jsonIdentities.put(identity);
 		request.put("identities", jsonIdentities);
 
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 
 		JSONArray jsonArrayFeatureMasks = result.getJSONArray("featureMasks");
 
@@ -780,14 +885,14 @@ public class APIConnector {
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
 		logger.debug("checkRevocationKey phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("checkRevocationKey phase 1: response from server: {}", p1Result);
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("checkRevocationKey phase 2: sending to server: {}", request);
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 		logger.debug("checkRevocationKey phase 2: response from server: {}", result);
 
 		boolean set = result.getBoolean("revocationKeySet");
@@ -805,7 +910,7 @@ public class APIConnector {
 	 */
 	public SetRevocationKeyResult setRevocationKey(IdentityStoreInterface identityStore, String revocationKey) throws Exception {
 
-		//calculate key
+		// Calculate key
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		byte[] sha256 = md.digest(revocationKey.getBytes(StandardCharsets.UTF_8));
 
@@ -816,15 +921,16 @@ public class APIConnector {
 		request.put("identity", identityStore.getIdentity());
 		request.put("revocationKey", base64KeyPart);
 
+		// Phase 1: Send identity and revocation key
 		logger.debug("setRevocationKey phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("setRevocationKey phase 1: response from server: {}", p1Result);
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("setRevocationKey phase 2: sending to server: {}", request);
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 		logger.debug("setRevocationKey phase 2: response from server: {}", result);
 
 		if (result.getBoolean("success")) {
@@ -849,7 +955,7 @@ public class APIConnector {
 		}
 		request.put("identities", jsonIdentities);
 
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 
 		int interval = result.getInt("checkInterval");
 		JSONArray jsonStates = result.getJSONArray("states");
@@ -899,24 +1005,25 @@ public class APIConnector {
 
 		String url = getServerUrl() + "identity/turn_cred";
 
-		/* phase 1: send identity and type */
+		// Phase 1: send identity and type
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
 		request.put("type", type);
 
 		logger.debug("Obtain TURN servers phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Obtain TURN servers phase 1: response from server: {}", p1Result);
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("Obtain TURN servers phase 2: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Obtain TURN servers phase 2: response from server: {}", p2Result);
 
-		if (!p2Result.getBoolean("success"))
+		if (!p2Result.getBoolean("success")) {
 			throw new ThreemaException(p2Result.getString("error"));
+		}
 
 		String[] turnUrls = jsonArrayToStringArray(p2Result.getJSONArray("turnUrls"));
 		String[] turnUrlsDualStack = jsonArrayToStringArray(p2Result.getJSONArray("turnUrlsDualStack"));
@@ -985,23 +1092,19 @@ public class APIConnector {
 		request.put("version", version.getFullVersion());
 		request.put("arch", version.getArchitecture());
 
-		JSONObject result = new JSONObject(doPost(url, request.toString()));
+		JSONObject result = new JSONObject(this.postJson(url, request));
 
 		CheckLicenseResult checkLicenseResult = new CheckLicenseResult();
 		if (result.getBoolean("success")) {
 			checkLicenseResult.success = true;
 
-			if (result.has("updateMessage"))
+			if (result.has("updateMessage")) {
 				checkLicenseResult.updateMessage = result.getString("updateMessage");
+			}
 
-			if (result.has("updateUrl"))
+			if (result.has("updateUrl")) {
 				checkLicenseResult.updateUrl = result.getString("updateUrl");
-
-			if (result.has("logoLightUrl"))
-				checkLicenseResult.logoLightUrl = result.getString("logoLightUrl");
-
-			if (result.has("logoDarkUrl"))
-				checkLicenseResult.logoDarkUrl = result.getString("logoDarkUrl");
+			}
 
 		} else {
 			checkLicenseResult.success = false;
@@ -1026,9 +1129,7 @@ public class APIConnector {
 		}
 		request.put("contacts", identityArray);
 
-		String data = doPost(
-			getWorkServerUrl() + "fetch2",
-			request.toString());
+		String data = this.postJson(getWorkServerUrl() + "fetch2", request);
 
 		if (data == null || data.length() == 0) {
 			return workData;
@@ -1141,9 +1242,7 @@ public class APIConnector {
 		}
 		request.put("contacts", identityArray);
 
-		String data = doPost(
-			getWorkServerUrl() + "identities",
-			request.toString());
+		String data = this.postJson(getWorkServerUrl() + "identities", request);
 
 		if (data == null || data.length() == 0) {
 			return contactsList;
@@ -1176,18 +1275,16 @@ public class APIConnector {
 	 * Search the threema work directory without categories.
 	 */
 	public WorkDirectory fetchWorkDirectory(
-		String username,
-		String password,
-		IdentityStoreInterface identityStore,
-		WorkDirectoryFilter filter
+		@NonNull String username,
+		@NonNull String password,
+		@NonNull IdentityStoreInterface identityStore,
+		@NonNull WorkDirectoryFilter filter
 	) throws Exception {
-
 		JSONObject request = new JSONObject();
 		request.put("username", username);
 		request.put("password", password);
 		request.put("identity", identityStore.getIdentity());
 		request.put("query", filter.getQuery());
-
 
 		// Filter category
 		if (filter.getCategories() != null && filter.getCategories().size() > 0) {
@@ -1217,14 +1314,10 @@ public class APIConnector {
 		// Paging
 		request.put("page", filter.getPage());
 
-		String data = doPost(
-			getWorkServerUrl() + "directory",
-			request.toString());
+		String data = this.postJson(getWorkServerUrl() + "directory", request);
 
 		// Verify request
-		if (data == null
-			|| data.length() == 0) {
-			// Return null
+		if (data == null || data.length() == 0) {
 			return null;
 		}
 
@@ -1346,14 +1439,14 @@ public class APIConnector {
 		}
 
 		logger.debug("Update work info phase 1: sending to server: {}", request);
-		JSONObject p1Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Update work info phase 1: response from server: {}", p1Result);
 
 		makeTokenResponse(p1Result, request, identityStore);
 
-		/* phase 2: send token response */
+		// Phase 2: send token response
 		logger.debug("Update work info phase 2: sending to server: {}", request);
-		JSONObject p2Result = new JSONObject(doPost(url, request.toString()));
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Update work info phase 2: response from server: {}", p2Result);
 
 		if (!p2Result.getBoolean("success")) {
@@ -1410,10 +1503,20 @@ public class APIConnector {
 		}
 	}
 
-	protected String doPost(String urlStr, String body) throws IOException {
-		URL url = new URL(urlStr);
+	/**
+	 * Send a HTTP POST request with the specified body to the specified URL.
+	 *
+	 * The `Content-Type` header will be set to `application/json`, and the `User-Agent`
+	 * will be set appropriately as well.
+	 *
+	 * @param urlStr The target URL
+	 * @param body The request body
+	 * @return The response body, UTF-8 decoded
+	 */
+	protected String postJson(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
+		final URL url = new URL(urlStr);
 
-		HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+		final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 		if (urlConnection instanceof HttpsURLConnection) {
 			((HttpsURLConnection)urlConnection).setSSLSocketFactory(this.sslSocketFactoryFactory.makeFactory(url.getHost()));
 		}
@@ -1421,45 +1524,62 @@ public class APIConnector {
 		urlConnection.setReadTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
 		urlConnection.setRequestMethod("POST");
 		urlConnection.setRequestProperty("Content-Type", "application/json");
-		urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT + "/" + version.getVersion());
-		if (language != null) {
-			urlConnection.setRequestProperty("Accept-Language", language);
+		urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT + "/" + this.version.getVersion());
+		if (this.language != null) {
+			urlConnection.setRequestProperty("Accept-Language", this.language);
 		}
-		if (authenticator != null) {
-			authenticator.addAuthenticationToConnection(urlConnection);
+		if (this.authenticator != null) {
+			this.authenticator.addAuthenticationToConnection(urlConnection);
 		}
 		urlConnection.setDoOutput(true);
 		urlConnection.setDoInput(true);
 
 		try {
-			OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream(), StandardCharsets.UTF_8);
-			osw.write(body);
-			osw.close();
+			// Send request
+			try (OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream(), StandardCharsets.UTF_8)) {
+				osw.write(body.toString());
+			}
 
-			InputStream inputStream = urlConnection.getInputStream();
-			String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-			inputStream.close();
-
-			return result;
+			// Read response body
+			final String responseBody;
+			try (InputStream inputStream = urlConnection.getInputStream()) {
+				responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+			}
+			return responseBody;
 		} finally {
 			urlConnection.disconnect();
 		}
 	}
 
-	private void makeTokenResponse(JSONObject p1Result, JSONObject request, IdentityStoreInterface identityStore) throws JSONException, IOException, ThreemaException {
+	/**
+	 * Create a token response for a two-phase API request by updating
+	 * the original request JSON object.
+	 *
+	 * @param p1Result Phase 1 response.
+	 * @param request Phase 1 request. This request will be updated with the signed token.
+	 * @param identityStore Identity store used to sign the token.
+	 * @throws JSONException if a required field cannot be retrieved from the `p1Result`
+	 * @throws IOException if base64 decoding of the token fails
+	 * @throws ThreemaException if the token is invalid or if signing fails
+	 */
+	private void makeTokenResponse(
+		@NonNull JSONObject p1Result,
+		@NonNull JSONObject request,
+		@NonNull IdentityStoreInterface identityStore
+	) throws JSONException, IOException, ThreemaException {
 		byte[] token = Base64.decode(p1Result.getString("token"));
 		byte[] tokenRespKeyPub = Base64.decode(p1Result.getString("tokenRespKeyPub"));
 		if (isBadToken(token)) {
 			throw new ThreemaException("Bad token");
 		}
 
-		/* sign token with our secret key */
+		// Sign token with our secret key
 		byte[] nonce = new byte[NaCl.NONCEBYTES];
 		random.nextBytes(nonce);
 
 		byte[] response = identityStore.encryptData(token, nonce, tokenRespKeyPub);
 		if (response == null) {
-			throw new ThreemaException("TM047"); /* encryption failed */
+			throw new ThreemaException("TM047"); // encryption failed
 		}
 
 		request.put("token", Base64.encodeBytes(token));
@@ -1528,8 +1648,6 @@ public class APIConnector {
 		public String error;
 		public String updateMessage;
 		public String updateUrl;
-		public String logoLightUrl;
-		public String logoDarkUrl;
 	}
 
 	public static class CheckIdentityStatesResult {

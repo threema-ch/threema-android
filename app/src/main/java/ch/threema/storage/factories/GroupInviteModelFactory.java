@@ -27,7 +27,6 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +37,8 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.Result;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -45,7 +46,7 @@ import ch.threema.storage.models.group.GroupInviteModel;
 import java8.util.Optional;
 
 public class GroupInviteModelFactory extends ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(GroupInviteModelFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupInviteModelFactory");
 
 	public GroupInviteModelFactory(DatabaseServiceNew databaseServiceNew) {
 		super(databaseServiceNew, GroupInviteModel.TABLE);
@@ -137,6 +138,12 @@ public class GroupInviteModelFactory extends ModelFactory {
 		this.update(groupInviteModel.getId(), contentValues);
 	}
 
+	public List<GroupInviteModel> getAll() {
+		return getCursorResultModelList(
+			null,
+			null);
+	}
+
 	public @NonNull List<GroupInviteModel> getAllActive() {
 		final String selection = GroupInviteModel.COLUMN_IS_INVALIDATED + "=?";
 		final String[] selectionArgs = new String[]{ String.valueOf(0) };
@@ -147,12 +154,15 @@ public class GroupInviteModelFactory extends ModelFactory {
 	}
 
 	/**
-	 * Return the number of all active group links that have been created individually apart from the default link
+	 * Return the number of all active group links that have been created individually apart from the default link for a group
+	 * @param GroupId groupApiId identifying the unique group for which the custom invites should be queried
 	 */
-	public @NonNull List<GroupInviteModel> getAllActiveCustom() {
+	public @NonNull List<GroupInviteModel> getAllActiveCustomForGroup(GroupId groupApiId) {
 		final String selection = GroupInviteModel.COLUMN_IS_INVALIDATED + "=?"
+			+ " AND " + GroupInviteModel.COLUMN_GROUP_ID + "=?"
 			+ " AND " + GroupInviteModel.COLUMN_DEFAULT_FLAG + "=?";
-		final String[] selectionArgs = new String[]{ String.valueOf(0), String.valueOf(0) };
+		final String[] selectionArgs = new String[]{ String.valueOf(0), groupApiId.toString(), String.valueOf(0) };
+
 		return this.getCursorResultModelList(
 			selection,
 			selectionArgs
@@ -177,12 +187,12 @@ public class GroupInviteModelFactory extends ModelFactory {
 		);
 	}
 
-	public @NonNull List<GroupInviteModel> getByGroupId(int groupId) {
+	public @NonNull List<GroupInviteModel> getByGroupApiId(GroupId groupApiId) {
 		final String selection = GroupInviteModel.COLUMN_GROUP_ID + "=?"
 			+ " AND " + GroupInviteModel.COLUMN_IS_INVALIDATED + " =?";
 
 		final String[] selectionArgs = new String[] {
-			String.valueOf(groupId),
+			groupApiId.toString(),
 			String.valueOf(0),
 		};
 
@@ -192,11 +202,11 @@ public class GroupInviteModelFactory extends ModelFactory {
 		);
 	}
 
-	public @NonNull Optional<GroupInviteModel>  getDefaultByGroupId(int groupId) {
+	public @NonNull Optional<GroupInviteModel> getDefaultByGroupApiId(GroupId groupId) {
 		final Cursor cursor = this.databaseService.getReadableDatabase().rawQuery(
 			"SELECT * FROM "+ getTableName() +
 				" WHERE " + GroupInviteModel.COLUMN_DEFAULT_FLAG + " =" + 1 +
-				" AND " + GroupInviteModel.COLUMN_GROUP_ID + " =" + groupId +
+				" AND " + GroupInviteModel.COLUMN_GROUP_ID + "=\"" + groupId.toString() + "\"" +
 				" ORDER BY " + GroupInviteModel.COLUMN_ID + " DESC LIMIT 1", null);
 
 		return returnFirstModelFromCursor(cursor);
@@ -260,7 +270,7 @@ public class GroupInviteModelFactory extends ModelFactory {
 		try {
 			return new GroupInviteModel.Builder()
 				.withId(Objects.requireNonNull(cursorHelper.getInt(GroupInviteModel.COLUMN_ID)))
-				.withGroupId(Objects.requireNonNull(cursorHelper.getInt(GroupInviteModel.COLUMN_GROUP_ID)))
+				.withGroupApiId(new GroupId(Objects.requireNonNull(cursorHelper.getString(GroupInviteModel.COLUMN_GROUP_ID))))
 				.withToken(GroupInviteToken.fromHexString(Objects.requireNonNull(cursorHelper.getString(GroupInviteModel.COLUMN_TOKEN))))
 				.withGroupName(Objects.requireNonNull(cursorHelper.getString(GroupInviteModel.COLUMN_ORIGINAL_GROUP_NAME)))
 				.withInviteName(Objects.requireNonNull(cursorHelper.getString(GroupInviteModel.COLUMN_INVITE_NAME)))
@@ -279,7 +289,7 @@ public class GroupInviteModelFactory extends ModelFactory {
 		if (groupInviteModel.getId() >= 0) {
 			contentValues.put(GroupInviteModel.COLUMN_ID, groupInviteModel.getId());
 		}
-		contentValues.put(GroupInviteModel.COLUMN_GROUP_ID, groupInviteModel.getGroupId());
+		contentValues.put(GroupInviteModel.COLUMN_GROUP_ID, groupInviteModel.getGroupApiId().toString());
 		contentValues.put(GroupInviteModel.COLUMN_TOKEN, groupInviteModel.getToken().toString());
 		contentValues.put(GroupInviteModel.COLUMN_INVITE_NAME, groupInviteModel.getInviteName());
 		contentValues.put(GroupInviteModel.COLUMN_ORIGINAL_GROUP_NAME, groupInviteModel.getOriginalGroupName());

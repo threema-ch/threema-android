@@ -22,11 +22,11 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
@@ -37,7 +37,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  */
 public class DeliveryReceiptMessage extends AbstractMessage {
 
-	private static final Logger logger = LoggerFactory.getLogger(DeliveryReceiptMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DeliveryReceiptMessage");
 
 	private int receiptType;
 	private MessageId[] receiptMessageIds;

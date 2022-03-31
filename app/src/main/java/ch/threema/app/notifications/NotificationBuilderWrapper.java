@@ -39,7 +39,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -52,7 +51,9 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.voip.services.VoipCallService;
+import ch.threema.base.utils.LoggingUtil;
 
 import static androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_CHAT;
@@ -63,7 +64,7 @@ import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_C
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_VOIP_ID_PREFIX;
 
 public class NotificationBuilderWrapper extends NotificationCompat.Builder {
-	private static final Logger logger = LoggerFactory.getLogger(NotificationBuilderWrapper.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationBuilderWrapper");
 
 	public static long[] VIBRATE_PATTERN_SHORT = new long[]{0, 100, 150, 100};
 	public static long[] VIBRATE_PATTERN_REGULAR = new long[]{0, 250, 250, 250};
@@ -381,9 +382,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 	 */
 	@TargetApi(Build.VERSION_CODES.O)
 	private static NotificationChannel createNotificationChannel(String hash, NotificationChannelSettings notificationChannelSettings) {
-		AudioAttributes audioAttributes = new AudioAttributes.Builder()
-				.setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
-				.build();
+		AudioAttributes audioAttributes = SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT);
 
 		@SuppressLint("WrongConstant") NotificationChannel newNotificationChannel = new NotificationChannel(
 				hash, hash.substring(0, 16),

@@ -25,7 +25,6 @@ import android.content.Intent;
 
 import org.saltyrtc.client.crypto.CryptoProvider;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -52,6 +51,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.services.instance.SessionInstanceServiceImpl;
 import ch.threema.app.webclient.state.WebClientSessionState;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.WebClientSessionModel;
 import java8.util.concurrent.CompletableFuture;
@@ -78,7 +78,7 @@ public class SessionServiceImpl implements SessionService {
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(SessionServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SessionServiceImpl");
 
 	// Worker thread
 	@NonNull private final HandlerExecutor handler;

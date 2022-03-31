@@ -25,17 +25,20 @@
 			android:layout_gravity="center"
 			android:visibility="gone"/>
 
-	<ch.threema.app.ui.CircularProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
+			style="?attr/circularProgressIndicatorStyle"
 			android:id="@+id/progress_determinate"
 			android:layout_width="@dimen/avatar_size_small"
 			android:layout_height="@dimen/avatar_size_small"
-			app:progressbar_progress="0"
-			app:progressbar_max="100"
-			app:progressbar_width="@dimen/conversation_controller_progress_stroke_width"
-			app:progressbar_color="?attr/colorAccent"
-			app:background_color="?attr/secondary_accent_color"
-			app:background_width="@dimen/conversation_controller_progress_stroke_width"
-			app:border_width="@dimen/conversation_controller_progress_border_width"
+			app:trackThickness="@dimen/conversation_controller_progress_stroke_width"
+			app:trackColor="?attr/secondary_accent_color"
+			app:indicatorColor="?attr/colorAccent"
+			app:indicatorSize="@dimen/conversation_controller_progress_size"
+			app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
+			app:indicatorDirectionCircular="clockwise"
+			app:showAnimationBehavior="inward"
+			app:hideAnimationBehavior="inward"
+			android:max="100"
 			android:clickable="false"
 			android:layout_gravity="center"
 			android:visibility="gone"/>

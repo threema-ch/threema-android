@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -51,13 +50,15 @@ import ch.threema.app.ui.ViewModelFactory;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.GroupId;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public class IncomingGroupRequestActivity extends ThreemaToolbarActivity implements
 	IncomingGroupJoinRequestDialog.IncomingGroupJoinRequestDialogClickListener,
 	GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(IncomingGroupRequestActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingGroupRequestActivity");
 
 	private static final String DIALOG_TAG_REALLY_DELETE_REQUEST = "deleteRequest";
 	private static final String DIALOG_TAG_RESPOND = "respond";
@@ -109,8 +110,8 @@ public class IncomingGroupRequestActivity extends ThreemaToolbarActivity impleme
 		}
 
 		Intent intent = getIntent();
-		int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
-		if (groupId == 0) {
+		GroupId groupId = (GroupId) intent.getSerializableExtra(ThreemaApplication.INTENT_DATA_GROUP_API);
+		if (groupId == null) {
 			logger.error("No group received to display group request for");
 			finish();
 		}
@@ -168,7 +169,7 @@ public class IncomingGroupRequestActivity extends ThreemaToolbarActivity impleme
 						actionMode.finish();
 					}
 				}
-				else {
+				else if (groupJoinRequestModel.getResponseStatus() == IncomingGroupJoinRequestModel.ResponseStatus.OPEN) {
 					IncomingGroupJoinRequestDialog.newInstance(groupJoinRequestModel.getId())
 						.setCallback(IncomingGroupRequestActivity.this) // only required here, but not in the open requests chip view
 						.show(getSupportFragmentManager(), DIALOG_TAG_RESPOND);

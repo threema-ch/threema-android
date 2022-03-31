@@ -46,11 +46,13 @@ import ch.threema.storage.models.WebClientSessionModel;
 @AnyThread
 public class WakeLockServiceImpl implements WakeLockService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WakeLockService");
+
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":webClientWakeLock";
-	private static final String LIFETIME_SERVICE_TAG = "WakeLockService";
+	private static final String LIFETIME_SERVICE_TAG = "wcWakeLockService";
+
 	private final Context appContext;
 	private final LifetimeService lifetimeService;
-	private boolean lifetimeServiceConnectionAcquired = false;
+	private volatile boolean lifetimeServiceConnectionAcquired = false;
 
 	/**
 	 * All acquired webclient session
@@ -122,7 +124,10 @@ public class WakeLockServiceImpl implements WakeLockService {
 
 			// Acquire network connection if necessary
 			if (!this.lifetimeServiceConnectionAcquired) {
-				this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+				// Note: This connection is unpauseable, so that even messages without push flag
+				//       are delivered immediately. Since we have a wakelock anyways, the overhead
+				//       and battery impact is negligible.
+				this.lifetimeService.acquireUnpauseableConnection(LIFETIME_SERVICE_TAG);
 				this.lifetimeServiceConnectionAcquired = true;
 				logger.debug("acquired network connection");
 			}

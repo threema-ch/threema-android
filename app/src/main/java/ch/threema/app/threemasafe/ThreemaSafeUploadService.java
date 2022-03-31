@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -39,9 +38,10 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ThreemaSafeUploadService extends FixedJobIntentService {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeUploadService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeUploadService");
 
 	private static final int JOB_ID = 1001;
 	public static final String EXTRA_FORCE_UPLOAD = "force";

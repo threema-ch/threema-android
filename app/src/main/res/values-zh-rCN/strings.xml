@@ -15,7 +15,7 @@
     <string name="invite_sms_body">嗨！让我们使用%1$s以安全和符合隐私的方式进行交流！我的Threema ID：https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema，保护隐私的安全通讯工具。</string>
     <string name="enter_id_hint">输入 Threema ID</string>
-    <string name="account_links">关联账户</string>
+    <string name="account_links">链接账户</string>
     <string name="menu_settings">设置</string>
     <string name="menu_about">关于 Threema</string>
     <string name="menu_add_contact">添加联系人</string>
@@ -34,7 +34,7 @@
     <string name="prefs_header_chat">会话</string>
     <string name="prefs_header_reset">重置</string>
     <string name="prefs_header_keyboard">键盘</string>
-    <string name="prefs_sum_sync_contacts_on">使用设备通讯录同步%s用户</string>
+    <string name="prefs_sum_sync_contacts_on">使用设备通讯录同步 %s 用户</string>
     <string name="prefs_sum_sync_contacts_off">不要将 %s 用户与设备通讯录同步</string>
     <string name="prefs_title_sync_contacts">联系人同步</string>
     <string name="prefs_sum_block_unknown_off">任何人都可以向您发送信息。
@@ -69,9 +69,9 @@
     <string name="prefs_troubleshooting">故障排除</string>
     <string name="prefs_sum_troubleshooting">分析并修复问题</string>
     <string name="prefs_workarounds">解决方法</string>
-    <string name="prefs_title_polling_switch">投票</string>
-    <string name="prefs_sum_polling_on">定期检查是否有新消息（或使用更多电量）</string>
-    <string name="prefs_sum_polling_off">仅在推送时检查新消息</string>
+    <string name="prefs_title_threema_push_switch">使用 Threema Push</string>
+    <string name="prefs_sum_threema_push_on">使用 Threema Push 以获取新消息通知</string>
+    <string name="prefs_sum_threema_push_off">使用系统推送服务检查新消息</string>
     <string name="prefs_logging">记录中</string>
     <string name="prefs_title_message_log_switch">记录到文件</string>
     <string name="prefs_title_sum_message_log_on">事件和网络消息将记录到 debug_log.txt</string>
@@ -231,8 +231,8 @@
     <string name="masterkey_is_unlocked">主钥匙已解锁</string>
     <string name="file_too_large">文件大于最大大小 50 MB</string>
     <string name="deleting_thread">正在删除会话</string>
-    <string name="enter_serial_body">请输入您的商店许可证密钥，或点击这里取回您的密钥：
-https://shop.threema.ch/retrieve_keys</string>
+    <string name="enter_serial_body"><![CDATA[请输入您的商店许可证密钥，或点击这里取回您的密钥：
+https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">解锁 Threema</string>
     <string name="serial_required_want_exit">许可证密钥无效。您想重试还是退出Threema？</string>
     <string name="checking_serial">正在检查许可证密钥</string>
@@ -405,7 +405,8 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no_matching_distribution_lists">没有匹配的通讯组列表</string>
     <string name="is_typing">输入中…</string>
     <string name="push_not_available_title">找不到推送服务</string>
-    <string name="push_not_available_text">我们无法在您的设备上找到推送服务，因为 Google Play 服务没有安装或过时。Threema 会每15分钟检查一次新消息。</string>
+    <string name="push_not_available_text1">我们无法在您的设备上找到推送服务，因为 Google Play 服务没有安装或过时。</string>
+    <string name="push_not_available_text2">%s 将在后台持续地与服务器连接。如果您的设备启用了电池优化，这可能会干扰后台连接，Threema Push 将可能无法可靠地运行。</string>
     <string name="backup_in_progress">正在进行备份</string>
     <string name="backup_or_restore_success_body">数据备份成功完成</string>
     <string name="backup_or_restore_error">Threema 备份</string>
@@ -487,15 +488,13 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_answer_count_error">请输入至少两个答案进行投票。</string>
     <string name="ballot_one_contact_not_supported">警告：%1$s 将无法参与您的投票。</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人将无法参与您的投票。</string>
-    <string name="enable_polling">使用投票</string>
     <string name="contact_state_inactive">不活跃</string>
     <string name="contact_state_invalid">无效</string>
     <string name="back">返回</string>
     <string name="wearable_reply">回复</string>
     <string name="wearable_reply_label">回复 %s</string>
     <string name="message_acknowledged">您对这条消息表示 “同意”。</string>
-    <string name="push_disable_text">如果继续，推送消息将被禁用，Threema 将会
-每15分钟检查一次新消息。</string>
+    <string name="push_disable_text">如果继续，您将使用 “Threema Push” 代替系统内置的推送服务。虽然这能减少您的数字足迹，但您需要允许 “应用程序在后台运行” 才能顺利使用。如果在设备设置中找不到相应的选项，您可能需要联系设备制造商的支持以获取配置帮助。</string>
     <string name="ballot_intermediate_results_show">显示中间结果</string>
     <string name="converting_video">正在处理影片</string>
     <string name="video_size_small">高质量（使用数据较少）</string>
@@ -507,7 +506,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="kick_user_from_group">将 %1$s 踢出群组</string>
     <string name="show_as_qrcode">显示为二维码</string>
     <string name="qr_code">二维码</string>
-    <string name="really_leave_id_export">如果您尚未这样做，请将ID导出文本字符串或相应的二维码保存到安全的地方或打印出来。如果没有备份，则无法恢复 Threema ID。</string>
+    <string name="really_leave_id_export">如果您还没有备份，请将ID导出文本字符串或将相应的二维码保存到安全的地方或打印出来。没有备份的话，则无法恢复 Threema ID。</string>
     <string name="revocation_key_title">ID吊销</string>
     <string name="revocation_key_not_set">未设置吊销密码</string>
     <string name="revocation_key_set_at">吊销密码设置为%1$s</string>
@@ -600,16 +599,13 @@ Threema 支持的所有表情符号。</string>
     <string name="blocked">被屏蔽</string>
     <string name="name">名称</string>
     <string name="privacy_policy">隐私政策</string>
+    <string name="terms_of_service">条款</string>
     <string name="save_group_changes">您想保存对群组的更改吗？</string>
     <string name="prefs_title_fontsize">字体大小</string>
     <string name="fontsize_normal">正常</string>
     <string name="fontsize_large">大</string>
     <string name="fontsize_xlarge">超大</string>
     <string name="no_app_for_location">在此设备上找不到地图应用程序</string>
-    <string name="polling_interval_5">5分钟</string>
-    <string name="polling_interval_15">15分钟（默认）</string>
-    <string name="polling_interval_30">30分钟</string>
-    <string name="prefs_polling_interval">投票间隔</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">已删除%d个会话</string>
     <string name="prefs_sendlog">发送日志</string>
     <string name="prefs_sendlog_summary">将日志发送给 Threema，以便在出现问题时进行进一步分析</string>
@@ -670,7 +666,7 @@ Threema 支持的所有表情符号。</string>
     <string name="new_wizard_info_nickname">"昵称用於设备上的推送通知，向尚未将您存储在通讯录的用户识别您的身份。
 我们建议仅提供您的名字或化名作为昵称。
 如果您未设置昵称，在默认情况下，我们将使用您的 Threema ID。 "</string>
-    <string name="not_linked">未连接</string>
+    <string name="not_linked">未链接</string>
     <string name="linked">已连接</string>
     <string name="pending_sms_verification_notice">您的手机号码尚未验证。</string>
     <string name="no_sms_received">没有收到短信？</string>
@@ -775,7 +771,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="battery_optimizations_title">禁用电池优化</string>
     <string name="battery_optimizations_explain">电池优化使 %1$s 在手机进入睡眠模式时无法正常运行。请为 %2$s 禁用电池优化。</string>
     <string name="battery_optimizations_disable_guide">在下拉菜单中选择 “所有应用”</string>
-    <string name="battery_optimizations_disable_guide_ctd">在列表中搜索%s并禁用优化</string>
+    <string name="battery_optimizations_disable_guide_ctd">在列表中搜索 %s 并禁用优化</string>
     <string name="battery_optimizations_disable_confirm">你确定要对 %1$s 保持打开电池优化吗？%2$s 将无法正常运行。</string>
     <string name="enter_text_hint">输入文字</string>
     <string name="backup_explain_text">如果您切换或丢失设备，如果您没有备份，您将无法恢复您的 Threema ID 或会话。请使用适当的备份方法保存您的数据。</string>
@@ -889,7 +885,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="webclient_running_sessions">%d 个会话正在运行</string>
     <string name="passphrase_service_name">密码服务</string>
     <string name="passphrase_service_description">密码解锁时的通知</string>
-    <string name="webclient_service_description">Threema 桌面版/网页版会话运行时的通知</string>
+    <string name="webclient_service_description">Threema 网页版/桌面版会话运行时的通知</string>
     <string name="prefs_title_accept_privacy_policy">接受隐私权政策</string>
     <string name="privacy_policy_explain">%1$s比任何其他即时通讯工具都更加严格地保护您的隐私。在我们的%2$s中了解更多。</string>
     <string name="privacy_policy_check_confirm">使用 %s 前，请接受隐私政策。\n\n（根据欧盟法规 2016/679《通用数据保护条例》的要求）</string>
@@ -1334,18 +1330,66 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="notification_channel_group_join_request">收到群组加入请求的通知频道</string>
     <string name="reset_default_group_link_title">重置默认链接信息</string>
     <string name="reset_default_group_link_desc">之前分享的链接将失效，通过旧链接提出的请求将自动被拒绝，并给出过期的回应。</string>
-    <string name="other_group_links">其他</string>
+    <string name="custom">其他</string>
     <string name="show_public_key">显示公钥</string>
     <string name="public_key_for">%s的公钥</string>
     <string name="copied">已复制</string>
     <string name="no_votes_yet">到目前为止，还没有人投票。</string>
     <string name="permission_contacts_sync_required">请允许系统访问您的联系人，以便同步联系人列表。</string>
     <string name="not_voted_user_list">这些参与者没有投票：%s</string>
+    <string name="contact_update">更新联系人状态</string>
     <string name="invalid_onprem_id">此ID(永久)不再存在，或者与您的ID不兼容。</string>
     <string name="enable_unknown_sources">无法安装。请确保为 %s 启用了 “安装未知应用程序” 。</string>
+    <string name="threema_push">Threema Push</string>
+    <string name="threema_push_notification_text">点击了解更多。</string>
+    <string name="threema_push_notification_info_text_1">Threema Push 在后台持续运行，以通知您新收到的消息和来电。</string>
+    <string name="threema_push_notification_info_text_2">如果不能显示永久通知，应用程序就不能在后台运行。通过显示永久通知，可以确保 Threema Push 即使在您不主动使用该应用程序时也会保持运行。</string>
+    <string name="threema_push_notification_info_text_3">如果您仍然遇到延迟或丢失通知的问题，请调整您的系统设置，以确保应用程序可以在后台不受任何限制地运行，并禁用节电模式。</string>
+    <string name="threema_push_service_description">当 Threema Push 运行时，显示永久通知</string>
+    <string name="threema_push_activated">Threema Push 现在已激活。</string>
     <string name="add_shortcut_success">快捷方式创建成功</string>
     <string name="add_shortcut_error">将快捷方式添加到主屏幕时发生错误</string>
     <string name="web_link">链接</string>
     <string name="link_copied">%s 已复制</string>
     <string name="invalid_onprem_id_title">无法添加ID</string>
+    <string name="name_given">名字</string>
+    <string name="name_family">姓氏</string>
+    <string name="name_prefix">姓名前缀</string>
+    <string name="name_middle">中间名</string>
+    <string name="name_suffix">姓名后缀</string>
+    <string name="full_name">名称</string>
+    <string name="send_contact">发送联系人</string>
+    <string name="edit_send_contact_detail_icon">联系人的详细类型</string>
+    <string name="phoneTypeCustom">自定义</string>
+    <string name="phoneTypeHome">住宅</string>
+    <string name="phoneTypeMobile">手机</string>
+    <string name="phoneTypeWork">单位</string>
+    <string name="phoneTypePager">寻呼机</string>
+    <string name="phoneTypeOther">其他</string>
+    <string name="phoneTypeCar">车载电话</string>
+    <string name="phoneTypeIsdn">ISDN</string>
+    <string name="phoneTypeOtherFax">其他传真</string>
+    <string name="eventTypeCustom">自定义</string>
+    <string name="eventTypeBirthday">生日</string>
+    <string name="eventTypeAnniversary">周年纪念日</string>
+    <string name="eventTypeOther">其他</string>
+    <string name="emailTypeHome">个人</string>
+    <string name="emailTypeWork">工作</string>
+    <string name="emailTypeOther">其他</string>
+    <string name="postalTypeCustom">自定义</string>
+    <string name="postalTypeHome">住宅</string>
+    <string name="postalTypeWork">单位</string>
+    <string name="postalTypeOther">其他</string>
+    <string name="relationTypeCustom">自定义</string>
+    <string name="relationTypeChild">子女</string>
+    <string name="relationTypeFriend">朋友</string>
+    <string name="relationTypeParent">父母</string>
+    <string name="relationTypeSpouse">配偶</string>
+    <string name="contact_property_key">"钥匙"</string>
+    <string name="header_nickname_entry">"昵称"</string>
+    <string name="contact_picture_content_description">联系人头像</string>
+    <string name="prefs_title_use_system_ringtone">使用系统铃声</string>
+    <string name="organization_type">单位</string>
+    <string name="permission_bluetooth_connect_required">请启用 “附近设备” 权限以定位已连接的蓝牙耳机</string>
+    <string name="threema_push_start_webclient_sessions_manually">Threema Push 现在已启用。您需要手动重启 Threema 网页版和桌面版会话。</string>
 </resources>

@@ -25,9 +25,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.view.View;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.RejectedExecutionException;
 
 import ch.threema.app.R;
@@ -46,7 +43,6 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ReceiverModel;
 
 public class AvatarListItemUtil {
-	private static final Logger logger = LoggerFactory.getLogger(AvatarListItemUtil.class);
 
 	public static void loadAvatar(
 			final int position,

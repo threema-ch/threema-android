@@ -26,7 +26,6 @@ import android.content.Context;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -36,10 +35,11 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushRegistrationWorker extends Worker {
-	private final Logger logger = LoggerFactory.getLogger(PushRegistrationWorker.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("PushRegistrationWorker");
 
 	private final Context appContext;
 

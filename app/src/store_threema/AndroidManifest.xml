@@ -4,6 +4,8 @@
 
 	<!-- To install updates - Threema Shop version only -->
 	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
+	<!-- Request ignoring of battery optimizations -->
 	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
 	<application tools:ignore="GoogleAppIndexingWarning">

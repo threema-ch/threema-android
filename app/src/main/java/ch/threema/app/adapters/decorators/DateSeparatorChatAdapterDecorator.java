@@ -40,7 +40,7 @@ public class DateSeparatorChatAdapterDecorator extends ChatAdapterDecorator {
 
 		if(this.showHide(holder.bodyTextView, true)) {
 			if (date != null) {
-				holder.bodyTextView.setText(LocaleUtil.formatDateRelative(getContext(), date.getTime()));
+				holder.bodyTextView.setText(LocaleUtil.formatDateRelative(date.getTime()));
 			}
 		}
 	}

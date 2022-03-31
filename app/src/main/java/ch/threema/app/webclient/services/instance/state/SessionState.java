@@ -23,7 +23,6 @@ package ch.threema.app.webclient.services.instance.state;
 
 import org.saltyrtc.client.SaltyRTCBuilder;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -35,6 +34,7 @@ import java.nio.ByteBuffer;
 import ch.threema.app.webclient.SendMode;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 
 /**
@@ -61,7 +61,7 @@ public abstract class SessionState {
 	}
 
 	// Logging
-	@NonNull protected final Logger logger = LoggerFactory.getLogger(SessionState.class);
+	@NonNull protected final Logger logger = LoggingUtil.getThreemaLogger("SessionState");
 
 	// Session context
 	@NonNull protected final SessionContext ctx;

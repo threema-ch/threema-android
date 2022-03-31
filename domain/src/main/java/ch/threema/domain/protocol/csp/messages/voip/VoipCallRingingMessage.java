@@ -24,9 +24,9 @@ package ch.threema.domain.protocol.csp.messages.voip;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
@@ -35,7 +35,7 @@ import java.io.ByteArrayOutputStream;
  * It indicates towards the caller that the phone is ringing.
  */
 public class VoipCallRingingMessage extends VoipMessage {
-	private static final Logger logger = LoggerFactory.getLogger(VoipCallRingingMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallRingingMessage");
 
 	private @Nullable VoipCallRingingData callRingingData;
 

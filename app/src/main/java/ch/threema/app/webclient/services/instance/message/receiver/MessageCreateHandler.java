@@ -29,7 +29,6 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -45,14 +44,15 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 
 @WorkerThread
 abstract public class MessageCreateHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(MessageCreateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCreateHandler");
 
-	private static final String CONNECTION_SOURCE_TAG = "wc.createMessage";
+	private static final String LIFETIME_SERVICE_TAG = "wcMessageCreateHandler";
 
 	private final MessageDispatcher dispatcher;
 	protected final MessageService messageService;
@@ -75,11 +75,13 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 	}
 
 	@AnyThread
-	public MessageCreateHandler(String subType,
-	                            MessageDispatcher dispatcher,
-	                            MessageService messageService,
-	                            LifetimeService lifetimeService,
-	                            IdListService blacklistService) {
+	public MessageCreateHandler(
+		String subType,
+		MessageDispatcher dispatcher,
+		MessageService messageService,
+		LifetimeService lifetimeService,
+		IdListService blacklistService
+	) {
 		super(subType);
 		this.dispatcher = dispatcher;
 		this.messageService = messageService;
@@ -108,7 +110,7 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 	) {
 		logger.debug("Dispatching message create");
 		try {
-			this.lifetimeService.acquireConnection(CONNECTION_SOURCE_TAG);
+			this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
 
 			// Check if the contact is blocked
 			ch.threema.app.messagereceiver.MessageReceiver receiver = receiverModel.getReceiver();
@@ -153,7 +155,7 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 			logger.error("Exception", e);
 			this.failed(message, "internalError");
 		} finally {
-			this.lifetimeService.releaseConnectionLinger(CONNECTION_SOURCE_TAG, 5000);
+			this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, 5000);
 		}
 	}
 

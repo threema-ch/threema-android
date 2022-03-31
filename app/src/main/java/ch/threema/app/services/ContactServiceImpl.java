@@ -1008,13 +1008,14 @@ public class ContactServiceImpl implements ContactService {
 
 	@Override
 	public ContactMessageReceiver createReceiver(ContactModel contact) {
-		return new ContactMessageReceiver(contact,
-				this,
-				this.databaseServiceNew,
-				this.messageQueue,
-				this.identityStore,
-				this.blackListIdentityService,
-				this.apiService);
+		return new ContactMessageReceiver(
+			contact,
+			this,
+			this.databaseServiceNew,
+			this.messageQueue,
+			this.identityStore,
+			this.blackListIdentityService
+		);
 	}
 
 	private ContactModel getContact(AbstractMessage msg) {

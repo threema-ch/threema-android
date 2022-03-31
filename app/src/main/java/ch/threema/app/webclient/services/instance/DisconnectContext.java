@@ -22,7 +22,6 @@
 package ch.threema.app.webclient.services.instance;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,6 +31,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Capture the disconnect context:
@@ -41,7 +41,7 @@ import androidx.annotation.Nullable;
  */
 @AnyThread
 public abstract class DisconnectContext {
-	private static final Logger logger = LoggerFactory.getLogger(DisconnectContext.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DisconnectContext");
 
 	// The session SHALL be stopped by the receiving peer.
 	public final static int REASON_SESSION_STOPPED = 1;

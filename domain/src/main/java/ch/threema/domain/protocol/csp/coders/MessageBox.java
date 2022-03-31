@@ -24,12 +24,12 @@ package ch.threema.domain.protocol.csp.coders;
 import com.neilalexander.jnacl.NaCl;
 import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.connection.Payload;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -40,7 +40,7 @@ import ch.threema.domain.models.MessageId;
  */
 public class MessageBox implements Serializable {
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageBox.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageBox");
 
 	private String fromIdentity;
 	private String toIdentity;

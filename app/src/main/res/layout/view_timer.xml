@@ -23,19 +23,21 @@
 		android:layout_width="18dp"
 		android:layout_height="18dp"
 		app:srcCompat="@drawable/ic_circle"
-		android:tint="@color/material_red"/>
+		app:tint="@color/material_red" />
 
-	<ch.threema.app.ui.CircularProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
+		style="?attr/circularProgressIndicatorStyle"
 		android:id="@+id/progress_circular"
 		android:layout_width="18dp"
 		android:layout_height="18dp"
-		app:progressbar_progress="0"
-		app:progressbar_max="100"
-		app:progressbar_width="2dp"
-		app:progressbar_color="@android:color/white"
-		app:background_color="@android:color/transparent"
-		app:background_width="2dp"
-		app:border_width="2dp"
+		app:trackThickness="2dp"
+		app:trackColor="@android:color/transparent"
+		app:indicatorColor="@android:color/white"
+		app:indicatorSize="14dp"
+		app:indicatorInset="2dp"
+		app:indicatorDirectionCircular="clockwise"
+		app:showAnimationBehavior="none"
+		app:hideAnimationBehavior="none"
 		android:clickable="false"
 		android:layout_gravity="center"/>
 

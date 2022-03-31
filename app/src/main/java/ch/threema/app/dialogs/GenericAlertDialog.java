@@ -229,7 +229,16 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 		return this;
 	}
 
-	public void showInActivity(){
+	/**
+	 * Set the callback of this dialog.
+	 *
+	 * @param dialogClickListener the listener
+	 */
+	public void setCallback(DialogClickListener dialogClickListener) {
+		callback = dialogClickListener;
+	}
+
+	public void showInActivity() {
 		alertDialog.show();
 	}
 }

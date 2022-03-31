@@ -27,12 +27,12 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.services.GroupService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -41,7 +41,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupModelFactory extends ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(GroupModelFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModelFactory");
 
 	public GroupModelFactory(DatabaseServiceNew databaseService) {
 		super(databaseService, GroupModel.TABLE);

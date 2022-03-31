@@ -32,7 +32,6 @@ import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,9 +41,10 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import androidx.annotation.ColorInt;
+import ch.threema.base.utils.LoggingUtil;
 
 public class MarkupParser {
-	private static final Logger logger = LoggerFactory.getLogger(MarkupParser.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MarkupParser");
 
 	private static final String BOUNDARY_PATTERN = "[\\s.,!?¡¿‽⸮;:&(){}\\[\\]⟨⟩‹›«»'\"‘’“”*~\\-_…⋯᠁]";
 	private static final String URL_BOUNDARY_PATTERN = "[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=%]";

@@ -44,7 +44,6 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -79,13 +78,14 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
 /**
  * A view that shows all open ballots (polls) for a chat in a ChipGroup and allows users to vote or close the ballot
  */
 public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLifecycleObserver, Chip.OnClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(OpenBallotNoticeView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("OpenBallotNoticeView");
 	private static final int MAX_BALLOTS_SHOWN = 20;
 	private static final int MAX_BALLOT_TITLE_LENGTH = 25;
 	private ChipGroup chipGroup;
@@ -369,7 +369,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 								backgroundColor = ColorStateList.valueOf(getResources().getColor(R.color.material_red));
 							} else {
 								foregroundColor = ColorStateList.valueOf(getResources().getColor(R.color.material_red));
-								backgroundColor = foregroundColor.withAlpha(0x1A);
+								backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
 							}
 						} else {
 							if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
@@ -377,7 +377,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 								backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
 							} else {
 								foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-								backgroundColor = foregroundColor.withAlpha(0x1A);
+								backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
 							}
 						}
 

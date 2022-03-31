@@ -33,7 +33,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,9 +42,10 @@ import java.util.List;
 
 import ch.threema.app.R;
 import ch.threema.app.adapters.StickerSelectorAdapter;
+import ch.threema.base.utils.LoggingUtil;
 
 public class StickerSelectorActivity extends ThreemaToolbarActivity implements LoaderManager.LoaderCallbacks<String[]> {
-	private static final Logger logger = LoggerFactory.getLogger(StickerSelectorActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("StickerSelectorActivity");
 
 	private static final String STICKER_DIRECTORY = "emojione";
 	private static final String STICKER_INDEX = STICKER_DIRECTORY + "/contents.txt";

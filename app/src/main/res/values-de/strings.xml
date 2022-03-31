@@ -71,9 +71,16 @@
 	<string name="prefs_troubleshooting">Fehlerbehebung</string>
 	<string name="prefs_sum_troubleshooting">Probleme analysieren und beheben</string>
 	<string name="prefs_workarounds">Workarounds</string>
-	<string name="prefs_title_polling_switch">Polling</string>
-	<string name="prefs_sum_polling_on">Periodisch auf neue Nachrichten prüfen (braucht mehr Akku!)</string>
-	<string name="prefs_sum_polling_off">Bei Push auf neue Nachrichten prüfen</string>
+	<string name="threema_push">Threema Push</string>
+	<string name="threema_push_notification_text">Tippen für mehr Informationen.</string>
+	<string name="threema_push_notification_info_text_1">Threema Push ist im Hintergrund aktiv, um Sie über eingehende Nachrichten und Anrufe zu informieren.</string>
+	<string name="threema_push_notification_info_text_2">Apps können nicht im Hintergrund laufen, ohne eine dauerhafte Benachrichtigung anzuzeigen. Indem wir diese Benachrichtigung anzeigen, können wir sicherstellen, dass Threema Push auch dann aktiv bleibt, wenn Sie die App nicht aktiv nutzen.</string>
+	<string name="threema_push_notification_info_text_3">Wenn Sie immer noch Probleme mit verzögerten oder fehlenden Benachrichtigungen haben, passen Sie bitte Ihre Systemeinstellungen an, um sicherzustellen, dass die App ohne Einschränkungen im Hintergrund aktiv sein kann und alle Batteriesparfunktionen deaktiviert sind.</string>
+	<string name="threema_push_service_description">Dauerhafte Benachrichtigung, wenn Threema Push aktiv ist</string>
+	<string name="threema_push_activated">Threema Push aktiviert.</string>
+	<string name="prefs_title_threema_push_switch">Threema Push benutzen</string>
+	<string name="prefs_sum_threema_push_on">Threema Push nutzen, um über neue Nachrichten informiert zu werden</string>
+	<string name="prefs_sum_threema_push_off">Mittels System-Push-Dienst auf neue Nachrichten prüfen</string>
 	<string name="prefs_logging">Logging</string>
 	<string name="prefs_title_message_log_switch">In Datei loggen</string>
 	<string name="prefs_title_sum_message_log_on">Ereignisse und Netzwerkinformationen werden in die Datei debug_log.txt geloggt</string>
@@ -255,9 +262,7 @@
 	<string name="masterkey_is_unlocked">Hauptschlüssel ist entsperrt</string>
 	<string name="file_too_large" tools:ignore="Typos">Die Datei ist grösser als die erlaubten 50 MB</string>
 	<string name="deleting_thread">Chat wird gelöscht</string>
-	<string name="enter_serial_body">Bitte geben Sie Ihren Shop-Lizenzschlüssel ein. Falls Sie diesen vergessen haben,
-		klicken Sie hier: https://shop.threema.ch/retrieve_keys
-	</string>
+	<string name="enter_serial_body"><![CDATA[Bitte geben Sie Ihren Shop-Lizenzschlüssel ein. Sie können eine Lizenz <a href="https://shop.threema.ch/">kaufen</a> oder einen Schlüssel für eine bereits gekaufte Lizenz <a href="https://shop.threema.ch/retrieve_keys">wiederherstellen</a>.]]></string>
 	<string name="enter_serial_title">Threema freischalten</string>
 	<string name="serial_required_want_exit">Der Lizenzschlüssel ist ungültig. Möchten Sie es nochmals versuchen oder
 		Threema verlassen?
@@ -447,7 +452,8 @@
 	<string name="no_matching_distribution_lists">Noch keine Verteilerlisten definiert.</string>
 	<string name="is_typing">schreibt gerade…</string>
 	<string name="push_not_available_title">Push-Dienst nicht verfügbar</string>
-	<string name="push_not_available_text">Kein Push-Dienst auf Ihrem Gerät gefunden, da die Google Play-Dienste fehlen oder nicht aktuell sind. Threema wird alle 15 Minuten nach neuen Nachrichten prüfen.</string>
+	<string name="push_not_available_text1">Kein Push-Dienst auf Ihrem Gerät gefunden, da die Google Play-Dienste fehlen oder nicht aktuell sind.</string>
+	<string name="push_not_available_text2">%s wird versuchen, eine dauerhafte Hintergrundverbindung zum Server zu öffnen. Dies funktioniert möglicherweise nicht zuverlässig, wenn die Akkuoptimierungs-Mechanismen Ihres Geräts die Hintergrundverbindung beeinträchtigen.</string>
 	<string name="backup_in_progress">Datensicherung wird erstellt</string>
 	<string name="backup_or_restore_success_body">Datensicherung erfolgreich erstellt</string>
 	<string name="backup_or_restore_error">Threema-Datensicherung</string>
@@ -482,7 +488,7 @@
 	<string name="really_delete_media">Möchten Sie diese %d Medien-Nachricht(en) wirklich löschen?</string>
 	<string name="check_updates">Auf Updates prüfen</string>
 	<string name="masterkey_lock_explain">Threema hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der
-		Passphrase gefragt werden, kann dies an einer Taskkiller- oder Batterie-Spar-App liegen, welche die Passphrase
+		Passphrase gefragt werden, kann dies an einer Taskkiller- oder Akkuspar-App liegen, welche die Passphrase
 		aus dem Speicher entfernt.
 	</string>
 	<string name="identity_already_exists">Diese ID ist bereits in Ihrer Kontaktliste</string>
@@ -543,16 +549,13 @@
 	<string name="ballot_one_contact_not_supported">Achtung: %1$s kann noch nicht an Umfragen teilnehmen.</string>
 	<string name="ballot_x_contact_not_supported">Achtung: %1$d Kontakte können noch nicht an Umfragen teilnehmen.
 	</string>
-	<string name="enable_polling">Polling nutzen</string>
 	<string name="contact_state_inactive">Inaktiv</string>
 	<string name="contact_state_invalid">Ungültig</string>
 	<string name="back">Zurück</string>
 	<string name="wearable_reply">Antworten</string>
 	<string name="wearable_reply_label">Antwort an %s</string>
 	<string name="message_acknowledged">Nachricht bestätigt</string>
-	<string name="push_disable_text">Wenn Sie fortfahren, werden Push-Nachrichten deaktiviert und Threema wird alle 15
-		Minuten nach neuen Nachrichten prüfen.
-	</string>
+	<string name="push_disable_text">Wenn Sie fortfahren, wird «Threema Push» anstelle des Push-Dienstes des Systems verwendet. Dies trägt dazu bei, Ihren digitalen Fussabdruck zu verringern, erfordert jedoch, dass Ihr Gerät so konfiguriert ist, dass die App im Hintergrund ausgeführt werden kann. Kontaktieren Sie ggf. den Support Ihres Geräteherstellers für Unterstützung bei der Konfiguration, falls die entsprechenden Optionen in den Geräte-Einstellungen nicht auffindbar sind.</string>
 	<string name="ballot_intermediate_results_show">Zwischenresultate zeigen</string>
 	<string name="converting_video">Video wird bearbeitet</string>
 	<string name="video_size_small">Hoch (kleine Datenmenge)</string>
@@ -667,16 +670,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="blocked">blockiert</string>
 	<string name="name">Name</string>
 	<string name="privacy_policy">Datenschutzerklärung</string>
+	<string name="terms_of_service">Nutzungsbedingungen</string>
+	<string name="eula">Endnutzer-Lizenzvereinbarung</string>
 	<string name="save_group_changes">Möchten Sie Änderungen an der Gruppe übernehmen?</string>
 	<string name="prefs_title_fontsize">Schriftgrösse</string>
 	<string name="fontsize_normal">Normal</string>
 	<string name="fontsize_large">Gross</string>
 	<string name="fontsize_xlarge">Sehr gross</string>
 	<string name="no_app_for_location">Keine Karten-App auf diesem Gerät gefunden.</string>
-	<string name="polling_interval_5">5 Minuten</string>
-	<string name="polling_interval_15">15 Minuten (Standard)</string>
-	<string name="polling_interval_30">30 Minuten</string>
-	<string name="prefs_polling_interval">Polling-Intervall</string>
 	<string name="chat_deleted">%d Chat(s) gelöscht</string>
 	<string name="prefs_sendlog">Logdatei versenden</string>
 	<string name="prefs_sendlog_summary">Logdatei für Problemanalyse an Threema senden</string>
@@ -855,7 +856,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="battery_optimizations_explain">Die Akku-Leistungsoptimierung verhindert, dass %1$s korrekt funktioniert, wenn Ihr Handy in den Schlafmodus fällt. Bitte deaktivieren Sie die Optimierung für %2$s.</string>
 	<string name="battery_optimizations_disable_guide">Wählen Sie «Alle Apps» im Ausklappmenü</string>
 	<string name="battery_optimizations_disable_guide_ctd">Suchen Sie nach %s in der Liste und deaktivieren Sie die Optimierung</string>
-	<string name="battery_optimizations_disable_confirm">Möchten Sie die Akku-Leistungsoptimierung für %1$s wirklich aktiviert lassen? Dadurch ist %2$s nicht sinnvoll nutzbar.</string>
+	<string name="battery_optimizations_disable_confirm">Möchten Sie die Akku-Leistungsoptimierung für %1$s wirklich aktiviert lassen? Dadurch ist %2$s nicht zuverlässig nutzbar.</string>
 	<string name="enter_text_hint">Text eingeben</string>
 	<string name="backup_explain_text">Wenn Sie Ihr Gerät wechseln oder verlieren, kann ohne ein Backup niemand Ihre Threema-ID und Chats wiederherstellen. Sichern Sie deshalb Ihre Daten mit den vorliegenden Backup-Möglichkeiten.</string>
 	<string name="data_backup_explain" tools:ignore="Typos">Ein Daten-Backup sichert:\n\n&#9679; ID und Schlüsselpaar\n&#9679; Kontakte und Vertrauensstatus\n&#9679; Gruppenmitgliedschaften\n&#9679; Chats\n&#9679; Medien und Dateien (optional)\n\nDie Daten werden in ein verschlüsseltes ZIP gesichert. Das Backup sollte anschliessend an einem geeigneten Ort ausserhalb des Geräts gespeichert werden.</string>
@@ -904,10 +905,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="threema_call_with">Anruf an %s</string>
 	<string name="threema_message_to">Nachricht an %s</string>
 	<string name="permission_record_audio_required">Aktivieren Sie die Mikrofon-Berechtigung, um verschlüsselte Threema-Anrufe zu tätigen und Sprachnachrichten aufzunehmen.</string>
-	<string name="prefs_voice_call_notifications">Sprachanrufe</string>
+	<string name="prefs_voice_call_notifications">Threema-Anrufe</string>
 	<string name="prefs_voice_call_sound">Klingelton</string>
-	<string name="prefs_sum_voice_call_sound">Klingelton für Threema-Sprachanrufe auswählen</string>
-	<string name="prefs_sum_voice_call_vibrate">Bei eingehenden Threema-Sprachanrufen vibrieren</string>
+	<string name="prefs_sum_voice_call_sound">Klingelton für Threema-Anrufe auswählen</string>
+	<string name="prefs_sum_voice_call_vibrate">Bei eingehenden Threema-Anrufen vibrieren</string>
 	<string name="prefs_title_voip">Threema-Anrufe</string>
 	<string name="prefs_title_force_turn">Anrufe immer über Server</string>
 	<string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über Threema-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
@@ -1403,13 +1404,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="notification_channel_group_join_request">Benachrichtigung für Gruppenanfragen</string>
 	<string name="reset_default_group_link_title">Zurücksetzen Info</string>
 	<string name="reset_default_group_link_desc">Der zuvor geteilte Link wird somit ungültig und Anfragen über den alten Link werden automatisch abgelehnt.</string>
-	<string name="other_group_links">weitere</string>
+	<string name="custom">other custom</string>
 	<string name="show_public_key">Öffentlichen Schlüssel anzeigen</string>
 	<string name="public_key_for">Öffentlicher Schlüssel von %s</string>
 	<string name="copied">Kopiert</string>
 	<string name="no_votes_yet">Bisher wurden noch keine Stimmen abgegeben.</string>
 	<string name="permission_contacts_sync_required">Erlauben Sie bitte den Zugriff auf die Kontakte, um sie zu synchronisieren.</string>
 	<string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
+	<string name="contact_update">Aktualisierung der Kontakte-Informationen</string>
 	<string name="invalid_onprem_id">Entweder existiert diese ID nicht (mehr), oder sie ist nicht mit Ihrer ID kompatibel.</string>
 	<string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie \"Unbekannte Apps installieren\" für %s.</string>
 	<string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
@@ -1417,4 +1419,41 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="web_link">Link</string>
 	<string name="link_copied">%s kopiert</string>
 	<string name="invalid_onprem_id_title">Hinzufügen nicht möglich</string>
+	<string name="full_name">Name</string>
+	<string name="name_given">Vorname</string>
+	<string name="name_family">Nachname</string>
+	<string name="name_prefix">Namenspräfix</string>
+	<string name="name_middle">Zweiter Vorname</string>
+	<string name="name_suffix">Namenssuffix</string>
+	<string name="phoneTypeCustom">Benutzerdefiniert</string>
+	<string name="phoneTypeHome">Privat</string>
+	<string name="phoneTypeMobile">Mobil</string>
+	<string name="phoneTypeWork">Geschäftlich</string>
+	<string name="phoneTypePager">Pager</string>
+	<string name="phoneTypeOther">Sonstige</string>
+	<string name="phoneTypeCar">Auto</string>
+	<string name="phoneTypeIsdn">ISDN</string>
+	<string name="phoneTypeOtherFax">Weitere Faxnummer</string>
+	<string name="eventTypeCustom">Benutzerdefiniert</string>
+	<string name="eventTypeBirthday">Geburtstag</string>
+	<string name="eventTypeAnniversary">Jahrestag</string>
+	<string name="eventTypeOther">Sonstige</string>
+	<string name="emailTypeHome">Privat</string>
+	<string name="emailTypeWork">Geschäftlich</string>
+	<string name="emailTypeOther">Sonstige</string>
+	<string name="postalTypeCustom">Benutzerdefiniert</string>
+	<string name="postalTypeHome">Privat</string>
+	<string name="postalTypeWork">Geschäftlich</string>
+	<string name="postalTypeOther">Sonstige</string>
+	<string name="relationTypeCustom">Benutzerdefiniert</string>
+	<string name="relationTypeChild">Kind</string>
+	<string name="relationTypeFriend">Freund</string>
+	<string name="relationTypeParent">Elternteil</string>
+	<string name="relationTypeSpouse">Ehepartner</string>
+	<string name="contact_property_key">"Schlüssel"</string>
+	<string name="header_nickname_entry">"Spitzname"</string>
+	<string name="prefs_title_use_system_ringtone">Systemton verwenden</string>
+	<string name="organization_type">Organisation</string>
+	<string name="permission_bluetooth_connect_required">Aktivieren Sie die «Geräte in der Nähe»-Berechtigung, um verbundene Bluetooth-Geräte zu finden</string>
+	<string name="threema_push_start_webclient_sessions_manually">Threema Push ist aktiviert. Threema Web und Desktop-Sitzungen müssen daher manuell gestartet werden.</string>
 </resources>

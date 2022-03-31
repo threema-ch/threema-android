@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+
+	<include layout="@layout/toolbar_view"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<FrameLayout
+			android:id="@+id/settings"
+			android:layout_width="fill_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="3" />
+
+		<View
+			android:id="@+id/settings_separator"
+			android:layout_width="1dp"
+			android:layout_height="fill_parent"
+			android:background="@color/material_grey_300" />
+
+		<FrameLayout
+			android:id="@+id/settings_detailed"
+			android:layout_width="fill_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="2" />
+
+	</LinearLayout>
+</LinearLayout>

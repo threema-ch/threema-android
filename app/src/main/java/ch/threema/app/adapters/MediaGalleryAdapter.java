@@ -35,7 +35,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +51,7 @@ import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
@@ -64,7 +64,7 @@ import static ch.threema.storage.models.data.MessageContentsType.VIDEO;
 import static ch.threema.storage.models.data.MessageContentsType.VOICE_MESSAGE;
 
 public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
-	private static final Logger logger = LoggerFactory.getLogger(MediaGalleryAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaGalleryAdapter");
 
 	private final List<AbstractMessageModel> values;
 	private final FileService fileService;

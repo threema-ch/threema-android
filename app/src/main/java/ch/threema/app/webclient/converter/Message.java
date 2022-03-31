@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.webkit.MimeTypeMap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,6 +53,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
@@ -65,7 +65,7 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 @AnyThread
 public class Message extends Converter {
-	private static final Logger logger = LoggerFactory.getLogger(Message.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("Message");
 
 	public final static String ID = "id";
 	public final static String TYPE = "type";

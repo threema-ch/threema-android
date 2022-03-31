@@ -22,7 +22,6 @@
 package ch.threema.app.services.group;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -35,8 +34,11 @@ import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.processors.MessageProcessor;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.services.UserService;
 import ch.threema.base.Result;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestData;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
@@ -50,24 +52,25 @@ import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
 
 public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinRequestService {
-	private static final Logger logger = LoggerFactory.getLogger(IncomingGroupJoinRequestServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingGroupJoinRequestServiceImpl");
 
 	private final @NonNull GroupJoinResponseService groupJoinResponseService;
 	private final @NonNull GroupService groupService;
-	private final @NonNull IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory;
-	private final @NonNull GroupInviteModelFactory groupInviteModelFactory;
+	private final @NonNull UserService userService;
+	private final @NonNull DatabaseServiceNew databaseServiceNew;
 
 	private static final String GROUP_INVITE_NOT_FOUND_MSG = "Group Join Request: Group invite not found";
 
 	public IncomingGroupJoinRequestServiceImpl(
 		@NonNull final GroupJoinResponseService groupJoinResponseService,
 		@NonNull final GroupService groupService,
+		@NonNull final UserService userService,
 		@NonNull final DatabaseServiceNew databaseService
 	) {
 		this.groupJoinResponseService = groupJoinResponseService;
 		this.groupService = groupService;
-		this.incomingGroupJoinRequestModelFactory = databaseService.getIncomingGroupJoinRequestModelFactory();
-		this.groupInviteModelFactory = databaseService.getGroupInviteModelFactory();
+		this.userService = userService;
+		this.databaseServiceNew = databaseService;
 	}
 
 	/**
@@ -81,7 +84,8 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 	MessageProcessor.ProcessingResult process(@NonNull final GroupJoinRequestMessage message) {
 		final GroupJoinRequestData joinRequest = message.getData();
 		final GroupInviteToken token = joinRequest.getToken();
-		final Optional<GroupInviteModel> optionalGroupInvite = this.groupInviteModelFactory
+		GroupInviteModelFactory groupInviteModelFactory = databaseServiceNew.getGroupInviteModelFactory();
+		final Optional<GroupInviteModel> optionalGroupInvite = groupInviteModelFactory
 			.getByToken(token.toString());
 
 		if (optionalGroupInvite.isEmpty()) {
@@ -103,7 +107,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 				MessageProcessor.ProcessingResult.FAILED;
 		}
 
-		final GroupModel group = this.groupService.getById(groupInvite.getGroupId());
+		final GroupModel group = databaseServiceNew.getGroupModelFactory().getByApiGroupIdAndCreator(groupInvite.getGroupApiId().toString(), userService.getIdentity());
 		if (group == null) {
 			logger.error("Group Join Request: Corresponding group not found");
 			return MessageProcessor.ProcessingResult.FAILED;
@@ -112,13 +116,14 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 		if (Arrays.asList(this.groupService.getGroupIdentities(group)).contains(message.getFromIdentity())) {
 			logger.info("Group Join Request: Requesting identity already part of the group, accept and return a group sync message");
 			groupService.sendSync(group, new String[]{message.getFromIdentity()});
-			return trySendingResponse(message, new GroupJoinResponseData.Accept(groupInvite.getGroupId())) ?
+			return trySendingResponse(message, new GroupJoinResponseData.Accept(groupInvite.getGroupApiId().toLong())) ?
 				MessageProcessor.ProcessingResult.SUCCESS :
 				MessageProcessor.ProcessingResult.FAILED;
 		}
 
 		final @Nullable IncomingGroupJoinRequestModel joinRequestModel;
-		Optional<IncomingGroupJoinRequestModel> previousRequest = this.incomingGroupJoinRequestModelFactory
+		IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+		Optional<IncomingGroupJoinRequestModel> previousRequest = incomingGroupJoinRequestModelFactory
 			.getRequestByGroupInviteAndIdentity(groupInvite.getId(), message.getFromIdentity());
 
 		// persist new request or reopen previously received request and update message and response state
@@ -132,15 +137,15 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 		}
 		else {
 			joinRequestModel = previousRequest.get();
-			this.incomingGroupJoinRequestModelFactory
+			incomingGroupJoinRequestModelFactory
 				.updateStatus(joinRequestModel,IncomingGroupJoinRequestModel.ResponseStatus.OPEN);
 
-			this.incomingGroupJoinRequestModelFactory
+			incomingGroupJoinRequestModelFactory
 				.updateRequestMessage(joinRequestModel, message);
 		}
 
 		if (this.groupService.isFull(group)) {
-			this.incomingGroupJoinRequestModelFactory
+			incomingGroupJoinRequestModelFactory
 				.updateStatus(joinRequestModel,IncomingGroupJoinRequestModel.ResponseStatus.GROUP_FULL);
 
 			return trySendingResponse(message, new GroupJoinResponseData.GroupFull()) ?
@@ -172,14 +177,15 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 	 */
 	@Override
 	public void accept(@NonNull IncomingGroupJoinRequestModel model) throws Exception {
-		Optional<GroupInviteModel> invite = this.groupInviteModelFactory
+		Optional<GroupInviteModel> invite = this.databaseServiceNew.getGroupInviteModelFactory()
 			.getById(model.getGroupInviteId());
 
 		if (invite.isEmpty()) {
 			throw new ThreemaException(GROUP_INVITE_NOT_FOUND_MSG);
 		}
 
-		GroupModel group = this.groupService.getById(invite.get().getGroupId());
+		GroupModel group = this.databaseServiceNew.getGroupModelFactory()
+			.getByApiGroupIdAndCreator(invite.get().getGroupApiId().toString(), userService.getIdentity());
 		if (group == null) {
 			throw new ThreemaException("Group could not be found");
 		}
@@ -197,7 +203,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			false
 		);
 
-		this.incomingGroupJoinRequestModelFactory
+		this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
 			.updateStatus(model, IncomingGroupJoinRequestModel.ResponseStatus.ACCEPTED);
 
 		this.groupJoinResponseService.send(
@@ -205,12 +211,6 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			invite.get().getToken(),
 			new GroupJoinResponseData.Accept(group.getApiGroupId().toLong())
 		);
-
-		// check if we have other open request from the same identity for the same group and also mark those as accepted
-		markAllOtherRequestsFromIDForGroup(
-			invite.get().getGroupId(),
-			model.getRequestingIdentity(),
-			IncomingGroupJoinRequestModel.ResponseStatus.ACCEPTED);
 
 		fireOnRespondEvent();
 	}
@@ -221,14 +221,14 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 	 */
 	@Override
 	public void reject(@NonNull IncomingGroupJoinRequestModel model) throws ThreemaException {
-		Optional<GroupInviteModel> invite = this.groupInviteModelFactory
+		Optional<GroupInviteModel> invite = this.databaseServiceNew.getGroupInviteModelFactory()
 			.getById(model.getGroupInviteId());
 
 		if (invite.isEmpty()) {
 			throw new ThreemaException(GROUP_INVITE_NOT_FOUND_MSG);
 		}
 
-		this.incomingGroupJoinRequestModelFactory
+		this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
 			.updateStatus(model, IncomingGroupJoinRequestModel.ResponseStatus.REJECTED);
 
 		this.groupJoinResponseService.send(
@@ -236,12 +236,6 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			invite.get().getToken(),
 			new GroupJoinResponseData.Reject()
 		);
-
-		// check if we have other open request from the same identity for the same group and mark those as rejected
-		markAllOtherRequestsFromIDForGroup(
-			invite.get().getGroupId(),
-			model.getRequestingIdentity(),
-			IncomingGroupJoinRequestModel.ResponseStatus.REJECTED);
 
 		fireOnRespondEvent();
 	}
@@ -253,16 +247,16 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 	 * @param responseStatus status that should be updated to
 	 * */
 	private void markAllOtherRequestsFromIDForGroup(
-		int groupId,
+		GroupId groupId,
 		@NonNull String identity,
 		@NonNull IncomingGroupJoinRequestModel.ResponseStatus responseStatus
 	) {
-		List<IncomingGroupJoinRequestModel> otherOpenRequests = this.incomingGroupJoinRequestModelFactory
+		IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+		List<IncomingGroupJoinRequestModel> otherOpenRequests = incomingGroupJoinRequestModelFactory
 			.getAllOpenRequestsByGroupIdAndIdentity(groupId, identity);
 
 		for (IncomingGroupJoinRequestModel otherOpenRequest : otherOpenRequests) {
-			this.incomingGroupJoinRequestModelFactory
-				.updateStatus(otherOpenRequest, responseStatus);
+			incomingGroupJoinRequestModelFactory.updateStatus(otherOpenRequest, responseStatus);
 		}
 	}
 
@@ -285,7 +279,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 		);
 
 		final Result<IncomingGroupJoinRequestModel, Exception> insertResult =
-			this.incomingGroupJoinRequestModelFactory.insert(provisionalModel);
+			this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory().insert(provisionalModel);
 
 		if (insertResult.isFailure()) {
 			logger.error("Group Join Request: Could not insert database record", insertResult.getError());

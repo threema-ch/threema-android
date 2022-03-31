@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.widget.ImageView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,14 +42,14 @@ import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class GifMessagePlayer extends MessagePlayer {
-	private static final Logger logger = LoggerFactory.getLogger(GifMessagePlayer.class);
-	private static final String TAG = "GifMessagePlayer";
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GifMessagePlayer");
 
 	private final PreferenceService preferenceService;
 	private GifDrawable gifDrawable;

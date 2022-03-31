@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -81,7 +81,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 	OutgoingGroupJoinRequestDialog.OutgoingGroupJoinRequestDialogClickListener,
 	GenericAlertDialog.DialogClickListener,
 	SelectorDialog.SelectorDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(OutgoingGroupRequestActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("OutgoingGroupRequestActivity");
 
 	public static final String EXTRA_QR_RESULT = "qr_group_link_result";
 
@@ -290,14 +290,18 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			Optional<GroupInviteModel> groupInviteModel = databaseService
 				.getGroupInviteModelFactory()
 				.getByToken(groupInvite.getToken().toString());
-			GroupModel groupModel = databaseService.getGroupModelFactory().getById(groupInviteModel.get().getGroupId());
+			GroupModel groupModel = databaseService
+				.getGroupModelFactory()
+				.getByApiGroupIdAndCreator(
+					groupInviteModel.get().getGroupApiId().toString(), userService.getIdentity()
+				);
 			if (groupModel != null) {
 				forwardToGroup(groupModel.getId());
 			}
 			else {
 				// show info that request was already sent with info about resend option
 				GenericAlertDialog.newInstance(
-					"You are the admin of this underlying group but the group does not exist anymore",
+					R.string.group_request_already_sent_title,
 					HtmlCompat.fromHtml(
 						String.format(getString(R.string.group_request_already_sent), groupInvite.getGroupName()),
 						HtmlCompat.FROM_HTML_MODE_COMPACT),
@@ -334,12 +338,8 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 					.show(getSupportFragmentManager(), DIALOG_TAG_REQUEST_ALREADY_SENT);
 				return;
 			}
-			requestJoinRequestMessage(
-				NameUtil.getDisplayName(
-					contactService.getByIdentity(groupInvite.getAdminIdentity())
-				),
-				groupInvite.getGroupName());
-		} else if (groupInvite.getInviteType() == GroupInvite.InviteType.AUTOMATIC) {
+		}
+		if (groupInvite.getInviteType() == GroupInvite.InviteType.AUTOMATIC) {
 			confirmSend(
 				NameUtil.getDisplayName(contactService.getByIdentity(groupInvite.getAdminIdentity())),
 				groupInvite.getGroupName()

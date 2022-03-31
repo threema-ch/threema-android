@@ -23,6 +23,11 @@ package ch.threema.domain.protocol.api;
 
 import java.net.URLConnection;
 
+import androidx.annotation.NonNull;
+
 public interface APIAuthenticator {
-	void addAuthenticationToConnection(URLConnection urlConnection);
+	/**
+	 * Add necessary auth headers to the URLConnection.
+	 */
+	void addAuthenticationToConnection(@NonNull URLConnection urlConnection);
 }

@@ -38,25 +38,25 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.AnimationUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 
 public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleObserver {
-	private static final Logger logger = LoggerFactory.getLogger(QRCodePopup.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodePopup");
 
 	private ImageView imageView;
 	private View topLayout;
 	private View parentView;
 
 	private final int[] location = new int[2];
-	private View iconBorder, iconImage;
 
 	public QRCodePopup(Context context, View parentView, LifecycleOwner lifecycleOwner) {
 		super(context);
@@ -75,8 +75,6 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 		topLayout =  layoutInflater.inflate(R.layout.popup_qrcode, null, true);
 
 		this.imageView = topLayout.findViewById(R.id.image_view);
-		this.iconBorder = topLayout.findViewById(R.id.icon_border);
-		this.iconImage = topLayout.findViewById(R.id.icon_image);
 
 		// border around popup contents
 		int borderSize = context.getResources().getDimensionPixelSize(R.dimen.qrcode_min_margin) * 2;
@@ -102,14 +100,13 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 	 * Show a popup with a QR code
 	 * @param sourceView starting point for animation
 	 * @param text text to display as QR code
+	 * @param borderColor color to draw around the QR code (depending on type)
 	 */
-	public void show(@NonNull final View sourceView, String text) {
+	public void show(@NonNull final View sourceView, String text, @QRCodeServiceImpl.QRCodeColor int borderColor) {
 		Bitmap bitmap;
 
 		if (text != null) {
-			bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true);
-			this.iconBorder.setVisibility(View.GONE);
-			this.iconImage.setVisibility(View.GONE);
+			bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true, borderColor);
 		} else {
 			bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getUserQRCode();
 		}

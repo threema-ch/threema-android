@@ -27,13 +27,13 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.CursorHelper;
@@ -42,7 +42,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactModelFactory extends ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(ContactModelFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactModelFactory");
 
 	public ContactModelFactory(DatabaseServiceNew databaseService) {
 		super(databaseService, ContactModel.TABLE);

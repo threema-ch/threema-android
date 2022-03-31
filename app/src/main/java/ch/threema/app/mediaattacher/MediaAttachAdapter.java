@@ -36,9 +36,10 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,23 +52,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ui.CheckableFrameLayout;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.ui.SquareImageView;
 import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.MediaGalleryHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(MediaAttachAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachAdapter");
 
 	private final Context context;
 	private List<MediaAttachItem> mediaItems;
 	private final MediaAttachAdapter.ItemClickListener clickListener;
 	private final MediaAttachViewModel mediaAttachViewModel;
+	private final int columnCount;
 
-	public MediaAttachAdapter(Context context, MediaAttachAdapter.ItemClickListener clickListener) {
+	public MediaAttachAdapter(Context context, MediaAttachAdapter.ItemClickListener clickListener, int columnCount) {
 		this.context = context;
 		this.mediaItems = new ArrayList<>();
 		this.clickListener = clickListener;
+		this.columnCount = columnCount;
 		this.mediaAttachViewModel = new ViewModelProvider((MediaSelectionBaseActivity)context).get(MediaAttachViewModel.class);
 	}
 
@@ -77,7 +80,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 	}
 
 	public static class MediaGalleryHolder extends RecyclerView.ViewHolder {
-		SquareImageView imageView;
+		ShapeableImageView imageView;
 		FrameLayout mediaFrame;
 		CheckableFrameLayout contentView;
 		LinearLayout gifIndicator;
@@ -122,11 +125,25 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 			// required item ID to check on recycling
 			holder.itemId = mediaAttachItem.getId();
 			CheckableFrameLayout contentView = holder.contentView;
-			SquareImageView imageView = holder.imageView;
+			ShapeableImageView imageView = holder.imageView;
 			LinearLayout gifIndicator = holder.gifIndicator;
 			LinearLayout videoIndicator = holder.videoIndicator;
 			ImageView loadErrorIndicator = holder.loadErrorIndicator;
 			TextView videoDuration = holder.videoDuration;
+
+			if (position == 0) {
+				ShapeAppearanceModel leftShapeAppearanceModel = new ShapeAppearanceModel.Builder()
+					.setTopLeftCornerSize(context.getResources().getDimensionPixelSize(R.dimen.media_attach_button_radius))
+					.build();
+				holder.imageView.setShapeAppearanceModel(leftShapeAppearanceModel);
+			}
+
+			if (position == columnCount - 1) {
+				ShapeAppearanceModel rightShapeAppearanceModel = new ShapeAppearanceModel.Builder()
+					.setTopRightCornerSize(context.getResources().getDimensionPixelSize(R.dimen.media_attach_button_radius))
+					.build();
+				holder.imageView.setShapeAppearanceModel(rightShapeAppearanceModel);
+			}
 
 			try {
 				Glide.with(context).load(mediaAttachItem.getUri())

@@ -26,7 +26,6 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +38,7 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkDirectory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
@@ -46,7 +46,7 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
 
 public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, WorkDirectoryContact> {
-	private static final Logger logger = LoggerFactory.getLogger(DirectoryDataSource.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryDataSource");
 
 	private PreferenceService preferenceService;
 	private APIConnector apiConnector;

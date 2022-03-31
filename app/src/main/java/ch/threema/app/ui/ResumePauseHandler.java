@@ -23,9 +23,6 @@ package ch.threema.app.ui;
 
 import android.app.Activity;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +31,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 
 public class ResumePauseHandler {
-	private static final Logger logger = LoggerFactory.getLogger(ResumePauseHandler.class);
-
 	private static final Map<String, ResumePauseHandler> instances = new HashMap<>();
 	private static final Object lock = new Object();
 

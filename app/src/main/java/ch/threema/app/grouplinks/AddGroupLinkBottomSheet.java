@@ -45,7 +45,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import net.sqlcipher.SQLException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -66,6 +65,7 @@ import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.models.GroupModel;
@@ -76,7 +76,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 
 public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements View.OnClickListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(AddGroupLinkBottomSheet.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AddGroupLinkBottomSheet");
 
 	private static final String DIALOG_TAG_EDIT_EXPIRATION_DATE = "editDate";
 	private static final String BUNDLE_NEW_INVITE_ID_EXTRA = "newInvite";
@@ -194,10 +194,11 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 		this.textInputLayout.setEndIconOnClickListener(this);
 		this.administrationCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			try {
-				groupLinkToAdd = new GroupInviteModel.Builder(groupLinkToAdd)
+				GroupInviteModel updateModel = new GroupInviteModel.Builder(groupLinkToAdd)
 					.withManualConfirmation(isChecked)
 					.build();
-				groupInviteRepository.update(groupLinkToAdd);
+				groupInviteRepository.update(updateModel);
+				this.groupLinkToAdd = updateModel;
 			}
 			catch (SQLException | GroupInviteModel.MissingRequiredArgumentsException e) {
 				LogUtil.error(String.format(getString(R.string.an_error_occurred_more), e.getMessage()), this);
@@ -226,7 +227,6 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 				boolean hasMessageText = s.toString().trim().length() > 0;
 				textInputLayout.setEndIconVisible(hasMessageText);
 				textInputLayout.setEndIconActivated(hasMessageText);
-
 			}
 		});
 
@@ -275,9 +275,13 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 				if (this.linkExpirationDate != null && date != null) {
 					linkExpirationDate.setText(DateUtils.formatDateTime(this, date, DateUtils.FORMAT_SHOW_DATE));
 					try {
+						GroupInviteModel updateModel = new GroupInviteModel.Builder(groupLinkToAdd)
+							.withExpirationDate(new Date(date)).build();
 						groupInviteRepository.update(
-							new GroupInviteModel.Builder(groupLinkToAdd).withExpirationDate(new Date(date)).build()
+							updateModel
 						);
+						this.groupLinkToAdd = updateModel;
+
 					} catch (SQLException | GroupInviteModel.MissingRequiredArgumentsException e) {
 						LogUtil.error(String.format(getString(R.string.an_error_occurred_more), e.getMessage()), this);
 					}
@@ -304,14 +308,14 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 		Editable editedLinkName = newGroupLinkName.getText();
 		try {
 			if (editedLinkName != null) {
-				groupInviteRepository.update(
-					new GroupInviteModel.Builder(groupLinkToAdd).withInviteName(editedLinkName.toString()).build()
-				);
+				GroupInviteModel updateModel = new GroupInviteModel.Builder(groupLinkToAdd).withInviteName(editedLinkName.toString()).build();
+				groupInviteRepository.update(updateModel);
+				this.groupLinkToAdd = updateModel;
+				Toast.makeText(getApplicationContext(),
+					getString(R.string.group_link_update_success),
+					Toast.LENGTH_LONG
+				).show();
 			}
-			Toast.makeText(getApplicationContext(),
-				getString(R.string.group_link_update_success),
-				Toast.LENGTH_LONG
-			).show();
 		} catch (SQLException | GroupInviteModel.MissingRequiredArgumentsException e) {
 			LogUtil.error(String.format(getString(R.string.an_error_occurred_more), e.getMessage()), this);
 		}

@@ -25,7 +25,6 @@ import android.content.Context;
 
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 
@@ -127,7 +126,9 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.SymmetricEncryptionService;
 import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
@@ -136,7 +137,7 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
 
 public class ServiceManager {
-	private static final Logger logger = LoggerFactory.getLogger(ServiceManager.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
 
 	private final ThreemaConnection connection;
 	private final IdentityStore identityStore;
@@ -180,7 +181,7 @@ public class ServiceManager {
 	private SynchronizeContactsService synchronizeContactsService;
 	private SystemScreenLockService systemScreenLockService;
 
-	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService, readReceiptsRecipientsService, isTypingRecipientsService;
+	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService;
 	private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
 	private DistributionListService distributionListService;
 	private MessageProcessor messageProcessor;
@@ -191,7 +192,7 @@ public class ServiceManager {
 	private ThreemaSafeService threemaSafeService;
 	private RingtoneService ringtoneService;
 	private BackupChatService backupChatService;
-	private DatabaseServiceNew databaseServiceNew;
+	private final DatabaseServiceNew databaseServiceNew;
 	private SensorService sensorService;
 	private VoipStateService voipStateService;
 	private BrowserDetectionService browserDetectionService;
@@ -199,6 +200,8 @@ public class ServiceManager {
 	private ServerAddressProviderService serverAddressProviderService;
 
 	private WebClientServiceManager webClientServiceManager;
+
+	private SymmetricEncryptionService symmetricEncryptionService;
 
 	public ServiceManager(ThreemaConnection connection,
 						  DatabaseServiceNew databaseServiceNew,
@@ -263,9 +266,6 @@ public class ServiceManager {
 
 	/**
 	 * Start the server connection. Do not call this directly; use the LifetimeService!
-	 *
-	 * @throws NoIdentityException
-	 * @throws MasterKeyLockedException
 	 */
 	public void startConnection() throws ThreemaException {
 		logger.trace("startConnection");
@@ -344,7 +344,7 @@ public class ServiceManager {
 		}
 	}
 
-	public MessageQueue getMessageQueue() throws MasterKeyLockedException {
+	public MessageQueue getMessageQueue() {
 		if (this.messageQueue == null) {
 			this.messageQueue = new MessageQueue(
 					this.getContactStore(),
@@ -424,6 +424,7 @@ public class ServiceManager {
 					this.getContactService(),
 					this.getFileService(),
 					this.getIdentityStore(),
+					this.getSymmetricEncryptionService(),
 					this.getPreferenceService(),
 					this.getMessageAckProcessor(),
 					this.getLockAppService(),
@@ -493,11 +494,6 @@ public class ServiceManager {
 	public LifetimeService getLifetimeService() {
 		if(this.lifetimeService == null) {
 			this.lifetimeService = new LifetimeServiceImpl(this.getContext());
-
-			if (this.getPreferenceService().isPolling()) {
-				long interval = this.getPreferenceService().getPollingInterval();
-				this.lifetimeService.setPollingInterval(interval);
-			}
 		}
 
 		return this.lifetimeService;
@@ -516,8 +512,7 @@ public class ServiceManager {
 	}
 
 	/**
-	 * service to backup or restore data (conversations and contacts)
-	 * @return
+	 * @return service to backup or restore data (conversations and contacts)
 	 */
 	public BackupRestoreDataService getBackupRestoreDataService() throws FileSystemNotPresentException {
 		if(this.backupRestoreDataService == null) {
@@ -531,8 +526,7 @@ public class ServiceManager {
 
 	public LicenseService getLicenseService() throws FileSystemNotPresentException {
 		if(this.licenseService == null) {
-			switch(BuildFlavor.getLicenseType())
-			{
+			switch(BuildFlavor.getLicenseType()) {
 				case SERIAL:
 					this.licenseService = new LicenseServiceSerial(
 							this.getAPIConnector(),
@@ -641,8 +635,7 @@ public class ServiceManager {
 		return this.groupInviteService;
 	}
 
-	public @NonNull
-	GroupJoinResponseService getGroupJoinResponseService() throws MasterKeyLockedException {
+	public @NonNull GroupJoinResponseService getGroupJoinResponseService() {
 		if (this.groupJoinResponseService == null) {
 			this.groupJoinResponseService = new GroupJoinResponseServiceImpl(
 				this.getDatabaseServiceNew(),
@@ -659,6 +652,7 @@ public class ServiceManager {
 			this.incomingGroupJoinRequestService = new IncomingGroupJoinRequestServiceImpl(
 				this.getGroupJoinResponseService(),
 				this.getGroupService(),
+				this.getUserService(),
 				this.databaseServiceNew
 			);
 		}
@@ -980,5 +974,13 @@ public class ServiceManager {
 
 	public DatabaseServiceNew getDatabaseServiceNew() {
 		return this.databaseServiceNew;
+	}
+
+	public @NonNull
+	SymmetricEncryptionService getSymmetricEncryptionService() {
+		if (symmetricEncryptionService == null) {
+			symmetricEncryptionService = new SymmetricEncryptionService();
+		}
+		return symmetricEncryptionService;
 	}
 }

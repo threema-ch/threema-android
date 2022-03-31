@@ -38,19 +38,20 @@ import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.base.Result;
+import ch.threema.domain.models.GroupId;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.models.group.GroupInviteModel;
 
 public class GroupLinkViewModel extends ViewModel {
 
-	private final int groupId;
+	private final GroupId groupApiId;
 	private MutableLiveData<List<GroupInviteModel>> groupInviteModels;
 	private GroupInviteModelFactory repository;
 	private final SparseBooleanArray checkedItems = new SparseBooleanArray();
 
-	public GroupLinkViewModel(int groupId) {
+	public GroupLinkViewModel(GroupId groupId) {
 		super();
-		this.groupId = groupId;
+		this.groupApiId = groupId;
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
 			this.repository = serviceManager.getDatabaseServiceNew().getGroupInviteModelFactory();
@@ -59,7 +60,7 @@ public class GroupLinkViewModel extends ViewModel {
 					@NonNull
 					@Override
 					public List<GroupInviteModel> getValue() {
-						return repository.getByGroupId(groupId);
+						return repository.getByGroupApiId(groupId);
 					}
 				};
 			}
@@ -94,7 +95,7 @@ public class GroupLinkViewModel extends ViewModel {
 	}
 
 	public void onDataChanged() {
-		groupInviteModels.postValue(repository.getByGroupId(groupId));
+		groupInviteModels.postValue(repository.getByGroupApiId(groupApiId));
 	}
 
 	void toggleChecked(int pos) {

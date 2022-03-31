@@ -22,8 +22,6 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import org.apache.commons.io.EndianUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,9 +35,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  * {@code encryptionKey} to be used when decrypting the audio blob.
  */
 public class BoxAudioMessage extends AbstractMessage {
-
-	private static final Logger logger = LoggerFactory.getLogger(BoxAudioMessage.class);
-
 	private int duration;
 	private byte[] audioBlobId;
 	private int audioSize;

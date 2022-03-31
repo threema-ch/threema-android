@@ -22,7 +22,6 @@
 package ch.threema.app.routines;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -34,10 +33,11 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class ReadMessagesRoutine implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(ReadMessagesRoutine.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ReadMessagesRoutine");
 
 	private final List<AbstractMessageModel> messages;
 	private final MessageService messageService;

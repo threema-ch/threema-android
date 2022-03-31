@@ -54,7 +54,6 @@ import org.saltyrtc.client.keystore.Box;
 import org.saltyrtc.client.nonce.SignalingChannelNonce;
 import org.saltyrtc.client.signaling.CloseCode;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
@@ -99,6 +98,7 @@ import ch.threema.app.webclient.utils.DefaultNoopPeerConnectionObserver;
 import ch.threema.app.webclient.utils.DefaultNoopWebSocketListener;
 import ch.threema.app.webclient.webrtc.PeerConnectionWrapper;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
@@ -107,7 +107,7 @@ import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_
 @SuppressWarnings("FieldCanBeLocal")
 @UiThread
 public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements TextEntryDialog.TextEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(WebDiagnosticsActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WebDiagnosticsActivity");
 	private static final String DIALOG_TAG_SEND_VOIP_DEBUG = "svd";
 
 	// Config

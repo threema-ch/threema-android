@@ -28,45 +28,62 @@ import android.content.Intent;
 import android.os.SystemClock;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.base.utils.LoggingUtil;
+import java8.util.stream.StreamSupport;
 
+/**
+ * @see LifetimeService
+ */
+@AnyThread
 public class LifetimeServiceImpl implements LifetimeService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("LifetimeServiceImpl");
 
 	public static final String REQUEST_CODE_KEY = "requestCode";
 	public static final int REQUEST_CODE_RELEASE = 1;
 	public static final int REQUEST_CODE_RESEND = 2;
-	public static final int REQUEST_CODE_POLL = 3;
-	public static final int REQUEST_LOCK_APP = 4;
+	public static final int REQUEST_LOCK_APP = 3;
 
 	private static final int MESSAGE_SEND_TIME = 30*1000;
 	private static final int MESSAGE_RESEND_INTERVAL = 5*60*1000;   /* 5 minutes */
 
-	private final Context context;
-	private final AlarmManager alarmManager;
+	private final @NonNull Context context;
+	private final @NonNull AlarmManager alarmManager;
 
-	private boolean active = false;
-	private int refCount = 0;
+	private final  @NonNull Map<String, ConnectionSlot> connectionSlots = new HashMap<>();
+	private volatile boolean active = false;
+	private volatile boolean paused = false;
 	private long lingerUntil = 0;   /* time (in SystemClock.elapsedRealtime()) until which the connection must stay active in any case */
-	private long pollingInterval;
-	private PollingHelper pollingHelper;
 
-	private DownloadService downloadService;
+	private @Nullable DownloadService downloadService;
 
 	private final List<LifetimeServiceListener> listeners = new ArrayList<>();
 
-	public LifetimeServiceImpl(Context context) {
+	/**
+	 * A reserved "connection slot".
+	 */
+	private static class ConnectionSlot {
+		final boolean unpauseable;
+		public ConnectionSlot(boolean unpauseable) {
+			this.unpauseable = unpauseable;
+		}
+	}
+
+	public LifetimeServiceImpl(@NonNull Context context) {
 		this.context = context;
 		this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -78,119 +95,160 @@ public class LifetimeServiceImpl implements LifetimeService {
 	}
 
 	@Override
-	public synchronized void acquireConnection(String source) {
-		refCount++;
-
-		logger.info("acquireConnection: source = {}, refCount = {}", source, refCount);
-
-		if (!active) {
-			try {
-				//do not start a connection if a restore is in progress
-				if (RestoreService.isRunning()) {
-					throw new Exception("restore in progress");
-				}
-				if (BackupService.isRunning()) {
-					throw new Exception("backup in progress");
-				}
-				ThreemaApplication.getServiceManager().startConnection();
-				logger.debug("connection started");
-				active = true;
-
-			} catch (Exception e) {
-				logger.error("startConnection: failed or skipped", e);
-			}
-		} else {
-			logger.info("another connection is already active");
+	public synchronized void acquireConnection(@NonNull String sourceTag, boolean unpauseable) {
+		// Ensure that a connection slot is not acquired twice
+		if (this.connectionSlots.containsKey(sourceTag)) {
+			logger.error("acquireConnection: tag {} already present in connectionSlots", sourceTag);
+			return;
 		}
+
+		// Store connection slot
+		this.connectionSlots.put(sourceTag, new ConnectionSlot(unpauseable));
+		logger.info("acquireConnection: tag={}, new slotCount={}", sourceTag, this.connectionSlots.size());
+
+		// Establish connection
+		this.ensureConnection();
 	}
 
 	@Override
-	public synchronized void releaseConnection(String source) {
-		if (refCount == 0) {
-			logger.debug("releaseConnection: refCount is already 0! (source = " + source + ")");
+	public synchronized void releaseConnection(@NonNull String sourceTag) {
+		// Ensure that there are any connections registered
+		if (this.connectionSlots.isEmpty()) {
+			logger.warn("releaseConnection: slotCount is already 0! (source = {})", sourceTag);
 			return;
 		}
-		refCount--;
 
-		logger.info("releaseConnection: source = {}, refCount = {}", source, refCount);
+		// Remove slot
+		@Nullable ConnectionSlot previousSlot = this.connectionSlots.remove(sourceTag);
+		if (previousSlot == null) {
+			logger.error("releaseConnection: tag {} was not present in connectionSlots", sourceTag);
+		}
 
-		cleanupConnection();
+		logger.info("releaseConnection: tag={}, slotCount={}", sourceTag, this.connectionSlots.size());
+
+		this.cleanupConnection();
 	}
 
 	@Override
-	public synchronized void releaseConnectionLinger(String source, long timeoutMs) {
-		if (refCount == 0) {
-			logger.debug("releaseConnectionLinger: refCount is already 0! (source = " + source + ")");
+	public synchronized void releaseConnectionLinger(@NonNull String sourceTag, long timeoutMs) {
+		// Ensure that there are any connections registered
+		if (this.connectionSlots.isEmpty()) {
+			logger.warn("releaseConnectionLinger: slotCount is already 0! (source={})", sourceTag);
 			return;
 		}
-		refCount--;
 
-		logger.info("releaseConnectionLinger: source = {}, timeout = {}", source, timeoutMs);
+		// Remove slot
+		@Nullable ConnectionSlot previousSlot = this.connectionSlots.remove(sourceTag);
+		if (previousSlot == null) {
+			logger.error("releaseConnectionLinger: tag {} was not present in connectionSlots", sourceTag);
+		}
+
+		logger.info("releaseConnectionLinger: tag={}, slotCount={}, linger={}s",
+			sourceTag, this.connectionSlots.size(), timeoutMs / 1000);
 
 		long newLingerUntil = SystemClock.elapsedRealtime() + timeoutMs;
-
 		if (newLingerUntil > lingerUntil) {
 			/* must re-schedule alarm */
 			lingerUntil = newLingerUntil;
 
 			cancelAlarm(REQUEST_CODE_RELEASE);
-			scheduleAlarm(REQUEST_CODE_RELEASE, lingerUntil, false);
+			scheduleAlarm(REQUEST_CODE_RELEASE, lingerUntil);
 		}
 	}
 
 	@Override
-	public void setPollingInterval(long intervalMs) {
-		// account for inexact repeating - which is the default in API 19+
-		// "Your alarm's first trigger will not be before the requested time, but it might not occur for almost a full interval after that time"
-		if (pollingInterval == intervalMs)
+	public synchronized void ensureConnection() {
+		if (this.connectionSlots.isEmpty()) {
+			logger.info("ensureConnection: No connection slots active");
 			return;
-
-		pollingInterval = intervalMs;
-
-		if (pollingInterval == 0) {
-			/* polling now disabled - cancel alarm */
-			cancelAlarm(REQUEST_CODE_POLL);
-			logger.info("Polling disabled");
-		} else {
-			/* polling now enabled - (re)start alarm */
-			scheduleRepeatingAlarm(REQUEST_CODE_POLL, SystemClock.elapsedRealtime() + pollingInterval, pollingInterval);
-			logger.info("Polling enabled. Interval: {}", pollingInterval);
 		}
+		if (this.active) {
+			logger.info("ensureConnection: A connection is already active");
+			return;
+		}
+
+		// Do not start a connection if a backup or restore is in progress
+		if (RestoreService.isRunning()) {
+			logger.warn("ensureConnection: Skipping, restore in progress");
+			return;
+		}
+		if (BackupService.isRunning()) {
+			logger.warn("ensureConnection: Skipping, backup in progress");
+			return;
+		}
+
+		// Start connection
+		try {
+			ThreemaApplication.getServiceManager().startConnection();
+		} catch (Exception e) {
+			logger.error("ensureConnection: startConnection failed", e);
+			return;
+		}
+		logger.info("ensureConnection: Connection started");
+		this.active = true;
 	}
 
 	public synchronized void alarm(Intent intent) {
 		int requestCode = intent.getIntExtra("requestCode", 0);
 		long time = System.currentTimeMillis();
 
-		logger.info("Alarm type " + requestCode + " (handling) START");
+		logger.info("Alarm type {} (handling) START", requestCode);
 
 		switch (requestCode) {
 			case REQUEST_CODE_RELEASE:
-				cleanupConnection();
+				this.cleanupConnection();
 				break;
 			case REQUEST_CODE_RESEND:
 				/* resend attempt - acquire connection for a moment */
-				acquireConnection("resend_alarm");
-				releaseConnectionLinger("resend_alarm", MESSAGE_SEND_TIME);
-				break;
-			case REQUEST_CODE_POLL:
-				if (pollingHelper == null)
-					pollingHelper = new PollingHelper(context, "alarm");
-				if (pollingHelper.poll()) {
-					updateLastPollTimestamp();
-				}
-
+				acquireConnection("resendAlarm");
+				releaseConnectionLinger("resendAlarm", MESSAGE_SEND_TIME);
 				break;
 			case REQUEST_LOCK_APP:
 				lockApp();
 				break;
 		}
-		logger.info("Alarm type " + requestCode + " (handling) DONE. Duration = " + (System.currentTimeMillis() - time) + "ms");
+		logger.info("Alarm type {} (handling) DONE. Duration={} ms", requestCode, System.currentTimeMillis() - time);
 	}
 
 	@Override
 	public synchronized boolean isActive() {
-		return active;
+		return this.active;
+	}
+
+	@Override
+	public synchronized boolean isPaused() {
+		return this.paused;
+	}
+
+	@Override
+	public synchronized void pause() {
+		logger.info("Pausing connection");
+
+		// Check for unpauseable connection slots
+		long unpauseableConnectionCount = StreamSupport.stream(this.connectionSlots.values())
+			.filter(slot -> slot.unpauseable)
+			.count();
+		if (unpauseableConnectionCount > 0) {
+			logger.info("Cannot pause, there are {} unpauseable connections", unpauseableConnectionCount);
+			return;
+		}
+
+		// Pause connection
+		this.paused = true;
+		this.cleanupConnection();
+	}
+
+	@Override
+	public synchronized void unpause() {
+		logger.info("Unpausing connection");
+
+		// Restore connection
+		if (this.paused) {
+			this.paused = false;
+		} else {
+			logger.info("Cannot unpause, connection is not paused");
+		}
+		this.ensureConnection();
 	}
 
 	@Override
@@ -217,26 +275,30 @@ public class LifetimeServiceImpl implements LifetimeService {
 		}
 	}
 
-	private void cleanupConnection() {
+	/**
+	 * If the connection slots are empty or if the state is paused, disconnect.
+	 */
+	private synchronized void cleanupConnection() {
 		boolean interrupted = false;
-		if (refCount == 0) {
+		if (this.connectionSlots.isEmpty() || this.paused) {
 			long curTime = SystemClock.elapsedRealtime();
 
-			if (!active) {
-				logger.info("cleanupConnection: connection not active");
+			if (!this.active) {
+				logger.info("cleanupConnection: Connection not active");
 			} else if (lingerUntil > curTime && !ThreemaApplication.isIsDeviceIdle()) {
-				logger.info("cleanupConnection: connection must linger for another " + (lingerUntil - curTime) + " milliseconds");
+				logger.info("cleanupConnection: Connection must linger for another {} milliseconds", lingerUntil - curTime);
 			} else if (downloadService != null && downloadService.isDownloading()) {
-				logger.info("cleanupConnection: still downloading - linger on");
+				logger.info("cleanupConnection: Ctill downloading - linger on");
 				cancelAlarm(REQUEST_CODE_RELEASE);
-				releaseConnectionLinger("ongoing_download", MESSAGE_SEND_TIME);
+				acquireConnection("ongoingDownload");
+				releaseConnectionLinger("ongoingDownload", MESSAGE_SEND_TIME);
 			} else {
 				try {
 					ThreemaApplication.getServiceManager().stopConnection();
 				} catch (InterruptedException e) {
 					logger.error("Interrupted while stopping connection");
 					interrupted = true;
-					// Connection cleanup is important, so swallow the interruption here.
+					// Connection cleanup is important, so postpone the interruption here.
 				}
 
 				synchronized (this.listeners) {
@@ -249,23 +311,23 @@ public class LifetimeServiceImpl implements LifetimeService {
 					}
 				}
 
-				active = false;
-				logger.info("cleanupConnection: connection closed");
+				this.active = false;
+				logger.info("cleanupConnection: Connection closed");
 
 				/* check if any messages remain in the queue */
 				try {
 					int queueSize = ThreemaApplication.getServiceManager().getMessageQueue().getQueueSize();
 					if (queueSize > 0) {
 						long resendTime = SystemClock.elapsedRealtime() + MESSAGE_RESEND_INTERVAL;
-						logger.info(queueSize + " messages remaining in queue; scheduling resend at " + new Date(resendTime).toString());
-						scheduleAlarm(REQUEST_CODE_RESEND, resendTime, false);
+						logger.info("cleanupConnection: {} messages remaining in queue; scheduling resend at {}", queueSize, new Date(resendTime));
+						scheduleAlarm(REQUEST_CODE_RESEND, resendTime);
 					}
 				} catch (Exception e) {
 					logger.error("Exception", e);
 				}
 			}
 		} else {
-			logger.info("cleanupConnection: refCount = {} - not cleaning up", refCount);
+			logger.info("cleanupConnection: slotCount={} - not cleaning up", this.connectionSlots.size());
 		}
 
 		if (interrupted) {
@@ -274,10 +336,10 @@ public class LifetimeServiceImpl implements LifetimeService {
 		}
 	}
 
-	private void scheduleAlarm(int requestCode, long triggerAtMillis, boolean whenIdle) {
+	private void scheduleAlarm(int requestCode, long triggerAtMillis) {
 		long curTime = SystemClock.elapsedRealtime();
 
-		logger.info("Alarm type " + requestCode + " schedule in " + (triggerAtMillis - curTime) + "ms");
+		logger.info("Alarm type {} schedule in {} ms", requestCode, triggerAtMillis - curTime);
 
 		try {
 			alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis,
@@ -288,42 +350,20 @@ public class LifetimeServiceImpl implements LifetimeService {
 		}
 	}
 
-	private void scheduleRepeatingAlarm(int requestCode, long triggerAtMillis, long intervalMillis) {
-		alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, intervalMillis,
-				makePendingIntentForRequestCode(requestCode));
-	}
-
 	private void cancelAlarm(int requestCode) {
-
-		logger.info("Alarm type " + requestCode + " cancel");
+		logger.info("Alarm type {} cancel", requestCode);
 		alarmManager.cancel(makePendingIntentForRequestCode(requestCode));
 	}
 
 	private PendingIntent makePendingIntentForRequestCode(int requestCode) {
 		Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-		intent.putExtra("requestCode", requestCode);
+		intent.putExtra(AlarmManagerBroadcastReceiver.EXTRA_REQUEST_CODE, requestCode);
 
 		return PendingIntent.getBroadcast(
 				context,
 				requestCode,
 				intent,
 				0);
-	}
-
-	/**
-	 * We want to know when the last successful polling happened. Store it in the preferences.
-	 */
-	private void updateLastPollTimestamp() {
-		try {
-			final PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-			if (preferenceService != null) {
-				long timestamp = System.currentTimeMillis();
-				preferenceService.setLastSuccessfulPollTimestamp(timestamp);
-				logger.debug("Updated last poll timestamp");
-			}
-		} catch (Exception e) {
-			//
-		}
 	}
 
 	private void lockApp(){

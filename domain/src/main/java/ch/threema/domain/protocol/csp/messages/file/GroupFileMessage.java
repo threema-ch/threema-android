@@ -21,10 +21,10 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
 public class GroupFileMessage extends AbstractGroupMessage
 	implements FileMessageInterface {
 
-	private static final Logger logger = LoggerFactory.getLogger(GroupFileMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupFileMessage");
 
 	private FileData fileData;
 

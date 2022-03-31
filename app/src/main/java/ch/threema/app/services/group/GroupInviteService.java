@@ -29,6 +29,7 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.storage.models.GroupModel;
@@ -45,7 +46,7 @@ public interface GroupInviteService {
 	@Nullable
 	Optional<GroupInviteModel> getDefaultGroupInvite(@NonNull GroupModel groupModel);
 
-	int getCustomLinksCount();
+	int getCustomLinksCount(GroupId groupApiId);
 
 	void deleteDefaultLink(GroupModel groupModel);
 

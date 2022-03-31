@@ -24,7 +24,6 @@ package ch.threema.app.services;
 import android.net.Uri;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
@@ -36,13 +35,14 @@ import javax.net.ssl.HttpsURLConnection;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
 /**
  * Send ratings to the threema server
  */
 public class RatingService {
-	private static final Logger logger = LoggerFactory.getLogger(RatingService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("RatingService");
 
 	private final PreferenceService preferenceService;
 

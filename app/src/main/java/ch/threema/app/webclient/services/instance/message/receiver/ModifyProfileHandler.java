@@ -27,7 +27,6 @@ import android.graphics.BitmapFactory;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,6 +43,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -53,7 +53,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WorkerThread
 public class ModifyProfileHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ModifyProfileHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyProfileHandler");
 
 	private static final String FIELD_NICKNAME = "publicNickname";
 	private static final String FIELD_AVATAR = "avatar";

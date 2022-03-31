@@ -25,17 +25,17 @@ import android.util.JsonReader;
 import android.util.JsonWriter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
 public class VideoDataModel implements MediaMessageDataInterface {
-	private static final Logger logger = LoggerFactory.getLogger(VideoDataModel.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoDataModel");
 
 	private int duration, videoSize;
 	private byte[] videoBlobId;

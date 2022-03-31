@@ -21,8 +21,10 @@
 
 package ch.threema.app.fragments.wizard;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -30,6 +32,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.Objects;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
@@ -44,9 +49,12 @@ public class WizardFragment2 extends WizardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		View rootView = super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+
+		TextView title = rootView.findViewById(R.id.wizard_title);
+		title.setText(R.string.new_wizard_choose_nickname);
 
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard2);
@@ -68,8 +76,9 @@ public class WizardFragment2 extends WizardFragment {
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					if (getActivity().getCurrentFocus() == nicknameText) {
-						((OnSettingsChangedListener) getActivity()).onNicknameSet(s.toString());
+					Activity activity = requireActivity();
+					if (activity.getCurrentFocus() == nicknameText) {
+						((OnSettingsChangedListener) activity).onNicknameSet(s.toString());
 					}
 				}
 			});
@@ -104,18 +113,13 @@ public class WizardFragment2 extends WizardFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		new Handler().postDelayed(() -> {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					initValues();
-					if (nicknameText != null) {
-						nicknameText.requestFocus();
-						EditTextUtil.showSoftKeyboard(nicknameText);
-					}
-				}
-			});
-		}, 50);
+		new Handler(Looper.getMainLooper()).postDelayed(() -> RuntimeUtil.runOnUiThread(() -> {
+			initValues();
+			if (nicknameText != null) {
+				nicknameText.requestFocus();
+				EditTextUtil.showSoftKeyboard(nicknameText);
+			}
+		}), 50);
 	}
 
 	@Override
@@ -129,7 +133,7 @@ public class WizardFragment2 extends WizardFragment {
 
 	private void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
 			String nickname = callback.getNickname();
 			nicknameText.setText(nickname);
 			if (!TestUtil.empty(nickname)) {

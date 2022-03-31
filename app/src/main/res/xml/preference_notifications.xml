@@ -59,11 +59,18 @@
 	<PreferenceCategory
 		android:key="pref_key_voice_notif"
 		android:title="@string/prefs_voice_call_notifications">
+		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
+			android:key="@string/preferences__use_system_ringtone"
+			android:title="@string/prefs_title_use_system_ringtone"
+			android:defaultValue="false"
+			android:disableDependentsState="true"/>
 		<ch.threema.app.preference.RingtonePreference
 			android:defaultValue="null"
 			android:key="@string/preferences__voip_ringtone"
 			android:summary="@string/prefs_sum_voice_call_sound"
 			android:icon="@drawable/ic_notifications_active_outline"
+			android:dependency="@string/preferences__use_system_ringtone"
 			android:title="@string/prefs_voice_call_sound"/>
 		<CheckBoxPreference
 			android:defaultValue="true"

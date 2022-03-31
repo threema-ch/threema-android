@@ -23,7 +23,6 @@ package ch.threema.app.managers;
 
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +53,10 @@ import ch.threema.app.listeners.ServerMessageListener;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.listeners.ThreemaSafeListener;
 import ch.threema.app.listeners.VoipCallListener;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ListenerManager {
-	private static final Logger logger = LoggerFactory.getLogger(ListenerManager.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ListenerManager");
 
 	public interface HandleListener<T> {
 		void handle(T listener);

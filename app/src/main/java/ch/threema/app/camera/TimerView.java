@@ -30,24 +30,25 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
-import ch.threema.app.ui.CircularProgressBar;
 import ch.threema.app.utils.LocaleUtil;
 
 public class TimerView extends FrameLayout {
 	View parentView;
 	TextView counterView;
-	CircularProgressBar circularProgressBar;
-	private Handler timeDisplayHandler = new Handler();
+	CircularProgressIndicator circularProgressBar;
+	private final Handler timeDisplayHandler = new Handler();
 	private Runnable timeDisplayRunnable;
 	private OnTimerExpiredListener timerExpiredListener;
 	private long startTimeMs;
-	private long maxTimeMs = 2 * DateUtils.MINUTE_IN_MILLIS;
-
+	private long maxTimeMs = 5 * DateUtils.MINUTE_IN_MILLIS;
+	
 	public TimerView(@NonNull Context context) {
 		this(context, null);
 	}
@@ -80,7 +81,8 @@ public class TimerView extends FrameLayout {
 
 	public void start(long durationMs, OnTimerExpiredListener listener) {
 		startTimeMs = System.currentTimeMillis();
-		maxTimeMs = durationMs - DateUtils.SECOND_IN_MILLIS; // deduct one second to compensate for timer delay
+		maxTimeMs = Math.min(maxTimeMs, durationMs) - DateUtils.SECOND_IN_MILLIS; // deduct one second to compensate for timer delay
+		circularProgressBar.setMax((int) maxTimeMs);
 		timerExpiredListener = listener;
 
 		timeDisplayRunnable = () -> {
@@ -106,7 +108,7 @@ public class TimerView extends FrameLayout {
 
 	private void updateTimeDisplay(long elapsedTime) {
 		counterView.setText(LocaleUtil.formatTimerText(elapsedTime, false));
-		circularProgressBar.setProgress(elapsedTime * 100 / maxTimeMs);
+		circularProgressBar.setProgress((int) elapsedTime);
 	}
 
 	public interface OnTimerExpiredListener {

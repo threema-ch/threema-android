@@ -61,7 +61,7 @@
 
 				<ch.threema.app.ui.SquareImageView
 						android:id="@+id/qrcode_backup"
-						android:layout_margin="20dp"
+						android:layout_margin="4dp"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="center_horizontal"

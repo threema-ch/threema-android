@@ -39,7 +39,6 @@ import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -65,13 +64,15 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.GroupId;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public class OpenGroupRequestNoticeView extends ConstraintLayout implements DefaultLifecycleObserver,
 	OnClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(OpenGroupRequestNoticeView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("OpenGroupRequestNoticeView");
 
 	private static final int MAX_REQUESTS_SHOWN = 20;
 	private static final String DIALOG_HANDLE_REQUEST = "handle_request";
@@ -83,7 +84,7 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 	private ContactService contactService;
 	private DatabaseServiceNew databaseService;
 
-	int groupId = -1;
+	GroupId groupId;
 
 	private final IncomingGroupJoinRequestListener groupJoinRequestListener = new IncomingGroupJoinRequestListener() {
 		@Override
@@ -147,14 +148,18 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 		this.chipGroup = findViewById(R.id.chip_group);
 	}
 
-	public void setGroupIdReference(int groupId) {
+	public void setGroupIdReference(GroupId groupId) {
 		this.groupId = groupId;
 	}
 
 	public void updateGroupRequests() {
+		// return if we receive a new request and the listener triggers while we have a non group chat open
+		if (groupId == null) {
+			return;
+		}
 		executor.execute(() -> {
 			List<IncomingGroupJoinRequestModel> requests = databaseService.getIncomingGroupJoinRequestModelFactory()
-				.getDestictOpenRequestsForGroup(groupId);
+				.getAllOpenRequestsForGroup(groupId);
 			handler.post(() -> {
 				if (requests.isEmpty()) {
 					hide(false);
@@ -229,7 +234,7 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 			backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
 		} else {
 			foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-			backgroundColor = foregroundColor.withAlpha(0x1A);
+			backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
 		}
 		chip.setTextColor(foregroundColor);
 		chip.setChipBackgroundColor(backgroundColor);

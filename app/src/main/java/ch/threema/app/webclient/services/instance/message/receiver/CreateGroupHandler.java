@@ -27,7 +27,6 @@ import android.graphics.BitmapFactory;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,11 +47,12 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
 
 @WorkerThread
 public class CreateGroupHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(CreateGroupHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CreateGroupHandler");
 
 	private final MessageDispatcher dispatcher;
 	private final GroupService groupService;

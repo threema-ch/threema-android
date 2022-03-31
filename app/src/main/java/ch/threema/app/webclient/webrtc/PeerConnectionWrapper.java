@@ -34,7 +34,6 @@ import org.saltyrtc.tasks.webrtc.messages.Answer;
 import org.saltyrtc.tasks.webrtc.messages.Candidate;
 import org.saltyrtc.tasks.webrtc.messages.Offer;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
@@ -59,6 +58,7 @@ import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.Config;
 import ch.threema.app.webclient.listeners.PeerConnectionListener;
 import ch.threema.app.webclient.state.PeerConnectionState;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
@@ -75,7 +75,7 @@ public class PeerConnectionWrapper {
 	private static final String THREEMA_DC_LABEL = "THREEMA";
 
 	// Logger
-	private final Logger logger = LoggerFactory.getLogger(PeerConnectionWrapper.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("PeerConnectionWrapper");
 
 	// Worker thread handler
 	@NonNull private final HandlerExecutor handler;

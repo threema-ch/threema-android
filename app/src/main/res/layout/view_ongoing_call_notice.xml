@@ -43,8 +43,8 @@
 				android:layout_gravity="left|center_vertical"
 				android:layout_marginRight="8dp"
 				android:contentDescription="@string/call_ongoing"
-				android:tint="@android:color/white"
-				app:srcCompat="@drawable/ic_phone_locked_outline" />
+				app:srcCompat="@drawable/ic_phone_locked_outline"
+				app:tint="@android:color/white" />
 
 			<TextView
 				android:id="@+id/call_text"

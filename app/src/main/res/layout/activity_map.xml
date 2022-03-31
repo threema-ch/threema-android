@@ -113,9 +113,9 @@
 			android:layout_marginRight="@dimen/lp_default_margin"
 			android:background="@drawable/circle_white"
 			android:elevation="4dp"
-			android:tint="@color/text_color_secondary"
 			app:srcCompat="@drawable/ic_gps_fixed"
-			tools:ignore="ContentDescription"/>
+			tools:ignore="ContentDescription"
+			app:tint="@color/text_color_secondary" />
 
 	</RelativeLayout>
 

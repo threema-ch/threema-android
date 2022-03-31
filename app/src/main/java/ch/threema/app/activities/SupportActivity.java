@@ -32,7 +32,6 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -44,9 +43,10 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.UrlUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class SupportActivity extends ThreemaToolbarActivity {
-	private static final Logger logger = LoggerFactory.getLogger(SupportActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SupportActivity");
 	private ProgressBar progressBar;
 
 	@SuppressLint("SetJavaScriptEnabled")

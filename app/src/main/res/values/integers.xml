@@ -7,4 +7,6 @@
 	<integer name="message_edittext_max_lines">2</integer>
 	<integer name="max_bubble_text_length">800</integer>
 	<integer name="max_quote_text_length">480</integer>
+	<integer name="button_alpha">0x24</integer>
+	<integer name="chip_alpha">0x1A</integer>
 </resources>

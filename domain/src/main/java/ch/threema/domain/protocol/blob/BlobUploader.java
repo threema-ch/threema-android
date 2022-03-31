@@ -23,7 +23,6 @@ package ch.threema.domain.protocol.blob;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -37,6 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.SSLSocketFactoryFactory;
 import ch.threema.base.ProgressListener;
@@ -51,21 +51,22 @@ import ch.threema.domain.protocol.Version;
  */
 public class BlobUploader {
 
-	private static final Logger logger = LoggerFactory.getLogger(BlobUploader.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BlobUploader");
 
 	private static final int CHUNK_SIZE = 16384;
 
-	private final @NonNull
-	SSLSocketFactoryFactory factory;
+	private final @NonNull SSLSocketFactoryFactory factory;
+	private final ServerAddressProvider serverAddressProvider;
+	private final boolean ipv6;
+
 	private final InputStream blobInputStream;
 	private final int blobLength;
-	private ProgressListener progressListener;
-	private volatile boolean cancel;
-	private Version version;
 	private String authToken;
-	private ServerAddressProvider serverAddressProvider;
-	private boolean ipv6;
 	private boolean persist = false;
+
+	private volatile boolean cancel;
+	private ProgressListener progressListener;
+	private Version version;
 
 	public BlobUploader(@NonNull SSLSocketFactoryFactory factory, byte[] blobData, boolean ipv6, ServerAddressProvider serverAddressProvider, ProgressListener progressListener) {
 		this(factory, new ByteArrayInputStream(blobData), blobData.length, ipv6, serverAddressProvider, progressListener);

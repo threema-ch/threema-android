@@ -207,6 +207,11 @@
 		<item name="cornerSize">16dp</item>
 	</style>
 
+	<style name="Threema.ShapeAppearance.SendMedia" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">@dimen/media_attach_button_radius</item>
+	</style>
+
 	<style name="Threema.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
 		<item name="android:background">?attr/material_toolbar_color</item>
 		<item name="titleTextAppearance">@style/TextAppearance.Toolbar.Title</item>
@@ -401,9 +406,9 @@
 		<item name="font_textentry">26sp</item>
 	</style>
 
-	<style name="AttachmentsLabel">
+	<style name="MediaAttachButtonLabel">
 		<item name="android:textColor">?attr/textColorSecondary</item>
-		<item name="android:textSize">12sp</item>
+		<item name="android:textSize">13sp</item>
 	</style>
 
 	<!-- wizard -->
@@ -436,6 +441,7 @@
 		<item name="android:fontFamily">sans-serif-light</item>
 		<item name="android:textStyle">bold</item>
 		<item name="android:textSize">@dimen/wizard_title_text_size</item>
+		<item name="android:layout_marginTop">@dimen/wizard_title_text_margin_top</item>
 	</style>
 
 	<style name="WizardSubTitleText" parent="@android:style/TextAppearance">

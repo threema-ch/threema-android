@@ -43,11 +43,11 @@ public class NotificationChannelSettings {
 	private long[] vibrationPattern;
 	private Integer lightColor;
 	private Uri sound;
-	private String channelGroupId;
-	private String groupName;
-	private String description;
-	private String seqPrefKey;
-	private int visibility;
+	private final String channelGroupId;
+	private final String groupName;
+	private final String description;
+	private final String seqPrefKey;
+	private final int visibility;
 
 	public NotificationChannelSettings(String channelGroupId, @NonNull String prefix, SharedPreferences sharedPreferences, int importance, boolean showBadge, int visibility, String groupName, String description, String seqPrefKey) {
 		this.prefix = prefix;
@@ -148,9 +148,9 @@ public class NotificationChannelSettings {
 	 */
 	public String hash() {
 		String result = prefix +
-		Long.toString(seqNum) +
-		Integer.toString(importance) +
-		Boolean.toString(showBadge) +
+			seqNum +
+			importance +
+			showBadge +
 		Arrays.toString(vibrationPattern) +
 		(lightColor != null ? Integer.toString(lightColor) : "0") +
 		(sound != null ? sound.toString() : "null");

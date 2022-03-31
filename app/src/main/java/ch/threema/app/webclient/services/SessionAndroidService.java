@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.MainThread;
 import androidx.core.app.NotificationCompat;
@@ -40,10 +39,11 @@ import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.webclient.activities.SessionsActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 @MainThread
 public class SessionAndroidService extends Service {
-	private static final Logger logger = LoggerFactory.getLogger(SessionAndroidService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SessionAndroidService");
 	private static final int WEBCLIENT_ACTIVE_NOTIFICATION_ID = 23329;
 
 	public static final String ACTION_START = "start";
@@ -65,7 +65,14 @@ public class SessionAndroidService extends Service {
 
 		super.onCreate();
 
-		NotificationCompat.Builder builder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_WEBCLIENT, null);
+		// Initialization of the session service may lock the app for a while, so we display
+		// a temporary notification before getting the service, in order to avoid a
+		// "Context.startForegroundService() did not then call Service.startForeground()" exception
+		final NotificationCompat.Builder builder = new NotificationBuilderWrapper(
+			this,
+			NotificationService.NOTIFICATION_CHANNEL_WEBCLIENT,
+			null
+		);
 		builder.setContentTitle(getString(R.string.webclient))
 			.setContentText(getString(R.string.please_wait))
 			.setSmallIcon(R.drawable.ic_web_notification)
@@ -74,11 +81,11 @@ public class SessionAndroidService extends Service {
 		startForeground(WEBCLIENT_ACTIVE_NOTIFICATION_ID, builder.build());
 		logger.info("startForeground called");
 
-		// initialization may lock the app for a while so we display the above temporary notification before getting the service to avoid a Context.startForegroundService() did not then call Service.startForeground() exception
+		// Instantiate session service
 		try {
 			sessionService = ThreemaApplication.getServiceManager().getWebClientServiceManager().getSessionService();
 		} catch (Exception e) {
-			logger.error("Service Manager not available (passphrase locked?). Can't start web client", e);
+			logger.error("Session service could not be initialized (passphrase locked?). Can't start web client", e);
 			stopSelf();
 			return;
 		}

@@ -76,6 +76,7 @@ import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IdUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.voip.CallState;
 import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.Config;
@@ -85,6 +86,7 @@ import ch.threema.app.voip.receivers.CallRejectReceiver;
 import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
@@ -97,10 +99,10 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
+import static androidx.media.AudioAttributesCompat.USAGE_NOTIFICATION_RINGTONE;
 import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
@@ -1500,7 +1502,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					}
 				});
 				ringtonePlayer.setLooping(true);
-				ringtonePlayer.setAudioStreamType(AudioManager.STREAM_RING);
+				if (Build.VERSION.SDK_INT <= 21) {
+					ringtonePlayer.setAudioStreamType(AudioManager.STREAM_RING);
+				} else {
+					ringtonePlayer.setAudioAttributes(SoundUtil.getAudioAttributesForUsage(USAGE_NOTIFICATION_RINGTONE));
+				}
 
 				try {
 					ringtonePlayer.setDataSource(appContext, ringtoneUri);

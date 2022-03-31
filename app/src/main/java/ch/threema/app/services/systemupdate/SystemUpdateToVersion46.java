@@ -22,7 +22,6 @@
 package ch.threema.app.services.systemupdate;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -31,10 +30,11 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UpdateSystemService;
+import ch.threema.base.utils.LoggingUtil;
 
 
 public class SystemUpdateToVersion46 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion46.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion46");
 
 	private final String[] oldEmojiSet = {
 		"#\u20E3",

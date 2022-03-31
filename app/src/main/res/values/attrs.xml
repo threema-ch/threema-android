@@ -60,6 +60,8 @@
 	<attr name="bubble_pressed_overlay" format="reference|color"/>
 	<attr name="bubble_selected_overlay" format="reference|color"/>
 	<attr name="date_separator_bg_color" format="reference|color"/>
+	<attr name="bubble_thumbnail_placeholder_tint" format="reference|color"/>
+	<attr name="bubble_thumbnail_placeholder_background" format="reference|color"/>
 
 <!--	<attr name="bubble_date_separator" format="reference"/>
 -->

@@ -7,8 +7,8 @@
     android:fitsSystemWindows="false"
     >
 
-    <fragment
-        class="ch.threema.app.camera.CameraFragment"
+    <androidx.fragment.app.FragmentContainerView
+        android:name="ch.threema.app.camera.CameraFragment"
         android:id="@+id/fragment_container"
         android:tag="camera"
         android:layout_width="match_parent"

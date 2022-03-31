@@ -33,7 +33,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,10 +61,11 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public class BallotOverviewActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener, GenericAlertDialog.DialogClickListener, SelectorDialog.SelectorDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(BallotOverviewActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotOverviewActivity");
 
 	private static final String DIALOG_TAG_BALLOT_DELETE = "bd";
 	private static final String DIALOG_TAG_CHOOSE_ACTION = "ca";
@@ -77,7 +77,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 	private ContactService contactService;
 	private GroupService groupService;
 	private String myIdentity;
-	private Intent receivedIntent;
 
 	private MessageReceiver messageReceiver;
 	private BallotOverviewListAdapter listAdapter = null;
@@ -87,15 +86,13 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 	private ActionMode actionMode = null;
 	private boolean enableBallotListeners = true;
 
-	private Runnable updateList = new Runnable() {
-		@Override
-		public void run() {
-			if (listAdapter != null) {
-				listAdapter.notifyDataSetChanged();
-			}
+	private final Runnable updateList = () -> {
+		if (listAdapter != null) {
+			listAdapter.notifyDataSetChanged();
 		}
 	};
-	private BallotVoteListener ballotVoteListener = new BallotVoteListener() {
+
+	private final BallotVoteListener ballotVoteListener = new BallotVoteListener() {
 		@Override
 		public void onSelfVote(BallotModel ballotModel) {
 			RuntimeUtil.runOnUiThread(updateList);
@@ -117,7 +114,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		}
 	};
 
-	private BallotListener ballotListener = new BallotListener() {
+	private final BallotListener ballotListener = new BallotListener() {
 		@Override
 		public void onClosed(BallotModel ballotModel) {
 			RuntimeUtil.runOnUiThread(() -> updateList());
@@ -172,7 +169,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		((ViewGroup) listView.getParent()).addView(emptyView);
 		listView.setEmptyView(emptyView);
 
-		receivedIntent = getIntent();
+		Intent receivedIntent = getIntent();
 
 		this.messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(this, receivedIntent);
 		if (this.messageReceiver == null) {
@@ -383,9 +380,9 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		dialog.show(getSupportFragmentManager(), DIALOG_TAG_BALLOT_DELETE);
 	}
 
-	private boolean removeSelectedBallotsDo(SparseBooleanArray checkedItems) {
+	private void removeSelectedBallotsDo(SparseBooleanArray checkedItems) {
 		if (!this.requiredInstances()) {
-			return false;
+			return;
 		}
 		synchronized (this.ballots) {
 			//disable listener
@@ -399,7 +396,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 							this.ballotService.remove(this.ballots.get(index));
 						} catch (NotAllowedException e) {
 							LogUtil.exception(e, this);
-							return false;
+							return;
 						}
 					}
 
@@ -415,7 +412,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 
 		this.updateList();
 
-		return true;
 	}
 
 	@Override

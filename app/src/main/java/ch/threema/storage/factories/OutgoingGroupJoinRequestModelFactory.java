@@ -85,12 +85,6 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
 		return Result.success(model);
 	}
 
-	public void updateStatus(@NonNull OutgoingGroupJoinRequestModel model, @NonNull OutgoingGroupJoinRequestModel.Status status) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_STATUS, status.name());
-		this.update(model.getId(), contentValues);
-	}
-
 	public void updateStatusAndSentDate(@NonNull OutgoingGroupJoinRequestModel model, @NonNull OutgoingGroupJoinRequestModel.Status status) {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_STATUS, status.name());
@@ -98,10 +92,19 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
 		this.update(model.getId(), contentValues);
 	}
 
-	public void updateGroupApiId(@NonNull OutgoingGroupJoinRequestModel model, @NonNull GroupId groupApiId) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_GROUP_API_ID, groupApiId.toLong());
-		this.update(model.getId(), contentValues);
+	public boolean update(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel) throws SQLException {
+		ContentValues contentValues = buildContentValues(outgoingGroupJoinRequestModel);
+		int rowsAffected = this.databaseService.getWritableDatabase().update(this.getTableName(),
+			contentValues,
+			OutgoingGroupJoinRequestModel.COLUMN_ID + "=?",
+			new String[]{
+				String.valueOf(outgoingGroupJoinRequestModel.getId())
+			});
+
+		if (rowsAffected != 1) {
+			throw new SQLException(NO_RECORD_MSG + outgoingGroupJoinRequestModel.getId());
+		}
+		return true;
 	}
 
 	/**
@@ -222,7 +225,7 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
 	}
 
 	private static @NonNull OutgoingGroupJoinRequestModel cursorHelperToGroupJoinRequestModel(CursorHelper cursorHelper) {
-		final @Nullable Long groupApiId = cursorHelper.getLong(OutgoingGroupJoinRequestModel.COLUMN_GROUP_API_ID);
+		final @Nullable String groupApiId = cursorHelper.getString(OutgoingGroupJoinRequestModel.COLUMN_GROUP_API_ID);
 
 		return new OutgoingGroupJoinRequestModel(
 			Objects.requireNonNull(cursorHelper.getInt(OutgoingGroupJoinRequestModel.COLUMN_ID)),
@@ -236,5 +239,24 @@ public class OutgoingGroupJoinRequestModelFactory extends ModelFactory {
 			),
 			groupApiId == null ? null : new GroupId(groupApiId)
 		);
+	}
+
+	private ContentValues buildContentValues(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel) {
+		ContentValues contentValues = new ContentValues();
+		if (outgoingGroupJoinRequestModel.getId() >= 0) {
+			contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_ID, outgoingGroupJoinRequestModel.getId());
+		}
+		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_INVITE_ADMIN_IDENTITY, outgoingGroupJoinRequestModel.getAdminIdentity());
+		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_GROUP_NAME, outgoingGroupJoinRequestModel.getGroupName());
+		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_REQUEST_TIME, outgoingGroupJoinRequestModel.getRequestTime().getTime());
+		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_STATUS, outgoingGroupJoinRequestModel.getStatus().name());
+		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_INVITE_TOKEN, outgoingGroupJoinRequestModel.getInviteToken());
+		contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_MESSAGE, outgoingGroupJoinRequestModel.getMessage()); // default false as this can only be called on available or new group invites
+
+		if (outgoingGroupJoinRequestModel.getGroupApiId() != null) {
+			contentValues.put(OutgoingGroupJoinRequestModel.COLUMN_GROUP_API_ID, outgoingGroupJoinRequestModel.getGroupApiId().toString());
+		}
+
+		return contentValues;
 	}
 }

@@ -99,9 +99,10 @@ public class BallotDataChoiceTest {
 				.addResult(pos++, 0)
 				.addResult(pos++, 1);
 		c.setName("Test");
+		c.setTotalVotes(4);
 
 		try {
-			JSONObject o = new JSONObject("{\"i\":100,\"n\":\"Test\",\"o\":123, \"r\": [1,0,0,1]}");
+			JSONObject o = new JSONObject("{\"i\":100,\"n\":\"Test\",\"o\":123, \"r\": [1,0,0,1], \"t\":4}");
 			Assert.assertEquals(
 					o.toString(),
 					c.toString()

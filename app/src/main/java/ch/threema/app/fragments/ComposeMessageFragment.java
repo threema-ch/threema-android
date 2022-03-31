@@ -29,13 +29,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -59,7 +56,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
@@ -77,7 +73,6 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -93,6 +88,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -179,6 +175,7 @@ import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.WallpaperService;
@@ -213,13 +210,13 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.LogUtil;
-import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
+import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ToolbarUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
@@ -227,6 +224,7 @@ import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.DatabaseServiceNew;
@@ -264,7 +262,7 @@ public class ComposeMessageFragment extends Fragment implements
 	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(ComposeMessageFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageFragment");
 
 	private static final String CONFIRM_TAG_DELETE_DISTRIBUTION_LIST = "deleteDistributionList";
 	public static final String DIALOG_TAG_CONFIRM_CALL = "dtcc";
@@ -292,7 +290,7 @@ public class ComposeMessageFragment extends Fragment implements
 	public static final int SCROLLBUTTON_VIEW_TIMEOUT = 3000;
 	private static final int SMOOTHSCROLL_THRESHOLD = 10;
 	private static final int MAX_SELECTED_ITEMS = 100; // may not be larger than MESSAGE_PAGE_SIZE
-	private static final int MAX_FORWARDABLE_ITEMS = 50;
+	public static final int MAX_FORWARDABLE_ITEMS = 50;
 	private static final int CONTEXT_MENU_BOLD = 700;
 	private static final int CONTEXT_MENU_ITALIC = 701;
 	private static final int CONTEXT_MENU_STRIKETHRU = 702;
@@ -348,6 +346,8 @@ public class ComposeMessageFragment extends Fragment implements
 	private VoipStateService voipStateService;
 	private DownloadService downloadService;
 	private LicenseService licenseService;
+
+	private ActivityResultLauncher<Intent> wallpaperLauncher;
 
 	private boolean listUpdateInProgress = false, isPaused = false;
 	private final List<AbstractMessageModel> unreadMessages = new ArrayList<>();
@@ -1137,8 +1137,6 @@ public class ComposeMessageFragment extends Fragment implements
 		/*
 		 * This callback tells the fragment when it is fully associated with the new activity instance. This is called after onCreateView(LayoutInflater, ViewGroup, Bundle) and before onViewStateRestored(Bundle).
 		 */
-		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
 		if (preferenceService == null) {
 			return;
 		}
@@ -1253,7 +1251,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 
 			// update group requests as they could have been changed when coming back from the overview activity
-			if (ConfigUtils.supportsGroupLinks()) {
+			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupOwner(this.groupModel)) {
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
 		}
@@ -1464,7 +1462,7 @@ public class ComposeMessageFragment extends Fragment implements
 							if (abstractMessageModel != null) {
 								final Date createdAt = abstractMessageModel.getCreatedAt();
 								if (createdAt != null) {
-									final String text = LocaleUtil.formatDateRelative(getActivity(), createdAt.getTime());
+									final String text = LocaleUtil.formatDateRelative(createdAt.getTime());
 									dateTextView.setText(text);
 									dateView.post(() -> {
 										dateTextView.setText(text);
@@ -1886,7 +1884,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.messageReceiver = this.groupService.createReceiver(this.groupModel);
 			this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupId);
 			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupOwner(this.groupModel)) {
-				this.openGroupRequestNoticeView.setGroupIdReference(this.groupId);
+				this.openGroupRequestNoticeView.setGroupIdReference(this.groupModel.getApiGroupId());
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
@@ -2420,8 +2418,13 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void valuesLoaded(List<AbstractMessageModel> values) {
-		if(values != null && values.size() > 0) {
-			this.currentPageReferenceId = values.get(values.size()-1).getId();
+		if (values != null && values.size() > 0) {
+			AbstractMessageModel topMessageModel = values.get(values.size() - 1);
+			// the topmost message may be a unread messages indicator. as it does not have an id, skip it.
+			if (topMessageModel instanceof FirstUnreadMessageModel && values.size() > 1) {
+				topMessageModel = values.get(values.size() - 2);
+			}
+			this.currentPageReferenceId = topMessageModel.getId();
 		}
 	}
 
@@ -2445,7 +2448,7 @@ public class ComposeMessageFragment extends Fragment implements
 					return messageService.getMessagesForReceiver(messageReceiver, new MessageService.MessageFilter() {
 						@Override
 						public long getPageSize() {
-							return -1;
+							return unreadCount;
 						}
 
 						@Override
@@ -2933,38 +2936,9 @@ public class ComposeMessageFragment extends Fragment implements
 			@Override
 			public void run() {
 				int ringerMode = audioManager.getRingerMode();
-				boolean isSilent = (ringerMode == AudioManager.RINGER_MODE_SILENT
-					|| ringerMode == AudioManager.RINGER_MODE_VIBRATE);
 
-				if (preferenceService.isInAppSounds() && !isSilent) {
-					MediaPlayerStateWrapper mediaPlayer = new MediaPlayerStateWrapper();
-					mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-						.setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-						.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-						.build());
-					mediaPlayer.setVolume(0.3f, 0.3f);
-					mediaPlayer.setStateListener(new MediaPlayerStateWrapper.StateListener() {
-						@Override
-						public void onCompletion(MediaPlayer mp) {
-							if (mp.isPlaying()) {
-								mp.stop();
-							}
-							mp.reset();
-							mp.release();
-						}
-
-						@Override
-						public void onPrepared(MediaPlayer mp) {}
-					});
-
-					try (AssetFileDescriptor afd = ComposeMessageFragment.this.getResources().openRawResourceFd(resId)) {
-						mediaPlayer.setDataSource(afd);
-						mediaPlayer.prepare();
-						mediaPlayer.start();
-					} catch (Exception e) {
-						logger.debug("could not play in-app sound.");
-						mediaPlayer.release();
-					}
+				if (preferenceService.isInAppSounds()) {
+					SoundUtil.play(resId);
 				}
 
 				if (preferenceService.isInAppVibrate() && isVibrate) {
@@ -3481,8 +3455,8 @@ public class ComposeMessageFragment extends Fragment implements
 		}.execute();
 
 		// show/hide open group request chips if there are any
-		if (ConfigUtils.supportsGroupLinks() && !databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
-			.getDestictOpenRequestsForGroup(groupId).isEmpty()) {
+		if (ConfigUtils.supportsGroupLinks() && groupModel != null && !databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
+			.getSingleMostRecentOpenRequestsPerUserForGroup(groupModel.getApiGroupId()).isEmpty()) {
 			showOpenGroupRequestsMenuItem.setVisible(true);
 			showAllGroupRequestsMenuItem.setVisible(true);
 			if (preferenceService.getGroupRequestsOverviewHidden()) {
@@ -3499,8 +3473,9 @@ public class ComposeMessageFragment extends Fragment implements
 
 		// link to incoming group requests overview if there are any (includes already answered ones)
 		showAllGroupRequestsMenuItem.setVisible(ConfigUtils.supportsGroupLinks() &&
+			groupModel != null &&
 			!databaseServiceNew.getIncomingGroupJoinRequestModelFactory()
-			.getAllRequestsForGroup(groupId).isEmpty()
+			.getAllRequestsForGroup(groupModel.getApiGroupId()).isEmpty()
 		);
 
 		updateVoipCallMenuItem(null);
@@ -3609,7 +3584,7 @@ public class ComposeMessageFragment extends Fragment implements
 				VoipUtil.initiateCall(activity, contactModel, false, null);
 				break;
 			case R.id.menu_wallpaper:
-				wallpaperService.selectWallpaper(this, this.messageReceiver, new Runnable() {
+				wallpaperService.selectWallpaper(this, this.wallpaperLauncher, this.messageReceiver, new Runnable() {
 					@Override
 					public void run() {
 						RuntimeUtil.runOnUiThread(new Runnable() {
@@ -3684,7 +3659,7 @@ public class ComposeMessageFragment extends Fragment implements
 				break;
 			case R.id.menu_group_request_show_all:
 				Intent groupRequestsOverviewIntent = new Intent(getContext(), IncomingGroupRequestActivity.class);
-				IntentDataUtil.addMessageReceiverToIntent(groupRequestsOverviewIntent, messageReceiver);
+				groupRequestsOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_API, groupModel.getApiGroupId());
 				startActivity(groupRequestsOverviewIntent);
 				break;
 			case R.id.menu_group_requests_show:
@@ -3762,11 +3737,6 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode,
 									final Intent intent) {
-		if (wallpaperService != null && wallpaperService.handleActivityResult(this, requestCode, resultCode, intent, this.messageReceiver)) {
-			setBackgroundWallpaper();
-			return;
-		}
-
 		if (requestCode == ACTIVITY_ID_VOICE_RECORDER) {
 			if (this.messagePlayerService != null) {
 				this.messagePlayerService.resumeAll(getActivity(), messageReceiver, SOURCE_AUDIORECORDER);
@@ -4092,7 +4062,7 @@ public class ComposeMessageFragment extends Fragment implements
 		AbstractMessageModel messageModel = selectedMessages.get(0);
 
 		if (messageModel != null && messageModel.getType() == MessageType.TEXT) {
-			new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, messageModel.getBody());
+			new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, messageModel.getBody(), QRCodeServiceImpl.QR_TYPE_ANY);
 		}
 	}
 
@@ -4363,6 +4333,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.conversationService = serviceManager.getConversationService();
 				this.deviceService =serviceManager.getDeviceService();
 				this.wallpaperService = serviceManager.getWallpaperService();
+				this.wallpaperLauncher = wallpaperService.getWallpaperActivityResultLauncher(this, this::setBackgroundWallpaper, () -> this.messageReceiver);
 				this.mutedChatsListService = serviceManager.getMutedChatsListService();
 				this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
 				this.hiddenChatsListService = serviceManager.getHiddenChatsListService();

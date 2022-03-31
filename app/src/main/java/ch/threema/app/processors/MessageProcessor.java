@@ -22,7 +22,6 @@
 package ch.threema.app.processors;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -87,7 +86,7 @@ import ch.threema.storage.models.ServerMessageModel;
 
 public class MessageProcessor implements MessageProcessorInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageProcessor");
-	private static final Logger validationLogger = LoggerFactory.getLogger("Validation");
+	private static final Logger validationLogger = LoggingUtil.getThreemaLogger("Validation");
 
 	private final MessageService messageService;
 	private final ContactService contactService;

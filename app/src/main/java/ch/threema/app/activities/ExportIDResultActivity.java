@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
@@ -51,7 +50,8 @@ import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.ui.ImagePopup;
+import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
@@ -108,27 +108,13 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 		textView.setText(backupData);
 
 		final ImageView imageView = findViewById(R.id.qrcode_backup);
-		this.qrcodeBitmap = serviceManager.getQRCodeService().getRawQR(backupData, false);
+		this.qrcodeBitmap = serviceManager.getQRCodeService().getRawQR(backupData, false, QRCodeServiceImpl.QR_TYPE_ID_EXPORT);
 
 		final int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, QRCODE_SMALL_DIMENSION_PIXEL, getResources().getDisplayMetrics());
 		Bitmap bmpScaled = Bitmap.createScaledBitmap(qrcodeBitmap, px, px, false);
 		bmpScaled.setDensity(Bitmap.DENSITY_NONE);
 		imageView.setImageBitmap(bmpScaled);
-		imageView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (qrcodeBitmap != null) {
-					// using a BitmapDrawable disables anti-aliasing in ImageView's scaling
-					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), qrcodeBitmap);
-					bitmapDrawable.setFilterBitmap(false);
-
-					View rootView = findViewById(R.id.main_content);
-
-					ImagePopup detailPopup = new ImagePopup(ExportIDResultActivity.this, rootView, rootView.getWidth(), rootView.getHeight(), getResources().getDimensionPixelSize(R.dimen.image_popup_screen_border_width));
-					detailPopup.show(v, bitmapDrawable, getString(R.string.backup_share_subject) + " " + identity, true);
-				}
-			}
-		});
+		imageView.setOnClickListener(v -> new QRCodePopup(ExportIDResultActivity.this, getWindow().getDecorView(), ExportIDResultActivity.this).show(v, backupData, QRCodeServiceImpl.QR_TYPE_ID_EXPORT));
 	}
 
 	private void showTooltip() {

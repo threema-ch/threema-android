@@ -25,7 +25,6 @@ import android.Manifest;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
@@ -38,11 +37,12 @@ import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion66 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 66;
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion66.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion66");
 	private Context context;
 
 	public SystemUpdateToVersion66(Context context) {

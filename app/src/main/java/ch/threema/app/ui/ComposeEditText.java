@@ -30,7 +30,6 @@ import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
@@ -39,9 +38,10 @@ import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ComposeEditText extends EmojiEditText {
-	private static final Logger logger = LoggerFactory.getLogger(ComposeEditText.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");
 
 	private Context context;
 	private boolean isLocked = false;

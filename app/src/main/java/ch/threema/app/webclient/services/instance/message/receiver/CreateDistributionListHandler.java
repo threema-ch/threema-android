@@ -28,11 +28,9 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +42,12 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.DistributionListModel;
 
 @WorkerThread
 public class CreateDistributionListHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(CreateDistributionListHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CreateDistributionListHandler");
 
 	private final MessageDispatcher dispatcher;
 	private final DistributionListService distributionListService;

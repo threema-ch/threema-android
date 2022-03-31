@@ -134,6 +134,11 @@ public class BallotModelFactory extends ModelFactory {
 						c.setChoiceType(BallotModel.ChoiceType.valueOf(choiceType));
 					}
 
+					String displayType = cursorHelper.getString(BallotModel.COLUMN_DISPLAY_TYPE);
+					if (!TestUtil.empty(displayType)) {
+						c.setDisplayType(BallotModel.DisplayType.valueOf(displayType));
+					}
+
 					return false;
 				}
 			});
@@ -187,6 +192,7 @@ public class BallotModelFactory extends ModelFactory {
 		contentValues.put(BallotModel.COLUMN_ASSESSMENT, ballotModel.getAssessment() != null ? ballotModel.getAssessment().toString() : null);
 		contentValues.put(BallotModel.COLUMN_TYPE, ballotModel.getType() != null ? ballotModel.getType().toString() : null);
 		contentValues.put(BallotModel.COLUMN_CHOICE_TYPE, ballotModel.getChoiceType() != null ? ballotModel.getChoiceType().toString() : null);
+		contentValues.put(BallotModel.COLUMN_DISPLAY_TYPE, ballotModel.getDisplayType() != null ? ballotModel.getDisplayType().toString() : null);
 		contentValues.put(BallotModel.COLUMN_CREATED_AT, ballotModel.getCreatedAt() != null ? ballotModel.getCreatedAt().getTime(): null);
 		contentValues.put(BallotModel.COLUMN_MODIFIED_AT, ballotModel.getModifiedAt() != null ? ballotModel.getModifiedAt().getTime(): null);
 		contentValues.put(BallotModel.COLUMN_LAST_VIEWED_AT, ballotModel.getLastViewedAt() != null ? ballotModel.getLastViewedAt().getTime(): null);
@@ -282,7 +288,7 @@ public class BallotModelFactory extends ModelFactory {
 	@Override
 	public String[] getStatements() {
 		return new String[] {
-				"CREATE TABLE `ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiBallotId` VARCHAR NOT NULL , `creatorIdentity` VARCHAR NOT NULL , `name` VARCHAR , `state` VARCHAR NOT NULL , `assessment` VARCHAR NOT NULL , `type` VARCHAR NOT NULL , `choiceType` VARCHAR NOT NULL , `createdAt` BIGINT NOT NULL , `modifiedAt` BIGINT NOT NULL , `lastViewedAt` BIGINT )",
+				"CREATE TABLE `ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiBallotId` VARCHAR NOT NULL , `creatorIdentity` VARCHAR NOT NULL , `name` VARCHAR , `state` VARCHAR NOT NULL , `assessment` VARCHAR NOT NULL , `type` VARCHAR NOT NULL , `choiceType` VARCHAR NOT NULL , `displayType` VARCHAR , `createdAt` BIGINT NOT NULL , `modifiedAt` BIGINT NOT NULL , `lastViewedAt` BIGINT )",
 
 				//indices
 				"CREATE UNIQUE INDEX `apiBallotIdAndCreator` ON `ballot` ( `apiBallotId`, `creatorIdentity` )"

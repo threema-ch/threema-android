@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -42,6 +41,7 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Listen for changes that require the entire list of contacts to be refreshed in Threema Web.
@@ -50,7 +50,7 @@ import ch.threema.app.webclient.services.instance.MessageUpdater;
  */
 @WorkerThread
 public class ReceiversUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggerFactory.getLogger(ReceiversUpdateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ReceiversUpdateHandler");
 
 	// Handler
 	private final @NonNull HandlerExecutor handler;

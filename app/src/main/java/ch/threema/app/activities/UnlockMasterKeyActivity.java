@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -40,27 +39,39 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.slf4j.Logger;
+
 import java.util.Arrays;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PassphraseService;
+import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.ui.ThreemaTextInputEditText;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
-// this should NOT extend ThreemaToolbarActivity
+// Note: This should NOT extend ThreemaToolbarActivity
 public class UnlockMasterKeyActivity extends ThreemaActivity {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UnlockMasterKeyActivity");
 
+	// Dialog tags
 	private static final String DIALOG_TAG_UNLOCKING = "dtu";
+
+	// Views
 	private ThreemaTextInputEditText passphraseText;
 	private TextInputLayout passphraseLayout;
 	private ImageView unlockButton;
-	private MasterKey masterKey = ThreemaApplication.getMasterKey();
+
+	private final MasterKey masterKey = ThreemaApplication.getMasterKey();
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,39 +88,28 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 		passphraseLayout = findViewById(R.id.passphrase_layout);
 		passphraseText = findViewById(R.id.passphrase);
 		passphraseText.addTextChangedListener(new PasswordWatcher());
-		passphraseText.setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-					if (isValidEntry(passphraseText)) {
-						doUnlock();
-					}
-					return true;
+		passphraseText.setOnKeyListener((v, keyCode, event) -> {
+			if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+				if (isValidEntry(passphraseText)) {
+					doUnlock();
 				}
-				return false;
+				return true;
 			}
+			return false;
 		});
-		passphraseText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				boolean handled = false;
-				if (actionId == EditorInfo.IME_ACTION_GO) {
-					if (isValidEntry(passphraseText)) {
-						doUnlock();
-						handled = true;
-					}
+		passphraseText.setOnEditorActionListener((v, actionId, event) -> {
+			boolean handled = false;
+			if (actionId == EditorInfo.IME_ACTION_GO) {
+				if (isValidEntry(passphraseText)) {
+					doUnlock();
+					handled = true;
 				}
-				return handled;
 			}
+			return handled;
 		});
 
 		unlockButton = findViewById(R.id.unlock_button);
-		unlockButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				doUnlock();
-			}
-		});
+		unlockButton.setOnClickListener(v -> doUnlock());
 		unlockButton.setClickable(false);
 		unlockButton.setEnabled(false);
 	}
@@ -126,7 +126,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//check if the key is unlocked!
+		// Check if the key is unlocked!
 		if(!this.justCheck() && !this.masterKey.isLocked()) {
 			this.finish();
 		}
@@ -136,7 +136,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 		unlockButton.setEnabled(false);
 		unlockButton.setClickable(false);
 
-		// hide keyboard to make error message visible on low resolution displays
+		// Hide keyboard to make error message visible on low resolution displays
 		EditTextUtil.hideSoftKeyboard(this.passphraseText);
 
 		this.unlock(this.passphraseText.getPassphrase());
@@ -171,56 +171,60 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 		final boolean justCheck = this.justCheck();
 
 		if (justCheck || this.masterKey.isLocked()) {
-			//only change on master key!
+			// Only change on master key!
 			GenericProgressDialog.newInstance(R.string.masterkey_unlocking, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_UNLOCKING);
 
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					boolean isValid;
+			new Thread(() -> {
+				boolean isValid;
+				if (justCheck) {
+					isValid = masterKey.checkPassphrase(passphrase);
+				} else {
+					isValid = masterKey.unlock(passphrase);
+				}
+
+				// clear passphrase
+				Arrays.fill(passphrase, ' ');
+
+				if (!isValid) {
+					 RuntimeUtil.runOnUiThread(() -> {
+						 passphraseLayout.setError(getString(R.string.invalid_passphrase));
+						 passphraseText.setText("");
+					 });
+				} else {
 					if (justCheck) {
-						isValid = masterKey.checkPassphrase(passphrase);
-					} else {
-						isValid = masterKey.unlock(passphrase);
-					}
-
-					// clear passphrase
-					Arrays.fill(passphrase, ' ');
-
-					if (!isValid) {
-					 	RuntimeUtil.runOnUiThread(() -> {
-							 passphraseLayout.setError(getString(R.string.invalid_passphrase));
-							 passphraseText.setText("");
+						 RuntimeUtil.runOnUiThread(() -> {
+							 UnlockMasterKeyActivity.this.setResult(RESULT_OK);
+							 UnlockMasterKeyActivity.this.finish();
 						 });
 					} else {
-						if (justCheck) {
-						 	RuntimeUtil.runOnUiThread(() -> {
-								 UnlockMasterKeyActivity.this.setResult(RESULT_OK);
-								 UnlockMasterKeyActivity.this.finish();
-							 });
-						} else {
-							//finish after unlock
-							RuntimeUtil.runOnUiThread(() -> {
-								ThreemaApplication.reset();
+						// Finish after unlock
+						RuntimeUtil.runOnUiThread(() -> {
+							ThreemaApplication.reset();
 
-								new Thread(() -> {
-									/* trigger a connection now - as there was no identity before the master key was unlocked */
-									ThreemaApplication.getServiceManager().getLifetimeService().acquireConnection("UnlockMasterKey");
-								}).start();
+							new Thread(() -> {
+								// Trigger a connection now, as there was no identity before the master key was unlocked
+								final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+								if (serviceManager != null) {
+									final LifetimeService lifetimeService = serviceManager.getLifetimeService();
+									lifetimeService.ensureConnection();
+								}
+							}).start();
 
-								// cancel all notifications...if any
-								NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-								notificationManager.cancelAll();
+							// Cancel all notifications...if any
+							NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+							notificationManager.cancelAll();
 
-								/* show persistent notification */
-								PassphraseService.start(UnlockMasterKeyActivity.this.getApplicationContext());
+							// Show persistent notification
+							PassphraseService.start(UnlockMasterKeyActivity.this.getApplicationContext());
 
-								UnlockMasterKeyActivity.this.finish();
-							});
-						}
+							// Start ThreemaPush service (which could not be started without an unlocked passphrase)
+							ThreemaPushService.tryStart(logger, getApplicationContext());
+
+							UnlockMasterKeyActivity.this.finish();
+						});
 					}
-				 	RuntimeUtil.runOnUiThread(() -> DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_UNLOCKING, true));
 				}
+				 RuntimeUtil.runOnUiThread(() -> DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_UNLOCKING, true));
 			}).start();
 		} else {
 			this.finish();
@@ -232,7 +236,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		// We override this method to avoid restarting the entire
 		// activity when the keyboard is opened or orientation changes
 		super.onConfigurationChanged(newConfig);

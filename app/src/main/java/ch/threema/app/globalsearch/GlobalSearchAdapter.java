@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -48,6 +47,7 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -55,7 +55,7 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.data.LocationDataModel;
 
 public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(GlobalSearchAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchAdapter");
 	private static final String FLOW_CHARACTER = "\u25BA\uFE0E";
 
 	private GroupService groupService;
@@ -133,7 +133,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 						name
 				);
 			}
-			itemHolder.dateView.setText(LocaleUtil.formatDateRelative(context, current.getCreatedAt().getTime()));
+			itemHolder.dateView.setText(LocaleUtil.formatDateRelative(current.getCreatedAt().getTime()));
 
 			setSnippetToTextView(current, itemHolder);
 

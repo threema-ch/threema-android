@@ -22,7 +22,6 @@
 package ch.threema.app.routines;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +41,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
@@ -49,7 +49,7 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
  * Update the app icon
  */
 public class UpdateAppLogoRoutine implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(UpdateAppLogoRoutine.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateAppLogoRoutine");
 
 	private FileService fileService;
 	private final PreferenceService preferenceService;

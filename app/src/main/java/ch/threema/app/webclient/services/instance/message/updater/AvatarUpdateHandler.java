@@ -27,7 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import org.msgpack.core.MessagePackException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.executor.HandlerExecutor;
@@ -37,6 +36,7 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -45,7 +45,7 @@ import ch.threema.storage.models.GroupModel;
  */
 @WorkerThread
 public class AvatarUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggerFactory.getLogger(AvatarUpdateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarUpdateHandler");
 
 	// Handler
 	private final @NonNull HandlerExecutor handler;

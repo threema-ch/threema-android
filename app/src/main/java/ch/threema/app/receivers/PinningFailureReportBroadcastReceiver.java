@@ -31,12 +31,12 @@ import com.datatheorem.android.trustkit.reporting.BackgroundReporter;
 import com.datatheorem.android.trustkit.reporting.PinningFailureReport;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
 
 public class PinningFailureReportBroadcastReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(PinningFailureReportBroadcastReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PinningFailureReportBroadcastReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

@@ -31,16 +31,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class TranscoderView extends FrameLayout {
-	private static final Logger logger = LoggerFactory.getLogger(TranscoderView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("TranscoderView");
 
 	public static final int PROGRESS_MAX = 100;
 

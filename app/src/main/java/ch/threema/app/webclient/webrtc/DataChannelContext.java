@@ -36,7 +36,6 @@ import org.saltyrtc.tasks.webrtc.WebRTCTask;
 import org.saltyrtc.tasks.webrtc.crypto.DataChannelCryptoContext;
 import org.saltyrtc.tasks.webrtc.exceptions.IllegalStateError;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.DataChannel;
 
 import java.nio.ByteBuffer;
@@ -47,6 +46,7 @@ import java.util.concurrent.ExecutionException;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.webclient.exceptions.WouldBlockException;
 import ch.threema.app.webrtc.FlowControlledDataChannel;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Function;
@@ -62,7 +62,9 @@ import java8.util.function.Function;
 @SameThread
 public class DataChannelContext {
 	private final static long MAX_CHUNK_SIZE = 256 * 1024;
-	@NonNull private final Logger logger = LoggerFactory.getLogger(DataChannelContext.class);
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DataChannelContext");
+
 	@NonNull private final DataChannel dc;
 	@NonNull public final FlowControlledDataChannel fcdc;
 	@Nullable private final DataChannelCryptoContext crypto;

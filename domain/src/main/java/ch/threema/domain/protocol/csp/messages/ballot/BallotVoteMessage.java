@@ -24,13 +24,13 @@ package ch.threema.domain.protocol.csp.messages.ballot;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -41,7 +41,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 public class BallotVoteMessage extends AbstractMessage
 	implements BallotVoteInterface {
 
-	private static final Logger logger = LoggerFactory.getLogger(BallotVoteMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotVoteMessage");
 
 	private BallotId ballotId;
 	private String ballotCreatorId;

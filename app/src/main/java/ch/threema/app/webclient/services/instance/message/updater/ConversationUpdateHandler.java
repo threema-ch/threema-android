@@ -27,7 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import org.msgpack.core.MessagePackException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
@@ -44,6 +43,7 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ConversationModel;
 
 import static ch.threema.app.webclient.Protocol.ARGUMENT_MODE;
@@ -53,7 +53,7 @@ import static ch.threema.app.webclient.Protocol.ARGUMENT_MODE_REMOVED;
 
 @WorkerThread
 public class ConversationUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggerFactory.getLogger(ConversationUpdateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationUpdateHandler");
 
 	// Handler
 	private final @NonNull HandlerExecutor handler;

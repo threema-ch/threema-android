@@ -45,7 +45,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,9 +72,10 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class VoiceRecorderActivity extends AppCompatActivity implements DefaultLifecycleObserver, View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener, SensorListener {
-	private static final Logger logger = LoggerFactory.getLogger(VoiceRecorderActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceRecorderActivity");
 
 	private static final String DIALOG_TAG_CANCEL_CONFIRM = "cc";
 	private static final String DIALOG_TAG_EXPIRED_CONFIRM = "ec";

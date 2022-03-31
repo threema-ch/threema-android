@@ -23,7 +23,6 @@ package ch.threema.domain.protocol.blob;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,6 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.SSLSocketFactoryFactory;
 import ch.threema.base.ProgressListener;
@@ -51,18 +51,19 @@ import ch.threema.domain.protocol.Version;
  */
 public class BlobLoader {
 
-	private static final Logger logger = LoggerFactory.getLogger(BlobLoader.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BlobLoader");
 
 	private static final int BUFFER_SIZE = 8192;
 
-	private final @NonNull
-	SSLSocketFactoryFactory factory;
+	private final @NonNull SSLSocketFactoryFactory factory;
+	private final ServerAddressProvider serverAddressProvider;
+	private final boolean ipv6;
+
 	private final byte[] blobId;
-	private ProgressListener progressListener;
+
 	private volatile boolean cancel;
+	private ProgressListener progressListener;
 	private Version version;
-	private ServerAddressProvider serverAddressProvider;
-	private boolean ipv6;
 
 	public BlobLoader(@NonNull SSLSocketFactoryFactory factory, byte[] blobId, boolean ipv6, ServerAddressProvider serverAddressProvider, ProgressListener progressListener) {
 		this.factory = factory;
@@ -79,7 +80,6 @@ public class BlobLoader {
 	 * @param markAsDone if true, the server is informed of successful download and will delete the
 	 * blob. Do not use for group messages.
 	 * @return blob data or null if download was cancelled
-	 * @throws IOException
 	 */
 	public @Nullable byte[] load(boolean markAsDone) throws IOException, ThreemaException {
 
@@ -154,14 +154,14 @@ public class BlobLoader {
 
 		if (markAsDone) {
 			if (blob.length > 0) {
-				this.markAsDown(blobId);
+				this.markAsDone(blobId);
 			}
 		}
 
 		return blob;
 	}
 
-	public InputStreamLength getInputStream() throws IOException, ThreemaException {
+	private InputStreamLength getInputStream() throws IOException, ThreemaException {
 
 		URL blobUrl = getBlobUrl(blobId, false);
 
@@ -180,7 +180,7 @@ public class BlobLoader {
 		return new InputStreamLength(inputStream, contentLength);
 	}
 
-	public boolean markAsDown(byte[] blobId) {
+	public void markAsDone(byte[] blobId) {
 		try {
 			URL blobDoneUrl = getBlobUrl(blobId, true);
 
@@ -193,14 +193,9 @@ public class BlobLoader {
 			doneConnection.setDoInput(true);
 			doneConnection.setRequestMethod("POST");
 			IOUtils.toByteArray(doneConnection.getInputStream());
-
-			return true;
-
 		} catch (IOException | ThreemaException e) {
 			logger.warn("Marking blob as done failed", e);
 		}
-
-		return false;
 	}
 
 	/**
@@ -232,7 +227,7 @@ public class BlobLoader {
 		return new URL(blobUrl);
 	}
 
-	public class InputStreamLength {
+	private static class InputStreamLength {
 		public final BufferedInputStream inputStream;
 		public final int length;
 

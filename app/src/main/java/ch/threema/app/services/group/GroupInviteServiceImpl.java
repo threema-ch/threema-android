@@ -40,6 +40,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.base.Result;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
@@ -95,7 +96,7 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 			.insert(
 				new GroupInviteModel.Builder()
 					.withId(-1)
-					.withGroupId(groupModel.getId())
+					.withGroupApiId(groupModel.getApiGroupId())
 					.withToken(groupInviteToken)
 					.withGroupName(groupModel.getName() == null ? groupService.getMembersString(groupModel) : groupModel.getName())
 					.withInviteName(isDefault ? ThreemaApplication.getAppContext().getResources().getString(R.string.default_link_name) : ThreemaApplication.getAppContext().getResources().getString(R.string.group_link_default_name))
@@ -113,15 +114,16 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 
 	/**
 	 * Creates and persists a new group invite with a unique random token that is flagged as default. If there was
-	 * a default link previously generated, the last added one is re-enabled.
+	 * a default link previously generated, the last added one is re-enabled meaning the invalid flag is inverted.
 	 * @param groupModel GroupModel for the group for which the invite should be created/re-enabled
 	 * @return GroupInviteModel created
 	 * @throws GroupInviteToken.InvalidGroupInviteTokenException if the token has invalid length or format
 	 * @throws IOException if an error occurred while persisting the new GroupInviteModel in the db
 	 */
 	@Override
-	public GroupInviteModel createOrEnableDefaultLink(GroupModel groupModel) throws IOException, GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException {
-		Optional<GroupInviteModel> groupInviteModelOptional = groupInviteModelFactory.getDefaultByGroupId(groupModel.getId());
+	public GroupInviteModel createOrEnableDefaultLink(GroupModel groupModel) throws IOException,
+		GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException {
+		Optional<GroupInviteModel> groupInviteModelOptional = groupInviteModelFactory.getDefaultByGroupApiId(groupModel.getApiGroupId());
 
 		// enable previously known invite again
 		if (groupInviteModelOptional.isPresent()) {
@@ -137,32 +139,29 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 	}
 
 	/**
-	 * Creates and persists a new group invite with a unique random token that is flagged as default. If there is already
-	 * @param groupModel GroupModel for the group for which the invite should be created
-	 * @return GroupInviteModel created
-	 * @throws GroupInviteToken.InvalidGroupInviteTokenException if the token has invalid length or format
-	 * @throws IOException if an error occurred while persisting the new GroupInviteModel in the db
+	 * Queries the default link for a group
+	 * @param groupModel GroupModel for the group for which the default link should be queried
+	 * @return GroupInviteModel set as default
 	 */
 	@Override
 	public Optional<GroupInviteModel> getDefaultGroupInvite(@NonNull GroupModel groupModel) {
-		return groupInviteModelFactory.getDefaultByGroupId(groupModel.getId());
+		return groupInviteModelFactory.getDefaultByGroupApiId(groupModel.getApiGroupId());
 	}
 
 	@Override
-	public int getCustomLinksCount() {
-		return groupInviteModelFactory.getAllActiveCustom().size();
+	public int getCustomLinksCount(GroupId groupApiId) {
+		return groupInviteModelFactory.getAllActiveCustomForGroup(groupApiId).size();
 	}
 
 	/**
 	 * Deletes the default link for a group if there is any valid one. Deleting in this context means
 	 * setting the invalid flag as we want to keep the token entries in the db to send a expired response to previously valid links.
 	 * @param groupModel GroupModel for the group for which the  default link should be reset
-	 * @return GroupInviteModel created
 	 */
 	@Override
 	public void deleteDefaultLink(GroupModel groupModel) {
 		// check if there is already a default link, create a new default link if not
-		Optional<GroupInviteModel> optionalDefaultInvite = groupInviteModelFactory.getDefaultByGroupId(groupModel.getId());
+		Optional<GroupInviteModel> optionalDefaultInvite = groupInviteModelFactory.getDefaultByGroupApiId(groupModel.getApiGroupId());
 		if (optionalDefaultInvite.isPresent() && !optionalDefaultInvite.get().isInvalidated()) {
 			groupInviteModelFactory.delete(optionalDefaultInvite.get());
 		}
@@ -176,7 +175,7 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 	@Override
 	public GroupInviteModel resetDefaultGroupInvite(@NonNull GroupModel groupModel) throws IOException, GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException {
 		// check if there is already a default link, create a new default link if not
-		Optional<GroupInviteModel> optionalDefaultInvite = groupInviteModelFactory.getDefaultByGroupId(groupModel.getId());
+		Optional<GroupInviteModel> optionalDefaultInvite = groupInviteModelFactory.getDefaultByGroupApiId(groupModel.getApiGroupId());
 
 		if (optionalDefaultInvite.isEmpty() || optionalDefaultInvite.get().isInvalidated()) {
 			return createGroupInvite(groupModel, true);

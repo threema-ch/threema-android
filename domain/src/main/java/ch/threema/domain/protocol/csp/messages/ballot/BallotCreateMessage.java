@@ -22,10 +22,10 @@
 package ch.threema.domain.protocol.csp.messages.ballot;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
@@ -35,7 +35,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 public class BallotCreateMessage extends AbstractMessage
 	implements BallotCreateInterface{
 
-	private static final Logger logger = LoggerFactory.getLogger(BallotCreateMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotCreateMessage");
 
 
 	private BallotId ballotId;

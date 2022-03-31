@@ -54,7 +54,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -111,6 +110,7 @@ import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
@@ -126,7 +126,7 @@ public class ContactsSectionFragment
 		ContactListAdapter.AvatarListener,
 		GenericAlertDialog.DialogClickListener,
 		BottomSheetAbstractDialog.BottomSheetDialogCallback {
-	private static final Logger logger = LoggerFactory.getLogger(ContactsSectionFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSectionFragment");
 
 	private static final int PERMISSION_REQUEST_REFRESH_CONTACTS = 1;
 	private static final String DIALOG_TAG_REALLY_DELETE_CONTACTS = "rdc";

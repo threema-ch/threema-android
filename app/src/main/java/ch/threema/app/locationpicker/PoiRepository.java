@@ -32,7 +32,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,10 +52,11 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ProtocolStrings;
 
 class PoiRepository {
-	private static final Logger logger = LoggerFactory.getLogger(PoiRepository.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PoiRepository");
 	public static final int QUERY_MIN_LENGTH = 3;
 
 	private List<Poi> places = new ArrayList<>();

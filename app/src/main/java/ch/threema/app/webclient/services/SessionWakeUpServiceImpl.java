@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import org.saltyrtc.client.crypto.CryptoException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -55,6 +54,7 @@ import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
 @WorkerThread
@@ -75,7 +75,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
 	public static final int DISCONNECT_WAKEUP_SECONDS = 20;
 
 	// Logger
-	@NonNull private static final Logger logger = LoggerFactory.getLogger(SessionWakeUpServiceImpl.class);
+	@NonNull private static final Logger logger = LoggingUtil.getThreemaLogger("SessionWakeUpServiceImpl");
 
 	// Singleton
 	@Nullable private static SessionWakeUpService instance = null;

@@ -23,7 +23,6 @@ package ch.threema.domain.protocol.csp.connection;
 
 import androidx.annotation.NonNull;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
@@ -52,7 +52,7 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
  */
 public class MessageQueue implements MessageAckListener, ConnectionStateListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageQueue.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageQueue");
 
 	private final ContactStore contactStore;
 	private final IdentityStoreInterface identityStore;

@@ -26,18 +26,18 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.services.PollingHelper;
+import ch.threema.base.utils.LoggingUtil;
 
 public class FetchMessagesBroadcastReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(AlarmManagerBroadcastReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FetchMessagesBroadcastReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		logger.info("FetchMessagesBroadcastReceiver: onReceive");
 
-		PollingHelper pollingHelper = new PollingHelper(context, "Retry from AlarmManager");
+		PollingHelper pollingHelper = new PollingHelper(context, "retryFromAlarmManager");
 		pollingHelper.poll(true);
 	}
 }

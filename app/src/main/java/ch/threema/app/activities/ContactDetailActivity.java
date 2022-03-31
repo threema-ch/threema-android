@@ -78,6 +78,7 @@ import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -777,7 +778,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	private void scanQR() {
-		QRScannerUtil.getInstance().initiateScan(this, false, getString(R.string.qr_scanner_id_hint));
+		QRScannerUtil.getInstance().initiateScan(this, null, QRCodeServiceImpl.QR_TYPE_ID);
 	}
 
 	@Override

@@ -26,7 +26,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -35,11 +34,12 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.work.WorkManager;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.UpdateSystemService;
+import ch.threema.base.utils.LoggingUtil;
 
 /* clean up image labeler */
 
 public class SystemUpdateToVersion64 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion64.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion64");
 	private Context context;
 
 	public SystemUpdateToVersion64(Context context) {

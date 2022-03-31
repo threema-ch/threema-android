@@ -34,7 +34,6 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,9 +42,10 @@ import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ui.ZoomableExoPlayerView;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
-	private static final Logger logger = LoggerFactory.getLogger(VideoPreviewFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
 
 	private ZoomableExoPlayerView videoView;
 	private SimpleExoPlayer videoPlayer;

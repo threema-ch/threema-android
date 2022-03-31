@@ -32,7 +32,6 @@ import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteOpenHelper;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.security.InvalidKeyException;
@@ -43,6 +42,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.base.crypto.NonceStoreInterface;
 import ch.threema.base.utils.Utils;
@@ -51,7 +51,7 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class NonceDatabaseBlobService extends SQLiteOpenHelper
 	implements NonceStoreInterface  {
-	private static final Logger logger = LoggerFactory.getLogger(NonceDatabaseBlobService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NonceDatabaseBlobService");
 
 	public static final String DATABASE_NAME = "threema-nonce-blob.db";
 	public static final String DATABASE_NAME_V4 = "threema-nonce-blob4.db";

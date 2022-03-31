@@ -37,7 +37,6 @@ import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -55,7 +54,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -75,11 +73,12 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.video.VideoTimelineCache;
+import ch.threema.base.utils.LoggingUtil;
 
 import static com.google.android.exoplayer2.C.TIME_END_OF_SOURCE;
 
 public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver {
-	private static final Logger logger = LoggerFactory.getLogger(VideoEditView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoEditView");
 
 	private static final int MOVING_NONE = 0;
 	private static final int MOVING_LEFT = 1;
@@ -179,9 +178,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private void initVideoView() {
 		this.videoPlayer = new SimpleExoPlayer.Builder(context).build();
 		this.videoPlayer.setPlayWhenReady(false);
-		this.videoPlayer.addListener(new Player.EventListener() {
+		this.videoPlayer.addListener(new Player.Listener() {
 			@Override
-			public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+			public void onPlaybackStateChanged(int playbackState) {
+				Player.Listener.super.onPlaybackStateChanged(playbackState);
 				updateProgressBar();
 			}
 		});
@@ -190,12 +190,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		this.videoView.setControllerHideOnTouch(true);
 		this.videoView.setControllerShowTimeoutMs(1500);
 		this.videoView.setControllerAutoShow(true);
-		this.videoView.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return onTouchEvent(event);
-			}
-		});
+		this.videoView.setOnTouchListener((v, event) -> onTouchEvent(event));
 	}
 
 	@SuppressLint("DrawAllocation")
@@ -533,7 +528,8 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			thumbnailThread.start();
 
 			DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, Util.getUserAgent(context, context.getString(R.string.app_name)));
-			videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(videoItem.getUri());
+			videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
+				.createMediaSource(com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri()));
 
 			preparePlayer();
 		}
