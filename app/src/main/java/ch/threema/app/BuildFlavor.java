@@ -124,6 +124,7 @@ public class BuildFlavor {
 				case FLAVOR_HMS_WORK:
 					licenseType = LicenseType.HMS_WORK;
 					break;
+				case FLAVOR_STORE_THREEMA:
 				case FLAVOR_FDROID:
 					licenseType = LicenseType.SERIAL;
 					break;

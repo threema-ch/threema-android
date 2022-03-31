@@ -378,7 +378,7 @@ public class ContactsSectionFragment
 			});
 
 			if (resumePauseHandler != null) {
-				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_UPDATE_LIST, runIfActiveCreateList);
+				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_UPDATE_LIST, runIfActiveUpdateList);
 			}
 		}
 
