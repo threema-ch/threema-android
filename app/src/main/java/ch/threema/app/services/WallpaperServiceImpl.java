@@ -41,7 +41,6 @@ import android.widget.Toast;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,13 +52,15 @@ import java.util.concurrent.ExecutionException;
 
 import javax.crypto.CipherInputStream;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.activities.CropImageActivity;
-import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetListDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -72,14 +73,17 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Supplier;
+import kotlin.jvm.functions.Function0;
 
+import static android.app.Activity.RESULT_OK;
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
 public class WallpaperServiceImpl implements WallpaperService {
-	private static final Logger logger = LoggerFactory.getLogger(WallpaperServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WallpaperServiceImpl");
 
 	private static final String DIALOG_TAG_LOADING_IMAGE = "lit";
 	private static final String SELECTOR_TAG_WALLPAPER_DEFAULT = "def";
@@ -98,6 +102,36 @@ public class WallpaperServiceImpl implements WallpaperService {
 		this.preferenceService = preferenceService;
 		this.fileService = fileService;
 		this.masterKey = masterKey;
+	}
+
+	/**
+	 * Get the wallpaper activity result launcher. This needs to be called before the fragment is created.
+	 *
+	 * @param fragment           the fragment that is launching the image selection activity
+	 * @param onCropResultAction this runnable is additionally executed when a new wallpaper has been cropped
+	 * @param getMessageReceiver this function must return the message receiver; it will be called when the image selection result is available
+	 * @return the activity result launcher that is used when triggering a new wallpaper image selection
+	 */
+	@Override
+	public ActivityResultLauncher<Intent> getWallpaperActivityResultLauncher(@NonNull Fragment fragment, @Nullable Runnable onCropResultAction, @Nullable Function0<MessageReceiver> getMessageReceiver) {
+		ActivityResultLauncher<Intent> cropLauncher = fragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+			final File tempWallpaperFile = new File(fileService.getTempPath() + "/.wp" + MEDIA_IGNORE_FILENAME);
+
+			if (result.getResultCode() == Activity.RESULT_OK &&
+				fileService.decryptFileToFile(tempWallpaperFile, this.wallpaperCropFile)) {
+				preferenceService.setCustomWallpaperEnabled(true);
+				if (onCropResultAction != null) {
+					onCropResultAction.run();
+				}
+			}
+			FileUtil.deleteFileOrWarn(tempWallpaperFile, "deleteCropFile", logger);
+		});
+
+		return fragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+			if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+				this.onImageSelected(fragment, result.getData(), cropLauncher, getMessageReceiver != null ? getMessageReceiver.invoke() : null);
+			}
+		});
 	}
 
 	@Override
@@ -227,7 +261,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 	}
 
 	@Override
-	public void selectWallpaper(final Fragment fragment, final MessageReceiver messageReceiver, Runnable onSuccess) {
+	public void selectWallpaper(@NonNull final Fragment fragment, @NonNull ActivityResultLauncher<Intent> fileSelectionLauncher, @Nullable final MessageReceiver messageReceiver, @Nullable Runnable onSuccess) {
 		ArrayList<BottomSheetItem> items = new ArrayList<>();
 
 		if (!ConfigUtils.isWorkBuild() || messageReceiver != null) {
@@ -303,7 +337,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 							}
 							break;
 						case SELECTOR_TAG_WALLPAPER_GALLERY:
-							selectWallpaperFromGallery(fragment);
+							selectWallpaperFromGallery(fragment, fileSelectionLauncher);
 							break;
 						case SELECTOR_TAG_WALLPAPER_NONE:
 							setEmptyWallpaper(messageReceiver);
@@ -319,7 +353,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 			public void onCancel(String tag) {
 			}
 		});
-		dialog.show(fragment.getFragmentManager(), DIALOG_TAG_SELECT_WALLPAPER);
+		dialog.show(fragment.getParentFragmentManager(), DIALOG_TAG_SELECT_WALLPAPER);
 	}
 
 	private File deleteWallpaperFile(MessageReceiver messageReceiver) {
@@ -358,8 +392,8 @@ public class WallpaperServiceImpl implements WallpaperService {
 		}
 	}
 
-	private void selectWallpaperFromGallery(Fragment fragment) {
-		FileUtil.selectFile(null, fragment, new String[]{MimeUtil.MIME_TYPE_IMAGE}, ThreemaActivity.ACTIVITY_ID_SETTINGS, false, 0, null);
+	private void selectWallpaperFromGallery(Fragment fragment, ActivityResultLauncher<Intent> imageSelectLauncher) {
+		FileUtil.selectFile(fragment.requireContext(), imageSelectLauncher, new String[]{MimeUtil.MIME_TYPE_IMAGE}, false, 0, null);
 	}
 
 	@Override
@@ -404,87 +438,6 @@ public class WallpaperServiceImpl implements WallpaperService {
 		return wallpaperFile.exists() && wallpaperFile.length() == 0;
 	}
 
-	@SuppressLint("StaticFieldLeak")
-	@Override
-	public boolean handleActivityResult(final Fragment fragment, int requestCode, int resultCode, final Intent data, MessageReceiver messageReceiver) {
-		if (data == null) {
-			return false;
-		}
-
-		final File tempWallpaperFile = new File(fileService.getTempPath() + "/.wp" + MEDIA_IGNORE_FILENAME);
-
-		switch (requestCode) {
-			case ThreemaActivity.ACTIVITY_ID_SETTINGS:
-				if (resultCode == Activity.RESULT_OK) {
-					try {
-						this.wallpaperCropFile = this.fileService.createWallpaperFile(messageReceiver);
-					} catch (IOException e) {
-						LogUtil.exception(e, fragment.getActivity());
-						break;
-					}
-
-					if (TestUtil.required(this.wallpaperCropFile)) {
-						// input stream might be a cloud file, so put loading into an asynctask
-						new AsyncTask<Void, Void, Boolean>() {
-							@Override
-							protected void onPreExecute() {
-								super.onPreExecute();
-								GenericProgressDialog.newInstance(R.string.download, R.string.please_wait).show(fragment.getFragmentManager(), DIALOG_TAG_LOADING_IMAGE);
-							}
-
-							@Override
-							protected Boolean doInBackground(Void... params) {
-								Activity activity = fragment.getActivity();
-								if (activity != null) {
-									try (InputStream inputStream = activity.getContentResolver().openInputStream(data.getData()); FileOutputStream fos = new FileOutputStream(tempWallpaperFile)) {
-										if (inputStream != null) {
-											IOUtils.copy(inputStream, fos);
-											return true;
-										}
-									} catch (Exception e) {
-										logger.error("Exception", e);
-									}
-								}
-								return false;
-							}
-
-							@Override
-							protected void onPostExecute(Boolean success) {
-								super.onPostExecute(success);
-								DialogUtil.dismissDialog(fragment.getFragmentManager(), DIALOG_TAG_LOADING_IMAGE, true);
-								if (success) {
-									doCrop(fragment, Uri.fromFile(tempWallpaperFile));
-								}
-							}
-						}.execute();
-						return true;
-					}
-				}
-				break;
-			case CropImageActivity.REQUEST_CROP:
-				/* return from wallpaper crop */
-				boolean result;
-
-				if (resultCode == Activity.RESULT_OK &&
-					fileService.decryptFileToFile(tempWallpaperFile, this.wallpaperCropFile)) {
-					preferenceService.setCustomWallpaperEnabled(true);
-					result = true;
-				} else {
-					/*
-					if (this.wallpaperCropFile != null && this.wallpaperCropFile.exists()) {
-						this.wallpaperCropFile.delete();
-					}
-					*/
-					result = false;
-				}
-				FileUtil.deleteFileOrWarn(tempWallpaperFile, "deleteCropFile", logger);
-				return result;
-			default:
-				break;
-		}
-		return false;
-	}
-
 	@Override
 	public void removeAll(Context context, boolean silent) {
 		try {
@@ -497,24 +450,73 @@ public class WallpaperServiceImpl implements WallpaperService {
 		}
 	}
 
-	private void doCrop(Fragment fragment, Uri imageUri) {
+	@SuppressLint("StaticFieldLeak")
+	private void onImageSelected(@NonNull Fragment fragment, @NonNull Intent data, @NonNull ActivityResultLauncher<Intent> cropLauncher, @Nullable MessageReceiver messageReceiver) {
+		try {
+			this.wallpaperCropFile = this.fileService.createWallpaperFile(messageReceiver);
+		} catch (IOException e) {
+			LogUtil.exception(e, fragment.getActivity());
+			return;
+		}
+
+		final File tempWallpaperFile = new File(fileService.getTempPath() + "/.wp" + MEDIA_IGNORE_FILENAME);
+
+		if (this.wallpaperCropFile != null) {
+			// input stream might be a cloud file, so put loading into an asynctask
+			new AsyncTask<Void, Void, Boolean>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					GenericProgressDialog.newInstance(R.string.download, R.string.please_wait).show(fragment.getParentFragmentManager(), DIALOG_TAG_LOADING_IMAGE);
+				}
+
+				@Override
+				protected Boolean doInBackground(Void... params) {
+					Activity activity = fragment.getActivity();
+					if (activity != null) {
+						try (InputStream inputStream = activity.getContentResolver().openInputStream(data.getData()); FileOutputStream fos = new FileOutputStream(tempWallpaperFile)) {
+							if (inputStream != null) {
+								IOUtils.copy(inputStream, fos);
+								return true;
+							}
+						} catch (Exception e) {
+							logger.error("Exception", e);
+						}
+					}
+					return false;
+				}
+
+				@Override
+				protected void onPostExecute(Boolean success) {
+					super.onPostExecute(success);
+					DialogUtil.dismissDialog(fragment.getParentFragmentManager(), DIALOG_TAG_LOADING_IMAGE, true);
+					if (success) {
+						doCrop(fragment, Uri.fromFile(tempWallpaperFile), cropLauncher);
+					}
+				}
+			}.execute();
+		}
+	}
+
+	private void doCrop(Fragment fragment, Uri imageUri, ActivityResultLauncher<Intent> launcher) {
 		Activity activity = fragment.getActivity();
 
 		DisplayMetrics metrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		Rect rectgle = new Rect();
+		Rect rectangle = new Rect();
 		Window window = activity.getWindow();
-		window.getDecorView().getWindowVisibleDisplayFrame(rectgle);
+		window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
 
 		int width = metrics.widthPixels;
 		int height = metrics.heightPixels;
 
 		if (height > width) {
 			// portrait
-			height -= rectgle.top;
+			height -= rectangle.top;
 		} else {
 			// landscape
-			width -= rectgle.top;
+			//noinspection SuspiciousNameCombination
+			width -= rectangle.top;
 		}
 
 		int y = Math.max(width, height);
@@ -527,6 +529,6 @@ public class WallpaperServiceImpl implements WallpaperService {
 		intent.putExtra(CropImageActivity.EXTRA_MAX_Y, y);
 		intent.putExtra(CropImageActivity.EXTRA_ASPECT_X, x);
 		intent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, y);
-		fragment.startActivityForResult(intent, CropImageActivity.REQUEST_CROP);
+		launcher.launch(intent);
 	}
 }

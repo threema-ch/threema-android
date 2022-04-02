@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,9 +36,10 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class SMSVerificationLinkActivity extends AppCompatActivity {
-	private static final Logger logger = LoggerFactory.getLogger(SMSVerificationLinkActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationLinkActivity");
 
 	private UserService userService;
 

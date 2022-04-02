@@ -30,17 +30,18 @@ import android.os.PowerManager;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.FetchMessagesBroadcastReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.QueueSendCompleteListener;
 
@@ -50,7 +51,7 @@ import ch.threema.domain.protocol.csp.connection.QueueSendCompleteListener;
  * has sent all new messages.
  */
 public class PollingHelper implements QueueSendCompleteListener {
-	private static final Logger logger = LoggerFactory.getLogger(PollingHelper.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PollingHelper");
 
 	private static final int CONNECTION_TIMEOUT = 1000 * 120;       /* maximum time to stay connected for each poll (usually the connection will be terminated earlier as the server signals the end of the queue) */
 	private static final int CONNECTION_TIMEOUT_ALREADY_CONNECTED = 1000 * 60;      /* same, but timeout to use if we're already connected when polling */
@@ -59,23 +60,23 @@ public class PollingHelper implements QueueSendCompleteListener {
 	private static volatile Timer timer;     /* same timer for all instances */
 	private static final Object timerLock = new Object();
 
-	private final Context context;
-	private final String name;
+	private final @NonNull Context context;
+	private final @NonNull String lifetimeServiceTag;
 
 	private boolean connectionAcquired;
 	private PowerManager.WakeLock wakeLock;
 	private TimerTask timeoutTask;
 
-	public PollingHelper(Context context, String name) {
+	public PollingHelper(@NonNull Context context, @NonNull String lifetimeServiceTag) {
 		this.context = context;
-		this.name = name;
+		this.lifetimeServiceTag = lifetimeServiceTag;
 	}
 
 	/**
 	 * Return whether polling was successful.
 	 */
 	public synchronized boolean poll(final boolean useWakeLock) {
-		logger.info("Fetch attempt. Source = {}", name);
+		logger.info("Fetch attempt. Source = {}", lifetimeServiceTag);
 
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
@@ -122,8 +123,8 @@ public class PollingHelper implements QueueSendCompleteListener {
 				}
 
 				// Acquire a connection to the Threema server
-				LifetimeService lifetimeService = serviceManager.getLifetimeService();
-				lifetimeService.acquireConnection(name);
+				final LifetimeService lifetimeService = serviceManager.getLifetimeService();
+				lifetimeService.acquireConnection(this.lifetimeServiceTag);
 
 				if(!lifetimeService.isActive()) {
 					AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -202,8 +203,8 @@ public class PollingHelper implements QueueSendCompleteListener {
 			if (serviceManager != null) {
 				serviceManager.getConnection().removeQueueSendCompleteListener(this);
 
-				LifetimeService lifetimeService = serviceManager.getLifetimeService();
-				lifetimeService.releaseConnectionLinger(name, CONNECTION_LINGER);
+				final LifetimeService lifetimeService = serviceManager.getLifetimeService();
+				lifetimeService.releaseConnectionLinger(this.lifetimeServiceTag, CONNECTION_LINGER);
 				connectionAcquired = false;
 
 				if (timeoutTask != null) {

@@ -60,7 +60,6 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,6 +87,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
@@ -97,7 +97,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		LocationPickerAdapter.OnClickItemListener,
 		LocationPickerConfirmDialog.LocationConfirmDialogClickListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(LocationPickerActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerActivity");
 
 	private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
 	private static final String DIALOG_TAG_CONFIRM_PLACE = "conf";
@@ -335,7 +335,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 					public void onStyleLoaded(@NonNull Style style) {
 						// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
 						setupLocationComponent(style);
-						zoomToCenter();
+						// hack: delay location query
+						mapView.postDelayed(() -> zoomToCenter(), 500);
 					}
 				});
 				mapboxMap.getUiSettings().setAttributionEnabled(false);

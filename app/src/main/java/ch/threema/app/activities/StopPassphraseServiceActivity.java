@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
@@ -35,6 +34,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
 
@@ -42,7 +42,7 @@ import ch.threema.localcrypto.MasterKey;
  * Simple activity to stop passphrase service, lock master key and finish the app removing it from recents list - to be used from the persistent notification
  */
 public class StopPassphraseServiceActivity extends Activity {
-	private static final Logger logger = LoggerFactory.getLogger(StopPassphraseServiceActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("StopPassphraseServiceActivity");
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {

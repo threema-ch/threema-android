@@ -22,10 +22,10 @@
 package ch.threema.app.fragments.wizard;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
@@ -47,15 +47,16 @@ import com.google.i18n.phonenumbers.AsYouTypeFormatter;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import ch.threema.app.R;
@@ -64,6 +65,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Example:
@@ -75,7 +77,7 @@ import ch.threema.app.utils.TestUtil;
  */
 
 public class WizardFragment3 extends WizardFragment {
-	private static final Logger logger = LoggerFactory.getLogger(WizardFragment3.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment3");
 
 	private EditText prefixText, emailEditText, phoneText;
 	private CountryListAdapter countryListAdapter;
@@ -87,13 +89,16 @@ public class WizardFragment3 extends WizardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, final ViewGroup container,
 							 Bundle savedInstanceState) {
-		View rootView = super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
+
+		TextView title = rootView.findViewById(R.id.wizard_title);
+		title.setText(R.string.new_wizard_help_your_friends_find_you);
 
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard3);
 		contentViewStub.inflate();
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
 
 		countrySpinner = rootView.findViewById(R.id.country_spinner);
 		emailEditText = rootView.findViewById(R.id.wizard_email);
@@ -154,7 +159,7 @@ public class WizardFragment3 extends WizardFragment {
 							if (position > -1) {
 								countrySpinner.setSelection(position);
 								setPhoneNumberFormatter(countryCode);
-								((OnSettingsChangedListener) getActivity()).onPrefixSet(prefixText.getText().toString());
+								((OnSettingsChangedListener) requireActivity()).onPrefixSet(prefixText.getText().toString());
 							}
 						} catch (NumberFormatException e) {
 							logger.error("Exception", e);
@@ -252,7 +257,7 @@ public class WizardFragment3 extends WizardFragment {
 
 				@Override
 				protected void onPostExecute(final ArrayList<Map<String, String>> result) {
-					countryListAdapter = new CountryListAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, result);
+					countryListAdapter = new CountryListAdapter(android.R.layout.simple_spinner_dropdown_item, result);
 					countrySpinner.setAdapter(countryListAdapter);
 					countrySpinner.setSelection(countryListAdapter.getCount());
 					countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -329,12 +334,12 @@ public class WizardFragment3 extends WizardFragment {
 	}
 
 	private class CountryListAdapter extends BaseAdapter implements SpinnerAdapter {
-		private ArrayList<Map<String, String>> list;
-		private LayoutInflater inflater;
-		private int resource;
+		private final List<Map<String, String>> list;
+		private final LayoutInflater inflater;
+		private final int resource;
 
-		public CountryListAdapter(Context context, int resource, ArrayList<Map<String, String>> objects) {
-			this.inflater = getActivity().getLayoutInflater();
+		public CountryListAdapter(int resource, List<Map<String, String>> objects) {
+			this.inflater = requireActivity().getLayoutInflater();
 			this.list = objects;
 			this.resource = resource;
 		}
@@ -382,7 +387,8 @@ public class WizardFragment3 extends WizardFragment {
 			String countryName = getCountryName(region);
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, String> map = list.get(i);
-				if (map.get("name").equalsIgnoreCase(countryName)) {
+				String name = map.get("name");
+				if (name != null && name.equalsIgnoreCase(countryName)) {
 					return i;
 				}
 			}
@@ -409,18 +415,13 @@ public class WizardFragment3 extends WizardFragment {
 	public void onResume() {
 		super.onResume();
 
-		new Handler().postDelayed(() -> {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					initValues();
-					if (phoneText != null) {
-						phoneText.requestFocus();
-						EditTextUtil.showSoftKeyboard(phoneText);
-					}
-				}
-			});
-		}, 50);
+		new Handler(Looper.getMainLooper()).postDelayed(() -> RuntimeUtil.runOnUiThread(() -> {
+			initValues();
+			if (phoneText != null) {
+				phoneText.requestFocus();
+				EditTextUtil.showSoftKeyboard(phoneText);
+			}
+		}), 50);
 	}
 
 	@Override
@@ -434,7 +435,7 @@ public class WizardFragment3 extends WizardFragment {
 
 	void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
 			emailEditText.setText(callback.getEmail());
 
 			if (TestUtil.empty(callback.getPresetEmail())) {

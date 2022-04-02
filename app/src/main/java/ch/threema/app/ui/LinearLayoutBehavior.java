@@ -29,12 +29,12 @@ import android.widget.LinearLayout;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import ch.threema.base.utils.LoggingUtil;
 
 public class LinearLayoutBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
-	private static final Logger logger = LoggerFactory.getLogger(LinearLayoutBehavior.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LinearLayoutBehavior");
 
 	public LinearLayoutBehavior(Context context, AttributeSet attrs) {
 		super(context, attrs);

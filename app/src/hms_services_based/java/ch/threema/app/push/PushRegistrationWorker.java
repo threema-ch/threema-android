@@ -27,7 +27,6 @@ import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hms.aaid.HmsInstanceId;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -37,7 +36,7 @@ import ch.threema.app.utils.PushUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushRegistrationWorker extends Worker {
-	private final Logger logger = LoggerFactory.getLogger(PushRegistrationWorker.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("PushRegistrationWorker");
 
 	public static String TOKEN_SCOPE = "HCM";
 	public static String APP_ID_CONFIG_FIELD = "client/app_id";

@@ -22,12 +22,12 @@
 package ch.threema.app.services;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.utils.ExponentialBackOffUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class MessageSendingServiceExponentialBackOff implements MessageSendingService {
-	private static final Logger logger = LoggerFactory.getLogger(MessageSendingServiceExponentialBackOff.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageSendingServiceExponentialBackOff");
 
 	private final MessageSendingServiceState messageSendingServiceState;
 

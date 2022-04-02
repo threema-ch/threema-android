@@ -17,6 +17,7 @@
 	<dimen name="conversation_controller_icon_size">32dp</dimen>
 	<dimen name="conversation_controller_progress_stroke_width">3dp</dimen>
 	<dimen name="conversation_controller_progress_border_width">3dp</dimen>
+	<dimen name="conversation_controller_progress_size">34dp</dimen>
 
 	<dimen name="media_thumbnail_min_width">200dp</dimen>
     <dimen name="media_thumbnail_min_height">100dp</dimen>
@@ -135,31 +136,35 @@
 	<dimen name="contacts_scrollbar_tolerance">25dp</dimen>
 
 	<!-- image/media attach popup -->
-	<dimen name="control_panel_height">88dp</dimen> <!-- media_attach_button_size + 4 -->
+	<dimen name="control_panel_height">100dp</dimen> <!-- media_attach_button_size + 8 -->
 	<dimen name="image_attach_thumbnail_size">180dp</dimen>
 	<dimen name="image_attach_popup_maxwidth">600dp</dimen>
-	<dimen name="image_attach_popup_action_icon_size">24dp</dimen>
+	<dimen name="image_attach_popup_action_icon_size">48dp</dimen>
 	<dimen name="image_popup_screen_border_width">32dp</dimen>
 	<dimen name="image_popup_topbottom_margin">24dp</dimen>
 	<dimen name="image_popup_leftright_margin">4dp</dimen>
 	<dimen name="image_popup_text_size">12sp</dimen>
 	<dimen name="image_popup_text_margin_bottom">6dp</dimen>
-	<dimen name="qrcode_min_margin">24dp</dimen>
+	<dimen name="qrcode_min_margin">8dp</dimen>
 	<dimen name="grid_spacing">2dp</dimen>
 	<dimen name="drag_handle_height">4dp</dimen>
-	<dimen name="drag_handle_topbottom_margin">8dp</dimen>
+	<dimen name="drag_handle_topbottom_margin">10dp</dimen>
 	<dimen name="gallery_drawer_corner_radius">15dp</dimen>
 	<dimen name="broken_image_icon_size">32dp</dimen>
 	<dimen name="send_items_grid_action_icon_margin">3dp</dimen>
 
 	<!-- media attacher button dimensions -->
-	<dimen name="media_attach_button_radius">8dp</dimen>
-	<dimen name="media_attach_button_size">80dp</dimen>
-	<dimen name="media_attach_button_stroke_width">1dp</dimen>
+	<dimen name="media_attach_button_radius">10dp</dimen>
+	<dimen name="media_attach_button_height">92dp</dimen>
+	<dimen name="media_attach_button_width">76dp</dimen>
+	<dimen name="media_attach_button_stroke_width">1.2dp</dimen>
 	<dimen name="media_attach_control_panel_shadow_size">3dp</dimen>
+	<dimen name="media_gallery_grid_item_padding">0.75dp</dimen>
 
 	<!-- wizard -->
 	<dimen name="wizard_contents_padding">16dp</dimen>
+	<dimen name="wizard_title_text_margin_top">8dp</dimen>
+	<item type="dimen" name="wizard_title_width_percent">.75</item>
 	<dimen name="wizard_button_height">32dp</dimen>
 	<dimen name="wizard_default_view_height">32dp</dimen>
 	<dimen name="wizard_edittext_text_size">14sp</dimen>
@@ -312,6 +317,9 @@
 	<dimen name="bottom_nav_badge_offset_vertical">2dp</dimen>
 	<dimen name="header_contact_section_work_height">40dp</dimen>
 	<dimen name="recently_added_background_corner_size">12dp</dimen>
+	<dimen name="qrscanner_masking_margin">50dp</dimen>
+	<dimen name="qrscanner_masking_margin_top">16dp</dimen>
+	<dimen name="qrscanner_masking_margin_bottom">84dp</dimen>
 
 	<!-- override touch target size for me.zhanghai.android.fastscroll -->
 	<dimen name="afs_min_touch_target_size">24dp</dimen>

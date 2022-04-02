@@ -37,18 +37,15 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.DropDownPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -67,11 +64,12 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
 
 public class SettingsSecurityFragment extends ThreemaPreferenceFragment implements PasswordEntryDialog.PasswordEntryDialogClickListener, GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(SettingsSecurityFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsSecurityFragment");
 
 	private Preference pinPreference;
 	private TwoStatePreference uiLockSwitchPreference;
@@ -82,7 +80,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 	private DeadlineListService hiddenChatsListService;
 
 	private View fragmentView;
-	private PreferenceScreen preferenceScreen;
 
 	private static final String ID_DIALOG_PASSPHRASE = "mkpw";
 	private static final String ID_DIALOG_PROGRESS = "pogress";
@@ -94,14 +91,13 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 	private static final int ID_ENABLE_SYSTEM_LOCK = 7780;
 
 	@Override
-	public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
-		logger.debug("### onCreatePreferencesFix savedInstanceState = " + savedInstanceState);
+	protected void initializePreferences() {
+		logger.debug("### initializePreferences");
+
+		super.initializePreferences();
 
 		preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
 		hiddenChatsListService = ThreemaApplication.getServiceManager().getHiddenChatsListService();
-
-		addPreferencesFromResource(R.xml.preference_security);
-		preferenceScreen = findPreference("pref_key_security");
 	}
 
 	private void onCreateUnlocked() {
@@ -231,7 +227,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		masterkeyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				if (MessageDigest.isEqual(preference.getKey().getBytes(),getResources().getString(R.string.preferences__masterkey_passphrase).getBytes())) {
+				if (MessageDigest.isEqual(preference.getKey().getBytes(), getResources().getString(R.string.preferences__masterkey_passphrase).getBytes())) {
 					Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_PASSPHRASE_CHECK, true);
 					startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK);
@@ -338,7 +334,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		fragmentView = view;
 		fragmentView.setVisibility(View.INVISIBLE);
 
-		preferenceFragmentCallbackInterface.setToolbarTitle(R.string.prefs_security);
 		super.onViewCreated(view, savedInstanceState);
 
 		// ask for pin before entering
@@ -417,18 +412,18 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 	private void setPin() {
 		DialogFragment dialogFragment = PasswordEntryDialog.newInstance(
-				R.string.set_pin_menu_title,
-				R.string.set_pin_summary_intro,
-				R.string.set_pin_hint,
-				R.string.ok,
-				R.string.cancel,
-				ThreemaApplication.MIN_PIN_LENGTH,
-				ThreemaApplication.MAX_PIN_LENGTH,
-				R.string.set_pin_again_summary,
-				InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD,
-				0, PasswordEntryDialog.ForgotHintType.NONE);
+			R.string.set_pin_menu_title,
+			R.string.set_pin_summary_intro,
+			R.string.set_pin_hint,
+			R.string.ok,
+			R.string.cancel,
+			ThreemaApplication.MIN_PIN_LENGTH,
+			ThreemaApplication.MAX_PIN_LENGTH,
+			R.string.set_pin_again_summary,
+			InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD,
+			0, PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.setTargetFragment(this, 0);
-		dialogFragment.show(getFragmentManager(), ID_DIALOG_PIN);
+		dialogFragment.show(getParentFragmentManager(), ID_DIALOG_PIN);
 	}
 
 	@TargetApi(Build.VERSION_CODES.M)
@@ -452,13 +447,13 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 	private void setBiometricLock() {
 		/* TODO: Use BiometricLockActivity */
-		if (BiometricUtil.isBiometricsSupported(getContext())) {
+		if (BiometricUtil.isBiometricsSupported(requireContext())) {
 			BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-					.setTitle(getString(R.string.prefs_title_access_protection))
-					.setSubtitle(getString(R.string.biometric_enter_authentication))
-					.setNegativeButtonText(getString(R.string.cancel))
-					.build();
-			BiometricPrompt biometricPrompt = new BiometricPrompt(this.getActivity(), new RuntimeUtil.MainThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
+				.setTitle(getString(R.string.prefs_title_access_protection))
+				.setSubtitle(getString(R.string.biometric_enter_authentication))
+				.setNegativeButtonText(getString(R.string.cancel))
+				.build();
+			BiometricPrompt biometricPrompt = new BiometricPrompt(requireActivity(), new RuntimeUtil.MainThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
 				@Override
 				public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
 					if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
@@ -515,22 +510,22 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 	private void setPassphrase() {
 		DialogFragment dialogFragment = PasswordEntryDialog.newInstance(
-				R.string.masterkey_passphrase_title,
-				R.string.masterkey_passphrase_summary,
-				R.string.masterkey_passphrase_hint,
-				R.string.ok,
-				R.string.cancel,
-				8, 0,
-				R.string.masterkey_passphrase_again_summary,
-				0, 0, PasswordEntryDialog.ForgotHintType.NONE);
+			R.string.masterkey_passphrase_title,
+			R.string.masterkey_passphrase_summary,
+			R.string.masterkey_passphrase_hint,
+			R.string.ok,
+			R.string.cancel,
+			8, 0,
+			R.string.masterkey_passphrase_again_summary,
+			0, 0, PasswordEntryDialog.ForgotHintType.NONE);
 		dialogFragment.setTargetFragment(this, 0);
-		dialogFragment.show(getFragmentManager(), ID_DIALOG_PASSPHRASE);
+		dialogFragment.show(getParentFragmentManager(), ID_DIALOG_PASSPHRASE);
 	}
 
 	private void setMasterKeyPreferenceText() {
 		masterkeyPreference.setSummary(ThreemaApplication.getMasterKey().isProtected() ?
-				getString(R.string.click_here_to_change_passphrase) :
-				getString(R.string.prefs_masterkey_passphrase));
+			getString(R.string.click_here_to_change_passphrase) :
+			getString(R.string.prefs_masterkey_passphrase));
 	}
 
 	@Override
@@ -552,7 +547,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 					@Override
 					protected void onPreExecute() {
 						GenericProgressDialog.newInstance(R.string.setting_masterkey_passphrase, R.string.please_wait)
-								.show(getFragmentManager(), ID_DIALOG_PROGRESS);
+							.show(getParentFragmentManager(), ID_DIALOG_PROGRESS);
 					}
 
 					@Override
@@ -643,4 +638,10 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 				break;
 		}
 	}
+
+	@Override
+	public int getPreferenceResource() {
+		return R.xml.preference_security;
+	}
+
 }

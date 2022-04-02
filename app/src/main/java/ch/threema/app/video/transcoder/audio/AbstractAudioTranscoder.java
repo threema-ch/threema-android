@@ -26,16 +26,16 @@ import android.media.MediaFormat;
 import android.media.MediaMuxer;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.video.transcoder.VideoTranscoder;
+import ch.threema.base.utils.LoggingUtil;
 import java8.util.Optional;
 
 public abstract class AbstractAudioTranscoder {
-	private static final Logger logger = LoggerFactory.getLogger(AbstractAudioTranscoder.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractAudioTranscoder");
 
 	//region Member Variables
 	protected final AudioComponent component;

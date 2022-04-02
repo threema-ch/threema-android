@@ -25,7 +25,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +37,11 @@ import androidx.annotation.StringRes;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.AppRestrictionService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class AppRestrictionUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(AppRestrictionUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AppRestrictionUtil");
 
 	public static boolean isAddContactDisabled(Context context) {
 		return getBoolRestriction(context, R.string.restriction__disable_add_contact);

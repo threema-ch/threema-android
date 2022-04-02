@@ -22,6 +22,7 @@
 package ch.threema.storage.models;
 
 import java.util.Date;
+import java.util.Objects;
 
 import ch.threema.base.utils.Utils;
 
@@ -74,5 +75,18 @@ public class DistributionListModel implements ReceiverModel {
 	public DistributionListModel setArchived(boolean archived) {
 		isArchived = archived;
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof DistributionListModel)) return false;
+		DistributionListModel that = (DistributionListModel) o;
+		return id == that.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

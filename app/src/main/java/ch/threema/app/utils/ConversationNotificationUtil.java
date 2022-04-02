@@ -25,7 +25,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +42,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
 public class ConversationNotificationUtil {
-	private static final Logger logger = LoggerFactory.getLogger(ConversationNotificationUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationNotificationUtil");
 
 	protected static final HashMap<String, NotificationService.ConversationNotificationGroup> notificationGroupHashMap = new HashMap<>();
 

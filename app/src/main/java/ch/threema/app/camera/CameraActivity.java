@@ -33,16 +33,8 @@ import android.view.WindowManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
@@ -53,12 +45,13 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
 
 public class CameraActivity extends ThreemaAppCompatActivity implements CameraFragment.CameraCallback, CameraFragment.CameraConfiguration {
-	private static final Logger logger = LoggerFactory.getLogger(CameraActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("CameraActivity");
 
 	public static final String KEY_EVENT_ACTION = "key_event_action";
 	public static final String KEY_EVENT_EXTRA = "key_event_extra";
@@ -134,17 +127,9 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 	}
 
 	@Override
-	public void onImageReady(@NonNull byte[] imageData) {
+	public void onImageReady() {
 		removeFragment();
-
-		try (ByteArrayInputStream in = new ByteArrayInputStream(imageData);
-		     BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(cameraFilePath))) {
-			IOUtils.copy(in, out);
-			setResult(RESULT_OK);
-		} catch (IOException e) {
-			logger.error("Exception", e);
-			setResult(RESULT_CANCELED);
-		}
+		setResult(RESULT_OK);
 		this.finish();
 	}
 
@@ -165,6 +150,11 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 	@Override
 	public String getVideoFilePath() {
 		return videoFilePath;
+	}
+
+	@Override
+	public String getCameraFilePath() {
+		return cameraFilePath;
 	}
 
 	private void removeFragment() {

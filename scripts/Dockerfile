@@ -19,7 +19,7 @@ ARG NDK_VERSION=21.1.6352462
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q \
  && apt-get -y -q install --no-install-recommends \
-    build-essential file openjdk-8-jdk git wget unzip rsync vim-nox cpu-checker \
+    build-essential file openjdk-11-jdk git wget unzip rsync vim-nox cpu-checker \
  && rm -rf /var/lib/apt/lists/*
 
 # Download Android command line tools

@@ -23,10 +23,10 @@ package ch.threema.domain.protocol.csp.messages;
 
 import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 /**
@@ -37,7 +37,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  */
 public class ContactSetPhotoMessage extends AbstractMessage {
 
-	private static final Logger logger = LoggerFactory.getLogger(ContactSetPhotoMessage.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactSetPhotoMessage");
 
 	private byte[] blobId;
 	private int size;

@@ -30,16 +30,16 @@ import android.os.PowerManager;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.listeners.SensorListener;
+import ch.threema.base.utils.LoggingUtil;
 
 public class SensorServiceImpl implements SensorService, SensorEventListener {
-	private static final Logger logger = LoggerFactory.getLogger(SensorServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SensorServiceImpl");
 	private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":SensorService";
 
 	private PowerManager.WakeLock proximityWakelock;

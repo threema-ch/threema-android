@@ -37,19 +37,19 @@ import android.provider.MediaStore;
 
 import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class IconUtil {
-	private static final Logger logger = LoggerFactory.getLogger(IconUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IconUtil");
 	private static final HashMap<String, Integer> mimeIcons = new HashMap<>();
 
 	private static void add(String mimeType, int resId) {
@@ -221,7 +221,7 @@ public class IconUtil {
 		add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
 	}
 
-	public static int getMimeIcon(String mimeType) {
+	public static int getMimeIcon(@Nullable String mimeType) {
 		if (mimeType == null) {
 			return R.drawable.ic_doc_generic_am;
 		}

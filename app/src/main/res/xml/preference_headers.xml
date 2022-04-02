@@ -1,44 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<preference-headers xmlns:app="http://schemas.android.com/apk/res-auto">
-	<header
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+	app:key="pref_screen_header">
+	<Preference
 		app:fragment="ch.threema.app.preference.SettingsPrivacyFragment"
 		app:icon="@drawable/ic_privacy_outline"
 		app:key="pref_key_privacy"
-		app:persistent="true"
-		app:title="@string/prefs_privacy"/>
-	<header
+		app:title="@string/prefs_privacy" />
+	<Preference
 		app:fragment="ch.threema.app.preference.SettingsSecurityFragment"
 		app:icon="@drawable/ic_lock_outline"
 		app:key="pref_key_security"
 		app:persistent="true"
-		app:title="@string/prefs_security"
-		/>
-	<header
+		app:title="@string/prefs_security" />
+	<Preference
 		app:fragment="ch.threema.app.preference.SettingsAppearanceFragment"
 		app:icon="@drawable/ic_palette_outline"
 		app:key="pref_key_appearance"
 		app:persistent="true"
-		app:title="@string/prefs_header_appearance"
-		/>
-	<header
+		app:title="@string/prefs_header_appearance" />
+	<Preference
 		app:fragment="ch.threema.app.preference.SettingsNotificationsFragment"
 		app:icon="@drawable/ic_notifications_active_outline"
 		app:key="pref_key_notifications"
 		app:persistent="true"
-		app:title="@string/prefs_notifications"
-		/>
-	<header
+		app:title="@string/prefs_notifications" />
+	<Preference
 		app:fragment="ch.threema.app.preference.SettingsChatFragment"
 		app:icon="@drawable/ic_forum_outline"
 		app:key="pref_key_chatdisplay"
 		app:persistent="true"
-		app:title="@string/prefs_chatdisplay"
-		/>
-	<header
+		app:title="@string/prefs_chatdisplay" />
+	<Preference
 		app:fragment="ch.threema.app.preference.SettingsMediaFragment"
 		app:icon="@drawable/ic_folder_multiple_images_outline"
 		app:key="pref_key_particular_settings"
 		app:persistent="true"
-		app:title="@string/prefs_media_title"
-		/>
-</preference-headers>
+		app:title="@string/prefs_media_title" />
+	<Preference
+		app:fragment="ch.threema.app.preference.SettingsCallsFragment"
+		app:icon="@drawable/ic_videocall"
+		app:key="pref_key_calls"
+		app:persistent="true"
+		app:title="@string/prefs_title_voip" />
+	<Preference
+		app:fragment="ch.threema.app.preference.SettingsAboutFragment"
+		app:icon="@drawable/ic_about_outline"
+		app:key="pref_key_about"
+		app:title="@string/menu_about" />
+	<Preference
+		app:icon="@drawable/ic_work_outline"
+		app:key="pref_key_work"
+		app:title="@string/threema_work" />
+	<Preference
+		app:fragment="ch.threema.app.preference.SettingsDeveloperFragment"
+		app:icon="@drawable/ic_directions_bike_grey600_24dp"
+		app:key="pref_key_developers"
+		app:title="@string/prefs_developers" />
+</PreferenceScreen>

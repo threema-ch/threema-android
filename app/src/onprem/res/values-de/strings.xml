@@ -23,6 +23,9 @@
 		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form
 		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema OnPrem anonym benutzen möchten.
 	</string>
+	<string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch einwegverschlüsselt (gehasht), bevor sie zum
+		Kontaktabgleich an der Server geschickt werden. Adressbuchdaten werden nicht auf dem Server gespeichert.
+	</string>
 	<string name="threema_contact">Threema OnPrem-Kontakt</string>
 	<string name="menu_about">Über Threema OnPrem</string>
 	<string name="list_theme_light">Hell</string>

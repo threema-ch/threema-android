@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/edit_send_contact_coordinator"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".activities.EditSendContactActivity">
+
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
+		android:id="@+id/bottom_sheet_coordinator"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_gravity="center_horizontal">
+
+		<RelativeLayout
+			android:id="@id/bottom_sheet"
+			style="?attr/bottomSheetStyle"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_gravity="center"
+			android:clipToPadding="false"
+			android:elevation="0dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			app:behavior_hideable="true"
+			app:behavior_saveFlags="all"
+			app:layout_behavior="@string/bottom_sheet_behavior">
+
+			<ImageView
+				android:id="@+id/drag_handle"
+				android:layout_width="28dp"
+				android:layout_height="@dimen/drag_handle_height"
+				android:layout_alignParentTop="true"
+				android:layout_centerHorizontal="true"
+				android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
+				android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
+				android:importantForAccessibility="no"
+				android:src="@drawable/bottomsheet_grapple" />
+
+			<ProgressBar
+				android:id="@+id/progress_bar_parsing"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/drag_handle"
+				android:layout_centerHorizontal="true" />
+
+			<androidx.core.widget.NestedScrollView
+				android:id="@+id/nested_scroll_view"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_below="@id/drag_handle"
+				android:background="#00000000"
+				android:clipToPadding="false"
+				android:orientation="vertical"
+				android:paddingBottom="64dp">
+
+				<RelativeLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical">
+
+					<LinearLayout
+						android:id="@+id/edittext_container"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_alignParentTop="true"
+						android:orientation="vertical">
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/name_prefix"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:hint="@string/name_prefix"
+							android:visibility="gone"
+							app:errorEnabled="true"
+							app:hintAnimationEnabled="true"
+							app:hintEnabled="true">
+
+							<ch.threema.app.ui.ComposeEditText
+								android:id="@+id/name_prefix_edit_text"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:maxLength="100"
+								android:singleLine="true"
+								android:textSize="16sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/first_name"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:hint="@string/name_given"
+							android:visibility="gone"
+							app:errorEnabled="true"
+							app:hintAnimationEnabled="true"
+							app:hintEnabled="true">
+
+							<ch.threema.app.ui.ComposeEditText
+								android:id="@+id/first_name_edit_text"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:maxLength="100"
+								android:singleLine="true"
+								android:textSize="16sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/middle_name"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:hint="@string/name_middle"
+							android:visibility="gone"
+							app:errorEnabled="true"
+							app:hintAnimationEnabled="true"
+							app:hintEnabled="true">
+
+							<ch.threema.app.ui.ComposeEditText
+								android:id="@+id/middle_name_edit_text"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:maxLength="100"
+								android:singleLine="true"
+								android:textSize="16sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/last_name"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:hint="@string/name_family"
+							android:visibility="gone"
+							app:errorEnabled="true"
+							app:hintAnimationEnabled="true"
+							app:hintEnabled="true">
+
+							<ch.threema.app.ui.ComposeEditText
+								android:id="@+id/last_name_edit_text"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:maxLength="100"
+								android:singleLine="true"
+								android:textSize="16sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/name_suffix"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:hint="@string/name_suffix"
+							android:visibility="gone"
+							app:errorEnabled="true"
+							app:hintAnimationEnabled="true"
+							app:hintEnabled="true">
+
+							<ch.threema.app.ui.ComposeEditText
+								android:id="@+id/name_suffix_edit_text"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:maxLength="100"
+								android:singleLine="true"
+								android:textSize="16sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/name_full"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:hint="@string/full_name"
+							android:visibility="gone"
+							app:errorEnabled="true"
+							app:hintAnimationEnabled="true"
+							app:hintEnabled="true">
+
+							<ch.threema.app.ui.ComposeEditText
+								android:id="@+id/name_full_edit_text"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:maxLength="100"
+								android:singleLine="true"
+								android:textSize="16sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+					</LinearLayout>
+
+					<LinearLayout
+						android:id="@+id/property_container"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_below="@id/edittext_container"
+						android:orientation="vertical" />
+
+				</RelativeLayout>
+
+			</androidx.core.widget.NestedScrollView>
+
+		</RelativeLayout>
+
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/send_contact"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|right"
+			android:layout_margin="16dp"
+			android:contentDescription="@string/send_contact"
+			android:elevation="1dp"
+			android:src="@drawable/ic_send_grey600_24dp"
+			android:visibility="invisible" />
+
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar_layout_contact"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@id/bottom_sheet_coordinator"
+		android:layout_alignRight="@id/bottom_sheet_coordinator"
+		android:layout_gravity="center_horizontal"
+		android:background="@android:color/transparent"
+		app:elevation="0dp">
+
+		<com.google.android.material.appbar.MaterialToolbar
+			android:id="@+id/toolbar_contact"
+			style="@style/Threema.ToolbarStyle"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:visibility="invisible"
+			app:navigationIcon="@drawable/ic_arrow_down_ios_black_24dp"
+			app:navigationIconTint="?attr/textColorSecondary">
+
+			<TextView
+				android:id="@+id/toolbar_title_contact_textview"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:ellipsize="middle"
+				android:text="@string/share_contact"
+				android:textColor="?android:textColorPrimary"
+				android:textSize="18sp" />
+
+		</com.google.android.material.appbar.MaterialToolbar>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

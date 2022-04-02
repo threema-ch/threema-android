@@ -25,7 +25,6 @@ import org.apache.commons.io.FileUtils;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,11 +51,12 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class BlobRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(BlobRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BlobRequestHandler");
 
 	@Retention(RetentionPolicy.SOURCE)
 	@StringDef({

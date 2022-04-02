@@ -42,7 +42,6 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -86,6 +85,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkEmailException;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -102,7 +102,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 		WizardFragment5.SettingsInterface,
 		WizardDialog.WizardDialogCallback {
 
-	private static final Logger logger = LoggerFactory.getLogger(WizardBaseActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBaseActivity");
 
 	private static final String DIALOG_TAG_USE_ID_AS_NICKNAME = "nd";
 	private static final String DIALOG_TAG_INVALID_ENTRY = "ie";
@@ -190,7 +190,11 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 						if (ConfigUtils.isWorkBuild()) {
 							needConfirm = TestUtil.empty(number) && TestUtil.empty(email) && TestUtil.empty(getPresetEmail()) && TestUtil.empty(getPresetPhone());
 						} else {
-							needConfirm = TestUtil.empty(number) && TestUtil.empty(getPresetPhone());
+							if (ConfigUtils.isOnPremBuild()) {
+								needConfirm = false;
+							} else {
+								needConfirm = TestUtil.empty(number) && TestUtil.empty(getPresetPhone());
+							}
 						}
 						if (needConfirm) {
 							WizardDialog wizardDialog = WizardDialog.newInstance(
@@ -266,7 +270,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 		safeConfig = ThreemaSafeMDMConfig.getInstance();
 
 		if (ConfigUtils.isWorkRestricted()) {
-			if (!getSafeDisabled()) {
+			if (isSafeEnabled()) {
 				safePassword = safeConfig.getPassword();
 				safeServerInfo = safeConfig.getServerInfo();
 			}
@@ -553,8 +557,8 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 	}
 
 	@Override
-	public boolean getSafeDisabled() {
-		return safeConfig.isBackupDisabled();
+	public boolean isSafeEnabled() {
+		return !safeConfig.isBackupDisabled();
 	}
 
 	@Override
@@ -960,7 +964,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 
 	private void syncContactsAndFinish() {
 		/* trigger a connection now - as application lifecycle was set to resumed state when there was no identity yet */
-		serviceManager.getLifetimeService().acquireConnection("Wizard");
+		serviceManager.getLifetimeService().ensureConnection();
 
 		if (this.isSyncContacts) {
 			if (ConfigUtils.requestContactPermissions(this, null, PERMISSION_REQUEST_READ_CONTACTS)) {

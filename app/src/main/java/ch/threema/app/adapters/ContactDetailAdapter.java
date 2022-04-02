@@ -37,7 +37,6 @@ import android.widget.TextView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -55,11 +54,12 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(ContactDetailAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailAdapter");
 
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;

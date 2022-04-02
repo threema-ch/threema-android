@@ -23,7 +23,6 @@ package ch.threema.app.adapters.decorators;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.format.Formatter;
@@ -32,11 +31,9 @@ import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.PreferenceService;
@@ -59,11 +56,10 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 public class FileChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(FileChatAdapterDecorator.class);
 
 	private static final String LISTENER_TAG = "FileChatDecorator";
 
-	private Context context;
+	private final Context context;
 	private FileDataModel fileData;
 	private FileMessagePlayer fileMessagePlayer;
 
@@ -74,142 +70,49 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		this.fileMessagePlayer = (FileMessagePlayer) this.getMessagePlayerService().createPlayer(this.getMessageModel(), (Activity) context, this.helper.getMessageReceiver());
+		fileMessagePlayer = (FileMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) context, helper.getMessageReceiver());
 
 		holder.messagePlayer = fileMessagePlayer;
-		holder.controller.setClickable(false);
 
-		fileData = this.getMessageModel().getFileData();
+		fileData = getMessageModel().getFileData();
 
 		setThumbnail(holder, false);
 
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData));
 
-		if (holder.controller != null) {
-			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
-				@Override
-				public void onDebouncedClick(View v) {
-					int status = holder.controller.getStatus();
+		setControllerClickListener(holder);
+		setOnClickListener(view -> prepareDownload(fileData, fileMessagePlayer), holder.messageBlockView);
 
-					switch (status) {
-						case ControllerView.STATUS_READY_TO_PLAY:
-						case ControllerView.STATUS_READY_TO_DOWNLOAD:
-						case ControllerView.STATUS_NONE:
-							FileChatAdapterDecorator.this.prepareDownload(fileData, fileMessagePlayer);
-							break;
-						case ControllerView.STATUS_PROGRESSING:
-							if (FileChatAdapterDecorator.this.getMessageModel().isOutbox() && (FileChatAdapterDecorator.this.getMessageModel().getState() == MessageState.PENDING || FileChatAdapterDecorator.this.getMessageModel().getState() == MessageState.SENDING)) {
-								FileChatAdapterDecorator.this.getMessageService().cancelMessageUpload(FileChatAdapterDecorator.this.getMessageModel());
-							} else {
-								fileMessagePlayer.cancel();
-							}
-							break;
-						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(FileChatAdapterDecorator.this.getMessageModel());
-							}
-					}
-				}
-			});
+		configureFileMessagePlayer(holder, position);
+		configureBodyText(holder);
+		configureTertiaryText(holder);
+		configureSecondaryText(holder);
+		configureSizeText(holder);
+		configureDateView(holder);
+	}
+
+	private void configureDateView(@NonNull ComposeMessageHolder holder) {
+		if (holder.dateView != null) {
+			setDatePrefix(
+				FileUtil.getFileMessageDatePrefix(getContext(),
+				getMessageModel(),
+				FileUtil.isImageFile(fileData) ? getContext().getString(R.string.image_placeholder) : null),
+				0);
 		}
-		this.setOnClickListener(view -> prepareDownload(fileData, fileMessagePlayer), holder.messageBlockView);
+	}
 
-		fileMessagePlayer
-				.addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
-					@Override
-					public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
-						RuntimeUtil.runOnUiThread(() -> invalidate(holder, position));
-					}
-
-					@Override
-					public void onPause(AbstractMessageModel messageModel) {}
-
-					@Override
-					public void onStatusUpdate(AbstractMessageModel messageModel, int position) {}
-
-					@Override
-					public void onStop(AbstractMessageModel messageModel) {}
-				})
-				.addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
-					@Override
-					public void onStart(AbstractMessageModel messageModel) {
-						RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressing(false));
-					}
-
-					@Override
-					public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message, File decryptedFile) {
-						RuntimeUtil.runOnUiThread(() -> {
-							if (!success) {
-								holder.controller.setReadyToDownload();
-								if (!TestUtil.empty(message)) {
-									Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-								}
-							} else {
-								holder.controller.setHidden();
-							}
-						});
-					}
-				})
-				.addListener(LISTENER_TAG, new MessagePlayer.DownloadListener() {
-					@Override
-					public void onStart(AbstractMessageModel messageModel) {
-						RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressingDeterminate(100));
-					}
-
-					@Override
-					public void onStatusUpdate(AbstractMessageModel messageModel, final int progress) {
-							RuntimeUtil.runOnUiThread(() -> holder.controller.setProgress(progress));
-					}
-
-					@Override
-					public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message) {
-						RuntimeUtil.runOnUiThread(() -> {
-							if (success) {
-								if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_STICKER || fileData.getRenderingType() == FileData.RENDERING_MEDIA)) {
-									holder.controller.setHidden();
-								} else {
-									holder.controller.setNeutral();
-									setThumbnail(holder, false);
-								}
-							} else {
-								holder.controller.setReadyToDownload();
-								if (!TestUtil.empty(message)) {
-									Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-								}
-							}
-						});
-					}
-				});
-
-		this.showHide(holder.tertiaryTextView, true);
-		this.showHide(holder.secondaryTextView, true);
-		this.showHide(holder.size, true);
-
-		if (!TestUtil.empty(fileData.getCaption())) {
-			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), this.filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				this.getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			this.showHide(holder.bodyTextView, true);
-		} else {
-			this.showHide(holder.bodyTextView, false);
-		}
-
-		if (holder.tertiaryTextView != null) {
-			String fileName = fileData.getFileName();
-			if (!TestUtil.empty(fileName)) {
-				holder.tertiaryTextView.setText(highlightMatches(fileName, this.filterString));
-			} else {
-				holder.tertiaryTextView.setText(R.string.no_filename);
+	private void configureSizeText(@NonNull ComposeMessageHolder holder) {
+		showHide(holder.size, true);
+		if (holder.size != null) {
+			long size = fileData.getFileSize();
+			if (size > 0) {
+				holder.size.setText(Formatter.formatShortFileSize(getContext(), fileData.getFileSize()));
 			}
 		}
+	}
 
+	private void configureSecondaryText(@NonNull ComposeMessageHolder holder) {
+		showHide(holder.secondaryTextView, true);
 		if (holder.secondaryTextView != null) {
 			String mimeString = fileData.getMimeType();
 			if (holder.secondaryTextView != null) {
@@ -220,20 +123,138 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 			}
 		}
+	}
 
-		if (holder.size != null) {
-			long size = fileData.getFileSize();
-			if (size > 0) {
-				holder.size.setText(Formatter.formatShortFileSize(getContext(), fileData.getFileSize()));
+	private void configureTertiaryText(@NonNull ComposeMessageHolder holder) {
+		showHide(holder.tertiaryTextView, true);
+		if (holder.tertiaryTextView != null) {
+			String fileName = fileData.getFileName();
+			if (!TestUtil.empty(fileName)) {
+				holder.tertiaryTextView.setText(highlightMatches(fileName, filterString));
+			} else {
+				holder.tertiaryTextView.setText(R.string.no_filename);
 			}
 		}
+	}
 
-		if (holder.dateView != null) {
-			this.setDatePrefix(
-				FileUtil.getFileMessageDatePrefix(getContext(),
+	private void configureBodyText(@NonNull ComposeMessageHolder holder) {
+		if (!TestUtil.empty(fileData.getCaption())) {
+			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), filterString));
+
+			LinkifyUtil.getInstance().linkify(
+				(ComposeMessageFragment) helper.getFragment(),
+				holder.bodyTextView,
 				getMessageModel(),
-				FileUtil.isImageFile(fileData) ? getContext().getString(R.string.image_placeholder) : null),
-				0);
+				true,
+				actionModeStatus.getActionModeEnabled(),
+				onClickElement);
+
+			showHide(holder.bodyTextView, true);
+		} else {
+			showHide(holder.bodyTextView, false);
+		}
+	}
+
+	private void configureFileMessagePlayer(@NonNull ComposeMessageHolder holder, int position) {
+		fileMessagePlayer
+			.addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
+				@Override
+				public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
+					RuntimeUtil.runOnUiThread(() -> invalidate(holder, position));
+				}
+
+				@Override
+				public void onPause(AbstractMessageModel messageModel) {}
+
+				@Override
+				public void onStatusUpdate(AbstractMessageModel messageModel, int position) {}
+
+				@Override
+				public void onStop(AbstractMessageModel messageModel) {}
+			})
+			.addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
+				@Override
+				public void onStart(AbstractMessageModel messageModel) {
+					RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressing(false));
+				}
+
+				@Override
+				public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message, File decryptedFile) {
+					RuntimeUtil.runOnUiThread(() -> {
+						if (!success) {
+							holder.controller.setReadyToDownload();
+							if (!TestUtil.empty(message)) {
+								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+							}
+						} else {
+							holder.controller.setHidden();
+						}
+					});
+				}
+			})
+			.addListener(LISTENER_TAG, new MessagePlayer.DownloadListener() {
+				@Override
+				public void onStart(AbstractMessageModel messageModel) {
+					RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressingDeterminate(100));
+				}
+
+				@Override
+				public void onStatusUpdate(AbstractMessageModel messageModel, final int progress) {
+					RuntimeUtil.runOnUiThread(() -> holder.controller.setProgress(progress));
+				}
+
+				@Override
+				public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message) {
+					RuntimeUtil.runOnUiThread(() -> {
+						if (success) {
+							if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_STICKER || fileData.getRenderingType() == FileData.RENDERING_MEDIA)) {
+								holder.controller.setHidden();
+							} else {
+								holder.controller.setNeutral();
+								setThumbnail(holder, false);
+							}
+						} else {
+							holder.controller.setReadyToDownload();
+							if (!TestUtil.empty(message)) {
+								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+							}
+						}
+					});
+				}
+			});
+	}
+
+	private void setControllerClickListener(@NonNull ComposeMessageHolder holder) {
+		if (holder.controller != null) {
+			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
+				@Override
+				public void onDebouncedClick(View v) {
+					int status = holder.controller.getStatus();
+
+					switch (status) {
+						case ControllerView.STATUS_READY_TO_PLAY:
+						case ControllerView.STATUS_READY_TO_DOWNLOAD:
+						case ControllerView.STATUS_NONE:
+							prepareDownload(fileData, fileMessagePlayer);
+							break;
+						case ControllerView.STATUS_PROGRESSING:
+							if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
+								getMessageService().cancelMessageUpload(getMessageModel());
+							} else {
+								fileMessagePlayer.cancel();
+							}
+							break;
+						case ControllerView.STATUS_READY_TO_RETRY:
+							if (onClickRetry != null) {
+								onClickRetry.onClick(getMessageModel());
+							}
+							break;
+						default:
+							// no action taken for other statuses
+							break;
+					}
+				}
+			});
 		}
 	}
 
@@ -242,7 +263,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 			if (fileData.isDownloaded()) {
 				fileMessagePlayer.open();
 			} else {
-				if (!this.getMessageModel().isOutbox()) {
+				if (!getMessageModel().isOutbox()) {
 					final PreferenceService preferenceService = getPreferenceService();
 
 					if (preferenceService != null && !preferenceService.getFileSendInfoShown()) {
@@ -250,11 +271,9 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 								.setTitle(R.string.download)
 								.setMessage(R.string.send_as_files_warning)
 								.setNegativeButton(R.string.cancel, null)
-								.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int id) {
-										preferenceService.setFileSendInfoShown(true);
-										fileMessagePlayer.open();
-									}
+								.setPositiveButton(R.string.ok, (dialog, id) -> {
+									preferenceService.setFileSendInfoShown(true);
+									fileMessagePlayer.open();
 								})
 								.show();
 					} else {
@@ -268,23 +287,24 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 	private void setThumbnail(ComposeMessageHolder holder, final boolean updateBitmap) {
 		Bitmap thumbnail = null;
 		try {
-			thumbnail = this.getFileService().getMessageThumbnailBitmap(this.getMessageModel(),
-				updateBitmap ? null : this.getThumbnailCache());
+			thumbnail = getFileService().getMessageThumbnailBitmap(getMessageModel(),
+				updateBitmap ? null : getThumbnailCache());
 		} catch (Exception e) {
 			//
 		}
 
 		if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_STICKER || fileData.getRenderingType() == FileData.RENDERING_MEDIA)) {
-			ImageViewUtil.showRoundedBitmap(
-					getContext(),
-					holder.contentView,
-					holder.attachmentImage,
-					thumbnail,
-					helper.getThumbnailWidth()
+			ImageViewUtil.showRoundedBitmapOrImagePlaceholder(
+				getContext(),
+				holder.contentView,
+				holder.attachmentImage,
+				thumbnail,
+				helper.getThumbnailWidth()
 			);
 			holder.bodyTextView.setWidth(helper.getThumbnailWidth());
 			if (holder.attachmentImage != null) {
-				holder.attachmentImage.setVisibility(thumbnail != null ? View.VISIBLE : View.GONE);
+				boolean hasDrawable = holder.attachmentImage.getDrawable() != null;
+				holder.attachmentImage.setVisibility(hasDrawable ? View.VISIBLE : View.GONE);
 				holder.attachmentImage.setContentDescription(getContext().getString(R.string.image_placeholder));
 			}
 
@@ -321,57 +341,60 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 	}
 
-	private void setControllerState(ComposeMessageHolder holder, FileDataModel fileData) {
-		if (this.getMessageModel().isOutbox() && !(this.getMessageModel() instanceof DistributionListMessageModel)) {
-			// outgoing message
+	private void setControllerState(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
+		if (getMessageModel().isOutbox() && !(getMessageModel() instanceof DistributionListMessageModel)) {
+			setControllerStateOutgoing(holder, fileData);
+		} else {
+			setControllerStateIncoming(holder, fileData);
+		}
+	}
 
-			switch (this.getMessageModel().getState()) {
-				case TRANSCODING:
-					holder.controller.setTranscoding();
-					if (holder.transcoderView != null) {
-						holder.transcoderView.setProgress(holder.messagePlayer.getTranscodeProgress());
-					}
-					break;
-				case PENDING:
-					setThumbnail(holder, true);
-					// fallthrough
-				case SENDING:
-					holder.controller.setProgressing();
-					break;
-				case SENDFAILED:
-					holder.controller.setRetry();
-					break;
-				case SENT:
-				default:
-					if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
-						holder.controller.setHidden();
-					} else {
-						holder.controller.setNeutral();
-					}
+	private void setControllerStateOutgoing(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
+		switch (getMessageModel().getState()) {
+			case TRANSCODING:
+				holder.controller.setTranscoding();
+				if (holder.transcoderView != null) {
+					holder.transcoderView.setProgress(holder.messagePlayer.getTranscodeProgress());
+				}
+				break;
+			case PENDING:
+				setThumbnail(holder, true);
+				// fallthrough
+			case SENDING:
+				holder.controller.setProgressing();
+				break;
+			case SENDFAILED:
+				holder.controller.setRetry();
+				break;
+			case SENT:
+			default:
+				if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
+					holder.controller.setHidden();
+				} else {
+					holder.controller.setNeutral();
+				}
+		}
+	}
+
+	private void setControllerStateIncoming(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
+		if (fileData.isDownloaded()) {
+			if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
+				holder.controller.setHidden();
+			} else {
+				holder.controller.setNeutral();
 			}
 		} else {
-			// incoming message
-			if (fileData != null) {
-				if (fileData.isDownloaded()) {
-					if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
-						holder.controller.setHidden();
-					} else {
-						holder.controller.setNeutral();
-					}
-				} else {
-					holder.controller.setReadyToDownload();
-				}
-			}
-			if (holder.messagePlayer != null) {
-				switch (holder.messagePlayer.getState()) {
-					case MessagePlayer.State_DOWNLOADING:
-						holder.controller.setProgressingDeterminate(100);
-						holder.controller.setProgress(holder.messagePlayer.getDownloadProgress());
-						break;
-					case MessagePlayer.State_DECRYPTING:
-						holder.controller.setProgressing();
-						break;
-				}
+			holder.controller.setReadyToDownload();
+		}
+		if (holder.messagePlayer != null) {
+			switch (holder.messagePlayer.getState()) {
+				case MessagePlayer.State_DOWNLOADING:
+					holder.controller.setProgressingDeterminate(100);
+					holder.controller.setProgress(holder.messagePlayer.getDownloadProgress());
+					break;
+				case MessagePlayer.State_DECRYPTING:
+					holder.controller.setProgressing();
+					break;
 			}
 		}
 	}

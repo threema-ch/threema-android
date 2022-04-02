@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/layout_wizard_intro"
+             android:id="@+id/layout_wizard_intro"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:fillViewport="true">
@@ -24,6 +23,15 @@
 			android:layout_height="wrap_content"
 			android:transitionName="@string/transition_name_dots"/>
 
+		<TextView
+			android:id="@+id/wizard_privacy_policy_explain"
+			style="@style/WizardSmallText"
+			android:layout_marginTop="32dp"
+			android:textSize="15dp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/privacy_policy_explain"/>
+
 	</LinearLayout>
 
 	<LinearLayout
@@ -38,15 +46,13 @@
 		android:layout_marginBottom="@dimen/wizard_contents_padding">
 
 		<TextView
-			android:id="@+id/new_to_threema_title"
 			style="@style/WizardMediumText"
+			android:id="@+id/new_to_threema_title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginBottom="@dimen/wizard_edittext_hint_padding"
 			android:layout_marginTop="@dimen/wizard_contents_padding"
-			android:text="@string/new_to_threema"
-			android:textColor="#0872F6"
-			android:textColorHint="#000000" />
+			android:layout_marginBottom="@dimen/wizard_edittext_hint_padding"
+			android:text="@string/new_to_threema"/>
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/setup_threema"

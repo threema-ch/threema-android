@@ -37,9 +37,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -55,7 +52,6 @@ import ch.threema.app.utils.StringConversionUtil;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
-	private static final Logger logger = LoggerFactory.getLogger(SendMediaGridAdapter.class);
 
 	private final List<MediaItem> items;
 	private final Context context;
@@ -94,7 +90,7 @@ public class SendMediaGridAdapter extends BaseDynamicGridAdapter {
 
 	@Override
 	public int getCount() {
-		return Math.min(items.size() + 1, SendMediaActivity.MAX_SELECTABLE_IMAGES);
+		return Math.min(items.size() + 1, SendMediaActivity.MAX_EDITABLE_IMAGES);
 	}
 
 	@Override

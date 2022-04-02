@@ -25,12 +25,12 @@ import android.content.Intent;
 import android.widget.RemoteViewsService;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.adapters.WidgetViewsFactory;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WidgetService extends RemoteViewsService {
-	private static final Logger logger = LoggerFactory.getLogger(WidgetService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetService");
 
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) {

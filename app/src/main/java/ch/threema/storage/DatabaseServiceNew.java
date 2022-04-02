@@ -31,7 +31,6 @@ import net.sqlcipher.database.SQLiteException;
 import net.sqlcipher.database.SQLiteOpenHelper;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,11 +98,13 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion67;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion68;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion69;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion7;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion70;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion8;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.factories.BallotChoiceModelFactory;
 import ch.threema.storage.factories.BallotModelFactory;
 import ch.threema.storage.factories.BallotVoteModelFactory;
@@ -127,12 +128,12 @@ import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.WebClientSessionModelFactory;
 
 public class DatabaseServiceNew extends SQLiteOpenHelper {
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseServiceNew.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseServiceNew");
 
 	public static final String DATABASE_NAME = "threema.db";
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion69.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion70.VERSION;
 
 	private final Context context;
 	private final String key;
@@ -626,6 +627,9 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion69.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion69(this, sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion70.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion70(sqLiteDatabase));
 		}
 	}
 

@@ -42,8 +42,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -63,10 +64,11 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 // this should NOT extend ThreemaToolbarActivity
 public class EnterSerialActivity extends ThreemaActivity {
-	private static final Logger logger = LoggerFactory.getLogger(EnterSerialActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("EnterSerialActivity");
 
 	private static final String BUNDLE_PASSWORD = "bupw";
 	private static final String BUNDLE_LICENSE_KEY = "bulk";
@@ -92,7 +94,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		if (serviceManager == null) {
-			// hide keyboard to make error message visible on low resolution displays
+			// Hide keyboard to make error message visible on low resolution displays
 			EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
 			Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
 			return;
@@ -117,6 +119,11 @@ public class EnterSerialActivity extends ThreemaActivity {
 		licenseKeyOrUsernameText = findViewById(R.id.license_key);
 		passwordText = findViewById(getResources().getIdentifier("password", "id", getPackageName()));
 		serverText = findViewById(getResources().getIdentifier("server", "id", getPackageName()));
+
+		TextView enterKeyExplainText = findViewById(R.id.layout_top);
+		enterKeyExplainText.setText(HtmlCompat.fromHtml(getString(R.string.enter_serial_body), HtmlCompat.FROM_HTML_MODE_COMPACT));
+		enterKeyExplainText.setClickable(true);
+		enterKeyExplainText.setMovementMethod(LinkMovementMethod.getInstance());
 
 		if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
 			setupForShopBuild();
@@ -159,39 +166,23 @@ public class EnterSerialActivity extends ThreemaActivity {
 		privateExplainText = findViewById(R.id.private_explain);
 
 		if (privateExplainText != null) {
-			String workInfoUrl = String.format(getString(R.string.threema_work_url), LocaleUtil.getAppLanguage());
-
-			if (PushService.hmsServicesInstalled(this)) {
-				privateExplainText.setText(Html.fromHtml(
-					String.format(getString(R.string.private_threema_download),
-						workInfoUrl,
-						getString(R.string.private_download_url)
-						)
-					)
-				);
-			}
-			else {
-				privateExplainText.setText(Html.fromHtml
-					(String.format(getString(R.string.private_threema_download),
-						workInfoUrl,
-						getString(R.string.private_download_url))
-					)
-				);
-			}
+			final String workInfoUrl = String.format(getString(R.string.threema_work_url), LocaleUtil.getAppLanguage());
+			privateExplainText.setText(Html.fromHtml(
+				String.format(
+					getString(R.string.private_threema_download),
+					workInfoUrl,
+					getString(R.string.private_download_url)
+				)
+			));
 			privateExplainText.setClickable(true);
 			privateExplainText.setMovementMethod(LinkMovementMethod.getInstance());
 		}
 		licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
 		passwordText.addTextChangedListener(new TextChangeWatcher());
 		loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
-		loginButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				doUnlock();
-			}
-		});
+		loginButton.setOnClickListener(v -> doUnlock());
 
-		//always enable login button
+		// Always enable login button
 		this.enableLogin(true);
 	}
 
@@ -232,7 +223,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 				}
 			}
 		} else {
-			// we get here if called from url intent and we're already licensed
+			// We get here if called from url intent and we're already licensed
 			if (scheme != null) {
 				Toast.makeText(this, R.string.already_licensed, Toast.LENGTH_LONG).show();
 				finish();
@@ -433,7 +424,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		// We override this method to avoid restarting the entire
 		// activity when the keyboard is opened or orientation changes
 		super.onConfigurationChanged(newConfig);

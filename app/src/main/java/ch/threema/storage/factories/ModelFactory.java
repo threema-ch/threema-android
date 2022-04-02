@@ -25,13 +25,13 @@ import net.sqlcipher.DatabaseUtils;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.ColumnIndexCache;
 import ch.threema.storage.DatabaseServiceNew;
 
 public abstract class ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(ModelFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ModelFactory");
 
 	protected static final String NO_RECORD_MSG = "Update of model failed, no records matched for id=";
 

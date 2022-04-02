@@ -27,7 +27,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +38,7 @@ import androidx.annotation.WorkerThread;
 
 import ch.threema.app.utils.BatteryStatusUtil;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.WebClientSessionModel;
 
 /**
@@ -48,7 +48,7 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @WorkerThread
 public class BatteryStatusServiceImpl implements BatteryStatusService {
-	private static final Logger logger = LoggerFactory.getLogger(BatteryStatusServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusServiceImpl");
 
 	// State
 	@NonNull private final Context appContext;

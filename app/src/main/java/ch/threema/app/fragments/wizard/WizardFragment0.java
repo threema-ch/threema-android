@@ -27,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import ch.threema.app.R;
 
 public class WizardFragment0 extends WizardFragment {
@@ -35,14 +37,17 @@ public class WizardFragment0 extends WizardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		View rootView = super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
+
+		TextView title = rootView.findViewById(R.id.wizard_title);
+		title.setText(R.string.new_wizard_welcome);
 
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard0);
 		contentViewStub.inflate();
 
-		TextView tv = rootView.findViewById(R.id.wizard_id_title);
-		tv.setText(this.userService.getIdentity());
+		TextView idTitle = rootView.findViewById(R.id.wizard_id_title);
+		idTitle.setText(this.userService.getIdentity());
 
 		return rootView;
 	}

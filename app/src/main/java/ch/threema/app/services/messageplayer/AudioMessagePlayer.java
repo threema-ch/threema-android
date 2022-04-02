@@ -31,7 +31,6 @@ import android.net.Uri;
 import android.os.Build;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -47,6 +46,8 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SensorService;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.SoundUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
@@ -57,7 +58,7 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 import static android.media.AudioManager.STREAM_MUSIC;
 
 public class AudioMessagePlayer extends MessagePlayer implements AudioManager.OnAudioFocusChangeListener, SensorListener {
-	private final Logger logger = LoggerFactory.getLogger(AudioMessagePlayer.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("AudioMessagePlayer");
 	private final String UID;
 
 	private final int SEEKBAR_UPDATE_FREQUENCY = 500;
@@ -132,9 +133,9 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 
 	private AudioAttributes getAudioAttributes(int stream) {
 		if (stream == AudioManager.STREAM_VOICE_CALL) {
-			return new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION).build();
+			return SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION);
 		} else {
-			return new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).build();
+			return SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_MEDIA);
 		}
 	}
 
@@ -237,7 +238,11 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
-			mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(audioPlaybackSpeed).setPitch(1f));
+			float newPlaybackSpeed = mediaPlayer.setPlaybackSpeed(audioPlaybackSpeed);
+
+			if (audioPlaybackSpeed != newPlaybackSpeed) {
+				preferenceService.setAudioPlaybackSpeed(newPlaybackSpeed);
+			}
 		}
 
 		if (requestFocus(resume)) {
@@ -402,7 +407,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		float newSpeed = 1f;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mediaPlayer != null) {
-			float currentSpeed = mediaPlayer.getPlaybackParams().getSpeed();
+			float currentSpeed = mediaPlayer.getPlaybackSpeed();
 
 			if (currentSpeed == 1f) {
 				newSpeed = 1.5f;
@@ -413,9 +418,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 			}
 
 			if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-				if (!mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(newSpeed).setPitch(1f))) {
-					newSpeed = currentSpeed;
-				}
+				newSpeed = mediaPlayer.setPlaybackSpeed(newSpeed);
 			}
 		}
 

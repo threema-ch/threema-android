@@ -39,16 +39,16 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.utils.RingtoneUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class RingtoneSelectorDialog extends ThreemaDialogFragment {
-	private static final Logger logger = LoggerFactory.getLogger(RingtoneSelectorDialog.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("RingtoneSelectorDialog");
 
 	private RingtoneSelectorDialogClickListener callback;
 	private Activity activity;

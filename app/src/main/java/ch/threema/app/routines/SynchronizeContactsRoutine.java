@@ -31,7 +31,6 @@ import android.provider.ContactsContract;
 import com.google.common.collect.ListMultimap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,13 +52,14 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 
 public class SynchronizeContactsRoutine implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(SynchronizeContactsRoutine.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsRoutine");
 
 	private final UserService userService;
 	private final Context context;

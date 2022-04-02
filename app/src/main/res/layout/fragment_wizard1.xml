@@ -3,32 +3,18 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="@dimen/wizard_contents_padding"
-				android:paddingBottom="@dimen/wizard_contents_padding">
-
-	<TextView
-		android:id="@+id/safe_enable_title"
-		style="@style/WizardTitleText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="8dp"
-		android:gravity="center_horizontal"
-		android:text="@string/threema_safe"
-		android:textColor="#303F9F" />
+                android:gravity="center_horizontal">
 
 	<TextView
 		android:id="@+id/safe_enable_explain"
 		style="@style/WizardSmallText"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/safe_enable_title"
+		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="@dimen/wizard_paragraph_height"
 		android:gravity="center_horizontal"
-		android:text="@string/safe_configure_choose_password"
-		android:textColor="#303F9F" />
+		android:text="@string/safe_configure_choose_password"/>
 
 	<com.google.android.material.textfield.TextInputLayout
 		android:id="@+id/password1layout"
@@ -48,13 +34,12 @@
 			style="@style/WizardHintedEditText"
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/wizard_hinted_edittext_height"
-			android:hint="@string/password_hint"
 			android:imeOptions="actionNext"
 			android:inputType="text|textNoSuggestions|textPassword"
 			android:nextFocusForward="@+id/safe_password2"
 			android:singleLine="true"
-			android:textColor="#1976D2"
-			android:textIsSelectable="false" />
+			android:textIsSelectable="false"
+			android:hint="@string/password_hint"/>
 
 	</com.google.android.material.textfield.TextInputLayout>
 
@@ -74,13 +59,13 @@
 			style="@style/WizardHintedEditText"
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/wizard_hinted_edittext_height"
-			android:hint="@string/backup_password_again_summary"
 			android:imeOptions="actionGo"
 			android:inputType="text|textNoSuggestions|textPassword"
 			android:nextFocusForward="@+id/safe_password1"
 			android:singleLine="true"
-			android:textColor="#303F9F"
-			android:textIsSelectable="false"></ch.threema.app.ui.ThreemaTextInputEditText>
+			android:textIsSelectable="false"
+			android:hint="@string/backup_password_again_summary">
+		</ch.threema.app.ui.ThreemaTextInputEditText>
 
 	</com.google.android.material.textfield.TextInputLayout>
 

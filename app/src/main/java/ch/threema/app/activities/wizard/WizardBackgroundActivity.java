@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -36,11 +35,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity {
-	private static final Logger logger = LoggerFactory.getLogger(WizardBackgroundActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackgroundActivity");
 
 	protected ServiceManager serviceManager;
 	protected PreferenceService preferenceService;

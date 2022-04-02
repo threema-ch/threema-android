@@ -26,10 +26,10 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -47,11 +47,12 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class ComposeMessageActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(ComposeMessageActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageActivity");
 
 	private static final int ID_HIDDEN_CHECK_ON_NEW_INTENT = 9291;
 	private static final int ID_HIDDEN_CHECK_ON_CREATE = 9292;
@@ -190,12 +191,18 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	public void onResume() {
 		logger.debug("onResume");
 		super.onResume();
+
+		// Set the soft input mode to resize when activity resumes because it is set to adjust nothing while it is paused
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 	}
 
 	@Override
 	public void onPause() {
 		logger.debug("onPause");
 		super.onPause();
+
+		// Set the soft input mode to adjust nothing while paused. This is needed when the keyboard is opened to edit the contact before sending.
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 	}
 
 	@Override
@@ -282,8 +289,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	@Override
 	public void onYes(String tag, Object data) {
 		Intent intent = new Intent(this, SettingsActivity.class);
-		intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsSecurityFragment.class.getName());
-		intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+		intent.putExtra(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT, true);
 		startActivity(intent);
 		finish();
 	}

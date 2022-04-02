@@ -36,7 +36,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import net.sqlcipher.SQLException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +66,7 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
@@ -75,7 +75,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 		GenericAlertDialog.DialogClickListener,
 		SelectorDialog.SelectorDialogClickListener,
 		TextEntryDialog.TextEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(GroupLinkOverviewActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkOverviewActivity");
 
 	private static final String DIALOG_TAG_REALLY_DELETE_INVITE = "delete_invite";
 	private static final String DIALOG_TAG_ITEM_MENU = "itemMenu";
@@ -117,18 +117,6 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 			return false;
 		}
 
-		viewModel = new ViewModelProvider(this,
-			new ViewModelFactory(groupId))
-			.get(GroupLinkViewModel.class);
-
-		try {
-			this.groupLinkAdapter = new GroupLinkAdapter(this, viewModel);
-		} catch (ThreemaException e) {
-			logger.error("Exception could not create GroupLinkAdapter... finishing", e);
-			finish();
-			return false;
-		}
-
 		initLayout(groupId);
 		initListeners(groupId);
 		return true;
@@ -154,6 +142,17 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 			GroupModel groupModel = groupService.getById(groupId);
 			if (groupModel == null) {
 				logger.error("Exception: could not get group model by id, finishing...");
+				finish();
+				return;
+			}
+			viewModel = new ViewModelProvider(this,
+				new ViewModelFactory(groupModel.getApiGroupId()))
+				.get(GroupLinkViewModel.class);
+
+			try {
+				this.groupLinkAdapter = new GroupLinkAdapter(this, viewModel);
+			} catch (ThreemaException e) {
+				logger.error("Exception could not create GroupLinkAdapter... finishing", e);
 				finish();
 				return;
 			}

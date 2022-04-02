@@ -34,7 +34,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -48,6 +47,7 @@ import ch.threema.app.R;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 
 public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
@@ -55,7 +55,7 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 	private Activity activity;
 	private String tag = null;
 
-	private static final Logger logger = LoggerFactory.getLogger(LocationPickerConfirmDialog.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerConfirmDialog");
 
 	public static LocationPickerConfirmDialog newInstance(String title, String name, LatLng latLng, LatLngBounds latLngBounds) {
 		LocationPickerConfirmDialog dialog = new LocationPickerConfirmDialog();

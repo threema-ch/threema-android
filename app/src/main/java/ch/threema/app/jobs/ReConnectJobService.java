@@ -25,13 +25,13 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PollingHelper;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ReConnectJobService extends JobService {
-	private static final Logger logger = LoggerFactory.getLogger(ReConnectJobService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
 
 	private PollingHelper pollingHelper = null;
 
@@ -43,7 +43,7 @@ public class ReConnectJobService extends JobService {
 				logger.info("Scheduling poll on reconnect");
 
 				if (pollingHelper == null) {
-					pollingHelper = new PollingHelper(ReConnectJobService.this, "reConnect");
+					pollingHelper = new PollingHelper(ReConnectJobService.this, "reconnectJobService");
 				}
 
 				boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());

@@ -27,7 +27,6 @@ import android.os.Environment;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -43,9 +42,10 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.UpdateSystemService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class SystemUpdateToVersion7 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion7.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion7");
 
 	private final SQLiteDatabase sqLiteDatabase;
 

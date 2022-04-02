@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Threema Work для Android</string>
+    <string name="enter_serial_body">Введіть облікові дані, надані вашою компанією або організацією</string>
+    <string name="serial_required_want_exit">Ліцензія недійсна. Cпробувати ще раз чи вийти з Threema?</string>
+    <string name="checking_serial">Перевірка облікових даних</string>
+    <string name="username_hint">Ім\'я користувача</string>
+    <string name="new_wizard_works_like_phone_number">Ваш ID Threema подібний до номера телефону.\nВін використовується для того, щоб інші люди могли з вами зв\'язатися.</string>
+    <string name="new_wizard_nickname_explain">Ваші контакти будуть бачити цей псевдонім у сповіщеннях.</string>
+    <string name="new_wizard_help_your_friends_find_you">Допоможіть іншим вас знайти!</string>
+    <string name="new_wizard_find_friends">Знайдіть свої контакти в Threema Work</string>
+    <string name="new_wizard_sync_contacts_explain">Увімкніть, щоб бачити, хто з ваших контактів використовує Threema або Threema Work.</string>
+    <string name="new_wizard_anonymous_confirm">Ви не зв\'язали номер телефону або адресу ел. пошти з ID Threema, а тому не з\'явитесь у списках контактів інших. Справді використовувати Threema Work анонімно?</string>
+    <string name="new_wizard_setup_threema">Налаштувати Threema Work</string>
+    <string name="new_wizard_welcome">Вітаємо в Threema Work!</string>
+    <string name="new_wizard_info_fingerprint">Проводячи пальцем по екрану, ви створюєте випадкові дані (так звану ентропію), на основі яких формується
+		пара ключів, пов\'язана з вашим унікальним ID Threema. Ця пара складається з <b>відкритого ключа</b>, який надається
+		вашим контактам, і <b>закритого ключа</b>, який безпечно зберігається на вашому пристрої. Ваші контакти шифруватимуть свої повідомлення за допомогою
+		вашого відкритого ключа. Лише власник закритого ключа може розшифрувати ці повідомлення.</string>
+    <string name="new_wizard_info_link">Якщо ви вкажете свій номер телефону та адресу ел. пошти, інші люди зможуть знайти
+		вас у Threema Work автоматично за умови, що вони зберегли ваші контакти у своїй телефонній книзі. Дані будуть зберігатися
+		на нашому сервері в хешованому вигляді. Ви можете пропустити цей крок, якщо хочете використовувати Threema Work
+		анонімно.</string>
+    <string name="threema_contact">Контакт Threema Work</string>
+    <string name="menu_about">Про Threema Work</string>
+    <string name="list_theme_light">Світла</string>
+    <string name="list_theme_dark">Темна (за умовчанням)</string>
+    <string name="private_threema_download"><![CDATA[Якщо вам потрібен месенджер для особистого використання, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">торкніться тут</a>, щоб завантажити Threema.]]></string>
+    <string name="directory_search">Шукати в каталозі</string>
+    <string name="directory_title">Каталог компанії</string>
+    <string name="directory_empty_view_text">Нічого не знайдено\n\nВведіть принаймні 3 символи імені, щоб почати пошук користувачів Threema в каталозі вашої компанії</string>
+</resources>

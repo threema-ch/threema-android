@@ -26,16 +26,16 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 import ch.threema.app.utils.FileUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.voicemessage.VoiceRecorderActivity.DEFAULT_SAMPLING_RATE_HZ;
 
 public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecorder.OnInfoListener {
-	private static final Logger logger = LoggerFactory.getLogger(AudioRecorder.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioRecorder");
 
 	private Context context;
 	private MediaRecorder mediaRecorder;

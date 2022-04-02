@@ -26,7 +26,6 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
@@ -37,9 +36,10 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
-	private static final Logger logger = LoggerFactory.getLogger(LinkWithEmailAsyncTask.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LinkWithEmailAsyncTask");
 	private static final String DIALOG_TAG_PROGRESS = "lpr";
 
 	private UserService userService;

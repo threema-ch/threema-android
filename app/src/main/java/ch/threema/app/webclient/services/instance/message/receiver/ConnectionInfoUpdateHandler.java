@@ -27,19 +27,19 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Webclient sending connection info.
  */
 @WorkerThread
 public class ConnectionInfoUpdateHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ConnectionInfoUpdateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectionInfoUpdateHandler");
 
 	@AnyThread
 	public ConnectionInfoUpdateHandler() {

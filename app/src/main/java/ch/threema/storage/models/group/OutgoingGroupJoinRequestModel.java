@@ -49,6 +49,33 @@ public class OutgoingGroupJoinRequestModel {
 	private final @NonNull Status status;
 	private final @Nullable GroupId groupApiId;
 
+	public enum Status {
+		UNKNOWN,
+		ACCEPTED,
+		REJECTED,
+		GROUP_FULL,
+		EXPIRED;
+
+		private static OutgoingGroupJoinRequestModel.Status[] allValues = values();
+		public static OutgoingGroupJoinRequestModel.Status fromOrdinal(int n) {return allValues[n];}
+		public static OutgoingGroupJoinRequestModel.Status fromString(String status) {
+			switch (status){
+				case "UNKNOWN":
+					return UNKNOWN;
+				case "ACCEPTED":
+					return ACCEPTED;
+				case "REJECTED":
+					return REJECTED;
+				case "GROUP_FULL":
+					return GROUP_FULL;
+				case "EXPIRED":
+					return EXPIRED;
+				default:
+					return UNKNOWN;
+			}
+		}
+	}
+
 	public OutgoingGroupJoinRequestModel(
 		int id,
 		@NonNull String inviteToken,
@@ -67,6 +94,17 @@ public class OutgoingGroupJoinRequestModel {
 		this.requestTime = requestTime;
 		this.status = status;
 		this.groupApiId = groupApiId;
+	}
+
+	public OutgoingGroupJoinRequestModel(Builder builder){
+		this.id = builder.id;
+		this.inviteToken = builder.inviteToken;
+		this.groupName = builder.groupName;
+		this.message = builder.message;
+		this.adminIdentity = builder.adminIdentity;
+		this.requestTime = builder.requestTime;
+		this.status = builder.status;
+		this.groupApiId = builder.groupApiId;
 	}
 
 	public int getId() {
@@ -105,12 +143,71 @@ public class OutgoingGroupJoinRequestModel {
 		return this.groupApiId;
 	}
 
-	public enum Status {
-		UNKNOWN,
-		ACCEPTED,
-		REJECTED,
-		GROUP_FULL,
-		EXPIRED
-	}
+	public static class Builder {
+		private int id;
+		private String inviteToken;
+		private String groupName;
+		private String message;
+		private String adminIdentity;
+		private Date requestTime;
+		private Status status;
+		private GroupId groupApiId;
 
+		public Builder() { }
+
+		public Builder(OutgoingGroupJoinRequestModel model) {
+			this.id = model.id;
+			this.inviteToken = model.inviteToken;
+			this.groupName = model.groupName;
+			this.message = model.message;
+			this.adminIdentity = model.adminIdentity;
+			this.requestTime = model.requestTime;
+			this.status = model.status;
+			this.groupApiId = model.groupApiId;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withId(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withInviteToken(String inviteToken) {
+			this.inviteToken = inviteToken;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withGroupName(String groupName) {
+			this.groupName = groupName;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withMessage(String message) {
+			this.message = message;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withAdminIdentity(String adminIdentity) {
+			this.adminIdentity = adminIdentity;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withRequestTime(Date requestTime) {
+			this.requestTime = requestTime;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withResponseStatus(OutgoingGroupJoinRequestModel.Status status) {
+			this.status = status;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel.Builder withGroupApiId(GroupId groupApiId) {
+			this.groupApiId = groupApiId;
+			return this;
+		}
+
+		public OutgoingGroupJoinRequestModel build() {
+			return new OutgoingGroupJoinRequestModel(this);
+		}
+	}
 }

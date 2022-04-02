@@ -33,6 +33,7 @@ package ch.threema.app.voip;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
@@ -42,6 +43,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
@@ -49,6 +51,7 @@ import android.os.Process;
 import org.slf4j.Logger;
 import org.webrtc.ThreadUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -58,8 +61,11 @@ import ch.threema.app.voip.util.AppRTCUtils;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static android.bluetooth.BluetoothDevice.BOND_BONDED;
+import static android.bluetooth.BluetoothDevice.DEVICE_TYPE_CLASSIC;
+
 /**
- * VoipBluetoothManager manages functions related to Bluetoth devices in
+ * VoipBluetoothManager manages functions related to Bluetooth devices in
  * Threema voice calls.
  */
 public class VoipBluetoothManager {
@@ -318,6 +324,7 @@ public class VoipBluetoothManager {
 	 * Note that the AppRTCAudioManager is also involved in driving this state
 	 * change.
 	 */
+	@SuppressLint("MissingPermission")
 	public void start() {
 		ThreadUtils.checkIsOnMainThread();
 		logger.debug("start");
@@ -360,8 +367,10 @@ public class VoipBluetoothManager {
 		bluetoothHeadsetFilter.addAction(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED);
 		registerReceiver(bluetoothHeadsetReceiver, bluetoothHeadsetFilter);
 
-		logger.debug("HEADSET profile state: "
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+			logger.debug("HEADSET profile state: "
 				+ headsetStateToString(bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)));
+		}
 		logger.debug("Bluetooth proxy for headset profile has started");
 		this.bluetoothState = State.HEADSET_UNAVAILABLE;
 		logger.debug("start done: BT state=" + bluetoothState);
@@ -458,6 +467,7 @@ public class VoipBluetoothManager {
 	 * HEADSET_AVAILABLE and |bluetoothDevice| will be mapped to the connected
 	 * device if available.
 	 */
+	@SuppressLint("MissingPermission")
 	public void updateDevice() {
 		if (bluetoothState == State.UNINITIALIZED || bluetoothHeadset == null) {
 			return;
@@ -466,7 +476,29 @@ public class VoipBluetoothManager {
 		// Get connected devices for the headset profile. Returns the set of
 		// devices which are in state STATE_CONNECTED. The BluetoothDevice class
 		// is just a thin wrapper for a Bluetooth hardware address.
-		List<BluetoothDevice> devices = bluetoothHeadset.getConnectedDevices();
+
+		List<BluetoothDevice> devices = new ArrayList<>();
+		try {
+			devices = bluetoothHeadset.getConnectedDevices();
+		} catch (SecurityException e) {
+			// BluetoothHeadset wants BLUETOOTH_CONNECT permission on some API 31 devices despite of targetSdk < 31
+			logger.error("Buggy BluetoothHeadset implementation", e);
+
+			// hack / bold assumption - fallback to list of bonded devices
+			if (bluetoothHeadset != null) {
+				if (bluetoothAdapter != null && BluetoothProfile.STATE_CONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)) {
+					Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
+					for (BluetoothDevice bondedDevice : bondedDevices) {
+						if (bondedDevice.getType() == DEVICE_TYPE_CLASSIC &&
+							bondedDevice.getBluetoothClass().hasService(BluetoothClass.Service.AUDIO) &&
+							bondedDevice.getBondState() == BOND_BONDED) {
+							devices.add(bondedDevice);
+						}
+					}
+				}
+			}
+		}
+
 		if (devices.isEmpty()) {
 			bluetoothDevice = null;
 			bluetoothState = State.HEADSET_UNAVAILABLE;
@@ -475,11 +507,21 @@ public class VoipBluetoothManager {
 			// Always use first device is list. Android only supports one device.
 			bluetoothDevice = devices.get(0);
 			bluetoothState = State.HEADSET_AVAILABLE;
+
+			String state = "unknown";
+			try {
+				state = headsetStateToString(bluetoothHeadset.getConnectionState(bluetoothDevice));
+			} catch (SecurityException e) {
+				// BluetoothHeadset wants BLUETOOTH_CONNECT permission despite of targetSdk < 31
+				logger.error("Buggy BluetoothHeadset implementation", e);
+			}
+
 			logger.debug("Connected bluetooth headset: "
-					+ "name=" + bluetoothDevice.getName() + ", "
-					+ "state=" + headsetStateToString(bluetoothHeadset.getConnectionState(bluetoothDevice))
-					+ ", SCO audio=" + bluetoothHeadset.isAudioConnected(bluetoothDevice));
+				+ "name=" + bluetoothDevice.getName() + ", "
+				+ "state=" + state
+				+ ", SCO audio=" + bluetoothHeadset.isAudioConnected(bluetoothDevice));
 		}
+
 		logger.debug("updateDevice done: BT state=" + bluetoothState);
 	}
 
@@ -516,7 +558,7 @@ public class VoipBluetoothManager {
 	/**
 	 * Logs the state of the local Bluetooth adapter.
 	 */
-	@SuppressLint("HardwareIds")
+	@SuppressLint({"HardwareIds", "MissingPermission"})
 	protected void logBluetoothAdapterInfo(BluetoothAdapter localAdapter) {
 		try {
 			logger.debug("BluetoothAdapter: "
@@ -569,6 +611,7 @@ public class VoipBluetoothManager {
 	 * Called when start of the BT SCO channel takes too long time. Usually
 	 * happens when the BT device has been turned on during an ongoing call.
 	 */
+	@SuppressLint("MissingPermission")
 	private void bluetoothTimeout() {
 		ThreadUtils.checkIsOnMainThread();
 		if (bluetoothState == State.UNINITIALIZED || bluetoothHeadset == null) {

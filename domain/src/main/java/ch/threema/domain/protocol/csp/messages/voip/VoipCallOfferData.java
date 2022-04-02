@@ -23,12 +23,12 @@ package ch.threema.domain.protocol.csp.messages.voip;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.voip.features.CallFeature;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
@@ -38,7 +38,7 @@ import ch.threema.base.utils.JSONUtil;
 import static java.nio.charset.StandardCharsets.*;
 
 public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
-	private static final Logger logger = LoggerFactory.getLogger(VoipCallOfferData.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallOfferData");
 
 	// Keys
 	private final static String KEY_OFFER = "offer";

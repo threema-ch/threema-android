@@ -31,20 +31,22 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ControllerView extends FrameLayout {
-	private static final Logger logger = LoggerFactory.getLogger(ControllerView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ControllerView");
 
 	private ProgressBar progressBarIndeterminate;
-	private CircularProgressBar progressBarDeterminate;
+	private CircularProgressIndicator progressBarDeterminate;
 	private AppCompatImageView icon;
 	private int status, progressMax = 100;
 

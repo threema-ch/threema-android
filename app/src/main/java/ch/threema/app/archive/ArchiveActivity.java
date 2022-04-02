@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -62,6 +61,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 
@@ -69,7 +69,7 @@ import static ch.threema.app.managers.ListenerManager.conversationListeners;
 import static ch.threema.app.managers.ListenerManager.messageListeners;
 
 public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, SearchView.OnQueryTextListener {
-	private static final Logger logger = LoggerFactory.getLogger(ArchiveActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveActivity");
 	private static final String DIALOG_TAG_REALLY_DELETE_CHATS = "delc";
 
 	private ArchiveAdapter archiveAdapter;

@@ -29,7 +29,6 @@ import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,12 +42,13 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
 
 public class IncomingGroupJoinRequestDialog extends ThreemaDialogFragment {
-	private static final Logger logger = LoggerFactory.getLogger(IncomingGroupJoinRequestDialog.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingGroupJoinRequestDialog");
 
 	private static final String EXTRA_REQUEST_ID = "requestId";
 

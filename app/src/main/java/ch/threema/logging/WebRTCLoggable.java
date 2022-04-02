@@ -24,15 +24,16 @@ package ch.threema.logging;
 import android.util.Log;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.Loggable;
 import org.webrtc.Logging;
+
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * An adapter that sends WebRTC native logs to the SLFJ logger.
  */
 public class WebRTCLoggable implements Loggable {
-	private static final Logger logger = LoggerFactory.getLogger("libwebrtc");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("libwebrtc");
 
 	private static int minLevel = Log.WARN;
 

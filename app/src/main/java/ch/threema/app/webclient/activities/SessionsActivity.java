@@ -43,7 +43,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import org.saltyrtc.client.crypto.CryptoException;
 import org.saltyrtc.client.exceptions.InvalidKeyException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,6 +68,8 @@ import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SilentSwitchCompat;
@@ -95,6 +96,7 @@ import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -102,7 +104,7 @@ import ch.threema.storage.models.WebClientSessionModel;
 public class SessionsActivity extends ThreemaToolbarActivity
 		implements SelectorDialog.SelectorDialogClickListener,
 		GenericAlertDialog.DialogClickListener, TextEntryDialog.TextEntryDialogClickListener {
-	@NonNull private static final Logger logger = LoggerFactory.getLogger(SessionsActivity.class);
+	@NonNull private static final Logger logger = LoggingUtil.getThreemaLogger("SessionsActivity");
 
 	@NonNull private static final String LOG_TAG = "WebClient.SessionFragment";
 	@NonNull private static final String DIALOG_TAG_ITEM_MENU = "itemMenu";
@@ -126,6 +128,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
 	private WebClientServiceManager webClientServiceManager;
 	private SessionService sessionService;
 	private DatabaseServiceNew databaseService;
+	private PreferenceService preferenceService;
 
 	private EmptyRecyclerView listView;
 	private SessionListAdapter listAdapter;
@@ -283,7 +286,8 @@ public class SessionsActivity extends ThreemaToolbarActivity
 		if (TestUtil.required(
 				this.webClientServiceManager,
 				this.sessionService,
-				this.databaseService
+				this.databaseService,
+				this.preferenceService
 		)) {
 			return true;
 		}
@@ -296,6 +300,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
 			this.webClientServiceManager = this.serviceManager.getWebClientServiceManager();
 			this.sessionService = this.webClientServiceManager.getSessionService();
 			this.databaseService = this.serviceManager.getDatabaseServiceNew();
+			this.preferenceService = this.serviceManager.getPreferenceService();
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
 			return false;
@@ -304,7 +309,8 @@ public class SessionsActivity extends ThreemaToolbarActivity
 		return TestUtil.required(
 				this.webClientServiceManager,
 				this.sessionService,
-				this.databaseService
+				this.databaseService,
+				this.preferenceService
 		);
 	}
 
@@ -389,6 +395,8 @@ public class SessionsActivity extends ThreemaToolbarActivity
 				SessionsActivity.this.initiateSession();
 			}
 		});
+
+		findViewById(R.id.notice_layout).setVisibility(preferenceService.useThreemaPush() ? View.VISIBLE : View.GONE);
 
 		View emptyView = this.findViewById(R.id.empty_frame);
 		TextView emptyTextView = emptyView.findViewById(R.id.empty_text);
@@ -683,7 +691,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
 
 	private void scanQR() {
 		logger.info("Initiate QR scan");
-		QRScannerUtil.getInstance().initiateScan(this, false, getString(R.string.webclient_qr_scan_message));
+		QRScannerUtil.getInstance().initiateScan(this, getString(R.string.webclient_qr_scan_message), QRCodeServiceImpl.QR_TYPE_WEB);
 	}
 
 	@Override

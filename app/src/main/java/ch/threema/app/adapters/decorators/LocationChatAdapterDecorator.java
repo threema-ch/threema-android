@@ -34,7 +34,6 @@ import android.widget.Toast;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -47,13 +46,14 @@ import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 
 import static android.view.View.GONE;
 
 public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(LocationChatAdapterDecorator.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationChatAdapterDecorator");
 
 	public LocationChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
 		super(context, messageModel, helper);

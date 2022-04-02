@@ -34,6 +34,8 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
@@ -58,13 +60,16 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 
-		View rootView = super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
+
+		TextView title = rootView.findViewById(R.id.wizard_title);
+		title.setText(R.string.threema_safe);
 
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard1);
 		contentViewStub.inflate();
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
 
 		this.password1 = rootView.findViewById(R.id.safe_password1);
 		this.password2 = rootView.findViewById(R.id.safe_password2);
@@ -131,7 +136,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
 	@Override
 	public void onYes(String tag, ThreemaSafeServerInfo serverInfo) {
-		((WizardFragment1.OnSettingsChangedListener) getActivity()).onSafeServerInfoSet(serverInfo);
+		((WizardFragment1.OnSettingsChangedListener) requireActivity()).onSafeServerInfoSet(serverInfo);
 	}
 
 	@Override
@@ -214,8 +219,8 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
 	private void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
-			if (!callback.getSafeDisabled()) {
+			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+			if (callback.isSafeEnabled()) {
 				password1.setText(callback.getSafePassword());
 				password2.setText(callback.getSafePassword());
 			}

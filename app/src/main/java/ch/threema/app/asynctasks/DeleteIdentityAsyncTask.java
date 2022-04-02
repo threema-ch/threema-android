@@ -25,7 +25,6 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,11 +41,12 @@ import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.NonceDatabaseBlobService;
 
 public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
-	private static final Logger logger = LoggerFactory.getLogger(DeleteIdentityAsyncTask.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteIdentityAsyncTask");
 
 	private static final String DIALOG_TAG_DELETING_ID = "di";
 

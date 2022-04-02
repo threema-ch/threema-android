@@ -36,7 +36,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -63,13 +62,14 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.app.Activity.RESULT_OK;
 
 public class BackupDataFragment extends Fragment implements
 		GenericAlertDialog.DialogClickListener,
 		PasswordEntryDialog.PasswordEntryDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(BackupDataFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupDataFragment");
 
 	public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 441;
 	private static final int REQUEST_CODE_DOCUMENT_TREE = 7222;
@@ -239,7 +239,17 @@ public class BackupDataFragment extends Fragment implements
 			if (backupUri == null) {
 				showPathSelectionIntro();
 			} else {
-				checkBatteryOptimizations();
+				DocumentFile documentFile = null;
+				try {
+					documentFile = DocumentFile.fromTreeUri(ThreemaApplication.getAppContext(), backupUri);
+				} catch (IllegalArgumentException e) {
+					logger.error("DocumentFile.fromTreeUri failed", e);
+				}
+				if (documentFile == null || !documentFile.exists()) {
+					showPathSelectionIntro();
+				} else {
+					checkBatteryOptimizations();
+				}
 			}
 		}
 	}

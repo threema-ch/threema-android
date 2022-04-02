@@ -88,15 +88,13 @@ public class DownloadServiceImpl implements DownloadService {
 		return null;
 	}
 
-	private boolean removeDownloadByBlobId(@NonNull byte[] blobId) {
+	private void removeDownloadByBlobId(@NonNull byte[] blobId) {
 		synchronized (this.downloads) {
 			Download download = getDownloadByBlobId(blobId);
 			if (download != null) {
 				logger.info("Blob {} remove downloader", Utils.byteArrayToHexString(blobId));
 				downloads.remove(download);
-				return true;
 			}
-			return false;
 		}
 	}
 
@@ -134,7 +132,7 @@ public class DownloadServiceImpl implements DownloadService {
 			if (wakeLock != null) {
 				wakeLock.acquire(DOWNLOAD_WAKELOCK_TIMEOUT);
 				logger.info("Acquire download wakelock");
-			};
+			}
 
 			if (blobId == null) {
 				logger.warn("Blob ID is null");
@@ -207,7 +205,7 @@ public class DownloadServiceImpl implements DownloadService {
 													Download download = getDownloadByBlobId(blobId);
 													if (download != null) {
 														if (download.blobLoader != null) {
-															download.blobLoader.markAsDown(download.blobId);
+															download.blobLoader.markAsDone(download.blobId);
 														}
 														logger.info("Blob {} marked as downloaded", blobIdHex);
 													}

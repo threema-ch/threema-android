@@ -24,7 +24,9 @@ package ch.threema.app.ui;
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class SquareImageView extends androidx.appcompat.widget.AppCompatImageView
+import com.google.android.material.imageview.ShapeableImageView;
+
+public class SquareImageView extends ShapeableImageView
 {
 	public SquareImageView(Context context)
 	{

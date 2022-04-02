@@ -24,12 +24,11 @@ package ch.threema.app.utils;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +39,7 @@ import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageUtil {
-	private static final Logger logger = LoggerFactory.getLogger(MessageUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageUtil");
 
 	private final static java.util.Set<MessageType> fileMessageModelTypes = EnumSet.of(
 			MessageType.IMAGE,
@@ -91,10 +91,6 @@ public class MessageUtil {
 		}
 	}
 
-	/**
-	 * @param messageModel
-	 * @return
-	 */
 	public static boolean hasDataFile(AbstractMessageModel messageModel) {
 		return messageModel != null && fileMessageModelTypes.contains(messageModel.getType());
 	}
@@ -117,19 +113,16 @@ public class MessageUtil {
 	}
 
 	public static boolean canSendDeliveryReceipt(AbstractMessageModel message) {
-		return message != null
-				&& message instanceof MessageModel
-				&& !message.isOutbox()
-				&& !message.isRead()
-				&& !message.isStatusMessage()
-				&& message.getType() != MessageType.VOIP_STATUS
-				&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS);
+		return message instanceof MessageModel
+			&& !message.isOutbox()
+			&& !message.isRead()
+			&& !message.isStatusMessage()
+			&& message.getType() != MessageType.VOIP_STATUS
+			&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS);
 	}
 
 	/**
-	 * return true if the message model can mark as read
-	 * @param message
-	 * @return
+	 * @return true if the message model can mark as read
 	 */
 	public static boolean canMarkAsRead(AbstractMessageModel message) {
 		return message != null
@@ -138,9 +131,7 @@ public class MessageUtil {
 	}
 
 	/**
-	 * return true if the message model can mark as consumed
-	 * @param message
-	 * @return
+	 * @return true if the message model can mark as consumed
 	 */
 	public static boolean canMarkAsConsumed(@Nullable AbstractMessageModel message) {
 		return
@@ -154,9 +145,7 @@ public class MessageUtil {
 	}
 
 	/**
-	 * return true, if the user-acknowledge flag can be set
-	 * @param messageModel
-	 * @return
+	 * @return true, if the user-acknowledge flag can be set
 	 */
 	public static boolean canSendUserAcknowledge(AbstractMessageModel messageModel) {
 		return
@@ -168,9 +157,7 @@ public class MessageUtil {
 						&& !(messageModel instanceof GroupMessageModel);
 	}
 	/**
-	 * return true, if the user-decline flag can be set
-	 * @param messageModel
-	 * @return
+	 * @return true, if the user-decline flag can be set
 	 */
 	public static boolean canSendUserDecline(AbstractMessageModel messageModel) {
 		return
@@ -183,9 +170,7 @@ public class MessageUtil {
 	}
 
 	/**
-	 * return true if the user-acknowledge flag visible
-	 * @param messageModel
-	 * @return
+	 * @return true if the user-acknowledge flag visible
 	 */
 	public static boolean showStatusIcon(AbstractMessageModel messageModel) {
 		boolean showState = false;
@@ -217,10 +202,9 @@ public class MessageUtil {
 				else {
 					//on outgoing message
 					if (ContactUtil.isChannelContact(messageModel.getIdentity())) {
-						showState = messageState != null
-								&& (messageState == MessageState.SENDFAILED
-								|| messageState == MessageState.PENDING
-								|| messageState == MessageState.SENDING);
+						showState = (messageState == MessageState.SENDFAILED
+							|| messageState == MessageState.PENDING
+							|| messageState == MessageState.SENDING);
 					} else {
 						showState = true;
 					}
@@ -239,9 +223,7 @@ public class MessageUtil {
 	}
 
 	/**
-	 * return true, if the "system" automatically can generate a thumbnail file
-	 * @param messageModel
-	 * @return
+	 * @return true, if the "system" automatically can generate a thumbnail file
 	 */
 	public static boolean autoGenerateThumbnail(AbstractMessageModel messageModel) {
 		return messageModel != null
@@ -250,7 +232,6 @@ public class MessageUtil {
 
 	/**
 	 * Returns all affected receivers of a distribution list (including myself)
-	 * @param messageReceiver
 	 * @return ArrayList of all MessageReceivers
 	 */
 	public static ArrayList<MessageReceiver> getAllReceivers(final MessageReceiver messageReceiver) {
@@ -260,10 +241,10 @@ public class MessageUtil {
 
 		List<MessageReceiver> affectedReceivers = messageReceiver.getAffectedMessageReceivers();
 		if (affectedReceivers != null && affectedReceivers.size() > 0) {
-			allReceivers.addAll(Functional.filter(affectedReceivers, new IPredicateNonNull<MessageReceiver>() {
+			allReceivers.addAll(Functional.filter(affectedReceivers, new IPredicateNonNull<>() {
 				@Override
 				public boolean apply(@NonNull MessageReceiver type) {
-					return type != null && !type.isEqual(messageReceiver);
+					return !type.isEqual(messageReceiver);
 				}
 			}));
 		}
@@ -272,11 +253,13 @@ public class MessageUtil {
 
 	/**
 	 * Expand list of MessageReceivers to contain distribution list receivers as single recipients
-	 * @param allReceivers - list of MessageReceivers including distrubtion lists
+	 * @param allReceivers - list of MessageReceivers including distribution lists
 	 * @return - expanded list of receivers with duplicates removed
 	 */
 	public static MessageReceiver[] addDistributionListReceivers(MessageReceiver[] allReceivers) {
-		Set<MessageReceiver> resolvedReceivers = new HashSet<>();
+		// Use LinkedHashSet in order to preserve insertion order.
+		// If the order is not preserved sending of files to distribution lists is likely to fail
+		Set<MessageReceiver> resolvedReceivers = new LinkedHashSet<>();
 		for (MessageReceiver receiver: allReceivers) {
 			if (receiver.getType() == MessageReceiver.Type_DISTRIBUTION_LIST) {
 				resolvedReceivers.addAll(MessageUtil.getAllReceivers(receiver));
@@ -284,7 +267,7 @@ public class MessageUtil {
 				resolvedReceivers.add(receiver);
 			}
 		}
-		return resolvedReceivers.toArray(new MessageReceiver[resolvedReceivers.size()]);
+		return resolvedReceivers.toArray(new MessageReceiver[0]);
 	}
 
 	/**
@@ -339,7 +322,7 @@ public class MessageUtil {
 						|| fromState == MessageState.PENDING
 						|| fromState == MessageState.TRANSCODING;
 			default:
-				logger.debug("message state " + toState.toString() + " not handled");
+				logger.debug("message state {} not handled", toState);
 				return false;
 		}
 	}

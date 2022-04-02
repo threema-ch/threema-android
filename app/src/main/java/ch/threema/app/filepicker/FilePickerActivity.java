@@ -41,7 +41,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.navigation.NavigationView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -62,9 +61,10 @@ import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.StorageUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class FilePickerActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(FilePickerActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FilePickerActivity");
 
 	private static final int PERMISSION_STORAGE = 1;
 

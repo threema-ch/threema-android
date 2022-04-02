@@ -22,7 +22,6 @@
 package ch.threema.app.services.systemupdate;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -30,11 +29,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion14 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion14.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion14");
 
 	@Override
 	public boolean runDirectly() {

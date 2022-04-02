@@ -24,19 +24,19 @@ package ch.threema.app.utils;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.webrtc.IceCandidate;
 import org.webrtc.Logging;
 import org.webrtc.PeerConnectionFactory;
 
 import androidx.annotation.NonNull;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.WebRTCLoggable;
 
 /**
  * This util handles WebRTC initialization.
  */
 public class WebRTCUtil {
-	private static final Logger logger = LoggerFactory.getLogger(WebRTCUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WebRTCUtil");
 
 	private static boolean initialized = false;
 

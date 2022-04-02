@@ -25,7 +25,6 @@ import android.net.Uri;
 
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -50,6 +49,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 
@@ -57,7 +57,7 @@ import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 
 @WorkerThread
 public class FileMessageCreateHandler extends MessageCreateHandler {
-	private static final Logger logger = LoggerFactory.getLogger(FileMessageCreateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FileMessageCreateHandler");
 
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_FILE_TYPE = "fileType";

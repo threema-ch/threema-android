@@ -33,7 +33,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -57,6 +56,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -67,7 +67,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_SETTLING;
 
 public class GlobalSearchActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener {
-	private static final Logger logger = LoggerFactory.getLogger(GlobalSearchActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity");
 	private static final int QUERY_MIN_LENGTH = 2;
 	private static final long QUERY_TIMEOUT_MS = 500;
 

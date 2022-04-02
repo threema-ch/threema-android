@@ -28,7 +28,6 @@ import android.media.MediaMetadataRetriever;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -40,13 +39,14 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.MimeUtil.MIME_AUDIO;
 import static ch.threema.app.utils.MimeUtil.MIME_VIDEO;
 
 public class VideoConfig {
-	private static final Logger logger = LoggerFactory.getLogger(VideoConfig.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoConfig");
 
 	public static final int BITRATE_LOW = 384000;
 	public static final int BITRATE_MEDIUM = 1500000;

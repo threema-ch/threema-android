@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.updater;
 import android.graphics.Bitmap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -40,10 +39,11 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.converter.Profile;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+import ch.threema.base.utils.LoggingUtil;
 
 @WorkerThread
 public class ProfileUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggerFactory.getLogger(ProfileUpdateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileUpdateHandler");
 
 	// Handler
 	private final @NonNull HandlerExecutor handler;

@@ -33,9 +33,9 @@ import android.os.SystemClock;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -61,9 +61,11 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
+import ch.threema.app.services.PreferenceService;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -71,7 +73,7 @@ import ch.threema.storage.models.ConversationModel;
 import static androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED;
 
 public final class ShortcutUtil {
-	private static final Logger logger = LoggerFactory.getLogger(ShortcutUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ShortcutUtil");
 
 	private static final int MAX_SHARE_TARGETS = 100; // we recommend that you publish only four distinct shortcuts to improve their visual appearance in the launcher. https://developer.android.com/guide/topics/ui/shortcuts/best-practices
 
@@ -82,6 +84,7 @@ public final class ShortcutUtil {
 	private static final Object dynamicShortcutLock = new Object();
 
 	private static final String DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY = "ch.threema.app.category.DYNAMIC_SHORTCUT_SHARE_TARGET"; // do not use BuildConfig.APPLICATION_ID
+	private static final String KEY_RECENT_UIDS = "recent_uids";
 
 	private static class CommonShortcutInfo {
 		Intent intent;
@@ -271,7 +274,8 @@ public final class ShortcutUtil {
 			return;
 		}
 
-		if (ThreemaApplication.getServiceManager().getPreferenceService() == null || !ThreemaApplication.getServiceManager().getPreferenceService().isDirectShare()) {
+		PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
+		if (preferenceService == null || !preferenceService.isDirectShare()) {
 			return;
 		}
 
@@ -319,10 +323,12 @@ public final class ShortcutUtil {
 			final int numPublishableConversations = Math.min(conversations.size(), Math.min(ShortcutManagerCompat.getMaxShortcutCountPerActivity(getContext()), MAX_SHARE_TARGETS));
 
 			final List<ShortcutInfoCompat> shareTargetShortcuts = new ArrayList<>();
+			final List<String> publishedRecentChatsUids = new ArrayList<>();
 			for (int i = 0; i < numPublishableConversations; i++) {
 				ShortcutInfoCompat shortcutInfoCompat = getShareTargetShortcutInfo(conversations.get(i), i);
 				if (shortcutInfoCompat != null) {
 					shareTargetShortcuts.add(shortcutInfoCompat);
+					publishedRecentChatsUids.add(shortcutInfoCompat.getId());
 				}
 			}
 
@@ -330,6 +336,13 @@ public final class ShortcutUtil {
 				logger.info("No recent chats to publish sharing targets for");
 				return;
 			}
+
+			if (Arrays.equals(preferenceService.getList(KEY_RECENT_UIDS), publishedRecentChatsUids.toArray(new String[0]))) {
+				logger.info("Recent chats unchanged. Not updating sharing targets");
+				return;
+			}
+
+			preferenceService.setList(KEY_RECENT_UIDS, publishedRecentChatsUids.toArray(new String[0]));
 
 			try {
 				ShortcutManagerCompat.setDynamicShortcuts(getContext(), shareTargetShortcuts);

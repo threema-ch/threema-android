@@ -28,15 +28,15 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.FixedJobIntentService;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ConnectivityChangeService extends FixedJobIntentService {
-	private static final Logger logger = LoggerFactory.getLogger(ConnectivityChangeService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectivityChangeService");
 
 	private static final int MESSAGE_SEND_TIME = 30 * 1000;
 	private static final int JOB_ID = 2001;
@@ -75,28 +75,6 @@ public class ConnectivityChangeService extends FixedJobIntentService {
 				}
 			}
 
-			if (online && !wasOnline) {
-				// The device changed from OFFLINE to ONLINE.
-				if (preferenceService != null && preferenceService.isPolling()) {
-					// If polling is enabled and if the last successful polling was longer ago
-					// than the polling interval, poll immediately. This can happen for example
-					// if the user uses an app that only activates the connection periodically
-					// to save battery, but that interval is out of sync with the
-					// polling interval.
-					final Long prev = preferenceService.getLastSuccessfulPollTimestamp();
-					if (prev != null) {
-						final long msAgo = System.currentTimeMillis() - prev;
-						if (msAgo > preferenceService.getPollingInterval()) {
-							// Poll immediately
-							PollingHelper pollingHelper = new PollingHelper(this, "connectivityChange");
-							if (pollingHelper.poll()) {
-								preferenceService.setLastSuccessfulPollTimestamp(System.currentTimeMillis());
-							}
-						}
-					}
-				}
-			}
-
 			if (online != wasOnline) {
 				logger.info("Device is now {}", online ? "ONLINE" : "OFFLINE");
 
@@ -104,8 +82,8 @@ public class ConnectivityChangeService extends FixedJobIntentService {
 				try {
 					if (serviceManager.getMessageQueue().getQueueSize() > 0) {
 						logger.info("Messages in queue; acquiring connection");
-						serviceManager.getLifetimeService().acquireConnection("connectivity_change");
-						serviceManager.getLifetimeService().releaseConnectionLinger("connectivity_change", MESSAGE_SEND_TIME);
+						serviceManager.getLifetimeService().acquireConnection("connectivityChange");
+						serviceManager.getLifetimeService().releaseConnectionLinger("connectivityChange", MESSAGE_SEND_TIME);
 					}
 
 					/* if no backup was created in due time, do it now. The JobScheduler will handle connectivity changes in Lollipop+  */

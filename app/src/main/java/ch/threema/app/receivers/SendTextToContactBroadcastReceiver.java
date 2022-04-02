@@ -28,17 +28,17 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.BackgroundErrorNotification;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(SendTextToContactBroadcastReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SendTextToContactBroadcastReceiver");
 
 	@Override
 	@SuppressLint("StaticFieldLeak")

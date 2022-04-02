@@ -22,19 +22,19 @@
 package ch.threema.domain.protocol.csp.messages.voip;
 
 import androidx.annotation.NonNull;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.base.utils.JSONUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class VoipCallHangupData extends VoipCallData<VoipCallHangupData> {
-	private static final Logger logger = LoggerFactory.getLogger(VoipCallHangupData.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallHangupData");
 
 	//region Serialization
 

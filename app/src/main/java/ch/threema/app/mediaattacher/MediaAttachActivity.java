@@ -49,12 +49,13 @@ import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
@@ -65,6 +66,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
 import ch.threema.app.actions.SendAction;
+import ch.threema.app.activities.EditSendContactActivity;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ballot.BallotWizardActivity;
@@ -72,13 +74,13 @@ import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
-import ch.threema.app.listeners.QRCodeScanListener;
 import ch.threema.app.locationpicker.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AnimationUtil;
@@ -89,6 +91,7 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
@@ -99,7 +102,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 									ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener,
 									GenericAlertDialog.DialogClickListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(MediaAttachActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachActivity");
 
 	private static final int CONTACT_PICKER_INTENT = 33002;
 	private static final int LOCATION_PICKER_INTENT = 33003;
@@ -108,7 +111,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	private static final int PERMISSION_REQUEST_ATTACH_CONTACT = 2;
 	private static final int PERMISSION_REQUEST_QR_READER = 3;
 	private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
-
 
 	public static final String CONFIRM_TAG_REALLY_SEND_FILE = "reallySendFile";
 	public static final String DIALOG_TAG_PREPARE_SEND_FILE = "prepSF";
@@ -122,6 +124,18 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 	private MessageReceiver messageReceiver;
 	private MessageService messageService;
+
+	private final ActivityResultLauncher<Intent> editContactResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		r -> {
+			if (r.getResultCode() == RESULT_OK) {
+				if (r.getData() != null && r.getData().getExtras() != null && r.getData().getExtras().get(EditSendContactActivity.RESULT_CONTACT_URI) instanceof Uri) {
+					Uri modifiedVcardUri = (Uri) r.getData().getExtras().get(EditSendContactActivity.RESULT_CONTACT_URI);
+					String caption = (String) r.getData().getExtras().get(EditSendContactActivity.RESULT_CONTACT_NAME);
+					sendFileMessage(new ArrayList<>(Collections.singletonList(modifiedVcardUri)), new ArrayList<>(Collections.singletonList(caption)));
+				}
+			}
+			finish();
+		});
 
 	/* start setup methods */
 	@Override
@@ -293,7 +307,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				}
 			}
 
-			if (count > SendMediaActivity.MAX_SELECTABLE_IMAGES) {
+			if (count > SendMediaActivity.MAX_EDITABLE_IMAGES) {
 				editButton.setAlpha(0.2f);
 				editButton.setClickable(false);
 			} else {
@@ -482,12 +496,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		if (resultCode == Activity.RESULT_OK) {
 			final String scanResult = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
 			if (scanResult != null && scanResult.length() > 0) {
-				ListenerManager.qrCodeScanListener.handle(new ListenerManager.HandleListener<QRCodeScanListener>() {
-					@Override
-					public void handle(QRCodeScanListener listener) {
-						listener.onScanCompleted(scanResult);
-					}
-				});
+				ListenerManager.qrCodeScanListener.handle(listener -> listener.onScanCompleted(scanResult));
 				finish();
 			}
 
@@ -498,8 +507,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					sendLocationMessage(location, poiName);
 					break;
 				case CONTACT_PICKER_INTENT:
-					sendContact(intent.getData());
-					finish();
+					editContact(intent.getData());
 					break;
 				case REQUEST_CODE_ATTACH_FROM_GALLERY:
 					onEdit(FileUtil.getUrisFromResult(intent, getContentResolver()));
@@ -672,7 +680,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		v.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				QRScannerUtil.getInstance().initiateScan(MediaAttachActivity.this, true, null);
+				QRScannerUtil.getInstance().initiateScan(MediaAttachActivity.this, null, QRCodeServiceImpl.QR_TYPE_ANY);
 			}
 		}, 200);
 	}
@@ -712,17 +720,27 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				})).start();
 	}
 
-	private void sendContact(Uri contactUri) {
+	private void editContact(Uri contactUri) {
 		if (!validateSendingPermission()) {
 			return;
 		}
 
 		Cursor cursor = this.getContentResolver().query(contactUri, null, null, null, null);
-		if (cursor != null && cursor.moveToFirst()) {
+		if (cursor != null && cursor.moveToFirst() && cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY) >= 0) {
 			String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 			cursor.close();
+
+			controlPanel.setVisibility(View.GONE);
+
+			isEditingContact = true;
+			bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
 			Uri vcardUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
-			sendFileMessage(new ArrayList<>(Collections.singletonList(vcardUri)),null);
+
+			Intent editContactIntent = new Intent(this, EditSendContactActivity.class);
+			editContactIntent.putExtra(EditSendContactActivity.EXTRA_CONTACT, vcardUri);
+
+			editContactResultLauncher.launch(editContactIntent);
 		} else {
 			Toast.makeText(this, R.string.contact_not_found, Toast.LENGTH_LONG).show();
 		}

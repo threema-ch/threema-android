@@ -26,16 +26,16 @@ import android.util.JsonToken;
 import android.util.JsonWriter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.data.MessageDataInterface;
 
 public abstract class StatusDataModel {
-	private static final Logger logger = LoggerFactory.getLogger(StatusDataModel.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("StatusDataModel");
 
 	public interface StatusDataModelInterface extends MessageDataInterface {
 		int getType();

@@ -24,7 +24,6 @@ package ch.threema.storage.factories;
 import android.content.ContentValues;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,6 +32,7 @@ import java.util.List;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
@@ -46,7 +46,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
 abstract class AbstractMessageModelFactory extends ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(AbstractMessageModelFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractMessageModelFactory");
 
 	AbstractMessageModelFactory(DatabaseServiceNew databaseServiceNew, String tableName) {
 		super(databaseServiceNew, tableName);

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Поселення</string>
+    <string name="village">Село</string>
+    <string name="town">Містечко</string>
+    <string name="isolated_dwelling">Ізольоване житло</string>
+    <string name="island">Острів</string>
+    <string name="islet">Острівець</string>
+    <string name="suburb">Район</string>
+    <string name="city">Місто</string>
+    <string name="city_block">Квартал</string>
+    <string name="neighbourhood">Мікрорайон</string>
+    <string name="locality">Місцевість</string>
+    <string name="state">Штат/регіон</string>
+    <string name="farm">Ферма</string>
+    <string name="street">Вулиця</string>
+    <string name="country">Країна</string>
+</resources>

@@ -35,6 +35,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -52,7 +53,6 @@ import android.text.format.DateUtils;
 import android.text.format.Formatter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +65,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
@@ -94,10 +95,12 @@ import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.app.utils.WidgetUtil;
 import ch.threema.app.voip.activities.CallActivity;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -109,13 +112,14 @@ import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
+import static ch.threema.app.ThreemaApplication.WORK_SYNC_NOTIFICATION_ID;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
 
 public class NotificationServiceImpl implements NotificationService {
-	private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationServiceImpl");
 	private static final long NOTIFY_AGAIN_TIMEOUT = 30 * DateUtils.SECOND_IN_MILLIS;
 
 	private final Context context;
@@ -241,6 +245,7 @@ public class NotificationServiceImpl implements NotificationService {
 		if (ConfigUtils.isWorkBuild()) {
 			notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_WORK_SYNC);
 		}
+		notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_IDENTITY_SYNC);
 		notificationManager.deleteNotificationChannelGroup(NOTIFICATION_CHANNELGROUP_CHAT);
 		notificationManager.deleteNotificationChannelGroup(NOTIFICATION_CHANNELGROUP_CHAT_UPDATE);
 		notificationManager.deleteNotificationChannelGroup(NOTIFICATION_CHANNELGROUP_VOIP);
@@ -301,7 +306,8 @@ public class NotificationServiceImpl implements NotificationService {
 		notificationChannel.enableLights(true);
 		notificationChannel.enableVibration(true);
 		notificationChannel.setShowBadge(false);
-		notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),null);
+		notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
+				SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT));
 		notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 		notificationManager.createNotificationChannel(notificationChannel);
 
@@ -343,6 +349,19 @@ public class NotificationServiceImpl implements NotificationService {
 			notificationChannel.setSound(null, null);
 			notificationManager.createNotificationChannel(notificationChannel);
 		}
+
+		// identity sync notification
+		notificationChannel = new NotificationChannel(
+				NOTIFICATION_CHANNEL_IDENTITY_SYNC,
+				context.getString(R.string.work_data_sync),
+				NotificationManager.IMPORTANCE_LOW);
+		notificationChannel.setDescription(context.getString(R.string.contact_update));
+		notificationChannel.enableLights(false);
+		notificationChannel.enableVibration(false);
+		notificationChannel.setShowBadge(false);
+		notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+		notificationChannel.setSound(null, null);
+		notificationManager.createNotificationChannel(notificationChannel);
 
 		// new synced contact notification
 		notificationChannel = new NotificationChannel(
@@ -1707,7 +1726,27 @@ public class NotificationServiceImpl implements NotificationService {
 		}
 	}
 
+	@Override
 	public void showWorkSyncProgress() {
+		showSyncProgress(WORK_SYNC_NOTIFICATION_ID, NOTIFICATION_CHANNEL_WORK_SYNC, R.string.wizard1_sync_work);
+	}
+
+	@Override
+	public void cancelWorkSyncProgress() {
+		this.cancel(WORK_SYNC_NOTIFICATION_ID);
+	}
+
+	@Override
+	public void showIdentityStatesSyncProgress() {
+		showSyncProgress(ThreemaApplication.IDENTITY_SYNC_NOTIFICATION_ID, NOTIFICATION_CHANNEL_IDENTITY_SYNC, R.string.synchronize_contact);
+	}
+
+	@Override
+	public void cancelIdentityStatesSyncProgress() {
+		this.cancel(ThreemaApplication.IDENTITY_SYNC_NOTIFICATION_ID);
+	}
+
+	private void showSyncProgress(final int notificationId, final String channelName, final @StringRes int textRes) {
 		final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		if (notificationManager == null) {
@@ -1715,23 +1754,20 @@ public class NotificationServiceImpl implements NotificationService {
 		}
 
 		NotificationCompat.Builder builder =
-				new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_WORK_SYNC, null)
+			new NotificationBuilderWrapper(context, channelName, null)
 				.setSound(null)
 				.setSmallIcon(R.drawable.ic_sync_notification)
-				.setContentTitle(this.context.getString(R.string.wizard1_sync_work))
+				.setContentTitle(this.context.getString(textRes))
 				.setProgress(0, 0, true)
 				.setPriority(Notification.PRIORITY_LOW)
 				.setAutoCancel(true)
 				.setLocalOnly(true)
 				.setOnlyAlertOnce(true);
 
-		this.notify(ThreemaApplication.WORK_SYNC_NOTIFICATION_ID, builder);
+		this.notify(notificationId, builder);
 	}
 
-	@Override
-	public void cancelWorkSyncProgress() {
-		this.cancel(ThreemaApplication.WORK_SYNC_NOTIFICATION_ID);
-	}
+
 
 	@Override
 	public void showNewSyncedContactsNotification(List<ContactModel> contactModels) {
@@ -1936,12 +1972,17 @@ public class NotificationServiceImpl implements NotificationService {
 				logger.info("Unknown response state don't show notification");
 				return;
 		}
+
 		if (outgoingGroupJoinRequestModel.getGroupApiId() != null) {
 			GroupModel groupModel = databaseService
 				.getGroupModelFactory()
 				.getByApiGroupIdAndCreator(outgoingGroupJoinRequestModel.getGroupApiId().toString(), outgoingGroupJoinRequestModel.getAdminIdentity());
-			notificationIntent = new Intent(context, ComposeMessageActivity.class);
-			notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+			if (groupModel != null) {
+				notificationIntent = new Intent(context, ComposeMessageActivity.class);
+				notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+			} else {
+				notificationIntent = new Intent(context, OutgoingGroupRequestActivity.class);
+			}
 		} else {
 			notificationIntent = new Intent(context, OutgoingGroupRequestActivity.class);
 		}
@@ -1970,7 +2011,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public void showGroupJoinRequestNotification(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel) {
 
 		Intent notificationIntent = new Intent(context, IncomingGroupRequestActivity.class);
-		notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+		notificationIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_API, groupModel.getApiGroupId());
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 

@@ -34,6 +34,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -50,35 +51,6 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({ Type_CONTACT, Type_GROUP, Type_DISTRIBUTION_LIST })
 	@interface MessageReceiverType {}
-
-	/**
-	 * result of a encryption
-	 */
-	interface EncryptResult {
-		/**
-		 * encrypted data as byte array
-		 * @return
-		 */
-		byte[] getData();
-
-		/**
-		 * used encryption key
-		 * @return
-		 */
-		byte[] getKey();
-
-		/**
-		 * used encryption nonce
-		 * @return
-		 */
-		byte[] getNonce();
-
-		/**
-		 * size of the data
-		 * @return
-		 */
-		int getSize();
-	}
 
 	interface OnSendingPermissionDenied {
 		void denied(int errorResId);
@@ -97,9 +69,6 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 
 	/**
 	 * create a local (unsaved) db model for the given message type
-	 * @param type
-	 * @param postedAt
-	 * @return
 	 */
 	AbstractMessageModel createLocalModel(MessageType type, @MessageContentsType int contentsType, Date postedAt);
 
@@ -112,54 +81,30 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 
 	/**
 	 * save a message model to the database
-	 * @param save
 	 */
-	void saveLocalModel(M save);
+	void saveLocalModel(M messageModel);
 
 	/**
 	 * send a text message
-	 *
-	 * @param text
-	 * @param messageModel
-	 * @return
-	 * @throws ThreemaException
 	 */
 	boolean createBoxedTextMessage(String text, M messageModel) throws ThreemaException;
 
 	/**
 	 * send a location message
-	 *
-	 * @param lat
-	 * @param lng
-	 * @param acc
-	 * @param poiName
-	 * @param messageModel
-	 * @return
-	 * @throws ThreemaException
 	 */
-	boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, M messageModel) throws ThreemaException;
+	boolean createBoxedLocationMessage(M messageModel) throws ThreemaException;
 
 	/**
 	 * send a file message
-	 * @param thumbnailBlobId
-	 * @param fileBlobId
-	 * @param fileResult
-	 * @param messageModel
-	 * @return
-	 * @throws ThreemaException
 	 */
-	boolean createBoxedFileMessage(byte[] thumbnailBlobId,
-	                               byte[] fileBlobId, EncryptResult fileResult,
-	                               M messageModel) throws ThreemaException;
+	boolean createBoxedFileMessage(
+		byte[] thumbnailBlobId,
+		byte[] fileBlobId,
+		SymmetricEncryptionResult encryptionResult,
+		M messageModel) throws ThreemaException;
 
 	/**
 	 * send a ballot (create) message
-	 * @param ballotData
-	 * @param ballotModel
-	 * @param filteredIdentities
-	 * @param abstractMessageModel
-	 * @return
-	 * @throws ThreemaException
 	 */
 	boolean createBoxedBallotMessage(
 			final BallotData ballotData,
@@ -169,56 +114,42 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 
 	/**
 	 * send a ballot vote message
-	 * @param votes
-	 * @param ballotModel
-	 * @return
-	 * @throws ThreemaException
 	 */
 	boolean createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException;
 
 	/**
 	 * select and filter (if filter is set) all message models
-	 * @param filter
-	 * @return
-	 * @throws SQLException
 	 */
 	List<M> loadMessages(MessageService.MessageFilter filter) throws SQLException;
 
 	/**
 	 * Count messages for this receiver
-	 * @return
 	 */
 	long getMessagesCount();
 
 	/**
 	 * count the unread message
-	 * @return
 	 */
 	long getUnreadMessagesCount();
 
 	/**
 	 * get all unread messages
 	 * @return a list of unread messages
-	 * @throws SQLException
 	 */
 	List<M> getUnreadMessages() throws SQLException;
 
 	/**
 	 * compare
-	 * @param o
-	 * @return
 	 */
 	boolean isEqual(MessageReceiver o);
 
 	/**
 	 * displaying name in gui
-	 * @return
 	 */
 	String getDisplayName();
 
 	/**
 	 * short displaying name in gui
-	 * @return
 	 */
 	String getShortName();
 
@@ -229,14 +160,12 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	void prepareIntent(Intent intent);
 
 	/**
-	 * get the bitmap of the avatar in the notification
-	 * @return
+	 * @return the bitmap of the avatar in the notification
 	 */
 	Bitmap getNotificationAvatar();
 
 	/**
-	 * a unique id
-	 * @return
+	 * @return a unique id
 	 */
 	@Deprecated
 	int getUniqueId();
@@ -244,25 +173,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	String getUniqueIdString();
 
 	/**
-	 * Encrypt a file. This will encrypt data in place in order to save memory.
-	 * @param fileData Content data to encrypt. WILL BE MODIFIED!
-	 * @return Encrypted data and meta data
-	 */
-	EncryptResult encryptFileData(byte[] fileData) throws ThreemaException;
-
-	/**
-	 * encrypt a thumbnail file
-	 * @param fileData
-	 * @param encryptionKey
-	 * @return
-	 * @throws Exception
-	 */
-	EncryptResult encryptFileThumbnailData(byte[] fileData, final byte[] encryptionKey) throws Exception;
-
-	/**
 	 * check, if the message model belongs to this receiver
-	 * @param message
-	 * @return
 	 */
 	boolean isMessageBelongsToMe(AbstractMessageModel message);
 
@@ -271,26 +182,21 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	 * notable exceptions:
 	 * - distribution lists
 	 * - groups without members ("notes")
-	 * @return
 	 */
 	boolean sendMediaData();
 
 	/**
 	 * check if we should offer the user a possibility to retry sending in the UI if the message was queued but there was an IO error in the sender thread
-	 * @return
 	 */
 	boolean offerRetry();
 
 	/**
 	 * validate sending permission
-	 * @param onSendingPermissionDenied
-	 * @return
 	 */
 	boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied);
 
 	/**
 	 * type of the receiver
-	 * @return
 	 */
 	@MessageReceiverType int getType();
 

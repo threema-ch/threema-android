@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,11 +38,12 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.DistributionListModel;
 
 @WorkerThread
 public class DeleteDistributionListHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(DeleteDistributionListHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteDistributionListHandler");
 
 	private final MessageDispatcher responseDispatcher;
 	private final DistributionListService distributionListService;

@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -43,6 +42,7 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.MessageType;
  */
 @WorkerThread
 public class MessageReadRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(MessageReadRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageReadRequestHandler");
 
 	private final ContactService contactService;
 	private final GroupService groupService;

@@ -30,7 +30,6 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -47,11 +46,12 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 
 public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-	private static final Logger logger = LoggerFactory.getLogger(WidgetViewsFactory.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetViewsFactory");
 
 	private Context context;
 	private int appWidgetId;

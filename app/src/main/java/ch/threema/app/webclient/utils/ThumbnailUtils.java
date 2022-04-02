@@ -24,17 +24,17 @@ package ch.threema.app.webclient.utils;
 import android.graphics.Bitmap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Functions related to the webclient.
  */
 @AnyThread
 public class ThumbnailUtils {
-	private static final Logger logger = LoggerFactory.getLogger(ThumbnailUtils.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailUtils");
 
 	public static class Size {
 		public int width;

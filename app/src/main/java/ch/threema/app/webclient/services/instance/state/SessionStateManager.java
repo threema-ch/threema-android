@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 
 import org.saltyrtc.client.SaltyRTCBuilder;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -41,6 +40,7 @@ import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -57,7 +57,7 @@ public class SessionStateManager {
 		void onStopped(@NonNull DisconnectContext reason);
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(SessionStateManager.class);
+	private final Logger logger = LoggingUtil.getThreemaLogger("SessionStateManager");
 
 	// Stop event handler
 	@NonNull private final StopHandler stopHandler;

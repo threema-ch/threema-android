@@ -22,7 +22,6 @@
 package ch.threema.app.threemasafe;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,12 +33,13 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
 import static ch.threema.app.threemasafe.ThreemaSafeService.BACKUP_ID_LENGTH;
 
 public class ThreemaSafeServerInfo {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeServerInfo.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServerInfo");
 
 	private static final String SAFE_URL_PREFIX = "https://";
 	private static final String BACKUP_DIRECTORY_NAME = "backups/";

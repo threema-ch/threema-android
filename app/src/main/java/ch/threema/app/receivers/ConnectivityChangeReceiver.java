@@ -27,12 +27,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.services.ConnectivityChangeService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ConnectivityChangeReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ConnectivityChangeReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectivityChangeReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

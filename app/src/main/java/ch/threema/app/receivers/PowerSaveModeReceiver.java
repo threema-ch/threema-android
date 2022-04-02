@@ -27,10 +27,11 @@ import android.content.Intent;
 import android.os.PowerManager;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import ch.threema.base.utils.LoggingUtil;
 
 public class PowerSaveModeReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(AlarmManagerBroadcastReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PowerSaveModeReceiver");
 
 	@Override
 	public void onReceive(final Context context, final Intent intent) {

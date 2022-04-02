@@ -24,7 +24,6 @@ package ch.threema.app.routines;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -36,6 +35,7 @@ import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStoreInterface;
 
@@ -43,7 +43,7 @@ import ch.threema.domain.stores.IdentityStoreInterface;
  * Send (only in work build) the infos to the work info resource
  */
 public class UpdateWorkInfoRoutine implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(UpdateWorkInfoRoutine.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateWorkInfoRoutine");
 
 	private final APIConnector apiConnector;
 	private final IdentityStoreInterface identityStore;

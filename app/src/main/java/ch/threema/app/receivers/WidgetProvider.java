@@ -31,16 +31,16 @@ import android.os.SystemClock;
 import android.widget.RemoteViews;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.services.WidgetService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WidgetProvider extends AppWidgetProvider {
-	private static final Logger logger = LoggerFactory.getLogger(WidgetProvider.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetProvider");
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

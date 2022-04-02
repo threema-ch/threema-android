@@ -2,6 +2,9 @@ Screenshots available here: https://gitlab.com/leos1/leos-wiki/-/wikis/LeOS-Mess
 
 # LeOS-Messenger for Android
 
+This version has his own push messages service. No need for any g**gle push server :))
+
+
 This repository contains the complete source code of LeOS-Messenger a fork of
 [Threema](https://threema.ch/) for Android.
 

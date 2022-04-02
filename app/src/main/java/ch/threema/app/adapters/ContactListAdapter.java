@@ -38,8 +38,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.Collator;
 import java.text.Normalizer;
@@ -71,7 +69,6 @@ import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactListAdapter extends FilterableListAdapter implements SectionIndexer {
-	private static final Logger logger = LoggerFactory.getLogger(ContactListAdapter.class);
 
 	private static final int MAX_RECENTLY_ADDED_CONTACTS = 3;
 

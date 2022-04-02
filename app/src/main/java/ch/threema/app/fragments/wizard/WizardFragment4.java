@@ -26,6 +26,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.TextView;
+
+import java.util.Objects;
 
 import androidx.appcompat.widget.SwitchCompat;
 import ch.threema.app.R;
@@ -41,9 +44,12 @@ public class WizardFragment4 extends WizardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		View rootView = super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+		TextView title = rootView.findViewById(R.id.wizard_title);
+		title.setText(R.string.new_wizard_find_friends);
+
+		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
 
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard4);
@@ -53,14 +59,19 @@ public class WizardFragment4 extends WizardFragment {
 
 		if (ConfigUtils.isOnPremBuild() && ConfigUtils.isDemoOPServer(preferenceService)) {
 			defaultSwitchValue = false;
+			// Add another warning for dull-witted G**gle reviewers
+			TextView textView = rootView.findViewById(R.id.disabled_by_policy);
+			textView.setText(R.string.new_wizard_info_sync_contacts);
+			textView.setVisibility(View.VISIBLE);
 		}
 
-		if (SynchronizeContactsUtil.isRestrictedProfile(getActivity()) &&
+		OnSettingsChangedListener settingsChangedListener = (OnSettingsChangedListener) requireActivity();
+		if (SynchronizeContactsUtil.isRestrictedProfile(requireActivity()) &&
 				!ConfigUtils.isWorkRestricted()) {
 			// restricted user profiles cannot add accounts
 			syncContactsSwitch.setChecked(false);
 			syncContactsSwitch.setEnabled(false);
-			((OnSettingsChangedListener) getActivity()).onSyncContactsSet(false);
+			settingsChangedListener.onSyncContactsSet(false);
 		} else {
 			if (callback.isReadOnlyProfile()) {
 				syncContactsSwitch.setEnabled(false);
@@ -69,11 +80,11 @@ public class WizardFragment4 extends WizardFragment {
 				syncContactsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						((OnSettingsChangedListener) getActivity()).onSyncContactsSet(isChecked);
+						settingsChangedListener.onSyncContactsSet(isChecked);
 					}
 				});
 				syncContactsSwitch.setChecked(defaultSwitchValue);
-				((OnSettingsChangedListener) getActivity()).onSyncContactsSet(defaultSwitchValue);
+				settingsChangedListener.onSyncContactsSet(defaultSwitchValue);
 			}
 		}
 
@@ -93,7 +104,7 @@ public class WizardFragment4 extends WizardFragment {
 
 	void initValues() {
 		if (isResumed() && ConfigUtils.isWorkRestricted()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) getActivity();
+			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
 			syncContactsSwitch.setChecked(callback.getSyncContacts());
 		}
 	}

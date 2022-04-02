@@ -33,7 +33,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,12 +52,13 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener,
 	WizardSafeSearchPhoneDialog.WizardSafeSearchPhoneDialogCallback,
 	ThreemaSafeAdvancedDialog.WizardDialogCallback {
-	private static final Logger logger = LoggerFactory.getLogger(WizardSafeRestoreActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardSafeRestoreActivity");
 
 	private static final String DIALOG_TAG_PASSWORD = "tpw";
 	private static final String DIALOG_TAG_PROGRESS = "tpr";

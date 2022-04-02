@@ -62,6 +62,18 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
+                                      <entry key="backgroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="imagePath" value="$PROJECT_DIR$/../../icons/leos.png" />
+                                                <entry key="scalingPercent" value="62" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="foregroundClipArt">
                                         <value>
                                           <PersistentState>
@@ -79,8 +91,8 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="$PROJECT_DIR$/ic_launcher.png" />
-                                                <entry key="scalingPercent" value="129" />
+                                                <entry key="imagePath" value="$PROJECT_DIR$/../../icons/leos.png" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -112,8 +124,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="foregroundLayerName" value="ic_launcher_2" />
+                                      <entry key="backgroundLayerName" value="logo_main_background" />
+                                      <entry key="foregroundLayerName" value="logo_main" />
                                     </map>
                                   </option>
                                 </PersistentState>

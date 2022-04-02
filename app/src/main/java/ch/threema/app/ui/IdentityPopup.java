@@ -47,6 +47,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.QRCodeService;
+import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -62,7 +63,7 @@ import ch.threema.base.ThreemaException;
 
 public class IdentityPopup extends DimmingPopupWindow {
 
-	private Context context;
+	private final Context context;
 	private WeakReference<Activity> activityRef = new WeakReference<>(null);
 	private ImageView qrCodeView;
 	private QRCodeService qrCodeService;
@@ -174,7 +175,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 	}
 
 	private void zoomQR(View v) {
-		new QRCodePopup(context, activityRef.get().getWindow().getDecorView(), null).show(v, null);
+		new QRCodePopup(context, activityRef.get().getWindow().getDecorView(), null).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
 	}
 
 	/**

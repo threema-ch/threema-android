@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -35,11 +34,12 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class AcknowledgeRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(AcknowledgeRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AcknowledgeRequestHandler");
 
 	private final MessageService messageService;
 	private final NotificationService notificationService;

@@ -26,7 +26,6 @@ import android.os.AsyncTask;
 import net.sqlcipher.database.SQLiteException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +38,11 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class EmptyChatAsyncTask extends AsyncTask<Void, Integer, Integer> {
-	private static final Logger logger = LoggerFactory.getLogger(EmptyChatAsyncTask.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("EmptyChatAsyncTask");
 
 	private static final String DIALOG_TAG_EMPTYING_CHAT = "ec";
 

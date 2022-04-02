@@ -24,9 +24,6 @@ package ch.threema.app.services.systemupdate;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.services.PreferenceService;
@@ -36,10 +33,9 @@ import ch.threema.app.services.UpdateSystemService;
  * migrate locking prefs
  */
 public class SystemUpdateToVersion54 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion54.class);
 
 	private Context context;
-	
+
 	public SystemUpdateToVersion54(Context context) {
 		this.context = context;
 	}
@@ -62,7 +58,7 @@ public class SystemUpdateToVersion54 extends UpdateToVersion implements UpdateSy
 				editor.commit();
 			}
 		}
-				
+
 		// clean up old prefs
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.remove("pref_key_system_lock_enabled");

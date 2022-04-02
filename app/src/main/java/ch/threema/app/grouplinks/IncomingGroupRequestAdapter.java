@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -44,13 +43,14 @@ import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import java8.util.Optional;
 
 public class IncomingGroupRequestAdapter extends RecyclerView.Adapter<IncomingGroupRequestAdapter.IncomingGroupRequestViewHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(IncomingGroupRequestAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingGroupRequestAdapter");
 
 	private final Context context;
 	private final LayoutInflater inflater;

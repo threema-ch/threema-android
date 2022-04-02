@@ -6,6 +6,8 @@
 	<string name="default_notification_sound" translatable="false">content://settings/system/notification_sound</string>
 	<string name="webclient_info_url" translatable="false">https://threema.ch/threema-web</string>
 	<string name="privacy_policy_url" translatable="false">https://threema.ch/privacy_policy/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
+	<string name="terms_of_service_url" translatable="false">https://threema.ch/tos/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
+	<string name="eula_url" translatable="false">https://threema.ch/eula/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
 	<string name="threema_safe" translatable="false">Threema Safe</string>
 	<string name="safe_enter_server_address_explain" translatable="false">server.example.com</string>
 	<string name="lp_map_copyright" translatable="false">© Threema © MapTiler © OpenStreetMap contributors</string>
@@ -16,7 +18,7 @@
 	<string name="audio_focus_loss" translatable="false">Audio focus loss</string>
 	<string name="threema_work" translatable="false">Threema Work</string>
 	<string name="work_explain_url" translatable="false">https://threema.ch/work_info/?lang=%1$s</string>
-	<string name="translators_list" translatable="false">Alperen Zekeri̇ya Çulha, Hakan Sönger, Vit Semenec, Lia Rumantscha (Marina Cajacob, Daniel Telli), よりどりグリーン, Ryota Hasegawa, Xavier Bach-Esteve, Andrej Tobola, Gábor Botzheim</string>
+	<string name="translators_list" translatable="false">Alperen Zekeri̇ya Çulha, Hakan Sönger, Vit Semenec, Lia Rumantscha (Marina Cajacob, Daniel Telli), よりどりグリーン, Ryota Hasegawa, Xavier Bach-Esteve, Andrej Tobola, Gábor Botzheim, Max Bakalov, Daryna Stremetska</string>
 	<string name="threema_safe_password_faq" translatable="false">https://threema.ch/%s/faq/safepw</string>
 	<string name="threema_passwords_faq" translatable="false">https://threema.ch/%s/faq/lost_pass</string>
 	<string name="backup_faq_url" translatable="false">https://threema.ch/%s/faq/data_backup</string>

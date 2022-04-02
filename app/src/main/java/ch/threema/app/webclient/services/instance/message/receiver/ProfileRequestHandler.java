@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -41,13 +40,14 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.converter.Profile;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Webclient sending the user profile.
  */
 @WorkerThread
 public class ProfileRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ProfileRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileRequestHandler");
 
 	// Dispatchers
 	@NonNull private final MessageDispatcher responseDispatcher;

@@ -24,10 +24,7 @@ package ch.threema.app.mediaattacher;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -39,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.ImageViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
@@ -74,8 +72,8 @@ public class ControlPanelButton extends FrameLayout {
 			setLabelIcon(a.getResourceId(R.styleable.ControlPanelButton_labelIcon, R.drawable.ic_image_outline));
 			setLabelText(a.getResourceId(R.styleable.ControlPanelButton_labelText, R.string.name));
 
-			@ColorInt int strokeColor = a.getColor(R.styleable.ControlPanelButton_strokeColor, Color.TRANSPARENT);
 			@ColorInt int fillColor = a.getColor(R.styleable.ControlPanelButton_fillColor, ConfigUtils.getColorFromAttribute(context, R.attr.attach_button_background));
+			@ColorInt int strokeColor = a.getColor(R.styleable.ControlPanelButton_strokeColor, -1);
 
 			int fillColorAlpha = a.getInt(R.styleable.ControlPanelButton_fillColorAlpha, -1);
 
@@ -87,22 +85,26 @@ public class ControlPanelButton extends FrameLayout {
 	}
 
 	private void setForegroundColor(@ColorInt int color) {
-		this.labelTextView.setTextColor(color);
 		ImageViewCompat.setImageTintList(this.labelImageView, ColorStateList.valueOf(color));
 	}
 
 	private void setFillAndStrokeColor(@ColorInt int fillColor, @ColorInt int strokeColor, int fillColorAlpha) {
 		try {
-			StateListDrawable stateListDrawable = (StateListDrawable) container.getBackground();
-			LayerDrawable layerDrawable = (LayerDrawable) stateListDrawable.getCurrent();
+			GradientDrawable gradientDrawable = (GradientDrawable) labelImageView.getBackground().mutate();
 
-			GradientDrawable gradientDrawable = (GradientDrawable) layerDrawable.getDrawable(0);
-
-			gradientDrawable.setColor(fillColor);
-			if (fillColorAlpha >= 0) {
-				gradientDrawable.setAlpha(fillColorAlpha);
+			if (ConfigUtils.getAppTheme(getContext())== ConfigUtils.THEME_DARK) {
+				fillColorAlpha += 0x20;
 			}
-			gradientDrawable.setStroke(getResources().getDimensionPixelSize(R.dimen.media_attach_button_stroke_width), strokeColor);
+
+			if (fillColorAlpha >= 0) {
+				gradientDrawable.setColor(ColorUtils.setAlphaComponent(fillColor, fillColorAlpha));
+			} else {
+				gradientDrawable.setColor(fillColor);
+			}
+
+			if (strokeColor != -1) {
+				gradientDrawable.setStroke(getResources().getDimensionPixelSize(R.dimen.media_attach_button_stroke_width), strokeColor);
+			}
 
 		} catch (Exception ignore) {
 		}

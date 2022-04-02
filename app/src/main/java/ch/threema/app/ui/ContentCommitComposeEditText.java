@@ -31,7 +31,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,12 +48,13 @@ import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class ContentCommitComposeEditText extends ComposeEditText {
-	private static final Logger logger = LoggerFactory.getLogger(ContentCommitComposeEditText.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContentCommitComposeEditText");
 
 	private MessageReceiver messageReceiver;
 	private MessageService messageService;

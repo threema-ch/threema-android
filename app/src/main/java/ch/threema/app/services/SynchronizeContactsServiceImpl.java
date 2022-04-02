@@ -28,7 +28,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,13 +44,14 @@ import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 
 public class SynchronizeContactsServiceImpl implements SynchronizeContactsService {
-	private static final Logger logger = LoggerFactory.getLogger(SynchronizeContactsServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsServiceImpl");
 
 	private final ContentResolver contentResolver;
 	private final APIConnector apiConnector;

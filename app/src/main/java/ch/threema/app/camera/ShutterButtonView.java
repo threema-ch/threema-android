@@ -31,16 +31,16 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import ch.threema.app.R;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class ShutterButtonView extends AppCompatImageView {
-	private static final Logger logger = LoggerFactory.getLogger(ShutterButtonView.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ShutterButtonView");
 	private static final float DEAD_ZONE_HEIGHT = 0.05F;
 
 	private ShutterButtonListener shutterButtonListener;

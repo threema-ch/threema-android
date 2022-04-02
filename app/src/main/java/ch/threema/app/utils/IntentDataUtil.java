@@ -31,7 +31,6 @@ import android.os.SystemClock;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,7 +41,6 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.HomeActivity;
-import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
@@ -55,6 +53,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -68,7 +67,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 
 public class IntentDataUtil {
-	private static final Logger logger = LoggerFactory.getLogger(RecipientListBaseActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListBaseActivity");
 
 	public static final String ACTION_LICENSE_NOT_ALLOWED = BuildConfig.APPLICATION_ID + "license_not_allowed";
 	public static final String ACTION_CONTACTS_CHANGED = BuildConfig.APPLICATION_ID + "contacts_changed";

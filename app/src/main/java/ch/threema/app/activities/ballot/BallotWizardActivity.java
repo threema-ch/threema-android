@@ -31,12 +31,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -57,12 +57,13 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public class BallotWizardActivity extends ThreemaActivity {
-	private static final Logger logger = LoggerFactory.getLogger(BallotWizardActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotWizardActivity");
 
 	private static final int NUM_PAGES = 2;
 
@@ -386,7 +387,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
 }

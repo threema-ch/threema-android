@@ -24,22 +24,22 @@ package ch.threema.app.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import androidx.preference.PreferenceManager;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.utils.DownloadUtil;
 import ch.threema.app.utils.PushUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class UpdateReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(UpdateReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
 			logger.info("*** App was updated ***");
+
+			DownloadUtil.deleteOldAPKs(context);
 
 			// force token register
 			PushUtil.clearPushTokenSentDate(context);

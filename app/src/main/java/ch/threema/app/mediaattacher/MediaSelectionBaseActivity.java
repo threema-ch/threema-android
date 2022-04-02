@@ -55,7 +55,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,6 +97,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
@@ -114,7 +114,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 abstract public class MediaSelectionBaseActivity extends ThreemaActivity implements View.OnClickListener,
 														MediaAttachAdapter.ItemClickListener {
 	// Logging
-	private static final Logger logger = LoggerFactory.getLogger(MediaSelectionBaseActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaSelectionBaseActivity");
 
 	// Threema services
 	protected ServiceManager serviceManager;
@@ -124,6 +124,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	public static final String KEY_BOTTOM_SHEET_STATE = "bottom_sheet_state";
 	public static final String KEY_PREVIEW_MODE = "preview_mode";
 	private static final String KEY_PREVIEW_ITEM_POSITION = "preview_item";
+	private static final String KEY_IS_EDITING_CONTACT = "contact_editing";
 
 	protected static final int PERMISSION_REQUEST_ATTACH_FROM_GALLERY = 4;
 	protected static final int PERMISSION_REQUEST_ATTACH_FILE = 5;
@@ -155,7 +156,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected MediaAttachAdapter mediaAttachAdapter;
 	protected ImagePreviewPagerAdapter imagePreviewPagerAdapter;
 
-	protected int peekHeightNumElements = 1;
+	protected boolean isEditingContact = false;
+
+	protected int peekHeightNumRows = 1;
 	private @ColorInt int savedStatusBarColor = 0;
 
 	private boolean isDragging = false;
@@ -192,6 +195,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		if (savedInstanceState != null) {
 			onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
 			int bottomSheetStyleState = savedInstanceState.getInt(KEY_BOTTOM_SHEET_STATE);
+			isEditingContact = savedInstanceState.getBoolean(KEY_IS_EDITING_CONTACT);
 			if (bottomSheetStyleState != 0) {
 				updateUI(bottomSheetStyleState);
 			}
@@ -210,6 +214,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		outState.putInt(KEY_BOTTOM_SHEET_STATE, bottomSheetBehavior.getState());
 		outState.putBoolean(KEY_PREVIEW_MODE, isPreviewMode);
 		outState.putInt(KEY_PREVIEW_ITEM_POSITION, previewPager.getCurrentItem());
+		outState.putBoolean(KEY_IS_EDITING_CONTACT, isEditingContact);
 	}
 
 	/* end lifecycle methods */
@@ -296,10 +301,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.checkBox.setOnClickListener(v -> {
 			checkBox.toggle();
 			MediaAttachItem mediaItem = imagePreviewPagerAdapter.getItem(previewPager.getCurrentItem());
-			if (checkBox.isChecked()) {
-				mediaAttachViewModel.addSelectedMediaItem(mediaItem.getId(), mediaItem);
-			} else {
-				mediaAttachViewModel.removeSelectedMediaItem(mediaItem.getId());
+			if (mediaItem != null) {
+				if (checkBox.isChecked()) {
+					mediaAttachViewModel.addSelectedMediaItem(mediaItem.getId(), mediaItem);
+				} else {
+					mediaAttachViewModel.removeSelectedMediaItem(mediaItem.getId());
+				}
 			}
 		});
 
@@ -338,19 +345,19 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			this.gridLayoutManager = new GridLayoutManager(this, 4);
 			this.mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
 
-			this.peekHeightNumElements = 1;
+			this.peekHeightNumRows = 1;
 		} else {
 			this.gridLayoutManager = new GridLayoutManager(this, 3);
 			this.mediaAttachRecyclerView.setLayoutManager(gridLayoutManager);
 
-			this.peekHeightNumElements = isInSplitScreenMode() ? 1 : 2;
+			this.peekHeightNumRows = isInSplitScreenMode() ? 1 : 2;
 		}
 
 		// Set initial peek height
 		this.updatePeekHeight();
 
 		// Listen for layout changes
-		this.mediaAttachAdapter = new MediaAttachAdapter(this, this);
+		this.mediaAttachAdapter = new MediaAttachAdapter(this, this, this.gridLayoutManager.getSpanCount());
 		this.imagePreviewPagerAdapter = new ImagePreviewPagerAdapter(this);
 		this.previewPager.setOffscreenPageLimit(1);
 		this.mediaAttachRecyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
@@ -497,6 +504,10 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	private void updatePreviewInfo(int position) {
 		MediaAttachItem mediaItem = imagePreviewPagerAdapter.getItem(position);
+		if (mediaItem == null) {
+			return;
+		}
+
 		checkBox.setChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().containsKey(mediaItem.getId()));
 
 		previewFilenameTextView.setText(String.format("%s/%s", mediaItem.getBucketName(), mediaItem.getDisplayName()));
@@ -743,7 +754,10 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 		switch (state) {
 			case STATE_HIDDEN:
-				finish();
+				// If editing a contact, we don't want to finish this activity yet
+				if (!isEditingContact) {
+					finish();
+				}
 				break;
 			case STATE_EXPANDED:
 				dateView.setVisibility(View.VISIBLE);
@@ -775,7 +789,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				);
 				// show/hide control panel in attach mode depending on whether we have selected items
 				if (MediaSelectionBaseActivity.this instanceof MediaAttachActivity) {
-					if (mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty() && controlPanel.getTranslationY() == 0) {
+					if (mediaAttachViewModel.getSelectedMediaItemsHashMap().isEmpty()) {
 						controlPanel.animate().translationY(controlPanel.getHeight());
 					} else { // show
 						controlPanel.animate().translationY(0);
@@ -828,15 +842,15 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	/**
-	 * Adjust the peek height of the bottom sheet to fit in the {@link #peekHeightNumElements}
+	 * Adjust the peek height of the bottom sheet to fit in the {@link #peekHeightNumRows}
 	 * number of items vertically.
 	 */
 	protected synchronized void updatePeekHeight() {
 		logger.debug("*** updatePeekHeight");
 
 		if (shouldShowMediaGrid()) {
-			final int numElements = this.peekHeightNumElements;
-			logger.debug("Update peek height ({} elements)", numElements);
+			final int numRows = this.peekHeightNumRows;
+			logger.debug("Update peek height ({} elements)", numRows);
 			int numItems = mediaAttachRecyclerView.getLayoutManager().getItemCount();
 
 			bottomSheetLayout.setVisibility(View.VISIBLE);
@@ -861,8 +875,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			boolean peekHeightKnown;
 			if (numItems > 0 && mediaAttachRecyclerView.getChildAt(0) != null) {
 				// Child views are already here, we can calculate the total height
-				peekHeight += mediaAttachRecyclerView.getChildAt(0).getHeight() * numElements;
-				peekHeight += MediaSelectionBaseActivity.this.getResources().getDimensionPixelSize(R.dimen.grid_spacing) * numElements;
+				int itemHeight =  mediaAttachRecyclerView.getChildAt(0).getHeight();
+				peekHeight += itemHeight * numRows;
+				peekHeight += MediaSelectionBaseActivity.this.getResources().getDimensionPixelSize(R.dimen.grid_spacing) * numRows;
+				if (numItems > (numRows * gridLayoutManager.getSpanCount())) {
+					peekHeight += itemHeight / 8; // teaser for further items below
+				}
 				peekHeightKnown = true;
 			} else {
 				// Child views aren't initialized yet
@@ -901,7 +919,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			MediaAttachItem item = mediaAttachAdapter.getMediaItems().get(firstVisible);
 			dateView.post(() -> {
 				dateTextView.setMaxLines(1);
-				dateTextView.setText(LocaleUtil.formatDateRelative(MediaSelectionBaseActivity.this, item.getDateModified() * 1000));
+				dateTextView.setText(LocaleUtil.formatDateRelative(item.getDateModified() * 1000));
 			});
 			dateView.setVisibility(View.VISIBLE);
 		} else {

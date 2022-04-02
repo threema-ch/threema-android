@@ -47,7 +47,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,9 +57,10 @@ import androidx.transition.Fade;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
 
 public class AnimationUtil {
-	private static final Logger logger = LoggerFactory.getLogger(AnimationUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimationUtil");
 
 	public static void expand(final View v) {
 		expand(v, null);

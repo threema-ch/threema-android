@@ -22,13 +22,13 @@
 package ch.threema.app.processors;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.MessageAckListener;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
@@ -39,7 +39,7 @@ import ch.threema.storage.models.MessageState;
  * the outgoing message in the message queue.
  */
 public class MessageAckProcessor implements MessageAckListener {
-	private static final Logger logger = LoggerFactory.getLogger(MessageAckProcessor.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageAckProcessor");
 
 	// Services
 	private MessageService messageService;

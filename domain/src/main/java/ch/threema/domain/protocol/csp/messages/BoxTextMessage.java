@@ -21,9 +21,6 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.charset.StandardCharsets;
 
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -32,8 +29,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  * A message that has plain text as its contents.
  */
 public class BoxTextMessage extends AbstractMessage {
-
-	private static final Logger logger = LoggerFactory.getLogger(BoxTextMessage.class);
 
 	private String text;
 

@@ -30,7 +30,6 @@ import android.os.Build;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.biometric.BiometricManager;
 import androidx.core.app.ActivityCompat;
@@ -38,11 +37,12 @@ import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.BiometricLockActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.activities.BiometricLockActivity.INTENT_DATA_AUTHENTICATION_TYPE;
 
 public class BiometricUtil {
-	private static final Logger logger = LoggerFactory.getLogger(BiometricUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BiometricUtil");
 
 	public static boolean isBiometricsSupported(Context context) {
 		String toast = context.getString(R.string.biometrics_not_avilable);

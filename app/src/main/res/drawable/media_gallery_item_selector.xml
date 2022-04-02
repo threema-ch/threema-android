@@ -4,5 +4,5 @@
 	<item android:state_activated="true" android:drawable="@drawable/shape_square_pressed"/>
 	<item android:state_selected="true" android:drawable="@drawable/shape_square_pressed"/>
 	<item android:state_checked="true" android:drawable="@drawable/shape_square"/>
-	<item android:drawable="@android:color/transparent"/>
+	<item android:drawable="@drawable/shape_square_foreground"/>
 </selector>

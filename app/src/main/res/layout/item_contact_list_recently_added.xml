@@ -61,7 +61,7 @@
 		android:stateListAnimator="@animator/selector_list_checkbox_bg"
 		android:visibility="visible"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintLeft_toLeftOf="@id/recently_added_background"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<ch.threema.app.ui.CheckableView

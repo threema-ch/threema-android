@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
@@ -47,14 +48,29 @@ import ch.threema.app.ThreemaApplication;
 public class ShowOnceDialog extends ThreemaDialogFragment {
 	private AlertDialog alertDialog;
 	private Activity activity;
-	public static final String PREF_PREFIX = "dialog_";
+
+	private static final String PREF_PREFIX = "dialog_";
+
+	public static final String ARG_TITLE = "title";
+	public static final String ARG_MESSAGE_STRING = "messageString";
+	public static final String ARG_MESSAGE_INT = "messageInt";
 
 	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message) {
-		ShowOnceDialog dialog = new ShowOnceDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("messageInt", message);
+		final Bundle args = new Bundle();
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE_INT, message);
+		return newInstance(args);
+	}
 
+	public static ShowOnceDialog newInstance(@StringRes int title, @NonNull String message) {
+		final Bundle args = new Bundle();
+		args.putInt(ARG_TITLE, title);
+		args.putString(ARG_MESSAGE_STRING, message);
+		return newInstance(args);
+	}
+
+	private static ShowOnceDialog newInstance(@NonNull Bundle args) {
+		final ShowOnceDialog dialog = new ShowOnceDialog();
 		dialog.setArguments(args);
 		return dialog;
 	}
@@ -88,8 +104,13 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
 
-		@StringRes int title = getArguments().getInt("title");
-		@StringRes int messageInt = getArguments().getInt("messageInt");
+		final Bundle arguments = getArguments();
+		@StringRes int title = arguments.getInt(ARG_TITLE);
+		@StringRes int messageInt = arguments.getInt(ARG_MESSAGE_INT);
+		String messageString = null;
+		if (messageInt == 0) {
+			messageString = arguments.getString(ARG_MESSAGE_STRING);
+		}
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_show_once, null);
 		final TextView textView = dialogView.findViewById(R.id.message);
@@ -105,7 +126,11 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 		}
 
 		builder.setPositiveButton(getString(R.string.ok), null);
-		textView.setText(messageInt);
+		if (messageString != null) {
+			textView.setText(messageString);
+		} else {
+			textView.setText(messageInt);
+		}
 
 		setCancelable(false);
 

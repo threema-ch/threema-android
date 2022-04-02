@@ -24,21 +24,18 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import com.neilalexander.jnacl.NaCl;
-
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
@@ -46,17 +43,16 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
 import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
-import ch.threema.domain.protocol.csp.coders.MessageBox;
-import ch.threema.domain.models.MessageId;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
@@ -70,12 +66,13 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactMessageReceiver");
-	private static final Logger validationLogger = LoggerFactory.getLogger("Validation");
+	private static final Logger validationLogger = LoggingUtil.getThreemaLogger("Validation");
 
 	private final ContactModel contactModel;
 	private final ContactService contactService;
@@ -83,23 +80,32 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private final DatabaseServiceNew databaseServiceNew;
 	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
-	private IdListService blackListIdentityService;
-	private ApiService apiService;
+	private final IdListService blackListIdentityService;
 
 	public ContactMessageReceiver(ContactModel contactModel,
 								  ContactService contactService,
 								  DatabaseServiceNew databaseServiceNew,
 								  MessageQueue messageQueue,
 								  IdentityStore identityStore,
-								  IdListService blackListIdentityService,
-	                              ApiService apiService) {
+								  IdListService blackListIdentityService) {
 		this.contactModel = contactModel;
 		this.contactService = contactService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.messageQueue = messageQueue;
 		this.identityStore = identityStore;
 		this.blackListIdentityService = blackListIdentityService;
-		this.apiService = apiService;
+	}
+
+	protected ContactMessageReceiver(ContactMessageReceiver contactMessageReceiver) {
+		this(
+			contactMessageReceiver.contactModel,
+			contactMessageReceiver.contactService,
+			contactMessageReceiver.databaseServiceNew,
+			contactMessageReceiver.messageQueue,
+			contactMessageReceiver.identityStore,
+			contactMessageReceiver.blackListIdentityService
+		);
+		avatar = contactMessageReceiver.avatar;
 	}
 
 	@Override
@@ -111,7 +117,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		m.setCreatedAt(new Date());
 		m.setSaved(false);
 		m.setUid(UUID.randomUUID().toString());
-		m.setIdentity(this.contactModel.getIdentity());
+		m.setIdentity(contactModel.getIdentity());
 		return m;
 	}
 
@@ -127,31 +133,31 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		m.setCreatedAt(new Date());
 		m.setSaved(true);
 		m.setUid(UUID.randomUUID().toString());
-		m.setIdentity(this.contactModel.getIdentity());
+		m.setIdentity(contactModel.getIdentity());
 		m.setBody(statusBody);
 
-		this.saveLocalModel(m);
+		saveLocalModel(m);
 
 		return m;
 	}
 
 	@Override
 	public void saveLocalModel(MessageModel save) {
-		this.databaseServiceNew.getMessageModelFactory().createOrUpdate(save);
+		databaseServiceNew.getMessageModelFactory().createOrUpdate(save);
 	}
 
 	@Override
 	public boolean createBoxedTextMessage(String text, MessageModel messageModel) throws ThreemaException {
 		BoxTextMessage msg = new BoxTextMessage();
 		msg.setText(text);
-		msg.setToIdentity(this.contactModel.getIdentity());
+		msg.setToIdentity(contactModel.getIdentity());
 
 		//fix #ANDR-512
 		//save model after receiving a new message id
-		this.initNewAbstractMessage(messageModel, msg);
+		initNewAbstractMessage(messageModel, msg);
 
 		logger.info("Enqueue text message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox boxmsg = this.messageQueue.enqueue(msg);
+		MessageBox boxmsg = messageQueue.enqueue(msg);
 		if (boxmsg != null) {
 			messageModel.setIsQueued(true);
 			MessageId id = boxmsg.getMessageId();
@@ -166,7 +172,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				validationLogger.info("> Nonce: {}", Utils.byteArrayToHexString(boxmsg.getNonce()));
 				validationLogger.info("> Data: {}", Utils.byteArrayToHexString(boxmsg.getBox()));
 				validationLogger.info("> Public key ({}): {}",
-					msg.getToIdentity(), Utils.byteArrayToHexString(this.contactModel.getPublicKey()));
+					msg.getToIdentity(), Utils.byteArrayToHexString(contactModel.getPublicKey()));
 			}
 
 			if(id != null) {
@@ -181,21 +187,24 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public boolean createBoxedLocationMessage(double lat, double lng, float acc, String poiName, MessageModel messageModel) throws ThreemaException {
+	public boolean createBoxedLocationMessage(@NonNull MessageModel messageModel) throws ThreemaException {
+
+		LocationDataModel locationDataModel = messageModel.getLocationData();
 
 		BoxLocationMessage msg = new BoxLocationMessage();
-		msg.setLatitude(lat);
-		msg.setLongitude(lng);
-		msg.setAccuracy(acc);
-		msg.setToIdentity(this.contactModel.getIdentity());
-		msg.setPoiName(poiName);
+		msg.setLatitude(locationDataModel.getLatitude());
+		msg.setLongitude(locationDataModel.getLongitude());
+		msg.setAccuracy(locationDataModel.getAccuracy());
+		msg.setToIdentity(contactModel.getIdentity());
+		msg.setPoiName(locationDataModel.getPoi());
+		msg.setPoiAddress(locationDataModel.getAddress());
 
 		//fix #ANDR-512
 		//save model after receiving a new message id
-		this.initNewAbstractMessage(messageModel, msg);
+		initNewAbstractMessage(messageModel, msg);
 
 		logger.info("Enqueue location message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox boxmsg = this.messageQueue.enqueue(msg);
+		MessageBox boxmsg = messageQueue.enqueue(msg);
 
 		if (boxmsg != null) {
 			messageModel.setIsQueued(true);
@@ -211,16 +220,19 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public boolean createBoxedFileMessage(byte[] thumbnailBlobId,
-											 byte[] fileBlobId, EncryptResult fileResult,
-											MessageModel messageModel) throws ThreemaException {
+	public boolean createBoxedFileMessage(
+		byte[] thumbnailBlobId,
+		byte[] fileBlobId,
+		SymmetricEncryptionResult encryptionResult,
+		MessageModel messageModel
+	) throws ThreemaException {
 		FileDataModel modelFileData = messageModel.getFileData();
 		FileMessage fileMessage = new FileMessage();
 		FileData fileData = new FileData();
 		fileData
 				.setFileBlobId(fileBlobId)
 				.setThumbnailBlobId(thumbnailBlobId)
-				.setEncryptionKey(fileResult.getKey())
+				.setEncryptionKey(encryptionResult.getKey())
 				.setMimeType(modelFileData.getMimeType())
 				.setThumbnailMimeType(modelFileData.getThumbnailMimeType())
 				.setFileSize(modelFileData.getFileSize())
@@ -231,15 +243,15 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				.setMetaData(modelFileData.getMetaData());
 
 		fileMessage.setData(fileData);
-		fileMessage.setToIdentity(this.contactModel.getIdentity());
+		fileMessage.setToIdentity(contactModel.getIdentity());
 
 		//fix #ANDR-512
 		//save model after receiving a new message id
-		this.initNewAbstractMessage(messageModel, fileMessage);
+		initNewAbstractMessage(messageModel, fileMessage);
 
 		logger.info("Enqueue file message ID {} to {}",
 			fileMessage.getMessageId(), fileMessage.getToIdentity());
-		MessageBox messageBox = this.messageQueue.enqueue(fileMessage);
+		MessageBox messageBox = messageQueue.enqueue(fileMessage);
 		if(messageBox != null) {
 			messageModel.setIsQueued(true);
 			MessageId id = messageBox.getMessageId();
@@ -263,17 +275,17 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
 		BallotCreateMessage msg = new BallotCreateMessage();
-		msg.setToIdentity(this.contactModel.getIdentity());
-		msg.setBallotCreator(this.identityStore.getIdentity());
+		msg.setToIdentity(contactModel.getIdentity());
+		msg.setBallotCreator(identityStore.getIdentity());
 		msg.setBallotId(ballotId);
 		msg.setData(ballotData);
 
 		//fix #ANDR-512
 		//save model after receiving a new message id
-		this.initNewAbstractMessage(messageModel, msg);
+		initNewAbstractMessage(messageModel, msg);
 
 		logger.info("Enqueue ballot message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox messageBox = this.messageQueue.enqueue(msg);
+		MessageBox messageBox = messageQueue.enqueue(msg);
 		if(messageBox != null) {
 			messageModel.setIsQueued(true);
 			messageModel.setApiMessageId(messageBox.getMessageId().toString());
@@ -288,27 +300,24 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	public boolean createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException {
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
-		switch (ballotModel.getType()) {
-			case RESULT_ON_CLOSE:
-				//if i am the creator do not send anything
-				if(TestUtil.compare(ballotModel.getCreatorIdentity(), this.identityStore.getIdentity())) {
-					return true;
-				}
-
-				break;
+		if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
+			//if i am the creator do not send anything
+			if (TestUtil.compare(ballotModel.getCreatorIdentity(), identityStore.getIdentity())) {
+				return true;
+			}
 		}
 
 		BallotVoteMessage msg = new BallotVoteMessage();
 
 		msg.setBallotCreator(ballotModel.getCreatorIdentity());
 		msg.setBallotId(ballotId);
-		msg.setToIdentity(this.getContact().getIdentity());
+		msg.setToIdentity(getContact().getIdentity());
 		for(BallotVote v: votes) {
 			msg.getBallotVotes().add(v);
 		}
 
 		logger.info("Enqueue ballot vote message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox messageBox = this.messageQueue.enqueue(msg);
+		MessageBox messageBox = messageQueue.enqueue(msg);
 		if (messageBox != null) {
 			contactService.setIsHidden(msg.getToIdentity(), false);
 			contactService.setIsArchived(msg.getToIdentity(), false);
@@ -320,145 +329,82 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 	@Override
 	public List<MessageModel> loadMessages(MessageService.MessageFilter filter) throws SQLException {
-		return this.databaseServiceNew.getMessageModelFactory().find(
-				this.contactModel.getIdentity(),
+		return databaseServiceNew.getMessageModelFactory().find(
+			contactModel.getIdentity(),
 				filter);
 	}
 
 	@Override
 	public long getMessagesCount() {
-		return this.databaseServiceNew.getMessageModelFactory().countMessages(
-			this.contactModel.getIdentity());
+		return databaseServiceNew.getMessageModelFactory().countMessages(
+			contactModel.getIdentity());
 	}
 
 	@Override
 	public long getUnreadMessagesCount() {
-		return this.databaseServiceNew.getMessageModelFactory().countUnreadMessages(
-				this.contactModel.getIdentity());
+		return databaseServiceNew.getMessageModelFactory().countUnreadMessages(
+			contactModel.getIdentity());
 	}
 
 	@Override
 	public List<MessageModel> getUnreadMessages() {
-		return this.databaseServiceNew.getMessageModelFactory().getUnreadMessages(
-			this.contactModel.getIdentity());
+		return databaseServiceNew.getMessageModelFactory().getUnreadMessages(
+			contactModel.getIdentity());
 	}
 
 	public MessageModel getLastMessage() {
-		return this.databaseServiceNew.getMessageModelFactory().getLastMessage(
-				this.contactModel.getIdentity());
+		return databaseServiceNew.getMessageModelFactory().getLastMessage(
+			contactModel.getIdentity());
 	}
 
 	public ContactModel getContact() {
-		return this.contactModel;
+		return contactModel;
 	}
 
 	@Override
 	public boolean isEqual(MessageReceiver o) {
-		return o instanceof ContactMessageReceiver && ((ContactMessageReceiver) o).getContact().getIdentity().equals(this.getContact().getIdentity());
+		return o instanceof ContactMessageReceiver && ((ContactMessageReceiver) o).getContact().getIdentity().equals(getContact().getIdentity());
 	}
 
 	@Override
 	public String getDisplayName() {
-		return NameUtil.getDisplayNameOrNickname(this.contactModel, true);
+		return NameUtil.getDisplayNameOrNickname(contactModel, true);
 	}
 
 	@Override
 	public String getShortName() {
-		return NameUtil.getShortName(this.contactModel);
+		return NameUtil.getShortName(contactModel);
 	}
 
 	@Override
 	public void prepareIntent(Intent intent) {
-		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, this.contactModel.getIdentity());
+		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, contactModel.getIdentity());
 	}
 
 	@Override
 	@Nullable
 	public Bitmap getNotificationAvatar() {
-		if(this.avatar == null && this.contactService != null) {
-			this.avatar = this.contactService.getAvatar(this.contactModel, false);
+		if(avatar == null && contactService != null) {
+			avatar = contactService.getAvatar(contactModel, false);
 		}
-		return this.avatar;
+		return avatar;
 	}
 
 	@Deprecated
 	@Override
 	public int getUniqueId() {
-		return this.contactService.getUniqueId(this.contactModel);
+		return contactService.getUniqueId(contactModel);
 	}
 
 	@Override
 	public String getUniqueIdString() {
-		return this.contactService.getUniqueIdString(this.contactModel);
-	}
-
-	@Override
-	public EncryptResult encryptFileThumbnailData(byte[] fileThumbnailData, final byte[] encryptionKey) throws ThreemaException {
-		final byte[] thumbnailBoxed = NaCl.symmetricEncryptData(fileThumbnailData, encryptionKey, ProtocolDefines.FILE_THUMBNAIL_NONCE);
-		BlobUploader blobUploaderThumbnail = apiService.createUploader(thumbnailBoxed);
-		blobUploaderThumbnail.setVersion(ThreemaApplication.getAppVersion());
-
-		return new EncryptResult() {
-			@Override
-			public byte[] getData() {
-				return thumbnailBoxed;
-			}
-
-			@Override
-			public byte[] getKey() {
-				return encryptionKey;
-			}
-
-			@Override
-			public byte[] getNonce() {
-				return ProtocolDefines.FILE_THUMBNAIL_NONCE;
-			}
-
-			@Override
-			public int getSize() {
-				return thumbnailBoxed.length;
-			}
-		};
-	}
-
-	@Override
-	public EncryptResult encryptFileData(final byte[] fileData) throws ThreemaException {
-		//generate random symmetric key for file encryption
-		SecureRandom rnd = new SecureRandom();
-		final byte[] encryptionKey = new byte[NaCl.SYMMKEYBYTES];
-		rnd.nextBytes(encryptionKey);
-
-		NaCl.symmetricEncryptDataInplace(fileData, encryptionKey, ProtocolDefines.FILE_NONCE);
-		BlobUploader blobUploaderThumbnail = apiService.createUploader(fileData);
-		blobUploaderThumbnail.setVersion(ThreemaApplication.getAppVersion());
-
-		return new EncryptResult() {
-			@Override
-			public byte[] getData() {
-				return fileData;
-			}
-
-			@Override
-			public byte[] getKey() {
-				return encryptionKey;
-			}
-
-			@Override
-			public byte[] getNonce() {
-				return ProtocolDefines.FILE_NONCE;
-			}
-
-			@Override
-			public int getSize() {
-				return fileData.length;
-			}
-		};
+		return contactService.getUniqueIdString(contactModel);
 	}
 
 	@Override
 	public boolean isMessageBelongsToMe(AbstractMessageModel message) {
 		return message instanceof MessageModel
-			&& message.getIdentity().equals(this.contactModel.getIdentity());
+			&& message.getIdentity().equals(contactModel.getIdentity());
 	}
 
 	@Override
@@ -474,12 +420,12 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	public boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied) {
 		int cannotSendResId = 0;
-		if(this.blackListIdentityService.has(this.contactModel.getIdentity())) {
+		if(blackListIdentityService.has(contactModel.getIdentity())) {
 			cannotSendResId = R.string.blocked_cannot_send;
 		}
 		else {
-			if (this.contactModel.getState() != null) {
-				switch (this.contactModel.getState()) {
+			if (contactModel.getState() != null) {
+				switch (contactModel.getState()) {
 					case INVALID:
 						cannotSendResId = R.string.invalid_cannot_send;
 						break;
@@ -509,20 +455,33 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 	@Override
 	public String[] getIdentities() {
-		return new String[]{this.contactModel.getIdentity()};
+		return new String[]{contactModel.getIdentity()};
 	}
 
 	@Override
 	public String[] getIdentities(int requiredFeature) {
-		if(ThreemaFeature.hasFeature(this.contactModel.getFeatureMask(), requiredFeature)) {
-			return new String[] {this.contactModel.getIdentity()};
+		if(ThreemaFeature.hasFeature(contactModel.getFeatureMask(), requiredFeature)) {
+			return new String[] {contactModel.getIdentity()};
 		}
 		return new String[0];
 	}
 
 	@Override
-	public String toString() {
-		return "ContactMessageReceiver (identity = " + this.contactModel.getIdentity() + ")";
+	public @NonNull String toString() {
+		return "ContactMessageReceiver (identity = " + contactModel.getIdentity() + ")";
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ContactMessageReceiver)) return false;
+		ContactMessageReceiver that = (ContactMessageReceiver) o;
+		return Objects.equals(contactModel, that.contactModel);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(contactModel);
 	}
 
 	private void initNewAbstractMessage(MessageModel messageModel, AbstractMessage abstractMessage) {
@@ -531,7 +490,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				&& abstractMessage.getMessageId() != null
 				&& TestUtil.empty(messageModel.getApiMessageId())) {
 			messageModel.setApiMessageId(abstractMessage.getMessageId().toString());
-			this.saveLocalModel(messageModel);
+			saveLocalModel(messageModel);
 		}
 	}
 }

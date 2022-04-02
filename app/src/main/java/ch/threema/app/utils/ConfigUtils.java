@@ -67,7 +67,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -84,6 +83,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -112,6 +112,7 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
@@ -124,7 +125,7 @@ import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_A
 import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
 
 public class ConfigUtils {
-	private static final Logger logger = LoggerFactory.getLogger(ConfigUtils.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ConfigUtils");
 
 	public static final int THEME_LIGHT = 0;
 	public static final int THEME_DARK = 1;
@@ -253,9 +254,8 @@ public class ConfigUtils {
 
 	/**
 	 * Get a Socket Factory for certificate pinning and forced TLS version upgrade.
-	 * @param host
 	 */
-	public static SSLSocketFactory getSSLSocketFactory(String host) {
+	public static @NonNull SSLSocketFactory getSSLSocketFactory(String host) {
 		return new TLSUpgradeSocketFactoryWrapper(TrustKit.getInstance().getSSLSocketFactory(host));
 	}
 
@@ -403,7 +403,14 @@ public class ConfigUtils {
 		if (newStyle != -1) {
 			emojiStyle = newStyle;
 		} else {
-			emojiStyle = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences__emoji_style), "0"));
+			if (BuildFlavor.isLibre()) {
+				emojiStyle = EMOJI_ANDROID;
+				return;
+			}
+			emojiStyle = Integer.valueOf(
+				PreferenceManager.getDefaultSharedPreferences(context).
+				getString(context.getString(R.string.preferences__emoji_style),
+				"0"));
 		}
 	}
 
@@ -500,11 +507,23 @@ public class ConfigUtils {
 	}
 
 	public static String getPrivacyPolicyURL(Context context) {
+		return getLicenceURL(context, R.string.privacy_policy_url);
+	}
+
+	public static String getTermsOfServiceURL(Context context) {
+		return getLicenceURL(context, R.string.terms_of_service_url);
+	}
+
+	public static String getEulaURL(Context context) {
+		return getLicenceURL(context, R.string.eula_url);
+	}
+
+	private static String getLicenceURL(Context context, @StringRes int url) {
 		String lang = LocaleUtil.getAppLanguage().startsWith("de") ? "de" : "en";
 		String version = ConfigUtils.getAppVersion(context);
 		String theme = ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK ? "dark" : "light";
 
-		return String.format(context.getString(R.string.privacy_policy_url), lang, version, theme);
+		return String.format(context.getString(url), lang, version, theme);
 	}
 
 	public static String getWorkExplainURL(Context context) {
@@ -601,7 +620,7 @@ public class ConfigUtils {
 	}
 
 	public static boolean supportsGroupLinks() {
-		return isTestBuild();
+		return false;
 	}
 
 	/**
@@ -649,7 +668,6 @@ public class ConfigUtils {
 			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
 	}
 
-
 	/**
 	 * Returns true if privacy settings imply that screenshots and app switcher thumbnails should be disabled
 	 * @param preferenceService
@@ -693,7 +711,11 @@ public class ConfigUtils {
 		return !PreferenceService.LockingMech_NONE.equals(preferenceService.getLockMechanism());
 	}
 
-	public static void setLocaleOverride(Context context, PreferenceService preferenceService) {
+	public static void setLocaleOverride(@Nullable Context context, @Nullable PreferenceService preferenceService) {
+		if (context == null) {
+			return;
+		}
+
 		if (preferenceService == null) {
 			return;
 		}
@@ -736,6 +758,7 @@ public class ConfigUtils {
 					break;
 			}
 			res.updateConfiguration(conf, dm);
+			Locale.setDefault(conf.locale);
 		} catch (Exception e) {
 			//
 		}
@@ -961,6 +984,23 @@ public class ConfigUtils {
 	 */
 	public static boolean requestAudioPermissions(@NonNull Activity activity, Fragment fragment, int requestCode) {
 		final String[] permissions = new String[]{ Manifest.permission.RECORD_AUDIO };
+		if (checkIfNeedsPermissionRequest(activity, permissions)) {
+			requestPermissions(activity, fragment, permissions, requestCode);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Asynchronously request permission required for checking for connected bluetooth devices in Android S
+	 *
+	 * @param activity Activity context for onRequestPermissionsResult callback
+	 * @param requestCode request code for onRequestPermissionsResult callback
+	 * @return true if permissions are already granted, false otherwise
+	 */
+	@RequiresApi(api = Build.VERSION_CODES.S)
+	public static boolean requestBluetoothConnectPermissions(@NonNull Activity activity, Fragment fragment, int requestCode) {
+		final String[] permissions = new String[]{ Manifest.permission.BLUETOOTH_CONNECT };
 		if (checkIfNeedsPermissionRequest(activity, permissions)) {
 			requestPermissions(activity, fragment, permissions, requestCode);
 			return false;
@@ -1384,6 +1424,30 @@ public class ConfigUtils {
 				}
 			}
 		} catch (Exception ignored) {}
+	}
+
+	/**
+	 * Return whether or not to use Threema Push, based on the build flavor and the preferences.
+	 */
+	public static boolean useThreemaPush(@NonNull PreferenceService preferenceService) {
+		return BuildFlavor.forceThreemaPush() || preferenceService.useThreemaPush();
+	}
+
+	/**
+	 * Return whether or not to use Threema Push, based on the build flavor and the preferences.
+	 */
+	public static boolean useThreemaPush(@NonNull SharedPreferences rawSharedPreferences, @NonNull Context context) {
+		return BuildFlavor.forceThreemaPush()
+			|| rawSharedPreferences.getBoolean(context.getString(R.string.preferences__threema_push_switch), false);
+	}
+
+
+	/**
+	 * Return whether to show border around qr code to indicate its purpose
+	 * @return true if borders are to be shown, false otherwise
+	 */
+	public static boolean showQRCodeTypeBorders() {
+		return false;
 	}
 
 	/**

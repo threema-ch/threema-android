@@ -38,6 +38,8 @@
 	<color name="bubble_send">#EFFDE4</color>
 	<color name="bubble_selected_overlay">#4441d68d</color>
 	<color name="bubble_pressed_overlay">@color/material_grey_300_alpha</color>
+	<color name="bubble_thumbnail_placeholder_tint">#eeeeee</color>
+	<color name="bubble_thumbnail_placeholder_background">#fcfcfc</color>
 
 	<!-- emoji picker color -->
 	<color name="emoji_picker_background_top">#e4e7e9</color>
@@ -80,6 +82,7 @@
 	<color name="messagelist_highlight_color">@color/material_red</color>
 	<color name="ballot_list_footer_background">#ffe3e3e3</color>
 	<color name="image_tint_default">@color/material_grey_600</color>
+	<color name="media_attach_button_background_default">#FFEEEEEE</color>
 
 	<!--**********************************************************************************************************-->
 	<!-- values for dark application theme -->
@@ -134,6 +137,8 @@
 	<color name="dark_bubble_send">#303030</color>
 	<color name="dark_bubble_selected_overlay">#44419645</color>
 	<color name="dark_bubble_pressed_overlay">@color/material_grey_300_alpha</color>
+	<color name="dark_bubble_thumbnail_placeholder_tint">#666666</color>
+	<color name="dark_bubble_thumbnail_placeholder_background">#555555</color>
 
 	<!--**********************************************************************************************************-->
 	<!-- agnostic colors -->
@@ -194,6 +199,7 @@
 	<color name="imagepaint_overlay_select_color">#FFFFFFFF</color>
 	<color name="gallery_background">#ff1a1a1a</color>
 	<color name="status_bar_detail">#3000</color>
+	<color name="mediaviewer_caption_background_color">#77000000</color>
 
 	<!--**********************************************************************************************************-->
 	<!-- material colors for reference -->
@@ -227,4 +233,5 @@
 	<color name="material_teal_secondary">#00ebd5</color>
 	<color name="material_grey_300_alpha">#44e0e0e0</color>
 	<color name="recently_added_background">#2241d68d</color>
+	<color name="qrscanner_masking_color">#50000000</color>
 </resources>

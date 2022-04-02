@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.os.UserManager;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -34,10 +33,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SynchronizeContactsUtil {
-	private static final Logger logger = LoggerFactory.getLogger(SynchronizeContactsUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsUtil");
 
 	public static void startDirectly() {
 		SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();

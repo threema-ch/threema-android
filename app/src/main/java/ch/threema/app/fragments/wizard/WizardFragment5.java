@@ -213,7 +213,7 @@ public class WizardFragment5 extends WizardFragment implements View.OnClickListe
 		String getPresetEmail();
 		boolean getSafeForcePasswordEntry();
 		boolean getSafeSkipBackupPasswordEntry();
-		boolean getSafeDisabled();
+		boolean isSafeEnabled();
 		String getSafePassword();
 		ThreemaSafeServerInfo getSafeServerInfo();
 		boolean getSyncContacts();

@@ -22,14 +22,13 @@
 package ch.threema.app.services;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class DeadlineListServiceImpl implements DeadlineListService {
-	private static final Logger logger = LoggerFactory.getLogger(DeadlineListServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DeadlineListServiceImpl");
 
 	private final Object lock = new Object();
 	private HashMap<String, String> hashMap;

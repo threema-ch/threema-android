@@ -25,7 +25,6 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -36,6 +35,7 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
@@ -43,7 +43,7 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
  * add profile pic field to normal, group and distribution list message models
  */
 public class SystemUpdateToVersion42 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion42.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion42");
 
 	private final SQLiteDatabase sqLiteDatabase;
 

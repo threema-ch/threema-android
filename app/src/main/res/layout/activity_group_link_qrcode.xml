@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/main_content"
 	android:layout_width="match_parent"
@@ -34,7 +35,7 @@
 			android:paddingLeft="16dp"
 			android:paddingRight="16dp">
 
-			<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/qr_code_container"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -51,28 +52,6 @@
 					android:layout_height="match_parent"
 					android:adjustViewBounds="true"
 					android:scaleType="fitCenter"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toTopOf="parent" />
-
-				<View
-					android:id="@+id/icon_border"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
-					android:layout_gravity="center"
-					android:background="@android:color/white"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toTopOf="parent" />
-
-				<ImageView
-					android:id="@+id/icon_image"
-					android:layout_width="36dp"
-					android:layout_height="36dp"
-					android:layout_gravity="center"
-					android:src="@mipmap/ic_launcher"
 					app:layout_constraintBottom_toBottomOf="parent"
 					app:layout_constraintLeft_toLeftOf="parent"
 					app:layout_constraintRight_toRightOf="parent"

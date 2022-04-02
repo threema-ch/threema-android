@@ -25,11 +25,13 @@ import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.lambdaworks.crypto.SCrypt;
@@ -39,7 +41,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -58,6 +59,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -89,24 +91,33 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.Result;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.factories.DistributionListMemberModelFactory;
+import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMemberModelFactory;
 import ch.threema.storage.factories.GroupModelFactory;
+import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
+import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupInviteModel;
+import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
+import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
@@ -117,7 +128,7 @@ import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RE
 import static ch.threema.app.threemasafe.ThreemaSafeUploadService.EXTRA_FORCE_UPLOAD;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
 
 	// Scrypt parameters as recommended by OWASP:
 	// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt
@@ -183,6 +194,33 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_GROUP_MEMBERS = "members";
 	private static final String TAG_SAFE_GROUP_DELETED = "deleted";
 	private static final String TAG_SAFE_GROUP_PRIVATE = "private";
+
+	private static final String TAG_SAFE_GROUP_LINKS = "links";
+	private static final String TAG_SAFE_GROUP_LINK_ID = "id";
+	private static final String TAG_SAFE_GROUP_LINK_GROUP_ID = "linkedGroupId";
+	private static final String TAG_SAFE_GROUP_LINK_DEFAULT = "defaultFlag";
+	private static final String TAG_SAFE_GROUP_LINK_TOKEN = "token";
+	private static final String TAG_SAFE_GROUP_LINK_GROUP_NAME = "groupName";
+	private static final String TAG_SAFE_GROUP_LINK_NAME = "link_name";
+	private static final String TAG_SAFE_GROUP_LINK_CONFIRMATION = "confirmationFlag";
+	private static final String TAG_SAFE_GROUP_LINK_EXPIRATION_DATE = "expirationDate";
+	private static final String TAG_SAFE_GROUP_LINK_DELETED = "invalidFlag";
+
+	private static final String TAG_SAFE_INCOMING_GROUP_REQUESTS = "incomingRequests";
+	private static final String TAG_SAFE_INCOMING_REQUEST_SOURCE_LINK_ID = "linkId";
+	private static final String TAG_SAFE_INCOMING_REQUEST_MESSAGE = "sourceLink";
+	private static final String TAG_SAFE_INCOMING_REQUEST_REQUESTER_ID = "requesterId";
+	private static final String TAG_SAFE_INCOMING_REQUEST_TIME = "requestTime";
+	private static final String TAG_SAFE_INCOMING_REQUEST_STATUS = "status";
+
+	private static final String TAG_SAFE_OUTGOING_GROUP_REQUESTS = "outgoingRequests";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_SOURCE_LINK_TOKEN = "token";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_GROUP_NAME = "groupName";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_GROUP_API_ID = "groupApiId";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_MESSAGE = "message";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_ADMIN_IDENTITY = "admin";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_TIME = "time";
+	private static final String TAG_SAFE_OUTGOING_REQUEST_STATUS = "status";
 
 	private static final String TAG_SAFE_DISTRIBUTIONLISTS = "distributionlists";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_NAME = "name";
@@ -690,6 +728,31 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} catch (JSONException e) {
 			// no distribution lists - ignore and continue
 		}
+
+		// Careful! incoming requests have to be restored before group links to update the foreign keys to the restored group link db index ids
+		if (ConfigUtils.isTestBuild()) {
+			try {
+				parseIncomingGroupRequests(jsonObject.getJSONArray(TAG_SAFE_INCOMING_GROUP_REQUESTS));
+			} catch (JSONException e) {
+				logger.info("No incoming group requests to restore from Threema Safe");
+				// no incoming group requests - ignore and continue
+			}
+
+			try {
+				parseOutgoingGroupRequests(jsonObject.getJSONArray(TAG_SAFE_OUTGOING_GROUP_REQUESTS));
+			} catch (JSONException e) {
+				logger.info("No outgoing group requests to restore from Threema Safe");
+				// no outgoing group request - ignore and continue
+			}
+
+			try {
+				logger.info("safe try parse group links");
+				parseGroupLinks(jsonObject.getJSONArray(TAG_SAFE_GROUP_LINKS));
+			} catch (JSONException e) {
+				logger.info("No group links to restore from Threema Safe");
+				// no group links - ignore and continue
+			}
+		}
 	}
 
 	private void parseUser(String identity, JSONObject user) throws ThreemaException, IOException, JSONException {
@@ -974,6 +1037,107 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
+	private void parseGroupLinks(JSONArray groupLinks) {
+		if (groupLinks == null) return;
+		if (databaseServiceNew == null) return;
+
+		GroupInviteModelFactory groupInviteModelFactory = databaseServiceNew.getGroupInviteModelFactory();
+
+		List<Pair<Integer, Integer>> updateGroupInviteIDForeigntKeysToRequests = new ArrayList<>();
+		for (int i = 0; i < groupLinks.length(); i++) {
+			try {
+				JSONObject groupLink = groupLinks.getJSONObject(i);
+				GroupInviteModel.Builder groupInviteModel = new GroupInviteModel.Builder()
+					.withId(-1)
+					.withInviteName(groupLink.getString(TAG_SAFE_GROUP_LINK_NAME))
+					.withGroupName(groupLink.getString(TAG_SAFE_GROUP_LINK_GROUP_NAME))
+					.withToken(GroupInviteToken.fromHexString(groupLink.getString(TAG_SAFE_GROUP_LINK_TOKEN)))
+					.withManualConfirmation(groupLink.getBoolean(TAG_SAFE_GROUP_LINK_CONFIRMATION))
+					.withGroupApiId(new GroupId(groupLink.getString(TAG_SAFE_GROUP_LINK_GROUP_ID)))
+					.setIsInvalidated(groupLink.getBoolean(TAG_SAFE_GROUP_LINK_DELETED))
+					.setIsDefault(groupLink.getBoolean(TAG_SAFE_GROUP_LINK_DEFAULT));
+
+				long optionalDateLong = groupLink.optLong(TAG_SAFE_GROUP_LINK_EXPIRATION_DATE);
+				if (optionalDateLong != 0) {
+					groupInviteModel.withExpirationDate(new Date(optionalDateLong));
+				}
+
+				Result<GroupInviteModel, Exception> insertResult = groupInviteModelFactory.insert(groupInviteModel.build());
+				if (insertResult.isSuccess()) {
+					updateGroupInviteIDForeigntKeysToRequests.add(new Pair(groupLink.getInt(TAG_SAFE_GROUP_LINK_ID), insertResult.getValue().getId()));
+				}
+			}
+			catch (JSONException | NullPointerException
+				| GroupInviteToken.InvalidGroupInviteTokenException
+				| GroupInviteModel.MissingRequiredArgumentsException e) {
+				// log and continue
+				logger.error("Exception, could not restore group link ", e);
+			}
+		}
+		// update the new db index id references on incoming requests as they are likely not the same on the new device -> make sure incoming requests are restored first!
+		updateGroupInviteForeignKeyForIncomingRequests(updateGroupInviteIDForeigntKeysToRequests);
+	}
+
+	private void parseIncomingGroupRequests(JSONArray incomingRequests) {
+		if (incomingRequests == null) return;
+		if (databaseServiceNew == null) return;
+
+		IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+
+		for (int i = 0; i < incomingRequests.length(); i++) {
+			try {
+				JSONObject incomingRequest = incomingRequests.getJSONObject(i);
+				IncomingGroupJoinRequestModel incomingGroupJoinRequestModel = new IncomingGroupJoinRequestModel.Builder()
+					.withGroupInviteId(incomingRequest.getInt(TAG_SAFE_INCOMING_REQUEST_SOURCE_LINK_ID))
+					.withMessage(incomingRequest.getString(TAG_SAFE_INCOMING_REQUEST_MESSAGE))
+					.withRequestingIdentity(incomingRequest.getString(TAG_SAFE_INCOMING_REQUEST_REQUESTER_ID))
+					.withRequestTime(new Date(incomingRequest.getLong(TAG_SAFE_INCOMING_REQUEST_TIME)))
+					.withResponseStatus(IncomingGroupJoinRequestModel.ResponseStatus.fromString(incomingRequest.getString(TAG_SAFE_INCOMING_REQUEST_STATUS)))
+					.build();
+
+				incomingGroupJoinRequestModelFactory.insert(incomingGroupJoinRequestModel);
+
+			}
+			catch (JSONException | NullPointerException e) {
+				// log and continue
+				logger.error("Exception, could not restore incoming group request ", e);
+			}
+		}
+	}
+
+	private void parseOutgoingGroupRequests(JSONArray outgoingRequests) {
+		if (outgoingRequests == null) return;
+		if (databaseServiceNew == null) return;
+
+		OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory = databaseServiceNew.getOutgoingGroupJoinRequestModelFactory();
+
+		for (int i = 0; i < outgoingRequests.length(); i++) {
+			try {
+				JSONObject outgoingRequest = outgoingRequests.getJSONObject(i);
+
+				//in case the request was rejected and we can link to a group
+				String optionalGroupApiId = outgoingRequest.getString(TAG_SAFE_OUTGOING_REQUEST_GROUP_API_ID);
+
+				OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel = new OutgoingGroupJoinRequestModel(
+					-1,
+					outgoingRequest.getString(TAG_SAFE_OUTGOING_REQUEST_SOURCE_LINK_TOKEN),
+					outgoingRequest.getString(TAG_SAFE_OUTGOING_REQUEST_GROUP_NAME),
+					outgoingRequest.getString(TAG_SAFE_OUTGOING_REQUEST_MESSAGE),
+					outgoingRequest.getString(TAG_SAFE_OUTGOING_REQUEST_ADMIN_IDENTITY),
+					new Date(outgoingRequest.getLong(TAG_SAFE_OUTGOING_REQUEST_TIME)),
+					OutgoingGroupJoinRequestModel.Status.fromString(outgoingRequest.getString(TAG_SAFE_OUTGOING_REQUEST_STATUS)),
+					!optionalGroupApiId.equals("0") ? new GroupId(optionalGroupApiId) : null
+				);
+
+				outgoingGroupJoinRequestModelFactory.insert(outgoingGroupJoinRequestModel);
+			}
+			catch (JSONException | NullPointerException e) {
+				// log and continue
+				logger.error("Exception, could not restore outgoing group request ", e);
+			}
+		}
+	}
+
 	private void parseDistributionlists(JSONArray distributionlists) {
 		if (distributionlists == null) return;
 		if (databaseServiceNew == null) return;
@@ -1091,6 +1255,20 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			}
 		}
 		return null;
+	}
+
+	private void updateGroupInviteForeignKeyForIncomingRequests(List<Pair<Integer, Integer>> updateGroupInviteIDForeigntKeysToRequests) {
+		IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+		for (Pair updateIdFromTo : updateGroupInviteIDForeigntKeysToRequests) {
+			List<IncomingGroupJoinRequestModel> linkedIncomingRequestForGroupInvite = incomingGroupJoinRequestModelFactory.getByGroupInvite((int) updateIdFromTo.first);
+			for (IncomingGroupJoinRequestModel incomingGroupJoinRequestModel: linkedIncomingRequestForGroupInvite) {
+				ContentValues updateValues = new ContentValues();
+				updateValues.put(IncomingGroupJoinRequestModel.COLUMN_GROUP_INVITE, (int) updateIdFromTo.second);
+				incomingGroupJoinRequestModelFactory.update(
+					incomingGroupJoinRequestModel.getId(),
+					updateValues);
+			}
+		}
 	}
 
 	@Override
@@ -1318,6 +1496,108 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 
 		return groupsArray;
+	}
+
+	private JSONObject getGroupLink(GroupInviteModel groupInviteModel) throws JSONException {
+		JSONObject groupLink = new JSONObject();
+
+		if (groupInviteModel.getExpirationDate() != null) {
+			groupLink.put(TAG_SAFE_GROUP_LINK_EXPIRATION_DATE, groupInviteModel.getExpirationDate().getTime());
+		} else {
+			groupLink.put(TAG_SAFE_GROUP_LINK_EXPIRATION_DATE, 0);
+		}
+
+		groupLink.put(TAG_SAFE_GROUP_LINK_ID, groupInviteModel.getId());
+		groupLink.put(TAG_SAFE_GROUP_LINK_NAME, groupInviteModel.getInviteName());
+		groupLink.put(TAG_SAFE_GROUP_LINK_GROUP_NAME, groupInviteModel.getOriginalGroupName());
+		groupLink.put(TAG_SAFE_GROUP_LINK_CONFIRMATION, groupInviteModel.getManualConfirmation());
+		groupLink.put(TAG_SAFE_GROUP_LINK_TOKEN, groupInviteModel.getToken());
+		groupLink.put(TAG_SAFE_GROUP_LINK_GROUP_ID, groupInviteModel.getGroupApiId());
+		groupLink.put(TAG_SAFE_GROUP_LINK_DEFAULT, groupInviteModel.isDefault());
+		groupLink.put(TAG_SAFE_GROUP_LINK_DELETED, groupInviteModel.isInvalidated());
+
+		return groupLink;
+	}
+
+	private JSONArray getGroupLinks() throws JSONException {
+		final GroupInviteModelFactory groupInviteModelFactory;
+		try {
+			groupInviteModelFactory = databaseServiceNew.getGroupInviteModelFactory();
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			return null;
+		}
+
+		JSONArray groupLinksArray = new JSONArray();
+		for (final GroupInviteModel groupInviteModel : groupInviteModelFactory.getAll()) {
+			groupLinksArray.put(getGroupLink(groupInviteModel));
+		}
+		return groupLinksArray;
+	}
+
+	private JSONObject getIncomingGroupJoinRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) throws JSONException {
+		JSONObject incomingGroupRequest = new JSONObject();
+
+		incomingGroupRequest.put(TAG_SAFE_INCOMING_REQUEST_SOURCE_LINK_ID, incomingGroupJoinRequestModel.getGroupInviteId());
+		incomingGroupRequest.put(TAG_SAFE_INCOMING_REQUEST_MESSAGE, incomingGroupJoinRequestModel.getMessage());
+		incomingGroupRequest.put(TAG_SAFE_INCOMING_REQUEST_REQUESTER_ID, incomingGroupJoinRequestModel.getRequestingIdentity());
+		incomingGroupRequest.put(TAG_SAFE_INCOMING_REQUEST_TIME, incomingGroupJoinRequestModel.getRequestTime().getTime());
+		incomingGroupRequest.put(TAG_SAFE_INCOMING_REQUEST_STATUS, incomingGroupJoinRequestModel.getResponseStatus());
+
+		return incomingGroupRequest;
+	}
+
+	private JSONArray getIncomingGroupRequests() throws JSONException {
+		final IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory;
+		try {
+			incomingGroupJoinRequestModelFactory = databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			return null;
+		}
+
+		JSONArray groupRequestsArray = new JSONArray();
+		for (final IncomingGroupJoinRequestModel incomingGroupJoinRequestModel : incomingGroupJoinRequestModelFactory.getAll()) {
+			groupRequestsArray.put(getIncomingGroupJoinRequest(incomingGroupJoinRequestModel));
+		}
+
+		return groupRequestsArray;
+	}
+
+	private JSONObject getOutgoingGroupRequest(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel) throws JSONException {
+		JSONObject outgoingJoinRequest = new JSONObject();
+
+		if (outgoingGroupJoinRequestModel.getGroupApiId() != null) {
+			outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_GROUP_API_ID, outgoingGroupJoinRequestModel.getGroupApiId().toString());
+		} else {
+			outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_GROUP_API_ID, 0);
+		}
+
+		outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_GROUP_NAME, outgoingGroupJoinRequestModel.getGroupName());
+		outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_ADMIN_IDENTITY, outgoingGroupJoinRequestModel.getAdminIdentity());
+		outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_MESSAGE, outgoingGroupJoinRequestModel.getMessage());
+		outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_SOURCE_LINK_TOKEN, outgoingGroupJoinRequestModel.getInviteToken());
+		outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_TIME, outgoingGroupJoinRequestModel.getRequestTime().getTime());
+		outgoingJoinRequest.put(TAG_SAFE_OUTGOING_REQUEST_STATUS, outgoingGroupJoinRequestModel.getStatus());
+
+		return outgoingJoinRequest;
+	}
+
+	private JSONArray getOutgoingGroupRequests()  throws JSONException {
+		final OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
+		try {
+			outgoingGroupJoinRequestModelFactory = databaseServiceNew.getOutgoingGroupJoinRequestModelFactory();
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			return null;
+		}
+
+		JSONArray outgoingGroupRequests = new JSONArray();
+		for (final OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel : outgoingGroupJoinRequestModelFactory.getAll()) {
+			outgoingGroupRequests.put(getOutgoingGroupRequest(outgoingGroupJoinRequestModel));
+		}
+
+		return outgoingGroupRequests;
 	}
 
 	private JSONArray getDistributionlistMembers(String[] distributionlistMembers) {
@@ -1553,6 +1833,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			jsonObject.put(TAG_SAFE_GROUPS, getGroups());
 			jsonObject.put(TAG_SAFE_DISTRIBUTIONLISTS, getDistributionlists());
 			jsonObject.put(TAG_SAFE_SETTINGS, getSettings());
+			if (ConfigUtils.isTestBuild()) {
+				jsonObject.put(TAG_SAFE_GROUP_LINKS, getGroupLinks());
+				jsonObject.put(TAG_SAFE_INCOMING_GROUP_REQUESTS, getIncomingGroupRequests());
+				jsonObject.put(TAG_SAFE_OUTGOING_GROUP_REQUESTS, getOutgoingGroupRequests());
+			}
 
 			return jsonObject.toString(BuildConfig.DEBUG ? 4 : 0);
 

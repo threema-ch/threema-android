@@ -22,7 +22,6 @@
 package ch.threema.app.stores;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -37,6 +36,7 @@ import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
@@ -51,7 +51,7 @@ import ch.threema.storage.models.ContactModel;
  * which stores the contacts in the Android SQLite database.
  */
 public class DatabaseContactStore implements ContactStore {
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseContactStore.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseContactStore");
 
 	private final APIConnector apiConnector;
 	private final PreferenceService preferenceService;

@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,14 +45,15 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public class NotificationActionService extends IntentService {
 
-	private static final Logger logger = LoggerFactory.getLogger(NotificationActionService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationActionService");
 
-	private static final String TAG = "NotificationAction";
+	private static final String TAG = "notificationAction";
 	public static final String ACTION_REPLY = BuildConfig.APPLICATION_ID + ".REPLY";
 	public static final String ACTION_MARK_AS_READ = BuildConfig.APPLICATION_ID + ".MARK_AS_READ";
 	public static final String ACTION_ACK = BuildConfig.APPLICATION_ID + ".ACK";

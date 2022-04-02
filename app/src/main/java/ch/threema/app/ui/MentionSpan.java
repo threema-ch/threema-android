@@ -47,8 +47,10 @@ public class MentionSpan extends ReplacementSpan {
 	private ContactService contactService;
 	private UserService userService;
 	private int width = 0;
-	private Paint backgroundPaint, invertedPaint;
-	@ColorInt private int textColor, invertedTextColor;
+	private final Paint backgroundPaint;
+	private final Paint invertedPaint;
+	@ColorInt private final int textColor;
+	@ColorInt private final int invertedTextColor;
 	private static final int padding = ThreemaApplication.getAppContext().getResources().getDimensionPixelSize(R.dimen.mention_padding);
 	private static final int radius = ThreemaApplication.getAppContext().getResources().getDimensionPixelSize(R.dimen.mention_radius);
 
@@ -88,15 +90,18 @@ public class MentionSpan extends ReplacementSpan {
 	@Override
 	public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
 		if (!TestUtil.empty(text) && end - start == 11) {
-			width = (int) paint.measureText(MENTION_INDICATOR + getMentionLabelText(text, start, end)) + (padding * 2);
-			return width;
+			String labelText = getMentionLabelText(text, start, end);
+			if (!TestUtil.empty(labelText)) {
+				width = (int) paint.measureText(MENTION_INDICATOR + labelText) + (padding * 2);
+				return width;
+			}
 		}
 		return 0;
 	}
 
 	@Override
 	public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-		if (!TestUtil.empty(text) && end - start == 11) {
+		if (width != 0 && !TestUtil.empty(text) && end - start == 11) {
 			int alpha = paint.getAlpha();
 			String identity = text.subSequence(start + 2, end - 1).toString();
 

@@ -31,7 +31,6 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Date;
@@ -41,10 +40,11 @@ import androidx.annotation.NonNull;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushService extends FirebaseMessagingService {
-	private static final Logger logger = LoggerFactory.getLogger(PushService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
 
 	public static final String EXTRA_CLEAR_TOKEN = "clear";
 	public static final String EXTRA_WITH_CALLBACK = "cb";

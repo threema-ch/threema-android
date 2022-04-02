@@ -34,28 +34,28 @@
 
 			<ch.threema.app.mediaattacher.ControlPanelButton
 				android:id="@+id/cancel"
-				android:layout_width="@dimen/media_attach_button_size"
-				android:layout_height="@dimen/media_attach_button_size"
+				android:layout_width="@dimen/media_attach_button_width"
+				android:layout_height="@dimen/media_attach_button_height"
+				app:fillColor="@color/media_attach_button_background_default"
 				app:labelIcon="@drawable/ic_close"
 				app:labelText="@string/cancel" />
 
 			<ch.threema.app.mediaattacher.ControlPanelButton
 				android:id="@+id/select"
-				android:layout_width="@dimen/media_attach_button_size"
-				android:layout_height="@dimen/media_attach_button_size"
+				android:layout_width="@dimen/media_attach_button_width"
+				android:layout_height="@dimen/media_attach_button_height"
 				app:labelIcon="@drawable/ic_baseline_add_24"
 				app:labelText="@string/add"
-				app:strokeColor="?attr/colorAccent"
 				app:fillColor="?attr/colorAccent"
-				app:fillColorAlpha="0x1A"
+				app:fillColorAlpha="@integer/chip_alpha"
 				app:foregroundColor="?attr/colorAccent"/>
 
 		</LinearLayout>
 
 		<Button
 			android:id="@+id/select_counter_button"
-			android:layout_width="40dp"
-			android:layout_height="40dp"
+			android:layout_width="32dp"
+			android:layout_height="32dp"
 			android:textSize="12sp"
 			android:translationX="10dp"
 			android:layout_marginTop="4dp"
@@ -66,7 +66,7 @@
 			app:layout_constraintStart_toStartOf="@+id/control_buttons"
 			app:layout_constraintTop_toTopOf="parent"
 			android:background="@drawable/selector_media_send_counterbubble"
-			android:textAppearance="@style/AttachmentsLabel"
+			android:textAppearance="@style/MediaAttachButtonLabel"
 			android:contentDescription="@string/selection_counter_label" />
 
 	</androidx.constraintlayout.widget.ConstraintLayout>

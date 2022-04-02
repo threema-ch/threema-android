@@ -33,7 +33,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -45,19 +44,19 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEditView.AvatarEditListener {
-	private static final Logger logger = LoggerFactory.getLogger(ContactEditDialog.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactEditDialog");
 
 	// TODO Handle activity destruction after configuration change with "don't save activities" on
 

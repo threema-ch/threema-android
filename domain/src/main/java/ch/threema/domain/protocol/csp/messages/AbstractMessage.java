@@ -21,8 +21,6 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -38,8 +36,6 @@ import ch.threema.domain.protocol.csp.coders.MessageBox;
  * in unencrypted form. For the encrypted version, see {@link MessageBox}.
  */
 public abstract class AbstractMessage {
-
-	private static final Logger logger = LoggerFactory.getLogger(AbstractMessage.class);
 
 	private String fromIdentity;
 	private String toIdentity;

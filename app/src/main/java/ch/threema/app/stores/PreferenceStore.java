@@ -28,7 +28,6 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -62,12 +61,13 @@ import ch.threema.app.listeners.PreferenceListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class PreferenceStore implements PreferenceStoreInterface {
-	private static final Logger logger = LoggerFactory.getLogger(PreferenceStore.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PreferenceStore");
 
 	public static final String PREFS_IDENTITY = "identity";
 	public static final String PREFS_SERVER_GROUP = "server_group";
@@ -394,6 +394,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	}
 
 	@Override
+	@Nullable
 	public String[] getStringArray(String key, boolean crypted) {
 		String value = null;
 		if (crypted) {

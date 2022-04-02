@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -50,6 +49,7 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkContact;
@@ -57,7 +57,7 @@ import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.storage.models.ContactModel;
 
 public class WorkSyncService extends FixedJobIntentService {
-	private static final Logger logger = LoggerFactory.getLogger(WorkSyncService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WorkSyncService");
 
 	private static final int JOB_ID = 2004;
 	public static final String EXTRA_WORK_UPDATE_RESTRICTIONS_ONLY = "reon";

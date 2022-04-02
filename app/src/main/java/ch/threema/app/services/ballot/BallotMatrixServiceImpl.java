@@ -22,7 +22,6 @@
 package ch.threema.app.services.ballot;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +30,13 @@ import java.util.Map;
 
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public class BallotMatrixServiceImpl implements BallotMatrixService {
-	private static final Logger logger = LoggerFactory.getLogger(BallotMatrixServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotMatrixServiceImpl");
 
 	private abstract class AxisElement {
 		private final int pos;
@@ -242,8 +242,14 @@ public class BallotMatrixServiceImpl implements BallotMatrixService {
 		int maxPoints = 0;
 		for(Choice c: this.choices) {
 			int point = 0;
-			for(Participant p: this.participants) {
-				point += p.hasOtherChoose(c.getPos()) ? 1 : 0;
+			// check if we saved total votes count from a result of display type SUMMARY (case broadcast poll)
+			if (c.getBallotChoiceModel().getVoteCount() != 0) {
+				point = c.getBallotChoiceModel().getVoteCount();
+			}
+			else { // else compute the count
+				for (Participant p: this.participants) {
+					point += p.hasOtherChoose(c.getPos()) ? 1 : 0;
+				}
 			}
 			c.voteCount = point;
 			maxPoints = Math.max(point, maxPoints);

@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -37,11 +36,11 @@ import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion16 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion16.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion16");
 
 	private final SQLiteDatabase sqLiteDatabase;
 

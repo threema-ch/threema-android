@@ -32,79 +32,146 @@ public class BuildFlavor {
 	private final static String FLAVOR_RED = "red";
 	private final static String FLAVOR_HMS = "hms";
 	private final static String FLAVOR_HMS_WORK = "hms_work";
+	private final static String FLAVOR_FDROID = "fdroid";
 
 	public enum LicenseType {
 		NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK, ONPREM
 	}
 
-	private static boolean initialized = false;
+	private static volatile boolean initialized = false;
 	private static LicenseType licenseType = null;
 	private static String name = null;
 
 	/**
-	 * License Type
-	 * @return
+	 * Return the build flavor {@link LicenseType}.
 	 */
 	public static LicenseType getLicenseType() {
 		init();
 		return licenseType;
 	}
 
+	/**
+	 * Return the build flavor name.
+	 */
 	public static String getName() {
 		init();
 		return name;
 	}
 
-	private static void init() {
-		if(!initialized) {
+	/**
+	 * Return whether the self-updater is supported or not.
+	 */
+	@SuppressWarnings("ConstantConditions")
+	public static boolean maySelfUpdate() {
+		switch (BuildConfig.FLAVOR) {
+			case FLAVOR_STORE_THREEMA:
+				return true;
+			default:
+				return false;
+		}
+	}
 
+	/**
+	 * Return whether this build flavor always uses Threema Push.
+	 */
+	@SuppressWarnings("ConstantConditions")
+	public static boolean forceThreemaPush() {
+		switch (BuildConfig.FLAVOR) {
+			case FLAVOR_FDROID:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Return whether this build flavor is "libre", meaning that it contains
+	 * no proprietary services.
+	 */
+	@SuppressWarnings("ConstantConditions")
+	public static boolean isLibre() {
+		switch (BuildConfig.FLAVOR) {
+			case FLAVOR_FDROID:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	private static synchronized void init() {
+		if (!initialized) {
+			// License Type
 			switch (BuildConfig.FLAVOR) {
+				case FLAVOR_NONE:
+				case FLAVOR_SANDBOX:
+					licenseType = LicenseType.NONE;
+					break;
 				case FLAVOR_STORE_GOOGLE:
 					licenseType = LicenseType.GOOGLE;
+					break;
+				case FLAVOR_STORE_GOOGLE_WORK:
+				case FLAVOR_SANDBOX_WORK:
+				case FLAVOR_RED:
+					licenseType = LicenseType.GOOGLE_WORK;
+					break;
+				case FLAVOR_ONPREM:
+					licenseType = LicenseType.ONPREM;
+					break;
+				case FLAVOR_HMS:
+					licenseType = LicenseType.HMS;
+					break;
+				case FLAVOR_HMS_WORK:
+					licenseType = LicenseType.HMS_WORK;
+					break;
+				case FLAVOR_STORE_THREEMA:
+				case FLAVOR_FDROID:
+					licenseType = LicenseType.SERIAL;
+					break;
+				default:
+					throw new IllegalStateException("Unhandled build flavor " + BuildConfig.FLAVOR);
+			}
+
+			// Name
+			switch (BuildConfig.FLAVOR) {
+				case FLAVOR_STORE_GOOGLE:
 					name = "Google Play";
 					break;
 				case FLAVOR_STORE_THREEMA:
-					licenseType = LicenseType.SERIAL;
 					name = "Threema Shop";
 					break;
 				case FLAVOR_NONE:
-					licenseType = LicenseType.NONE;
 					name = "DEV";
 					break;
 				case FLAVOR_STORE_GOOGLE_WORK:
-					licenseType = LicenseType.GOOGLE_WORK;
 					name = "Work";
 					break;
 				case FLAVOR_SANDBOX:
 					name = "Sandbox";
-					licenseType = LicenseType.NONE;
 					break;
 				case FLAVOR_SANDBOX_WORK:
 					name = "Sandbox Work";
-					licenseType = LicenseType.GOOGLE_WORK;
 					break;
 				case FLAVOR_ONPREM:
 					name = "OnPrem";
-					licenseType = LicenseType.ONPREM;
 					break;
 				case FLAVOR_RED:
 					name = "Red";
-					licenseType = LicenseType.GOOGLE_WORK;
 					break;
 				case FLAVOR_HMS:
 					name = "HMS";
-					licenseType = LicenseType.HMS;
 					break;
 				case FLAVOR_HMS_WORK:
-					name = "Hms Work";
-					licenseType = LicenseType.HMS_WORK;
+					name = "HMS Work";
+					break;
+				case FLAVOR_FDROID:
+					name = "F-Droid";
 					break;
 				default:
-					throw new RuntimeException("invalid flavor build " + BuildConfig.FLAVOR);
+					throw new IllegalStateException("Unhandled build flavor " + BuildConfig.FLAVOR);
 			}
-
-			if(BuildConfig.DEBUG) {
-				name += " (DEBUG)";
+			if (BuildConfig.DEBUG) {
+				name += "";
 			}
 
 			initialized = true;

@@ -25,13 +25,11 @@ import android.content.Context;
 import android.os.Build;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.push.PushService;
@@ -39,12 +37,12 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.PushUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
+import ch.threema.base.utils.LoggingUtil;
 
 @AnyThread
 public class ClientInfo extends Converter {
-	private static final Logger logger = LoggerFactory.getLogger(ClientInfo.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ClientInfo");
 
 	// Top level keys
 	private final static String DEVICE = "device";

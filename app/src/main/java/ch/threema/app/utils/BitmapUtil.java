@@ -39,7 +39,6 @@ import android.provider.MediaStore;
 import android.view.View;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,9 +54,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
+import ch.threema.base.utils.LoggingUtil;
 
 public class BitmapUtil {
-	private static final Logger logger = LoggerFactory.getLogger(BitmapUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BitmapUtil");
 
 	private static final int DEFAULT_JPG_QUALITY = 80;
 	private static final int DEFAULT_PNG_QUALITY = 100; // PNG is lossless anyway

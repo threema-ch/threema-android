@@ -139,6 +139,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 		switch (requestCode) {
 			case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
 				if (resultCode == RESULT_OK) {
+					lockAppService.unlock(null);
 					handleIntent();
 				} else {
 					Toast.makeText(this, getString(R.string.pin_locked_cannot_send), Toast.LENGTH_LONG).show();

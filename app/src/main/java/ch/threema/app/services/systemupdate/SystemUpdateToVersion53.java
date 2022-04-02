@@ -25,19 +25,18 @@ import android.app.NotificationManager;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LogUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * remove old pre-API26 notification channels
  */
 public class SystemUpdateToVersion53 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion53.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion53");
 
 	public SystemUpdateToVersion53() { }
 

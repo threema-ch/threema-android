@@ -39,7 +39,6 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
@@ -57,11 +56,12 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
 
 public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity implements ThreemaSafeAdvancedDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(ThreemaSafeConfigureActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeConfigureActivity");
 
 	private static final String DIALOG_TAG_PREPARING = "prep";
 	private static final String DIALOG_TAG_ADVANCED = "adv";

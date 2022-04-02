@@ -25,7 +25,6 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,12 +38,13 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * add profile pic field to normal, group and distribution list message models
  */
 public class SystemUpdateToVersion43 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion43.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion43");
 
 	private final SQLiteDatabase sqLiteDatabase;
 

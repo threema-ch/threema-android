@@ -44,7 +44,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,12 +65,13 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.UserService;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.storage.models.ContactModel.DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY;
 
 public class AndroidContactUtil {
-	private static final Logger logger = LoggerFactory.getLogger(AndroidContactUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AndroidContactUtil");
 	private UserService userService;
 	private FileService fileService;
 
@@ -223,7 +223,7 @@ public class AndroidContactUtil {
 			}
 		}
 
-		logger.info("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey(), contactUri);
+		logger.debug("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey(), contactUri);
 		return false;
 	}
 

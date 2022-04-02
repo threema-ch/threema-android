@@ -21,9 +21,10 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import org.junit.Assert;
 import org.junit.Test;
+
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class BallotDataTest {
 	private static final String testBallot = "{"
@@ -37,16 +38,19 @@ public class BallotDataTest {
 					+"\"i\":1,"
 					+"\"n\":\"desc1\","
 					+"\"o\":1,"
-					+"\"r\":[1,0]"
+					+"\"r\":[1,0],"
+					+"\"t\":2"
 				+"},"
 				+"{"
 					+"\"i\":2,"
 					+"\"n\":\"desc2\","
 					+"\"o\":2,"
-					+"\"r\":[1,1]"
+					+"\"r\":[1,1],"
+					+"\"t\":2"
 				+"}"
 			+"]," +
-			"\"p\":[\"ECHOECH1\",\"ECHOECH2\"]"
+			"\"p\":[\"ECHOECH1\",\"ECHOECH2\"],"
+			+"\"u\":0"
 			+"}";
 
 	@Test
@@ -109,6 +113,7 @@ public class BallotDataTest {
 		c1.setName("desc1");
 		c1.setOrder(1);
 		c1.addResult(0, 1).addResult(1,0);
+		c1.setTotalVotes(2);
 		d.getChoiceList().add(c1);
 
 		BallotDataChoice c2 = new BallotDataChoice(2);
@@ -116,7 +121,9 @@ public class BallotDataTest {
 		c2.setOrder(2);
 		c2.setName("desc2");
 		c2.addResult(0, 1).addResult(1,1);
+		c2.setTotalVotes(2);
 		d.getChoiceList().add(c2);
+		d.setDisplayType(BallotData.DisplayType.LIST_MODE);
 
 		try {
 			BallotData b = BallotData.parse(testBallot);

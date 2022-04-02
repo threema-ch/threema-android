@@ -50,7 +50,6 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -64,6 +63,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -109,12 +109,12 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
@@ -135,6 +135,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
@@ -155,7 +156,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	GenericAlertDialog.DialogClickListener,
 	LifecycleOwner {
 
-	private static final Logger logger = LoggerFactory.getLogger(HomeActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("HomeActivity");
 
 	private static final String THREEMA_CHANNEL_IDENTITY = "*THREEMA";
 	private static final String THREEMA_CHANNEL_INFO_COMMAND = "Info";
@@ -170,7 +171,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private static final String DIALOG_TAG_CANCEL_VERIFY = "cv";
 	private static final String DIALOG_TAG_MASTERKEY_LOCKED = "mkl";
 	private static final String DIALOG_TAG_SERIAL_LOCKED = "sll";
-	private static final String DIALOG_TAG_ENABLE_POLLING = "enp";
 	private static final String DIALOG_TAG_FINISH_UP = "fup";
 	private static final String DIALOG_TAG_THREEMA_CHANNEL_VERIFY = "cvf";
 	private static final String DIALOG_TAG_UPDATING = "updating";
@@ -527,6 +527,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
 
+		final boolean isAppStart = savedInstanceState == null;
+
 		AnimationUtil.setupTransitions(this.getApplicationContext(), getWindow());
 
 		ConfigUtils.configureActivityTheme(this);
@@ -546,7 +548,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				this.startMainActivity(savedInstanceState);
 
 				// only execute this on first startup
-				if (savedInstanceState == null) {
+				if (isAppStart) {
 					if (preferenceService != null && userService != null && userService.hasIdentity()) {
 						if (ConfigUtils.isWorkRestricted()) {
 							// update configuration
@@ -912,7 +914,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	@UiThread
-	private void initMainActivity(Bundle savedInstanceState) {
+	private void initMainActivity(@Nullable Bundle savedInstanceState) {
+		final boolean isAppStart = savedInstanceState == null;
+
 		//refresh StateBitmapUtil
 		StateBitmapUtil.getInstance().refresh();
 
@@ -977,12 +981,27 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		// call onPrepareOptionsMenu
 		this.invalidateOptionsMenu();
 
-		if (savedInstanceState == null) {
-			if (!PushService.servicesInstalled(this)) {
-				enablePolling(serviceManager);
+		// Checks on app start
+		if (isAppStart) {
+			// If a non-libre build of Threema cannot find push services, fall back to Threema Push
+			if (!BuildFlavor.forceThreemaPush() && !PushService.servicesInstalled(this)) {
+				this.enableThreemaPush();
 				if (!ConfigUtils.isBlackBerry() && !ConfigUtils.isAmazonDevice() && !ConfigUtils.isWorkBuild()) {
-					RuntimeUtil.runOnUiThread(() -> ShowOnceDialog.newInstance(R.string.push_not_available_title, R.string.push_not_available_text).show(getSupportFragmentManager(), "nopush"));
+					RuntimeUtil.runOnUiThread(() -> {
+						// Show "push not available" dialog
+						int title = R.string.push_not_available_title;
+						final String message = getString(R.string.push_not_available_text1) + "\n\n" + getString(R.string.push_not_available_text2, getString(R.string.app_name));
+						ShowOnceDialog.newInstance(title, message).show(getSupportFragmentManager(), "nopush");
+					});
 				}
+			}
+
+			// For libre builds of Threema, always ask user to disable battery permissions
+			if (BuildFlavor.forceThreemaPush() && !DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(this)) {
+				final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
+				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
+				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
+				startActivityForResult(intent, 12345);
 			}
 		}
 
@@ -1026,7 +1045,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			intent.removeExtra(EXTRA_SHOW_CONTACTS);
 		}
 
-		if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_CURRENT_FRAGMENT_TAG)) {
+		if (!isAppStart && savedInstanceState.containsKey(BUNDLE_CURRENT_FRAGMENT_TAG)) {
 			// restored session
 			initialFragmentTag = savedInstanceState.getString(BUNDLE_CURRENT_FRAGMENT_TAG, initialFragmentTag);
 
@@ -1160,14 +1179,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
-	private void enablePolling(ServiceManager serviceManager) {
-		if (!preferenceService.isPolling()) {
-			preferenceService.setPolling(true);
-			LifetimeService lifetimeService = serviceManager.getLifetimeService();
-
-			if (lifetimeService != null) {
-				lifetimeService.setPollingInterval(1);
-			}
+	/**
+	 * Ensure that Threema Push is enabled in the preferences.
+	 */
+	private void enableThreemaPush() {
+		if (!preferenceService.useThreemaPush()) {
+			preferenceService.setUseThreemaPush(true);
+			ThreemaPushService.tryStart(logger, ThreemaApplication.getAppContext());
 		}
 	}
 
@@ -1374,7 +1392,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				}
 			} else if (addDisabled != null && addDisabled) {
 				MenuItem menuItem = menu.findItem(R.id.threema_channel);
-				menuItem.setVisible(false);
+				if (menuItem != null) {
+					menuItem.setVisible(false);
+				}
 			}
 
 			if (ConfigUtils.supportsGroupLinks()) {
@@ -1489,9 +1509,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
 				finish();
 				break;
-			case DIALOG_TAG_ENABLE_POLLING:
-				enablePolling(serviceManager);
-				break;
 			case DIALOG_TAG_FINISH_UP:
 				System.exit(0);
 				break;
@@ -1514,9 +1531,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				finish();
 				break;
 			case DIALOG_TAG_SERIAL_LOCKED:
-				finish();
-				break;
-			case DIALOG_TAG_ENABLE_POLLING:
 				finish();
 				break;
 			default:

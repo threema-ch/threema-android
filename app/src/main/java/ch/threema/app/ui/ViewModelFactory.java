@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import ch.threema.app.grouplinks.GroupLinkViewModel;
 import ch.threema.app.grouplinks.IncomingGroupRequestViewModel;
+import ch.threema.domain.models.GroupId;
 
 public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 	private Object[] params;
@@ -36,10 +37,10 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 	@Override
 	public <T extends ViewModel> T create(Class<T> modelClass) {
 		if (modelClass == GroupLinkViewModel.class) {
-			return (T) new GroupLinkViewModel((int) this.params[0]);
+			return (T) new GroupLinkViewModel((GroupId) this.params[0]);
 		} // extend for more view model types
 		else if (modelClass == IncomingGroupRequestViewModel.class) {
-			return (T) new IncomingGroupRequestViewModel((int) this.params[0]);
+			return (T) new IncomingGroupRequestViewModel((GroupId)this.params[0]);
 		}
 		 else {
 			return super.create(modelClass);

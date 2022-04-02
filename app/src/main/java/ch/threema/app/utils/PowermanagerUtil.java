@@ -28,16 +28,16 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 public class PowermanagerUtil {
-	private static final Logger logger = LoggerFactory.getLogger(PowermanagerUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PowermanagerUtil");
 
 	// https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-push-notificati/48166241
 	// https://stackoverflow.com/questions/31638986/protected-apps-setting-on-huawei-phones-and-how-to-handle-it
@@ -129,6 +129,6 @@ public class PowermanagerUtil {
 	}
 
 	public static boolean needsFixing(Context context) {
-		return !DisableBatteryOptimizationsActivity.isWhitelisted(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
+		return !DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
 	}
 }

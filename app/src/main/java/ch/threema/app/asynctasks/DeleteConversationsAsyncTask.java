@@ -28,7 +28,6 @@ import android.view.View;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -45,10 +44,11 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ConversationModel;
 
 public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integer> {
-	private static final Logger logger = LoggerFactory.getLogger(DeleteConversationsAsyncTask.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteConversationsAsyncTask");
 
 	private static final String DIALOG_TAG = "dcon";
 

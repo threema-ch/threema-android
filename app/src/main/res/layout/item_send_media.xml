@@ -2,9 +2,10 @@
 <ch.threema.app.ui.CheckableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/content_frame"
+	android:padding="1dp"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/gallery_background"
+	android:background="@drawable/shape_square_background"
 	android:foreground="@drawable/media_gallery_item_selector">
 
 	<ImageView
@@ -16,7 +17,8 @@
 		app:srcCompat="@drawable/ic_baseline_broken_image_24"
 		app:tint="@android:color/white" />
 
-	<ImageView
+	<com.google.android.material.imageview.ShapeableImageView
+		app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.SendMedia"
 		android:id="@+id/image_view"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"

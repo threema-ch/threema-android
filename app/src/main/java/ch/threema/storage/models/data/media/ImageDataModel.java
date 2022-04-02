@@ -25,16 +25,16 @@ import android.util.JsonReader;
 import android.util.JsonWriter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
 public class ImageDataModel implements MediaMessageDataInterface {
-	private static final Logger logger = LoggerFactory.getLogger(ImageDataModel.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageDataModel");
 
 	private byte[] imageBlobId;
 	private byte[] encryptionKey;

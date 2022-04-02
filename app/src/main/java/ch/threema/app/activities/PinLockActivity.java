@@ -35,10 +35,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -48,9 +48,10 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class PinLockActivity extends ThreemaActivity {
-	private static final Logger logger = LoggerFactory.getLogger(PinLockActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockActivity");
 
 	private static final String KEY_NUM_WRONG_CONFIRM_ATTEMPTS = "num_wrong_attempts";
 	private static final long ERROR_MESSAGE_TIMEOUT = 3000;
@@ -140,7 +141,7 @@ public class PinLockActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
 

@@ -45,11 +45,11 @@ public class LocaleServiceImpl implements LocaleService {
 		if (this.countryIsoCode == null) {
 			try {
 				TelephonyManager tm = (TelephonyManager) this.context.getSystemService(Context.TELEPHONY_SERVICE);
-				this.countryIsoCode = tm.getSimCountryIso().toUpperCase();
+				this.countryIsoCode = tm.getSimCountryIso().toUpperCase(Locale.US);
 			}
 			catch (Exception x) {
 				//do nothing
-				//is TELEPHONY_SERVICE disabled?s
+				//is TELEPHONY_SERVICE disabled?
 			}
 
 			if(this.countryIsoCode == null || this.countryIsoCode.length() == 0) {

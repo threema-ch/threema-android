@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Недійсні дані QR-коду</string>
+    <string name="webclient_init_session">Почати новий сеанс</string>
+    <string name="webclient_sessions_really_delete">Справді видалити цей сеанс у веб-клієнті або додатку для ПК?</string>
+    <string name="webclient_last_usage">Останнє використання: %s</string>
+    <string name="webclient_created_at">Створено: %1$s (%2$s)</string>
+    <string name="webclient_active_since">Активний з: %s</string>
+    <string name="webclient_enable">Увімкнути веб-клієнт або додаток для ПК</string>
+    <string name="webclient_no_sessions_found">Щоб підключитися, завантажте додаток для ПК (<b>https://threema.ch/download</b>) або відкрийте веб-клієнт (<b>%s</b>), а тоді натисніть кнопку нижче й відскануйте QR-код, наведений на екрані комп\'ютера,</string>
+    <string name="webclient_session_rename">Перейменувати сеанс</string>
+    <string name="webclient_session_label">Нова назва</string>
+    <string name="webclient_session_start">Почати сеанс</string>
+    <string name="webclient_session_stop">Завершити сеанс</string>
+    <string name="webclient_persistent">постійний</string>
+    <string name="webclient_disposable">одноразовий</string>
+    <string name="webclient_unnamed_session">Сеанс без назви</string>
+    <string name="webclient_session_remove">Видалити сеанс</string>
+    <string name="webclient_welcome_title">Спілкуйтеся на комп\'ютері!</string>
+    <string name="webclient_welcome_explain">За допомогою веб-клієнта та додатка для ПК можна спілкуватися на комп\'ютері або ноутбуці, зберігаючи повний доступ до всіх контактів, медіафайлів і чатів, включно з минулими розмовами.\n\n<b>Передавання будь-яких даних між телефоном і комп\'ютером захищено наскрізним шифруванням</b>. Крім того, якщо телефон і комп\'ютер знаходяться в одній мережі, використовується пряме підключення.\n\nПід час використання веб-клієнта або додатка для ПК акумулятор телефону може розряджатися швидше. Цю функцію можна ввімкнути або вимкнути коли завгодно.</string>
+    <string name="webclient_launch">Запустити веб-клієнт або додаток для ПК</string>
+    <string name="webclient_qr_scan_message">Відскануйте QR-код, наведений на вашому комп\'ютері.</string>
+    <string name="webclient_invalid_qr_code">Недійсний QR-код</string>
+    <string name="webclient_new_connection_toast">Почато сеанс у веб-клієнті або додатку для ПК</string>
+    <string name="webclient_protocol_error">Помилка протоколу</string>
+    <string name="webclient_protocol_version_to_old">Ваш додаток не підтримує цю версію веб-клієнта або додатка для ПК. Оновіть Threema для Android до останньої версії.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Ваш додаток не підтримує цю версію веб-клієнта або додатка для ПК. Завантажте останню версію додатка для ПК або попросіть адміністратора веб-клієнта оновити його до останньої версії.</string>
+    <string name="webclient_protocol_version_too_new_threema">Ваш додаток не підтримує цю версію веб-клієнта або додатка для ПК. Оновіть їх до останньої версії.</string>
+    <string name="webclient_session_already_exists">Сеанс, QR-код якого ви відсканували, вже існує. Перезапустіть додаток для ПК або веб-клієнт і повторіть спробу.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Почати цей сеанс?</string>
+    <string name="webclient_cannot_restore">Не вдалося відновити сеанс</string>
+    <string name="webclient_disabled">Веб-клієнт або додаток для ПК вимкнено</string>
+    <string name="webclient_cannot_start">Не вдалося почати сеанс</string>
+    <string name="webclient_constrained_by_mdm">Сервер не схвалено адміністратором.</string>
+    <string name="webclient_clear_all_sessions">Видалити всі сеанси</string>
+    <string name="webclient_prefs_debug_tool_summary">Скористайтеся цим інструментом, щоб виявити проблеми з підключенням до веб-клієнта або додатка для ПК</string>
+    <string name="webclient_diagnostics">Діагностика веб-клієнта або додатка для ПК</string>
+    <string name="webclient_diagnostics_start">Почати</string>
+    <string name="webclient_diagnostics_intro">Натисніть \"Почати\", щоб запустити перевірку.</string>
+    <string name="webclient_diagnostics_done">Перевірку завершено. Якщо вам не вдається підключитися до веб-клієнта або додатка для ПК, надішліть цей журнал службі підтримки Threema.</string>
+</resources>

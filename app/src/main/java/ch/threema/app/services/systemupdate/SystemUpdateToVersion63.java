@@ -25,16 +25,16 @@ import android.content.Context;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 
 public class SystemUpdateToVersion63 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggerFactory.getLogger(SystemUpdateToVersion63.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion63");
 	private Context context;
 
 	public SystemUpdateToVersion63(Context context) {

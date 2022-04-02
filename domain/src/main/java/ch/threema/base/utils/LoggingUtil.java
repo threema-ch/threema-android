@@ -43,7 +43,7 @@ public class LoggingUtil {
 	public static String cleanTag(@NonNull String tag, String[] prefixes) {
 		for (String prefix : prefixes) {
 			if (tag.startsWith(prefix)) {
-				return tag.replaceFirst("^.*\\.", "");
+				return tag.substring(prefix.length());
 			}
 		}
 		return tag;

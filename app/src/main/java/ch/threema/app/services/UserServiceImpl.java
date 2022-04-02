@@ -31,7 +31,6 @@ import android.provider.ContactsContract;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -59,15 +58,16 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.base.utils.Utils;
+import ch.threema.domain.identitybackup.IdentityBackupDecoder;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.CreateIdentityRequestDataInterface;
-import ch.threema.domain.identitybackup.IdentityBackupDecoder;
-import ch.threema.domain.stores.IdentityStoreInterface;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
-import ch.threema.base.utils.Utils;
+import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
@@ -77,7 +77,7 @@ import static ch.threema.app.ThreemaApplication.getServiceManager;
  * This service class handle all user actions (db/identity....)
  */
 public class UserServiceImpl implements UserService, CreateIdentityRequestDataInterface  {
-	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UserServiceImpl");
 
 	private final Context context;
 	private final PreferenceStoreInterface preferenceStore;
@@ -221,7 +221,12 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		Account a = this.getAccount(false);
 		if(a != null) {
 			AccountManager accountManager = AccountManager.get(this.context);
-			accountManager.removeAccount(a, callback, null);
+			try {
+				accountManager.removeAccount(a, callback, null);
+			} catch (Exception e) {
+				logger.error("Unable to remove account", e);
+				return false;
+			}
 			this.account = null;
 			return true;
 		}

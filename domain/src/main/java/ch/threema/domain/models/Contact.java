@@ -21,6 +21,9 @@
 
 package ch.threema.domain.models;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import ch.threema.base.utils.Utils;
 
 /**
@@ -90,5 +93,20 @@ public class Contact {
 		}
 
 		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Contact)) return false;
+		Contact contact = (Contact) o;
+		return Objects.equals(identity, contact.identity) && Arrays.equals(publicKey, contact.publicKey);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(identity);
+		result = 31 * result + Arrays.hashCode(publicKey);
+		return result;
 	}
 }

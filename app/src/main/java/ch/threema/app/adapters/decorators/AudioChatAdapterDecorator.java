@@ -31,7 +31,6 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -49,6 +48,7 @@ import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
@@ -58,17 +58,16 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import static ch.threema.app.voicemessage.VoiceRecorderActivity.MAX_VOICE_MESSAGE_LENGTH_MILLIS;
 
 public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(AudioChatAdapterDecorator.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioChatAdapterDecorator");
 
 	private static final String LISTENER_TAG = "decorator";
 	private MessagePlayer audioMessagePlayer;
-	private final PowerManager powerManager;
 	private final PowerManager.WakeLock audioPlayerWakelock;
 
 	public AudioChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
 		super(context.getApplicationContext(), messageModel, helper);
-		this.powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-		this.audioPlayerWakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BuildConfig.APPLICATION_ID + ":AudioPlayer");
+		PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+		audioPlayerWakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BuildConfig.APPLICATION_ID + ":AudioPlayer");
 	}
 
 	private void keepScreenOn() {
@@ -76,7 +75,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 			keepScreenOff();
 		}
 
-		if (audioPlayerWakelock != null && !audioPlayerWakelock.isHeld()) {
+		if (!audioPlayerWakelock.isHeld()) {
 			audioPlayerWakelock.acquire(MAX_VOICE_MESSAGE_LENGTH_MILLIS);
 		}
 
@@ -116,30 +115,27 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		String caption = null;
 
 		if (getMessageModel().getType() == MessageType.VOICEMESSAGE) {
-			audioDataModel = this.getMessageModel().getAudioData();
+			audioDataModel = getMessageModel().getAudioData();
 			duration = audioDataModel.getDuration();
 			isDownloaded = audioDataModel.isDownloaded();
 		} else {
-			fileDataModel = this.getMessageModel().getFileData();
+			fileDataModel = getMessageModel().getFileData();
 			duration = fileDataModel.getDurationSeconds();
 			isDownloaded = fileDataModel.isDownloaded();
 			caption = fileDataModel.getCaption();
 		}
 
-		audioMessagePlayer = this.getMessagePlayerService().createPlayer(this.getMessageModel(),
-			helper.getFragment().getActivity(), this.helper.getMessageReceiver());
+		audioMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
+			helper.getFragment().getActivity(), helper.getMessageReceiver());
 
-		this.setOnClickListener(view -> {
+		setOnClickListener(view -> {
 			// no action on onClick
 		}, holder.messageBlockView);
 
 		holder.messagePlayer = audioMessagePlayer;
-		holder.readOnButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				float speed = audioMessagePlayer.togglePlaybackSpeed();
-				setSpeedButtonText(holder, speed);
-			}
+		holder.readOnButton.setOnClickListener(v -> {
+			float speed = audioMessagePlayer.togglePlaybackSpeed();
+			setSpeedButtonText(holder, speed);
 		});
 
 		setSpeedButtonText(holder, getPreferenceService().getAudioPlaybackSpeed());
@@ -187,7 +183,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						if (isDownloaded) {
 							holder.controller.setPlay();
 						} else {
-							if (helper.getDownloadService().isDownloading(this.getMessageModel().getId())) {
+							if (helper.getDownloadService().isDownloading(getMessageModel().getId())) {
 								holder.controller.setProgressing(false);
 							} else {
 								holder.controller.setReadyToDownload();
@@ -243,12 +239,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 
 				audioMessagePlayer
-					.addListener(LISTENER_TAG, new MessagePlayer.PlayerListener() {
-						@Override
-						public void onError(final String humanReadableMessage) {
-							RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), humanReadableMessage, Toast.LENGTH_SHORT).show());
-						}
-					})
+					.addListener(LISTENER_TAG, humanReadableMessage -> RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), humanReadableMessage, Toast.LENGTH_SHORT).show()))
 
 					.addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
 						@Override
@@ -347,14 +338,14 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 				//no player => no playable file
 				holder.controller.setNeutral();
 
-				if (this.getMessageModel().getState() == MessageState.SENDFAILED) {
+				if (getMessageModel().getState() == MessageState.SENDFAILED) {
 					holder.controller.setRetry();
 				}
 			}
 
-			if (this.getMessageModel().isOutbox()) {
+			if (getMessageModel().isOutbox()) {
 				// outgoing message
-				switch (this.getMessageModel().getState()) {
+				switch (getMessageModel().getState()) {
 					case TRANSCODING:
 						holder.controller.setTranscoding();
 						break;
@@ -373,11 +364,11 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 		//do not show duration if 0
 		if(duration > 0) {
-			this.setDatePrefix(StringConversionUtil.secondsToString(
+			setDatePrefix(StringConversionUtil.secondsToString(
 					duration,
 					false
 			), holder.dateView.getTextSize());
-			this.dateContentDescriptionPreifx = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+			dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
 		}
 
 		if(holder.contentView != null) {
@@ -387,19 +378,19 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 		// format caption
 		if (!TextUtils.isEmpty(caption)) {
-			holder.bodyTextView.setText(formatTextString(caption, this.filterString));
+			holder.bodyTextView.setText(formatTextString(caption, filterString));
 
 			LinkifyUtil.getInstance().linkify(
 				(ComposeMessageFragment) helper.getFragment(),
 				holder.bodyTextView,
-				this.getMessageModel(),
+				getMessageModel(),
 				true,
 				actionModeStatus.getActionModeEnabled(),
 				onClickElement);
 
-			this.showHide(holder.bodyTextView, true);
+			showHide(holder.bodyTextView, true);
 		} else {
-			this.showHide(holder.bodyTextView, false);
+			showHide(holder.bodyTextView, false);
 		}
 	}
 

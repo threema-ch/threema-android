@@ -69,9 +69,6 @@ quan arribi el primer missatge.</string>
     <string name="prefs_troubleshooting">Resolució de problemes</string>
     <string name="prefs_sum_troubleshooting">Analitzar i solucionar problemes</string>
     <string name="prefs_workarounds">Solucions</string>
-    <string name="prefs_title_polling_switch">Votacions</string>
-    <string name="prefs_sum_polling_on">Comprovar si hi ha missatges nous periòdicament (utilitza més bateria!)</string>
-    <string name="prefs_sum_polling_off">Comprovar si hi ha missatges nous només en push</string>
     <string name="prefs_logging">Registre</string>
     <string name="prefs_title_message_log_switch">Registra a fitxer</string>
     <string name="prefs_title_sum_message_log_on">Esdeveniments i informació de xarxa es registraran al fitxer debug_log.txt</string>
@@ -405,7 +402,7 @@ de contacte</string>
     <string name="no_matching_distribution_lists">No hi ha llistes de distribució coincidents</string>
     <string name="is_typing">està escrivint...</string>
     <string name="push_not_available_title">No s\'ha trobat un servei de push</string>
-    <string name="push_not_available_text">No hem pogut trobar un servei de push al vostre dispositiu perquè els serveis de Google Play no estan instal·lats o  no estan actualitzats. Threema comprovarà si hi ha missatges nous cada 15 minuts.</string>
+    <string name="push_not_available_text1">No hem pogut trobar un servei de push al vostre dispositiu perquè els serveis de Google Play no estan instal·lats o no estan actualitzats.</string>
     <string name="backup_in_progress">Còpia en procés</string>
     <string name="backup_or_restore_success_body">Còpia de les dades completada correctament</string>
     <string name="backup_or_restore_error">Còpia de Threema</string>
@@ -482,7 +479,6 @@ de contacte</string>
     <string name="ballot_answer_count_error">Entreu almenys dues respostes per a l\'enquesta.</string>
     <string name="ballot_one_contact_not_supported">Advertiment: %1$s no podrà participar a la vostra enquesta.</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Advertiment: %1$d contactes no podran participar a la vostra enquesta.</string>
-    <string name="enable_polling">Usar la votació</string>
     <string name="contact_state_inactive">Inactiva</string>
     <string name="contact_state_invalid">No vàlida</string>
     <string name="back">Tornar</string>
@@ -587,16 +583,13 @@ de contacte</string>
     <string name="blocked">bloquejat</string>
     <string name="name">Nom</string>
     <string name="privacy_policy">Política de privacitat</string>
+    <string name="terms_of_service">Termes i condicions</string>
     <string name="save_group_changes">Voleu desar els canvis en el grup?</string>
     <string name="prefs_title_fontsize">Mida de lletra</string>
     <string name="fontsize_normal">Normal</string>
     <string name="fontsize_large">Gran</string>
     <string name="fontsize_xlarge">Extra Gran</string>
     <string name="no_app_for_location">No s\'ha trobat cap aplicació de mapes en aquest dispositiu</string>
-    <string name="polling_interval_5">5 minuts</string>
-    <string name="polling_interval_15">15 minuts (predeterminat)</string>
-    <string name="polling_interval_30">30 minuts</string>
-    <string name="prefs_polling_interval">Interval de comprovació</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d xats eliminats</string>
     <string name="prefs_sendlog">Enviar registre</string>
     <string name="prefs_sendlog_summary">Enviar el fitxer de registre a Threema per una anàlisi posterior en cas de problemes</string>
@@ -1314,7 +1307,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="notification_channel_group_join_request">Canal de notificacions per peticions de grup rebudes</string>
     <string name="reset_default_group_link_title">Restablir info d\'enllaç predeterminada</string>
     <string name="reset_default_group_link_desc">L\'enllaç compartit anteriorment deixarà de ser vàlid i les peticions a través de l\'enllaç antic seran rebutjades automàticament amb una resposta de caducades.</string>
-    <string name="other_group_links">altres</string>
+    <string name="custom">altres</string>
     <string name="show_public_key">Mostrar la clau pública</string>
     <string name="public_key_for">Clau pública de %s</string>
     <string name="copied">Copiada</string>
@@ -1328,4 +1321,38 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="web_link">Enllaç</string>
     <string name="link_copied">%s copiat</string>
     <string name="invalid_onprem_id_title">No es pot Afegir la ID</string>
+    <string name="full_name">Nom</string>
+    <string name="name_given">Nom</string>
+    <string name="name_family">Cognoms</string>
+    <string name="name_prefix">Prefix del nom</string>
+    <string name="name_middle">Segon nom</string>
+    <string name="name_suffix">Sufix del nom</string>
+    <string name="phoneTypeCustom">Personalitzat</string>
+    <string name="phoneTypeHome">Casa</string>
+    <string name="phoneTypeMobile">Mòbil</string>
+    <string name="phoneTypeWork">Feina</string>
+    <string name="phoneTypePager">Cercapersones</string>
+    <string name="phoneTypeOther">Altres</string>
+    <string name="phoneTypeCar">Cotxe"</string>
+    <string name="phoneTypeIsdn">XDSI</string>
+    <string name="phoneTypeOtherFax">Altres faxos</string>
+    <string name="eventTypeCustom">Personalitza</string>
+    <string name="eventTypeBirthday">Natalici</string>
+    <string name="eventTypeAnniversary">Aniversari</string>
+    <string name="eventTypeOther">Altres</string>
+    <string name="emailTypeHome">Casa</string>
+    <string name="emailTypeWork">Feina</string>
+    <string name="emailTypeOther">Altres</string>
+    <string name="postalTypeCustom">Personalitza</string>
+    <string name="postalTypeHome">Casa</string>
+    <string name="postalTypeWork">Feina</string>
+    <string name="postalTypeOther">Altres</string>
+    <string name="relationTypeCustom">Personalitzada</string>
+    <string name="relationTypeChild">Fill</string>
+    <string name="relationTypeFriend">Amic</string>
+    <string name="relationTypeParent">Pare/mare</string>
+    <string name="relationTypeSpouse">Cònjuge</string>
+    <string name="contact_property_key">"Clau"</string>
+    <string name="header_nickname_entry">"Àlies"</string>
+	<string name="organization_type">Organització</string>
 </resources>

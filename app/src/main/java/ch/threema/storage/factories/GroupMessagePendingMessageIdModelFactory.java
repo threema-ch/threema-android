@@ -26,15 +26,15 @@ import android.content.ContentValues;
 import net.sqlcipher.Cursor;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.GroupMessagePendingMessageIdModel;
 
 public class GroupMessagePendingMessageIdModelFactory extends ModelFactory {
-	private static final Logger logger = LoggerFactory.getLogger(GroupMessagePendingMessageIdModel.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupMessagePendingMessageIdModel");
 
 	public GroupMessagePendingMessageIdModelFactory(DatabaseServiceNew databaseService) {
 		super(databaseService, GroupMessagePendingMessageIdModel.TABLE);

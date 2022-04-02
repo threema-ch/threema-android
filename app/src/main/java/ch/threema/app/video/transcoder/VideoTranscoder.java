@@ -38,7 +38,6 @@ import android.text.TextUtils;
 import android.view.Surface;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +54,7 @@ import ch.threema.app.video.transcoder.audio.AudioComponent;
 import ch.threema.app.video.transcoder.audio.AudioFormatTranscoder;
 import ch.threema.app.video.transcoder.audio.AudioNullTranscoder;
 import ch.threema.app.video.transcoder.audio.UnsupportedAudioFormatException;
+import ch.threema.base.utils.LoggingUtil;
 import java8.util.Optional;
 
 /**
@@ -75,7 +75,7 @@ import java8.util.Optional;
 
 @TargetApi(18)
 public class VideoTranscoder {
-	private static final Logger logger = LoggerFactory.getLogger(VideoTranscoder.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoder");
 	private @NonNull Optional<AbstractAudioTranscoder> audioTranscoder = Optional.empty();
 	private @NonNull Optional<Exception> audioTranscoderError = Optional.empty();
 

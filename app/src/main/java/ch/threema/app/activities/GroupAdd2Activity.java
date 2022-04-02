@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -40,10 +39,11 @@ import ch.threema.app.dialogs.ContactEditDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupAdd2Activity extends GroupEditActivity implements ContactEditDialog.ContactEditDialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(GroupAdd2Activity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
 
 	private static final String DIALOG_TAG_CREATING_GROUP = "groupCreate";
 	private static final String BUNDLE_GROUP_IDENTITIES = "grId";

@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -42,7 +43,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -54,9 +54,10 @@ import androidx.core.view.WindowInsetsCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
+import ch.threema.base.utils.LoggingUtil;
 
 public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener, PreviewFragmentInterface {
-	private static final Logger logger = LoggerFactory.getLogger(AudioViewFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioViewFragment");
 
 	private WeakReference<ProgressBar> progressBarRef;
 	private WeakReference<PlayerView> audioView;
@@ -175,7 +176,7 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	private void loadAudio(Uri audioUri) {
 		if (this.audioPlayer != null) {
 			DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), getContext().getString(R.string.app_name)));
-			MediaSource audioSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(audioUri);
+			MediaSource audioSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(audioUri));
 
 			this.audioPlayer.setPlayWhenReady(this.isImmediatePlay);
 			this.isPreparing = true;

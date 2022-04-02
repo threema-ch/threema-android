@@ -25,7 +25,6 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,12 +37,13 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class MessagePlayerServiceImpl implements MessagePlayerService {
-	private static final Logger logger = LoggerFactory.getLogger(MessagePlayerServiceImpl.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayerServiceImpl");
 
 	private final Map<String, MessagePlayer> messagePlayers = new HashMap<>();
 	private final Context context;

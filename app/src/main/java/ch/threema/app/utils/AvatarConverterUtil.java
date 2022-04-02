@@ -39,7 +39,6 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,12 +51,13 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
 import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_WIDTH_PX;
 
 public class AvatarConverterUtil {
-	private static final Logger logger = LoggerFactory.getLogger(AvatarConverterUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarConverterUtil");
 
 	private static int avatarSize = -1, iconSize = -1, iconOffset = -1;
 

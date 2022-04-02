@@ -21,6 +21,9 @@
 
 package ch.threema.app.utils;
 
-public class DownloadUtil  {
-	//stub
+import android.content.Context;
+
+public class DownloadUtil {
+	// stub
+	public static void deleteOldAPKs(Context context) {	}
 }

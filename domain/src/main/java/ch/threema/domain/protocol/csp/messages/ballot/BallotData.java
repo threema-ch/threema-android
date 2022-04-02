@@ -40,6 +40,7 @@ public class BallotData {
 	private final static String KEY_CHOICE_TYPE = "o";
 	private final static String KEY_CHOICES = "c";
 	private final static String KEY_PARTICIPANTS = "p";
+	private final static String KEY_DISPLAY_TYPE = "u";
 
 	public enum State {
 		OPEN(0), CLOSED(1);
@@ -110,12 +111,31 @@ public class BallotData {
 		}
 	}
 
+	public enum DisplayType {
+		LIST_MODE(0), SUMMARY_MODE(1);
+
+		private final int value;
+
+		DisplayType(int value) {
+			this.value = value;
+		}
+
+		static DisplayType fromId(int id) {
+			for (DisplayType f : values()) {
+				if (f.value == id) return f;
+			}
+			throw new IllegalArgumentException();
+		}
+	}
+
 	private String description;
 	private State state;
 	private AssessmentType assessmentType;
 	private Type type;
 	//default choice type text
 	private ChoiceType choiceType = ChoiceType.TEXT;
+	//default display type list mode
+	private DisplayType displayType = DisplayType.LIST_MODE;
 
 	private final List<BallotDataChoice> choiceList = new ArrayList<>();
 	private final List<String> participants = new ArrayList<>();
@@ -179,6 +199,15 @@ public class BallotData {
 		return this;
 	}
 
+	public DisplayType getDisplayType() {
+		return this.displayType;
+	}
+
+	public BallotData setDisplayType(DisplayType displayType) {
+		this.displayType = displayType;
+		return this;
+	}
+
 	/**
 	 *
 	 * @param identity
@@ -231,6 +260,15 @@ public class BallotData {
 			catch (IllegalArgumentException e) {
 				throw new BadMessageException("TM034");
 			}
+			try {
+				if (o.has(KEY_DISPLAY_TYPE)) {
+					ballotData.displayType = DisplayType.fromId(o.getInt(KEY_DISPLAY_TYPE));
+				} else {
+					ballotData.displayType = DisplayType.LIST_MODE;
+				}
+			} catch (IllegalArgumentException e) {
+				throw new BadMessageException("TM035");
+			}
 
 			JSONArray choices = o.getJSONArray(KEY_CHOICES);
 			for(int n = 0; n < choices.length(); n++) {
@@ -264,6 +302,7 @@ public class BallotData {
 			o.put(KEY_ASSESSMENT_TYPE, this.assessmentType.value);
 			o.put(KEY_TYPE, this.type.value);
 			o.put(KEY_CHOICE_TYPE, this.choiceType.value);
+			o.put(KEY_DISPLAY_TYPE, this.displayType.value);
 
 			JSONArray a = new JSONArray();
 			for (BallotDataChoice c : this.getChoiceList()) {

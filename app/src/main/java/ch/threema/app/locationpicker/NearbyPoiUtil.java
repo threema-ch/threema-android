@@ -27,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,12 +42,13 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocationUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ProtocolStrings;
 
 import static ch.threema.app.locationpicker.LocationPickerActivity.POI_RADIUS;
 
 public class NearbyPoiUtil {
-	private static final Logger logger = LoggerFactory.getLogger(NearbyPoiUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NearbyPoiUtil");
 
 	/**
 	 * Fetch POIs around the specified location. Append them to the list `pois`.

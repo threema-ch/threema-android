@@ -59,6 +59,17 @@ public class IncomingGroupJoinRequestModel implements Serializable {
 		this.responseStatus = responseStatus;
 	}
 
+	private IncomingGroupJoinRequestModel(
+		Builder builder
+	) {
+		this.id = builder.id;
+		this.groupInviteId = builder.groupInviteId;
+		this.message = builder.message;
+		this.requestingIdentity = builder.requestingIdentity;
+		this.requestTime = builder.requestTime;
+		this.responseStatus = builder.responseStatus;
+	}
+
 	public int getId() {
 		return this.id;
 	}
@@ -92,7 +103,81 @@ public class IncomingGroupJoinRequestModel implements Serializable {
 		ACCEPTED,
 		REJECTED,
 		GROUP_FULL,
-		EXPIRED
+		EXPIRED;
+
+		private static ResponseStatus[] allValues = values();
+		public static ResponseStatus fromOrdinal(int n) {return allValues[n];}
+		public static IncomingGroupJoinRequestModel.ResponseStatus fromString(String status) {
+			switch (status){
+				case "OPEN":
+					return OPEN;
+				case "ACCEPTED":
+					return ACCEPTED;
+				case "REJECTED":
+					return REJECTED;
+				case "GROUP_FULL":
+					return GROUP_FULL;
+				case "EXPIRED":
+					return EXPIRED;
+				default:
+					return EXPIRED;
+			}
+		}
+	}
+
+	public static class Builder {
+		private int id;
+		private int groupInviteId;
+		private String message;
+		private String requestingIdentity;
+		private Date requestTime;
+		private ResponseStatus responseStatus;
+
+		public Builder() { }
+
+		public Builder(IncomingGroupJoinRequestModel model) {
+			this.id = model.id;
+			this.groupInviteId = model.groupInviteId;
+			this.message = model.message;
+			this.requestingIdentity = model.requestingIdentity;
+			this.requestTime = model.requestTime;
+			this.responseStatus = model.responseStatus;
+
+		}
+
+		public IncomingGroupJoinRequestModel.Builder withId(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public IncomingGroupJoinRequestModel.Builder withGroupInviteId(int groupInviteId) {
+			this.groupInviteId = groupInviteId;
+			return this;
+		}
+
+		public IncomingGroupJoinRequestModel.Builder withMessage(String message) {
+			this.message = message;
+			return this;
+		}
+
+		public IncomingGroupJoinRequestModel.Builder withRequestingIdentity(String requestingIdentity) {
+			this.requestingIdentity = requestingIdentity;
+			return this;
+		}
+
+		public IncomingGroupJoinRequestModel.Builder withRequestTime(Date requestTime) {
+			this.requestTime = requestTime;
+			return this;
+		}
+
+		public IncomingGroupJoinRequestModel.Builder withResponseStatus(ResponseStatus responseStatus) {
+			this.responseStatus = responseStatus;
+			return this;
+		}
+
+		public IncomingGroupJoinRequestModel build() {
+			return new IncomingGroupJoinRequestModel(this);
+		}
 	}
 
 }

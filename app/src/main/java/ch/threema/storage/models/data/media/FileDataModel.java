@@ -24,7 +24,6 @@ package ch.threema.storage.models.data.media;
 import android.util.JsonWriter;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -38,11 +37,12 @@ import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 public class FileDataModel implements MediaMessageDataInterface {
-	private static final Logger logger = LoggerFactory.getLogger(FileDataModel.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("FileDataModel");
 
 	public static final String METADATA_KEY_DURATION = "d";
 	public static final String METADATA_KEY_WIDTH = "w";

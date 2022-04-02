@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
@@ -41,10 +40,11 @@ import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.StopPassphraseServiceActivity;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
 public class PassphraseService extends Service {
-	private static final Logger logger = LoggerFactory.getLogger(PassphraseService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PassphraseService");
 	private static Intent service;
 
 	@Override

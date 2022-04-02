@@ -52,8 +52,5 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
 	@Override
 	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-/*		if (ConfigUtils.refreshDeviceTheme(this)) {
-			ConfigUtils.recreateActivity(this);
-		}
-*/	}
+	}
 }

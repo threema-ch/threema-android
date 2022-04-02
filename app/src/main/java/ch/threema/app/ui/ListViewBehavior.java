@@ -29,15 +29,15 @@ import android.view.ViewGroup;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import ch.threema.base.utils.LoggingUtil;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class ListViewBehavior extends CoordinatorLayout.Behavior<View> {
-	private static final Logger logger = LoggerFactory.getLogger(ListViewBehavior.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewBehavior");
 
 	public ListViewBehavior(Context context, AttributeSet attrs) {
 		super(context, attrs);

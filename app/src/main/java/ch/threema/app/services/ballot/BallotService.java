@@ -31,8 +31,8 @@ import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -148,11 +148,4 @@ public interface BallotService {
 	BallotMatrixData getMatrixData(int ballotModelId);
 
 	boolean removeAll();
-
-	/**
-	 * Check if a poll is complete i.e. all voters have cast their vote
-	 * @param model BallotModel to check
-	 * @return true if all participants voted, false otherwise
-	 */
-	boolean isComplete(BallotModel model);
 }

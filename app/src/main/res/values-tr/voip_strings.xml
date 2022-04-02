@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <resources>
     <string name="voip_title">Threema Çağrısı</string>
-    <string name="voip_hangup">Telefonu kapatmak</string>
+    <string name="voip_hangup">Telefonu kapat</string>
     <string name="voip_toggle_mic">Mikrofonu aç / kapat</string>
     <string name="voip_toggle_speaker">Hoparlörü aç / kapat</string>
     <string name="voip_switch_cam">Kamerayı değiştir</string>
@@ -35,7 +35,7 @@
     <string name="voip_call_finished_inbox">Gelen Çağrı</string>
     <string name="voip_call_status_aborted">Çağrı İptal Edildi</string>
     <string name="voip_return_call">Geri arama</string>
-    <string name="voip_accept">Kabul etmek</string>
+    <string name="voip_accept">Kabul et</string>
     <string name="voip_reject">Reddetmek</string>
     <string name="voip_speakerphone">Hoparlör</string>
     <string name="voip_wired_headset">Kulaklık</string>

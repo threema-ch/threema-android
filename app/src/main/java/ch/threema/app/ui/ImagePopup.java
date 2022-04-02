@@ -37,16 +37,12 @@ import android.widget.TextView;
 
 import com.google.android.material.card.MaterialCardView;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 
 public class ImagePopup extends DimmingPopupWindow {
-	private static final Logger logger = LoggerFactory.getLogger(ImagePopup.class);
 
 	private ImageView imageView;
 	private TextView filenameTextView, dateTextView;

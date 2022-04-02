@@ -68,6 +68,7 @@ import ch.threema.base.utils.Base64;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
+import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ID;
 import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
 
 public class AddContactActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener, NewContactDialog.NewContactDialogClickListener {
@@ -227,7 +228,11 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 					showContactDetail(identity);
 					finish();
 				} else if (exception instanceof InvalidEntryException){
-					GenericAlertDialog.newInstance(R.string.title_adduser, ((InvalidEntryException) exception).getTextId(), R.string.close, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
+					GenericAlertDialog.newInstance(
+						ConfigUtils.isOnPremBuild() ?
+						R.string.invalid_onprem_id_title :
+						R.string.title_adduser,
+						((InvalidEntryException) exception).getTextId(), R.string.close, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
 				} else if (exception instanceof PolicyViolationException) {
 					Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
 					finish();
@@ -366,7 +371,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			if (ConfigUtils.supportsGroupLinks()) {
 				QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(this, getString(R.string.qr_scanner_id_hint));
 			} else {
-				QRScannerUtil.getInstance().initiateScan(this, false, getString(R.string.qr_scanner_id_hint));
+				QRScannerUtil.getInstance().initiateScan(this, getString(R.string.qr_scanner_id_hint), QR_TYPE_ID);
 			}
 		}
 	}

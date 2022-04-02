@@ -36,6 +36,8 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.NotificationService;
+import ch.threema.app.services.PollingHelper;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -49,6 +51,8 @@ public class IdentityStatesWorker extends Worker {
 	private ContactService contactService;
 	private APIConnector apiConnector;
 	private PreferenceService preferenceService;
+	private NotificationService notificationService;
+	private PollingHelper pollingHelper = null;
 
 	public IdentityStatesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
 		super(context, workerParams);
@@ -58,6 +62,7 @@ public class IdentityStatesWorker extends Worker {
 			contactService = serviceManager.getContactService();
 			apiConnector = serviceManager.getAPIConnector();
 			preferenceService = serviceManager.getPreferenceService();
+			notificationService = serviceManager.getNotificationService();
 		} catch (Exception e) {
 			//
 		}
@@ -71,6 +76,10 @@ public class IdentityStatesWorker extends Worker {
 		if (this.contactService == null) {
 			logger.info("ContactService not available while updating IdentityStates");
 			return Result.failure();
+		}
+
+		if (notificationService != null) {
+			notificationService.showIdentityStatesSyncProgress();
 		}
 
 		//get all identities
@@ -159,7 +168,7 @@ public class IdentityStatesWorker extends Worker {
 									save = true;
 								}
 							} else {
-								logger.warn("Feature mask is null!");
+								logger.warn("Feature mask for contact {} is null.", contactModel.getIdentity());
 								// is this a valid contact?
 							}
 							if (ContactUtil.allowedChangeToState(contactModel, contactModelState)) {
@@ -183,7 +192,19 @@ public class IdentityStatesWorker extends Worker {
 				logger.error("Exception", e);
 			}
 		}
+
+		// force a quick poll
+		if (pollingHelper == null) {
+			pollingHelper = new PollingHelper(getApplicationContext(), "identityStatesWorker");
+		}
+
+		pollingHelper.poll(false);
+
 		logger.debug("finished");
+
+		if (notificationService != null) {
+			notificationService.cancelIdentityStatesSyncProgress();
+		}
 
 		return Result.success();
 	}

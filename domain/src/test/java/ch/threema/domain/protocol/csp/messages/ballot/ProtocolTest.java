@@ -63,6 +63,7 @@ public class ProtocolTest {
 		data.setType(BallotData.Type.RESULT_ON_CLOSE);
 		data.setAssessmentType(BallotData.AssessmentType.SINGLE);
 		data.setState(BallotData.State.OPEN);
+		data.setDisplayType(BallotData.DisplayType.LIST_MODE);
 
 
 		for(int n = 0; n < 10; n++) {
@@ -71,6 +72,7 @@ public class ProtocolTest {
 			c.setName("Choice " + (n+1));
 			c.setOrder(n);
 			c.addResult(0, 1).addResult(1,0);
+			c.setTotalVotes(2);
 			data.getChoiceList().add(c);
 		}
 		b.setData(data);

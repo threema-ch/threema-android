@@ -69,9 +69,6 @@
     <string name="prefs_troubleshooting">トラブルシューティング</string>
     <string name="prefs_sum_troubleshooting">問題の分析と修正</string>
     <string name="prefs_workarounds">回避策</string>
-    <string name="prefs_title_polling_switch">投票</string>
-    <string name="prefs_sum_polling_on">新しいメッセージを定期的にチェックする（より多くのバッテリーを使用します！）</string>
-    <string name="prefs_sum_polling_off">プッシュのみで新着メッセージを確認する</string>
     <string name="prefs_logging">ログ</string>
     <string name="prefs_title_message_log_switch">ファイルにログを記録</string>
     <string name="prefs_title_sum_message_log_on">イベントとネットワーク情報は debug_log.txt ファイルに記録されます</string>
@@ -230,8 +227,8 @@
     <string name="masterkey_is_unlocked">マスターキーが解除されました</string>
     <string name="file_too_large">ファイルが最大容量の 50 MB を超えています</string>
     <string name="deleting_thread">トークを削除する</string>
-    <string name="enter_serial_body">ショップライセンスキーを入力するか、ここをクリックしてキーを取得してください。
-https://shop.threema.ch/retrieve_keys</string>
+    <string name="enter_serial_body"><![CDATA[ショップライセンスキーを入力するか、ここをクリックしてキーを取得してください。
+https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Threemaのロック解除</string>
     <string name="serial_required_want_exit">ライセンスキーが無効です。再度お試しいただくか、Threemaを終了しますか？</string>
     <string name="checking_serial">ライセンスの確認</string>
@@ -397,7 +394,7 @@ https://shop.threema.ch/retrieve_keys</string>
     <string name="no_matching_distribution_lists">該当する配信リストはありません</string>
     <string name="is_typing">は入力中です...</string>
     <string name="push_not_available_title">プッシュサービスが見つかりませんでした</string>
-    <string name="push_not_available_text">Google Playサービスがインストールされていないか、古いため、お使いの端末でプッシュサービスが見つかりませんでした。Threemaは15分ごとに新しいメッセージをチェックします。</string>
+    <string name="push_not_available_text1">Google Playサービスがインストールされていないか、古いため、お使いの端末でプッシュサービスが見つかりませんでした。</string>
     <string name="backup_in_progress">バックアップ実行中</string>
     <string name="backup_or_restore_success_body">データのバックアップが終了しました</string>
     <string name="backup_or_restore_error">Threemaバックアップ</string>
@@ -477,7 +474,6 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="ballot_answer_count_error">投票を作成するには2つ以上の選択肢を追加してください</string>
     <string name="ballot_one_contact_not_supported">警告: %1$sは投票に参加できなくなります。</string>
     <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告: %1$dの連絡先は投票に参加できなくなります。</string>
-    <string name="enable_polling">投票を使う</string>
     <string name="contact_state_inactive">非アクティブ</string>
     <string name="contact_state_invalid">無効</string>
     <string name="back">戻る</string>
@@ -583,16 +579,13 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="blocked">ブロック</string>
     <string name="name">名前</string>
     <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="terms_of_service">利用規約</string>
     <string name="save_group_changes">グループの変更を保存しますか？</string>
     <string name="prefs_title_fontsize">フォントサイズ</string>
     <string name="fontsize_normal">正規</string>
     <string name="fontsize_large">大</string>
     <string name="fontsize_xlarge">特大</string>
     <string name="no_app_for_location">インストール済みのマップアプリが見つかりませんでした</string>
-    <string name="polling_interval_5">5分</string>
-    <string name="polling_interval_15">15分 (デフォルト)</string>
-    <string name="polling_interval_30">30分</string>
-    <string name="prefs_polling_interval">投票の間隔</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%dつのトークが削除されました</string>
     <string name="prefs_sendlog">ログを送信する</string>
     <string name="prefs_sendlog_summary">問題を分析するためにログファイルをThreemaに送信します</string>
@@ -1108,7 +1101,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="ballot_window_show">投票バーを表示</string>
     <string name="tooltip_voip_other_party_video_on">相手がビデオ通話を開始しました。ここをタップすると、あなたのカメラもオンになります。</string>
     <string name="tooltip_voip_other_party_video_disabled">相手が現在のアプリのバージョンを使用していない、またはビデオ通話を許可しません。</string>
-	<string name="biometrics_not_enrolled">生体認証は登録されていません。</string>
+    <string name="biometrics_not_enrolled">生体認証は登録されていません。</string>
     <string name="biometrics_not_avilable">このシステムでは生体認証は利用できません。</string>
     <string name="biometrics_no_permission">生体認証またはハードウェアにアクセスするための許可がありません。</string>
     <string name="verification_settings_desc">3つの点は、連絡先の検証レベルを表しています。</string>
@@ -1183,8 +1176,14 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="set_backup_path_intro">バックアップの保存場所を選んでください</string>
     <string name="group_join_request">グループ参加要求</string>
     <string name="group_join_request_for">%sに対するグループ参加要求</string>
+    <string name="group_link_default_name">無名のリンク</string>
+    <string name="group_link_share">グループリンクを共有</string>
     <string name="group_request_incoming_dialog_title">%sからの要求</string>
+    <string name="accept">受け入れる</string>
+    <string name="reject">拒否する</string>
     <string name="group_link_none">リンクがまだ生成されていません</string>
+    <string name="group_request_send_title">グループ参加リクエストを送信</string>
+    <string name="group_requests_all_title">全てのグループリクエスト</string>
     <string name="group_qr_code_title">グループQRコード</string>
     <string name="tap_here_for_more">詳しい情報はこちら</string>
     <string name="app_store_error_code">App storeエラーコード: %d</string>
@@ -1196,4 +1195,38 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="label_continue">続ける</string>
     <string name="select_date">日付を選択</string>
     <string name="select_time">時間を選択</string>
+    <string name="name_given">名</string>
+    <string name="name_family">姓</string>
+    <string name="name_prefix">敬称（名前の前）</string>
+    <string name="name_middle">ミドルネーム</string>
+    <string name="name_suffix">敬称（名前の後）</string>
+    <string name="full_name">名前</string>
+    <string name="phoneTypeCustom">カスタム</string>
+    <string name="phoneTypeHome">自宅</string>
+    <string name="phoneTypeMobile">携帯</string>
+    <string name="phoneTypeWork">勤務先</string>
+    <string name="phoneTypePager">ポケベル</string>
+    <string name="phoneTypeOther">その他</string>
+    <string name="phoneTypeCar">クルマ</string>
+    <string name="phoneTypeIsdn">ISDN</string>
+    <string name="phoneTypeOtherFax">FAX（その他）</string>
+    <string name="eventTypeCustom">カスタム</string>
+    <string name="eventTypeBirthday">誕生日</string>
+    <string name="eventTypeAnniversary">記念日</string>
+    <string name="eventTypeOther">その他</string>
+    <string name="emailTypeHome">自宅</string>
+    <string name="emailTypeWork">勤務先</string>
+    <string name="emailTypeOther">その他</string>
+    <string name="postalTypeCustom">カスタム</string>
+    <string name="postalTypeHome">自宅</string>
+    <string name="postalTypeWork">勤務先</string>
+    <string name="postalTypeOther">その他</string>
+    <string name="relationTypeCustom">カスタム</string>
+    <string name="relationTypeChild">子ども</string>
+    <string name="relationTypeFriend">友だち</string>
+    <string name="relationTypeParent">親</string>
+    <string name="relationTypeSpouse">配偶者</string>
+    <string name="contact_property_key">"鍵"</string>
+    <string name="header_nickname_entry">"ニックネーム"</string>
+    <string name="organization_type">組織</string>
 </resources>

@@ -62,10 +62,10 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 		this.currentKeyboardHeight = 0;
 
 		setSupportActionBar(getToolbar());
-		ActionBar actionBar = getSupportActionBar();
-
+		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar == null) {
 			finish();
+			return;
 		}
 
 		Drawable checkDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_check);
@@ -93,12 +93,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 				currentKeyboardHeight = keyboardHeight;
 			}
 		});
-		rootView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				cancel();
-			}
-		});
+		rootView.setOnClickListener(v -> cancel());
 
 		Intent intent = getIntent();
 		@ColorInt int color = intent.getIntExtra(INTENT_EXTRA_COLOR, getResources().getColor(android.R.color.white));
@@ -135,13 +130,10 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 		textEntry.setHintTextColor(hintColor);
 		// offset values don't seem to have the same range as in a textpaint (we have to approx. quadruple them)
 		textEntry.setShadowLayer(TextEntity.TEXT_SHADOW_RADIUS * 4, TextEntity.TEXT_SHADOW_OFFSET * 4, TextEntity.TEXT_SHADOW_OFFSET * 4, Color.BLACK);
-		textEntry.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				textEntry.setVisibility(View.VISIBLE);
-				textEntry.requestFocus();
-				EditTextUtil.showSoftKeyboard(textEntry);
-			}
+		textEntry.postDelayed(() -> {
+			textEntry.setVisibility(View.VISIBLE);
+			textEntry.requestFocus();
+			EditTextUtil.showSoftKeyboard(textEntry);
 		}, 500);
 	}
 
@@ -154,6 +146,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
 
+		//noinspection SwitchStatementWithTooFewBranches
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				returnResult(textEntry.getText());

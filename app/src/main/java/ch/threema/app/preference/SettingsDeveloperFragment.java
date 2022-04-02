@@ -24,12 +24,9 @@ package ch.threema.app.preference;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -49,15 +46,16 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
-	private static final Logger logger = LoggerFactory.getLogger(SettingsDeveloperFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsDeveloperFragment");
 
 	// Test identities.
 	private static final String TEST_IDENTITY_1 = "ADDRTCNX";
@@ -70,27 +68,25 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	private UserService userService;
 
 	@Override
-	public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
+	public void initializePreferences() {
 		if (!requiredInstances()) {
 			return;
 		}
 
-		addPreferencesFromResource(R.xml.preference_developers);
-
 		// Generate VoIP messages
-		final Preference generateVoipPreference = findPreference(getResources().getString(R.string.preferences__generate_voip_messages));
+		final Preference generateVoipPreference = getPref(getResources().getString(R.string.preferences__generate_voip_messages));
 		generateVoipPreference.setSummary("Create the test identity " + TEST_IDENTITY_1
 			+ " and add all possible VoIP messages to that conversation.");
 		generateVoipPreference.setOnPreferenceClickListener(this::generateVoipMessages);
 
 		// Generate test quotes
-		final Preference generateRecursiveQuote = findPreference(getResources().getString(R.string.preferences__generate_test_quotes));
+		final Preference generateRecursiveQuote = getPref(getResources().getString(R.string.preferences__generate_test_quotes));
 		generateRecursiveQuote.setSummary("Create the test identities " + TEST_IDENTITY_1 + " and "
 			+ TEST_IDENTITY_2 + " and add some test quotes.");
 		generateRecursiveQuote.setOnPreferenceClickListener(this::generateTestQuotes);
 
 		// Remove developer menu
-		final Preference removeMenuPreference = findPreference(getResources().getString(R.string.preferences__remove_menu));
+		final Preference removeMenuPreference = getPref(getResources().getString(R.string.preferences__remove_menu));
 		removeMenuPreference.setSummary("Hide the developer menu from the settings.");
 		removeMenuPreference.setOnPreferenceClickListener(this::hideDeveloperMenu);
 	}
@@ -136,7 +132,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 		}
 
 		// Test messages
-		final VoipMessage[] testMessages = new VoipMessage[] {
+		final VoipMessage[] testMessages = new VoipMessage[]{
 			new VoipMessage(VoipStatusDataModel.createMissed(), "missed"),
 			new VoipMessage(VoipStatusDataModel.createFinished(42), "finished"),
 			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.UNKNOWN), "rejected (unknown)"),
@@ -144,7 +140,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.TIMEOUT), "rejected (timeout)"),
 			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.REJECTED), "rejected (rejected)"),
 			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.DISABLED), "rejected (disabled)"),
-			new VoipMessage(VoipStatusDataModel.createRejected((byte)99), "rejected (invalid reason code)"),
+			new VoipMessage(VoipStatusDataModel.createRejected((byte) 99), "rejected (invalid reason code)"),
 			new VoipMessage(VoipStatusDataModel.createRejected(null), "rejected (null reason code)"),
 			new VoipMessage(VoipStatusDataModel.createAborted(), "aborted"),
 		};
@@ -159,7 +155,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 					// Create test messages
 					final ContactMessageReceiver receiver = contactService.createReceiver(contact);
 					messageService.createStatusMessage("Creating test messages...", receiver);
-					for (boolean isOutbox : new boolean[] { true, false }) {
+					for (boolean isOutbox : new boolean[]{true, false}) {
 						for (VoipMessage msg : testMessages) {
 							final String text = (isOutbox ? "Outgoing " : "Incoming ") + msg.description;
 							messageService.createStatusMessage(text, receiver);
@@ -293,8 +289,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		preferenceFragmentCallbackInterface.setToolbarTitle(R.string.prefs_developers);
-		super.onViewCreated(view, savedInstanceState);
+	public int getPreferenceResource() {
+		return R.xml.preference_developers;
 	}
 }

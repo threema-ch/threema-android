@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,6 +41,7 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.TagModel;
 
@@ -50,7 +50,7 @@ import ch.threema.storage.models.TagModel;
  */
 @WorkerThread
 public class ModifyConversationHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ModifyConversationHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyConversationHandler");
 
 	private static final String FIELD_IS_PINNED = "isStarred";
 

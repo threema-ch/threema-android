@@ -25,16 +25,16 @@ import android.app.Activity;
 import android.content.Intent;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NavUtils;
 import androidx.core.app.TaskStackBuilder;
 import ch.threema.app.R;
 import ch.threema.app.activities.PinLockActivity;
+import ch.threema.base.utils.LoggingUtil;
 
 public class NavigationUtil {
-	private static final Logger logger = LoggerFactory.getLogger(NavigationUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("NavigationUtil");
 
 	public static void navigateUpToHome(@NonNull Activity activity) {
 		// navigate to home and get rid of the backstack (since we may have pulled the rug from under our feet)

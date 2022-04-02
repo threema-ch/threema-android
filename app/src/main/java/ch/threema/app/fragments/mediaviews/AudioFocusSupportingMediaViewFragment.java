@@ -30,13 +30,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.R;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
+import ch.threema.base.utils.LoggingUtil;
 
 public abstract class AudioFocusSupportingMediaViewFragment extends MediaViewFragment implements AudioManager.OnAudioFocusChangeListener, PreviewFragmentInterface.AudioFocusActions {
-	private static final Logger logger = LoggerFactory.getLogger(AudioFocusSupportingMediaViewFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioFocusSupportingMediaViewFragment");
 
 	private AudioManager audioManager;
 

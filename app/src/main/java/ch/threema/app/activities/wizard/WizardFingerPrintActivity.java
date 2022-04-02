@@ -26,12 +26,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -39,13 +37,15 @@ import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
+import ch.threema.app.licensing.StoreLicenseCheck;
 import ch.threema.app.ui.NewWizardFingerPrintView;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 
 public class WizardFingerPrintActivity extends WizardBackgroundActivity implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggerFactory.getLogger(WizardFingerPrintActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
 
 	public static final int PROGRESS_MAX = 50;
 	private static final String DIALOG_TAG_CREATE_ID = "ci";
@@ -64,7 +64,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 		swipeProgress.setProgress(0);
 
 		fingerView = findViewById(R.id.finger_overlay);
-		FrameLayout infoView = findViewById(R.id.more_info_layout);
+		ImageView infoView = findViewById(R.id.wizard_icon_info);
 		infoView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -158,6 +158,8 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 	@Override
 	public void onYes(String tag, Object data) {
 		if (tag.equals(DIALOG_TAG_CREATE_ERROR)) {
+			// check again for a valid license and try to create identity
+			StoreLicenseCheck.checkLicense(this, userService);
 			createIdentity((byte[]) data);
 		}
 	}

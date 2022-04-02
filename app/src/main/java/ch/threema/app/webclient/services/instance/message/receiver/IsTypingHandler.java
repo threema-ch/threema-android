@@ -27,17 +27,17 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 @WorkerThread
 public class IsTypingHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(IsTypingHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("IsTypingHandler");
 
 	private final UserService userService;
 

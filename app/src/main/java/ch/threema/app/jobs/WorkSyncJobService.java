@@ -26,10 +26,11 @@ import android.app.job.JobService;
 import android.content.Intent;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import ch.threema.base.utils.LoggingUtil;
 
 public class WorkSyncJobService extends JobService {
-	private static final Logger logger = LoggerFactory.getLogger(WorkSyncJobService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("WorkSyncJobService");
 
 	@Override
 	public boolean onStartJob(JobParameters params) {

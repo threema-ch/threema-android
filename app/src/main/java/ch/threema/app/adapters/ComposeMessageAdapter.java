@@ -35,9 +35,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ListView;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +85,6 @@ import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
-	private static final Logger logger = LoggerFactory.getLogger(ComposeMessageAdapter.class);
 
 	private final List<AbstractMessageModel> values;
 	private final ChatAdapterDecorator.Helper decoratorHelper;

@@ -31,7 +31,6 @@ import androidx.annotation.WorkerThread;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -42,13 +41,14 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Webclient sending all client information.
  */
 @WorkerThread
 public class ClientInfoRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(ClientInfoRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ClientInfoRequestHandler");
 
 	private final MessageDispatcher dispatcher;
 	private final PreferenceService preferenceService;

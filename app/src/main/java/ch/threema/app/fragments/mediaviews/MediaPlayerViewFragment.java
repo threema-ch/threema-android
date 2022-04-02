@@ -40,7 +40,6 @@ import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.TimeBar;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,13 +51,14 @@ import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import pl.droidsonroids.gif.GifImageView;
 
 import static ch.threema.app.R.id.position_container;
 import static ch.threema.app.utils.StringConversionUtil.getDurationString;
 
 public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.StateListener {
-	private static final Logger logger = LoggerFactory.getLogger(MediaPlayerViewFragment.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerViewFragment");
 
 	private WeakReference<GifImageView> imageViewRef;
 	private WeakReference<ImageView> previewViewRef;

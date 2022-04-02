@@ -26,7 +26,6 @@ import android.content.Intent;
 
 import org.msgpack.core.MessagePackException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -41,13 +40,14 @@ import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.app.webclient.services.BatteryStatusServiceImpl;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Subscribe to BatteryStatusListener notifications. Send them to Threema Web as update messages.
  */
 @WorkerThread
 public class BatteryStatusUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggerFactory.getLogger(BatteryStatusUpdateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusUpdateHandler");
 
 	// Handler
 	private final @NonNull HandlerExecutor handler;

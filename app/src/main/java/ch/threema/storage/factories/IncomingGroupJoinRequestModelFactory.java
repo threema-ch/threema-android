@@ -34,6 +34,7 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.Result;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -104,7 +105,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 	 * @param id of the record that should be changed
 	 * @param values that should be changed
 	 */
-	private void update(int id, final @NonNull ContentValues values) throws SQLException {
+	public void update(int id, final @NonNull ContentValues values) throws SQLException {
 		int rowsAffected = this.databaseService.getWritableDatabase().update(
 			this.getTableName(),
 			values,
@@ -177,7 +178,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 		return this.getCursorResultModelList(selection, selectionArgs);
 	}
 
-	public @NonNull List<IncomingGroupJoinRequestModel> getDestictOpenRequestsForGroup(int groupId) {
+	public @NonNull List<IncomingGroupJoinRequestModel> getSingleMostRecentOpenRequestsPerUserForGroup(GroupId groupId) {
 		String selection = "SELECT * FROM " + this.getTableName() + " b INNER JOIN " + GroupInviteModel.TABLE + " l"
 			+ " ON b." + IncomingGroupJoinRequestModel.COLUMN_GROUP_INVITE + " = l." + GroupInviteModel.COLUMN_ID
 			+ " WHERE l." + GroupInviteModel.COLUMN_GROUP_ID + " =?"
@@ -189,7 +190,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 			+ " LIMIT 1)";
 
 		final String[] selectionArgs = new String[] {
-			String.valueOf(groupId),
+			groupId.toString(),
 			IncomingGroupJoinRequestModel.ResponseStatus.OPEN.name()
 		};
 
@@ -197,13 +198,28 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 		return getAllModelsFromCursor(cursor);
 	}
 
-	public @NonNull List<IncomingGroupJoinRequestModel> getAllRequestsForGroup(int groupId) {
+	public @NonNull List<IncomingGroupJoinRequestModel> getAllRequestsForGroup(GroupId groupId) {
 		String selection = "SELECT * FROM " + this.getTableName() + " b INNER JOIN " + GroupInviteModel.TABLE + " l"
 			+ " ON b." + IncomingGroupJoinRequestModel.COLUMN_GROUP_INVITE + " = l." + GroupInviteModel.COLUMN_ID
 			+ " WHERE l." + GroupInviteModel.COLUMN_GROUP_ID + " =?";
 
 		final String[] selectionArgs = new String[] {
-			String.valueOf(groupId)
+			groupId.toString()
+		};
+
+		Cursor cursor = this.getReadableDatabase().rawQuery(selection, selectionArgs);
+		return getAllModelsFromCursor(cursor);
+	}
+
+	public @NonNull List<IncomingGroupJoinRequestModel> getAllOpenRequestsForGroup(GroupId groupId) {
+		String selection = "SELECT * FROM " + this.getTableName() + " b INNER JOIN " + GroupInviteModel.TABLE + " l"
+			+ " ON b." + IncomingGroupJoinRequestModel.COLUMN_GROUP_INVITE + " = l." + GroupInviteModel.COLUMN_ID
+			+ " WHERE l." + GroupInviteModel.COLUMN_GROUP_ID + " =?"
+			+ " AND b." + IncomingGroupJoinRequestModel.COLUMN_RESPONSE_STATUS + " =?";
+
+		final String[] selectionArgs = new String[] {
+			groupId.toString(),
+			IncomingGroupJoinRequestModel.ResponseStatus.OPEN.name()
 		};
 
 		Cursor cursor = this.getReadableDatabase().rawQuery(selection, selectionArgs);
@@ -222,7 +238,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 	}
 
 	public @NonNull List<IncomingGroupJoinRequestModel> getAllOpenRequestsByGroupIdAndIdentity(
-		int groupId,
+		GroupId groupId,
 		@NonNull String identity)
 	{
 		String selection = "SELECT *" + " FROM " + this.getTableName() + " b INNER JOIN " + GroupInviteModel.TABLE + " l"
@@ -232,7 +248,7 @@ public class IncomingGroupJoinRequestModelFactory extends ModelFactory {
 			+ " AND b." + IncomingGroupJoinRequestModel.COLUMN_RESPONSE_STATUS + " =?";
 
 		final String[] selectionArgs = new String[] {
-			String.valueOf(groupId),
+			groupId.toString(),
 			identity,
 			IncomingGroupJoinRequestModel.ResponseStatus.OPEN.name()
 		};

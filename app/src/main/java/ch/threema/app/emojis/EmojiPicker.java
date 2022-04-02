@@ -35,7 +35,6 @@ import android.widget.LinearLayout;
 import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,9 +44,10 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.LockableViewPager;
+import ch.threema.base.utils.LoggingUtil;
 
 public class EmojiPicker extends LinearLayout {
-	private static final Logger logger = LoggerFactory.getLogger(EmojiPicker.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiPicker");
 
 	private Context context;
 	private View emojiPickerView;

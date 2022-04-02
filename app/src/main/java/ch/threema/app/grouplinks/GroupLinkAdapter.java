@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
@@ -42,14 +41,14 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.AbstractRecyclerAdapter;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.group.GroupInviteModel;
 
 public class GroupLinkAdapter extends AbstractRecyclerAdapter<GroupInviteModel, RecyclerView.ViewHolder> {
-	private static final Logger logger = LoggerFactory.getLogger(GroupLinkAdapter.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkAdapter");
 
 	private final GroupService groupService;
 
@@ -58,6 +57,7 @@ public class GroupLinkAdapter extends AbstractRecyclerAdapter<GroupInviteModel, 
 	private GroupLinkAdapter.OnClickItemListener onClickItemListener;
 	private List<GroupInviteModel> groupInviteModels;
 	private final GroupLinkViewModel viewModel;
+
 	private final int colorIdRed;
 	private final int colorIdGreen;
 
@@ -107,12 +107,12 @@ public class GroupLinkAdapter extends AbstractRecyclerAdapter<GroupInviteModel, 
 
 		GroupLinkViewHolder holder = (GroupLinkViewHolder) h;
 		final GroupInviteModel groupInviteModel = this.groupInviteModels.get(position);
-		AvatarListItemUtil.loadAvatar(
-			position,
-			groupService.getById(groupInviteModel.getGroupId()),
-			null,
-			groupService,
-			holder.avatarListItemHolder);
+		if (groupInviteModel.isDefault()) {
+			holder.avatarListItemHolder.avatarView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_link_outline));
+		}
+		else {
+			holder.avatarListItemHolder.avatarView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_settings_advanced));
+		}
 		holder.linkname.setText(groupInviteModel.getInviteName());
 		holder.administered.setText(
 			groupInviteModel.getManualConfirmation() ?

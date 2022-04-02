@@ -36,7 +36,7 @@
 				android:textColor="?attr/textColorPrimary"
 				android:textSize="24sp"
 				app:layout_constraintBottom_toTopOf="@+id/scan_button"
-				app:layout_constraintLeft_toLeftOf="@+id/qr_image" />
+				app:layout_constraintLeft_toLeftOf="@+id/qr_container" />
 
 			<ImageView
 				android:id="@+id/share_button"
@@ -53,6 +53,18 @@
 				app:srcCompat="@drawable/ic_share_outline"
 				app:tint="?attr/textColorSecondary" />
 
+			<com.google.android.material.card.MaterialCardView
+				android:id="@+id/qr_container"
+				android:layout_width="100dp"
+				android:layout_height="100dp"
+				app:strokeColor="?attr/accent_alpha"
+				app:strokeWidth="1dp"
+				app:cardElevation="0dp"
+				app:contentPadding="1dp"
+				app:layout_constraintBottom_toTopOf="@+id/web_enable"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/identity_label">
+
 			<ImageView
 				android:id="@+id/qr_image"
 				android:layout_width="100dp"
@@ -60,56 +72,68 @@
 				android:adjustViewBounds="false"
 				android:clickable="true"
 				android:contentDescription="@string/qr_code"
+				android:layout_gravity="center"
 				android:focusable="true"
 				android:foreground="?selectableItemBackground"
-				android:scaleType="fitCenter"
-				app:layout_constraintBottom_toTopOf="@+id/web_enable"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintTop_toBottomOf="@+id/identity_label" />
+				android:scaleType="fitCenter" />
+
+			</com.google.android.material.card.MaterialCardView>
 
 			<com.google.android.material.chip.Chip
 				android:id="@+id/scan_button"
 				style="@style/Threema.Chip.Outline.Action.WithIcon"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_marginLeft="16dp"
 				android:text="@string/scan_id"
 				app:chipIcon="@drawable/ic_qr_code_scan"
 				app:ensureMinTouchTargetSize="false"
-				app:layout_constraintLeft_toRightOf="@+id/qr_image"
-				app:layout_constraintTop_toTopOf="@+id/qr_image"
-				 />
+				app:layout_constraintWidth_min="wrap"
+				app:layout_constraintLeft_toRightOf="@+id/qr_container"
+				app:layout_constraintTop_toTopOf="@+id/qr_container"
+				app:layout_constraintRight_toRightOf="@+id/buttons_right_barrier"/>
 
 			<com.google.android.material.chip.Chip
 				android:id="@+id/profile_button"
 				style="@style/Threema.Chip.Outline.Action.WithIcon"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_marginTop="8dp"
 				android:text="@string/my_profile"
 				app:chipIcon="@drawable/ic_profile"
 				app:ensureMinTouchTargetSize="false"
+				app:layout_constraintWidth_min="wrap"
 				app:layout_constraintTop_toBottomOf="@+id/scan_button"
-				app:layout_constraintLeft_toLeftOf="@+id/scan_button" />
+				app:layout_constraintLeft_toLeftOf="@+id/scan_button"
+				app:layout_constraintRight_toRightOf="@+id/buttons_right_barrier" />
 
-			<!-- material switch currently has themeing problems -->
+			<androidx.constraintlayout.widget.Barrier
+				android:id="@+id/buttons_right_barrier"
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				app:barrierDirection="right"
+				app:constraint_referenced_ids="scan_button,profile_button"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toTopOf="@id/qr_container" />
+
+			<!-- material switch currently has theming problems -->
 
 			<androidx.appcompat.widget.SwitchCompat
 				android:id="@+id/web_enable"
-				android:layout_width="wrap_content"
+				android:layout_marginBottom="2dp"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:contentDescription="@string/webclient_enable"
-				app:ensureMinTouchTargetSize="false"
-				app:layout_constraintBaseline_toBaselineOf="@+id/web_label"
+				app:layout_constraintTop_toBottomOf="@id/qr_container"
+				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintLeft_toLeftOf="parent"
+				android:minHeight="0dp"
 				app:switchPadding="0dp" />
 
 			<TextView
 				android:id="@+id/web_label"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
-				android:layout_marginBottom="3dp"
+				android:layout_height="0dp"
 				android:paddingTop="6dp"
 				android:paddingBottom="6dp"
 				android:paddingLeft="2dp"
@@ -119,9 +143,8 @@
 				android:focusable="true"
 				android:text="@string/webclient"
 				android:textAppearance="@style/Threema.TextAppearance.Body2"
-				app:layout_constraintTop_toBottomOf="@id/qr_image"
-				app:layout_constraintLeft_toRightOf="@+id/web_enable"
-				app:layout_constraintBottom_toBottomOf="parent" />
+				app:layout_constraintBaseline_toBaselineOf="@+id/web_enable"
+				app:layout_constraintLeft_toRightOf="@+id/web_enable" />
 
 			<androidx.constraintlayout.widget.Group
 				android:id="@+id/web_controls"

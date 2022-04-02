@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -41,13 +40,14 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(AnimGifChatAdapterDecorator.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimGifChatAdapterDecorator");
 
 	private static final String LISTENER_TAG = "decorator";
 	private GifMessagePlayer gifMessagePlayer;
@@ -62,52 +62,46 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 
 		logger.debug("configureChatMessage - position " + position);
 
-		gifMessagePlayer = (GifMessagePlayer) this.getMessagePlayerService().createPlayer(this.getMessageModel(), (Activity) this.getContext(), this.helper.getMessageReceiver());
+		gifMessagePlayer = (GifMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) getContext(), helper.getMessageReceiver());
 		holder.messagePlayer = gifMessagePlayer;
 
 		/*
 		 * setup click listeners
 		 */
 		if (holder.controller != null) {
-			holder.controller.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					int status = holder.controller.getStatus();
+			holder.controller.setOnClickListener(v -> {
+				int status = holder.controller.getStatus();
 
-					switch (status) {
-						case ControllerView.STATUS_READY_TO_PLAY:
-						case ControllerView.STATUS_READY_TO_DOWNLOAD:
-							gifMessagePlayer.open();
-							break;
-						case ControllerView.STATUS_PROGRESSING:
-							if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.TRANSCODING ||
-								getMessageModel().getState() == MessageState.PENDING ||
-								getMessageModel().getState() == MessageState.SENDING)) {
-								getMessageService().remove(getMessageModel());
-							} else {
-								gifMessagePlayer.cancel();
-							}
-							break;
-						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(getMessageModel());
-							}
-							break;
-					}
+				switch (status) {
+					case ControllerView.STATUS_READY_TO_PLAY:
+					case ControllerView.STATUS_READY_TO_DOWNLOAD:
+						gifMessagePlayer.open();
+						break;
+					case ControllerView.STATUS_PROGRESSING:
+						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.TRANSCODING ||
+							getMessageModel().getState() == MessageState.PENDING ||
+							getMessageModel().getState() == MessageState.SENDING)) {
+							getMessageService().remove(getMessageModel());
+						} else {
+							gifMessagePlayer.cancel();
+						}
+						break;
+					case ControllerView.STATUS_READY_TO_RETRY:
+						if (onClickRetry != null) {
+							onClickRetry.onClick(getMessageModel());
+						}
+						break;
 				}
 			});
 		}
-		this.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (!isInChoiceMode()) {
-					if ((!getPreferenceService().isGifAutoplay() ||
-						holder.controller.getStatus() == ControllerView.STATUS_READY_TO_DOWNLOAD)) {
-						gifMessagePlayer.open();
-					}
-					if (getPreferenceService().isGifAutoplay() && holder.controller.getStatus() == ControllerView.STATUS_NONE) {
-						gifMessagePlayer.openInExternalPlayer(null);
-					}
+		setOnClickListener(v -> {
+			if (!isInChoiceMode()) {
+				if ((!getPreferenceService().isGifAutoplay() ||
+					holder.controller.getStatus() == ControllerView.STATUS_READY_TO_DOWNLOAD)) {
+					gifMessagePlayer.open();
+				}
+				if (getPreferenceService().isGifAutoplay() && holder.controller.getStatus() == ControllerView.STATUS_NONE) {
+					gifMessagePlayer.openInExternalPlayer(null);
 				}
 			}
 		}, holder.messageBlockView);
@@ -117,49 +111,44 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 		 */
 		Bitmap thumbnail;
 		try {
-			thumbnail = this.getFileService().getMessageThumbnailBitmap(this.getMessageModel(),
-					this.getThumbnailCache());
+			thumbnail = getFileService().getMessageThumbnailBitmap(getMessageModel(),
+				getThumbnailCache());
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			thumbnail = null;
 		}
 
-		final FileDataModel fileData = this.getMessageModel().getFileData();
+		final FileDataModel fileData = getMessageModel().getFileData();
 		fileSize = fileData.getFileSize();
 
-		if (thumbnail != null) {
-			ImageViewUtil.showRoundedBitmap(
-					getContext(),
-					holder.contentView,
-					holder.attachmentImage,
-					thumbnail,
-					this.getThumbnailWidth()
-			);
-			holder.bodyTextView.setWidth(this.getThumbnailWidth());
-			if (holder.attachmentImage != null) {
-				holder.attachmentImage.invalidate();
-			}
-			if (fileData.getRenderingType() == FileData.RENDERING_STICKER) {
-				holder.messageBlockView.setBackground(null);
-			} else {
-				setDefaultBackground(holder);
-			}
+		ImageViewUtil.showRoundedBitmapOrImagePlaceholder(
+			getContext(),
+			holder.contentView,
+			holder.attachmentImage,
+			thumbnail,
+			getThumbnailWidth()
+		);
+		holder.bodyTextView.setWidth(getThumbnailWidth());
+
+		if (holder.attachmentImage != null) {
+			holder.attachmentImage.invalidate();
+		}
+		if (fileData.getRenderingType() == FileData.RENDERING_STICKER) {
+			holder.messageBlockView.setBackground(null);
 		} else {
-			// TODO show placeholder
-			this.showHide(holder.attachmentImage, false);
-			holder.controller.setHidden();
+			setDefaultBackground(holder);
 		}
 
 		if (!TestUtil.empty(fileData.getCaption())) {
-			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), this.filterString));
-			this.showHide(holder.bodyTextView, true);
+			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), filterString));
+			showHide(holder.bodyTextView, true);
 		} else {
-			this.showHide(holder.bodyTextView, false);
+			showHide(holder.bodyTextView, false);
 		}
 
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData, fileSize));
 
-		this.setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "GIF"), 0);
+		setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "GIF"), 0);
 
 		gifMessagePlayer
 				.attachContainer(holder.attachmentImage)
@@ -225,9 +214,9 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 	}
 
 	private void setControllerState(ComposeMessageHolder holder, FileDataModel fileData, long fileSize) {
-		if (this.getMessageModel().isOutbox()) {
+		if (getMessageModel().isOutbox()) {
 			// outgoing message
-			switch (this.getMessageModel().getState()) {
+			switch (getMessageModel().getState()) {
 				case TRANSCODING:
 					holder.controller.setTranscoding();
 					break;
@@ -243,7 +232,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 			}
 		} else {
 			// incoming message
-			if (this.getMessageModel() != null && this.getMessageModel().getState() == MessageState.PENDING) {
+			if (getMessageModel() != null && getMessageModel().getState() == MessageState.PENDING) {
 				if (fileData.isDownloaded()) {
 					holder.controller.setProgressing();
 				} else {

@@ -33,7 +33,6 @@ import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.RemoteMessage;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Map;
@@ -49,7 +48,7 @@ import static ch.threema.app.push.PushRegistrationWorker.APP_ID_CONFIG_FIELD;
 import static ch.threema.app.push.PushRegistrationWorker.TOKEN_SCOPE;
 
 public class PushService extends HmsMessageService {
-	private static final Logger logger = LoggerFactory.getLogger(PushService.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
 
 	@Override
 	public void onNewToken(@NonNull String token) {

@@ -22,16 +22,16 @@
 package ch.threema.app.utils;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.base.utils.LoggingUtil;
 
 public class LogUtil {
-	private static final Logger logger = LoggerFactory.getLogger(LogUtil.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LogUtil");
 
 	private LogUtil() { }
 

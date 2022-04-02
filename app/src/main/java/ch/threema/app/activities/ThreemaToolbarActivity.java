@@ -38,6 +38,7 @@ import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.Toolbar;
@@ -158,7 +159,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	protected boolean initActivity(Bundle savedInstanceState) {
 		logger.debug("initActivity");
 
-		int layoutResource = getLayoutResource();
+		@LayoutRes int layoutResource = getLayoutResource();
 
 		initServices();
 
@@ -193,7 +194,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 		return true;
 	}
 
-	public abstract int getLayoutResource();
+	public abstract @LayoutRes int getLayoutResource();
 
 	public void setToolbar(Toolbar toolbar) {
 		this.toolbar = toolbar;

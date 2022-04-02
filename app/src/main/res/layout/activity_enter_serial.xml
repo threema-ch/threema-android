@@ -16,7 +16,7 @@
 			android:layout_height="fill_parent"
 			android:adjustViewBounds="true"
 			android:clickable="false"
-			android:src="@drawable/background_pic_key"
+			android:src="@drawable/background_pic"
 			android:importantForAccessibility="no"
 			android:scaleType="centerCrop"/>
 
@@ -30,15 +30,16 @@
 			android:paddingTop="@dimen/wizard_contents_padding">
 
 		<TextView
-			android:id="@+id/enter_serial_welcome_title"
-			style="@style/WizardTitleText"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:layout_marginTop="8dp"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_welcome"
-			android:textColor="#1A05F4" />
+				style="@style/WizardTitleText"
+				android:id="@+id/enter_serial_welcome_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/new_wizard_welcome"
+				android:gravity="center_horizontal"
+				android:layout_centerHorizontal="true"
+				android:textColor="?attr/textColorPrimary"
+				android:layout_marginTop="8dp"
+				/>
 
 		<TextView
 			android:id="@+id/layout_top"
@@ -49,12 +50,9 @@
 			android:layout_centerHorizontal="true"
 			android:layout_marginBottom="5dp"
 			android:layout_marginTop="@dimen/wizard_paragraph_height"
-			android:autoLink="web"
 			android:gravity="center_horizontal"
-			android:linksClickable="true"
-			android:text="@string/enter_serial_body"
-			android:textColor="#1B07F6"
-			android:textColorLink="#FFC107"></TextView>
+			android:textColor="?attr/textColorPrimary"
+			android:textColorLink="@color/wizard_color_accent" />
 
 		<LinearLayout android:id="@+id/unlock_layout"
 					  android:layout_width="match_parent"

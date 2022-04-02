@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2020-2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,10 +21,13 @@
 
 package ch.threema.app.utils;
 
+import android.content.Context;
+
 /**
  * Empty placeholder (real DownloadUtil only exists in shop version).
  * Do not remove.
  */
-public class DownloadUtil  {
-	//stub
+public class DownloadUtil {
+	// stub
+	public static void deleteOldAPKs(Context context) {	}
 }

@@ -3,31 +3,18 @@
 				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:paddingTop="@dimen/wizard_contents_padding"
-				android:paddingBottom="@dimen/wizard_contents_padding"
 				app:layout_collapseMode="parallax">
 
 	<TextView
-		android:id="@+id/wizard_welcome"
-		style="@style/WizardTitleText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="8dp"
-		android:gravity="center_horizontal"
-		android:text="@string/new_wizard_welcome"
-		android:textColorLink="#FFA000" />
-
-	<TextView
-		android:id="@+id/scooter"
-		style="@style/WizardSubTitleText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/wizard_welcome"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="@dimen/wizard_paragraph_height"
-		android:gravity="center_horizontal"
-		android:text="@string/new_wizard_this_is_your_id" />
+			style="@style/WizardSubTitleText"
+			android:id="@+id/scooter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_this_is_your_id"
+			android:layout_marginTop="@dimen/wizard_paragraph_height"/>
 
 	<TextView
 			style="@style/WizardTitleText"
@@ -36,19 +23,18 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
-			android:gravity="center_horizontal"
 			android:textColor="@color/wizard_color_accent"
 			android:layout_marginTop="@dimen/wizard_small_paragraph_height"/>
 
 	<TextView
-		android:id="@+id/wizard_id_explain"
-		style="@style/WizardSmallText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/wizard_id_title"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="@dimen/wizard_small_paragraph_height"
-		android:gravity="center_horizontal"
-		android:text="@string/new_wizard_works_like_phone_number" />
+			style="@style/WizardSmallText"
+			android:id="@+id/wizard_id_explain"
+			android:layout_below="@id/wizard_id_title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:gravity="center_horizontal"
+			android:text="@string/new_wizard_works_like_phone_number"
+			android:layout_marginTop="@dimen/wizard_small_paragraph_height"/>
 
 </RelativeLayout>

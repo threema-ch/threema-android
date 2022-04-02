@@ -29,7 +29,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
@@ -46,13 +45,14 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.ImageDataModel;
 
 public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggerFactory.getLogger(ImageChatAdapterDecorator.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageChatAdapterDecorator");
 
 	private static final String LISTENER_TAG = "ImageDecorator";
 
@@ -62,71 +62,17 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		final MessagePlayer imageMessagePlayer = this.getMessagePlayerService().createPlayer(this.getMessageModel(),
-				(Activity) this.getContext(), helper.getMessageReceiver());
+		final MessagePlayer imageMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
+				(Activity) getContext(), helper.getMessageReceiver());
 		logger.debug("configureChatMessage Image");
 
 		holder.messagePlayer = imageMessagePlayer;
 
-		Bitmap thumbnail;
-		try {
-			thumbnail = this.getFileService().getMessageThumbnailBitmap(this.getMessageModel(),
-					this.getThumbnailCache());
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			thumbnail = null;
-		}
+		setOnClickListener(view -> viewImage(getMessageModel(), holder.attachmentImage), holder.messageBlockView);
 
-		this.setOnClickListener(view -> viewImage(getMessageModel(), holder.attachmentImage), holder.messageBlockView);
+		setControllerClickListener(holder, imageMessagePlayer);
 
-		if (holder.controller != null) {
-			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
-				@Override
-				public void onDebouncedClick(View v) {
-					int status = holder.controller.getStatus();
-
-					switch (status) {
-						case ControllerView.STATUS_PROGRESSING:
-							if (ImageChatAdapterDecorator.this.getMessageModel().isOutbox() && (ImageChatAdapterDecorator.this.getMessageModel().getState() == MessageState.PENDING || ImageChatAdapterDecorator.this.getMessageModel().getState() == MessageState.SENDING)) {
-								ImageChatAdapterDecorator.this.getMessageService().cancelMessageUpload(ImageChatAdapterDecorator.this.getMessageModel());
-							} else {
-								imageMessagePlayer.cancel();
-							}
-							break;
-						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(ImageChatAdapterDecorator.this.getMessageModel());
-							}
-							break;
-						case ControllerView.STATUS_READY_TO_DOWNLOAD:
-							imageMessagePlayer.open();
-							break;
-						default:
-							ImageChatAdapterDecorator.this.viewImage(ImageChatAdapterDecorator.this.getMessageModel(), holder.attachmentImage);
-					}
-				}
-			});
-		}
-
-		if (thumbnail != null) {
-			ImageViewUtil.showRoundedBitmap(
-					getContext(),
-					holder.contentView,
-					holder.attachmentImage,
-					thumbnail,
-					this.getThumbnailWidth()
-			);
-			holder.bodyTextView.setWidth(this.getThumbnailWidth());
-			this.showHide(holder.controller, false);
-		} else {
-			ImageViewUtil.showPlaceholderBitmap(
-				holder.contentView,
-				holder.attachmentImage,
-				this.getThumbnailWidth()
-			);
-			holder.bodyTextView.setWidth(0);
-			holder.controller.setHidden();
-		}
+		configureThumbnail(holder);
 
 		if (getContext() != null && holder.attachmentImage != null) {
 			holder.attachmentImage.setContentDescription(getContext().getString(R.string.image_placeholder));
@@ -134,22 +80,12 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, getMessageModel().getImageData()));
 
-		if (!TestUtil.empty(getMessageModel().getCaption())) {
-			holder.bodyTextView.setText(formatTextString(getMessageModel().getCaption(), this.filterString));
+		configureBodyText(holder);
 
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				this.getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
+		configureMessagePlayer(holder, imageMessagePlayer);
+	}
 
-			this.showHide(holder.bodyTextView, true);
-		} else {
-			this.showHide(holder.bodyTextView, false);
-		}
-
+	private void configureMessagePlayer(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer imageMessagePlayer) {
 		imageMessagePlayer
 				// download listener
 				.addListener(LISTENER_TAG, new MessagePlayer.DownloadListener() {
@@ -179,6 +115,81 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 				});
 	}
 
+	private void configureBodyText(@NonNull ComposeMessageHolder holder) {
+		if (!TestUtil.empty(getMessageModel().getCaption())) {
+			holder.bodyTextView.setText(formatTextString(getMessageModel().getCaption(), filterString));
+
+			LinkifyUtil.getInstance().linkify(
+				(ComposeMessageFragment) helper.getFragment(),
+				holder.bodyTextView,
+				getMessageModel(),
+				true,
+				actionModeStatus.getActionModeEnabled(),
+				onClickElement);
+
+			showHide(holder.bodyTextView, true);
+		} else {
+			showHide(holder.bodyTextView, false);
+		}
+	}
+
+	private void setControllerClickListener(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer imageMessagePlayer) {
+		if (holder.controller != null) {
+			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
+				@Override
+				public void onDebouncedClick(View v) {
+					int status = holder.controller.getStatus();
+
+					switch (status) {
+						case ControllerView.STATUS_PROGRESSING:
+							if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
+								getMessageService().cancelMessageUpload(getMessageModel());
+							} else {
+								imageMessagePlayer.cancel();
+							}
+							break;
+						case ControllerView.STATUS_READY_TO_RETRY:
+							if (onClickRetry != null) {
+								onClickRetry.onClick(getMessageModel());
+							}
+							break;
+						case ControllerView.STATUS_READY_TO_DOWNLOAD:
+							imageMessagePlayer.open();
+							break;
+						default:
+							viewImage(getMessageModel(), holder.attachmentImage);
+					}
+				}
+			});
+		}
+	}
+
+	private void configureThumbnail(@NonNull ComposeMessageHolder holder) {
+		Bitmap thumbnail;
+		try {
+			thumbnail = getFileService().getMessageThumbnailBitmap(getMessageModel(),
+				getThumbnailCache());
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			thumbnail = null;
+		}
+
+		ImageViewUtil.showRoundedBitmapOrImagePlaceholder(
+			getContext(),
+			holder.contentView,
+			holder.attachmentImage,
+			thumbnail,
+			getThumbnailWidth()
+		);
+		holder.bodyTextView.setWidth(getThumbnailWidth());
+
+		if (thumbnail == null) {
+			holder.controller.setHidden();
+		} else {
+			showHide(holder.controller, false);
+		}
+	}
+
 	private void viewImage(final AbstractMessageModel m, final View v) {
 		if (m.isAvailable()) {
 			Intent intent = new Intent(getContext(), MediaViewerActivity.class);
@@ -188,49 +199,58 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 	}
 
-	private void setControllerState(@NonNull ComposeMessageHolder holder, ImageDataModel imageDataModel) {
+	private void setControllerState(@NonNull ComposeMessageHolder holder, @NonNull ImageDataModel imageDataModel) {
 		if (holder.controller == null) {
 			return;
 		}
-		AbstractMessageModel messageModel = this.getMessageModel();
+		AbstractMessageModel messageModel = getMessageModel();
 		if (messageModel != null) {
 			if (messageModel.isOutbox() && !(messageModel instanceof DistributionListMessageModel)) {
-				// outgoing message
-				switch (messageModel.getState()) {
-					case TRANSCODING:
-						holder.controller.setTranscoding();
-						break;
-					case PENDING:
-					case SENDING:
-						holder.controller.setProgressing();
-						break;
-					case SENDFAILED:
-						holder.controller.setRetry();
-						break;
-					default:
-						holder.controller.setHidden();
-				}
+				setControllerStateOutgoingMessage(holder, messageModel);
 			} else {
 				// incoming message
-				if (TestUtil.required(imageDataModel)) {
-					if (imageDataModel.isDownloaded()) {
-						holder.controller.setHidden();
-					} else {
-						if (holder.messagePlayer.getState() == MessagePlayer.State_DOWNLOADING) {
-							// set correct state if re-entering this chat
-							holder.controller.setProgressing(false);
-						} else {
-							if (helper.getDownloadService().isDownloading(messageModel.getId())) {
-								holder.controller.setProgressing(false);
-							} else {
-								holder.controller.setReadyToDownload();
-							}
-						}
-					}
-				}
+				setControllerStateIncomingMessage(holder, imageDataModel, messageModel);
 			}
 		} else {
 			holder.controller.setHidden();
+		}
+	}
+
+	private void setControllerStateIncomingMessage(
+		@NonNull ComposeMessageHolder holder,
+		@NonNull ImageDataModel imageDataModel,
+		@NonNull AbstractMessageModel messageModel
+	) {
+		if (imageDataModel.isDownloaded()) {
+			holder.controller.setHidden();
+		} else {
+			if (holder.messagePlayer.getState() == MessagePlayer.State_DOWNLOADING) {
+				// set correct state if re-entering this chat
+				holder.controller.setProgressing(false);
+			} else {
+				if (helper.getDownloadService().isDownloading(messageModel.getId())) {
+					holder.controller.setProgressing(false);
+				} else {
+					holder.controller.setReadyToDownload();
+				}
+			}
+		}
+	}
+
+	private void setControllerStateOutgoingMessage(@NonNull ComposeMessageHolder holder, @NonNull AbstractMessageModel messageModel) {
+		switch (messageModel.getState()) {
+			case TRANSCODING:
+				holder.controller.setTranscoding();
+				break;
+			case PENDING:
+			case SENDING:
+				holder.controller.setProgressing();
+				break;
+			case SENDFAILED:
+				holder.controller.setRetry();
+				break;
+			default:
+				holder.controller.setHidden();
 		}
 	}
 }

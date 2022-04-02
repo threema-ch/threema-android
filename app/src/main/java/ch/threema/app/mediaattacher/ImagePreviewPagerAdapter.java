@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -82,7 +83,11 @@ public class ImagePreviewPagerAdapter extends FragmentStateAdapter {
 		return mediaAttachItems.size();
 	}
 
+	@Nullable
 	public MediaAttachItem getItem(int position) {
-		return mediaAttachItems.get(position);
+		if (position < mediaAttachItems.size() && position >= 0) {
+			return mediaAttachItems.get(position);
+		}
+		return null;
 	}
 }

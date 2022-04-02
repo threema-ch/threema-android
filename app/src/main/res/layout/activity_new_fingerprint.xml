@@ -1,136 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:id="@+id/layout_wizard_intro"
-			 android:layout_width="match_parent"
-			 android:layout_height="match_parent"
-			 android:fillViewport="true">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/layout_wizard_intro"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fillViewport="true">
 
 	<include layout="@layout/background_new_wizard"/>
 
-	<RelativeLayout android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
-					android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-					android:paddingTop="@dimen/wizard_contents_padding"
-					android:paddingBottom="@dimen/wizard_contents_padding"
-					android:layout_marginBottom="32dp">
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+		android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+		android:paddingTop="@dimen/wizard_contents_padding"
+		android:paddingBottom="@dimen/wizard_contents_padding">
 
-		<TextView
-			android:id="@+id/wizard_welcome"
-			style="@style/WizardTitleText"
+		<ImageView
+			android:id="@+id/wizard_icon_info"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:layout_marginTop="8dp"
+			app:srcCompat="@drawable/ic_info_outline"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="@id/dummy_title_align_view"
+			app:layout_constraintBottom_toBottomOf="@id/dummy_title_align_view"
+			app:tint="@color/wizard_color_accent" />
+
+		<TextView
+			style="@style/WizardTitleText"
+			android:id="@+id/dummy_title_align_view"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:layout_constraintRight_toLeftOf="@id/wizard_welcome"
+			app:layout_constraintBaseline_toBaselineOf="@id/wizard_welcome" />
+
+		<TextView
+			style="@style/WizardTitleText"
+			android:id="@+id/wizard_welcome"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
 			android:text="@string/new_wizard_welcome"
-			android:textColor="#0734BF" />
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintWidth_default="percent"
+			app:layout_constraintWidth_percent="@dimen/wizard_title_width_percent" />
 
 		<TextView
-			android:id="@+id/scooter"
 			style="@style/WizardSubTitleText"
-			android:layout_width="wrap_content"
+			android:id="@+id/scooter"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/wizard_welcome"
-			android:layout_centerHorizontal="true"
-			android:layout_marginTop="@dimen/wizard_paragraph_height"
 			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_move_finger"
-			android:textColor="#303F9F" />
+			android:text="@string/new_wizard_move_finger" />
 
 		<ProgressBar
-				android:id="@+id/wizard1_swipe_progress"
-				android:importantForAccessibility="no"
-				android:layout_width="match_parent"
-				android:layout_height="2dp"
-				android:layout_marginLeft="16dp"
-				android:layout_marginRight="16dp"
-				android:layout_marginTop="8dp"
-				android:layout_marginBottom="4dp"
-				android:layout_below="@id/scooter"
-				android:layout_gravity="center_horizontal"
-				style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-				android:progressDrawable="@drawable/layerlist_progressbar"
-				android:indeterminate="false"
-				android:longClickable="false"/>
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+			android:id="@+id/wizard1_swipe_progress"
+			android:importantForAccessibility="no"
+			android:layout_width="match_parent"
+			android:layout_height="2dp"
+			android:progressDrawable="@drawable/layerlist_progressbar"
+			android:indeterminate="false"
+			android:longClickable="false" />
 
-		<FrameLayout
-				android:id="@+id/thumb_layout"
-				android:layout_height="wrap_content"
-				android:layout_width="match_parent"
-				android:layout_marginTop="8dp"
-				android:layout_below="@id/wizard1_swipe_progress"
-				android:layout_gravity="center_horizontal"
-		        android:contentDescription="@string/new_wizard_move_finger"
-				>
+		<ch.threema.app.ui.NewWizardFingerPrintView
+			android:id="@+id/wizard1_finger_print"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/wizard_alpha_background"
+			android:importantForAccessibility="no" />
 
-			<ch.threema.app.ui.NewWizardFingerPrintView
-					android:id="@+id/wizard1_finger_print"
-					android:importantForAccessibility="no"
-					android:background="@color/wizard_alpha_background"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"/>
+		<ImageView
+			android:id="@+id/finger_overlay"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="72dp"
+			android:importantForAccessibility="no"
+			app:layout_constraintBottom_toBottomOf="@id/wizard1_finger_print"
+			app:layout_constraintLeft_toLeftOf="@id/wizard1_finger_print"
+			app:layout_constraintRight_toRightOf="@id/wizard1_finger_print"
+			app:srcCompat="@drawable/ic_finger_with_circles" />
 
-			<ImageView
-					android:id="@+id/finger_overlay"
-					android:importantForAccessibility="no"
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:layout_marginLeft="48dp"
-					android:layout_gravity="center_horizontal|bottom"
-					app:srcCompat="@drawable/ic_finger_with_circles"
-					/>
-		</FrameLayout>
+		<androidx.constraintlayout.helper.widget.Flow
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:constraint_referenced_ids="scooter,wizard1_swipe_progress,wizard1_finger_print"
+			app:layout_constraintTop_toBottomOf="@id/wizard_welcome"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintBottom_toTopOf="@id/cancel"
+			app:flow_wrapMode="chain"
+			app:flow_verticalGap="8dp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/cancel"
 			style="@style/WizardButtonInverse"
+			android:id="@+id/cancel"
 			android:layout_width="match_parent"
-			android:layout_below="@id/thumb_layout"
-			android:layout_marginTop="@dimen/wizard_contents_padding"
 			android:text="@string/cancel"
-			android:textColor="#0E0E0E"
-			android:textColorLink="#0E0E0E" />
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent" />
 
-	</RelativeLayout>
-
-	<FrameLayout android:layout_width="wrap_content"
-				 android:layout_height="wrap_content"
-				 android:layout_gravity="bottom"
-				 android:id="@+id/more_info_layout"
-				 android:background="?attr/selectableItemBackground"
-				 android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
-				 android:layout_marginRight="@dimen/wizard_contents_padding_horizontal">
-
-		<LinearLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="16dp"
-				android:gravity="center"
-				android:orientation="horizontal">
-
-			<ImageView
-				android:id="@+id/wizard_id_icon"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				app:srcCompat="@drawable/ic_info_outline"
-				android:textSize="14sp"
-				android:textColor="@color/wizard_color_accent"
-				app:tint="@color/wizard_color_primary" />
-
-			<TextView
-					android:id="@+id/wizard_id_info"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginLeft="8dp"
-					android:text="@string/new_wizard_more_information"
-					android:fontFamily="sans-serif-light"
-					android:textSize="14sp"
-					android:textColor="@color/wizard_color_accent"/>
-
-		</LinearLayout>
-
-	</FrameLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

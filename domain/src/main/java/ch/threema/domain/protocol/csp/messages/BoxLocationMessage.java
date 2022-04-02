@@ -21,9 +21,6 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
@@ -35,8 +32,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  * Coordinates are in WGS 84, accuracy is in meters.
  */
 public class BoxLocationMessage extends AbstractMessage {
-
-	private static final Logger logger = LoggerFactory.getLogger(BoxLocationMessage.class);
 
 	private double latitude;
 	private double longitude;

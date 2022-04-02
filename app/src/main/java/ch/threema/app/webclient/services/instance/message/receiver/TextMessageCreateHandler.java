@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -43,13 +42,14 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ServerMessageModel;
 
 @WorkerThread
 public class TextMessageCreateHandler extends MessageCreateHandler {
-	private static final Logger logger = LoggerFactory.getLogger(TextMessageCreateHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("TextMessageCreateHandler");
 
 	private static final String FIELD_TEXT = "text";
 	private static final String FIELD_QUOTE = "quote";

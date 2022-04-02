@@ -28,20 +28,41 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.neilalexander.jnacl.NaCl;
 
-import java.util.Date;
-import java.util.Hashtable;
+import org.slf4j.Logger;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Date;
+import java.util.HashMap;
+
+import androidx.annotation.IntDef;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class QRCodeServiceImpl implements QRCodeService {
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodeService");
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({QR_TYPE_ANY, QR_TYPE_ID, QR_TYPE_ID_EXPORT, QR_TYPE_WEB, QR_TYPE_GROUP_LINK})
+	public @interface QRCodeColor {}
+	public static final int QR_TYPE_ANY = 0x00000000;
+	public static final int QR_TYPE_ID = 0xff4caf50; // green
+	public static final int QR_TYPE_ID_EXPORT = 0xffffeb3b; // yellow
+	public static final int QR_TYPE_WEB = 0xff2196f3; // blue
+	public static final int QR_TYPE_GROUP_LINK = 0xfff44336; // red
+
+	private final static int QR_CODE_QUIET_ZONE_SIZE = 4; // https://www.qrcode.com/en/howto/code.html
+
 	private final UserService userService;
 	public final static String CONTENT_PREFIX = "3mid:";
 	public final static String ID_SCHEME = "3mid";
-	private Bitmap userQRCodeBitmap;
 
 	public QRCodeServiceImpl(UserService userService) {
 		this.userService = userService;
@@ -81,33 +102,49 @@ public class QRCodeServiceImpl implements QRCodeService {
 		return null;
 	}
 
-	private BitMatrix renderQR(String contents, int width, int height, int border, boolean unicode) {
+	/**
+	 * Render QR code for provided string
+	 * @param contents String to render
+	 * @param unicode Whether the string contains unicode characters
+	 * @param addQuietZone If a quiet zone margin should be added around the resulting QR code
+	 * @return a BitMatrix of the QR code
+	 */
+	private BitMatrix renderQR(String contents, boolean unicode, boolean addQuietZone) {
 		BarcodeFormat barcodeFormat = BarcodeFormat.QR_CODE;
 
 		QRCodeWriter barcodeWriter = new QRCodeWriter();
-		Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>(2);
-		hints.put(EncodeHintType.MARGIN, border);
+		HashMap<EncodeHintType, Object> hints = new HashMap<>(2);
+		hints.put(EncodeHintType.MARGIN, addQuietZone ? QRCodeServiceImpl.QR_CODE_QUIET_ZONE_SIZE : 0);
+		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
+
 		if (unicode) {
 			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 		}
 
 		try {
-			BitMatrix matrix = barcodeWriter.encode(contents, barcodeFormat, width, height, hints);
-			return matrix;
+			return barcodeWriter.encode(contents, barcodeFormat, 0, 0, hints);
 		} catch (WriterException e) {
+			logger.error("BarcodeWriter exception", e);
 		}
 		return null;
 	}
 
+	/**
+	 * Get a qr code bitmap for the string provided
+	 * @param raw String to render as a QR code
+	 * @param unicode Whether the string contains unicode characters
+	 * @param borderColor Color of a border indicating the QR code purpose / type
+	 * @return
+	 */
 	@Override
-	public Bitmap getRawQR(String raw, boolean unicode) {
+	public Bitmap getRawQR(String raw, boolean unicode, @QRCodeColor int borderColor) {
 		if (this.userService.hasIdentity()) {
-			BitMatrix matrix = null;
+			BitMatrix matrix;
 
 			if (raw != null && raw.length()>0) {
-				matrix = this.renderQR(raw, 0, 0, 0, unicode);
+				matrix = this.renderQR(raw, unicode, true);
 			} else {
-				matrix = this.renderQR(getUserQRCodeString(), 0, 0, 0, unicode);
+				matrix = this.renderQR(getUserQRCodeString(), unicode, true);
 			}
 
 			if (matrix != null) {
@@ -116,6 +153,7 @@ public class QRCodeServiceImpl implements QRCodeService {
 
 				int width = matrix.getWidth();
 				int height = matrix.getHeight();
+				int qrCodeTypeBorderSize = 1;
 				int[] pixels = new int[width * height];
 
 				for (int y = 0; y < height; y++) {
@@ -125,8 +163,15 @@ public class QRCodeServiceImpl implements QRCodeService {
 					}
 				}
 
-				Bitmap bitmap = Bitmap.createBitmap(matrix.getWidth(), matrix.getHeight(), Bitmap.Config.RGB_565);
-				bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+				Bitmap bitmap;
+				if (ConfigUtils.showQRCodeTypeBorders()) {
+					bitmap = Bitmap.createBitmap(matrix.getWidth() + (qrCodeTypeBorderSize * 2), matrix.getHeight() + (qrCodeTypeBorderSize * 2), Bitmap.Config.RGB_565);
+					bitmap.eraseColor(borderColor);
+					bitmap.setPixels(pixels, 0, width, qrCodeTypeBorderSize, qrCodeTypeBorderSize, width, height);
+				} else {
+					bitmap = Bitmap.createBitmap(matrix.getWidth(), matrix.getHeight(), Bitmap.Config.RGB_565);
+					bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+				}
 				return bitmap;
 			}
 
@@ -136,9 +181,6 @@ public class QRCodeServiceImpl implements QRCodeService {
 
 	@Override
 	public Bitmap getUserQRCode() {
-		if (this.userQRCodeBitmap == null) {
-			this.userQRCodeBitmap = this.getRawQR(null, false);
-		}
-		return this.userQRCodeBitmap;
+		return this.getRawQR(null, false, QR_TYPE_ID);
 	}
 }

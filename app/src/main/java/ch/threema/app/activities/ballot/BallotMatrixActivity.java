@@ -33,11 +33,12 @@ import android.widget.Toast;
 import com.google.android.material.card.MaterialCardView;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -61,13 +62,14 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public class BallotMatrixActivity extends BallotDetailActivity {
-	private static final Logger logger = LoggerFactory.getLogger(BallotMatrixActivity.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotMatrixActivity");
 
 	private BallotService ballotService;
 	private ContactService contactService;
@@ -127,23 +129,23 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 		@Override
 		public boolean handle(BallotModel b) {
 			return getBallotModel() != null && b != null
-					&& getBallotModel().getId() == b.getId();
+				&& getBallotModel().getId() == b.getId();
 		}
 	};
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if(!this.requireInstancesOrExit()) {
+		if (!this.requireInstancesOrExit()) {
 			return;
 		}
 
 		int ballotId = IntentDataUtil.getBallotId(this.getIntent());
 
-		if(ballotId != 0) {
+		if (ballotId != 0) {
 			try {
 				BallotModel ballotModel = this.ballotService.get(ballotId);
-				if(ballotModel == null) {
+				if (ballotModel == null) {
 					throw new ThreemaException("invalid ballot");
 				}
 
@@ -187,24 +189,34 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 	private void updateView() {
 		TableLayout dataTableLayout = findViewById(R.id.matrix_data);
 
-		if(dataTableLayout != null) {
-			dataTableLayout.removeAllViews();
+		if (dataTableLayout == null) {
+			logger.error("The data table layout is null");
+			return;
+		}
+
+		dataTableLayout.removeAllViews();
+
+		BallotModel.DisplayType displayType = BallotModel.DisplayType.LIST_MODE;
+
+		final BallotModel ballotModel = ballotService.get(this.getBallotModelId());
+		if (ballotModel != null) {
+			displayType = ballotModel.getDisplayType();
 		}
 
 		final BallotMatrixData matrixData = this.ballotService.getMatrixData(this.getBallotModelId());
 
-		if(matrixData == null) {
+		if (matrixData == null) {
 			//wrong data! exit now
 			Toast.makeText(this, "invalid data", Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}
 
-		List<BallotMatrixService.Participant> allParticipants = matrixData.getParticipants();
+		List<BallotMatrixService.Participant> allParticipants = getAllParticipants(matrixData, displayType);
 		List<BallotMatrixService.Participant> votedParticipants = new ArrayList<>();
 		List<BallotMatrixService.Participant> notVotedParticipants = new ArrayList<>();
 
-		for (BallotMatrixService.Participant participant: allParticipants) {
+		for (BallotMatrixService.Participant participant : allParticipants) {
 			if (participant.hasVoted()) {
 				votedParticipants.add(participant);
 			} else {
@@ -212,7 +224,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 			}
 		}
 
-		if (votedParticipants.size() == 0) {
+		if (votedParticipants.isEmpty() && displayType == BallotModel.DisplayType.LIST_MODE) {
 			// no votes
 			noVotesView.setVisibility(View.VISIBLE);
 			scrollParent.setVisibility(View.GONE);
@@ -222,16 +234,81 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 		noVotesView.setVisibility(View.GONE);
 		scrollParent.setVisibility(View.VISIBLE);
 
+		dataTableLayout.addView(getHeaderRow(votedParticipants));
+
+		for (BallotMatrixService.Choice c : matrixData.getChoices()) {
+			// create a new row for each answer
+			TableRow row = new TableRow(this);
+
+			// add answer first
+			View headerCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice_label, null);
+			((HintedTextView) headerCell.findViewById(R.id.choice_label)).setText(c.getBallotChoiceModel().getName());
+			row.addView(headerCell);
+
+			// add sums
+			View sumCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice_sum, null);
+			TextView sumText = sumCell.findViewById(R.id.voting_sum);
+
+			sumText.setText(String.valueOf(c.getVoteCount()));
+
+			if (c.isWinner()) {
+				sumCell.findViewById(R.id.cell).setBackgroundResource(R.drawable.matrix_winner_cell);
+				sumText.setTextColor(getResources().getColor(android.R.color.white));
+			}
+
+			row.addView(sumCell);
+
+			for (BallotMatrixService.Participant p : votedParticipants) {
+				row.addView(getVotedParticipantView(matrixData, p, c));
+			}
+
+			dataTableLayout.addView(row);
+		}
+
+		TextView notVotedTextView = findViewById(R.id.not_voted);
+		MaterialCardView notVotedContainer = findViewById(R.id.not_voted_container);
+
+		if (contactService != null && notVotedParticipants.size() > 0) {
+			notVotedContainer.setVisibility(View.VISIBLE);
+			String userList = "";
+
+			for (BallotMatrixService.Participant p : notVotedParticipants) {
+				if (!"".equals(userList)) {
+					userList += ", ";
+				}
+				userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), contactService);
+			}
+			notVotedTextView.setText(getString(R.string.not_voted_user_list, userList));
+		} else {
+			notVotedContainer.setVisibility(View.GONE);
+		}
+	}
+
+	@NonNull
+	private List<BallotMatrixService.Participant> getAllParticipants(@NonNull BallotMatrixData matrixData, @NonNull BallotModel.DisplayType displayType) {
+		List<BallotMatrixService.Participant> allParticipants = matrixData.getParticipants();
+
+		if (displayType == BallotModel.DisplayType.SUMMARY_MODE) {
+			for (BallotMatrixService.Participant p : allParticipants) {
+				if (p.getIdentity().equals(getMyIdentity())) {
+					return Collections.singletonList(p);
+				}
+			}
+		}
+
+		return allParticipants;
+	}
+
+	@NonNull
+	private TableRow getHeaderRow(@NonNull List<BallotMatrixService.Participant> votedParticipants) {
 		// add header row containing names/avatars of participants
 		TableRow nameHeaderRow = new TableRow(this);
 
-		View emptyCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_empty, null);
-		nameHeaderRow.addView(emptyCell);
+		getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_empty, nameHeaderRow);
 
-		View emptyCell2 = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_empty, null);
-		nameHeaderRow.addView(emptyCell2);
+		getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_empty, nameHeaderRow);
 
-		for(BallotMatrixService.Participant p: votedParticipants) {
+		for (BallotMatrixService.Participant p : votedParticipants) {
 			final ContactModel contactModel = this.contactService.getByIdentity(p.getIdentity());
 
 			View nameCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_name, null);
@@ -248,77 +325,34 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 			nameHeaderRow.addView(nameCell);
 		}
 
-		dataTableLayout.addView(nameHeaderRow);
+		return nameHeaderRow;
+	}
 
-		for(BallotMatrixService.Choice c: matrixData.getChoices()) {
-			//int point = points[choicePos];
-			// create a new row for each answer
-			TableRow row = new TableRow(this);
+	@NonNull
+	private View getVotedParticipantView(@NonNull BallotMatrixData matrixData, @NonNull BallotMatrixService.Participant p, @NonNull BallotMatrixService.Choice c) {
+		View choiceVoteView;
 
-			// add answer first
-			View headerCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice_label, null);
-			((HintedTextView)headerCell.findViewById(R.id.choice_label)).setText(c.getBallotChoiceModel().getName());
-			row.addView(headerCell);
-
-			// add sums
-			View sumCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice_sum, null);
-			TextView sumText = sumCell.findViewById(R.id.voting_sum);
-
-			sumText.setText(String.valueOf(c.getVoteCount()));
-
-			if(c.isWinner()) {
-				sumCell.findViewById(R.id.cell).setBackgroundResource(R.drawable.matrix_winner_cell);
-				sumText.setTextColor(getResources().getColor(android.R.color.white));
-			}
-
-			row.addView(sumCell);
-
-			for (BallotMatrixService.Participant p: votedParticipants) {
-				View choiceVoteView;
-
-				if (c.isWinner()) {
-					choiceVoteView = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice_winner, null);
-				} else {
-					choiceVoteView = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice, null);
-				}
-
-				BallotVoteModel vote = matrixData.getVote(p, c);
-				ViewUtil.show(
-					(View) choiceVoteView.findViewById(R.id.voting_value_1),
-						p.hasVoted() && vote != null && vote.getChoice() == 1);
-
-
-				ViewUtil.show(
-					(View) choiceVoteView.findViewById(R.id.voting_value_0),
-						p.hasVoted() && (vote == null || vote.getChoice() != 1));
-
-				ViewUtil.show(
-					(View) choiceVoteView.findViewById(R.id.voting_value_none),
-						!p.hasVoted());
-
-				row.addView(choiceVoteView);
-			}
-
-			dataTableLayout.addView(row);
+		if (c.isWinner()) {
+			choiceVoteView = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice_winner, null);
+		} else {
+			choiceVoteView = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_choice, null);
 		}
 
-		TextView notVotedTextView = findViewById(R.id.not_voted);
-		MaterialCardView notVotedContainer = findViewById(R.id.not_voted_container);
+		BallotVoteModel vote = matrixData.getVote(p, c);
+		ViewUtil.show(
+			(View) choiceVoteView.findViewById(R.id.voting_value_1),
+			p.hasVoted() && vote != null && vote.getChoice() == 1);
 
-		if (contactService != null && notVotedParticipants.size() > 0) {
-			notVotedContainer.setVisibility(View.VISIBLE);
-			String userList = "";
 
-			for (BallotMatrixService.Participant p: notVotedParticipants) {
-				if (!"".equals(userList)) {
-					userList += ", ";
-				}
-				userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), contactService);
-			}
-			notVotedTextView.setText(getString(R.string.not_voted_user_list, userList));
- 		} else {
-			notVotedContainer.setVisibility(View.GONE);
-		}
+		ViewUtil.show(
+			(View) choiceVoteView.findViewById(R.id.voting_value_0),
+			p.hasVoted() && (vote == null || vote.getChoice() != 1));
+
+		ViewUtil.show(
+			(View) choiceVoteView.findViewById(R.id.voting_value_none),
+			!p.hasVoted());
+
+		return choiceVoteView;
 	}
 
 	@Override
@@ -337,22 +371,22 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 	@Override
 	protected boolean checkInstances() {
 		return TestUtil.required(
-				this.ballotService,
-				this.contactService,
-				this.groupService,
-				this.identity);
+			this.ballotService,
+			this.contactService,
+			this.groupService,
+			this.identity);
 	}
-
 
 	@Override
 	protected void instantiate() {
 		super.instantiate();
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if(serviceManager != null) {
+		if (serviceManager != null) {
 			try {
 				this.ballotService = serviceManager.getBallotService();
 				this.identity = serviceManager.getUserService().getIdentity();
@@ -365,7 +399,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 	}
 
 	private boolean requireInstancesOrExit() {
-		if(!this.requiredInstances()) {
+		if (!this.requiredInstances()) {
 			logger.error("Required instances failed");
 			this.finish();
 			return false;
@@ -381,7 +415,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
 	@Override
 	BallotService getBallotService() {
-		if(this.requiredInstances()) {
+		if (this.requiredInstances()) {
 			return this.ballotService;
 		}
 

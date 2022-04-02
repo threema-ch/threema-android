@@ -26,12 +26,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.threema.app.AutostartService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class AutoStartNotifyReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(AutoStartNotifyReceiver.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AutoStartNotifyReceiver");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

@@ -23,6 +23,7 @@ package ch.threema.domain.protocol.csp.connection;
 
 import androidx.annotation.AnyThread;
 import ch.threema.base.crypto.NonceCounter;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
@@ -30,7 +31,6 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -46,7 +46,7 @@ import static com.neilalexander.jnacl.NaCl.BOXOVERHEAD;
  */
 class SenderThread extends Thread {
 
-	private static final Logger logger = LoggerFactory.getLogger(SenderThread.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SenderThread");
 
 	private final OutputStream os;
 	private final NaCl kclientTempServerTemp;

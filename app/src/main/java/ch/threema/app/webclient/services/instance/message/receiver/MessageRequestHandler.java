@@ -24,7 +24,6 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.filters.MessageFilter;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 /**
@@ -48,7 +48,7 @@ import ch.threema.storage.models.AbstractMessageModel;
  */
 @WorkerThread
 public class MessageRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggerFactory.getLogger(MessageRequestHandler.class);
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageRequestHandler");
 
 	private final MessageDispatcher dispatcher;
 	private final MessageService messageService;
