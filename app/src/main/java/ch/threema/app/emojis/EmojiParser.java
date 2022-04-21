@@ -68,2511 +68,3117 @@ public class EmojiParser {
 		EmojiParser.init5(EmojiParser.trie);
 		EmojiParser.init6(EmojiParser.trie);
 		EmojiParser.init7(EmojiParser.trie);
+		EmojiParser.init8(EmojiParser.trie);
 	}
 
 
 	public static void init1(IntTrie<ParseResult> trie) {
-		trie.insert(new int[]{ 128512 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 1))); // grinning face
-		trie.insert(new int[]{ 128514 }, new ParseResult(2, new SpriteCoordinates(1, 0, 727, 727))); // face with tears of joy
-		trie.insert(new int[]{ 128579 }, new ParseResult(2, new SpriteCoordinates(1, 0, 67, 727))); // upside-down face
-		trie.insert(new int[]{ 128536 }, new ParseResult(2, new SpriteCoordinates(1, 0, 397, 727))); // face blowing a kiss
-		trie.insert(new int[]{ 128541 }, new ParseResult(2, new SpriteCoordinates(1, 0, 331, 727))); // squinting face with tongue
-		trie.insert(new int[]{ 128526 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 727))); // smiling face with sunglasses
-		trie.insert(new int[]{ 128532 }, new ParseResult(2, new SpriteCoordinates(1, 0, 529, 727))); // pensive face
-		trie.insert(new int[]{ 128534 }, new ParseResult(2, new SpriteCoordinates(1, 0, 463, 727))); // confounded face
-		trie.insert(new int[]{ 128548 }, new ParseResult(2, new SpriteCoordinates(1, 0, 265, 727))); // face with steam from nose
-		trie.insert(new int[]{ 129397 }, new ParseResult(2, new SpriteCoordinates(1, 0, 463, 529))); // hot face
-		trie.insert(new int[]{ 128531 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 727))); // downcast face with sweat
-		trie.insert(new int[]{ 129317 }, new ParseResult(2, new SpriteCoordinates(1, 0, 397, 595))); // lying face
-		trie.insert(new int[]{ 128559 }, new ParseResult(2, new SpriteCoordinates(1, 0, 199, 727))); // hushed face
-		trie.insert(new int[]{ 129316 }, new ParseResult(2, new SpriteCoordinates(1, 0, 463, 595))); // drooling face
-		trie.insert(new int[]{ 129326 }, new ParseResult(2, new SpriteCoordinates(1, 0, 133, 595))); // face vomiting
-		trie.insert(new int[]{ 129312 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 595))); // cowboy hat face
-		trie.insert(new int[]{ 129313 }, new ParseResult(2, new SpriteCoordinates(1, 0, 529, 595))); // clown face
-		trie.insert(new int[]{ 128126 }, new ParseResult(2, new SpriteCoordinates(1, 0, 859, 67))); // alien monster
-		trie.insert(new int[]{ 128571 }, new ParseResult(2, new SpriteCoordinates(1, 0, 133, 727))); // smiling cat with heart-eyes
-		trie.insert(new int[]{ 129330 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 529))); // palms up together
-		trie.insert(new int[]{ 128080 }, new ParseResult(2, new SpriteCoordinates(1, 0, 859, 991))); // open hands
-		trie.insert(new int[]{ 128588 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 661))); // raising hands
-		trie.insert(new int[]{ 128079 }, new ParseResult(2, new SpriteCoordinates(1, 0, 925, 991))); // clapping hands
-		trie.insert(new int[]{ 129309 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 133))); // handshake
-		trie.insert(new int[]{ 128077,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 1))); // thumbs up: dark skin tone
-		trie.insert(new int[]{ 128078,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 991, 991))); // thumbs down: dark skin tone
-		trie.insert(new int[]{ 128074,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 199))); // oncoming fist: dark skin tone
-		trie.insert(new int[]{ 9994,127999 }, new ParseResult(3, new SpriteCoordinates(1, 0, 67, 67))); // raised fist: dark skin tone
-		trie.insert(new int[]{ 129307,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 265))); // left-facing fist: dark skin tone
-		trie.insert(new int[]{ 129308,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 199))); // right-facing fist: dark skin tone
-		trie.insert(new int[]{ 129310,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 67))); // crossed fingers: dark skin tone
-		trie.insert(new int[]{ 9996,127999 }, new ParseResult(3, new SpriteCoordinates(1, 0, 67, 1))); // victory hand: dark skin tone
-		trie.insert(new int[]{ 129311,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 1))); // love-you gesture: dark skin tone
-		trie.insert(new int[]{ 129304,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 463))); // sign of the horns: dark skin tone
-		trie.insert(new int[]{ 128076,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 67))); // OK hand: dark skin tone
-		trie.insert(new int[]{ 129295,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 529))); // pinching hand: dark skin tone
-		trie.insert(new int[]{ 129292,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 595))); // pinched fingers: dark skin tone
-		trie.insert(new int[]{ 128072,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 331))); // backhand index pointing left: dark skin tone
-		trie.insert(new int[]{ 128073,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 265))); // backhand index pointing right: dark skin tone
-		trie.insert(new int[]{ 128070,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 463))); // backhand index pointing up: dark skin tone
-		trie.insert(new int[]{ 128071,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 397))); // backhand index pointing down: dark skin tone
-		trie.insert(new int[]{ 9757,127999 }, new ParseResult(3, new SpriteCoordinates(1, 0, 133, 1))); // index pointing up: dark skin tone
-		trie.insert(new int[]{ 9995,127999 }, new ParseResult(3, new SpriteCoordinates(1, 0, 1, 67))); // raised hand: dark skin tone
-		trie.insert(new int[]{ 129306,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 331))); // raised back of hand: dark skin tone
-		trie.insert(new int[]{ 128400,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 199))); // hand with fingers splayed: dark skin tone
-		trie.insert(new int[]{ 128406,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 67))); // vulcan salute: dark skin tone
-		trie.insert(new int[]{ 128075,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 133))); // waving hand: dark skin tone
-		trie.insert(new int[]{ 129305,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 397))); // call me hand: dark skin tone
-		trie.insert(new int[]{ 128170,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 661))); // flexed biceps: dark skin tone
-		trie.insert(new int[]{ 128405,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 133))); // middle finger: medium-dark skin tone
-		trie.insert(new int[]{ 9997,127998 }, new ParseResult(3, new SpriteCoordinates(1, 0, 1, 1))); // writing hand: medium-dark skin tone
-		trie.insert(new int[]{ 128591,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 661))); // folded hands: medium-dark skin tone
-		trie.insert(new int[]{ 129462,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 529))); // foot: medium-dark skin tone
-		trie.insert(new int[]{ 129461,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 529))); // leg: medium-dark skin tone
-		trie.insert(new int[]{ 129463 }, new ParseResult(2, new SpriteCoordinates(1, 0, 133, 529))); // tooth
-		trie.insert(new int[]{ 128066,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 595))); // ear: medium skin tone
-		trie.insert(new int[]{ 129467,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 199))); // ear with hearing aid: medium skin tone
-		trie.insert(new int[]{ 128067,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 529))); // nose: medium skin tone
-		trie.insert(new int[]{ 129504 }, new ParseResult(2, new SpriteCoordinates(1, 0, 133, 133))); // brain
-		trie.insert(new int[]{ 129730 }, new ParseResult(2, new SpriteCoordinates(1, 0, 133, 67))); // people hugging
-		trie.insert(new int[]{ 128118,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 463))); // baby: dark skin tone
-		trie.insert(new int[]{ 128103,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 991))); // girl: dark skin tone
-		trie.insert(new int[]{ 129490,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 331))); // child: dark skin tone
-		trie.insert(new int[]{ 128102,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 991))); // boy: dark skin tone
-		trie.insert(new int[]{ 128105,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 859))); // woman: dark skin tone
-		trie.insert(new int[]{ 129489,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 331))); // person: dark skin tone
-		trie.insert(new int[]{ 128104,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 925))); // man: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 133))); // person: dark skin tone, curly hair
-		trie.insert(new int[]{ 129489,127999,129457 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 133))); // person: dark skin tone, curly hair
-		trie.insert(new int[]{ 128105,127999,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 331))); // woman, curly haired: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129457 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 331))); // woman, curly haired: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 199))); // man, curly haired: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129457 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 199))); // man, curly haired: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 199))); // person: dark skin tone, red hair
-		trie.insert(new int[]{ 129489,127999,129456 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 199))); // person: dark skin tone, red hair
-		trie.insert(new int[]{ 128105,127999,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 397))); // woman, red haired: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129456 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 397))); // woman, red haired: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 265))); // man, red haired: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129456 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 265))); // man, red haired: dark skin tone
-		trie.insert(new int[]{ 128113,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 859))); // blond-haired woman: dark skin tone
-		trie.insert(new int[]{ 128113,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 859))); // blond-haired woman: dark skin tone
-		trie.insert(new int[]{ 128113,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 859))); // blond-haired person: dark skin tone
-		trie.insert(new int[]{ 128113,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 859))); // blond-haired man: dark skin tone
-		trie.insert(new int[]{ 128113,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 859))); // blond-haired man: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 1))); // person: dark skin tone, white hair
-		trie.insert(new int[]{ 129489,127999,129459 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 1))); // person: dark skin tone, white hair
-		trie.insert(new int[]{ 128105,127999,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 199))); // woman, white haired: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129459 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 199))); // woman, white haired: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 67))); // man, white haired: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129459 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 67))); // man, white haired: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 67))); // person: dark skin tone, bald
-		trie.insert(new int[]{ 129489,127999,129458 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 67))); // person: dark skin tone, bald
-		trie.insert(new int[]{ 128105,127999,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 265))); // woman, bald: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129458 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 265))); // woman, bald: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 133))); // man, bald: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129458 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 133))); // man, bald: dark skin tone
-		trie.insert(new int[]{ 129492,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 265))); // bearded person: dark skin tone
-		trie.insert(new int[]{ 128117,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 529))); // old woman: dark skin tone
-		trie.insert(new int[]{ 129491,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 331))); // older person: dark skin tone
-		trie.insert(new int[]{ 128116,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 595))); // old man: dark skin tone
-		trie.insert(new int[]{ 128114,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 859))); // man with Chinese cap: dark skin tone
-		trie.insert(new int[]{ 128115,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 661))); // person wearing turban: dark skin tone
-		trie.insert(new int[]{ 128115,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 793))); // woman wearing turban: dark skin tone
-		trie.insert(new int[]{ 128115,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 793))); // woman wearing turban: dark skin tone
-		trie.insert(new int[]{ 128115,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 727))); // man wearing turban: dark skin tone
-		trie.insert(new int[]{ 128115,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 727))); // man wearing turban: dark skin tone
-		trie.insert(new int[]{ 129493,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 199))); // woman with headscarf: dark skin tone
-		trie.insert(new int[]{ 128110,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 859))); // police officer: dark skin tone
-		trie.insert(new int[]{ 128110,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 859))); // woman police officer: dark skin tone
-		trie.insert(new int[]{ 128110,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 859))); // woman police officer: dark skin tone
-		trie.insert(new int[]{ 128110,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 859))); // man police officer: dark skin tone
-		trie.insert(new int[]{ 128110,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 859))); // man police officer: dark skin tone
-		trie.insert(new int[]{ 128119,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 265))); // construction worker: dark skin tone
-		trie.insert(new int[]{ 128119,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 397))); // woman construction worker: dark skin tone
-		trie.insert(new int[]{ 128119,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 397))); // woman construction worker: dark skin tone
-		trie.insert(new int[]{ 128119,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 331))); // man construction worker: dark skin tone
-		trie.insert(new int[]{ 128119,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 331))); // man construction worker: dark skin tone
-		trie.insert(new int[]{ 128130,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 793))); // guard: dark skin tone
-		trie.insert(new int[]{ 128130,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 661, 793))); // woman guard: dark skin tone
-		trie.insert(new int[]{ 128130,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 661, 793))); // woman guard: dark skin tone
-		trie.insert(new int[]{ 128130,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 793))); // man guard: dark skin tone
-		trie.insert(new int[]{ 128130,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 793))); // man guard: dark skin tone
-		trie.insert(new int[]{ 128373,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 397))); // detective: dark skin tone
-		trie.insert(new int[]{ 128373,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 529))); // woman detective: dark skin tone
-		trie.insert(new int[]{ 128373,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 793, 529))); // woman detective: dark skin tone
-		trie.insert(new int[]{ 128373,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 463))); // man detective: dark skin tone
-		trie.insert(new int[]{ 128373,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 793, 463))); // man detective: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 331))); // health worker: dark skin tone
-		trie.insert(new int[]{ 129489,127999,9877 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 331))); // health worker: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 133))); // woman health worker: dark skin tone
-		trie.insert(new int[]{ 128105,127999,9877 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 133))); // woman health worker: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 1))); // man health worker: dark skin tone
-		trie.insert(new int[]{ 128104,127999,9877 }, new ParseResult(5, new SpriteCoordinates(1, 0, 991, 1))); // man health worker: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 331))); // farmer: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127806 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 331))); // farmer: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 925))); // woman farmer: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127806 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 925))); // woman farmer: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 991))); // man farmer: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127806 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 991))); // man farmer: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 265))); // cook: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127859 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 265))); // cook: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 925))); // woman cook: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127859 }, new ParseResult(6, new SpriteCoordinates(1, 0, 331, 925))); // woman cook: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 991))); // man cook: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127859 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 991))); // man cook: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 67))); // student: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127891 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 67))); // student: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 925))); // woman student: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127891 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 925))); // woman student: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 991))); // man student: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127891 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1, 991))); // man student: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 1))); // singer: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127908 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 1))); // singer: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 925))); // woman singer: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127908 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 925))); // woman singer: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 925))); // man singer: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127908 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 925))); // man singer: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 397))); // teacher: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127979 }, new ParseResult(6, new SpriteCoordinates(1, 0, 331, 397))); // teacher: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 925))); // woman teacher: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127979 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1, 925))); // woman teacher: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 793))); // man teacher: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127979 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 793))); // man teacher: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 397))); // factory worker: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127981 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 397))); // factory worker: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 859))); // woman factory worker: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127981 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 859))); // woman factory worker: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 727))); // man factory worker: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127981 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 727))); // man factory worker: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 397))); // technologist: dark skin tone
-		trie.insert(new int[]{ 129489,127999,128187 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 397))); // technologist: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 793))); // woman technologist: dark skin tone
-		trie.insert(new int[]{ 128105,127999,128187 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 793))); // woman technologist: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 661))); // man technologist: dark skin tone
-		trie.insert(new int[]{ 128104,127999,128187 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 661))); // man technologist: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 397))); // office worker: dark skin tone
-		trie.insert(new int[]{ 129489,127999,128188 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 397))); // office worker: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 727))); // woman office worker: dark skin tone
-		trie.insert(new int[]{ 128105,127999,128188 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 727))); // woman office worker: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 595))); // man office worker: dark skin tone
-		trie.insert(new int[]{ 128104,127999,128188 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 595))); // man office worker: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 397))); // mechanic: dark skin tone
-		trie.insert(new int[]{ 129489,127999,128295 }, new ParseResult(6, new SpriteCoordinates(1, 0, 67, 397))); // mechanic: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 661))); // woman mechanic: dark skin tone
-		trie.insert(new int[]{ 128105,127999,128295 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 661))); // woman mechanic: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 529))); // man mechanic: dark skin tone
-		trie.insert(new int[]{ 128104,127999,128295 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 529))); // man mechanic: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 397))); // scientist: dark skin tone
-		trie.insert(new int[]{ 129489,127999,128300 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1, 397))); // scientist: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 595))); // woman scientist: dark skin tone
-		trie.insert(new int[]{ 128105,127999,128300 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 595))); // woman scientist: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 463))); // man scientist: dark skin tone
-		trie.insert(new int[]{ 128104,127999,128300 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 463))); // man scientist: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 397))); // artist: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127912 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 397))); // artist: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 925))); // woman artist: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127912 }, new ParseResult(6, new SpriteCoordinates(1, 0, 67, 925))); // woman artist: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 859))); // man artist: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127912 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 859))); // man artist: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 265))); // firefighter: dark skin tone
-		trie.insert(new int[]{ 129489,127999,128658 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 265))); // firefighter: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 463))); // woman firefighter: dark skin tone
-		trie.insert(new int[]{ 128105,127999,128658 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 463))); // woman firefighter: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 331))); // man firefighter: dark skin tone
-		trie.insert(new int[]{ 128104,127999,128658 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 331))); // man firefighter: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 331))); // pilot: dark skin tone
-		trie.insert(new int[]{ 129489,127999,9992 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 331))); // pilot: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 1))); // woman pilot: dark skin tone
-		trie.insert(new int[]{ 128105,127999,9992 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 1))); // woman pilot: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 925))); // man pilot: dark skin tone
-		trie.insert(new int[]{ 128104,127999,9992 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 925))); // man pilot: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 331))); // astronaut: dark skin tone
-		trie.insert(new int[]{ 129489,127999,128640 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 331))); // astronaut: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 529))); // woman astronaut: dark skin tone
-		trie.insert(new int[]{ 128105,127999,128640 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 529))); // woman astronaut: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 397))); // man astronaut: dark skin tone
-		trie.insert(new int[]{ 128104,127999,128640 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 397))); // man astronaut: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 331))); // judge: dark skin tone
-		trie.insert(new int[]{ 129489,127999,9878 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 331))); // judge: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 67))); // woman judge: dark skin tone
-		trie.insert(new int[]{ 128105,127999,9878 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 67))); // woman judge: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 925))); // man judge: dark skin tone
-		trie.insert(new int[]{ 128104,127999,9878 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 925))); // man judge: dark skin tone
-		trie.insert(new int[]{ 128112,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 859))); // person with veil: dark skin tone
-		trie.insert(new int[]{ 128112,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 859))); // woman with veil: dark skin tone
-		trie.insert(new int[]{ 128112,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 397, 859))); // woman with veil: dark skin tone
-		trie.insert(new int[]{ 128112,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 859))); // man with veil: dark skin tone
-		trie.insert(new int[]{ 128112,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 859))); // man with veil: dark skin tone
-		trie.insert(new int[]{ 129333,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 199))); // person in tuxedo: dark skin tone
-		trie.insert(new int[]{ 129333,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 331))); // woman in tuxedo: dark skin tone
-		trie.insert(new int[]{ 129333,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 331))); // woman in tuxedo: dark skin tone
-		trie.insert(new int[]{ 129333,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 265))); // man in tuxedo: dark skin tone
-		trie.insert(new int[]{ 129333,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 265))); // man in tuxedo: dark skin tone
-		trie.insert(new int[]{ 128120,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 199))); // princess: dark skin tone
-		trie.insert(new int[]{ 129332,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 397))); // prince: dark skin tone
-		trie.insert(new int[]{ 129464,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 463))); // superhero: dark skin tone
-		trie.insert(new int[]{ 129464,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 529))); // woman superhero: dark skin tone
-		trie.insert(new int[]{ 129464,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 529))); // woman superhero: dark skin tone
-		trie.insert(new int[]{ 129464,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 529))); // man superhero: dark skin tone
-		trie.insert(new int[]{ 129464,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 529))); // man superhero: dark skin tone
-		trie.insert(new int[]{ 129465,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 265))); // supervillain: dark skin tone
-		trie.insert(new int[]{ 129465,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 397))); // woman supervillain: dark skin tone
-		trie.insert(new int[]{ 129465,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 397))); // woman supervillain: dark skin tone
-		trie.insert(new int[]{ 129465,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 331))); // man supervillain: dark skin tone
-		trie.insert(new int[]{ 129465,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 331))); // man supervillain: dark skin tone
-		trie.insert(new int[]{ 129399,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 529))); // ninja: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 133))); // mx claus: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127876 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 133))); // mx claus: dark skin tone
-		trie.insert(new int[]{ 129334,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 133))); // Mrs. Claus: dark skin tone
-		trie.insert(new int[]{ 127877,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 925))); // Santa Claus: dark skin tone
-		trie.insert(new int[]{ 129497,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 265))); // mage: dark skin tone
-		trie.insert(new int[]{ 129497,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 265))); // woman mage: dark skin tone
-		trie.insert(new int[]{ 129497,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 265))); // woman mage: dark skin tone
-		trie.insert(new int[]{ 129497,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 265))); // man mage: dark skin tone
-		trie.insert(new int[]{ 129497,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 265))); // man mage: dark skin tone
-		trie.insert(new int[]{ 129501,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 67))); // elf: dark skin tone
-		trie.insert(new int[]{ 129501,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 199))); // woman elf: dark skin tone
-		trie.insert(new int[]{ 129501,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 199))); // woman elf: dark skin tone
-		trie.insert(new int[]{ 129501,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 133))); // man elf: dark skin tone
-		trie.insert(new int[]{ 129501,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 133))); // man elf: dark skin tone
-		trie.insert(new int[]{ 129499,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 1))); // vampire: dark skin tone
-		trie.insert(new int[]{ 129499,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 133))); // woman vampire: dark skin tone
-		trie.insert(new int[]{ 129499,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 133))); // woman vampire: dark skin tone
-		trie.insert(new int[]{ 129499,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 67))); // man vampire: dark skin tone
-		trie.insert(new int[]{ 129499,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 67))); // man vampire: dark skin tone
-		trie.insert(new int[]{ 129502,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 1))); // man genie
-		trie.insert(new int[]{ 129502,9794 }, new ParseResult(3, new SpriteCoordinates(1, 0, 199, 1))); // man genie
-		trie.insert(new int[]{ 129500,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 199))); // merperson: dark skin tone
-		trie.insert(new int[]{ 129500,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 199))); // mermaid: dark skin tone
-		trie.insert(new int[]{ 129500,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 199))); // mermaid: dark skin tone
-		trie.insert(new int[]{ 129500,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 199))); // merman: dark skin tone
-		trie.insert(new int[]{ 129500,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 199))); // merman: dark skin tone
-		trie.insert(new int[]{ 129498,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 199))); // fairy: dark skin tone
-		trie.insert(new int[]{ 129498,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 265))); // woman fairy: dark skin tone
-		trie.insert(new int[]{ 129498,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 265))); // woman fairy: dark skin tone
-		trie.insert(new int[]{ 129498,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 265))); // man fairy: dark skin tone
-		trie.insert(new int[]{ 129498,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 265))); // man fairy: dark skin tone
-		trie.insert(new int[]{ 128124,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 133))); // baby angel: dark skin tone
-		trie.insert(new int[]{ 129328,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 595))); // pregnant woman: dark skin tone
-		trie.insert(new int[]{ 129329,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 595))); // breast-feeding: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 199))); // person feeding baby: dark skin tone
-		trie.insert(new int[]{ 129489,127999,127868 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 199))); // person feeding baby: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 925))); // woman feeding baby: dark skin tone
-		trie.insert(new int[]{ 128105,127999,127868 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 925))); // woman feeding baby: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 991))); // man feeding baby: dark skin tone
-		trie.insert(new int[]{ 128104,127999,127868 }, new ParseResult(6, new SpriteCoordinates(1, 0, 67, 991))); // man feeding baby: dark skin tone
-		trie.insert(new int[]{ 128583,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 199))); // person bowing: dark skin tone
-		trie.insert(new int[]{ 128583,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 331))); // woman bowing: dark skin tone
-		trie.insert(new int[]{ 128583,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 331))); // woman bowing: dark skin tone
-		trie.insert(new int[]{ 128583,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 265))); // man bowing: dark skin tone
-		trie.insert(new int[]{ 128583,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 265))); // man bowing: dark skin tone
-		trie.insert(new int[]{ 128129,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 793))); // person tipping hand: dark skin tone
-		trie.insert(new int[]{ 128129,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 1))); // woman tipping hand: dark skin tone
-		trie.insert(new int[]{ 128129,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 1))); // woman tipping hand: dark skin tone
-		trie.insert(new int[]{ 128129,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 793))); // man tipping hand: dark skin tone
-		trie.insert(new int[]{ 128129,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 793, 793))); // man tipping hand: dark skin tone
-		trie.insert(new int[]{ 128581,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 595))); // person gesturing NO: dark skin tone
-		trie.insert(new int[]{ 128581,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 727))); // woman gesturing NO: dark skin tone
-		trie.insert(new int[]{ 128581,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 727))); // woman gesturing NO: dark skin tone
-		trie.insert(new int[]{ 128581,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 661))); // man gesturing NO: dark skin tone
-		trie.insert(new int[]{ 128581,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 661))); // man gesturing NO: dark skin tone
-		trie.insert(new int[]{ 128582,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 397))); // person gesturing OK: dark skin tone
-		trie.insert(new int[]{ 128582,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 529))); // woman gesturing OK: dark skin tone
-		trie.insert(new int[]{ 128582,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 529))); // woman gesturing OK: dark skin tone
-		trie.insert(new int[]{ 128582,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 463))); // man gesturing OK: dark skin tone
-		trie.insert(new int[]{ 128582,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 463))); // man gesturing OK: dark skin tone
-		trie.insert(new int[]{ 128587,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 1))); // person raising hand: dark skin tone
-		trie.insert(new int[]{ 128587,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 133))); // woman raising hand: dark skin tone
-		trie.insert(new int[]{ 128587,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 133))); // woman raising hand: dark skin tone
-		trie.insert(new int[]{ 128587,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 67))); // man raising hand: dark skin tone
-		trie.insert(new int[]{ 128587,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 67))); // man raising hand: dark skin tone
-		trie.insert(new int[]{ 129487,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 463))); // deaf person: dark skin tone
-		trie.insert(new int[]{ 129487,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 463))); // deaf woman: dark skin tone
-		trie.insert(new int[]{ 129487,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 463))); // deaf woman: dark skin tone
-		trie.insert(new int[]{ 129487,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 463))); // deaf man: dark skin tone
-		trie.insert(new int[]{ 129487,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 463))); // deaf man: dark skin tone
-		trie.insert(new int[]{ 129318,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 595))); // person facepalming: dark skin tone
-		trie.insert(new int[]{ 129318,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 595))); // woman facepalming: dark skin tone
-		trie.insert(new int[]{ 129318,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 595))); // woman facepalming: dark skin tone
-		trie.insert(new int[]{ 129318,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 595))); // man facepalming: dark skin tone
-		trie.insert(new int[]{ 129318,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 595))); // man facepalming: dark skin tone
-		trie.insert(new int[]{ 129335,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 529))); // person shrugging: dark skin tone
-		trie.insert(new int[]{ 129335,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 67))); // woman shrugging: dark skin tone
-		trie.insert(new int[]{ 129335,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 67))); // woman shrugging: dark skin tone
-		trie.insert(new int[]{ 129335,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 1))); // man shrugging: dark skin tone
-		trie.insert(new int[]{ 129335,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 1))); // man shrugging: dark skin tone
-		trie.insert(new int[]{ 128590,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 661))); // person pouting: dark skin tone
-		trie.insert(new int[]{ 128590,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 661))); // woman pouting: dark skin tone
-		trie.insert(new int[]{ 128590,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 397, 661))); // woman pouting: dark skin tone
-		trie.insert(new int[]{ 128590,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 661))); // man pouting: dark skin tone
-		trie.insert(new int[]{ 128590,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 661))); // man pouting: dark skin tone
-		trie.insert(new int[]{ 128589,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 661))); // person frowning: dark skin tone
-		trie.insert(new int[]{ 128589,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 661))); // woman frowning: dark skin tone
-		trie.insert(new int[]{ 128589,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 661))); // woman frowning: dark skin tone
-		trie.insert(new int[]{ 128589,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 661))); // man frowning: dark skin tone
-		trie.insert(new int[]{ 128589,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 661))); // man frowning: dark skin tone
-		trie.insert(new int[]{ 128135,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 793))); // person getting haircut: dark skin tone
-		trie.insert(new int[]{ 128135,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 793))); // woman getting haircut: dark skin tone
-		trie.insert(new int[]{ 128135,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 793))); // woman getting haircut: dark skin tone
-		trie.insert(new int[]{ 128135,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 793))); // man getting haircut: dark skin tone
-		trie.insert(new int[]{ 128135,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 793))); // man getting haircut: dark skin tone
-		trie.insert(new int[]{ 128134,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 793))); // person getting massage: dark skin tone
-		trie.insert(new int[]{ 128134,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 793))); // woman getting massage: dark skin tone
-		trie.insert(new int[]{ 128134,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 793))); // woman getting massage: dark skin tone
-		trie.insert(new int[]{ 128134,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 793))); // man getting massage: dark skin tone
-		trie.insert(new int[]{ 128134,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 793))); // man getting massage: dark skin tone
-		trie.insert(new int[]{ 129494,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 1))); // person in steamy room: dark skin tone
-		trie.insert(new int[]{ 129494,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 133))); // woman in steamy room: dark skin tone
-		trie.insert(new int[]{ 129494,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 133))); // woman in steamy room: dark skin tone
-		trie.insert(new int[]{ 129494,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 67))); // man in steamy room: dark skin tone
-		trie.insert(new int[]{ 129494,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 67))); // man in steamy room: dark skin tone
-		trie.insert(new int[]{ 128133,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 793))); // nail polish: dark skin tone
-		trie.insert(new int[]{ 129331,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 463))); // selfie: dark skin tone
-		trie.insert(new int[]{ 128131,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 793))); // woman dancing: dark skin tone
-		trie.insert(new int[]{ 128378,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 265))); // man dancing: medium-dark skin tone
-		trie.insert(new int[]{ 128372,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 595))); // man in suit levitating: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 397))); // person in manual wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,129469 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 397))); // person in manual wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 925))); // woman in manual wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129469 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 925))); // woman in manual wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 991))); // man in manual wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129469 }, new ParseResult(6, new SpriteCoordinates(1, 0, 331, 991))); // man in manual wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 463))); // person in motorized wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,129468 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1, 463))); // person in motorized wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 925))); // woman in motorized wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129468 }, new ParseResult(6, new SpriteCoordinates(1, 0, 529, 925))); // woman in motorized wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 991))); // man in motorized wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129468 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 991))); // man in motorized wheelchair: medium-light skin tone
-		trie.insert(new int[]{ 128694,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 661))); // person walking: medium-light skin tone
-		trie.insert(new int[]{ 128694,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 661))); // woman walking: medium-light skin tone
-		trie.insert(new int[]{ 128694,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 661))); // woman walking: medium-light skin tone
-		trie.insert(new int[]{ 128694,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 661))); // man walking: medium-light skin tone
-		trie.insert(new int[]{ 128694,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 661))); // man walking: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 463))); // person with probing cane: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,129455 }, new ParseResult(6, new SpriteCoordinates(1, 0, 67, 463))); // person with probing cane: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 925))); // woman with probing cane: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129455 }, new ParseResult(6, new SpriteCoordinates(1, 0, 595, 925))); // woman with probing cane: medium-light skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 991))); // man with probing cane: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129455 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 991))); // man with probing cane: medium skin tone
-		trie.insert(new int[]{ 129486,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 463))); // person kneeling: medium-light skin tone
-		trie.insert(new int[]{ 129486,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 463))); // woman kneeling: medium-light skin tone
-		trie.insert(new int[]{ 129486,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 463, 463))); // woman kneeling: medium-light skin tone
-		trie.insert(new int[]{ 129486,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 463))); // man kneeling: medium-light skin tone
-		trie.insert(new int[]{ 129486,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 397, 463))); // man kneeling: medium-light skin tone
-		trie.insert(new int[]{ 127939,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 661))); // person running: medium-light skin tone
-		trie.insert(new int[]{ 127939,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1057, 793))); // woman running: medium-light skin tone
-		trie.insert(new int[]{ 127939,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1057, 793))); // woman running: medium-light skin tone
-		trie.insert(new int[]{ 127939,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1057, 727))); // man running: medium-light skin tone
-		trie.insert(new int[]{ 127939,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1057, 727))); // man running: medium-light skin tone
-		trie.insert(new int[]{ 129485,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 1))); // person standing: medium-light skin tone
-		trie.insert(new int[]{ 129485,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 133))); // woman standing: medium-light skin tone
-		trie.insert(new int[]{ 129485,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 133))); // woman standing: medium-light skin tone
-		trie.insert(new int[]{ 129485,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 67))); // man standing: medium-light skin tone
-		trie.insert(new int[]{ 129485,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 67))); // man standing: medium-light skin tone
-		trie.insert(new int[]{ 128109 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 859))); // women holding hands
-		trie.insert(new int[]{ 128143 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 727))); // kiss
-		trie.insert(new int[]{ 128104,8205,128105,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 0, 661, 925))); // family: man, woman, girl
-		trie.insert(new int[]{ 128104,128105,128103 }, new ParseResult(6, new SpriteCoordinates(1, 0, 661, 925))); // family: man, woman, girl
-		trie.insert(new int[]{ 128105,8205,128105,8205,128103,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 0, 727, 859))); // family: woman, woman, girl, boy
-		trie.insert(new int[]{ 128105,128105,128103,128102 }, new ParseResult(8, new SpriteCoordinates(1, 0, 727, 859))); // family: woman, woman, girl, boy
-		trie.insert(new int[]{ 128104,8205,128104,8205,128102,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 0, 727, 925))); // family: man, man, boy, boy
-		trie.insert(new int[]{ 128104,128104,128102,128102 }, new ParseResult(8, new SpriteCoordinates(1, 0, 727, 925))); // family: man, man, boy, boy
-		trie.insert(new int[]{ 128105,8205,128103,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 0, 793, 859))); // family: woman, girl, girl
-		trie.insert(new int[]{ 128105,128103,128103 }, new ParseResult(6, new SpriteCoordinates(1, 0, 793, 859))); // family: woman, girl, girl
-		trie.insert(new int[]{ 129526 }, new ParseResult(2, new SpriteCoordinates(1, 0, 1, 133))); // yarn
-		trie.insert(new int[]{ 128085 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 991))); // t-shirt
-		trie.insert(new int[]{ 128089 }, new ParseResult(2, new SpriteCoordinates(1, 0, 727, 991))); // bikini
-		trie.insert(new int[]{ 128097 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 991))); // woman’s sandal
-		trie.insert(new int[]{ 129510 }, new ParseResult(2, new SpriteCoordinates(1, 0, 67, 133))); // socks
-		trie.insert(new int[]{ 127891 }, new ParseResult(2, new SpriteCoordinates(1, 0, 1057, 859))); // graduation cap
-		trie.insert(new int[]{ 128091 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 991))); // purse
-		trie.insert(new int[]{ 128374,65039 }, new ParseResult(3, new SpriteCoordinates(1, 0, 793, 331))); // sunglasses
-		trie.insert(new int[]{ 128374 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 331))); // sunglasses
-		trie.insert(new int[]{ 129458 }, new ParseResult(2, new SpriteCoordinates(1, 0, 331, 529))); // bald
-		trie.insert(new int[]{ 128515 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 67))); // grinning face with big eyes
-		trie.insert(new int[]{ 129315 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 1))); // rolling on the floor laughing
-		trie.insert(new int[]{ 128521 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 1))); // winking face
-		trie.insert(new int[]{ 128535 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 727))); // kissing face
-		trie.insert(new int[]{ 128540 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 727))); // winking face with tongue
-		trie.insert(new int[]{ 129321 }, new ParseResult(2, new SpriteCoordinates(1, 1, 331, 595))); // star-struck
-		trie.insert(new int[]{ 128543 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 727))); // worried face
-		trie.insert(new int[]{ 128555 }, new ParseResult(2, new SpriteCoordinates(1, 1, 331, 727))); // tired face
-		trie.insert(new int[]{ 128544 }, new ParseResult(2, new SpriteCoordinates(1, 1, 529, 727))); // angry face
-		trie.insert(new int[]{ 129398 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 67))); // cold face
-		trie.insert(new int[]{ 129303 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 529))); // hugging face
-		trie.insert(new int[]{ 128566 }, new ParseResult(2, new SpriteCoordinates(1, 1, 265, 727))); // face without mouth
-		trie.insert(new int[]{ 128550 }, new ParseResult(2, new SpriteCoordinates(1, 1, 463, 727))); // frowning face with open mouth
-		trie.insert(new int[]{ 128554 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 727))); // sleepy face
-		trie.insert(new int[]{ 129319 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 595))); // sneezing face
-		trie.insert(new int[]{ 129400 }, new ParseResult(2, new SpriteCoordinates(1, 1, 529, 529))); // disguised face
-		trie.insert(new int[]{ 128169 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 727))); // pile of poo
-		trie.insert(new int[]{ 129302 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 595))); // robot
-		trie.insert(new int[]{ 128572 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 727))); // cat with wry smile
-		trie.insert(new int[]{ 129330,127995 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 595))); // palms up together: light skin tone
-		trie.insert(new int[]{ 128080,127995 }, new ParseResult(4, new SpriteCoordinates(1, 1, 859, 991))); // open hands: light skin tone
-		trie.insert(new int[]{ 128588,127995 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 67))); // raising hands: light skin tone
-		trie.insert(new int[]{ 128079,127995 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 991))); // clapping hands: light skin tone
-		trie.insert(new int[]{ 128077 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 1))); // thumbs up
-		trie.insert(new int[]{ 128078 }, new ParseResult(2, new SpriteCoordinates(1, 1, 991, 991))); // thumbs down
-		trie.insert(new int[]{ 128074 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 199))); // oncoming fist
-		trie.insert(new int[]{ 9994 }, new ParseResult(1, new SpriteCoordinates(1, 1, 67, 67))); // raised fist
-		trie.insert(new int[]{ 129307 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 265))); // left-facing fist
-		trie.insert(new int[]{ 129308 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 199))); // right-facing fist
-		trie.insert(new int[]{ 129310 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 133))); // crossed fingers
-		trie.insert(new int[]{ 9996,65039 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 1))); // victory hand
-		trie.insert(new int[]{ 9996 }, new ParseResult(1, new SpriteCoordinates(1, 1, 67, 1))); // victory hand
-		trie.insert(new int[]{ 129311 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 67))); // love-you gesture
-		trie.insert(new int[]{ 129304 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 463))); // sign of the horns
-		trie.insert(new int[]{ 128076 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 67))); // OK hand
-		trie.insert(new int[]{ 129295 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 661))); // pinching hand
-		trie.insert(new int[]{ 129292 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 661))); // pinched fingers
-		trie.insert(new int[]{ 128072 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 331))); // backhand index pointing left
-		trie.insert(new int[]{ 128073 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 265))); // backhand index pointing right
-		trie.insert(new int[]{ 128070 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 463))); // backhand index pointing up
-		trie.insert(new int[]{ 128071 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 397))); // backhand index pointing down
-		trie.insert(new int[]{ 9757,65039 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 67))); // index pointing up
-		trie.insert(new int[]{ 9757 }, new ParseResult(1, new SpriteCoordinates(1, 1, 133, 67))); // index pointing up
-		trie.insert(new int[]{ 9995 }, new ParseResult(1, new SpriteCoordinates(1, 1, 1, 67))); // raised hand
-		trie.insert(new int[]{ 129306 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 331))); // raised back of hand
-		trie.insert(new int[]{ 128400 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 265))); // hand with fingers splayed
-		trie.insert(new int[]{ 128406 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 133))); // vulcan salute
-		trie.insert(new int[]{ 128075 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 133))); // waving hand
-		trie.insert(new int[]{ 129305 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 397))); // call me hand
-		trie.insert(new int[]{ 128170 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 661))); // flexed biceps
-		trie.insert(new int[]{ 129470 }, new ParseResult(2, new SpriteCoordinates(1, 1, 529, 265))); // mechanical arm
-		trie.insert(new int[]{ 128405,127999 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 199))); // middle finger: dark skin tone
-		trie.insert(new int[]{ 9997,127999 }, new ParseResult(3, new SpriteCoordinates(1, 1, 1, 1))); // writing hand: dark skin tone
-		trie.insert(new int[]{ 128591,127999 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 661))); // folded hands: dark skin tone
-		trie.insert(new int[]{ 129462,127999 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 529))); // foot: dark skin tone
-		trie.insert(new int[]{ 129461,127999 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 529))); // leg: dark skin tone
-		trie.insert(new int[]{ 129460 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 529))); // bone
-		trie.insert(new int[]{ 128066,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 595))); // ear: medium-dark skin tone
-		trie.insert(new int[]{ 129467,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 529, 331))); // ear with hearing aid: medium-dark skin tone
-		trie.insert(new int[]{ 128067,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 529))); // nose: medium-dark skin tone
-		trie.insert(new int[]{ 129728 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 133))); // anatomical heart
-		trie.insert(new int[]{ 128118 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 397))); // baby
-		trie.insert(new int[]{ 128103 }, new ParseResult(2, new SpriteCoordinates(1, 1, 529, 991))); // girl
-		trie.insert(new int[]{ 129490 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 331))); // child
-		trie.insert(new int[]{ 128102 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 991))); // boy
-		trie.insert(new int[]{ 128105 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 859))); // woman
-		trie.insert(new int[]{ 129489 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 331))); // person
-		trie.insert(new int[]{ 128104 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 925))); // man
-		trie.insert(new int[]{ 129489,8205,129457 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 199))); // person: curly hair
-		trie.insert(new int[]{ 129489,129457 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 199))); // person: curly hair
-		trie.insert(new int[]{ 128105,8205,129457 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 265))); // woman: curly hair
-		trie.insert(new int[]{ 128105,129457 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 265))); // woman: curly hair
-		trie.insert(new int[]{ 128104,8205,129457 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 67))); // man: curly hair
-		trie.insert(new int[]{ 128104,129457 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 67))); // man: curly hair
-		trie.insert(new int[]{ 129489,8205,129456 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 265))); // person: red hair
-		trie.insert(new int[]{ 129489,129456 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 265))); // person: red hair
-		trie.insert(new int[]{ 128105,8205,129456 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 331))); // woman: red hair
-		trie.insert(new int[]{ 128105,129456 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 331))); // woman: red hair
-		trie.insert(new int[]{ 128104,8205,129456 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 133))); // man: red hair
-		trie.insert(new int[]{ 128104,129456 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 133))); // man: red hair
-		trie.insert(new int[]{ 128113,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 859))); // woman: blond hair
-		trie.insert(new int[]{ 128113,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 133, 859))); // woman: blond hair
-		trie.insert(new int[]{ 128113 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 859))); // person: blond hair
-		trie.insert(new int[]{ 128113,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 859))); // man: blond hair
-		trie.insert(new int[]{ 128113,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 859))); // man: blond hair
-		trie.insert(new int[]{ 129489,8205,129459 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 67))); // person: white hair
-		trie.insert(new int[]{ 129489,129459 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 67))); // person: white hair
-		trie.insert(new int[]{ 128105,8205,129459 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 133))); // woman: white hair
-		trie.insert(new int[]{ 128105,129459 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 133))); // woman: white hair
-		trie.insert(new int[]{ 128104,8205,129459 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 925))); // man: white hair
-		trie.insert(new int[]{ 128104,129459 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 925))); // man: white hair
-		trie.insert(new int[]{ 129489,8205,129458 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 133))); // person: bald
-		trie.insert(new int[]{ 129489,129458 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 133))); // person: bald
-		trie.insert(new int[]{ 128105,8205,129458 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 199))); // woman: bald
-		trie.insert(new int[]{ 128105,129458 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 199))); // woman: bald
-		trie.insert(new int[]{ 128104,8205,129458 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 1))); // man: bald
-		trie.insert(new int[]{ 128104,129458 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 1))); // man: bald
-		trie.insert(new int[]{ 129492 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 331))); // man: beard
-		trie.insert(new int[]{ 128117 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 463))); // old woman
-		trie.insert(new int[]{ 129491 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 331))); // older person
-		trie.insert(new int[]{ 128116 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 529))); // old man
-		trie.insert(new int[]{ 128114 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 793))); // man with Chinese cap
-		trie.insert(new int[]{ 128115 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 595))); // person wearing turban
-		trie.insert(new int[]{ 128115,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 727))); // woman wearing turban
-		trie.insert(new int[]{ 128115,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 727))); // woman wearing turban
-		trie.insert(new int[]{ 128115,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 661))); // man wearing turban
-		trie.insert(new int[]{ 128115,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 661))); // man wearing turban
-		trie.insert(new int[]{ 129493 }, new ParseResult(2, new SpriteCoordinates(1, 1, 331, 265))); // woman with headscarf
-		trie.insert(new int[]{ 128110 }, new ParseResult(2, new SpriteCoordinates(1, 1, 463, 859))); // police officer
-		trie.insert(new int[]{ 128110,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 859))); // woman police officer
-		trie.insert(new int[]{ 128110,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 859))); // woman police officer
-		trie.insert(new int[]{ 128110,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 859))); // man police officer
-		trie.insert(new int[]{ 128110,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 529, 859))); // man police officer
-		trie.insert(new int[]{ 128119 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 199))); // construction worker
-		trie.insert(new int[]{ 128119,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 331))); // woman construction worker
-		trie.insert(new int[]{ 128119,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 331))); // woman construction worker
-		trie.insert(new int[]{ 128119,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 265))); // man construction worker
-		trie.insert(new int[]{ 128119,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 265))); // man construction worker
-		trie.insert(new int[]{ 128130 }, new ParseResult(2, new SpriteCoordinates(1, 1, 529, 793))); // guard
-		trie.insert(new int[]{ 128130,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 661, 793))); // woman guard
-		trie.insert(new int[]{ 128130,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 661, 793))); // woman guard
-		trie.insert(new int[]{ 128130,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 793))); // man guard
-		trie.insert(new int[]{ 128130,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 793))); // man guard
-		trie.insert(new int[]{ 128373 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 397))); // detective
-		trie.insert(new int[]{ 128373,65039,8205,9792,65039 }, new ParseResult(6, new SpriteCoordinates(1, 1, 793, 529))); // woman detective
-		trie.insert(new int[]{ 128373,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 793, 529))); // woman detective
-		trie.insert(new int[]{ 128373,65039,8205,9794,65039 }, new ParseResult(6, new SpriteCoordinates(1, 1, 793, 463))); // man detective
-		trie.insert(new int[]{ 128373,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 793, 463))); // man detective
-		trie.insert(new int[]{ 129489,8205,9877,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 1))); // health worker
-		trie.insert(new int[]{ 129489,9877 }, new ParseResult(3, new SpriteCoordinates(1, 1, 397, 1))); // health worker
-		trie.insert(new int[]{ 128105,8205,9877,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 67))); // woman health worker
-		trie.insert(new int[]{ 128105,9877 }, new ParseResult(3, new SpriteCoordinates(1, 1, 925, 67))); // woman health worker
-		trie.insert(new int[]{ 128104,8205,9877,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 925))); // man health worker
-		trie.insert(new int[]{ 128104,9877 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 925))); // man health worker
-		trie.insert(new int[]{ 129489,8205,127806 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 463))); // farmer
-		trie.insert(new int[]{ 129489,127806 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 463))); // farmer
-		trie.insert(new int[]{ 128105,8205,127806 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 925))); // woman farmer
-		trie.insert(new int[]{ 128105,127806 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 925))); // woman farmer
-		trie.insert(new int[]{ 128104,8205,127806 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 991))); // man farmer
-		trie.insert(new int[]{ 128104,127806 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 991))); // man farmer
-		trie.insert(new int[]{ 129489,8205,127859 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 463))); // cook
-		trie.insert(new int[]{ 129489,127859 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 463))); // cook
-		trie.insert(new int[]{ 128105,8205,127859 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 925))); // woman cook
-		trie.insert(new int[]{ 128105,127859 }, new ParseResult(4, new SpriteCoordinates(1, 1, 529, 925))); // woman cook
-		trie.insert(new int[]{ 128104,8205,127859 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 991))); // man cook
-		trie.insert(new int[]{ 128104,127859 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 991))); // man cook
-		trie.insert(new int[]{ 129489,8205,127891 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 331))); // student
-		trie.insert(new int[]{ 129489,127891 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 331))); // student
-		trie.insert(new int[]{ 128105,8205,127891 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 925))); // woman student
-		trie.insert(new int[]{ 128105,127891 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 925))); // woman student
-		trie.insert(new int[]{ 128104,8205,127891 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 991))); // man student
-		trie.insert(new int[]{ 128104,127891 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 991))); // man student
-		trie.insert(new int[]{ 129489,8205,127908 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 265))); // singer
-		trie.insert(new int[]{ 129489,127908 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 265))); // singer
-		trie.insert(new int[]{ 128105,8205,127908 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 925))); // woman singer
-		trie.insert(new int[]{ 128105,127908 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 925))); // woman singer
-		trie.insert(new int[]{ 128104,8205,127908 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 991))); // man singer
-		trie.insert(new int[]{ 128104,127908 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 991))); // man singer
-		trie.insert(new int[]{ 129489,8205,127979 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 133))); // teacher
-		trie.insert(new int[]{ 129489,127979 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 133))); // teacher
-		trie.insert(new int[]{ 128105,8205,127979 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 925))); // woman teacher
-		trie.insert(new int[]{ 128105,127979 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 925))); // woman teacher
-		trie.insert(new int[]{ 128104,8205,127979 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 991))); // man teacher
-		trie.insert(new int[]{ 128104,127979 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 991))); // man teacher
-		trie.insert(new int[]{ 129489,8205,127981 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 67))); // factory worker
-		trie.insert(new int[]{ 129489,127981 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 67))); // factory worker
-		trie.insert(new int[]{ 128105,8205,127981 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 925))); // woman factory worker
-		trie.insert(new int[]{ 128105,127981 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 925))); // woman factory worker
-		trie.insert(new int[]{ 128104,8205,127981 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 991))); // man factory worker
-		trie.insert(new int[]{ 128104,127981 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 991))); // man factory worker
-		trie.insert(new int[]{ 129489,8205,128187 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 397))); // technologist
-		trie.insert(new int[]{ 129489,128187 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 397))); // technologist
-		trie.insert(new int[]{ 128105,8205,128187 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 727))); // woman technologist
-		trie.insert(new int[]{ 128105,128187 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 727))); // woman technologist
-		trie.insert(new int[]{ 128104,8205,128187 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 529))); // man technologist
-		trie.insert(new int[]{ 128104,128187 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 529))); // man technologist
-		trie.insert(new int[]{ 129489,8205,128188 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 397))); // office worker
-		trie.insert(new int[]{ 129489,128188 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 397))); // office worker
-		trie.insert(new int[]{ 128105,8205,128188 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 661))); // woman office worker
-		trie.insert(new int[]{ 128105,128188 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 661))); // woman office worker
-		trie.insert(new int[]{ 128104,8205,128188 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 463))); // man office worker
-		trie.insert(new int[]{ 128104,128188 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 463))); // man office worker
-		trie.insert(new int[]{ 129489,8205,128295 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 397))); // mechanic
-		trie.insert(new int[]{ 129489,128295 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 397))); // mechanic
-		trie.insert(new int[]{ 128105,8205,128295 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 595))); // woman mechanic
-		trie.insert(new int[]{ 128105,128295 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 595))); // woman mechanic
-		trie.insert(new int[]{ 128104,8205,128295 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 397))); // man mechanic
-		trie.insert(new int[]{ 128104,128295 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 397))); // man mechanic
-		trie.insert(new int[]{ 129489,8205,128300 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 397))); // scientist
-		trie.insert(new int[]{ 129489,128300 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 397))); // scientist
-		trie.insert(new int[]{ 128105,8205,128300 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 529))); // woman scientist
-		trie.insert(new int[]{ 128105,128300 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 529))); // woman scientist
-		trie.insert(new int[]{ 128104,8205,128300 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 331))); // man scientist
-		trie.insert(new int[]{ 128104,128300 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 331))); // man scientist
-		trie.insert(new int[]{ 129489,8205,127912 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 199))); // artist
-		trie.insert(new int[]{ 129489,127912 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 199))); // artist
-		trie.insert(new int[]{ 128105,8205,127912 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 925))); // woman artist
-		trie.insert(new int[]{ 128105,127912 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 925))); // woman artist
-		trie.insert(new int[]{ 128104,8205,127912 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 991))); // man artist
-		trie.insert(new int[]{ 128104,127912 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 991))); // man artist
-		trie.insert(new int[]{ 129489,8205,128658 }, new ParseResult(5, new SpriteCoordinates(1, 1, 397, 331))); // firefighter
-		trie.insert(new int[]{ 129489,128658 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 331))); // firefighter
-		trie.insert(new int[]{ 128105,8205,128658 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 397))); // woman firefighter
-		trie.insert(new int[]{ 128105,128658 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 397))); // woman firefighter
-		trie.insert(new int[]{ 128104,8205,128658 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 199))); // man firefighter
-		trie.insert(new int[]{ 128104,128658 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 199))); // man firefighter
-		trie.insert(new int[]{ 129489,8205,9992,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 331))); // pilot
-		trie.insert(new int[]{ 129489,9992 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 331))); // pilot
-		trie.insert(new int[]{ 128105,8205,9992,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 859))); // woman pilot
-		trie.insert(new int[]{ 128105,9992 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 859))); // woman pilot
-		trie.insert(new int[]{ 128104,8205,9992,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 925))); // man pilot
-		trie.insert(new int[]{ 128104,9992 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 925))); // man pilot
-		trie.insert(new int[]{ 129489,8205,128640 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 397))); // astronaut
-		trie.insert(new int[]{ 129489,128640 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 397))); // astronaut
-		trie.insert(new int[]{ 128105,8205,128640 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 463))); // woman astronaut
-		trie.insert(new int[]{ 128105,128640 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 463))); // woman astronaut
-		trie.insert(new int[]{ 128104,8205,128640 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 265))); // man astronaut
-		trie.insert(new int[]{ 128104,128640 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 265))); // man astronaut
-		trie.insert(new int[]{ 129489,8205,9878,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 331))); // judge
-		trie.insert(new int[]{ 129489,9878 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 331))); // judge
-		trie.insert(new int[]{ 128105,8205,9878,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 1))); // woman judge
-		trie.insert(new int[]{ 128105,9878 }, new ParseResult(3, new SpriteCoordinates(1, 1, 925, 1))); // woman judge
-		trie.insert(new int[]{ 128104,8205,9878,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 793, 925))); // man judge
-		trie.insert(new int[]{ 128104,9878 }, new ParseResult(3, new SpriteCoordinates(1, 1, 793, 925))); // man judge
-		trie.insert(new int[]{ 128112 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 859))); // person with veil
-		trie.insert(new int[]{ 128112,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 859))); // woman with veil
-		trie.insert(new int[]{ 128112,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 859))); // woman with veil
-		trie.insert(new int[]{ 128112,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 859))); // man with veil
-		trie.insert(new int[]{ 128112,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 859))); // man with veil
-		trie.insert(new int[]{ 129333 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 397))); // person in tuxedo
-		trie.insert(new int[]{ 129333,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 529))); // woman in tuxedo
-		trie.insert(new int[]{ 129333,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 529))); // woman in tuxedo
-		trie.insert(new int[]{ 129333,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 463))); // man in tuxedo
-		trie.insert(new int[]{ 129333,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 463))); // man in tuxedo
-		trie.insert(new int[]{ 128120 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 133))); // princess
-		trie.insert(new int[]{ 129332 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 595))); // prince
-		trie.insert(new int[]{ 129464 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 529))); // superhero
-		trie.insert(new int[]{ 129464,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 529))); // woman superhero
-		trie.insert(new int[]{ 129464,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 199, 529))); // woman superhero
-		trie.insert(new int[]{ 129464,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 529))); // man superhero
-		trie.insert(new int[]{ 129464,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 133, 529))); // man superhero
-		trie.insert(new int[]{ 129465 }, new ParseResult(2, new SpriteCoordinates(1, 1, 529, 397))); // supervillain
-		trie.insert(new int[]{ 129465,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 529))); // woman supervillain: light skin tone
-		trie.insert(new int[]{ 129465,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 529))); // woman supervillain: light skin tone
-		trie.insert(new int[]{ 129465,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 463))); // man supervillain
-		trie.insert(new int[]{ 129465,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 529, 463))); // man supervillain
-		trie.insert(new int[]{ 129399 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 1))); // ninja
-		trie.insert(new int[]{ 129489,8205,127876 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 397))); // mx claus
-		trie.insert(new int[]{ 129489,127876 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 397))); // mx claus
-		trie.insert(new int[]{ 129334 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 331))); // Mrs. Claus
-		trie.insert(new int[]{ 127877 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1057, 859))); // Santa Claus
-		trie.insert(new int[]{ 129497 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 265))); // mage
-		trie.insert(new int[]{ 129497,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 1))); // woman mage
-		trie.insert(new int[]{ 129497,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 1))); // woman mage
-		trie.insert(new int[]{ 129497,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 265))); // man mage
-		trie.insert(new int[]{ 129497,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 265))); // man mage
-		trie.insert(new int[]{ 129501 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 133))); // elf
-		trie.insert(new int[]{ 129501,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 199))); // woman elf
-		trie.insert(new int[]{ 129501,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 199))); // woman elf
-		trie.insert(new int[]{ 129501,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 199))); // man elf
-		trie.insert(new int[]{ 129501,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 1, 199))); // man elf
-		trie.insert(new int[]{ 129499 }, new ParseResult(2, new SpriteCoordinates(1, 1, 265, 67))); // vampire
-		trie.insert(new int[]{ 129499,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 199))); // woman vampire
-		trie.insert(new int[]{ 129499,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 199))); // woman vampire
-		trie.insert(new int[]{ 129499,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 133))); // man vampire
-		trie.insert(new int[]{ 129499,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 133))); // man vampire
-		trie.insert(new int[]{ 129503 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 67))); // zombie
-		trie.insert(new int[]{ 129500 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 199))); // merperson
-		trie.insert(new int[]{ 129500,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 1))); // mermaid
-		trie.insert(new int[]{ 129500,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 1))); // mermaid
-		trie.insert(new int[]{ 129500,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 199))); // merman
-		trie.insert(new int[]{ 129500,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 199, 199))); // merman
-		trie.insert(new int[]{ 129498 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 265))); // fairy
-		trie.insert(new int[]{ 129498,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 265))); // woman fairy
-		trie.insert(new int[]{ 129498,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 133, 265))); // woman fairy
-		trie.insert(new int[]{ 129498,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 265))); // man fairy
-		trie.insert(new int[]{ 129498,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 265))); // man fairy
-		trie.insert(new int[]{ 128124 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 67))); // baby angel
-		trie.insert(new int[]{ 129328 }, new ParseResult(2, new SpriteCoordinates(1, 1, 265, 595))); // pregnant woman
-		trie.insert(new int[]{ 129329 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 595))); // breast-feeding
-		trie.insert(new int[]{ 129489,8205,127868 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 463))); // person feeding baby
-		trie.insert(new int[]{ 129489,127868 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 463))); // person feeding baby
-		trie.insert(new int[]{ 128105,8205,127868 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 925))); // woman feeding baby
-		trie.insert(new int[]{ 128105,127868 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 925))); // woman feeding baby
-		trie.insert(new int[]{ 128104,8205,127868 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 991))); // man feeding baby
-		trie.insert(new int[]{ 128104,127868 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 991))); // man feeding baby
-		trie.insert(new int[]{ 128583 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 331))); // person bowing
-		trie.insert(new int[]{ 128583,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 463))); // woman bowing
-		trie.insert(new int[]{ 128583,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 463))); // woman bowing
-		trie.insert(new int[]{ 128583,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 397))); // man bowing
-		trie.insert(new int[]{ 128583,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 397))); // man bowing
-		trie.insert(new int[]{ 128129 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 793))); // person tipping hand
-		trie.insert(new int[]{ 128129,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 1))); // woman tipping hand
-		trie.insert(new int[]{ 128129,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 859, 1))); // woman tipping hand
-		trie.insert(new int[]{ 128129,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 793, 793))); // man tipping hand
-		trie.insert(new int[]{ 128129,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 793, 793))); // man tipping hand
-		trie.insert(new int[]{ 128581 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 727))); // person gesturing NO
-		trie.insert(new int[]{ 128581,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 727))); // woman gesturing NO
-		trie.insert(new int[]{ 128581,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 133, 727))); // woman gesturing NO
-		trie.insert(new int[]{ 128581,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 727))); // man gesturing NO
-		trie.insert(new int[]{ 128581,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 727))); // man gesturing NO
-		trie.insert(new int[]{ 128582 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 529))); // person gesturing OK
-		trie.insert(new int[]{ 128582,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 661))); // woman gesturing OK
-		trie.insert(new int[]{ 128582,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 661))); // woman gesturing OK
-		trie.insert(new int[]{ 128582,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 595))); // man gesturing OK
-		trie.insert(new int[]{ 128582,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 595))); // man gesturing OK
-		trie.insert(new int[]{ 128587 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 133))); // person raising hand
-		trie.insert(new int[]{ 128587,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 265))); // woman raising hand
-		trie.insert(new int[]{ 128587,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 265))); // woman raising hand
-		trie.insert(new int[]{ 128587,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 199))); // man raising hand
-		trie.insert(new int[]{ 128587,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 199))); // man raising hand
-		trie.insert(new int[]{ 129487 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 463))); // deaf person
-		trie.insert(new int[]{ 129487,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 463))); // deaf woman
-		trie.insert(new int[]{ 129487,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 463))); // deaf woman
-		trie.insert(new int[]{ 129487,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 463))); // deaf man
-		trie.insert(new int[]{ 129487,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 463))); // deaf man
-		trie.insert(new int[]{ 129318 }, new ParseResult(2, new SpriteCoordinates(1, 1, 463, 595))); // person facepalming
-		trie.insert(new int[]{ 129318,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 595))); // woman facepalming
-		trie.insert(new int[]{ 129318,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 595))); // woman facepalming
-		trie.insert(new int[]{ 129318,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 595))); // man facepalming
-		trie.insert(new int[]{ 129318,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 529, 595))); // man facepalming
-		trie.insert(new int[]{ 129335 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 133))); // person shrugging
-		trie.insert(new int[]{ 129335,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 265))); // woman shrugging
-		trie.insert(new int[]{ 129335,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 265))); // woman shrugging
-		trie.insert(new int[]{ 129335,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 199))); // man shrugging
-		trie.insert(new int[]{ 129335,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 595, 199))); // man shrugging
-		trie.insert(new int[]{ 128590 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 661))); // person pouting
-		trie.insert(new int[]{ 128590,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 661))); // woman pouting
-		trie.insert(new int[]{ 128590,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 529, 661))); // woman pouting
-		trie.insert(new int[]{ 128590,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 661))); // man pouting
-		trie.insert(new int[]{ 128590,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 463, 661))); // man pouting
-		trie.insert(new int[]{ 128589 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 661))); // person frowning
-		trie.insert(new int[]{ 128589,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 1))); // woman frowning
-		trie.insert(new int[]{ 128589,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 1))); // woman frowning
-		trie.insert(new int[]{ 128589,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 661, 661))); // man frowning
-		trie.insert(new int[]{ 128589,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 661, 661))); // man frowning
-		trie.insert(new int[]{ 128135 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 793))); // person getting haircut
-		trie.insert(new int[]{ 128135,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 793))); // woman getting haircut
-		trie.insert(new int[]{ 128135,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 133, 793))); // woman getting haircut
-		trie.insert(new int[]{ 128135,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 793))); // man getting haircut
-		trie.insert(new int[]{ 128135,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 793))); // man getting haircut
-		trie.insert(new int[]{ 128134 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 793))); // person getting massage
-		trie.insert(new int[]{ 128134,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 793))); // woman getting massage
-		trie.insert(new int[]{ 128134,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 793))); // woman getting massage
-		trie.insert(new int[]{ 128134,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 793))); // man getting massage
-		trie.insert(new int[]{ 128134,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 793))); // man getting massage
-		trie.insert(new int[]{ 129494 }, new ParseResult(2, new SpriteCoordinates(1, 1, 331, 67))); // person in steamy room
-		trie.insert(new int[]{ 129494,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 199))); // woman in steamy room
-		trie.insert(new int[]{ 129494,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 199))); // woman in steamy room
-		trie.insert(new int[]{ 129494,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 133))); // man in steamy room
-		trie.insert(new int[]{ 129494,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 133))); // man in steamy room
+		trie.insert(new int[]{ 128512 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 463))); // grinning face
+		trie.insert(new int[]{ 128514 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 397))); // face with tears of joy
+		trie.insert(new int[]{ 128579 }, new ParseResult(2, new SpriteCoordinates(1, 0, 331, 727))); // upside-down face
+		trie.insert(new int[]{ 128536 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 133))); // face blowing a kiss
+		trie.insert(new int[]{ 128541 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 67))); // squinting face with tongue
+		trie.insert(new int[]{ 128526 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 331))); // smiling face with sunglasses
+		trie.insert(new int[]{ 128532 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 265))); // pensive face
+		trie.insert(new int[]{ 128534 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 199))); // confounded face
+		trie.insert(new int[]{ 128548 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 1))); // face with steam from nose
+		trie.insert(new int[]{ 128563 }, new ParseResult(2, new SpriteCoordinates(1, 0, 529, 727))); // flushed face
+		trie.insert(new int[]{ 128560 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 727))); // anxious face with sweat
+		trie.insert(new int[]{ 129393 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 397))); // yawning face
+		trie.insert(new int[]{ 128556 }, new ParseResult(2, new SpriteCoordinates(1, 0, 727, 727))); // grimacing face
+		trie.insert(new int[]{ 128562 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 727))); // astonished face
+		trie.insert(new int[]{ 129296 }, new ParseResult(2, new SpriteCoordinates(1, 0, 67, 661))); // zipper-mouth face
+		trie.insert(new int[]{ 129298 }, new ParseResult(2, new SpriteCoordinates(1, 0, 1, 661))); // face with thermometer
+		trie.insert(new int[]{ 128127 }, new ParseResult(2, new SpriteCoordinates(1, 0, 67, 859))); // angry face with horns
+		trie.insert(new int[]{ 128128 }, new ParseResult(2, new SpriteCoordinates(1, 0, 1, 859))); // skull
+		trie.insert(new int[]{ 128570 }, new ParseResult(2, new SpriteCoordinates(1, 0, 463, 727))); // grinning cat
+		trie.insert(new int[]{ 128576 }, new ParseResult(2, new SpriteCoordinates(1, 0, 397, 727))); // weary cat
+		trie.insert(new int[]{ 129330,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 595))); // palms up together: medium skin tone
+		trie.insert(new int[]{ 128080,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1123, 925))); // open hands: medium skin tone
+		trie.insert(new int[]{ 128588,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 199))); // raising hands: medium skin tone
+		trie.insert(new int[]{ 128079,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1123, 991))); // clapping hands: medium skin tone
+		trie.insert(new int[]{ 128077,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 1123))); // thumbs up: medium-light skin tone
+		trie.insert(new int[]{ 128078,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1123, 1057))); // thumbs down: medium-light skin tone
+		trie.insert(new int[]{ 128074,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 1123))); // oncoming fist: medium-light skin tone
+		trie.insert(new int[]{ 9994,127996 }, new ParseResult(3, new SpriteCoordinates(1, 0, 67, 67))); // raised fist: medium-light skin tone
+		trie.insert(new int[]{ 129307,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 397))); // left-facing fist: medium-light skin tone
+		trie.insert(new int[]{ 129308,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 331))); // right-facing fist: medium-light skin tone
+		trie.insert(new int[]{ 129310,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 265))); // crossed fingers: medium-light skin tone
+		trie.insert(new int[]{ 9996,127996 }, new ParseResult(3, new SpriteCoordinates(1, 0, 67, 1))); // victory hand: medium-light skin tone
+		trie.insert(new int[]{ 129311,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 199))); // love-you gesture: medium-light skin tone
+		trie.insert(new int[]{ 129304,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 595))); // sign of the horns: medium-light skin tone
+		trie.insert(new int[]{ 128076,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 1123))); // OK hand: medium-light skin tone
+		trie.insert(new int[]{ 129295,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 661))); // pinching hand: medium-light skin tone
+		trie.insert(new int[]{ 129292,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 661))); // pinched fingers: light skin tone
+		trie.insert(new int[]{ 128072,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 1123))); // backhand index pointing left: medium-light skin tone
+		trie.insert(new int[]{ 128073,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 1123))); // backhand index pointing right: medium-light skin tone
+		trie.insert(new int[]{ 128070,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 1123))); // backhand index pointing up: medium-light skin tone
+		trie.insert(new int[]{ 128071,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 1123))); // backhand index pointing down: medium-light skin tone
+		trie.insert(new int[]{ 9757,127996 }, new ParseResult(3, new SpriteCoordinates(1, 0, 133, 1))); // index pointing up: medium-light skin tone
+		trie.insert(new int[]{ 9995,127996 }, new ParseResult(3, new SpriteCoordinates(1, 0, 1, 67))); // raised hand: medium-light skin tone
+		trie.insert(new int[]{ 129306,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 463))); // raised back of hand: medium-light skin tone
+		trie.insert(new int[]{ 128400,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 727))); // hand with fingers splayed: medium-light skin tone
+		trie.insert(new int[]{ 128406,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 595))); // vulcan salute: medium-light skin tone
+		trie.insert(new int[]{ 128075,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 1123))); // waving hand: medium-light skin tone
+		trie.insert(new int[]{ 129305,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 529))); // call me hand: medium-light skin tone
+		trie.insert(new int[]{ 128170,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 793))); // flexed biceps: medium-light skin tone
+		trie.insert(new int[]{ 128405,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 793, 661))); // middle finger: light skin tone
+		trie.insert(new int[]{ 9997,127995 }, new ParseResult(3, new SpriteCoordinates(1, 0, 1, 1))); // writing hand: light skin tone
+		trie.insert(new int[]{ 128591,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 661))); // folded hands: light skin tone
+		trie.insert(new int[]{ 129462,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 1))); // foot: light skin tone
+		trie.insert(new int[]{ 129461,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 67))); // leg: light skin tone
+		trie.insert(new int[]{ 128132 }, new ParseResult(2, new SpriteCoordinates(1, 0, 859, 331))); // lipstick
+		trie.insert(new int[]{ 128066,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 1123))); // ear: light skin tone
+		trie.insert(new int[]{ 129467,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 529))); // ear with hearing aid: light skin tone
+		trie.insert(new int[]{ 128067,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 1123))); // nose: light skin tone
+		trie.insert(new int[]{ 128065,65039 }, new ParseResult(3, new SpriteCoordinates(1, 0, 661, 1123))); // eye
+		trie.insert(new int[]{ 128065 }, new ParseResult(2, new SpriteCoordinates(1, 0, 661, 1123))); // eye
+		trie.insert(new int[]{ 128483,65039 }, new ParseResult(3, new SpriteCoordinates(1, 0, 793, 529))); // speaking head
+		trie.insert(new int[]{ 128483 }, new ParseResult(2, new SpriteCoordinates(1, 0, 793, 529))); // speaking head
+		trie.insert(new int[]{ 128118,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 859))); // baby: medium-light skin tone
+		trie.insert(new int[]{ 128103,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1123, 661))); // girl: medium-light skin tone
+		trie.insert(new int[]{ 129490,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 331))); // child: medium-light skin tone
+		trie.insert(new int[]{ 128102,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1123, 727))); // boy: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 991, 199))); // woman: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 199))); // person: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 1057))); // man: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 397))); // person: medium-light skin tone, curly hair
+		trie.insert(new int[]{ 129489,127996,129457 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 397))); // person: medium-light skin tone, curly hair
+		trie.insert(new int[]{ 128105,127996,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 727))); // woman, curly haired: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129457 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 727))); // woman, curly haired: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 1057))); // man, curly haired: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129457 }, new ParseResult(6, new SpriteCoordinates(1, 0, 529, 1057))); // man, curly haired: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 397))); // person: medium-light skin tone, red hair
+		trie.insert(new int[]{ 129489,127996,129456 }, new ParseResult(6, new SpriteCoordinates(1, 0, 331, 397))); // person: medium-light skin tone, red hair
+		trie.insert(new int[]{ 128105,127996,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 793))); // woman, red haired: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129456 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 793))); // woman, red haired: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 1057))); // man, red haired: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129456 }, new ParseResult(6, new SpriteCoordinates(1, 0, 595, 1057))); // man, red haired: medium-light skin tone
+		trie.insert(new int[]{ 128113,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 133))); // blond-haired woman: medium-light skin tone
+		trie.insert(new int[]{ 128113,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 133))); // blond-haired woman: medium-light skin tone
+		trie.insert(new int[]{ 128113,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 1))); // blond-haired person: medium-light skin tone
+		trie.insert(new int[]{ 128113,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 67))); // blond-haired man: medium-light skin tone
+		trie.insert(new int[]{ 128113,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 67))); // blond-haired man: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 397))); // person: medium-light skin tone, white hair
+		trie.insert(new int[]{ 129489,127996,129459 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 397))); // person: medium-light skin tone, white hair
+		trie.insert(new int[]{ 128105,127996,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 595))); // woman, white haired: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129459 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 595))); // woman, white haired: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 1057))); // man, white haired: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129459 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 1057))); // man, white haired: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 397))); // person: medium-light skin tone, bald
+		trie.insert(new int[]{ 129489,127996,129458 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 397))); // person: medium-light skin tone, bald
+		trie.insert(new int[]{ 128105,127996,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 661))); // woman, bald: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129458 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 661))); // woman, bald: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 1057))); // man, bald: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129458 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 1057))); // man, bald: medium-light skin tone
+		trie.insert(new int[]{ 129492,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 67))); // bearded person: medium-light skin tone
+		trie.insert(new int[]{ 129492,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 133))); // man: medium-light skin tone, beard
+		trie.insert(new int[]{ 129492,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 133))); // man: medium-light skin tone, beard
+		trie.insert(new int[]{ 129492,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 199))); // woman: medium-light skin tone, beard
+		trie.insert(new int[]{ 129492,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 199))); // woman: medium-light skin tone, beard
+		trie.insert(new int[]{ 128117,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 859))); // old woman: medium-light skin tone
+		trie.insert(new int[]{ 129491,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 265))); // older person: medium-light skin tone
+		trie.insert(new int[]{ 128116,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 859))); // old man: medium-light skin tone
+		trie.insert(new int[]{ 128114,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 859))); // man with Chinese cap: medium-light skin tone
+		trie.insert(new int[]{ 128115,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 859))); // person wearing turban: medium-light skin tone
+		trie.insert(new int[]{ 128115,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 859))); // woman wearing turban: medium-light skin tone
+		trie.insert(new int[]{ 128115,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 793, 859))); // woman wearing turban: medium-light skin tone
+		trie.insert(new int[]{ 128115,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 859))); // man wearing turban: medium-light skin tone
+		trie.insert(new int[]{ 128115,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 859))); // man wearing turban: medium-light skin tone
+		trie.insert(new int[]{ 129493,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 1))); // woman with headscarf: medium-light skin tone
+		trie.insert(new int[]{ 128110,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 463))); // police officer: medium-light skin tone
+		trie.insert(new int[]{ 128110,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 595))); // woman police officer: medium-light skin tone
+		trie.insert(new int[]{ 128110,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 595))); // woman police officer: medium-light skin tone
+		trie.insert(new int[]{ 128110,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 529))); // man police officer: medium-light skin tone
+		trie.insert(new int[]{ 128110,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 529))); // man police officer: medium-light skin tone
+		trie.insert(new int[]{ 128119,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 859))); // construction worker: medium-light skin tone
+		trie.insert(new int[]{ 128119,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 859))); // woman construction worker: medium-light skin tone
+		trie.insert(new int[]{ 128119,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 397, 859))); // woman construction worker: medium-light skin tone
+		trie.insert(new int[]{ 128119,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 859))); // man construction worker: medium-light skin tone
+		trie.insert(new int[]{ 128119,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 859))); // man construction worker: medium-light skin tone
+		trie.insert(new int[]{ 128130,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 463))); // guard: medium-light skin tone
+		trie.insert(new int[]{ 128130,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 595))); // woman guard: medium-light skin tone
+		trie.insert(new int[]{ 128130,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 595))); // woman guard: medium-light skin tone
+		trie.insert(new int[]{ 128130,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 529))); // man guard: medium-light skin tone
+		trie.insert(new int[]{ 128130,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 529))); // man guard: medium-light skin tone
+		trie.insert(new int[]{ 128373,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 793))); // detective: medium-light skin tone
+		trie.insert(new int[]{ 128373,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 793))); // woman detective: medium-light skin tone
+		trie.insert(new int[]{ 128373,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 793))); // woman detective: medium-light skin tone
+		trie.insert(new int[]{ 128373,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 793))); // man detective: medium-light skin tone
+		trie.insert(new int[]{ 128373,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 793))); // man detective: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 397))); // health worker: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,9877 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 397))); // health worker: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 529))); // woman health worker: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,9877 }, new ParseResult(5, new SpriteCoordinates(1, 0, 991, 529))); // woman health worker: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 1057))); // man health worker: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,9877 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 1057))); // man health worker: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 463))); // farmer: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127806 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 463))); // farmer: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 991))); // woman farmer: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127806 }, new ParseResult(6, new SpriteCoordinates(1, 0, 793, 991))); // woman farmer: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 397))); // man farmer: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127806 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 397))); // man farmer: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 463))); // cook: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127859 }, new ParseResult(6, new SpriteCoordinates(1, 0, 331, 463))); // cook: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 991))); // woman cook: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127859 }, new ParseResult(6, new SpriteCoordinates(1, 0, 727, 991))); // woman cook: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 331))); // man cook: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127859 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 331))); // man cook: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 463))); // student: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127891 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 463))); // student: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 991))); // woman student: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127891 }, new ParseResult(6, new SpriteCoordinates(1, 0, 595, 991))); // woman student: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 199))); // man student: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127891 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 199))); // man student: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 463))); // singer: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127908 }, new ParseResult(6, new SpriteCoordinates(1, 0, 67, 463))); // singer: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 991))); // woman singer: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127908 }, new ParseResult(6, new SpriteCoordinates(1, 0, 529, 991))); // woman singer: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 133))); // man singer: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127908 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 133))); // man singer: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 397))); // teacher: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127979 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 397))); // teacher: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 991))); // woman teacher: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127979 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 991))); // woman teacher: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 1))); // man teacher: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127979 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 1))); // man teacher: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 331))); // factory worker: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127981 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 331))); // factory worker: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 991))); // woman factory worker: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127981 }, new ParseResult(6, new SpriteCoordinates(1, 0, 331, 991))); // woman factory worker: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1057, 1057))); // man factory worker: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127981 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1057, 1057))); // man factory worker: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 265))); // technologist: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,128187 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 265))); // technologist: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 991))); // woman technologist: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,128187 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 991))); // woman technologist: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 1057))); // man technologist: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,128187 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 1057))); // man technologist: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 199))); // office worker: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,128188 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 199))); // office worker: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 991))); // woman office worker: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,128188 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 991))); // woman office worker: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 1057))); // man office worker: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,128188 }, new ParseResult(6, new SpriteCoordinates(1, 0, 925, 1057))); // man office worker: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 133))); // mechanic: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,128295 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 133))); // mechanic: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 991))); // woman mechanic: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,128295 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 991))); // woman mechanic: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 1057))); // man mechanic: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,128295 }, new ParseResult(6, new SpriteCoordinates(1, 0, 859, 1057))); // man mechanic: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 67))); // scientist: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,128300 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 67))); // scientist: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 991))); // woman scientist: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,128300 }, new ParseResult(6, new SpriteCoordinates(1, 0, 67, 991))); // woman scientist: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 1057))); // man scientist: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,128300 }, new ParseResult(6, new SpriteCoordinates(1, 0, 793, 1057))); // man scientist: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 463))); // artist: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127912 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1, 463))); // artist: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 991))); // woman artist: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127912 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 991))); // woman artist: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 67))); // man artist: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127912 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 67))); // man artist: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 397))); // firefighter: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,128658 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 397))); // firefighter: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 925))); // woman firefighter: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,128658 }, new ParseResult(6, new SpriteCoordinates(1, 0, 991, 925))); // woman firefighter: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 0, 661, 1057))); // man firefighter: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,128658 }, new ParseResult(6, new SpriteCoordinates(1, 0, 661, 1057))); // man firefighter: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 331))); // pilot: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,9992 }, new ParseResult(5, new SpriteCoordinates(1, 0, 397, 331))); // pilot: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 397))); // woman pilot: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,9992 }, new ParseResult(5, new SpriteCoordinates(1, 0, 991, 397))); // woman pilot: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 1057))); // man pilot: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,9992 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 1057))); // man pilot: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 1))); // astronaut: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,128640 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 1))); // astronaut: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 991))); // woman astronaut: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,128640 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1, 991))); // woman astronaut: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 1057))); // man astronaut: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,128640 }, new ParseResult(6, new SpriteCoordinates(1, 0, 727, 1057))); // man astronaut: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 397))); // judge: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,9878 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 397))); // judge: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 991, 463))); // woman judge: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,9878 }, new ParseResult(5, new SpriteCoordinates(1, 0, 991, 463))); // woman judge: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 1057))); // man judge: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,9878 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 1057))); // man judge: medium-light skin tone
+		trie.insert(new int[]{ 128112,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 199))); // person with veil: medium-light skin tone
+		trie.insert(new int[]{ 128112,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 331))); // woman with veil: medium-light skin tone
+		trie.insert(new int[]{ 128112,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 331))); // woman with veil: medium-light skin tone
+		trie.insert(new int[]{ 128112,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 925, 265))); // man with veil: medium-light skin tone
+		trie.insert(new int[]{ 128112,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 265))); // man with veil: medium-light skin tone
+		trie.insert(new int[]{ 129333,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 595))); // person in tuxedo: medium-light skin tone
+		trie.insert(new int[]{ 129333,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 595))); // woman in tuxedo: medium-light skin tone
+		trie.insert(new int[]{ 129333,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 595))); // woman in tuxedo: medium-light skin tone
+		trie.insert(new int[]{ 129333,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 595))); // man in tuxedo: medium-light skin tone
+		trie.insert(new int[]{ 129333,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 595))); // man in tuxedo: medium-light skin tone
+		trie.insert(new int[]{ 128120,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 859))); // princess: medium-light skin tone
+		trie.insert(new int[]{ 129332,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 331, 595))); // prince: medium-light skin tone
+		trie.insert(new int[]{ 129464,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 529))); // superhero: medium-light skin tone
+		trie.insert(new int[]{ 129464,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 529))); // woman superhero: medium-light skin tone
+		trie.insert(new int[]{ 129464,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 529))); // woman superhero: medium-light skin tone
+		trie.insert(new int[]{ 129464,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 529))); // man superhero: medium-light skin tone
+		trie.insert(new int[]{ 129464,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 463, 529))); // man superhero: medium-light skin tone
+		trie.insert(new int[]{ 129465,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 529))); // supervillain: medium-light skin tone
+		trie.insert(new int[]{ 129465,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 529))); // woman supervillain: medium-light skin tone
+		trie.insert(new int[]{ 129465,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 529))); // woman supervillain: medium-light skin tone
+		trie.insert(new int[]{ 129465,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 529))); // man supervillain: medium-light skin tone
+		trie.insert(new int[]{ 129465,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 529))); // man supervillain: medium-light skin tone
+		trie.insert(new int[]{ 129399,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 331))); // ninja: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 463))); // mx claus: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127876 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 463))); // mx claus: medium-light skin tone
+		trie.insert(new int[]{ 129334,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 595))); // Mrs. Claus: medium-light skin tone
+		trie.insert(new int[]{ 127877,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1057, 1123))); // Santa Claus: medium-light skin tone
+		trie.insert(new int[]{ 129497,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 199))); // mage: medium-light skin tone
+		trie.insert(new int[]{ 129497,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 265))); // woman mage: medium-light skin tone
+		trie.insert(new int[]{ 129497,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 265))); // woman mage: medium-light skin tone
+		trie.insert(new int[]{ 129497,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 265))); // man mage: medium-light skin tone
+		trie.insert(new int[]{ 129497,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 265))); // man mage: medium-light skin tone
+		trie.insert(new int[]{ 129501,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 133))); // elf: medium-light skin tone
+		trie.insert(new int[]{ 129501,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 1))); // woman elf: medium-light skin tone
+		trie.insert(new int[]{ 129501,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 1))); // woman elf: medium-light skin tone
+		trie.insert(new int[]{ 129501,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 133))); // man elf: medium-light skin tone
+		trie.insert(new int[]{ 129501,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 133))); // man elf: medium-light skin tone
+		trie.insert(new int[]{ 129499,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 199))); // vampire: medium-light skin tone
+		trie.insert(new int[]{ 129499,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 199))); // woman vampire: medium-light skin tone
+		trie.insert(new int[]{ 129499,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 199))); // woman vampire: medium-light skin tone
+		trie.insert(new int[]{ 129499,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 199))); // man vampire: medium-light skin tone
+		trie.insert(new int[]{ 129499,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 133, 199))); // man vampire: medium-light skin tone
+		trie.insert(new int[]{ 129503,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 133))); // man zombie
+		trie.insert(new int[]{ 129503,9794 }, new ParseResult(3, new SpriteCoordinates(1, 0, 1, 133))); // man zombie
+		trie.insert(new int[]{ 129500,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 199, 67))); // merperson: medium-light skin tone
+		trie.insert(new int[]{ 129500,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 199))); // mermaid: medium-light skin tone
+		trie.insert(new int[]{ 129500,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 199))); // mermaid: medium-light skin tone
+		trie.insert(new int[]{ 129500,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 133))); // merman: medium-light skin tone
+		trie.insert(new int[]{ 129500,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 133))); // merman: medium-light skin tone
+		trie.insert(new int[]{ 129498,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 1))); // fairy: medium-light skin tone
+		trie.insert(new int[]{ 129498,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 133))); // woman fairy: medium-light skin tone
+		trie.insert(new int[]{ 129498,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 133))); // woman fairy: medium-light skin tone
+		trie.insert(new int[]{ 129498,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 67))); // man fairy: medium-light skin tone
+		trie.insert(new int[]{ 129498,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 67))); // man fairy: medium-light skin tone
+		trie.insert(new int[]{ 128124,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 859))); // baby angel: medium-light skin tone
+		trie.insert(new int[]{ 129328,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 595))); // pregnant woman: medium-light skin tone
+		trie.insert(new int[]{ 129329,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 595))); // breast-feeding: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 463))); // person feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,127868 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 463))); // person feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 0, 661, 991))); // woman feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,127868 }, new ParseResult(6, new SpriteCoordinates(1, 0, 661, 991))); // woman feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1123, 265))); // man feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,127868 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1123, 265))); // man feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 128583,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 463))); // person bowing: medium-light skin tone
+		trie.insert(new int[]{ 128583,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 595))); // woman bowing: medium-light skin tone
+		trie.insert(new int[]{ 128583,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 595))); // woman bowing: medium-light skin tone
+		trie.insert(new int[]{ 128583,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 529))); // man bowing: medium-light skin tone
+		trie.insert(new int[]{ 128583,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 529))); // man bowing: medium-light skin tone
+		trie.insert(new int[]{ 128129,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 661))); // person tipping hand: medium-light skin tone
+		trie.insert(new int[]{ 128129,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 793))); // woman tipping hand: medium-light skin tone
+		trie.insert(new int[]{ 128129,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 793))); // woman tipping hand: medium-light skin tone
+		trie.insert(new int[]{ 128129,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 727))); // man tipping hand: medium-light skin tone
+		trie.insert(new int[]{ 128129,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 727))); // man tipping hand: medium-light skin tone
+		trie.insert(new int[]{ 128581,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 727))); // person gesturing NO: medium-light skin tone
+		trie.insert(new int[]{ 128581,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 727))); // woman gesturing NO: medium-light skin tone
+		trie.insert(new int[]{ 128581,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 727))); // woman gesturing NO: medium-light skin tone
+		trie.insert(new int[]{ 128581,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 727))); // man gesturing NO: medium-light skin tone
+		trie.insert(new int[]{ 128581,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 727))); // man gesturing NO: medium-light skin tone
+		trie.insert(new int[]{ 128582,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 661))); // person gesturing OK: medium-light skin tone
+		trie.insert(new int[]{ 128582,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 727))); // woman gesturing OK: medium-light skin tone
+		trie.insert(new int[]{ 128582,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 727))); // woman gesturing OK: medium-light skin tone
+		trie.insert(new int[]{ 128582,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 727))); // man gesturing OK: medium-light skin tone
+		trie.insert(new int[]{ 128582,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 727))); // man gesturing OK: medium-light skin tone
+		trie.insert(new int[]{ 128587,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 265))); // person raising hand: medium-light skin tone
+		trie.insert(new int[]{ 128587,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 397))); // woman raising hand: medium-light skin tone
+		trie.insert(new int[]{ 128587,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 397))); // woman raising hand: medium-light skin tone
+		trie.insert(new int[]{ 128587,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 331))); // man raising hand: medium-light skin tone
+		trie.insert(new int[]{ 128587,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 331))); // man raising hand: medium-light skin tone
+		trie.insert(new int[]{ 129487,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 67))); // deaf person: medium-light skin tone
+		trie.insert(new int[]{ 129487,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 199))); // deaf woman: medium-light skin tone
+		trie.insert(new int[]{ 129487,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 199))); // deaf woman: medium-light skin tone
+		trie.insert(new int[]{ 129487,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 133))); // deaf man: medium-light skin tone
+		trie.insert(new int[]{ 129487,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 133))); // deaf man: medium-light skin tone
+		trie.insert(new int[]{ 129318,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 1))); // person facepalming: medium-light skin tone
+		trie.insert(new int[]{ 129318,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 661, 133))); // woman facepalming: medium-light skin tone
+		trie.insert(new int[]{ 129318,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 661, 133))); // woman facepalming: medium-light skin tone
+		trie.insert(new int[]{ 129318,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 661, 67))); // man facepalming: medium-light skin tone
+		trie.insert(new int[]{ 129318,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 661, 67))); // man facepalming: medium-light skin tone
+		trie.insert(new int[]{ 129335,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 463))); // person shrugging: medium-light skin tone
+		trie.insert(new int[]{ 129335,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 595))); // woman shrugging: medium-light skin tone
+		trie.insert(new int[]{ 129335,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 595))); // woman shrugging: medium-light skin tone
+		trie.insert(new int[]{ 129335,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 529))); // man shrugging: medium-light skin tone
+		trie.insert(new int[]{ 129335,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 529))); // man shrugging: medium-light skin tone
+		trie.insert(new int[]{ 128590,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 661))); // person pouting: medium-light skin tone
+		trie.insert(new int[]{ 128590,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 661, 661))); // woman pouting: medium-light skin tone
+		trie.insert(new int[]{ 128590,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 661, 661))); // woman pouting: medium-light skin tone
+		trie.insert(new int[]{ 128590,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 595, 661))); // man pouting: medium-light skin tone
+		trie.insert(new int[]{ 128590,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 595, 661))); // man pouting: medium-light skin tone
+		trie.insert(new int[]{ 128589,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 1))); // person frowning: medium-light skin tone
+		trie.insert(new int[]{ 128589,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 133))); // woman frowning: medium-light skin tone
+		trie.insert(new int[]{ 128589,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 133))); // woman frowning: medium-light skin tone
+		trie.insert(new int[]{ 128589,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 727, 67))); // man frowning: medium-light skin tone
+		trie.insert(new int[]{ 128589,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 727, 67))); // man frowning: medium-light skin tone
+		trie.insert(new int[]{ 128135,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 793))); // person getting haircut: medium-light skin tone
+		trie.insert(new int[]{ 128135,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 1))); // woman getting haircut: medium-light skin tone
+		trie.insert(new int[]{ 128135,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 1))); // woman getting haircut: medium-light skin tone
+		trie.insert(new int[]{ 128135,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 793))); // man getting haircut: medium-light skin tone
+		trie.insert(new int[]{ 128135,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 793, 793))); // man getting haircut: medium-light skin tone
+		trie.insert(new int[]{ 128134,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 67))); // person getting massage: medium-light skin tone
+		trie.insert(new int[]{ 128134,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 199))); // woman getting massage: medium-light skin tone
+		trie.insert(new int[]{ 128134,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 199))); // woman getting massage: medium-light skin tone
+		trie.insert(new int[]{ 128134,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 133))); // man getting massage: medium-light skin tone
+		trie.insert(new int[]{ 128134,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 133))); // man getting massage: medium-light skin tone
+		trie.insert(new int[]{ 129494,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 133, 265))); // person in steamy room: medium-light skin tone
+		trie.insert(new int[]{ 129494,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 265))); // woman in steamy room: medium-light skin tone
+		trie.insert(new int[]{ 129494,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 265, 265))); // woman in steamy room: medium-light skin tone
+		trie.insert(new int[]{ 129494,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 265))); // man in steamy room: medium-light skin tone
+		trie.insert(new int[]{ 129494,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 199, 265))); // man in steamy room: medium-light skin tone
+		trie.insert(new int[]{ 128133,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 265))); // nail polish: medium-light skin tone
+		trie.insert(new int[]{ 129331,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 595))); // selfie: medium-light skin tone
+		trie.insert(new int[]{ 128131,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 859, 397))); // woman dancing: medium-light skin tone
+		trie.insert(new int[]{ 128378,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 793))); // man dancing: medium-light skin tone
+		trie.insert(new int[]{ 128111,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 0, 925, 397))); // men with bunny ears
+		trie.insert(new int[]{ 128111,9794 }, new ParseResult(3, new SpriteCoordinates(1, 0, 925, 397))); // men with bunny ears
+		trie.insert(new int[]{ 128372,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 793))); // man in suit levitating: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 0, 133, 331))); // person in manual wheelchair: dark skin tone
+		trie.insert(new int[]{ 129489,127999,129469 }, new ParseResult(6, new SpriteCoordinates(1, 0, 133, 331))); // person in manual wheelchair: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 925))); // woman in manual wheelchair: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129469 }, new ParseResult(6, new SpriteCoordinates(1, 0, 397, 925))); // woman in manual wheelchair: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1057, 463))); // man in manual wheelchair: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129469 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1057, 463))); // man in manual wheelchair: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 0, 199, 331))); // person in motorized wheelchair: dark skin tone
+		trie.insert(new int[]{ 129489,127999,129468 }, new ParseResult(6, new SpriteCoordinates(1, 0, 199, 331))); // person in motorized wheelchair: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 0, 463, 925))); // woman in motorized wheelchair: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129468 }, new ParseResult(6, new SpriteCoordinates(1, 0, 463, 925))); // woman in motorized wheelchair: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1057, 529))); // man in motorized wheelchair: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129468 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1057, 529))); // man in motorized wheelchair: dark skin tone
+		trie.insert(new int[]{ 128694,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 265, 661))); // person walking: dark skin tone
+		trie.insert(new int[]{ 128694,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 397, 661))); // woman walking: dark skin tone
+		trie.insert(new int[]{ 128694,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 397, 661))); // woman walking: dark skin tone
+		trie.insert(new int[]{ 128694,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 331, 661))); // man walking: dark skin tone
+		trie.insert(new int[]{ 128694,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 331, 661))); // man walking: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 0, 265, 331))); // person with probing cane: dark skin tone
+		trie.insert(new int[]{ 129489,127999,129455 }, new ParseResult(6, new SpriteCoordinates(1, 0, 265, 331))); // person with probing cane: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 925))); // woman with probing cane: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129455 }, new ParseResult(6, new SpriteCoordinates(1, 0, 529, 925))); // woman with probing cane: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1057, 595))); // man with probing cane: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129455 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1057, 595))); // man with probing cane: dark skin tone
+		trie.insert(new int[]{ 129486,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 265))); // person kneeling: dark skin tone
+		trie.insert(new int[]{ 129486,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 397))); // woman kneeling: dark skin tone
+		trie.insert(new int[]{ 129486,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 397))); // woman kneeling: dark skin tone
+		trie.insert(new int[]{ 129486,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 529, 331))); // man kneeling: dark skin tone
+		trie.insert(new int[]{ 129486,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 529, 331))); // man kneeling: dark skin tone
+		trie.insert(new int[]{ 127939,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 727, 1123))); // person running: dark skin tone
+		trie.insert(new int[]{ 127939,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 859, 1123))); // woman running: dark skin tone
+		trie.insert(new int[]{ 127939,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 859, 1123))); // woman running: dark skin tone
+		trie.insert(new int[]{ 127939,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 793, 1123))); // man running: dark skin tone
+		trie.insert(new int[]{ 127939,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 793, 1123))); // man running: dark skin tone
+		trie.insert(new int[]{ 129485,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 463))); // person standing: dark skin tone
+		trie.insert(new int[]{ 129485,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 67, 529))); // woman standing: dark skin tone
+		trie.insert(new int[]{ 129485,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 529))); // woman standing: dark skin tone
+		trie.insert(new int[]{ 129485,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 0, 1, 529))); // man standing: dark skin tone
+		trie.insert(new int[]{ 129485,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 0, 1, 529))); // man standing: dark skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129309,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 529, 1))); // people holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127995,129309,129489,127999 }, new ParseResult(10, new SpriteCoordinates(1, 0, 529, 1))); // people holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129309,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 397, 133))); // people holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127997,129309,129489,127995 }, new ParseResult(10, new SpriteCoordinates(1, 0, 397, 133))); // people holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129309,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 0, 397, 1))); // people holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 129489,127998,129309,129489,127996 }, new ParseResult(10, new SpriteCoordinates(1, 0, 397, 1))); // people holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129309,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 331, 331))); // people holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127999,129309,129489,127997 }, new ParseResult(10, new SpriteCoordinates(1, 0, 331, 331))); // people holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 67))); // woman and man holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 0, 1057, 67))); // woman and man holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 0, 991, 859))); // woman and man holding hands: medium light skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 0, 991, 859))); // woman and man holding hands: medium light skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 991, 133))); // woman and man holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 0, 991, 133))); // woman and man holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 595, 925))); // woman and man holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 0, 595, 925))); // woman and man holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128109,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 1, 925))); // women holding hands: light skin tone
+		trie.insert(new int[]{ 128109,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 859))); // women holding hands: medium-light skin tone
+		trie.insert(new int[]{ 128109,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 793))); // women holding hands: medium skin tone
+		trie.insert(new int[]{ 128109,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 727))); // women holding hands: medium-dark skin tone
+		trie.insert(new int[]{ 128109,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 925, 661))); // women holding hands: dark skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1123, 595))); // men holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127995,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 0, 1123, 595))); // men holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 991))); // men holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127997,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 0, 1057, 991))); // men holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 793))); // men holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128104,127998,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 0, 1057, 793))); // men holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 661))); // men holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127999,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 0, 1057, 661))); // men holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 463, 463))); // couple with heart: person, person, light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127995,10084,129489,127997 }, new ParseResult(9, new SpriteCoordinates(1, 0, 463, 463))); // couple with heart: person, person, light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 0, 397, 265))); // couple with heart: person, person, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127996,10084,129489,127998 }, new ParseResult(9, new SpriteCoordinates(1, 0, 397, 265))); // couple with heart: person, person, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 397, 67))); // couple with heart: person, person, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127997,10084,129489,127999 }, new ParseResult(9, new SpriteCoordinates(1, 0, 397, 67))); // couple with heart: person, person, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 67, 331))); // couple with heart: person, person, dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127999,10084,129489,127995 }, new ParseResult(9, new SpriteCoordinates(1, 0, 67, 331))); // couple with heart: person, person, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 1))); // couple with heart: woman, man, light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 0, 1057, 1))); // couple with heart: woman, man, light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 0, 991, 331))); // couple with heart: woman, man, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 0, 991, 331))); // couple with heart: woman, man, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 991, 67))); // couple with heart: woman, man, medium skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 0, 991, 67))); // couple with heart: woman, man, medium skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 0, 793, 925))); // couple with heart: woman, man, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 0, 793, 925))); // couple with heart: woman, man, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 331, 925))); // couple with heart: woman, man, dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 0, 331, 925))); // couple with heart: woman, man, dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 991, 991))); // couple with heart: woman, woman, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128105,127999 }, new ParseResult(9, new SpriteCoordinates(1, 0, 991, 991))); // couple with heart: woman, woman, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 991, 1))); // couple with heart: woman, woman, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128105,127995 }, new ParseResult(9, new SpriteCoordinates(1, 0, 991, 1))); // couple with heart: woman, woman, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 0, 727, 925))); // couple with heart: woman, woman, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128105,127996 }, new ParseResult(9, new SpriteCoordinates(1, 0, 727, 925))); // couple with heart: woman, woman, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 265, 925))); // couple with heart: woman, woman, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128105,127997 }, new ParseResult(9, new SpriteCoordinates(1, 0, 265, 925))); // couple with heart: woman, woman, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1123, 529))); // couple with heart: man, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 0, 1123, 529))); // couple with heart: man, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 0, 133, 1057))); // couple with heart: man, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 0, 133, 1057))); // couple with heart: man, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 925))); // couple with heart: man, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 0, 1057, 925))); // couple with heart: man, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 0, 1057, 397))); // couple with heart: man, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 0, 1057, 397))); // couple with heart: man, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128143,127995 }, new ParseResult(4, new SpriteCoordinates(1, 0, 661, 793))); // kiss: light skin tone
+		trie.insert(new int[]{ 128143,127996 }, new ParseResult(4, new SpriteCoordinates(1, 0, 595, 793))); // kiss: medium-light skin tone
+		trie.insert(new int[]{ 128143,127997 }, new ParseResult(4, new SpriteCoordinates(1, 0, 529, 793))); // kiss: medium skin tone
+		trie.insert(new int[]{ 128143,127998 }, new ParseResult(4, new SpriteCoordinates(1, 0, 463, 793))); // kiss: medium-dark skin tone
+		trie.insert(new int[]{ 128143,127999 }, new ParseResult(4, new SpriteCoordinates(1, 0, 397, 793))); // kiss: dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 0, 925, 991))); // kiss: woman, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 0, 925, 991))); // kiss: woman, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 0, 925, 925))); // kiss: woman, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 0, 925, 925))); // kiss: woman, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 0, 661, 925))); // kiss: woman, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 0, 661, 925))); // kiss: woman, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 0, 199, 925))); // kiss: woman, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 0, 199, 925))); // kiss: woman, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128105,127997 }, new ParseResult(15, new SpriteCoordinates(1, 0, 859, 991))); // kiss: woman, woman, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128105,127997 }, new ParseResult(11, new SpriteCoordinates(1, 0, 859, 991))); // kiss: woman, woman, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128105,127998 }, new ParseResult(15, new SpriteCoordinates(1, 0, 991, 265))); // kiss: woman, woman, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128105,127998 }, new ParseResult(11, new SpriteCoordinates(1, 0, 991, 265))); // kiss: woman, woman, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128105,127999 }, new ParseResult(15, new SpriteCoordinates(1, 0, 859, 925))); // kiss: woman, woman, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128105,127999 }, new ParseResult(11, new SpriteCoordinates(1, 0, 859, 925))); // kiss: woman, woman, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128105,127995 }, new ParseResult(15, new SpriteCoordinates(1, 0, 133, 925))); // kiss: woman, woman, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128105,127995 }, new ParseResult(11, new SpriteCoordinates(1, 0, 133, 925))); // kiss: woman, woman, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 0, 1123, 463))); // kiss: man, man, light skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 0, 1123, 463))); // kiss: man, man, light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 0, 67, 1057))); // kiss: man, man, medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 0, 67, 1057))); // kiss: man, man, medium-light skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 0, 1057, 859))); // kiss: man, man, medium skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 0, 1057, 859))); // kiss: man, man, medium skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 0, 1057, 727))); // kiss: man, man, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 0, 1057, 727))); // kiss: man, man, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 0, 1057, 331))); // kiss: man, man, dark skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 0, 1057, 331))); // kiss: man, man, dark skin tone
+		trie.insert(new int[]{ 128104,8205,128105,8205,128103,8205,128103 }, new ParseResult(11, new SpriteCoordinates(1, 0, 1057, 133))); // family: man, woman, girl, girl
+		trie.insert(new int[]{ 128104,128105,128103,128103 }, new ParseResult(8, new SpriteCoordinates(1, 0, 1057, 133))); // family: man, woman, girl, girl
+		trie.insert(new int[]{ 128104,8205,128104,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 0, 1057, 199))); // family: man, man, boy
+		trie.insert(new int[]{ 128104,128104,128102 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1057, 199))); // family: man, man, boy
+		trie.insert(new int[]{ 128105,8205,128103 }, new ParseResult(5, new SpriteCoordinates(1, 0, 67, 925))); // family: woman, girl
+		trie.insert(new int[]{ 128105,128103 }, new ParseResult(4, new SpriteCoordinates(1, 0, 67, 925))); // family: woman, girl
+		trie.insert(new int[]{ 128104,8205,128103,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 0, 1057, 265))); // family: man, girl, boy
+		trie.insert(new int[]{ 128104,128103,128102 }, new ParseResult(6, new SpriteCoordinates(1, 0, 1057, 265))); // family: man, girl, boy
+		trie.insert(new int[]{ 129404 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 199))); // lab coat
+		trie.insert(new int[]{ 129651 }, new ParseResult(2, new SpriteCoordinates(1, 0, 133, 67))); // shorts
+		trie.insert(new int[]{ 129403 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 265))); // sari
+		trie.insert(new int[]{ 128095 }, new ParseResult(2, new SpriteCoordinates(1, 0, 1123, 793))); // running shoe
+		trie.insert(new int[]{ 127913 }, new ParseResult(2, new SpriteCoordinates(1, 0, 925, 1123))); // top hat
+		trie.insert(new int[]{ 128081 }, new ParseResult(2, new SpriteCoordinates(1, 0, 1123, 859))); // crown
+		trie.insert(new int[]{ 127890 }, new ParseResult(2, new SpriteCoordinates(1, 0, 991, 1123))); // backpack
+		trie.insert(new int[]{ 129457 }, new ParseResult(2, new SpriteCoordinates(1, 0, 595, 133))); // curly hair
+		trie.insert(new int[]{ 128515 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 793))); // grinning face with big eyes
+		trie.insert(new int[]{ 129315 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 661))); // rolling on the floor laughing
+		trie.insert(new int[]{ 128521 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 793))); // winking face
+		trie.insert(new int[]{ 128535 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 793))); // kissing face
+		trie.insert(new int[]{ 128540 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 793))); // winking face with tongue
+		trie.insert(new int[]{ 129321 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 595))); // star-struck
+		trie.insert(new int[]{ 128543 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 727))); // worried face
+		trie.insert(new int[]{ 128555 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 595))); // tired face
+		trie.insert(new int[]{ 128558,8205,128168 }, new ParseResult(5, new SpriteCoordinates(1, 1, 793, 529))); // face exhaling
+		trie.insert(new int[]{ 128558,128168 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 529))); // face exhaling
+		trie.insert(new int[]{ 128566,8205,127787,65039 }, new ParseResult(6, new SpriteCoordinates(1, 1, 793, 397))); // face in clouds
+		trie.insert(new int[]{ 128566,127787 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 397))); // face in clouds
+		trie.insert(new int[]{ 128549 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 661))); // sad but relieved face
+		trie.insert(new int[]{ 129323 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 529))); // shushing face
+		trie.insert(new int[]{ 128580 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 199))); // face with rolling eyes
+		trie.insert(new int[]{ 128564 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 463))); // sleeping face
+		trie.insert(new int[]{ 129396 }, new ParseResult(2, new SpriteCoordinates(1, 1, 331, 595))); // woozy face
+		trie.insert(new int[]{ 129301 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 1))); // face with head-bandage
+		trie.insert(new int[]{ 128121 }, new ParseResult(2, new SpriteCoordinates(1, 1, 265, 859))); // ogre
+		trie.insert(new int[]{ 9760,65039 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 1))); // skull and crossbones
+		trie.insert(new int[]{ 9760 }, new ParseResult(1, new SpriteCoordinates(1, 1, 133, 1))); // skull and crossbones
+		trie.insert(new int[]{ 128568 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 331))); // grinning cat with smiling eyes
+		trie.insert(new int[]{ 128575 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 265))); // crying cat
+		trie.insert(new int[]{ 129330,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 331))); // palms up together: medium-dark skin tone
+		trie.insert(new int[]{ 128080,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1123, 1057))); // open hands: medium-dark skin tone
+		trie.insert(new int[]{ 128588,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 727))); // raising hands: medium-dark skin tone
+		trie.insert(new int[]{ 128079,127998 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 1123))); // clapping hands: medium-dark skin tone
+		trie.insert(new int[]{ 128077,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 1123))); // thumbs up: medium skin tone
+		trie.insert(new int[]{ 128078,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 1123))); // thumbs down: medium skin tone
+		trie.insert(new int[]{ 128074,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 1123))); // oncoming fist: medium skin tone
+		trie.insert(new int[]{ 9994,127997 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 67))); // raised fist: medium skin tone
+		trie.insert(new int[]{ 129307,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 661))); // left-facing fist: medium skin tone
+		trie.insert(new int[]{ 129308,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 661))); // right-facing fist: medium skin tone
+		trie.insert(new int[]{ 129310,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 661))); // crossed fingers: medium skin tone
+		trie.insert(new int[]{ 9996,127997 }, new ParseResult(3, new SpriteCoordinates(1, 1, 67, 1))); // victory hand: medium skin tone
+		trie.insert(new int[]{ 129311,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 661))); // love-you gesture: medium skin tone
+		trie.insert(new int[]{ 129304,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 661))); // sign of the horns: medium skin tone
+		trie.insert(new int[]{ 128076,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 1123))); // OK hand: medium skin tone
+		trie.insert(new int[]{ 129295,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 67))); // pinching hand: medium skin tone
+		trie.insert(new int[]{ 129292,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 133))); // pinched fingers: medium skin tone
+		trie.insert(new int[]{ 128072,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 1123))); // backhand index pointing left: medium skin tone
+		trie.insert(new int[]{ 128073,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 1123))); // backhand index pointing right: medium skin tone
+		trie.insert(new int[]{ 128070,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 1123))); // backhand index pointing up: medium skin tone
+		trie.insert(new int[]{ 128071,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 529, 1123))); // backhand index pointing down: medium skin tone
+		trie.insert(new int[]{ 9757,127997 }, new ParseResult(3, new SpriteCoordinates(1, 1, 133, 67))); // index pointing up: medium skin tone
+		trie.insert(new int[]{ 9995,127997 }, new ParseResult(3, new SpriteCoordinates(1, 1, 1, 67))); // raised hand: medium skin tone
+		trie.insert(new int[]{ 129306,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 529, 661))); // raised back of hand: medium skin tone
+		trie.insert(new int[]{ 128400,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 793))); // hand with fingers splayed: medium skin tone
+		trie.insert(new int[]{ 128406,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 793))); // vulcan salute: medium skin tone
+		trie.insert(new int[]{ 128075,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 1123))); // waving hand: medium skin tone
+		trie.insert(new int[]{ 129305,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 661))); // call me hand: medium skin tone
+		trie.insert(new int[]{ 128170,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 793))); // flexed biceps: medium skin tone
+		trie.insert(new int[]{ 128405,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 793))); // middle finger: medium-light skin tone
+		trie.insert(new int[]{ 9997,127996 }, new ParseResult(3, new SpriteCoordinates(1, 1, 1, 1))); // writing hand: medium-light skin tone
+		trie.insert(new int[]{ 128591,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 397))); // folded hands: medium-light skin tone
+		trie.insert(new int[]{ 129462,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 529))); // foot: medium-light skin tone
+		trie.insert(new int[]{ 129461,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 595))); // leg: medium-light skin tone
+		trie.insert(new int[]{ 128139 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 67))); // kiss mark
+		trie.insert(new int[]{ 128066,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 1123))); // ear: medium-light skin tone
+		trie.insert(new int[]{ 129467,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 1))); // ear with hearing aid: medium-light skin tone
+		trie.insert(new int[]{ 128067,127996 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 1123))); // nose: medium-light skin tone
+		trie.insert(new int[]{ 128064 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 1123))); // eyes
+		trie.insert(new int[]{ 128100 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1123, 925))); // bust in silhouette
+		trie.insert(new int[]{ 128118,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 859))); // baby: medium skin tone
+		trie.insert(new int[]{ 128103,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1123, 793))); // girl: medium skin tone
+		trie.insert(new int[]{ 129490,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 331))); // child: medium skin tone
+		trie.insert(new int[]{ 128102,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1123, 859))); // boy: medium skin tone
+		trie.insert(new int[]{ 128105,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 67))); // woman: medium skin tone
+		trie.insert(new int[]{ 129489,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 397))); // person: medium skin tone
+		trie.insert(new int[]{ 128104,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 1057))); // man: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 1))); // person: medium skin tone, curly hair
+		trie.insert(new int[]{ 129489,127997,129457 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 1))); // person: medium skin tone, curly hair
+		trie.insert(new int[]{ 128105,127997,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 661))); // woman, curly haired: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129457 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 661))); // woman, curly haired: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 1057))); // man, curly haired: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129457 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 1057))); // man, curly haired: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 67))); // person: medium skin tone, red hair
+		trie.insert(new int[]{ 129489,127997,129456 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 67))); // person: medium skin tone, red hair
+		trie.insert(new int[]{ 128105,127997,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 727))); // woman, red haired: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129456 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 727))); // woman, red haired: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 1057))); // man, red haired: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129456 }, new ParseResult(6, new SpriteCoordinates(1, 1, 529, 1057))); // man, red haired: medium skin tone
+		trie.insert(new int[]{ 128113,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 265))); // blond-haired woman: medium skin tone
+		trie.insert(new int[]{ 128113,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 265))); // blond-haired woman: medium skin tone
+		trie.insert(new int[]{ 128113,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 133))); // blond-haired person: medium skin tone
+		trie.insert(new int[]{ 128113,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 199))); // blond-haired man: medium skin tone
+		trie.insert(new int[]{ 128113,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 199))); // blond-haired man: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 397))); // person: medium skin tone, white hair
+		trie.insert(new int[]{ 129489,127997,129459 }, new ParseResult(6, new SpriteCoordinates(1, 1, 331, 397))); // person: medium skin tone, white hair
+		trie.insert(new int[]{ 128105,127997,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 529))); // woman, white haired: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129459 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 529))); // woman, white haired: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 1057))); // man, white haired: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129459 }, new ParseResult(6, new SpriteCoordinates(1, 1, 331, 1057))); // man, white haired: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 1, 397, 397))); // person: medium skin tone, bald
+		trie.insert(new int[]{ 129489,127997,129458 }, new ParseResult(6, new SpriteCoordinates(1, 1, 397, 397))); // person: medium skin tone, bald
+		trie.insert(new int[]{ 128105,127997,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 595))); // woman, bald: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129458 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 595))); // woman, bald: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 1, 397, 1057))); // man, bald: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129458 }, new ParseResult(6, new SpriteCoordinates(1, 1, 397, 1057))); // man, bald: medium skin tone
+		trie.insert(new int[]{ 129492,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 199))); // bearded person: medium skin tone
+		trie.insert(new int[]{ 129492,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 265))); // man: medium skin tone, beard
+		trie.insert(new int[]{ 129492,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 265))); // man: medium skin tone, beard
+		trie.insert(new int[]{ 129492,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 331))); // woman: medium skin tone, beard
+		trie.insert(new int[]{ 129492,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 331))); // woman: medium skin tone, beard
+		trie.insert(new int[]{ 128117,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 859))); // old woman: medium skin tone
+		trie.insert(new int[]{ 129491,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 331))); // older person: medium skin tone
+		trie.insert(new int[]{ 128116,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 859))); // old man: medium skin tone
+		trie.insert(new int[]{ 128114,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 67))); // man with Chinese cap: medium skin tone
+		trie.insert(new int[]{ 128115,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 859))); // person wearing turban: medium skin tone
+		trie.insert(new int[]{ 128115,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 1))); // woman wearing turban: medium skin tone
+		trie.insert(new int[]{ 128115,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 1))); // woman wearing turban: medium skin tone
+		trie.insert(new int[]{ 128115,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 859))); // man wearing turban: medium skin tone
+		trie.insert(new int[]{ 128115,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 859))); // man wearing turban: medium skin tone
+		trie.insert(new int[]{ 129493,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 133))); // woman with headscarf: medium skin tone
+		trie.insert(new int[]{ 128110,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 529))); // police officer: medium skin tone
+		trie.insert(new int[]{ 128110,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 661))); // woman police officer: medium skin tone
+		trie.insert(new int[]{ 128110,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 661))); // woman police officer: medium skin tone
+		trie.insert(new int[]{ 128110,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 595))); // man police officer: medium skin tone
+		trie.insert(new int[]{ 128110,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 595))); // man police officer: medium skin tone
+		trie.insert(new int[]{ 128119,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 859))); // construction worker: medium skin tone
+		trie.insert(new int[]{ 128119,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 859))); // woman construction worker: medium skin tone
+		trie.insert(new int[]{ 128119,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 859))); // woman construction worker: medium skin tone
+		trie.insert(new int[]{ 128119,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 859))); // man construction worker: medium skin tone
+		trie.insert(new int[]{ 128119,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 859))); // man construction worker: medium skin tone
+		trie.insert(new int[]{ 128130,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 859, 661))); // guard: medium skin tone
+		trie.insert(new int[]{ 128130,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 793))); // woman guard: medium skin tone
+		trie.insert(new int[]{ 128130,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 793))); // woman guard: medium skin tone
+		trie.insert(new int[]{ 128130,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 727))); // man guard: medium skin tone
+		trie.insert(new int[]{ 128130,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 727))); // man guard: medium skin tone
+		trie.insert(new int[]{ 128373,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 529, 793))); // detective: medium skin tone
+		trie.insert(new int[]{ 128373,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 661, 793))); // woman detective: medium skin tone
+		trie.insert(new int[]{ 128373,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 661, 793))); // woman detective: medium skin tone
+		trie.insert(new int[]{ 128373,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 595, 793))); // man detective: medium skin tone
+		trie.insert(new int[]{ 128373,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 793))); // man detective: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 397))); // health worker: medium skin tone
+		trie.insert(new int[]{ 129489,127997,9877 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 397))); // health worker: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 463))); // woman health worker: medium skin tone
+		trie.insert(new int[]{ 128105,127997,9877 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 463))); // woman health worker: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 1057))); // man health worker: medium skin tone
+		trie.insert(new int[]{ 128104,127997,9877 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 1057))); // man health worker: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 133))); // farmer: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127806 }, new ParseResult(6, new SpriteCoordinates(1, 1, 529, 133))); // farmer: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 1, 727, 991))); // woman farmer: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127806 }, new ParseResult(6, new SpriteCoordinates(1, 1, 727, 991))); // woman farmer: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 397))); // man farmer: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127806 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 397))); // man farmer: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 67))); // cook: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127859 }, new ParseResult(6, new SpriteCoordinates(1, 1, 529, 67))); // cook: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 1, 661, 991))); // woman cook: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127859 }, new ParseResult(6, new SpriteCoordinates(1, 1, 661, 991))); // woman cook: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 331))); // man cook: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127859 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 331))); // man cook: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 1, 397, 463))); // student: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127891 }, new ParseResult(6, new SpriteCoordinates(1, 1, 397, 463))); // student: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 991))); // woman student: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127891 }, new ParseResult(6, new SpriteCoordinates(1, 1, 529, 991))); // woman student: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 199))); // man student: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127891 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 199))); // man student: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 463))); // singer: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127908 }, new ParseResult(6, new SpriteCoordinates(1, 1, 331, 463))); // singer: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 991))); // woman singer: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127908 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 991))); // woman singer: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 133))); // man singer: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127908 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 133))); // man singer: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 463))); // teacher: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127979 }, new ParseResult(6, new SpriteCoordinates(1, 1, 199, 463))); // teacher: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 991))); // woman teacher: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127979 }, new ParseResult(6, new SpriteCoordinates(1, 1, 331, 991))); // woman teacher: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 1))); // man teacher: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127979 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 1))); // man teacher: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 463))); // factory worker: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127981 }, new ParseResult(6, new SpriteCoordinates(1, 1, 133, 463))); // factory worker: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 991))); // woman factory worker: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127981 }, new ParseResult(6, new SpriteCoordinates(1, 1, 265, 991))); // woman factory worker: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1057, 1057))); // man factory worker: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127981 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1057, 1057))); // man factory worker: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 463))); // technologist: medium skin tone
+		trie.insert(new int[]{ 129489,127997,128187 }, new ParseResult(6, new SpriteCoordinates(1, 1, 67, 463))); // technologist: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 991))); // woman technologist: medium skin tone
+		trie.insert(new int[]{ 128105,127997,128187 }, new ParseResult(6, new SpriteCoordinates(1, 1, 199, 991))); // woman technologist: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 1057))); // man technologist: medium skin tone
+		trie.insert(new int[]{ 128104,127997,128187 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 1057))); // man technologist: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 463))); // office worker: medium skin tone
+		trie.insert(new int[]{ 129489,127997,128188 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1, 463))); // office worker: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 991))); // woman office worker: medium skin tone
+		trie.insert(new int[]{ 128105,127997,128188 }, new ParseResult(6, new SpriteCoordinates(1, 1, 133, 991))); // woman office worker: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 1057))); // man office worker: medium skin tone
+		trie.insert(new int[]{ 128104,127997,128188 }, new ParseResult(6, new SpriteCoordinates(1, 1, 925, 1057))); // man office worker: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 397))); // mechanic: medium skin tone
+		trie.insert(new int[]{ 129489,127997,128295 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 397))); // mechanic: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 991))); // woman mechanic: medium skin tone
+		trie.insert(new int[]{ 128105,127997,128295 }, new ParseResult(6, new SpriteCoordinates(1, 1, 67, 991))); // woman mechanic: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 1057))); // man mechanic: medium skin tone
+		trie.insert(new int[]{ 128104,127997,128295 }, new ParseResult(6, new SpriteCoordinates(1, 1, 859, 1057))); // man mechanic: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 331))); // scientist: medium skin tone
+		trie.insert(new int[]{ 129489,127997,128300 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 331))); // scientist: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 991))); // woman scientist: medium skin tone
+		trie.insert(new int[]{ 128105,127997,128300 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1, 991))); // woman scientist: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 1, 793, 1057))); // man scientist: medium skin tone
+		trie.insert(new int[]{ 128104,127997,128300 }, new ParseResult(6, new SpriteCoordinates(1, 1, 793, 1057))); // man scientist: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 463))); // artist: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127912 }, new ParseResult(6, new SpriteCoordinates(1, 1, 265, 463))); // artist: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 1, 397, 991))); // woman artist: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127912 }, new ParseResult(6, new SpriteCoordinates(1, 1, 397, 991))); // woman artist: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 67))); // man artist: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127912 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 67))); // man artist: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 199))); // firefighter: medium skin tone
+		trie.insert(new int[]{ 129489,127997,128658 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 199))); // firefighter: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 859))); // woman firefighter: medium skin tone
+		trie.insert(new int[]{ 128105,127997,128658 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 859))); // woman firefighter: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 1, 661, 1057))); // man firefighter: medium skin tone
+		trie.insert(new int[]{ 128104,127997,128658 }, new ParseResult(6, new SpriteCoordinates(1, 1, 661, 1057))); // man firefighter: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 397))); // pilot: medium skin tone
+		trie.insert(new int[]{ 129489,127997,9992 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 397))); // pilot: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 331))); // woman pilot: medium skin tone
+		trie.insert(new int[]{ 128105,127997,9992 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 331))); // woman pilot: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 1057))); // man pilot: medium skin tone
+		trie.insert(new int[]{ 128104,127997,9992 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 1057))); // man pilot: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 265))); // astronaut: medium skin tone
+		trie.insert(new int[]{ 129489,127997,128640 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 265))); // astronaut: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 925))); // woman astronaut: medium skin tone
+		trie.insert(new int[]{ 128105,127997,128640 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 925))); // woman astronaut: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 1, 727, 1057))); // man astronaut: medium skin tone
+		trie.insert(new int[]{ 128104,127997,128640 }, new ParseResult(6, new SpriteCoordinates(1, 1, 727, 1057))); // man astronaut: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 397))); // judge: medium skin tone
+		trie.insert(new int[]{ 129489,127997,9878 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 397))); // judge: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 397))); // woman judge: medium skin tone
+		trie.insert(new int[]{ 128105,127997,9878 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 397))); // woman judge: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 1057))); // man judge: medium skin tone
+		trie.insert(new int[]{ 128104,127997,9878 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 1057))); // man judge: medium skin tone
+		trie.insert(new int[]{ 128112,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 925, 331))); // person with veil: medium skin tone
+		trie.insert(new int[]{ 128112,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 463))); // woman with veil: medium skin tone
+		trie.insert(new int[]{ 128112,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 463))); // woman with veil: medium skin tone
+		trie.insert(new int[]{ 128112,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 397))); // man with veil: medium skin tone
+		trie.insert(new int[]{ 128112,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 397))); // man with veil: medium skin tone
+		trie.insert(new int[]{ 129333,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 1))); // person in tuxedo: medium skin tone
+		trie.insert(new int[]{ 129333,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 661, 133))); // woman in tuxedo: medium skin tone
+		trie.insert(new int[]{ 129333,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 661, 133))); // woman in tuxedo: medium skin tone
+		trie.insert(new int[]{ 129333,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 661, 67))); // man in tuxedo: medium skin tone
+		trie.insert(new int[]{ 129333,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 661, 67))); // man in tuxedo: medium skin tone
+		trie.insert(new int[]{ 128120,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 859))); // princess: medium skin tone
+		trie.insert(new int[]{ 129332,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 199))); // prince: medium skin tone
+		trie.insert(new int[]{ 129464,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 331))); // superhero: medium skin tone
+		trie.insert(new int[]{ 129464,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 595, 463))); // woman superhero: medium skin tone
+		trie.insert(new int[]{ 129464,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 463))); // woman superhero: medium skin tone
+		trie.insert(new int[]{ 129464,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 595, 397))); // man superhero: medium skin tone
+		trie.insert(new int[]{ 129464,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 397))); // man superhero: medium skin tone
+		trie.insert(new int[]{ 129465,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 133))); // supervillain: medium skin tone
+		trie.insert(new int[]{ 129465,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 595, 265))); // woman supervillain: medium skin tone
+		trie.insert(new int[]{ 129465,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 265))); // woman supervillain: medium skin tone
+		trie.insert(new int[]{ 129465,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 595, 199))); // man supervillain: medium skin tone
+		trie.insert(new int[]{ 129465,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 595, 199))); // man supervillain: medium skin tone
+		trie.insert(new int[]{ 129399,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 595))); // ninja: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 463))); // mx claus: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127876 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 463))); // mx claus: medium skin tone
+		trie.insert(new int[]{ 129334,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 595))); // Mrs. Claus: medium skin tone
+		trie.insert(new int[]{ 127877,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 1123))); // Santa Claus: medium skin tone
+		trie.insert(new int[]{ 129497,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 265))); // mage: medium skin tone
+		trie.insert(new int[]{ 129497,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 265))); // woman mage: medium skin tone
+		trie.insert(new int[]{ 129497,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 265))); // woman mage: medium skin tone
+		trie.insert(new int[]{ 129497,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 265))); // man mage: medium skin tone
+		trie.insert(new int[]{ 129497,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 265))); // man mage: medium skin tone
+		trie.insert(new int[]{ 129501,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 1))); // elf: medium skin tone
+		trie.insert(new int[]{ 129501,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 133))); // woman elf: medium skin tone
+		trie.insert(new int[]{ 129501,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 133))); // woman elf: medium skin tone
+		trie.insert(new int[]{ 129501,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 67))); // man elf: medium skin tone
+		trie.insert(new int[]{ 129501,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 67))); // man elf: medium skin tone
 	}
 
 	public static void init2(IntTrie<ParseResult> trie) {
-		trie.insert(new int[]{ 128133 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 793))); // nail polish
-		trie.insert(new int[]{ 129331 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 595))); // selfie
-		trie.insert(new int[]{ 128131 }, new ParseResult(2, new SpriteCoordinates(1, 1, 463, 793))); // woman dancing
-		trie.insert(new int[]{ 128378 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 331))); // man dancing
-		trie.insert(new int[]{ 128111 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 859))); // people with bunny ears
-		trie.insert(new int[]{ 128372,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 595))); // man in suit levitating: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 397))); // person in manual wheelchair: medium skin tone
-		trie.insert(new int[]{ 129489,127997,129469 }, new ParseResult(6, new SpriteCoordinates(1, 1, 331, 397))); // person in manual wheelchair: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 859))); // woman in manual wheelchair: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129469 }, new ParseResult(6, new SpriteCoordinates(1, 1, 925, 859))); // woman in manual wheelchair: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 793))); // man in manual wheelchair: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129469 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 793))); // man in manual wheelchair: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 1, 397, 397))); // person in motorized wheelchair: medium skin tone
-		trie.insert(new int[]{ 129489,127997,129468 }, new ParseResult(6, new SpriteCoordinates(1, 1, 397, 397))); // person in motorized wheelchair: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 925))); // woman in motorized wheelchair: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129468 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1, 925))); // woman in motorized wheelchair: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 859))); // man in motorized wheelchair: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129468 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 859))); // man in motorized wheelchair: medium skin tone
-		trie.insert(new int[]{ 128694,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 661))); // person walking: medium skin tone
-		trie.insert(new int[]{ 128694,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 661))); // woman walking: medium skin tone
-		trie.insert(new int[]{ 128694,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 661))); // woman walking: medium skin tone
-		trie.insert(new int[]{ 128694,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 661))); // man walking: medium skin tone
-		trie.insert(new int[]{ 128694,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 661))); // man walking: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 1))); // person with probing cane: medium skin tone
-		trie.insert(new int[]{ 129489,127997,129455 }, new ParseResult(6, new SpriteCoordinates(1, 1, 463, 1))); // person with probing cane: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 925))); // woman with probing cane: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129455 }, new ParseResult(6, new SpriteCoordinates(1, 1, 67, 925))); // woman with probing cane: medium skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 1, 991, 925))); // man with probing cane: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129455 }, new ParseResult(6, new SpriteCoordinates(1, 1, 991, 925))); // man with probing cane: medium-light skin tone
-		trie.insert(new int[]{ 129486,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 463))); // person kneeling: medium skin tone
-		trie.insert(new int[]{ 129486,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 1))); // woman kneeling: medium skin tone
-		trie.insert(new int[]{ 129486,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 1))); // woman kneeling: medium skin tone
-		trie.insert(new int[]{ 129486,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 463))); // man kneeling: medium skin tone
-		trie.insert(new int[]{ 129486,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 463))); // man kneeling: medium skin tone
-		trie.insert(new int[]{ 127939,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 661))); // person running: medium skin tone
-		trie.insert(new int[]{ 127939,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1057, 793))); // woman running: medium skin tone
-		trie.insert(new int[]{ 127939,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1057, 793))); // woman running: medium skin tone
-		trie.insert(new int[]{ 127939,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1057, 727))); // man running: medium skin tone
-		trie.insert(new int[]{ 127939,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1057, 727))); // man running: medium skin tone
-		trie.insert(new int[]{ 129485,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 529, 67))); // person standing: medium skin tone
-		trie.insert(new int[]{ 129485,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 199))); // woman standing: medium skin tone
-		trie.insert(new int[]{ 129485,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 199))); // woman standing: medium skin tone
-		trie.insert(new int[]{ 129485,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 133))); // man standing: medium skin tone
-		trie.insert(new int[]{ 129485,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 133))); // man standing: medium skin tone
-		trie.insert(new int[]{ 128108 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 859))); // men holding hands
-		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128139,8205,128104 }, new ParseResult(11, new SpriteCoordinates(1, 1, 793, 859))); // kiss: woman, man
-		trie.insert(new int[]{ 128105,10084,128139,128104 }, new ParseResult(7, new SpriteCoordinates(1, 1, 793, 859))); // kiss: woman, man
-		trie.insert(new int[]{ 128104,8205,128105,8205,128103,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 1, 991, 595))); // family: man, woman, girl, boy
-		trie.insert(new int[]{ 128104,128105,128103,128102 }, new ParseResult(8, new SpriteCoordinates(1, 1, 991, 595))); // family: man, woman, girl, boy
-		trie.insert(new int[]{ 128105,8205,128105,8205,128102,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 1, 925, 793))); // family: woman, woman, boy, boy
-		trie.insert(new int[]{ 128105,128105,128102,128102 }, new ParseResult(8, new SpriteCoordinates(1, 1, 925, 793))); // family: woman, woman, boy, boy
-		trie.insert(new int[]{ 128104,8205,128104,8205,128103,8205,128103 }, new ParseResult(11, new SpriteCoordinates(1, 1, 991, 661))); // family: man, man, girl, girl
-		trie.insert(new int[]{ 128104,128104,128103,128103 }, new ParseResult(8, new SpriteCoordinates(1, 1, 991, 661))); // family: man, man, girl, girl
-		trie.insert(new int[]{ 128104,8205,128102 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 727))); // family: man, boy
-		trie.insert(new int[]{ 128104,128102 }, new ParseResult(4, new SpriteCoordinates(1, 1, 991, 727))); // family: man, boy
-		trie.insert(new int[]{ 129525 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 133))); // thread
-		trie.insert(new int[]{ 128086 }, new ParseResult(2, new SpriteCoordinates(1, 1, 793, 991))); // jeans
-		trie.insert(new int[]{ 129649 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 133))); // one-piece swimsuit
-		trie.insert(new int[]{ 128098 }, new ParseResult(2, new SpriteCoordinates(1, 1, 661, 991))); // woman’s boot
-		trie.insert(new int[]{ 129508 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 1))); // gloves
-		trie.insert(new int[]{ 9937,65039 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 1))); // rescue worker’s helmet
-		trie.insert(new int[]{ 9937 }, new ParseResult(1, new SpriteCoordinates(1, 1, 133, 1))); // rescue worker’s helmet
-		trie.insert(new int[]{ 128092 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 991))); // handbag
-		trie.insert(new int[]{ 129405 }, new ParseResult(2, new SpriteCoordinates(1, 1, 463, 529))); // goggles
-		trie.insert(new int[]{ 128516 }, new ParseResult(2, new SpriteCoordinates(1, 2, 661, 727))); // grinning face with smiling eyes
+		trie.insert(new int[]{ 129499,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 199))); // vampire: medium skin tone
+		trie.insert(new int[]{ 129499,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 67))); // woman vampire: medium skin tone
+		trie.insert(new int[]{ 129499,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 67))); // woman vampire: medium skin tone
+		trie.insert(new int[]{ 129499,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 1))); // man vampire: medium skin tone
+		trie.insert(new int[]{ 129499,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 1))); // man vampire: medium skin tone
+		trie.insert(new int[]{ 129502 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 133))); // genie
+		trie.insert(new int[]{ 129500,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 199))); // merperson: medium skin tone
+		trie.insert(new int[]{ 129500,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 199))); // mermaid: medium skin tone
+		trie.insert(new int[]{ 129500,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 199))); // mermaid: medium skin tone
+		trie.insert(new int[]{ 129500,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 199))); // merman: medium skin tone
+		trie.insert(new int[]{ 129500,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 199))); // merman: medium skin tone
+		trie.insert(new int[]{ 129498,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 133))); // fairy: medium skin tone
+		trie.insert(new int[]{ 129498,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 265))); // woman fairy: medium skin tone
+		trie.insert(new int[]{ 129498,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 265))); // woman fairy: medium skin tone
+		trie.insert(new int[]{ 129498,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 199))); // man fairy: medium skin tone
+		trie.insert(new int[]{ 129498,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 199))); // man fairy: medium skin tone
+		trie.insert(new int[]{ 128124,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 859))); // baby angel: medium skin tone
+		trie.insert(new int[]{ 129328,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 463))); // pregnant woman: medium skin tone
+		trie.insert(new int[]{ 129329,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 397))); // breast-feeding: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 1))); // person feeding baby: medium skin tone
+		trie.insert(new int[]{ 129489,127997,127868 }, new ParseResult(6, new SpriteCoordinates(1, 1, 529, 1))); // person feeding baby: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 1, 595, 991))); // woman feeding baby: medium skin tone
+		trie.insert(new int[]{ 128105,127997,127868 }, new ParseResult(6, new SpriteCoordinates(1, 1, 595, 991))); // woman feeding baby: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1123, 265))); // man feeding baby: medium skin tone
+		trie.insert(new int[]{ 128104,127997,127868 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1123, 265))); // man feeding baby: medium skin tone
+		trie.insert(new int[]{ 128583,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 727))); // person bowing: medium skin tone
+		trie.insert(new int[]{ 128583,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 727))); // woman bowing: medium skin tone
+		trie.insert(new int[]{ 128583,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 727))); // woman bowing: medium skin tone
+		trie.insert(new int[]{ 128583,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 727))); // man bowing: medium skin tone
+		trie.insert(new int[]{ 128583,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 727))); // man bowing: medium skin tone
+		trie.insert(new int[]{ 128129,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 859))); // person tipping hand: medium skin tone
+		trie.insert(new int[]{ 128129,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 859))); // woman tipping hand: medium skin tone
+		trie.insert(new int[]{ 128129,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 859))); // woman tipping hand: medium skin tone
+		trie.insert(new int[]{ 128129,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 859))); // man tipping hand: medium skin tone
+		trie.insert(new int[]{ 128129,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 859))); // man tipping hand: medium skin tone
+		trie.insert(new int[]{ 128581,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 793, 1))); // person gesturing NO: medium skin tone
+		trie.insert(new int[]{ 128581,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 793, 133))); // woman gesturing NO: medium skin tone
+		trie.insert(new int[]{ 128581,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 793, 133))); // woman gesturing NO: medium skin tone
+		trie.insert(new int[]{ 128581,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 793, 67))); // man gesturing NO: medium skin tone
+		trie.insert(new int[]{ 128581,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 793, 67))); // man gesturing NO: medium skin tone
+		trie.insert(new int[]{ 128582,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 595, 727))); // person gesturing OK: medium skin tone
+		trie.insert(new int[]{ 128582,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 727, 727))); // woman gesturing OK: medium skin tone
+		trie.insert(new int[]{ 128582,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 727))); // woman gesturing OK: medium skin tone
+		trie.insert(new int[]{ 128582,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 661, 727))); // man gesturing OK: medium skin tone
+		trie.insert(new int[]{ 128582,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 661, 727))); // man gesturing OK: medium skin tone
+		trie.insert(new int[]{ 128587,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 727))); // person raising hand: medium skin tone
+		trie.insert(new int[]{ 128587,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 727))); // woman raising hand: medium skin tone
+		trie.insert(new int[]{ 128587,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 727))); // woman raising hand: medium skin tone
+		trie.insert(new int[]{ 128587,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 727))); // man raising hand: medium skin tone
+		trie.insert(new int[]{ 128587,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 727))); // man raising hand: medium skin tone
+		trie.insert(new int[]{ 129487,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 529))); // deaf person: medium skin tone
+		trie.insert(new int[]{ 129487,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 529))); // deaf woman: medium skin tone
+		trie.insert(new int[]{ 129487,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 529))); // deaf woman: medium skin tone
+		trie.insert(new int[]{ 129487,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 529))); // deaf man: medium skin tone
+		trie.insert(new int[]{ 129487,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 529))); // deaf man: medium skin tone
+		trie.insert(new int[]{ 129318,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1, 661))); // person facepalming: medium skin tone
+		trie.insert(new int[]{ 129318,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 133, 661))); // woman facepalming: medium skin tone
+		trie.insert(new int[]{ 129318,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 661))); // woman facepalming: medium skin tone
+		trie.insert(new int[]{ 129318,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 661))); // man facepalming: medium skin tone
+		trie.insert(new int[]{ 129318,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 661))); // man facepalming: medium skin tone
+		trie.insert(new int[]{ 129335,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 397, 595))); // person shrugging: medium skin tone
+		trie.insert(new int[]{ 129335,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 529, 595))); // woman shrugging: medium skin tone
+		trie.insert(new int[]{ 129335,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 595))); // woman shrugging: medium skin tone
+		trie.insert(new int[]{ 129335,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 463, 595))); // man shrugging: medium skin tone
+		trie.insert(new int[]{ 129335,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 595))); // man shrugging: medium skin tone
+		trie.insert(new int[]{ 128590,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 463))); // person pouting: medium skin tone
+		trie.insert(new int[]{ 128590,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 727, 595))); // woman pouting: medium skin tone
+		trie.insert(new int[]{ 128590,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 595))); // woman pouting: medium skin tone
+		trie.insert(new int[]{ 128590,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 727, 529))); // man pouting: medium skin tone
+		trie.insert(new int[]{ 128590,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 529))); // man pouting: medium skin tone
+		trie.insert(new int[]{ 128589,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 727, 661))); // person frowning: medium skin tone
+		trie.insert(new int[]{ 128589,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 67, 727))); // woman frowning: medium skin tone
+		trie.insert(new int[]{ 128589,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 727))); // woman frowning: medium skin tone
+		trie.insert(new int[]{ 128589,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 1, 727))); // man frowning: medium skin tone
+		trie.insert(new int[]{ 128589,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 727))); // man frowning: medium skin tone
+		trie.insert(new int[]{ 128135,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 859, 133))); // person getting haircut: medium skin tone
+		trie.insert(new int[]{ 128135,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 265))); // woman getting haircut: medium skin tone
+		trie.insert(new int[]{ 128135,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 265))); // woman getting haircut: medium skin tone
+		trie.insert(new int[]{ 128135,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 199))); // man getting haircut: medium skin tone
+		trie.insert(new int[]{ 128135,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 199))); // man getting haircut: medium skin tone
+		trie.insert(new int[]{ 128134,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 859, 331))); // person getting massage: medium skin tone
+		trie.insert(new int[]{ 128134,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 463))); // woman getting massage: medium skin tone
+		trie.insert(new int[]{ 128134,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 463))); // woman getting massage: medium skin tone
+		trie.insert(new int[]{ 128134,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 859, 397))); // man getting massage: medium skin tone
+		trie.insert(new int[]{ 128134,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 859, 397))); // man getting massage: medium skin tone
+		trie.insert(new int[]{ 129494,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 265))); // person in steamy room: medium skin tone
+		trie.insert(new int[]{ 129494,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 67))); // woman in steamy room: medium skin tone
+		trie.insert(new int[]{ 129494,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 67))); // woman in steamy room: medium skin tone
+		trie.insert(new int[]{ 129494,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 331, 1))); // man in steamy room: medium skin tone
+		trie.insert(new int[]{ 129494,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 1))); // man in steamy room: medium skin tone
+		trie.insert(new int[]{ 128133,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 859, 529))); // nail polish: medium skin tone
+		trie.insert(new int[]{ 129331,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 661, 265))); // selfie: medium skin tone
+		trie.insert(new int[]{ 128131,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 859, 595))); // woman dancing: medium skin tone
+		trie.insert(new int[]{ 128378,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 463, 793))); // man dancing: medium skin tone
+		trie.insert(new int[]{ 128372,65039 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 793))); // man in suit levitating
+		trie.insert(new int[]{ 128372 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 793))); // man in suit levitating
+		trie.insert(new int[]{ 129489,8205,129469 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 331))); // person in manual wheelchair
+		trie.insert(new int[]{ 129489,129469 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 331))); // person in manual wheelchair
+		trie.insert(new int[]{ 128105,8205,129469 }, new ParseResult(5, new SpriteCoordinates(1, 1, 67, 925))); // woman in manual wheelchair
+		trie.insert(new int[]{ 128105,129469 }, new ParseResult(4, new SpriteCoordinates(1, 1, 67, 925))); // woman in manual wheelchair
+		trie.insert(new int[]{ 128104,8205,129469 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1057, 397))); // man in manual wheelchair
+		trie.insert(new int[]{ 128104,129469 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 397))); // man in manual wheelchair
+		trie.insert(new int[]{ 129489,8205,129468 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 331))); // person in motorized wheelchair
+		trie.insert(new int[]{ 129489,129468 }, new ParseResult(4, new SpriteCoordinates(1, 1, 265, 331))); // person in motorized wheelchair
+		trie.insert(new int[]{ 128105,8205,129468 }, new ParseResult(5, new SpriteCoordinates(1, 1, 133, 925))); // woman in motorized wheelchair
+		trie.insert(new int[]{ 128105,129468 }, new ParseResult(4, new SpriteCoordinates(1, 1, 133, 925))); // woman in motorized wheelchair
+		trie.insert(new int[]{ 128104,8205,129468 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1057, 463))); // man in motorized wheelchair
+		trie.insert(new int[]{ 128104,129468 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 463))); // man in motorized wheelchair
+		trie.insert(new int[]{ 128694 }, new ParseResult(2, new SpriteCoordinates(1, 1, 727, 199))); // person walking
+		trie.insert(new int[]{ 128694,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 331))); // woman walking
+		trie.insert(new int[]{ 128694,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 331))); // woman walking
+		trie.insert(new int[]{ 128694,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 727, 265))); // man walking
+		trie.insert(new int[]{ 128694,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 727, 265))); // man walking
+		trie.insert(new int[]{ 129489,8205,129455 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 331))); // person with probing cane
+		trie.insert(new int[]{ 129489,129455 }, new ParseResult(4, new SpriteCoordinates(1, 1, 331, 331))); // person with probing cane
+		trie.insert(new int[]{ 128105,8205,129455 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 925))); // woman with probing cane
+		trie.insert(new int[]{ 128105,129455 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 925))); // woman with probing cane
+		trie.insert(new int[]{ 128104,8205,129455 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1057, 529))); // man with probing cane
+		trie.insert(new int[]{ 128104,129455 }, new ParseResult(4, new SpriteCoordinates(1, 1, 1057, 529))); // man with probing cane
+		trie.insert(new int[]{ 129486 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 529))); // person kneeling
+		trie.insert(new int[]{ 129486,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 331, 529))); // woman kneeling
+		trie.insert(new int[]{ 129486,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 331, 529))); // woman kneeling
+		trie.insert(new int[]{ 129486,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 529))); // man kneeling
+		trie.insert(new int[]{ 129486,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 265, 529))); // man kneeling
+		trie.insert(new int[]{ 127939 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 1123))); // person running
+		trie.insert(new int[]{ 127939,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 991, 1123))); // woman running
+		trie.insert(new int[]{ 127939,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 991, 1123))); // woman running
+		trie.insert(new int[]{ 127939,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 925, 1123))); // man running
+		trie.insert(new int[]{ 127939,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 925, 1123))); // man running
+		trie.insert(new int[]{ 129485 }, new ParseResult(2, new SpriteCoordinates(1, 1, 397, 529))); // person standing
+		trie.insert(new int[]{ 129485,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 529, 529))); // woman standing
+		trie.insert(new int[]{ 129485,9792 }, new ParseResult(3, new SpriteCoordinates(1, 1, 529, 529))); // woman standing
+		trie.insert(new int[]{ 129485,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 1, 463, 529))); // man standing
+		trie.insert(new int[]{ 129485,9794 }, new ParseResult(3, new SpriteCoordinates(1, 1, 463, 529))); // man standing
+		trie.insert(new int[]{ 129489,8205,129309,8205,129489 }, new ParseResult(8, new SpriteCoordinates(1, 1, 397, 1))); // people holding hands
+		trie.insert(new int[]{ 129489,129309,129489 }, new ParseResult(6, new SpriteCoordinates(1, 1, 397, 1))); // people holding hands
+		trie.insert(new int[]{ 129489,127996,8205,129309,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 529, 331))); // people holding hands: medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127996,129309,129489,127995 }, new ParseResult(10, new SpriteCoordinates(1, 1, 529, 331))); // people holding hands: medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129309,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 463, 133))); // people holding hands: medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127997,129309,129489,127996 }, new ParseResult(10, new SpriteCoordinates(1, 1, 463, 133))); // people holding hands: medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129309,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 1, 397, 331))); // people holding hands: medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127998,129309,129489,127997 }, new ParseResult(10, new SpriteCoordinates(1, 1, 397, 331))); // people holding hands: medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129309,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 397, 133))); // people holding hands: dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127999,129309,129489,127998 }, new ParseResult(10, new SpriteCoordinates(1, 1, 397, 133))); // people holding hands: dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 331))); // woman and man holding hands: light skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 331))); // woman and man holding hands: light skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 67))); // woman and man holding hands: medium light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 67))); // woman and man holding hands: medium light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 991, 1))); // woman and man holding hands: medium dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 1, 991, 1))); // woman and man holding hands: medium dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 595, 925))); // woman and man holding hands: dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 1, 595, 925))); // woman and man holding hands: dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 265))); // women holding hands: light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128105,127996 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 265))); // women holding hands: light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 1))); // women holding hands: medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128105,127997 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 1))); // women holding hands: medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 991, 793))); // women holding hands: medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128105,127998 }, new ParseResult(10, new SpriteCoordinates(1, 1, 991, 793))); // women holding hands: medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 1, 925, 925))); // women holding hands: medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128105,127999 }, new ParseResult(10, new SpriteCoordinates(1, 1, 925, 925))); // women holding hands: medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128108 }, new ParseResult(2, new SpriteCoordinates(1, 1, 925, 727))); // men holding hands
+		trie.insert(new int[]{ 128104,127996,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1123, 595))); // men holding hands: medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127996,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1123, 595))); // men holding hands: medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 595, 1057))); // men holding hands: medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127997,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 1, 595, 1057))); // men holding hands: medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 991))); // men holding hands: medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127998,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 991))); // men holding hands: medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 793))); // men holding hands: dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127999,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 793))); // men holding hands: dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 529, 397))); // couple with heart: person, person, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127995,10084,129489,127998 }, new ParseResult(9, new SpriteCoordinates(1, 1, 529, 397))); // couple with heart: person, person, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 1, 529, 199))); // couple with heart: person, person, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127996,10084,129489,127999 }, new ParseResult(9, new SpriteCoordinates(1, 1, 529, 199))); // couple with heart: person, person, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 397, 199))); // couple with heart: person, person, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127998,10084,129489,127995 }, new ParseResult(9, new SpriteCoordinates(1, 1, 397, 199))); // couple with heart: person, person, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 397, 67))); // couple with heart: person, person, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127999,10084,129489,127996 }, new ParseResult(9, new SpriteCoordinates(1, 1, 397, 67))); // couple with heart: person, person, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 199))); // couple with heart: woman, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 1, 1057, 199))); // couple with heart: woman, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 1, 991, 991))); // couple with heart: woman, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 1, 991, 991))); // couple with heart: woman, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 991, 265))); // couple with heart: woman, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 1, 991, 265))); // couple with heart: woman, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 1, 859, 925))); // couple with heart: woman, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 1, 859, 925))); // couple with heart: woman, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128105 }, new ParseResult(8, new SpriteCoordinates(1, 1, 1, 925))); // couple with heart: woman, woman
+		trie.insert(new int[]{ 128105,10084,128105 }, new ParseResult(5, new SpriteCoordinates(1, 1, 1, 925))); // couple with heart: woman, woman
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 925, 991))); // couple with heart: woman, woman, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128105,127995 }, new ParseResult(9, new SpriteCoordinates(1, 1, 925, 991))); // couple with heart: woman, woman, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 991, 199))); // couple with heart: woman, woman, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128105,127996 }, new ParseResult(9, new SpriteCoordinates(1, 1, 991, 199))); // couple with heart: woman, woman, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 1, 793, 925))); // couple with heart: woman, woman, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128105,127997 }, new ParseResult(9, new SpriteCoordinates(1, 1, 793, 925))); // couple with heart: woman, woman, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 529, 925))); // couple with heart: woman, woman, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128105,127998 }, new ParseResult(9, new SpriteCoordinates(1, 1, 529, 925))); // couple with heart: woman, woman, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1123, 727))); // couple with heart: man, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 1, 1123, 727))); // couple with heart: man, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1123, 529))); // couple with heart: man, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 1, 1123, 529))); // couple with heart: man, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 925))); // couple with heart: man, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 1, 1057, 925))); // couple with heart: man, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 1, 1057, 727))); // couple with heart: man, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 1, 1057, 727))); // couple with heart: man, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,128139,8205,129489,127996 }, new ParseResult(15, new SpriteCoordinates(1, 1, 529, 463))); // kiss: person, person, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127995,10084,128139,129489,127996 }, new ParseResult(11, new SpriteCoordinates(1, 1, 529, 463))); // kiss: person, person, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,128139,8205,129489,127997 }, new ParseResult(15, new SpriteCoordinates(1, 1, 529, 265))); // kiss: person, person, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127996,10084,128139,129489,127997 }, new ParseResult(11, new SpriteCoordinates(1, 1, 529, 265))); // kiss: person, person, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,128139,8205,129489,127998 }, new ParseResult(15, new SpriteCoordinates(1, 1, 67, 397))); // kiss: person, person, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127997,10084,128139,129489,127998 }, new ParseResult(11, new SpriteCoordinates(1, 1, 67, 397))); // kiss: person, person, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,128139,8205,129489,127999 }, new ParseResult(15, new SpriteCoordinates(1, 1, 397, 265))); // kiss: person, person, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127998,10084,128139,129489,127999 }, new ParseResult(11, new SpriteCoordinates(1, 1, 397, 265))); // kiss: person, person, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128139,8205,128104 }, new ParseResult(11, new SpriteCoordinates(1, 1, 925, 859))); // kiss: woman, man
+		trie.insert(new int[]{ 128105,10084,128139,128104 }, new ParseResult(7, new SpriteCoordinates(1, 1, 925, 859))); // kiss: woman, man
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 1, 859, 991))); // kiss: woman, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 1, 859, 991))); // kiss: woman, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 1, 991, 133))); // kiss: woman, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 1, 991, 133))); // kiss: woman, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 1, 727, 925))); // kiss: woman, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 1, 727, 925))); // kiss: woman, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 1, 463, 925))); // kiss: woman, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 1, 463, 925))); // kiss: woman, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128105,127998 }, new ParseResult(15, new SpriteCoordinates(1, 1, 1057, 133))); // kiss: woman, woman, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128105,127998 }, new ParseResult(11, new SpriteCoordinates(1, 1, 1057, 133))); // kiss: woman, woman, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128105,127999 }, new ParseResult(15, new SpriteCoordinates(1, 1, 793, 991))); // kiss: woman, woman, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128105,127999 }, new ParseResult(11, new SpriteCoordinates(1, 1, 793, 991))); // kiss: woman, woman, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128105,127995 }, new ParseResult(15, new SpriteCoordinates(1, 1, 661, 925))); // kiss: woman, woman, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128105,127995 }, new ParseResult(11, new SpriteCoordinates(1, 1, 661, 925))); // kiss: woman, woman, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128105,127996 }, new ParseResult(15, new SpriteCoordinates(1, 1, 397, 925))); // kiss: woman, woman, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128105,127996 }, new ParseResult(11, new SpriteCoordinates(1, 1, 397, 925))); // kiss: woman, woman, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 1, 1123, 661))); // kiss: man, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 1, 1123, 661))); // kiss: man, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 1, 1123, 463))); // kiss: man, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 1, 1123, 463))); // kiss: man, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 1, 67, 1057))); // kiss: man, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 1, 67, 1057))); // kiss: man, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 1, 1057, 859))); // kiss: man, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 1, 1057, 859))); // kiss: man, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128106 }, new ParseResult(2, new SpriteCoordinates(1, 1, 925, 793))); // family
+		trie.insert(new int[]{ 128105,8205,128105,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 1, 265, 925))); // family: woman, woman, boy
+		trie.insert(new int[]{ 128105,128105,128102 }, new ParseResult(6, new SpriteCoordinates(1, 1, 265, 925))); // family: woman, woman, boy
+		trie.insert(new int[]{ 128104,8205,128104,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 1, 1057, 595))); // family: man, man, girl
+		trie.insert(new int[]{ 128104,128104,128103 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1057, 595))); // family: man, man, girl
+		trie.insert(new int[]{ 128105,8205,128103,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 1, 331, 925))); // family: woman, girl, boy
+		trie.insert(new int[]{ 128105,128103,128102 }, new ParseResult(6, new SpriteCoordinates(1, 1, 331, 925))); // family: woman, girl, boy
+		trie.insert(new int[]{ 128104,8205,128102,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 1, 1057, 661))); // family: man, boy, boy
+		trie.insert(new int[]{ 128104,128102,128102 }, new ParseResult(6, new SpriteCoordinates(1, 1, 1057, 661))); // family: man, boy, boy
+		trie.insert(new int[]{ 129466 }, new ParseResult(2, new SpriteCoordinates(1, 1, 595, 67))); // safety vest
+		trie.insert(new int[]{ 128084 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1123, 991))); // necktie
+		trie.insert(new int[]{ 129407 }, new ParseResult(2, new SpriteCoordinates(1, 1, 133, 595))); // flat shoe
+		trie.insert(new int[]{ 129406 }, new ParseResult(2, new SpriteCoordinates(1, 1, 199, 595))); // hiking boot
+		trie.insert(new int[]{ 129506 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 133))); // billed cap
+		trie.insert(new int[]{ 128141 }, new ParseResult(2, new SpriteCoordinates(1, 1, 859, 1))); // ring
+		trie.insert(new int[]{ 129523 }, new ParseResult(2, new SpriteCoordinates(1, 1, 1, 133))); // luggage
+		trie.insert(new int[]{ 129456 }, new ParseResult(2, new SpriteCoordinates(1, 1, 67, 595))); // red hair
+		trie.insert(new int[]{ 128516 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 727))); // grinning face with smiling eyes
 		trie.insert(new int[]{ 9786,65039 }, new ParseResult(2, new SpriteCoordinates(1, 2, 133, 1))); // smiling face
 		trie.insert(new int[]{ 9786 }, new ParseResult(1, new SpriteCoordinates(1, 2, 133, 1))); // smiling face
-		trie.insert(new int[]{ 128524 }, new ParseResult(2, new SpriteCoordinates(1, 2, 529, 727))); // relieved face
-		trie.insert(new int[]{ 128537 }, new ParseResult(2, new SpriteCoordinates(1, 2, 331, 727))); // kissing face with smiling eyes
-		trie.insert(new int[]{ 129322 }, new ParseResult(2, new SpriteCoordinates(1, 2, 199, 595))); // zany face
-		trie.insert(new int[]{ 129395 }, new ParseResult(2, new SpriteCoordinates(1, 2, 529, 529))); // partying face
-		trie.insert(new int[]{ 128533 }, new ParseResult(2, new SpriteCoordinates(1, 2, 397, 727))); // confused face
-		trie.insert(new int[]{ 128553 }, new ParseResult(2, new SpriteCoordinates(1, 2, 133, 727))); // weary face
-		trie.insert(new int[]{ 128545 }, new ParseResult(2, new SpriteCoordinates(1, 2, 265, 727))); // pouting face
-		trie.insert(new int[]{ 128561 }, new ParseResult(2, new SpriteCoordinates(1, 2, 67, 727))); // face screaming in fear
-		trie.insert(new int[]{ 129300 }, new ParseResult(2, new SpriteCoordinates(1, 2, 661, 265))); // thinking face
-		trie.insert(new int[]{ 128528 }, new ParseResult(2, new SpriteCoordinates(1, 2, 463, 727))); // neutral face
-		trie.insert(new int[]{ 128551 }, new ParseResult(2, new SpriteCoordinates(1, 2, 199, 727))); // anguished face
-		trie.insert(new int[]{ 128565 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 727))); // dizzy face
-		trie.insert(new int[]{ 128567 }, new ParseResult(2, new SpriteCoordinates(1, 2, 727, 661))); // face with medical mask
-		trie.insert(new int[]{ 128520 }, new ParseResult(2, new SpriteCoordinates(1, 2, 595, 727))); // smiling face with horns
-		trie.insert(new int[]{ 128123 }, new ParseResult(2, new SpriteCoordinates(1, 2, 859, 1))); // ghost
-		trie.insert(new int[]{ 127875 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1057, 793))); // jack-o-lantern
-		trie.insert(new int[]{ 128573 }, new ParseResult(2, new SpriteCoordinates(1, 2, 727, 595))); // kissing cat
-		trie.insert(new int[]{ 129330,127996 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 595))); // palms up together: medium-light skin tone
-		trie.insert(new int[]{ 128080,127996 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 991))); // open hands: medium-light skin tone
-		trie.insert(new int[]{ 128588,127996 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 661))); // raising hands: medium-light skin tone
-		trie.insert(new int[]{ 128079,127996 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 991))); // clapping hands: medium-light skin tone
-		trie.insert(new int[]{ 128077,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 991))); // thumbs up: light skin tone
-		trie.insert(new int[]{ 128078,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 991))); // thumbs down: light skin tone
-		trie.insert(new int[]{ 128074,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 1))); // oncoming fist: light skin tone
-		trie.insert(new int[]{ 9994,127995 }, new ParseResult(3, new SpriteCoordinates(1, 2, 67, 67))); // raised fist: light skin tone
-		trie.insert(new int[]{ 129307,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 1))); // left-facing fist: light skin tone
-		trie.insert(new int[]{ 129308,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 595))); // right-facing fist: light skin tone
-		trie.insert(new int[]{ 129310,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 595))); // crossed fingers: light skin tone
-		trie.insert(new int[]{ 9996,127995 }, new ParseResult(3, new SpriteCoordinates(1, 2, 67, 1))); // victory hand: light skin tone
-		trie.insert(new int[]{ 129311,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 595))); // love-you gesture: light skin tone
-		trie.insert(new int[]{ 129304,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 199))); // sign of the horns: light skin tone
-		trie.insert(new int[]{ 128076,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 991))); // OK hand: light skin tone
-		trie.insert(new int[]{ 129295,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 331))); // pinching hand: light skin tone
-		trie.insert(new int[]{ 129292,127996 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 397))); // pinched fingers: medium-light skin tone
-		trie.insert(new int[]{ 128072,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 133))); // backhand index pointing left: light skin tone
-		trie.insert(new int[]{ 128073,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 67))); // backhand index pointing right: light skin tone
-		trie.insert(new int[]{ 128070,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 265))); // backhand index pointing up: light skin tone
-		trie.insert(new int[]{ 128071,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 199))); // backhand index pointing down: light skin tone
-		trie.insert(new int[]{ 9757,127995 }, new ParseResult(3, new SpriteCoordinates(1, 2, 133, 67))); // index pointing up: light skin tone
-		trie.insert(new int[]{ 9995,127995 }, new ParseResult(3, new SpriteCoordinates(1, 2, 1, 67))); // raised hand: light skin tone
-		trie.insert(new int[]{ 129306,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 67))); // raised back of hand: light skin tone
-		trie.insert(new int[]{ 128400,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 67))); // hand with fingers splayed: light skin tone
-		trie.insert(new int[]{ 128406,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 727))); // vulcan salute: light skin tone
-		trie.insert(new int[]{ 128075,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 991, 991))); // waving hand: light skin tone
-		trie.insert(new int[]{ 129305,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 133))); // call me hand: light skin tone
-		trie.insert(new int[]{ 128170,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 529))); // flexed biceps: light skin tone
-		trie.insert(new int[]{ 128405 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 1))); // middle finger
-		trie.insert(new int[]{ 9997,65039 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 1))); // writing hand
-		trie.insert(new int[]{ 9997 }, new ParseResult(1, new SpriteCoordinates(1, 2, 1, 1))); // writing hand
-		trie.insert(new int[]{ 128591 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 661))); // folded hands
-		trie.insert(new int[]{ 129462 }, new ParseResult(2, new SpriteCoordinates(1, 2, 331, 529))); // foot
-		trie.insert(new int[]{ 129461 }, new ParseResult(2, new SpriteCoordinates(1, 2, 397, 529))); // leg
-		trie.insert(new int[]{ 129471 }, new ParseResult(2, new SpriteCoordinates(1, 2, 529, 331))); // mechanical leg
-		trie.insert(new int[]{ 128069 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1057, 331))); // tongue
-		trie.insert(new int[]{ 128066,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 463))); // ear: dark skin tone
-		trie.insert(new int[]{ 129467,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 397))); // ear with hearing aid: dark skin tone
-		trie.insert(new int[]{ 128067,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 397))); // nose: dark skin tone
-		trie.insert(new int[]{ 129729 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 133))); // lungs
-		trie.insert(new int[]{ 128118,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 331))); // baby: light skin tone
-		trie.insert(new int[]{ 128103,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 991))); // girl: light skin tone
-		trie.insert(new int[]{ 129490,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 331))); // child: light skin tone
-		trie.insert(new int[]{ 128102,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 991))); // boy: light skin tone
-		trie.insert(new int[]{ 128105,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 67))); // woman: light skin tone
-		trie.insert(new int[]{ 129489,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 67))); // person: light skin tone
-		trie.insert(new int[]{ 128104,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 925))); // man: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 397))); // person: light skin tone, curly hair
-		trie.insert(new int[]{ 129489,127995,129457 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 397))); // person: light skin tone, curly hair
-		trie.insert(new int[]{ 128105,127995,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 463))); // woman, curly haired: light skin tone
-		trie.insert(new int[]{ 128105,127995,129457 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 463))); // woman, curly haired: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 331))); // man, curly haired: light skin tone
-		trie.insert(new int[]{ 128104,127995,129457 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 331))); // man, curly haired: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 397))); // person: light skin tone, red hair
-		trie.insert(new int[]{ 129489,127995,129456 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 397))); // person: light skin tone, red hair
-		trie.insert(new int[]{ 128105,127995,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 529))); // woman, red haired: light skin tone
-		trie.insert(new int[]{ 128105,127995,129456 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 529))); // woman, red haired: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 397))); // man, red haired: light skin tone
-		trie.insert(new int[]{ 128104,127995,129456 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 397))); // man, red haired: light skin tone
-		trie.insert(new int[]{ 128113,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 859))); // blond-haired woman: light skin tone
-		trie.insert(new int[]{ 128113,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 67, 859))); // blond-haired woman: light skin tone
-		trie.insert(new int[]{ 128113,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 793))); // blond-haired person: light skin tone
-		trie.insert(new int[]{ 128113,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 859))); // blond-haired man: light skin tone
-		trie.insert(new int[]{ 128113,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1, 859))); // blond-haired man: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 331))); // person: light skin tone, white hair
-		trie.insert(new int[]{ 129489,127995,129459 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 331))); // person: light skin tone, white hair
-		trie.insert(new int[]{ 128105,127995,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 331))); // woman, white haired: light skin tone
-		trie.insert(new int[]{ 128105,127995,129459 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 331))); // woman, white haired: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 199))); // man, white haired: light skin tone
-		trie.insert(new int[]{ 128104,127995,129459 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 199))); // man, white haired: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 397))); // person: light skin tone, bald
-		trie.insert(new int[]{ 129489,127995,129458 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 397))); // person: light skin tone, bald
-		trie.insert(new int[]{ 128105,127995,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 397))); // woman, bald: light skin tone
-		trie.insert(new int[]{ 128105,127995,129458 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 397))); // woman, bald: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 265))); // man, bald: light skin tone
-		trie.insert(new int[]{ 128104,127995,129458 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 265))); // man, bald: light skin tone
-		trie.insert(new int[]{ 129492,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 331))); // bearded person: light skin tone
-		trie.insert(new int[]{ 128117,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 397))); // old woman: light skin tone
-		trie.insert(new int[]{ 129491,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 331))); // older person: light skin tone
-		trie.insert(new int[]{ 128116,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 463))); // old man: light skin tone
-		trie.insert(new int[]{ 128114,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 727))); // man with Chinese cap: light skin tone
-		trie.insert(new int[]{ 128115,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 529))); // person wearing turban: light skin tone
-		trie.insert(new int[]{ 128115,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 661))); // woman wearing turban: light skin tone
-		trie.insert(new int[]{ 128115,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 661))); // woman wearing turban: light skin tone
-		trie.insert(new int[]{ 128115,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 595))); // man wearing turban: light skin tone
-		trie.insert(new int[]{ 128115,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 595))); // man wearing turban: light skin tone
-		trie.insert(new int[]{ 129493,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 331))); // woman with headscarf: light skin tone
-		trie.insert(new int[]{ 128110,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 859))); // police officer: light skin tone
-		trie.insert(new int[]{ 128110,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 859))); // woman police officer: light skin tone
-		trie.insert(new int[]{ 128110,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 859))); // woman police officer: light skin tone
-		trie.insert(new int[]{ 128110,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 859))); // man police officer: light skin tone
-		trie.insert(new int[]{ 128110,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 463, 859))); // man police officer: light skin tone
-		trie.insert(new int[]{ 128119,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 133))); // construction worker: light skin tone
-		trie.insert(new int[]{ 128119,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 265))); // woman construction worker: light skin tone
-		trie.insert(new int[]{ 128119,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 265))); // woman construction worker: light skin tone
-		trie.insert(new int[]{ 128119,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 199))); // man construction worker: light skin tone
-		trie.insert(new int[]{ 128119,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 199))); // man construction worker: light skin tone
-		trie.insert(new int[]{ 128130,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 793))); // guard: light skin tone
-		trie.insert(new int[]{ 128130,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 793))); // woman guard: light skin tone
-		trie.insert(new int[]{ 128130,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 793))); // woman guard: light skin tone
-		trie.insert(new int[]{ 128130,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 793))); // man guard: light skin tone
-		trie.insert(new int[]{ 128130,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 463, 793))); // man guard: light skin tone
-		trie.insert(new int[]{ 128373,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 199))); // detective: light skin tone
-		trie.insert(new int[]{ 128373,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 331))); // woman detective: light skin tone
-		trie.insert(new int[]{ 128373,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 793, 331))); // woman detective: light skin tone
-		trie.insert(new int[]{ 128373,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 265))); // man detective: light skin tone
-		trie.insert(new int[]{ 128373,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 793, 265))); // man detective: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 265))); // health worker: light skin tone
-		trie.insert(new int[]{ 129489,127995,9877 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 265))); // health worker: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 265))); // woman health worker: light skin tone
-		trie.insert(new int[]{ 128105,127995,9877 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 265))); // woman health worker: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 133))); // man health worker: light skin tone
-		trie.insert(new int[]{ 128104,127995,9877 }, new ParseResult(5, new SpriteCoordinates(1, 2, 991, 133))); // man health worker: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 463))); // farmer: light skin tone
-		trie.insert(new int[]{ 129489,127995,127806 }, new ParseResult(6, new SpriteCoordinates(1, 2, 199, 463))); // farmer: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 925))); // woman farmer: light skin tone
-		trie.insert(new int[]{ 128105,127995,127806 }, new ParseResult(6, new SpriteCoordinates(1, 2, 529, 925))); // woman farmer: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 991))); // man farmer: light skin tone
-		trie.insert(new int[]{ 128104,127995,127806 }, new ParseResult(6, new SpriteCoordinates(1, 2, 331, 991))); // man farmer: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 463))); // cook: light skin tone
-		trie.insert(new int[]{ 129489,127995,127859 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 463))); // cook: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 925))); // woman cook: light skin tone
-		trie.insert(new int[]{ 128105,127995,127859 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 925))); // woman cook: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 991))); // man cook: light skin tone
-		trie.insert(new int[]{ 128104,127995,127859 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 991))); // man cook: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 397))); // student: light skin tone
-		trie.insert(new int[]{ 129489,127995,127891 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 397))); // student: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 925))); // woman student: light skin tone
-		trie.insert(new int[]{ 128105,127995,127891 }, new ParseResult(6, new SpriteCoordinates(1, 2, 331, 925))); // woman student: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 991))); // man student: light skin tone
-		trie.insert(new int[]{ 128104,127995,127891 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 991))); // man student: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 331))); // singer: light skin tone
-		trie.insert(new int[]{ 129489,127995,127908 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 331))); // singer: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 925))); // woman singer: light skin tone
-		trie.insert(new int[]{ 128105,127995,127908 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 925))); // woman singer: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 991))); // man singer: light skin tone
-		trie.insert(new int[]{ 128104,127995,127908 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 991))); // man singer: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 199))); // teacher: light skin tone
-		trie.insert(new int[]{ 129489,127995,127979 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 199))); // teacher: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 925))); // woman teacher: light skin tone
-		trie.insert(new int[]{ 128105,127995,127979 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 925))); // woman teacher: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 925))); // man teacher: light skin tone
-		trie.insert(new int[]{ 128104,127995,127979 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 925))); // man teacher: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 133))); // factory worker: light skin tone
-		trie.insert(new int[]{ 129489,127995,127981 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 133))); // factory worker: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 925))); // woman factory worker: light skin tone
-		trie.insert(new int[]{ 128105,127995,127981 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 925))); // woman factory worker: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 859))); // man factory worker: light skin tone
-		trie.insert(new int[]{ 128104,127995,127981 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 859))); // man factory worker: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 67))); // technologist: light skin tone
-		trie.insert(new int[]{ 129489,127995,128187 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 67))); // technologist: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 925))); // woman technologist: light skin tone
-		trie.insert(new int[]{ 128105,127995,128187 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 925))); // woman technologist: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 793))); // man technologist: light skin tone
-		trie.insert(new int[]{ 128104,127995,128187 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 793))); // man technologist: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 1))); // office worker: light skin tone
-		trie.insert(new int[]{ 129489,127995,128188 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 1))); // office worker: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 859))); // woman office worker: light skin tone
-		trie.insert(new int[]{ 128105,127995,128188 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 859))); // woman office worker: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 727))); // man office worker: light skin tone
-		trie.insert(new int[]{ 128104,127995,128188 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 727))); // man office worker: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 397))); // mechanic: light skin tone
-		trie.insert(new int[]{ 129489,127995,128295 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 397))); // mechanic: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 793))); // woman mechanic: light skin tone
-		trie.insert(new int[]{ 128105,127995,128295 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 793))); // woman mechanic: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 661))); // man mechanic: light skin tone
-		trie.insert(new int[]{ 128104,127995,128295 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 661))); // man mechanic: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 397))); // scientist: light skin tone
-		trie.insert(new int[]{ 129489,127995,128300 }, new ParseResult(6, new SpriteCoordinates(1, 2, 331, 397))); // scientist: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 727))); // woman scientist: light skin tone
-		trie.insert(new int[]{ 128105,127995,128300 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 727))); // woman scientist: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 595))); // man scientist: light skin tone
-		trie.insert(new int[]{ 128104,127995,128300 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 595))); // man scientist: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 265))); // artist: light skin tone
-		trie.insert(new int[]{ 129489,127995,127912 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 265))); // artist: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 925))); // woman artist: light skin tone
-		trie.insert(new int[]{ 128105,127995,127912 }, new ParseResult(6, new SpriteCoordinates(1, 2, 199, 925))); // woman artist: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 991))); // man artist: light skin tone
-		trie.insert(new int[]{ 128104,127995,127912 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 991))); // man artist: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 397))); // firefighter: light skin tone
-		trie.insert(new int[]{ 129489,127995,128658 }, new ParseResult(6, new SpriteCoordinates(1, 2, 199, 397))); // firefighter: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 595))); // woman firefighter: light skin tone
-		trie.insert(new int[]{ 128105,127995,128658 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 595))); // woman firefighter: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 463))); // man firefighter: light skin tone
-		trie.insert(new int[]{ 128104,127995,128658 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 463))); // man firefighter: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 133))); // pilot: light skin tone
-		trie.insert(new int[]{ 129489,127995,9992 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 133))); // pilot: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 133))); // woman pilot: light skin tone
-		trie.insert(new int[]{ 128105,127995,9992 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 133))); // woman pilot: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 1))); // man pilot: light skin tone
-		trie.insert(new int[]{ 128104,127995,9992 }, new ParseResult(5, new SpriteCoordinates(1, 2, 991, 1))); // man pilot: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 397))); // astronaut: light skin tone
-		trie.insert(new int[]{ 129489,127995,128640 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 397))); // astronaut: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 661))); // woman astronaut: light skin tone
-		trie.insert(new int[]{ 128105,127995,128640 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 661))); // woman astronaut: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 529))); // man astronaut: light skin tone
-		trie.insert(new int[]{ 128104,127995,128640 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 529))); // man astronaut: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 199))); // judge: light skin tone
-		trie.insert(new int[]{ 129489,127995,9878 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 199))); // judge: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 199))); // woman judge: light skin tone
-		trie.insert(new int[]{ 128105,127995,9878 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 199))); // woman judge: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 67))); // man judge: light skin tone
-		trie.insert(new int[]{ 128104,127995,9878 }, new ParseResult(5, new SpriteCoordinates(1, 2, 991, 67))); // man judge: light skin tone
-		trie.insert(new int[]{ 128112,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 859))); // person with veil: light skin tone
-		trie.insert(new int[]{ 128112,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 859))); // woman with veil: light skin tone
-		trie.insert(new int[]{ 128112,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 859))); // woman with veil: light skin tone
-		trie.insert(new int[]{ 128112,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 859))); // man with veil: light skin tone
-		trie.insert(new int[]{ 128112,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 859))); // man with veil: light skin tone
-		trie.insert(new int[]{ 129333,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 265))); // person in tuxedo: light skin tone
-		trie.insert(new int[]{ 129333,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 397))); // woman in tuxedo: light skin tone
-		trie.insert(new int[]{ 129333,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 397))); // woman in tuxedo: light skin tone
-		trie.insert(new int[]{ 129333,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 331))); // man in tuxedo: light skin tone
-		trie.insert(new int[]{ 129333,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 331))); // man in tuxedo: light skin tone
-		trie.insert(new int[]{ 128120,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 67))); // princess: light skin tone
-		trie.insert(new int[]{ 129332,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 463))); // prince: light skin tone
-		trie.insert(new int[]{ 129464,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 529))); // superhero: light skin tone
-		trie.insert(new int[]{ 129464,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 529))); // woman superhero: light skin tone
-		trie.insert(new int[]{ 129464,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 529))); // woman superhero: light skin tone
-		trie.insert(new int[]{ 129464,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 529))); // man superhero: light skin tone
-		trie.insert(new int[]{ 129464,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 529))); // man superhero: light skin tone
-		trie.insert(new int[]{ 129465,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 529))); // supervillain: light skin tone
-		trie.insert(new int[]{ 129465,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 463))); // woman supervillain
-		trie.insert(new int[]{ 129465,9792 }, new ParseResult(3, new SpriteCoordinates(1, 2, 529, 463))); // woman supervillain
-		trie.insert(new int[]{ 129465,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 529))); // man supervillain: light skin tone
-		trie.insert(new int[]{ 129465,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 67, 529))); // man supervillain: light skin tone
-		trie.insert(new int[]{ 129399,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 529))); // ninja: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 463))); // mx claus: light skin tone
-		trie.insert(new int[]{ 129489,127995,127876 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 463))); // mx claus: light skin tone
-		trie.insert(new int[]{ 129334,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 199))); // Mrs. Claus: light skin tone
-		trie.insert(new int[]{ 127877,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 727))); // Santa Claus: light skin tone
-		trie.insert(new int[]{ 129497,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 265))); // mage: light skin tone
-		trie.insert(new int[]{ 129497,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 67))); // woman mage: light skin tone
-		trie.insert(new int[]{ 129497,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 67))); // woman mage: light skin tone
-		trie.insert(new int[]{ 129497,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 1))); // man mage: light skin tone
-		trie.insert(new int[]{ 129497,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 1))); // man mage: light skin tone
-		trie.insert(new int[]{ 129501,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 199))); // elf: light skin tone
-		trie.insert(new int[]{ 129501,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 199))); // woman elf: light skin tone
-		trie.insert(new int[]{ 129501,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 199))); // woman elf: light skin tone
-		trie.insert(new int[]{ 129501,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 199))); // man elf: light skin tone
-		trie.insert(new int[]{ 129501,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 67, 199))); // man elf: light skin tone
-		trie.insert(new int[]{ 129499,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 133))); // vampire: light skin tone
-		trie.insert(new int[]{ 129499,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 265))); // woman vampire: light skin tone
-		trie.insert(new int[]{ 129499,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1, 265))); // woman vampire: light skin tone
-		trie.insert(new int[]{ 129499,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 199))); // man vampire: light skin tone
-		trie.insert(new int[]{ 129499,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 199))); // man vampire: light skin tone
-		trie.insert(new int[]{ 129503,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 133))); // woman zombie
-		trie.insert(new int[]{ 129503,9792 }, new ParseResult(3, new SpriteCoordinates(1, 2, 199, 133))); // woman zombie
-		trie.insert(new int[]{ 129500,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 199))); // merperson: light skin tone
-		trie.insert(new int[]{ 129500,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 67))); // mermaid: light skin tone
-		trie.insert(new int[]{ 129500,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 67))); // mermaid: light skin tone
-		trie.insert(new int[]{ 129500,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 1))); // merman: light skin tone
-		trie.insert(new int[]{ 129500,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 1))); // merman: light skin tone
-		trie.insert(new int[]{ 129498,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 265))); // fairy: light skin tone
-		trie.insert(new int[]{ 129498,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 265))); // woman fairy: light skin tone
-		trie.insert(new int[]{ 129498,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 265))); // woman fairy: light skin tone
-		trie.insert(new int[]{ 129498,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 265))); // man fairy: light skin tone
-		trie.insert(new int[]{ 129498,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 265))); // man fairy: light skin tone
-		trie.insert(new int[]{ 128124,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 793))); // baby angel: light skin tone
-		trie.insert(new int[]{ 129328,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 595))); // pregnant woman: light skin tone
-		trie.insert(new int[]{ 129329,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 595))); // breast-feeding: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 463))); // person feeding baby: light skin tone
-		trie.insert(new int[]{ 129489,127995,127868 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 463))); // person feeding baby: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 925))); // woman feeding baby: light skin tone
-		trie.insert(new int[]{ 128105,127995,127868 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 925))); // woman feeding baby: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 991))); // man feeding baby: light skin tone
-		trie.insert(new int[]{ 128104,127995,127868 }, new ParseResult(6, new SpriteCoordinates(1, 2, 199, 991))); // man feeding baby: light skin tone
-		trie.insert(new int[]{ 128583,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 1))); // person bowing: light skin tone
-		trie.insert(new int[]{ 128583,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 133))); // woman bowing: light skin tone
-		trie.insert(new int[]{ 128583,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 133))); // woman bowing: light skin tone
-		trie.insert(new int[]{ 128583,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 67))); // man bowing: light skin tone
-		trie.insert(new int[]{ 128583,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 67))); // man bowing: light skin tone
-		trie.insert(new int[]{ 128129,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 793))); // person tipping hand: light skin tone
-		trie.insert(new int[]{ 128129,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 793))); // woman tipping hand: light skin tone
-		trie.insert(new int[]{ 128129,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 793))); // woman tipping hand: light skin tone
-		trie.insert(new int[]{ 128129,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 793))); // man tipping hand: light skin tone
-		trie.insert(new int[]{ 128129,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 793))); // man tipping hand: light skin tone
-		trie.insert(new int[]{ 128581,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 397))); // person gesturing NO: light skin tone
-		trie.insert(new int[]{ 128581,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 529))); // woman gesturing NO: light skin tone
-		trie.insert(new int[]{ 128581,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 529))); // woman gesturing NO: light skin tone
-		trie.insert(new int[]{ 128581,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 463))); // man gesturing NO: light skin tone
-		trie.insert(new int[]{ 128581,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 463))); // man gesturing NO: light skin tone
-		trie.insert(new int[]{ 128582,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 199))); // person gesturing OK: light skin tone
-		trie.insert(new int[]{ 128582,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 331))); // woman gesturing OK: light skin tone
-		trie.insert(new int[]{ 128582,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 331))); // woman gesturing OK: light skin tone
-		trie.insert(new int[]{ 128582,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 265))); // man gesturing OK: light skin tone
-		trie.insert(new int[]{ 128582,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 265))); // man gesturing OK: light skin tone
-		trie.insert(new int[]{ 128587,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 661))); // person raising hand: light skin tone
-		trie.insert(new int[]{ 128587,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 661))); // woman raising hand: light skin tone
-		trie.insert(new int[]{ 128587,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 661))); // woman raising hand: light skin tone
-		trie.insert(new int[]{ 128587,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 661))); // man raising hand: light skin tone
-		trie.insert(new int[]{ 128587,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 661))); // man raising hand: light skin tone
-		trie.insert(new int[]{ 129487,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 463))); // deaf person: light skin tone
-		trie.insert(new int[]{ 129487,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 463))); // deaf woman: light skin tone
-		trie.insert(new int[]{ 129487,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 463))); // deaf woman: light skin tone
-		trie.insert(new int[]{ 129487,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 463))); // deaf man: light skin tone
-		trie.insert(new int[]{ 129487,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 463))); // deaf man: light skin tone
-		trie.insert(new int[]{ 129318,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 595))); // person facepalming: light skin tone
-		trie.insert(new int[]{ 129318,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 595))); // woman facepalming: light skin tone
-		trie.insert(new int[]{ 129318,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 595))); // woman facepalming: light skin tone
-		trie.insert(new int[]{ 129318,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 595))); // man facepalming: light skin tone
-		trie.insert(new int[]{ 129318,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 595))); // man facepalming: light skin tone
-		trie.insert(new int[]{ 129335,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 1))); // person shrugging: light skin tone
-		trie.insert(new int[]{ 129335,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 133))); // woman shrugging: light skin tone
-		trie.insert(new int[]{ 129335,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 133))); // woman shrugging: light skin tone
-		trie.insert(new int[]{ 129335,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 67))); // man shrugging: light skin tone
-		trie.insert(new int[]{ 129335,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 67))); // man shrugging: light skin tone
-		trie.insert(new int[]{ 128590,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 661))); // person pouting: light skin tone
-		trie.insert(new int[]{ 128590,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 661))); // woman pouting: light skin tone
-		trie.insert(new int[]{ 128590,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 661))); // woman pouting: light skin tone
-		trie.insert(new int[]{ 128590,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 661))); // man pouting: light skin tone
-		trie.insert(new int[]{ 128590,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 661))); // man pouting: light skin tone
-		trie.insert(new int[]{ 128589,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 661))); // person frowning: light skin tone
-		trie.insert(new int[]{ 128589,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 661))); // woman frowning: light skin tone
-		trie.insert(new int[]{ 128589,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 661))); // woman frowning: light skin tone
-		trie.insert(new int[]{ 128589,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 661))); // man frowning: light skin tone
-		trie.insert(new int[]{ 128589,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 661))); // man frowning: light skin tone
-		trie.insert(new int[]{ 128135,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 661))); // person getting haircut: light skin tone
-		trie.insert(new int[]{ 128135,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 793))); // woman getting haircut: light skin tone
-		trie.insert(new int[]{ 128135,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1, 793))); // woman getting haircut: light skin tone
-		trie.insert(new int[]{ 128135,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 727))); // man getting haircut: light skin tone
-		trie.insert(new int[]{ 128135,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 793, 727))); // man getting haircut: light skin tone
-		trie.insert(new int[]{ 128134,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 793))); // person getting massage: light skin tone
-		trie.insert(new int[]{ 128134,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 793))); // woman getting massage: light skin tone
-		trie.insert(new int[]{ 128134,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 793))); // woman getting massage: light skin tone
-		trie.insert(new int[]{ 128134,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 793))); // man getting massage: light skin tone
-		trie.insert(new int[]{ 128134,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 793))); // man getting massage: light skin tone
-		trie.insert(new int[]{ 129494,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 133))); // person in steamy room: light skin tone
-		trie.insert(new int[]{ 129494,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 265))); // woman in steamy room: light skin tone
-		trie.insert(new int[]{ 129494,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 265))); // woman in steamy room: light skin tone
-		trie.insert(new int[]{ 129494,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 199))); // man in steamy room: light skin tone
-		trie.insert(new int[]{ 129494,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 199))); // man in steamy room: light skin tone
-		trie.insert(new int[]{ 128133,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 793))); // nail polish: light skin tone
-		trie.insert(new int[]{ 129331,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 529))); // selfie: light skin tone
-		trie.insert(new int[]{ 128131,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 793))); // woman dancing: light skin tone
-		trie.insert(new int[]{ 128378,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 133))); // man dancing: light skin tone
-		trie.insert(new int[]{ 128111,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 859))); // women with bunny ears
-		trie.insert(new int[]{ 128111,9792 }, new ParseResult(3, new SpriteCoordinates(1, 2, 331, 859))); // women with bunny ears
-		trie.insert(new int[]{ 128372,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 397))); // man in suit levitating: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 331))); // person in manual wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,129469 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 331))); // person in manual wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 859))); // woman in manual wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129469 }, new ParseResult(6, new SpriteCoordinates(1, 2, 793, 859))); // woman in manual wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 925))); // man in manual wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129469 }, new ParseResult(6, new SpriteCoordinates(1, 2, 727, 925))); // man in manual wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 331))); // person in motorized wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,129468 }, new ParseResult(6, new SpriteCoordinates(1, 2, 331, 331))); // person in motorized wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 859))); // woman in motorized wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129468 }, new ParseResult(6, new SpriteCoordinates(1, 2, 859, 859))); // woman in motorized wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 925))); // man in motorized wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129468 }, new ParseResult(6, new SpriteCoordinates(1, 2, 793, 925))); // man in motorized wheelchair: medium-dark skin tone
-		trie.insert(new int[]{ 128694,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 463))); // person walking: medium-dark skin tone
-		trie.insert(new int[]{ 128694,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 595))); // woman walking: medium-dark skin tone
-		trie.insert(new int[]{ 128694,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 595))); // woman walking: medium-dark skin tone
-		trie.insert(new int[]{ 128694,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 529))); // man walking: medium-dark skin tone
-		trie.insert(new int[]{ 128694,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 529))); // man walking: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 1))); // person with probing cane: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,129455 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 1))); // person with probing cane: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 1))); // woman with probing cane: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129455 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 1))); // woman with probing cane: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 925))); // man with probing cane: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129455 }, new ParseResult(6, new SpriteCoordinates(1, 2, 859, 925))); // man with probing cane: medium-dark skin tone
-		trie.insert(new int[]{ 129486,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 463))); // person kneeling: medium-dark skin tone
-		trie.insert(new int[]{ 129486,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 67))); // woman kneeling: medium-dark skin tone
-		trie.insert(new int[]{ 129486,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 67))); // woman kneeling: medium-dark skin tone
-		trie.insert(new int[]{ 129486,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 1))); // man kneeling: medium-dark skin tone
-		trie.insert(new int[]{ 129486,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 1))); // man kneeling: medium-dark skin tone
-		trie.insert(new int[]{ 127939,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 529))); // person running: medium-dark skin tone
-		trie.insert(new int[]{ 127939,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 661))); // woman running: medium-dark skin tone
-		trie.insert(new int[]{ 127939,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1057, 661))); // woman running: medium-dark skin tone
-		trie.insert(new int[]{ 127939,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 595))); // man running: medium-dark skin tone
-		trie.insert(new int[]{ 127939,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1057, 595))); // man running: medium-dark skin tone
-		trie.insert(new int[]{ 129485,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 133))); // person standing: medium-dark skin tone
-		trie.insert(new int[]{ 129485,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 265))); // woman standing: medium-dark skin tone
-		trie.insert(new int[]{ 129485,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 265))); // woman standing: medium-dark skin tone
-		trie.insert(new int[]{ 129485,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 199))); // man standing: medium-dark skin tone
-		trie.insert(new int[]{ 129485,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 199))); // man standing: medium-dark skin tone
-		trie.insert(new int[]{ 128145 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 595))); // couple with heart
-		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128139,8205,128105 }, new ParseResult(11, new SpriteCoordinates(1, 2, 595, 859))); // kiss: woman, woman
-		trie.insert(new int[]{ 128105,10084,128139,128105 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 859))); // kiss: woman, woman
-		trie.insert(new int[]{ 128104,8205,128105,8205,128102,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 2, 595, 925))); // family: man, woman, boy, boy
-		trie.insert(new int[]{ 128104,128105,128102,128102 }, new ParseResult(8, new SpriteCoordinates(1, 2, 595, 925))); // family: man, woman, boy, boy
-		trie.insert(new int[]{ 128105,8205,128105,8205,128103,8205,128103 }, new ParseResult(11, new SpriteCoordinates(1, 2, 661, 859))); // family: woman, woman, girl, girl
-		trie.insert(new int[]{ 128105,128105,128103,128103 }, new ParseResult(8, new SpriteCoordinates(1, 2, 661, 859))); // family: woman, woman, girl, girl
-		trie.insert(new int[]{ 128105,8205,128102 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 859))); // family: woman, boy
-		trie.insert(new int[]{ 128105,128102 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 859))); // family: woman, boy
-		trie.insert(new int[]{ 128104,8205,128103 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 925))); // family: man, girl
-		trie.insert(new int[]{ 128104,128103 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 925))); // family: man, girl
-		trie.insert(new int[]{ 129509 }, new ParseResult(2, new SpriteCoordinates(1, 2, 199, 1))); // coat
-		trie.insert(new int[]{ 129650 }, new ParseResult(2, new SpriteCoordinates(1, 2, 133, 133))); // briefs
-		trie.insert(new int[]{ 128088 }, new ParseResult(2, new SpriteCoordinates(1, 2, 595, 991))); // kimono
-		trie.insert(new int[]{ 128094 }, new ParseResult(2, new SpriteCoordinates(1, 2, 529, 991))); // man’s shoe
-		trie.insert(new int[]{ 129507 }, new ParseResult(2, new SpriteCoordinates(1, 2, 199, 67))); // scarf
-		trie.insert(new int[]{ 129686 }, new ParseResult(2, new SpriteCoordinates(1, 2, 67, 133))); // military helmet
-		trie.insert(new int[]{ 128188 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 463))); // briefcase
-		trie.insert(new int[]{ 127746 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1057, 859))); // closed umbrella
-		trie.insert(new int[]{ 128513 }, new ParseResult(2, new SpriteCoordinates(1, 3, 529, 727))); // beaming face with smiling eyes
-		trie.insert(new int[]{ 128522 }, new ParseResult(2, new SpriteCoordinates(1, 3, 463, 727))); // smiling face with smiling eyes
-		trie.insert(new int[]{ 129394 }, new ParseResult(2, new SpriteCoordinates(1, 3, 397, 529))); // smiling face with tear
-		trie.insert(new int[]{ 128538 }, new ParseResult(2, new SpriteCoordinates(1, 3, 265, 727))); // kissing face with closed eyes
-		trie.insert(new int[]{ 129320 }, new ParseResult(2, new SpriteCoordinates(1, 3, 199, 595))); // face with raised eyebrow
-		trie.insert(new int[]{ 128527 }, new ParseResult(2, new SpriteCoordinates(1, 3, 397, 727))); // smirking face
-		trie.insert(new int[]{ 128577 }, new ParseResult(2, new SpriteCoordinates(1, 3, 727, 661))); // slightly frowning face
-		trie.insert(new int[]{ 129402 }, new ParseResult(2, new SpriteCoordinates(1, 3, 265, 529))); // pleading face
-		trie.insert(new int[]{ 129324 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 595))); // face with symbols on mouth
-		trie.insert(new int[]{ 128552 }, new ParseResult(2, new SpriteCoordinates(1, 3, 199, 727))); // fearful face
-		trie.insert(new int[]{ 129325 }, new ParseResult(2, new SpriteCoordinates(1, 3, 67, 595))); // face with hand over mouth
-		trie.insert(new int[]{ 128529 }, new ParseResult(2, new SpriteCoordinates(1, 3, 331, 727))); // expressionless face
-		trie.insert(new int[]{ 128558 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 727))); // face with open mouth
-		trie.insert(new int[]{ 129296 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 331))); // zipper-mouth face
-		trie.insert(new int[]{ 129298 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 265))); // face with thermometer
-		trie.insert(new int[]{ 128127 }, new ParseResult(2, new SpriteCoordinates(1, 3, 727, 793))); // angry face with horns
-		trie.insert(new int[]{ 128128 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 793))); // skull
-		trie.insert(new int[]{ 128570 }, new ParseResult(2, new SpriteCoordinates(1, 3, 67, 727))); // grinning cat
-		trie.insert(new int[]{ 128576 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1, 727))); // weary cat
-		trie.insert(new int[]{ 129330,127997 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 463))); // palms up together: medium skin tone
-		trie.insert(new int[]{ 128080,127997 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 991))); // open hands: medium skin tone
-		trie.insert(new int[]{ 128588,127997 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 661))); // raising hands: medium skin tone
-		trie.insert(new int[]{ 128079,127997 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 991))); // clapping hands: medium skin tone
-		trie.insert(new int[]{ 128077,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 925, 991))); // thumbs up: medium-light skin tone
-		trie.insert(new int[]{ 128078,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 991))); // thumbs down: medium-light skin tone
-		trie.insert(new int[]{ 128074,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 67))); // oncoming fist: medium-light skin tone
-		trie.insert(new int[]{ 9994,127996 }, new ParseResult(3, new SpriteCoordinates(1, 3, 67, 67))); // raised fist: medium-light skin tone
-		trie.insert(new int[]{ 129307,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 1))); // left-facing fist: medium-light skin tone
-		trie.insert(new int[]{ 129308,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 595))); // right-facing fist: medium-light skin tone
-		trie.insert(new int[]{ 129310,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 595))); // crossed fingers: medium-light skin tone
-		trie.insert(new int[]{ 9996,127996 }, new ParseResult(3, new SpriteCoordinates(1, 3, 67, 1))); // victory hand: medium-light skin tone
-		trie.insert(new int[]{ 129311,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 463, 595))); // love-you gesture: medium-light skin tone
-		trie.insert(new int[]{ 129304,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 199))); // sign of the horns: medium-light skin tone
-		trie.insert(new int[]{ 128076,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 991, 991))); // OK hand: medium-light skin tone
-		trie.insert(new int[]{ 129295,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 397))); // pinching hand: medium-light skin tone
-		trie.insert(new int[]{ 129292,127995 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 463))); // pinched fingers: light skin tone
-		trie.insert(new int[]{ 128072,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 199))); // backhand index pointing left: medium-light skin tone
-		trie.insert(new int[]{ 128073,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 133))); // backhand index pointing right: medium-light skin tone
-		trie.insert(new int[]{ 128070,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 331))); // backhand index pointing up: medium-light skin tone
-		trie.insert(new int[]{ 128071,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 265))); // backhand index pointing down: medium-light skin tone
-		trie.insert(new int[]{ 9757,127996 }, new ParseResult(3, new SpriteCoordinates(1, 3, 133, 1))); // index pointing up: medium-light skin tone
-		trie.insert(new int[]{ 9995,127996 }, new ParseResult(3, new SpriteCoordinates(1, 3, 1, 67))); // raised hand: medium-light skin tone
-		trie.insert(new int[]{ 129306,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 67))); // raised back of hand: medium-light skin tone
-		trie.insert(new int[]{ 128400,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 1))); // hand with fingers splayed: medium-light skin tone
-		trie.insert(new int[]{ 128406,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 727))); // vulcan salute: medium-light skin tone
-		trie.insert(new int[]{ 128075,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 1))); // waving hand: medium-light skin tone
-		trie.insert(new int[]{ 129305,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 133))); // call me hand: medium-light skin tone
-		trie.insert(new int[]{ 128170,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 397))); // flexed biceps: medium-light skin tone
-		trie.insert(new int[]{ 128405,127995 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 727))); // middle finger: light skin tone
-		trie.insert(new int[]{ 9997,127995 }, new ParseResult(3, new SpriteCoordinates(1, 3, 1, 1))); // writing hand: light skin tone
-		trie.insert(new int[]{ 128591,127995 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 661))); // folded hands: light skin tone
-		trie.insert(new int[]{ 129462,127995 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 463))); // foot: light skin tone
-		trie.insert(new int[]{ 129461,127995 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1, 529))); // leg: light skin tone
-		trie.insert(new int[]{ 128132 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 793))); // lipstick
-		trie.insert(new int[]{ 128066 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1057, 463))); // ear
-		trie.insert(new int[]{ 129467 }, new ParseResult(2, new SpriteCoordinates(1, 3, 529, 1))); // ear with hearing aid
-		trie.insert(new int[]{ 128067 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1057, 397))); // nose
-		trie.insert(new int[]{ 128099 }, new ParseResult(2, new SpriteCoordinates(1, 3, 529, 991))); // footprints
-		trie.insert(new int[]{ 128483,65039 }, new ParseResult(3, new SpriteCoordinates(1, 3, 595, 727))); // speaking head
-		trie.insert(new int[]{ 128483 }, new ParseResult(2, new SpriteCoordinates(1, 3, 595, 727))); // speaking head
-		trie.insert(new int[]{ 128118,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 265))); // baby: medium-light skin tone
-		trie.insert(new int[]{ 128103,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 991))); // girl: medium-light skin tone
-		trie.insert(new int[]{ 129490,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 199))); // child: medium-light skin tone
-		trie.insert(new int[]{ 128102,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 463, 991))); // boy: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 859))); // woman: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 331))); // person: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 925, 925))); // man: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 133))); // person: medium-light skin tone, curly hair
-		trie.insert(new int[]{ 129489,127996,129457 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 133))); // person: medium-light skin tone, curly hair
-		trie.insert(new int[]{ 128105,127996,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 331))); // woman, curly haired: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129457 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 331))); // woman, curly haired: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 331))); // man, curly haired: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129457 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 331))); // man, curly haired: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 199))); // person: medium-light skin tone, red hair
-		trie.insert(new int[]{ 129489,127996,129456 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 199))); // person: medium-light skin tone, red hair
-		trie.insert(new int[]{ 128105,127996,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 397))); // woman, red haired: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129456 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 397))); // woman, red haired: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 397))); // man, red haired: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129456 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 397))); // man, red haired: medium-light skin tone
-		trie.insert(new int[]{ 128113,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 859))); // blond-haired woman: medium-light skin tone
-		trie.insert(new int[]{ 128113,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 859))); // blond-haired woman: medium-light skin tone
-		trie.insert(new int[]{ 128113,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 727))); // blond-haired person: medium-light skin tone
-		trie.insert(new int[]{ 128113,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 793))); // blond-haired man: medium-light skin tone
-		trie.insert(new int[]{ 128113,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 793))); // blond-haired man: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 1))); // person: medium-light skin tone, white hair
-		trie.insert(new int[]{ 129489,127996,129459 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 1))); // person: medium-light skin tone, white hair
-		trie.insert(new int[]{ 128105,127996,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 199))); // woman, white haired: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129459 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 199))); // woman, white haired: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 199))); // man, white haired: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129459 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 199))); // man, white haired: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 67))); // person: medium-light skin tone, bald
-		trie.insert(new int[]{ 129489,127996,129458 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 67))); // person: medium-light skin tone, bald
-		trie.insert(new int[]{ 128105,127996,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 265))); // woman, bald: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,129458 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 265))); // woman, bald: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 265))); // man, bald: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,129458 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 265))); // man, bald: medium-light skin tone
-		trie.insert(new int[]{ 129492,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 67))); // bearded person: medium-light skin tone
-		trie.insert(new int[]{ 128117,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 331))); // old woman: medium-light skin tone
-		trie.insert(new int[]{ 129491,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 133))); // older person: medium-light skin tone
-		trie.insert(new int[]{ 128116,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 397))); // old man: medium-light skin tone
-		trie.insert(new int[]{ 128114,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 661))); // man with Chinese cap: medium-light skin tone
-		trie.insert(new int[]{ 128115,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 463))); // person wearing turban: medium-light skin tone
-		trie.insert(new int[]{ 128115,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 595))); // woman wearing turban: medium-light skin tone
-		trie.insert(new int[]{ 128115,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 595))); // woman wearing turban: medium-light skin tone
-		trie.insert(new int[]{ 128115,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 529))); // man wearing turban: medium-light skin tone
-		trie.insert(new int[]{ 128115,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 529))); // man wearing turban: medium-light skin tone
-		trie.insert(new int[]{ 129493,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 1))); // woman with headscarf: medium-light skin tone
-		trie.insert(new int[]{ 128110,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 859))); // police officer: medium-light skin tone
-		trie.insert(new int[]{ 128110,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 859))); // woman police officer: medium-light skin tone
-		trie.insert(new int[]{ 128110,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 859))); // woman police officer: medium-light skin tone
-		trie.insert(new int[]{ 128110,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 859))); // man police officer: medium-light skin tone
-		trie.insert(new int[]{ 128110,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 859))); // man police officer: medium-light skin tone
-		trie.insert(new int[]{ 128119,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 67))); // construction worker: medium-light skin tone
-		trie.insert(new int[]{ 128119,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 199))); // woman construction worker: medium-light skin tone
-		trie.insert(new int[]{ 128119,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 199))); // woman construction worker: medium-light skin tone
-		trie.insert(new int[]{ 128119,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 133))); // man construction worker: medium-light skin tone
-		trie.insert(new int[]{ 128119,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 133))); // man construction worker: medium-light skin tone
-		trie.insert(new int[]{ 128130,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 793))); // guard: medium-light skin tone
-		trie.insert(new int[]{ 128130,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 793))); // woman guard: medium-light skin tone
-		trie.insert(new int[]{ 128130,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 793))); // woman guard: medium-light skin tone
-		trie.insert(new int[]{ 128130,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 793))); // man guard: medium-light skin tone
-		trie.insert(new int[]{ 128130,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 793))); // man guard: medium-light skin tone
-		trie.insert(new int[]{ 128373,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 133))); // detective: medium-light skin tone
-		trie.insert(new int[]{ 128373,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 265))); // woman detective: medium-light skin tone
-		trie.insert(new int[]{ 128373,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 265))); // woman detective: medium-light skin tone
-		trie.insert(new int[]{ 128373,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 199))); // man detective: medium-light skin tone
-		trie.insert(new int[]{ 128373,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 199))); // man detective: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 331))); // health worker: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,9877 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 331))); // health worker: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 133))); // woman health worker: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,9877 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 133))); // woman health worker: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 133))); // man health worker: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,9877 }, new ParseResult(5, new SpriteCoordinates(1, 3, 991, 133))); // man health worker: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 331))); // farmer: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127806 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 331))); // farmer: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 925))); // woman farmer: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127806 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 925))); // woman farmer: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 991))); // man farmer: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127806 }, new ParseResult(6, new SpriteCoordinates(1, 3, 331, 991))); // man farmer: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 265))); // cook: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127859 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 265))); // cook: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 925))); // woman cook: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127859 }, new ParseResult(6, new SpriteCoordinates(1, 3, 331, 925))); // woman cook: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 991))); // man cook: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127859 }, new ParseResult(6, new SpriteCoordinates(1, 3, 265, 991))); // man cook: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 67))); // student: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127891 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 67))); // student: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 925))); // woman student: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127891 }, new ParseResult(6, new SpriteCoordinates(1, 3, 199, 925))); // woman student: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 991))); // man student: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127891 }, new ParseResult(6, new SpriteCoordinates(1, 3, 133, 991))); // man student: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 1))); // singer: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127908 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 1))); // singer: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 925))); // woman singer: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127908 }, new ParseResult(6, new SpriteCoordinates(1, 3, 133, 925))); // woman singer: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 991))); // man singer: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127908 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 991))); // man singer: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 397))); // teacher: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127979 }, new ParseResult(6, new SpriteCoordinates(1, 3, 331, 397))); // teacher: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 925))); // woman teacher: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127979 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 925))); // woman teacher: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 925))); // man teacher: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127979 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 925))); // man teacher: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 397))); // factory worker: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127981 }, new ParseResult(6, new SpriteCoordinates(1, 3, 265, 397))); // factory worker: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 859))); // woman factory worker: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127981 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 859))); // woman factory worker: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 859))); // man factory worker: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127981 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 859))); // man factory worker: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 397))); // technologist: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,128187 }, new ParseResult(6, new SpriteCoordinates(1, 3, 199, 397))); // technologist: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 793))); // woman technologist: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,128187 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 793))); // woman technologist: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 793))); // man technologist: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,128187 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 793))); // man technologist: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 397))); // office worker: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,128188 }, new ParseResult(6, new SpriteCoordinates(1, 3, 133, 397))); // office worker: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 727))); // woman office worker: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,128188 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 727))); // woman office worker: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 727))); // man office worker: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,128188 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 727))); // man office worker: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 397))); // mechanic: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,128295 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 397))); // mechanic: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 661))); // woman mechanic: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,128295 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 661))); // woman mechanic: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 661))); // man mechanic: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,128295 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 661))); // man mechanic: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 397))); // scientist: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,128300 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 397))); // scientist: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 595))); // woman scientist: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,128300 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 595))); // woman scientist: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 595))); // man scientist: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,128300 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 595))); // man scientist: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 397))); // artist: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127912 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 397))); // artist: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 925))); // woman artist: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127912 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 925))); // woman artist: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 991))); // man artist: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127912 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 991))); // man artist: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 265))); // firefighter: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,128658 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 265))); // firefighter: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 463))); // woman firefighter: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,128658 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 463))); // woman firefighter: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 463))); // man firefighter: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,128658 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 463))); // man firefighter: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 331))); // pilot: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,9992 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 331))); // pilot: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 1))); // woman pilot: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,9992 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 1))); // woman pilot: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 1))); // man pilot: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,9992 }, new ParseResult(5, new SpriteCoordinates(1, 3, 991, 1))); // man pilot: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 331))); // astronaut: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,128640 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 331))); // astronaut: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 529))); // woman astronaut: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,128640 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 529))); // woman astronaut: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 529))); // man astronaut: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,128640 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 529))); // man astronaut: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 331))); // judge: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,9878 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 331))); // judge: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 67))); // woman judge: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,9878 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 67))); // woman judge: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 67))); // man judge: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,9878 }, new ParseResult(5, new SpriteCoordinates(1, 3, 991, 67))); // man judge: medium-light skin tone
-		trie.insert(new int[]{ 128112,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 859))); // person with veil: medium-light skin tone
-		trie.insert(new int[]{ 128112,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 859))); // woman with veil: medium-light skin tone
-		trie.insert(new int[]{ 128112,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 859))); // woman with veil: medium-light skin tone
-		trie.insert(new int[]{ 128112,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 859))); // man with veil: medium-light skin tone
-		trie.insert(new int[]{ 128112,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 859))); // man with veil: medium-light skin tone
-		trie.insert(new int[]{ 129333,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 133))); // person in tuxedo: medium-light skin tone
-		trie.insert(new int[]{ 129333,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 265))); // woman in tuxedo: medium-light skin tone
-		trie.insert(new int[]{ 129333,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 265))); // woman in tuxedo: medium-light skin tone
-		trie.insert(new int[]{ 129333,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 199))); // man in tuxedo: medium-light skin tone
-		trie.insert(new int[]{ 129333,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 199))); // man in tuxedo: medium-light skin tone
-		trie.insert(new int[]{ 128120,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 1))); // princess: medium-light skin tone
-		trie.insert(new int[]{ 129332,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 331))); // prince: medium-light skin tone
-		trie.insert(new int[]{ 129464,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 265))); // superhero: medium-light skin tone
-		trie.insert(new int[]{ 129464,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 397))); // woman superhero: medium-light skin tone
-		trie.insert(new int[]{ 129464,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 397))); // woman superhero: medium-light skin tone
-		trie.insert(new int[]{ 129464,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 331))); // man superhero: medium-light skin tone
-		trie.insert(new int[]{ 129464,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 331))); // man superhero: medium-light skin tone
-		trie.insert(new int[]{ 129465,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 67))); // supervillain: medium-light skin tone
-		trie.insert(new int[]{ 129465,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 199))); // woman supervillain: medium-light skin tone
-		trie.insert(new int[]{ 129465,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 199))); // woman supervillain: medium-light skin tone
-		trie.insert(new int[]{ 129465,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 133))); // man supervillain: medium-light skin tone
-		trie.insert(new int[]{ 129465,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 133))); // man supervillain: medium-light skin tone
-		trie.insert(new int[]{ 129399,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 529))); // ninja: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 133))); // mx claus: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127876 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 133))); // mx claus: medium-light skin tone
-		trie.insert(new int[]{ 129334,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 67))); // Mrs. Claus: medium-light skin tone
-		trie.insert(new int[]{ 127877,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 859))); // Santa Claus: medium-light skin tone
-		trie.insert(new int[]{ 129497,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 199))); // mage: medium-light skin tone
-		trie.insert(new int[]{ 129497,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 265))); // woman mage: medium-light skin tone
-		trie.insert(new int[]{ 129497,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 265))); // woman mage: medium-light skin tone
-		trie.insert(new int[]{ 129497,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 265))); // man mage: medium-light skin tone
-		trie.insert(new int[]{ 129497,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 265))); // man mage: medium-light skin tone
-		trie.insert(new int[]{ 129501,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 133))); // elf: medium-light skin tone
-		trie.insert(new int[]{ 129501,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 1))); // woman elf: medium-light skin tone
-		trie.insert(new int[]{ 129501,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 1))); // woman elf: medium-light skin tone
-		trie.insert(new int[]{ 129501,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 133))); // man elf: medium-light skin tone
-		trie.insert(new int[]{ 129501,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 133))); // man elf: medium-light skin tone
-		trie.insert(new int[]{ 129499,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 199))); // vampire: medium-light skin tone
-		trie.insert(new int[]{ 129499,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 199))); // woman vampire: medium-light skin tone
-		trie.insert(new int[]{ 129499,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 199))); // woman vampire: medium-light skin tone
-		trie.insert(new int[]{ 129499,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 199))); // man vampire: medium-light skin tone
-		trie.insert(new int[]{ 129499,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 199))); // man vampire: medium-light skin tone
-		trie.insert(new int[]{ 129503,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 133))); // man zombie
-		trie.insert(new int[]{ 129503,9794 }, new ParseResult(3, new SpriteCoordinates(1, 3, 1, 133))); // man zombie
-		trie.insert(new int[]{ 129500,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 67))); // merperson: medium-light skin tone
-		trie.insert(new int[]{ 129500,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 199))); // mermaid: medium-light skin tone
-		trie.insert(new int[]{ 129500,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 199))); // mermaid: medium-light skin tone
-		trie.insert(new int[]{ 129500,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 133))); // merman: medium-light skin tone
-		trie.insert(new int[]{ 129500,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 133))); // merman: medium-light skin tone
-		trie.insert(new int[]{ 129498,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 1))); // fairy: medium-light skin tone
-		trie.insert(new int[]{ 129498,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 133))); // woman fairy: medium-light skin tone
-		trie.insert(new int[]{ 129498,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 133))); // woman fairy: medium-light skin tone
-		trie.insert(new int[]{ 129498,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 67))); // man fairy: medium-light skin tone
-		trie.insert(new int[]{ 129498,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 67))); // man fairy: medium-light skin tone
-		trie.insert(new int[]{ 128124,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 793))); // baby angel: medium-light skin tone
-		trie.insert(new int[]{ 129328,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1, 595))); // pregnant woman: medium-light skin tone
-		trie.insert(new int[]{ 129329,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 529))); // breast-feeding: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 199))); // person feeding baby: medium-light skin tone
-		trie.insert(new int[]{ 129489,127996,127868 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 199))); // person feeding baby: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 925))); // woman feeding baby: medium-light skin tone
-		trie.insert(new int[]{ 128105,127996,127868 }, new ParseResult(6, new SpriteCoordinates(1, 3, 265, 925))); // woman feeding baby: medium-light skin tone
+		trie.insert(new int[]{ 128524 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 661))); // relieved face
+		trie.insert(new int[]{ 128537 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 463))); // kissing face with smiling eyes
+		trie.insert(new int[]{ 129322 }, new ParseResult(2, new SpriteCoordinates(1, 2, 661, 397))); // zany face
+		trie.insert(new int[]{ 129395 }, new ParseResult(2, new SpriteCoordinates(1, 2, 199, 595))); // partying face
+		trie.insert(new int[]{ 128533 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 529))); // confused face
+		trie.insert(new int[]{ 128553 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 331))); // weary face
+		trie.insert(new int[]{ 128544 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 397))); // angry face
+		trie.insert(new int[]{ 129397 }, new ParseResult(2, new SpriteCoordinates(1, 2, 133, 595))); // hot face
+		trie.insert(new int[]{ 128531 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 595))); // downcast face with sweat
+		trie.insert(new int[]{ 129317 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 661))); // lying face
+		trie.insert(new int[]{ 128559 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 265))); // hushed face
+		trie.insert(new int[]{ 129316 }, new ParseResult(2, new SpriteCoordinates(1, 2, 67, 661))); // drooling face
+		trie.insert(new int[]{ 129314 }, new ParseResult(2, new SpriteCoordinates(1, 2, 133, 661))); // nauseated face
+		trie.insert(new int[]{ 129297 }, new ParseResult(2, new SpriteCoordinates(1, 2, 661, 661))); // money-mouth face
+		trie.insert(new int[]{ 128122 }, new ParseResult(2, new SpriteCoordinates(1, 2, 859, 793))); // goblin
+		trie.insert(new int[]{ 128125 }, new ParseResult(2, new SpriteCoordinates(1, 2, 859, 661))); // alien
+		trie.insert(new int[]{ 128569 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 199))); // cat with tears of joy
+		trie.insert(new int[]{ 128574 }, new ParseResult(2, new SpriteCoordinates(1, 2, 793, 133))); // pouting cat
+		trie.insert(new int[]{ 129330,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 199))); // palms up together: dark skin tone
+		trie.insert(new int[]{ 128080,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1123, 1057))); // open hands: dark skin tone
+		trie.insert(new int[]{ 128588,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 727))); // raising hands: dark skin tone
+		trie.insert(new int[]{ 128079,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 1123))); // clapping hands: dark skin tone
+		trie.insert(new int[]{ 128077,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 1123))); // thumbs up: medium-dark skin tone
+		trie.insert(new int[]{ 128078,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 1123))); // thumbs down: medium-dark skin tone
+		trie.insert(new int[]{ 128074,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 1123))); // oncoming fist: medium-dark skin tone
+		trie.insert(new int[]{ 9994,127998 }, new ParseResult(3, new SpriteCoordinates(1, 2, 67, 67))); // raised fist: medium-dark skin tone
+		trie.insert(new int[]{ 129307,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 661))); // left-facing fist: medium-dark skin tone
+		trie.insert(new int[]{ 129308,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 661))); // right-facing fist: medium-dark skin tone
+		trie.insert(new int[]{ 129310,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 661))); // crossed fingers: medium-dark skin tone
+		trie.insert(new int[]{ 9996,127998 }, new ParseResult(3, new SpriteCoordinates(1, 2, 67, 1))); // victory hand: medium-dark skin tone
+		trie.insert(new int[]{ 129311,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 661))); // love-you gesture: medium-dark skin tone
+		trie.insert(new int[]{ 129304,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 661))); // sign of the horns: medium-dark skin tone
+		trie.insert(new int[]{ 128076,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 1123))); // OK hand: medium-dark skin tone
+		trie.insert(new int[]{ 129295,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 1))); // pinching hand: medium-dark skin tone
+		trie.insert(new int[]{ 129292,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 67))); // pinched fingers: medium-dark skin tone
+		trie.insert(new int[]{ 128072,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 1123))); // backhand index pointing left: medium-dark skin tone
+		trie.insert(new int[]{ 128073,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 1123))); // backhand index pointing right: medium-dark skin tone
+		trie.insert(new int[]{ 128070,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 1123))); // backhand index pointing up: medium-dark skin tone
+		trie.insert(new int[]{ 128071,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 1123))); // backhand index pointing down: medium-dark skin tone
+		trie.insert(new int[]{ 9757,127998 }, new ParseResult(3, new SpriteCoordinates(1, 2, 133, 67))); // index pointing up: medium-dark skin tone
+		trie.insert(new int[]{ 9995,127998 }, new ParseResult(3, new SpriteCoordinates(1, 2, 1, 67))); // raised hand: medium-dark skin tone
+		trie.insert(new int[]{ 129306,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 661))); // raised back of hand: medium-dark skin tone
+		trie.insert(new int[]{ 128400,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 793))); // hand with fingers splayed: medium-dark skin tone
+		trie.insert(new int[]{ 128406,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 793))); // vulcan salute: medium-dark skin tone
+		trie.insert(new int[]{ 128075,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 1123))); // waving hand: medium-dark skin tone
+		trie.insert(new int[]{ 129305,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 661))); // call me hand: medium-dark skin tone
+		trie.insert(new int[]{ 128170,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 793))); // flexed biceps: medium-dark skin tone
+		trie.insert(new int[]{ 128405,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 793))); // middle finger: medium skin tone
+		trie.insert(new int[]{ 9997,127997 }, new ParseResult(3, new SpriteCoordinates(1, 2, 1, 1))); // writing hand: medium skin tone
+		trie.insert(new int[]{ 128591,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 331))); // folded hands: medium skin tone
+		trie.insert(new int[]{ 129462,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 463))); // foot: medium skin tone
+		trie.insert(new int[]{ 129461,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 529))); // leg: medium skin tone
+		trie.insert(new int[]{ 128068 }, new ParseResult(2, new SpriteCoordinates(1, 2, 661, 1123))); // mouth
+		trie.insert(new int[]{ 128066,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 1123))); // ear: medium skin tone
+		trie.insert(new int[]{ 129467,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 1))); // ear with hearing aid: medium skin tone
+		trie.insert(new int[]{ 128067,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 1123))); // nose: medium skin tone
+		trie.insert(new int[]{ 129504 }, new ParseResult(2, new SpriteCoordinates(1, 2, 67, 133))); // brain
+		trie.insert(new int[]{ 128101 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 595))); // busts in silhouette
+		trie.insert(new int[]{ 128118,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 859))); // baby: medium-dark skin tone
+		trie.insert(new int[]{ 128103,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1123, 463))); // girl: medium-dark skin tone
+		trie.insert(new int[]{ 129490,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 331))); // child: medium-dark skin tone
+		trie.insert(new int[]{ 128102,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1123, 529))); // boy: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 925))); // woman: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 1))); // person: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 595))); // man: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 397))); // person: medium-dark skin tone, curly hair
+		trie.insert(new int[]{ 129489,127998,129457 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 397))); // person: medium-dark skin tone, curly hair
+		trie.insert(new int[]{ 128105,127998,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 925))); // woman, curly haired: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129457 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 925))); // woman, curly haired: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 1057))); // man, curly haired: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129457 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 1057))); // man, curly haired: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 397))); // person: medium-dark skin tone, red hair
+		trie.insert(new int[]{ 129489,127998,129456 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 397))); // person: medium-dark skin tone, red hair
+		trie.insert(new int[]{ 128105,127998,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 1))); // woman, red haired: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129456 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 1))); // woman, red haired: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 1057))); // man, red haired: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129456 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 1057))); // man, red haired: medium-dark skin tone
+		trie.insert(new int[]{ 128113,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 859))); // blond-haired woman: medium-dark skin tone
+		trie.insert(new int[]{ 128113,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 859))); // blond-haired woman: medium-dark skin tone
+		trie.insert(new int[]{ 128113,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 859))); // blond-haired person: medium-dark skin tone
+		trie.insert(new int[]{ 128113,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 859))); // blond-haired man: medium-dark skin tone
+		trie.insert(new int[]{ 128113,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 793, 859))); // blond-haired man: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 331))); // person: medium-dark skin tone, white hair
+		trie.insert(new int[]{ 129489,127998,129459 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 331))); // person: medium-dark skin tone, white hair
+		trie.insert(new int[]{ 128105,127998,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 925))); // woman, white haired: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129459 }, new ParseResult(6, new SpriteCoordinates(1, 2, 793, 925))); // woman, white haired: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 925))); // man, white haired: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129459 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1057, 925))); // man, white haired: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 397))); // person: medium-dark skin tone, bald
+		trie.insert(new int[]{ 129489,127998,129458 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 397))); // person: medium-dark skin tone, bald
+		trie.insert(new int[]{ 128105,127998,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 925))); // woman, bald: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129458 }, new ParseResult(6, new SpriteCoordinates(1, 2, 859, 925))); // woman, bald: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 991))); // man, bald: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129458 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1057, 991))); // man, bald: medium-dark skin tone
+		trie.insert(new int[]{ 129492,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 199))); // bearded person: medium-dark skin tone
+		trie.insert(new int[]{ 129492,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 265))); // man: medium-dark skin tone, beard
+		trie.insert(new int[]{ 129492,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 265))); // man: medium-dark skin tone, beard
+		trie.insert(new int[]{ 129492,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 331))); // woman: medium-dark skin tone, beard
+		trie.insert(new int[]{ 129492,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1, 331))); // woman: medium-dark skin tone, beard
+		trie.insert(new int[]{ 128117,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 859))); // old woman: medium-dark skin tone
+		trie.insert(new int[]{ 129491,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 331))); // older person: medium-dark skin tone
+		trie.insert(new int[]{ 128116,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 859))); // old man: medium-dark skin tone
+		trie.insert(new int[]{ 128114,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 859))); // man with Chinese cap: medium-dark skin tone
+		trie.insert(new int[]{ 128115,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 859))); // person wearing turban: medium-dark skin tone
+		trie.insert(new int[]{ 128115,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 859))); // woman wearing turban: medium-dark skin tone
+		trie.insert(new int[]{ 128115,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 859))); // woman wearing turban: medium-dark skin tone
+		trie.insert(new int[]{ 128115,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 859))); // man wearing turban: medium-dark skin tone
+		trie.insert(new int[]{ 128115,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 859))); // man wearing turban: medium-dark skin tone
+		trie.insert(new int[]{ 129493,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 133))); // woman with headscarf: medium-dark skin tone
+		trie.insert(new int[]{ 128110,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 199))); // police officer: medium-dark skin tone
+		trie.insert(new int[]{ 128110,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 331))); // woman police officer: medium-dark skin tone
+		trie.insert(new int[]{ 128110,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 331))); // woman police officer: medium-dark skin tone
+		trie.insert(new int[]{ 128110,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 265))); // man police officer: medium-dark skin tone
+		trie.insert(new int[]{ 128110,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 265))); // man police officer: medium-dark skin tone
+		trie.insert(new int[]{ 128119,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 859))); // construction worker: medium-dark skin tone
+		trie.insert(new int[]{ 128119,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 859))); // woman construction worker: medium-dark skin tone
+		trie.insert(new int[]{ 128119,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 859))); // woman construction worker: medium-dark skin tone
+		trie.insert(new int[]{ 128119,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 859))); // man construction worker: medium-dark skin tone
+		trie.insert(new int[]{ 128119,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 859))); // man construction worker: medium-dark skin tone
+		trie.insert(new int[]{ 128130,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 265))); // guard: medium-dark skin tone
+		trie.insert(new int[]{ 128130,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 397))); // woman guard: medium-dark skin tone
+		trie.insert(new int[]{ 128130,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 397))); // woman guard: medium-dark skin tone
+		trie.insert(new int[]{ 128130,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 331))); // man guard: medium-dark skin tone
+		trie.insert(new int[]{ 128130,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 331))); // man guard: medium-dark skin tone
+		trie.insert(new int[]{ 128373,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 793))); // detective: medium-dark skin tone
+		trie.insert(new int[]{ 128373,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 793))); // woman detective: medium-dark skin tone
+		trie.insert(new int[]{ 128373,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 793))); // woman detective: medium-dark skin tone
+		trie.insert(new int[]{ 128373,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 793))); // man detective: medium-dark skin tone
+		trie.insert(new int[]{ 128373,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 793))); // man detective: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 265))); // health worker: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,9877 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 265))); // health worker: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 925))); // woman health worker: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,9877 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 925))); // woman health worker: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 859))); // man health worker: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,9877 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1057, 859))); // man health worker: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 463))); // farmer: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127806 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 463))); // farmer: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 991))); // woman farmer: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127806 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 991))); // woman farmer: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 1057))); // man farmer: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127806 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 1057))); // man farmer: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 463))); // cook: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127859 }, new ParseResult(6, new SpriteCoordinates(1, 2, 199, 463))); // cook: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 925))); // woman cook: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127859 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 925))); // woman cook: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 1057))); // man cook: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127859 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 1057))); // man cook: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 463))); // student: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127891 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1, 463))); // student: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 793))); // woman student: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127891 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 793))); // woman student: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 1057))); // man student: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127891 }, new ParseResult(6, new SpriteCoordinates(1, 2, 793, 1057))); // man student: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 397))); // singer: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127908 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 397))); // singer: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 727))); // woman singer: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127908 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 727))); // woman singer: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 1057))); // man singer: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127908 }, new ParseResult(6, new SpriteCoordinates(1, 2, 727, 1057))); // man singer: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 265))); // teacher: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127979 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 265))); // teacher: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 595))); // woman teacher: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127979 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 595))); // woman teacher: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 1057))); // man teacher: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127979 }, new ParseResult(6, new SpriteCoordinates(1, 2, 595, 1057))); // man teacher: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 199))); // factory worker: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127981 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 199))); // factory worker: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 529))); // woman factory worker: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127981 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 529))); // woman factory worker: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 1057))); // man factory worker: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127981 }, new ParseResult(6, new SpriteCoordinates(1, 2, 529, 1057))); // man factory worker: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 133))); // technologist: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,128187 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 133))); // technologist: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 463))); // woman technologist: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,128187 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 463))); // woman technologist: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 1057))); // man technologist: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,128187 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 1057))); // man technologist: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 67))); // office worker: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,128188 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 67))); // office worker: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 397))); // woman office worker: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,128188 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 397))); // woman office worker: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 1057))); // man office worker: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,128188 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 1057))); // man office worker: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 1))); // mechanic: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,128295 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 1))); // mechanic: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 331))); // woman mechanic: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,128295 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 331))); // woman mechanic: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 1057))); // man mechanic: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,128295 }, new ParseResult(6, new SpriteCoordinates(1, 2, 331, 1057))); // man mechanic: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 397))); // scientist: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,128300 }, new ParseResult(6, new SpriteCoordinates(1, 2, 397, 397))); // scientist: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 265))); // woman scientist: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,128300 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 265))); // woman scientist: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 1057))); // man scientist: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,128300 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 1057))); // man scientist: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 331))); // artist: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127912 }, new ParseResult(6, new SpriteCoordinates(1, 2, 463, 331))); // artist: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 661))); // woman artist: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127912 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 661))); // woman artist: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 1057))); // man artist: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127912 }, new ParseResult(6, new SpriteCoordinates(1, 2, 661, 1057))); // man artist: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 397))); // firefighter: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,128658 }, new ParseResult(6, new SpriteCoordinates(1, 2, 265, 397))); // firefighter: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 133))); // woman firefighter: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,128658 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 133))); // woman firefighter: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 1057))); // man firefighter: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,128658 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 1057))); // man firefighter: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 133))); // pilot: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,9992 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 133))); // pilot: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 925))); // woman pilot: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,9992 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 925))); // woman pilot: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 727))); // man pilot: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,9992 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1057, 727))); // man pilot: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 397))); // astronaut: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,128640 }, new ParseResult(6, new SpriteCoordinates(1, 2, 331, 397))); // astronaut: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 199))); // woman astronaut: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,128640 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 199))); // woman astronaut: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 1057))); // man astronaut: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,128640 }, new ParseResult(6, new SpriteCoordinates(1, 2, 199, 1057))); // man astronaut: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 199))); // judge: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,9878 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 199))); // judge: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 925))); // woman judge: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,9878 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 925))); // woman judge: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 793))); // man judge: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,9878 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1057, 793))); // man judge: medium-dark skin tone
+		trie.insert(new int[]{ 128112,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 1))); // person with veil: medium-dark skin tone
+		trie.insert(new int[]{ 128112,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 133))); // woman with veil: medium-dark skin tone
+		trie.insert(new int[]{ 128112,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 133))); // woman with veil: medium-dark skin tone
+		trie.insert(new int[]{ 128112,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 67))); // man with veil: medium-dark skin tone
+		trie.insert(new int[]{ 128112,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 67))); // man with veil: medium-dark skin tone
+		trie.insert(new int[]{ 129333,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 595))); // person in tuxedo: medium-dark skin tone
+		trie.insert(new int[]{ 129333,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 1))); // woman in tuxedo: medium-dark skin tone
+		trie.insert(new int[]{ 129333,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 1))); // woman in tuxedo: medium-dark skin tone
+		trie.insert(new int[]{ 129333,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 595))); // man in tuxedo: medium-dark skin tone
+		trie.insert(new int[]{ 129333,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 595))); // man in tuxedo: medium-dark skin tone
+		trie.insert(new int[]{ 128120,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 859))); // princess: medium-dark skin tone
+		trie.insert(new int[]{ 129332,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 67))); // prince: medium-dark skin tone
+		trie.insert(new int[]{ 129464,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 265))); // superhero: medium-dark skin tone
+		trie.insert(new int[]{ 129464,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 397))); // woman superhero: medium-dark skin tone
+		trie.insert(new int[]{ 129464,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 397))); // woman superhero: medium-dark skin tone
+		trie.insert(new int[]{ 129464,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 331))); // man superhero: medium-dark skin tone
+		trie.insert(new int[]{ 129464,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 331))); // man superhero: medium-dark skin tone
+		trie.insert(new int[]{ 129465,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 67))); // supervillain: medium-dark skin tone
+		trie.insert(new int[]{ 129465,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 199))); // woman supervillain: medium-dark skin tone
+		trie.insert(new int[]{ 129465,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 199))); // woman supervillain: medium-dark skin tone
+		trie.insert(new int[]{ 129465,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 133))); // man supervillain: medium-dark skin tone
+		trie.insert(new int[]{ 129465,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 133))); // man supervillain: medium-dark skin tone
+		trie.insert(new int[]{ 129399,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 595))); // ninja: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 463))); // mx claus: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127876 }, new ParseResult(6, new SpriteCoordinates(1, 2, 67, 463))); // mx claus: medium-dark skin tone
+		trie.insert(new int[]{ 129334,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 595))); // Mrs. Claus: medium-dark skin tone
+		trie.insert(new int[]{ 127877,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1057, 1123))); // Santa Claus: medium-dark skin tone
+		trie.insert(new int[]{ 129497,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 67, 265))); // mage: medium-dark skin tone
+		trie.insert(new int[]{ 129497,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 265))); // woman mage: medium-dark skin tone
+		trie.insert(new int[]{ 129497,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 265))); // woman mage: medium-dark skin tone
+		trie.insert(new int[]{ 129497,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 265))); // man mage: medium-dark skin tone
+		trie.insert(new int[]{ 129497,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 265))); // man mage: medium-dark skin tone
+		trie.insert(new int[]{ 129501,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 1))); // elf: medium-dark skin tone
+		trie.insert(new int[]{ 129501,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 133))); // woman elf: medium-dark skin tone
+		trie.insert(new int[]{ 129501,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 133))); // woman elf: medium-dark skin tone
+		trie.insert(new int[]{ 129501,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 67))); // man elf: medium-dark skin tone
+		trie.insert(new int[]{ 129501,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 67))); // man elf: medium-dark skin tone
+		trie.insert(new int[]{ 129499,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 199))); // vampire: medium-dark skin tone
+		trie.insert(new int[]{ 129499,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 67))); // woman vampire: medium-dark skin tone
+		trie.insert(new int[]{ 129499,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 67))); // woman vampire: medium-dark skin tone
+		trie.insert(new int[]{ 129499,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 1))); // man vampire: medium-dark skin tone
+		trie.insert(new int[]{ 129499,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 1))); // man vampire: medium-dark skin tone
+		trie.insert(new int[]{ 129502,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 133))); // woman genie
+		trie.insert(new int[]{ 129502,9792 }, new ParseResult(3, new SpriteCoordinates(1, 2, 133, 133))); // woman genie
+		trie.insert(new int[]{ 129500,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 199))); // merperson: medium-dark skin tone
+		trie.insert(new int[]{ 129500,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 199))); // mermaid: medium-dark skin tone
+		trie.insert(new int[]{ 129500,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 199))); // mermaid: medium-dark skin tone
+		trie.insert(new int[]{ 129500,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 199))); // merman: medium-dark skin tone
+		trie.insert(new int[]{ 129500,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 67, 199))); // merman: medium-dark skin tone
+		trie.insert(new int[]{ 129498,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 133))); // fairy: medium-dark skin tone
+		trie.insert(new int[]{ 129498,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 265))); // woman fairy: medium-dark skin tone
+		trie.insert(new int[]{ 129498,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1, 265))); // woman fairy: medium-dark skin tone
+		trie.insert(new int[]{ 129498,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 199))); // man fairy: medium-dark skin tone
+		trie.insert(new int[]{ 129498,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 199))); // man fairy: medium-dark skin tone
+		trie.insert(new int[]{ 128124,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 727))); // baby angel: medium-dark skin tone
+		trie.insert(new int[]{ 129328,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 331))); // pregnant woman: medium-dark skin tone
+		trie.insert(new int[]{ 129329,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 265))); // breast-feeding: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 463))); // person feeding baby: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,127868 }, new ParseResult(6, new SpriteCoordinates(1, 2, 133, 463))); // person feeding baby: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 859))); // woman feeding baby: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,127868 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 859))); // woman feeding baby: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 1057))); // man feeding baby: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,127868 }, new ParseResult(6, new SpriteCoordinates(1, 2, 859, 1057))); // man feeding baby: medium-dark skin tone
+		trie.insert(new int[]{ 128583,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 331, 727))); // person bowing: medium-dark skin tone
+		trie.insert(new int[]{ 128583,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 727))); // woman bowing: medium-dark skin tone
+		trie.insert(new int[]{ 128583,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 463, 727))); // woman bowing: medium-dark skin tone
+		trie.insert(new int[]{ 128583,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 727))); // man bowing: medium-dark skin tone
+		trie.insert(new int[]{ 128583,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 727))); // man bowing: medium-dark skin tone
+		trie.insert(new int[]{ 128129,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 463))); // person tipping hand: medium-dark skin tone
+		trie.insert(new int[]{ 128129,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 595))); // woman tipping hand: medium-dark skin tone
+		trie.insert(new int[]{ 128129,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 595))); // woman tipping hand: medium-dark skin tone
+		trie.insert(new int[]{ 128129,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 529))); // man tipping hand: medium-dark skin tone
+		trie.insert(new int[]{ 128129,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 529))); // man tipping hand: medium-dark skin tone
+		trie.insert(new int[]{ 128581,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 727))); // person gesturing NO: medium-dark skin tone
+		trie.insert(new int[]{ 128581,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 67))); // woman gesturing NO: medium-dark skin tone
+		trie.insert(new int[]{ 128581,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 793, 67))); // woman gesturing NO: medium-dark skin tone
+		trie.insert(new int[]{ 128581,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 793, 1))); // man gesturing NO: medium-dark skin tone
+		trie.insert(new int[]{ 128581,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 793, 1))); // man gesturing NO: medium-dark skin tone
+		trie.insert(new int[]{ 128582,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 529, 727))); // person gesturing OK: medium-dark skin tone
+		trie.insert(new int[]{ 128582,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 727))); // woman gesturing OK: medium-dark skin tone
+		trie.insert(new int[]{ 128582,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 727))); // woman gesturing OK: medium-dark skin tone
+		trie.insert(new int[]{ 128582,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 595, 727))); // man gesturing OK: medium-dark skin tone
+		trie.insert(new int[]{ 128582,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 595, 727))); // man gesturing OK: medium-dark skin tone
+		trie.insert(new int[]{ 128587,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 133, 727))); // person raising hand: medium-dark skin tone
+		trie.insert(new int[]{ 128587,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 727))); // woman raising hand: medium-dark skin tone
+		trie.insert(new int[]{ 128587,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 727))); // woman raising hand: medium-dark skin tone
+		trie.insert(new int[]{ 128587,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 199, 727))); // man raising hand: medium-dark skin tone
+		trie.insert(new int[]{ 128587,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 199, 727))); // man raising hand: medium-dark skin tone
+		trie.insert(new int[]{ 129487,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 1, 529))); // deaf person: medium-dark skin tone
+		trie.insert(new int[]{ 129487,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 133, 529))); // deaf woman: medium-dark skin tone
+		trie.insert(new int[]{ 129487,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 133, 529))); // deaf woman: medium-dark skin tone
+		trie.insert(new int[]{ 129487,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 67, 529))); // deaf man: medium-dark skin tone
+		trie.insert(new int[]{ 129487,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 67, 529))); // deaf man: medium-dark skin tone
+		trie.insert(new int[]{ 129318,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 463))); // person facepalming: medium-dark skin tone
+		trie.insert(new int[]{ 129318,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 595))); // woman facepalming: medium-dark skin tone
+		trie.insert(new int[]{ 129318,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 595))); // woman facepalming: medium-dark skin tone
+		trie.insert(new int[]{ 129318,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 529))); // man facepalming: medium-dark skin tone
+		trie.insert(new int[]{ 129318,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 529))); // man facepalming: medium-dark skin tone
+		trie.insert(new int[]{ 129335,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 595))); // person shrugging: medium-dark skin tone
+		trie.insert(new int[]{ 129335,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 397, 595))); // woman shrugging: medium-dark skin tone
+		trie.insert(new int[]{ 129335,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 397, 595))); // woman shrugging: medium-dark skin tone
+		trie.insert(new int[]{ 129335,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 595))); // man shrugging: medium-dark skin tone
+		trie.insert(new int[]{ 129335,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 595))); // man shrugging: medium-dark skin tone
+		trie.insert(new int[]{ 128590,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 397))); // person pouting: medium-dark skin tone
+		trie.insert(new int[]{ 128590,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 529))); // woman pouting: medium-dark skin tone
+		trie.insert(new int[]{ 128590,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 529))); // woman pouting: medium-dark skin tone
+		trie.insert(new int[]{ 128590,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 463))); // man pouting: medium-dark skin tone
+		trie.insert(new int[]{ 128590,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 463))); // man pouting: medium-dark skin tone
+		trie.insert(new int[]{ 128589,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 595))); // person frowning: medium-dark skin tone
+		trie.insert(new int[]{ 128589,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1, 727))); // woman frowning: medium-dark skin tone
+		trie.insert(new int[]{ 128589,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 1, 727))); // woman frowning: medium-dark skin tone
+		trie.insert(new int[]{ 128589,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 661))); // man frowning: medium-dark skin tone
+		trie.insert(new int[]{ 128589,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 661))); // man frowning: medium-dark skin tone
+		trie.insert(new int[]{ 128135,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 595, 793))); // person getting haircut: medium-dark skin tone
+		trie.insert(new int[]{ 128135,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 793))); // woman getting haircut: medium-dark skin tone
+		trie.insert(new int[]{ 128135,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 793))); // woman getting haircut: medium-dark skin tone
+		trie.insert(new int[]{ 128135,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 661, 793))); // man getting haircut: medium-dark skin tone
+		trie.insert(new int[]{ 128135,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 661, 793))); // man getting haircut: medium-dark skin tone
+		trie.insert(new int[]{ 128134,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 793, 793))); // person getting massage: medium-dark skin tone
+		trie.insert(new int[]{ 128134,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 67))); // woman getting massage: medium-dark skin tone
+		trie.insert(new int[]{ 128134,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 67))); // woman getting massage: medium-dark skin tone
+		trie.insert(new int[]{ 128134,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 859, 1))); // man getting massage: medium-dark skin tone
+		trie.insert(new int[]{ 128134,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 859, 1))); // man getting massage: medium-dark skin tone
+		trie.insert(new int[]{ 129494,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 265, 265))); // person in steamy room: medium-dark skin tone
+		trie.insert(new int[]{ 129494,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 67))); // woman in steamy room: medium-dark skin tone
+		trie.insert(new int[]{ 129494,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 67))); // woman in steamy room: medium-dark skin tone
+		trie.insert(new int[]{ 129494,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 1))); // man in steamy room: medium-dark skin tone
+		trie.insert(new int[]{ 129494,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 1))); // man in steamy room: medium-dark skin tone
+		trie.insert(new int[]{ 128133,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 133))); // nail polish: medium-dark skin tone
+		trie.insert(new int[]{ 129331,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 661, 133))); // selfie: medium-dark skin tone
+		trie.insert(new int[]{ 128131,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 199))); // woman dancing: medium-dark skin tone
+		trie.insert(new int[]{ 128378,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 793))); // man dancing: dark skin tone
+		trie.insert(new int[]{ 128372,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 463, 793))); // man in suit levitating: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 265))); // person in manual wheelchair: light skin tone
+		trie.insert(new int[]{ 129489,127995,129469 }, new ParseResult(6, new SpriteCoordinates(1, 2, 529, 265))); // person in manual wheelchair: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 991))); // woman in manual wheelchair: light skin tone
+		trie.insert(new int[]{ 128105,127995,129469 }, new ParseResult(6, new SpriteCoordinates(1, 2, 991, 991))); // woman in manual wheelchair: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1123, 265))); // man in manual wheelchair: light skin tone
+		trie.insert(new int[]{ 128104,127995,129469 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1123, 265))); // man in manual wheelchair: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 331))); // person in motorized wheelchair: light skin tone
+		trie.insert(new int[]{ 129489,127995,129468 }, new ParseResult(6, new SpriteCoordinates(1, 2, 529, 331))); // person in motorized wheelchair: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 1))); // woman in motorized wheelchair: light skin tone
+		trie.insert(new int[]{ 128105,127995,129468 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1057, 1))); // woman in motorized wheelchair: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1123, 331))); // man in motorized wheelchair: light skin tone
+		trie.insert(new int[]{ 128104,127995,129468 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1123, 331))); // man in motorized wheelchair: light skin tone
+		trie.insert(new int[]{ 128694,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 727, 133))); // person walking: light skin tone
+		trie.insert(new int[]{ 128694,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 265))); // woman walking: light skin tone
+		trie.insert(new int[]{ 128694,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 265))); // woman walking: light skin tone
+		trie.insert(new int[]{ 128694,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 727, 199))); // man walking: light skin tone
+		trie.insert(new int[]{ 128694,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 727, 199))); // man walking: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 397))); // person with probing cane: light skin tone
+		trie.insert(new int[]{ 129489,127995,129455 }, new ParseResult(6, new SpriteCoordinates(1, 2, 529, 397))); // person with probing cane: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1057, 67))); // woman with probing cane: light skin tone
+		trie.insert(new int[]{ 128105,127995,129455 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1057, 67))); // woman with probing cane: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 2, 1123, 397))); // man with probing cane: light skin tone
+		trie.insert(new int[]{ 128104,127995,129455 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1123, 397))); // man with probing cane: light skin tone
+		trie.insert(new int[]{ 129486,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 199, 529))); // person kneeling: light skin tone
+		trie.insert(new int[]{ 129486,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 331, 529))); // woman kneeling: light skin tone
+		trie.insert(new int[]{ 129486,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 331, 529))); // woman kneeling: light skin tone
+		trie.insert(new int[]{ 129486,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 265, 529))); // man kneeling: light skin tone
+		trie.insert(new int[]{ 129486,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 265, 529))); // man kneeling: light skin tone
+		trie.insert(new int[]{ 127939,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 1123))); // person running: light skin tone
+		trie.insert(new int[]{ 127939,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 1123))); // woman running: light skin tone
+		trie.insert(new int[]{ 127939,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 991, 1123))); // woman running: light skin tone
+		trie.insert(new int[]{ 127939,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 1123))); // man running: light skin tone
+		trie.insert(new int[]{ 127939,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 1123))); // man running: light skin tone
+		trie.insert(new int[]{ 129485,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 529))); // person standing: light skin tone
+		trie.insert(new int[]{ 129485,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 529, 529))); // woman standing: light skin tone
+		trie.insert(new int[]{ 129485,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 529, 529))); // woman standing: light skin tone
+		trie.insert(new int[]{ 129485,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 463, 529))); // man standing: light skin tone
+		trie.insert(new int[]{ 129485,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 463, 529))); // man standing: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129309,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 529, 463))); // people holding hands: light skin tone
+		trie.insert(new int[]{ 129489,127995,129309,129489,127995 }, new ParseResult(10, new SpriteCoordinates(1, 2, 529, 463))); // people holding hands: light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129309,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 2, 529, 67))); // people holding hands: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,129309,129489,127996 }, new ParseResult(10, new SpriteCoordinates(1, 2, 529, 67))); // people holding hands: medium-light skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129309,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 463, 463))); // people holding hands: medium skin tone
+		trie.insert(new int[]{ 129489,127997,129309,129489,127997 }, new ParseResult(10, new SpriteCoordinates(1, 2, 463, 463))); // people holding hands: medium skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129309,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 2, 199, 397))); // people holding hands: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,129309,129489,127998 }, new ParseResult(10, new SpriteCoordinates(1, 2, 199, 397))); // people holding hands: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129309,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 331, 331))); // people holding hands: dark skin tone
+		trie.insert(new int[]{ 129489,127999,129309,129489,127999 }, new ParseResult(10, new SpriteCoordinates(1, 2, 331, 331))); // people holding hands: dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 1057, 199))); // woman and man holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 2, 1057, 199))); // woman and man holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 397, 991))); // woman and man holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 2, 397, 991))); // woman and man holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 2, 991, 67))); // woman and man holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 2, 991, 67))); // woman and man holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 265, 925))); // woman and man holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 2, 265, 925))); // woman and man holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 1057, 133))); // women holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128105,127997 }, new ParseResult(10, new SpriteCoordinates(1, 2, 1057, 133))); // women holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 2, 661, 991))); // women holding hands: medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128105,127998 }, new ParseResult(10, new SpriteCoordinates(1, 2, 661, 991))); // women holding hands: medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 331, 991))); // women holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128105,127999 }, new ParseResult(10, new SpriteCoordinates(1, 2, 331, 991))); // women holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 199, 925))); // women holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128105,127995 }, new ParseResult(10, new SpriteCoordinates(1, 2, 199, 925))); // women holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128108,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 661))); // men holding hands: light skin tone
+		trie.insert(new int[]{ 128108,127996 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 595))); // men holding hands: medium-light skin tone
+		trie.insert(new int[]{ 128108,127997 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 529))); // men holding hands: medium skin tone
+		trie.insert(new int[]{ 128108,127998 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 463))); // men holding hands: medium-dark skin tone
+		trie.insert(new int[]{ 128108,127999 }, new ParseResult(4, new SpriteCoordinates(1, 2, 925, 397))); // men holding hands: dark skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 529, 133))); // couple with heart: person, person, light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127995,10084,129489,127999 }, new ParseResult(9, new SpriteCoordinates(1, 2, 529, 133))); // couple with heart: person, person, light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 331, 463))); // couple with heart: person, person, medium skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127997,10084,129489,127995 }, new ParseResult(9, new SpriteCoordinates(1, 2, 331, 463))); // couple with heart: person, person, medium skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 2, 397, 67))); // couple with heart: person, person, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127998,10084,129489,127996 }, new ParseResult(9, new SpriteCoordinates(1, 2, 397, 67))); // couple with heart: person, person, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 199, 331))); // couple with heart: person, person, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127999,10084,129489,127997 }, new ParseResult(9, new SpriteCoordinates(1, 2, 199, 331))); // couple with heart: person, person, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 925, 991))); // couple with heart: woman, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 2, 925, 991))); // couple with heart: woman, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 2, 595, 991))); // couple with heart: woman, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 2, 595, 991))); // couple with heart: woman, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 265, 991))); // couple with heart: woman, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 2, 265, 991))); // couple with heart: woman, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 133, 925))); // couple with heart: woman, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 2, 133, 925))); // couple with heart: woman, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 859, 991))); // couple with heart: woman, woman, light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128105,127995 }, new ParseResult(9, new SpriteCoordinates(1, 2, 859, 991))); // couple with heart: woman, woman, light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 2, 529, 991))); // couple with heart: woman, woman, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128105,127996 }, new ParseResult(9, new SpriteCoordinates(1, 2, 529, 991))); // couple with heart: woman, woman, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 199, 991))); // couple with heart: woman, woman, medium skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128105,127997 }, new ParseResult(9, new SpriteCoordinates(1, 2, 199, 991))); // couple with heart: woman, woman, medium skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 2, 529, 925))); // couple with heart: woman, woman, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128105,127998 }, new ParseResult(9, new SpriteCoordinates(1, 2, 529, 925))); // couple with heart: woman, woman, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 67, 925))); // couple with heart: woman, woman, dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128105,127999 }, new ParseResult(9, new SpriteCoordinates(1, 2, 67, 925))); // couple with heart: woman, woman, dark skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 2, 1123, 199))); // couple with heart: man, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 2, 1123, 199))); // couple with heart: man, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 2, 1123, 1))); // couple with heart: man, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 2, 1123, 1))); // couple with heart: man, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 2, 1057, 661))); // couple with heart: man, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 2, 1057, 661))); // couple with heart: man, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 2, 1057, 529))); // couple with heart: man, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 2, 1057, 529))); // couple with heart: man, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,128139,8205,129489,127997 }, new ParseResult(15, new SpriteCoordinates(1, 2, 529, 199))); // kiss: person, person, light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127995,10084,128139,129489,127997 }, new ParseResult(11, new SpriteCoordinates(1, 2, 529, 199))); // kiss: person, person, light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,128139,8205,129489,127998 }, new ParseResult(15, new SpriteCoordinates(1, 2, 529, 1))); // kiss: person, person, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127996,10084,128139,129489,127998 }, new ParseResult(11, new SpriteCoordinates(1, 2, 529, 1))); // kiss: person, person, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,128139,8205,129489,127999 }, new ParseResult(15, new SpriteCoordinates(1, 2, 397, 463))); // kiss: person, person, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127997,10084,128139,129489,127999 }, new ParseResult(11, new SpriteCoordinates(1, 2, 397, 463))); // kiss: person, person, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,128139,8205,129489,127995 }, new ParseResult(15, new SpriteCoordinates(1, 2, 265, 331))); // kiss: person, person, dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127999,10084,128139,129489,127995 }, new ParseResult(11, new SpriteCoordinates(1, 2, 265, 331))); // kiss: person, person, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 2, 793, 991))); // kiss: woman, man, light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 2, 793, 991))); // kiss: woman, man, light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 2, 463, 991))); // kiss: woman, man, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 2, 463, 991))); // kiss: woman, man, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 2, 133, 991))); // kiss: woman, man, medium skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 2, 133, 991))); // kiss: woman, man, medium skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 2, 463, 925))); // kiss: woman, man, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 2, 463, 925))); // kiss: woman, man, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 2, 1, 925))); // kiss: woman, man, dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 2, 1, 925))); // kiss: woman, man, dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128105,127999 }, new ParseResult(15, new SpriteCoordinates(1, 2, 727, 991))); // kiss: woman, woman, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128105,127999 }, new ParseResult(11, new SpriteCoordinates(1, 2, 727, 991))); // kiss: woman, woman, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128105,127995 }, new ParseResult(15, new SpriteCoordinates(1, 2, 67, 991))); // kiss: woman, woman, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128105,127995 }, new ParseResult(11, new SpriteCoordinates(1, 2, 67, 991))); // kiss: woman, woman, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128105,127996 }, new ParseResult(15, new SpriteCoordinates(1, 2, 397, 925))); // kiss: woman, woman, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128105,127996 }, new ParseResult(11, new SpriteCoordinates(1, 2, 397, 925))); // kiss: woman, woman, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128105,127997 }, new ParseResult(15, new SpriteCoordinates(1, 2, 925, 859))); // kiss: woman, woman, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128105,127997 }, new ParseResult(11, new SpriteCoordinates(1, 2, 925, 859))); // kiss: woman, woman, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 2, 1123, 133))); // kiss: man, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 2, 1123, 133))); // kiss: man, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 2, 1123, 67))); // kiss: man, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 2, 1123, 67))); // kiss: man, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 2, 1057, 1057))); // kiss: man, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 2, 1057, 1057))); // kiss: man, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 2, 1057, 463))); // kiss: man, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 2, 1057, 463))); // kiss: man, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,8205,128105,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 2, 1057, 265))); // family: man, woman, boy
+		trie.insert(new int[]{ 128104,128105,128102 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1057, 265))); // family: man, woman, boy
+		trie.insert(new int[]{ 128105,8205,128105,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 2, 925, 727))); // family: woman, woman, girl
+		trie.insert(new int[]{ 128105,128105,128103 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 727))); // family: woman, woman, girl
+		trie.insert(new int[]{ 128104,8205,128104,8205,128103,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 2, 1057, 331))); // family: man, man, girl, boy
+		trie.insert(new int[]{ 128104,128104,128103,128102 }, new ParseResult(8, new SpriteCoordinates(1, 2, 1057, 331))); // family: man, man, girl, boy
+		trie.insert(new int[]{ 128105,8205,128102,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 2, 925, 793))); // family: woman, boy, boy
+		trie.insert(new int[]{ 128105,128102,128102 }, new ParseResult(6, new SpriteCoordinates(1, 2, 925, 793))); // family: woman, boy, boy
+		trie.insert(new int[]{ 128104,8205,128103,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 2, 1057, 397))); // family: man, girl, girl
+		trie.insert(new int[]{ 128104,128103,128103 }, new ParseResult(6, new SpriteCoordinates(1, 2, 1057, 397))); // family: man, girl, girl
+		trie.insert(new int[]{ 128090 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 793))); // woman’s clothes
+		trie.insert(new int[]{ 128087 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 859))); // dress
+		trie.insert(new int[]{ 128096 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 661))); // high-heeled shoe
+		trie.insert(new int[]{ 129652 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 133))); // thong sandal
+		trie.insert(new int[]{ 128082 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 991))); // woman’s hat
+		trie.insert(new int[]{ 128093 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 727))); // clutch bag
+		trie.insert(new int[]{ 128083 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1123, 925))); // glasses
+		trie.insert(new int[]{ 129459 }, new ParseResult(2, new SpriteCoordinates(1, 2, 1, 595))); // white hair
+		trie.insert(new int[]{ 128513 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 793))); // beaming face with smiling eyes
+		trie.insert(new int[]{ 128522 }, new ParseResult(2, new SpriteCoordinates(1, 3, 67, 793))); // smiling face with smiling eyes
+		trie.insert(new int[]{ 129394 }, new ParseResult(2, new SpriteCoordinates(1, 3, 331, 595))); // smiling face with tear
+		trie.insert(new int[]{ 128538 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 727))); // kissing face with closed eyes
+		trie.insert(new int[]{ 129320 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 595))); // face with raised eyebrow
+		trie.insert(new int[]{ 128527 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1, 793))); // smirking face
+		trie.insert(new int[]{ 128577 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 331))); // slightly frowning face
+		trie.insert(new int[]{ 129402 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 595))); // pleading face
+		trie.insert(new int[]{ 128545 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 661))); // pouting face
+		trie.insert(new int[]{ 129398 }, new ParseResult(2, new SpriteCoordinates(1, 3, 265, 595))); // cold face
+		trie.insert(new int[]{ 129303 }, new ParseResult(2, new SpriteCoordinates(1, 3, 727, 133))); // hugging face
+		trie.insert(new int[]{ 128566 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 463))); // face without mouth
+		trie.insert(new int[]{ 128550 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 595))); // frowning face with open mouth
+		trie.insert(new int[]{ 128554 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 529))); // sleepy face
+		trie.insert(new int[]{ 129326 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 529))); // face vomiting
+		trie.insert(new int[]{ 129312 }, new ParseResult(2, new SpriteCoordinates(1, 3, 265, 661))); // cowboy hat face
+		trie.insert(new int[]{ 129313 }, new ParseResult(2, new SpriteCoordinates(1, 3, 199, 661))); // clown face
+		trie.insert(new int[]{ 128126 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 859))); // alien monster
+		trie.insert(new int[]{ 128571 }, new ParseResult(2, new SpriteCoordinates(1, 3, 793, 397))); // smiling cat with heart-eyes
+		trie.insert(new int[]{ 129330 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 331))); // palms up together
+		trie.insert(new int[]{ 128080 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1123, 1057))); // open hands
+		trie.insert(new int[]{ 128588 }, new ParseResult(2, new SpriteCoordinates(1, 3, 265, 727))); // raising hands
+		trie.insert(new int[]{ 128079 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1, 1123))); // clapping hands
+		trie.insert(new int[]{ 129309 }, new ParseResult(2, new SpriteCoordinates(1, 3, 463, 661))); // handshake
+		trie.insert(new int[]{ 128077,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 1123))); // thumbs up: dark skin tone
+		trie.insert(new int[]{ 128078,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 1123))); // thumbs down: dark skin tone
+		trie.insert(new int[]{ 128074,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 1123))); // oncoming fist: dark skin tone
+		trie.insert(new int[]{ 9994,127999 }, new ParseResult(3, new SpriteCoordinates(1, 3, 67, 67))); // raised fist: dark skin tone
+		trie.insert(new int[]{ 129307,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 661))); // left-facing fist: dark skin tone
+		trie.insert(new int[]{ 129308,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 661))); // right-facing fist: dark skin tone
+		trie.insert(new int[]{ 129310,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 661))); // crossed fingers: dark skin tone
 	}
 
 	public static void init3(IntTrie<ParseResult> trie) {
-		trie.insert(new int[]{ 128104,127996,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 991))); // man feeding baby: medium-light skin tone
-		trie.insert(new int[]{ 128104,127996,127868 }, new ParseResult(6, new SpriteCoordinates(1, 3, 199, 991))); // man feeding baby: medium-light skin tone
-		trie.insert(new int[]{ 128583,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 67))); // person bowing: medium-light skin tone
-		trie.insert(new int[]{ 128583,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 199))); // woman bowing: medium-light skin tone
-		trie.insert(new int[]{ 128583,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 199))); // woman bowing: medium-light skin tone
-		trie.insert(new int[]{ 128583,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 133))); // man bowing: medium-light skin tone
-		trie.insert(new int[]{ 128583,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 133))); // man bowing: medium-light skin tone
-		trie.insert(new int[]{ 128129,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 463, 793))); // person tipping hand: medium-light skin tone
-		trie.insert(new int[]{ 128129,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 793))); // woman tipping hand: medium-light skin tone
-		trie.insert(new int[]{ 128129,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 793))); // woman tipping hand: medium-light skin tone
-		trie.insert(new int[]{ 128129,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 793))); // man tipping hand: medium-light skin tone
-		trie.insert(new int[]{ 128129,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 793))); // man tipping hand: medium-light skin tone
-		trie.insert(new int[]{ 128581,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 463))); // person gesturing NO: medium-light skin tone
-		trie.insert(new int[]{ 128581,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 595))); // woman gesturing NO: medium-light skin tone
-		trie.insert(new int[]{ 128581,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 595))); // woman gesturing NO: medium-light skin tone
-		trie.insert(new int[]{ 128581,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 529))); // man gesturing NO: medium-light skin tone
-		trie.insert(new int[]{ 128581,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 529))); // man gesturing NO: medium-light skin tone
-		trie.insert(new int[]{ 128582,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 265))); // person gesturing OK: medium-light skin tone
-		trie.insert(new int[]{ 128582,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 397))); // woman gesturing OK: medium-light skin tone
-		trie.insert(new int[]{ 128582,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 397))); // woman gesturing OK: medium-light skin tone
-		trie.insert(new int[]{ 128582,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 331))); // man gesturing OK: medium-light skin tone
-		trie.insert(new int[]{ 128582,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 331))); // man gesturing OK: medium-light skin tone
-		trie.insert(new int[]{ 128587,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 661))); // person raising hand: medium-light skin tone
-		trie.insert(new int[]{ 128587,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 1))); // woman raising hand: medium-light skin tone
-		trie.insert(new int[]{ 128587,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 1))); // woman raising hand: medium-light skin tone
-		trie.insert(new int[]{ 128587,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 661))); // man raising hand: medium-light skin tone
-		trie.insert(new int[]{ 128587,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 661, 661))); // man raising hand: medium-light skin tone
-		trie.insert(new int[]{ 129487,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 463, 397))); // deaf person: medium-light skin tone
-		trie.insert(new int[]{ 129487,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 463))); // deaf woman: medium-light skin tone
-		trie.insert(new int[]{ 129487,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 463))); // deaf woman: medium-light skin tone
-		trie.insert(new int[]{ 129487,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 463))); // deaf man: medium-light skin tone
-		trie.insert(new int[]{ 129487,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 463))); // deaf man: medium-light skin tone
-		trie.insert(new int[]{ 129318,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 595))); // person facepalming: medium-light skin tone
-		trie.insert(new int[]{ 129318,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 595))); // woman facepalming: medium-light skin tone
-		trie.insert(new int[]{ 129318,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 595))); // woman facepalming: medium-light skin tone
-		trie.insert(new int[]{ 129318,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 595))); // man facepalming: medium-light skin tone
-		trie.insert(new int[]{ 129318,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 595))); // man facepalming: medium-light skin tone
-		trie.insert(new int[]{ 129335,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 463, 529))); // person shrugging: medium-light skin tone
-		trie.insert(new int[]{ 129335,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 1))); // woman shrugging: medium-light skin tone
-		trie.insert(new int[]{ 129335,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 1))); // woman shrugging: medium-light skin tone
-		trie.insert(new int[]{ 129335,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 529))); // man shrugging: medium-light skin tone
-		trie.insert(new int[]{ 129335,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 529))); // man shrugging: medium-light skin tone
-		trie.insert(new int[]{ 128590,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 661))); // person pouting: medium-light skin tone
-		trie.insert(new int[]{ 128590,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 661))); // woman pouting: medium-light skin tone
-		trie.insert(new int[]{ 128590,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 661))); // woman pouting: medium-light skin tone
-		trie.insert(new int[]{ 128590,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 661))); // man pouting: medium-light skin tone
-		trie.insert(new int[]{ 128590,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 661))); // man pouting: medium-light skin tone
-		trie.insert(new int[]{ 128589,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 661))); // person frowning: medium-light skin tone
-		trie.insert(new int[]{ 128589,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 661))); // woman frowning: medium-light skin tone
-		trie.insert(new int[]{ 128589,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 661))); // woman frowning: medium-light skin tone
-		trie.insert(new int[]{ 128589,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 661))); // man frowning: medium-light skin tone
-		trie.insert(new int[]{ 128589,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 661))); // man frowning: medium-light skin tone
-		trie.insert(new int[]{ 128135,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 463))); // person getting haircut: medium-light skin tone
-		trie.insert(new int[]{ 128135,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 595))); // woman getting haircut: medium-light skin tone
-		trie.insert(new int[]{ 128135,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 595))); // woman getting haircut: medium-light skin tone
-		trie.insert(new int[]{ 128135,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 529))); // man getting haircut: medium-light skin tone
-		trie.insert(new int[]{ 128135,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 529))); // man getting haircut: medium-light skin tone
-		trie.insert(new int[]{ 128134,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 661))); // person getting massage: medium-light skin tone
-		trie.insert(new int[]{ 128134,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 793))); // woman getting massage: medium-light skin tone
-		trie.insert(new int[]{ 128134,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 793))); // woman getting massage: medium-light skin tone
-		trie.insert(new int[]{ 128134,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 727))); // man getting massage: medium-light skin tone
-		trie.insert(new int[]{ 128134,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 727))); // man getting massage: medium-light skin tone
-		trie.insert(new int[]{ 129494,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 265))); // person in steamy room: medium-light skin tone
-		trie.insert(new int[]{ 129494,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 265))); // woman in steamy room: medium-light skin tone
-		trie.insert(new int[]{ 129494,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 265))); // woman in steamy room: medium-light skin tone
-		trie.insert(new int[]{ 129494,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 265))); // man in steamy room: medium-light skin tone
-		trie.insert(new int[]{ 129494,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 265))); // man in steamy room: medium-light skin tone
-		trie.insert(new int[]{ 128133,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 793))); // nail polish: medium-light skin tone
-		trie.insert(new int[]{ 129331,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 397))); // selfie: medium-light skin tone
-		trie.insert(new int[]{ 128131,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 793))); // woman dancing: medium-light skin tone
-		trie.insert(new int[]{ 128378,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 67))); // man dancing: medium-light skin tone
-		trie.insert(new int[]{ 128111,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 859))); // men with bunny ears
-		trie.insert(new int[]{ 128111,9794 }, new ParseResult(3, new SpriteCoordinates(1, 3, 265, 859))); // men with bunny ears
-		trie.insert(new int[]{ 128372,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 331))); // man in suit levitating: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 265))); // person in manual wheelchair: dark skin tone
-		trie.insert(new int[]{ 129489,127999,129469 }, new ParseResult(6, new SpriteCoordinates(1, 3, 331, 265))); // person in manual wheelchair: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 859))); // woman in manual wheelchair: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129469 }, new ParseResult(6, new SpriteCoordinates(1, 3, 661, 859))); // woman in manual wheelchair: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 925))); // man in manual wheelchair: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129469 }, new ParseResult(6, new SpriteCoordinates(1, 3, 727, 925))); // man in manual wheelchair: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 331))); // person in motorized wheelchair: dark skin tone
-		trie.insert(new int[]{ 129489,127999,129468 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 331))); // person in motorized wheelchair: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 859))); // woman in motorized wheelchair: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129468 }, new ParseResult(6, new SpriteCoordinates(1, 3, 727, 859))); // woman in motorized wheelchair: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 925))); // man in motorized wheelchair: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129468 }, new ParseResult(6, new SpriteCoordinates(1, 3, 793, 925))); // man in motorized wheelchair: dark skin tone
-		trie.insert(new int[]{ 128694,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 529))); // person walking: dark skin tone
-		trie.insert(new int[]{ 128694,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 661))); // woman walking: dark skin tone
-		trie.insert(new int[]{ 128694,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 661))); // woman walking: dark skin tone
-		trie.insert(new int[]{ 128694,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 595))); // man walking: dark skin tone
-		trie.insert(new int[]{ 128694,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 661, 595))); // man walking: dark skin tone
-		trie.insert(new int[]{ 129489,127999,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 331))); // person with probing cane: dark skin tone
-		trie.insert(new int[]{ 129489,127999,129455 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 331))); // person with probing cane: dark skin tone
-		trie.insert(new int[]{ 128105,127999,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 859))); // woman with probing cane: dark skin tone
-		trie.insert(new int[]{ 128105,127999,129455 }, new ParseResult(6, new SpriteCoordinates(1, 3, 793, 859))); // woman with probing cane: dark skin tone
-		trie.insert(new int[]{ 128104,127999,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 925))); // man with probing cane: dark skin tone
-		trie.insert(new int[]{ 128104,127999,129455 }, new ParseResult(6, new SpriteCoordinates(1, 3, 859, 925))); // man with probing cane: dark skin tone
-		trie.insert(new int[]{ 129486,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 463))); // person kneeling: dark skin tone
-		trie.insert(new int[]{ 129486,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 463))); // woman kneeling: dark skin tone
-		trie.insert(new int[]{ 129486,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 463))); // woman kneeling: dark skin tone
-		trie.insert(new int[]{ 129486,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 463))); // man kneeling: dark skin tone
-		trie.insert(new int[]{ 129486,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 463))); // man kneeling: dark skin tone
-		trie.insert(new int[]{ 127939,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 529))); // person running: dark skin tone
-		trie.insert(new int[]{ 127939,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 661))); // woman running: dark skin tone
-		trie.insert(new int[]{ 127939,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1057, 661))); // woman running: dark skin tone
-		trie.insert(new int[]{ 127939,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 595))); // man running: dark skin tone
-		trie.insert(new int[]{ 127939,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1057, 595))); // man running: dark skin tone
-		trie.insert(new int[]{ 129485,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 463))); // person standing: dark skin tone
-		trie.insert(new int[]{ 129485,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 463))); // woman standing: dark skin tone
-		trie.insert(new int[]{ 129485,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 463))); // woman standing: dark skin tone
-		trie.insert(new int[]{ 129485,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 463))); // man standing: dark skin tone
-		trie.insert(new int[]{ 129485,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 463))); // man standing: dark skin tone
-		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128104 }, new ParseResult(8, new SpriteCoordinates(1, 3, 529, 859))); // couple with heart: woman, man
-		trie.insert(new int[]{ 128105,10084,128104 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 859))); // couple with heart: woman, man
-		trie.insert(new int[]{ 128104,8205,10084,65039,8205,128139,8205,128104 }, new ParseResult(11, new SpriteCoordinates(1, 3, 463, 925))); // kiss: man, man
-		trie.insert(new int[]{ 128104,10084,128139,128104 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 925))); // kiss: man, man
-		trie.insert(new int[]{ 128104,8205,128105,8205,128103,8205,128103 }, new ParseResult(11, new SpriteCoordinates(1, 3, 529, 925))); // family: man, woman, girl, girl
-		trie.insert(new int[]{ 128104,128105,128103,128103 }, new ParseResult(8, new SpriteCoordinates(1, 3, 529, 925))); // family: man, woman, girl, girl
-		trie.insert(new int[]{ 128104,8205,128104,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 3, 595, 925))); // family: man, man, boy
-		trie.insert(new int[]{ 128104,128104,128102 }, new ParseResult(6, new SpriteCoordinates(1, 3, 595, 925))); // family: man, man, boy
-		trie.insert(new int[]{ 128105,8205,128103 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 859))); // family: woman, girl
-		trie.insert(new int[]{ 128105,128103 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 859))); // family: woman, girl
-		trie.insert(new int[]{ 128104,8205,128103,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 3, 661, 925))); // family: man, girl, boy
-		trie.insert(new int[]{ 128104,128103,128102 }, new ParseResult(6, new SpriteCoordinates(1, 3, 661, 925))); // family: man, girl, boy
-		trie.insert(new int[]{ 129404 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 529))); // lab coat
-		trie.insert(new int[]{ 129651 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 67))); // shorts
-		trie.insert(new int[]{ 129403 }, new ParseResult(2, new SpriteCoordinates(1, 3, 199, 529))); // sari
-		trie.insert(new int[]{ 128095 }, new ParseResult(2, new SpriteCoordinates(1, 3, 595, 991))); // running shoe
-		trie.insert(new int[]{ 127913 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1057, 727))); // top hat
-		trie.insert(new int[]{ 128081 }, new ParseResult(2, new SpriteCoordinates(1, 3, 661, 991))); // crown
-		trie.insert(new int[]{ 127890 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1057, 793))); // backpack
-		trie.insert(new int[]{ 129457 }, new ParseResult(2, new SpriteCoordinates(1, 3, 67, 529))); // curly hair
-		trie.insert(new int[]{ 128518 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 1))); // grinning squinting face
-		trie.insert(new int[]{ 128519 }, new ParseResult(2, new SpriteCoordinates(1, 4, 727, 727))); // smiling face with halo
-		trie.insert(new int[]{ 128525 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 727))); // smiling face with heart-eyes
-		trie.insert(new int[]{ 128523 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 727))); // face savoring food
-		trie.insert(new int[]{ 129488 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 463))); // face with monocle
-		trie.insert(new int[]{ 128530 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 727))); // unamused face
-		trie.insert(new int[]{ 9785,65039 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 1))); // frowning face
-		trie.insert(new int[]{ 9785 }, new ParseResult(1, new SpriteCoordinates(1, 4, 133, 1))); // frowning face
-		trie.insert(new int[]{ 128546 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 727))); // crying face
-		trie.insert(new int[]{ 129327 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 595))); // exploding head
-		trie.insert(new int[]{ 128560 }, new ParseResult(2, new SpriteCoordinates(1, 4, 331, 727))); // anxious face with sweat
-		trie.insert(new int[]{ 129393 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 199))); // yawning face
-		trie.insert(new int[]{ 128556 }, new ParseResult(2, new SpriteCoordinates(1, 4, 397, 727))); // grimacing face
-		trie.insert(new int[]{ 128562 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 727))); // astonished face
-		trie.insert(new int[]{ 129396 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 133))); // woozy face
-		trie.insert(new int[]{ 129301 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 529))); // face with head-bandage
-		trie.insert(new int[]{ 128121 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 133))); // ogre
-		trie.insert(new int[]{ 9760,65039 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 67))); // skull and crossbones
-		trie.insert(new int[]{ 9760 }, new ParseResult(1, new SpriteCoordinates(1, 4, 133, 67))); // skull and crossbones
-		trie.insert(new int[]{ 128568 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 727))); // grinning cat with smiling eyes
-		trie.insert(new int[]{ 128575 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 727))); // crying cat
-		trie.insert(new int[]{ 129330,127998 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 595))); // palms up together: medium-dark skin tone
-		trie.insert(new int[]{ 128080,127998 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 991))); // open hands: medium-dark skin tone
-		trie.insert(new int[]{ 128588,127998 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 1))); // raising hands: medium-dark skin tone
-		trie.insert(new int[]{ 128079,127998 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 991))); // clapping hands: medium-dark skin tone
-		trie.insert(new int[]{ 128077,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 991, 991))); // thumbs up: medium skin tone
-		trie.insert(new int[]{ 128078,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 991))); // thumbs down: medium skin tone
-		trie.insert(new int[]{ 128074,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 133))); // oncoming fist: medium skin tone
-		trie.insert(new int[]{ 9994,127997 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 67))); // raised fist: medium skin tone
-		trie.insert(new int[]{ 129307,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 265))); // left-facing fist: medium skin tone
-		trie.insert(new int[]{ 129308,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 199))); // right-facing fist: medium skin tone
-		trie.insert(new int[]{ 129310,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 133))); // crossed fingers: medium skin tone
-		trie.insert(new int[]{ 9996,127997 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 1))); // victory hand: medium skin tone
-		trie.insert(new int[]{ 129311,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 67))); // love-you gesture: medium skin tone
-		trie.insert(new int[]{ 129304,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 463))); // sign of the horns: medium skin tone
-		trie.insert(new int[]{ 128076,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 1))); // OK hand: medium skin tone
-		trie.insert(new int[]{ 129295,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 595))); // pinching hand: medium skin tone
-		trie.insert(new int[]{ 129292,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 661))); // pinched fingers: medium skin tone
-		trie.insert(new int[]{ 128072,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 265))); // backhand index pointing left: medium skin tone
-		trie.insert(new int[]{ 128073,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 199))); // backhand index pointing right: medium skin tone
-		trie.insert(new int[]{ 128070,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 397))); // backhand index pointing up: medium skin tone
-		trie.insert(new int[]{ 128071,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 331))); // backhand index pointing down: medium skin tone
-		trie.insert(new int[]{ 9757,127997 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 133))); // index pointing up: medium skin tone
-		trie.insert(new int[]{ 9995,127997 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 67))); // raised hand: medium skin tone
-		trie.insert(new int[]{ 129306,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 331))); // raised back of hand: medium skin tone
-		trie.insert(new int[]{ 128400,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 199))); // hand with fingers splayed: medium skin tone
-		trie.insert(new int[]{ 128406,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 67))); // vulcan salute: medium skin tone
-		trie.insert(new int[]{ 128075,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 67))); // waving hand: medium skin tone
-		trie.insert(new int[]{ 129305,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 397))); // call me hand: medium skin tone
-		trie.insert(new int[]{ 128170,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 595))); // flexed biceps: medium skin tone
-		trie.insert(new int[]{ 128405,127996 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 133))); // middle finger: medium-light skin tone
-		trie.insert(new int[]{ 9997,127996 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 1))); // writing hand: medium-light skin tone
-		trie.insert(new int[]{ 128591,127996 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 661))); // folded hands: medium-light skin tone
-		trie.insert(new int[]{ 129462,127996 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 529))); // foot: medium-light skin tone
-		trie.insert(new int[]{ 129461,127996 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 529))); // leg: medium-light skin tone
-		trie.insert(new int[]{ 128139 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 727))); // kiss mark
-		trie.insert(new int[]{ 128066,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 529))); // ear: light skin tone
-		trie.insert(new int[]{ 129467,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 331))); // ear with hearing aid: light skin tone
-		trie.insert(new int[]{ 128067,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 463))); // nose: light skin tone
-		trie.insert(new int[]{ 128065,65039 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1057, 595))); // eye
-		trie.insert(new int[]{ 128065 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1057, 595))); // eye
-		trie.insert(new int[]{ 128100 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 991))); // bust in silhouette
-		trie.insert(new int[]{ 128118,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 463))); // baby: medium skin tone
-		trie.insert(new int[]{ 128103,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 991))); // girl: medium skin tone
-		trie.insert(new int[]{ 129490,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 67, 331))); // child: medium skin tone
-		trie.insert(new int[]{ 128102,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 991))); // boy: medium skin tone
-		trie.insert(new int[]{ 128105,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 199))); // woman: medium skin tone
-		trie.insert(new int[]{ 129489,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 331))); // person: medium skin tone
-		trie.insert(new int[]{ 128104,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 991, 67))); // man: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 331))); // person: medium skin tone, curly hair
-		trie.insert(new int[]{ 129489,127997,129457 }, new ParseResult(6, new SpriteCoordinates(1, 4, 397, 331))); // person: medium skin tone, curly hair
-		trie.insert(new int[]{ 128105,127997,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 595))); // woman, curly haired: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129457 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 595))); // woman, curly haired: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 463))); // man, curly haired: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129457 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 463))); // man, curly haired: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 397))); // person: medium skin tone, red hair
-		trie.insert(new int[]{ 129489,127997,129456 }, new ParseResult(6, new SpriteCoordinates(1, 4, 1, 397))); // person: medium skin tone, red hair
-		trie.insert(new int[]{ 128105,127997,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 661))); // woman, red haired: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129456 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 661))); // woman, red haired: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 529))); // man, red haired: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129456 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 529))); // man, red haired: medium skin tone
-		trie.insert(new int[]{ 128113,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 859))); // blond-haired woman: medium skin tone
-		trie.insert(new int[]{ 128113,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 859))); // blond-haired woman: medium skin tone
-		trie.insert(new int[]{ 128113,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 67, 859))); // blond-haired person: medium skin tone
-		trie.insert(new int[]{ 128113,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 859))); // blond-haired man: medium skin tone
-		trie.insert(new int[]{ 128113,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 859))); // blond-haired man: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 199))); // person: medium skin tone, white hair
-		trie.insert(new int[]{ 129489,127997,129459 }, new ParseResult(6, new SpriteCoordinates(1, 4, 397, 199))); // person: medium skin tone, white hair
-		trie.insert(new int[]{ 128105,127997,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 463))); // woman, white haired: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129459 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 463))); // woman, white haired: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 331))); // man, white haired: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129459 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 331))); // man, white haired: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 265))); // person: medium skin tone, bald
-		trie.insert(new int[]{ 129489,127997,129458 }, new ParseResult(6, new SpriteCoordinates(1, 4, 397, 265))); // person: medium skin tone, bald
-		trie.insert(new int[]{ 128105,127997,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 529))); // woman, bald: medium skin tone
-		trie.insert(new int[]{ 128105,127997,129458 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 529))); // woman, bald: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 397))); // man, bald: medium skin tone
-		trie.insert(new int[]{ 128104,127997,129458 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 397))); // man, bald: medium skin tone
-		trie.insert(new int[]{ 129492,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 265))); // bearded person: medium skin tone
-		trie.insert(new int[]{ 128117,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 529))); // old woman: medium skin tone
-		trie.insert(new int[]{ 129491,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 331))); // older person: medium skin tone
-		trie.insert(new int[]{ 128116,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 595))); // old man: medium skin tone
-		trie.insert(new int[]{ 128114,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 859))); // man with Chinese cap: medium skin tone
-		trie.insert(new int[]{ 128115,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 661))); // person wearing turban: medium skin tone
-		trie.insert(new int[]{ 128115,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 859, 793))); // woman wearing turban: medium skin tone
-		trie.insert(new int[]{ 128115,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 793))); // woman wearing turban: medium skin tone
-		trie.insert(new int[]{ 128115,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 859, 727))); // man wearing turban: medium skin tone
-		trie.insert(new int[]{ 128115,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 727))); // man wearing turban: medium skin tone
-		trie.insert(new int[]{ 129493,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 199))); // woman with headscarf: medium skin tone
-		trie.insert(new int[]{ 128110,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 463, 859))); // police officer: medium skin tone
-		trie.insert(new int[]{ 128110,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 859))); // woman police officer: medium skin tone
-		trie.insert(new int[]{ 128110,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 859))); // woman police officer: medium skin tone
-		trie.insert(new int[]{ 128110,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 529, 859))); // man police officer: medium skin tone
-		trie.insert(new int[]{ 128110,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 859))); // man police officer: medium skin tone
-		trie.insert(new int[]{ 128119,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 265))); // construction worker: medium skin tone
-		trie.insert(new int[]{ 128119,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 859, 397))); // woman construction worker: medium skin tone
-		trie.insert(new int[]{ 128119,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 397))); // woman construction worker: medium skin tone
-		trie.insert(new int[]{ 128119,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 859, 331))); // man construction worker: medium skin tone
-		trie.insert(new int[]{ 128119,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 331))); // man construction worker: medium skin tone
-		trie.insert(new int[]{ 128130,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 793))); // guard: medium skin tone
-		trie.insert(new int[]{ 128130,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 661, 793))); // woman guard: medium skin tone
-		trie.insert(new int[]{ 128130,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 793))); // woman guard: medium skin tone
-		trie.insert(new int[]{ 128130,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 793))); // man guard: medium skin tone
-		trie.insert(new int[]{ 128130,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 793))); // man guard: medium skin tone
-		trie.insert(new int[]{ 128373,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 331))); // detective: medium skin tone
-		trie.insert(new int[]{ 128373,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 793, 463))); // woman detective: medium skin tone
-		trie.insert(new int[]{ 128373,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 463))); // woman detective: medium skin tone
-		trie.insert(new int[]{ 128373,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 793, 397))); // man detective: medium skin tone
-		trie.insert(new int[]{ 128373,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 397))); // man detective: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 133))); // health worker: medium skin tone
-		trie.insert(new int[]{ 129489,127997,9877 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 133))); // health worker: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 397))); // woman health worker: medium skin tone
-		trie.insert(new int[]{ 128105,127997,9877 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 397))); // woman health worker: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 265))); // man health worker: medium skin tone
-		trie.insert(new int[]{ 128104,127997,9877 }, new ParseResult(5, new SpriteCoordinates(1, 4, 991, 265))); // man health worker: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 463))); // farmer: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127806 }, new ParseResult(6, new SpriteCoordinates(1, 4, 67, 463))); // farmer: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 4, 661, 925))); // woman farmer: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127806 }, new ParseResult(6, new SpriteCoordinates(1, 4, 661, 925))); // woman farmer: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 991))); // man farmer: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127806 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 991))); // man farmer: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 463))); // cook: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127859 }, new ParseResult(6, new SpriteCoordinates(1, 4, 1, 463))); // cook: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 925))); // woman cook: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127859 }, new ParseResult(6, new SpriteCoordinates(1, 4, 595, 925))); // woman cook: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 991))); // man cook: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127859 }, new ParseResult(6, new SpriteCoordinates(1, 4, 397, 991))); // man cook: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 265))); // student: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127891 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 265))); // student: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 925))); // woman student: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127891 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 925))); // woman student: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 991))); // man student: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127891 }, new ParseResult(6, new SpriteCoordinates(1, 4, 265, 991))); // man student: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 199))); // singer: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127908 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 199))); // singer: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 925))); // woman singer: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127908 }, new ParseResult(6, new SpriteCoordinates(1, 4, 397, 925))); // woman singer: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 991))); // man singer: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127908 }, new ParseResult(6, new SpriteCoordinates(1, 4, 199, 991))); // man singer: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 67))); // teacher: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127979 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 67))); // teacher: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 925))); // woman teacher: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127979 }, new ParseResult(6, new SpriteCoordinates(1, 4, 265, 925))); // woman teacher: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 991))); // man teacher: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127979 }, new ParseResult(6, new SpriteCoordinates(1, 4, 67, 991))); // man teacher: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 1))); // factory worker: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127981 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 1))); // factory worker: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 925))); // woman factory worker: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127981 }, new ParseResult(6, new SpriteCoordinates(1, 4, 199, 925))); // woman factory worker: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 991))); // man factory worker: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127981 }, new ParseResult(6, new SpriteCoordinates(1, 4, 1, 991))); // man factory worker: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 397))); // technologist: medium skin tone
-		trie.insert(new int[]{ 129489,127997,128187 }, new ParseResult(6, new SpriteCoordinates(1, 4, 397, 397))); // technologist: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 925))); // woman technologist: medium skin tone
-		trie.insert(new int[]{ 128105,127997,128187 }, new ParseResult(6, new SpriteCoordinates(1, 4, 133, 925))); // woman technologist: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 925))); // man technologist: medium skin tone
-		trie.insert(new int[]{ 128104,127997,128187 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 925))); // man technologist: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 397))); // office worker: medium skin tone
-		trie.insert(new int[]{ 129489,127997,128188 }, new ParseResult(6, new SpriteCoordinates(1, 4, 331, 397))); // office worker: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 925))); // woman office worker: medium skin tone
-		trie.insert(new int[]{ 128105,127997,128188 }, new ParseResult(6, new SpriteCoordinates(1, 4, 67, 925))); // woman office worker: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 859))); // man office worker: medium skin tone
-		trie.insert(new int[]{ 128104,127997,128188 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 859))); // man office worker: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 397))); // mechanic: medium skin tone
-		trie.insert(new int[]{ 129489,127997,128295 }, new ParseResult(6, new SpriteCoordinates(1, 4, 265, 397))); // mechanic: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 925))); // woman mechanic: medium skin tone
-		trie.insert(new int[]{ 128105,127997,128295 }, new ParseResult(6, new SpriteCoordinates(1, 4, 1, 925))); // woman mechanic: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 793))); // man mechanic: medium skin tone
-		trie.insert(new int[]{ 128104,127997,128295 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 793))); // man mechanic: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 397))); // scientist: medium skin tone
-		trie.insert(new int[]{ 129489,127997,128300 }, new ParseResult(6, new SpriteCoordinates(1, 4, 199, 397))); // scientist: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 859))); // woman scientist: medium skin tone
-		trie.insert(new int[]{ 128105,127997,128300 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 859))); // woman scientist: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 727))); // man scientist: medium skin tone
-		trie.insert(new int[]{ 128104,127997,128300 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 727))); // man scientist: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 133))); // artist: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127912 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 133))); // artist: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 925))); // woman artist: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127912 }, new ParseResult(6, new SpriteCoordinates(1, 4, 331, 925))); // woman artist: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 991))); // man artist: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127912 }, new ParseResult(6, new SpriteCoordinates(1, 4, 133, 991))); // man artist: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 397))); // firefighter: medium skin tone
-		trie.insert(new int[]{ 129489,127997,128658 }, new ParseResult(6, new SpriteCoordinates(1, 4, 67, 397))); // firefighter: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 727))); // woman firefighter: medium skin tone
-		trie.insert(new int[]{ 128105,127997,128658 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 727))); // woman firefighter: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 595))); // man firefighter: medium skin tone
-		trie.insert(new int[]{ 128104,127997,128658 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 595))); // man firefighter: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 1))); // pilot: medium skin tone
-		trie.insert(new int[]{ 129489,127997,9992 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 1))); // pilot: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 265))); // woman pilot: medium skin tone
-		trie.insert(new int[]{ 128105,127997,9992 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 265))); // woman pilot: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 133))); // man pilot: medium skin tone
-		trie.insert(new int[]{ 128104,127997,9992 }, new ParseResult(5, new SpriteCoordinates(1, 4, 991, 133))); // man pilot: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 397))); // astronaut: medium skin tone
-		trie.insert(new int[]{ 129489,127997,128640 }, new ParseResult(6, new SpriteCoordinates(1, 4, 133, 397))); // astronaut: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 793))); // woman astronaut: medium skin tone
-		trie.insert(new int[]{ 128105,127997,128640 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 793))); // woman astronaut: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 661))); // man astronaut: medium skin tone
-		trie.insert(new int[]{ 128104,127997,128640 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 661))); // man astronaut: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 67))); // judge: medium skin tone
-		trie.insert(new int[]{ 129489,127997,9878 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 67))); // judge: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 331))); // woman judge: medium skin tone
-		trie.insert(new int[]{ 128105,127997,9878 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 331))); // woman judge: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 199))); // man judge: medium skin tone
-		trie.insert(new int[]{ 128104,127997,9878 }, new ParseResult(5, new SpriteCoordinates(1, 4, 991, 199))); // man judge: medium skin tone
-		trie.insert(new int[]{ 128112,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 859))); // person with veil: medium skin tone
-		trie.insert(new int[]{ 128112,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 859))); // woman with veil: medium skin tone
-		trie.insert(new int[]{ 128112,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 859))); // woman with veil: medium skin tone
-		trie.insert(new int[]{ 128112,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 859))); // man with veil: medium skin tone
-		trie.insert(new int[]{ 128112,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 859))); // man with veil: medium skin tone
-		trie.insert(new int[]{ 129333,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 529))); // person in tuxedo: medium skin tone
-		trie.insert(new int[]{ 129333,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 595))); // woman in tuxedo: medium skin tone
-		trie.insert(new int[]{ 129333,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 595))); // woman in tuxedo: medium skin tone
-		trie.insert(new int[]{ 129333,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 595))); // man in tuxedo: medium skin tone
-		trie.insert(new int[]{ 129333,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 595))); // man in tuxedo: medium skin tone
-		trie.insert(new int[]{ 128120,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 199))); // princess: medium skin tone
-		trie.insert(new int[]{ 129332,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 595))); // prince: medium skin tone
-		trie.insert(new int[]{ 129464,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 529))); // superhero: medium skin tone
-		trie.insert(new int[]{ 129464,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 529))); // woman superhero: medium skin tone
-		trie.insert(new int[]{ 129464,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 529))); // woman superhero: medium skin tone
-		trie.insert(new int[]{ 129464,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 529))); // man superhero: medium skin tone
-		trie.insert(new int[]{ 129464,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 529))); // man superhero: medium skin tone
-		trie.insert(new int[]{ 129465,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 463))); // supervillain: medium skin tone
-		trie.insert(new int[]{ 129465,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 529))); // woman supervillain: medium skin tone
-		trie.insert(new int[]{ 129465,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 529))); // woman supervillain: medium skin tone
-		trie.insert(new int[]{ 129465,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 529))); // man supervillain: medium skin tone
-		trie.insert(new int[]{ 129465,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 529))); // man supervillain: medium skin tone
-		trie.insert(new int[]{ 129399,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 67))); // ninja: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 331))); // mx claus: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127876 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 331))); // mx claus: medium skin tone
-		trie.insert(new int[]{ 129334,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 463))); // Mrs. Claus: medium skin tone
-		trie.insert(new int[]{ 127877,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 859))); // Santa Claus: medium skin tone
-		trie.insert(new int[]{ 129497,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 265))); // mage: medium skin tone
-		trie.insert(new int[]{ 129497,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 265))); // woman mage: medium skin tone
-		trie.insert(new int[]{ 129497,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 265))); // woman mage: medium skin tone
-		trie.insert(new int[]{ 129497,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 265))); // man mage: medium skin tone
-		trie.insert(new int[]{ 129497,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 265))); // man mage: medium skin tone
-		trie.insert(new int[]{ 129501,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 199, 67))); // elf: medium skin tone
-		trie.insert(new int[]{ 129501,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 199))); // woman elf: medium skin tone
-		trie.insert(new int[]{ 129501,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 199))); // woman elf: medium skin tone
-		trie.insert(new int[]{ 129501,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 133))); // man elf: medium skin tone
-		trie.insert(new int[]{ 129501,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 133))); // man elf: medium skin tone
-		trie.insert(new int[]{ 129499,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 1))); // vampire: medium skin tone
-		trie.insert(new int[]{ 129499,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 133))); // woman vampire: medium skin tone
-		trie.insert(new int[]{ 129499,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 133))); // woman vampire: medium skin tone
-		trie.insert(new int[]{ 129499,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 67))); // man vampire: medium skin tone
-		trie.insert(new int[]{ 129499,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 67))); // man vampire: medium skin tone
-		trie.insert(new int[]{ 129502 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 1))); // genie
-		trie.insert(new int[]{ 129500,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 67, 199))); // merperson: medium skin tone
-		trie.insert(new int[]{ 129500,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 199))); // mermaid: medium skin tone
-		trie.insert(new int[]{ 129500,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 199))); // mermaid: medium skin tone
-		trie.insert(new int[]{ 129500,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 199))); // merman: medium skin tone
-		trie.insert(new int[]{ 129500,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 199))); // merman: medium skin tone
-		trie.insert(new int[]{ 129498,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 199))); // fairy: medium skin tone
-		trie.insert(new int[]{ 129498,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 265))); // woman fairy: medium skin tone
-		trie.insert(new int[]{ 129498,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 265))); // woman fairy: medium skin tone
-		trie.insert(new int[]{ 129498,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 265))); // man fairy: medium skin tone
-		trie.insert(new int[]{ 129498,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 265))); // man fairy: medium skin tone
-		trie.insert(new int[]{ 128124,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 67))); // baby angel: medium skin tone
-		trie.insert(new int[]{ 129328,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 595))); // pregnant woman: medium skin tone
-		trie.insert(new int[]{ 129329,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 595))); // breast-feeding: medium skin tone
-		trie.insert(new int[]{ 129489,127997,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 397))); // person feeding baby: medium skin tone
-		trie.insert(new int[]{ 129489,127997,127868 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 397))); // person feeding baby: medium skin tone
-		trie.insert(new int[]{ 128105,127997,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 4, 529, 925))); // woman feeding baby: medium skin tone
-		trie.insert(new int[]{ 128105,127997,127868 }, new ParseResult(6, new SpriteCoordinates(1, 4, 529, 925))); // woman feeding baby: medium skin tone
-		trie.insert(new int[]{ 128104,127997,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 991))); // man feeding baby: medium skin tone
-		trie.insert(new int[]{ 128104,127997,127868 }, new ParseResult(6, new SpriteCoordinates(1, 4, 331, 991))); // man feeding baby: medium skin tone
-		trie.insert(new int[]{ 128583,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 265))); // person bowing: medium skin tone
-		trie.insert(new int[]{ 128583,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 397))); // woman bowing: medium skin tone
-		trie.insert(new int[]{ 128583,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 397))); // woman bowing: medium skin tone
-		trie.insert(new int[]{ 128583,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 331))); // man bowing: medium skin tone
-		trie.insert(new int[]{ 128583,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 331))); // man bowing: medium skin tone
-		trie.insert(new int[]{ 128129,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 793))); // person tipping hand: medium skin tone
-		trie.insert(new int[]{ 128129,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 859, 1))); // woman tipping hand: medium skin tone
-		trie.insert(new int[]{ 128129,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 1))); // woman tipping hand: medium skin tone
-		trie.insert(new int[]{ 128129,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 793, 793))); // man tipping hand: medium skin tone
-		trie.insert(new int[]{ 128129,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 793))); // man tipping hand: medium skin tone
-		trie.insert(new int[]{ 128581,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 661))); // person gesturing NO: medium skin tone
-		trie.insert(new int[]{ 128581,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 727))); // woman gesturing NO: medium skin tone
-		trie.insert(new int[]{ 128581,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 727))); // woman gesturing NO: medium skin tone
-		trie.insert(new int[]{ 128581,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 727))); // man gesturing NO: medium skin tone
-		trie.insert(new int[]{ 128581,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 727))); // man gesturing NO: medium skin tone
-		trie.insert(new int[]{ 128582,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 463))); // person gesturing OK: medium skin tone
-		trie.insert(new int[]{ 128582,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 595))); // woman gesturing OK: medium skin tone
-		trie.insert(new int[]{ 128582,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 595))); // woman gesturing OK: medium skin tone
-		trie.insert(new int[]{ 128582,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 529))); // man gesturing OK: medium skin tone
-		trie.insert(new int[]{ 128582,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 529))); // man gesturing OK: medium skin tone
-		trie.insert(new int[]{ 128587,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 67))); // person raising hand: medium skin tone
-		trie.insert(new int[]{ 128587,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 199))); // woman raising hand: medium skin tone
-		trie.insert(new int[]{ 128587,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 199))); // woman raising hand: medium skin tone
-		trie.insert(new int[]{ 128587,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 133))); // man raising hand: medium skin tone
-		trie.insert(new int[]{ 128587,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 133))); // man raising hand: medium skin tone
-		trie.insert(new int[]{ 129487,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 463))); // deaf person: medium skin tone
-		trie.insert(new int[]{ 129487,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 463))); // deaf woman: medium skin tone
-		trie.insert(new int[]{ 129487,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 463))); // deaf woman: medium skin tone
-		trie.insert(new int[]{ 129487,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 463))); // deaf man: medium skin tone
-		trie.insert(new int[]{ 129487,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 463))); // deaf man: medium skin tone
-		trie.insert(new int[]{ 129318,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 595))); // person facepalming: medium skin tone
-		trie.insert(new int[]{ 129318,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 661, 1))); // woman facepalming: medium skin tone
-		trie.insert(new int[]{ 129318,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 1))); // woman facepalming: medium skin tone
-		trie.insert(new int[]{ 129318,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 595))); // man facepalming: medium skin tone
-		trie.insert(new int[]{ 129318,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 595))); // man facepalming: medium skin tone
-		trie.insert(new int[]{ 129335,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 265))); // person shrugging: medium skin tone
-		trie.insert(new int[]{ 129335,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 397))); // woman shrugging: medium skin tone
-		trie.insert(new int[]{ 129335,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 397))); // woman shrugging: medium skin tone
-		trie.insert(new int[]{ 129335,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 331))); // man shrugging: medium skin tone
-		trie.insert(new int[]{ 129335,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 331))); // man shrugging: medium skin tone
-		trie.insert(new int[]{ 128590,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 661))); // person pouting: medium skin tone
-		trie.insert(new int[]{ 128590,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 661))); // woman pouting: medium skin tone
-		trie.insert(new int[]{ 128590,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 463, 661))); // woman pouting: medium skin tone
-		trie.insert(new int[]{ 128590,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 661))); // man pouting: medium skin tone
-		trie.insert(new int[]{ 128590,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 661))); // man pouting: medium skin tone
-		trie.insert(new int[]{ 128589,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 661))); // person frowning: medium skin tone
-		trie.insert(new int[]{ 128589,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 661, 661))); // woman frowning: medium skin tone
-		trie.insert(new int[]{ 128589,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 661))); // woman frowning: medium skin tone
-		trie.insert(new int[]{ 128589,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 595, 661))); // man frowning: medium skin tone
-		trie.insert(new int[]{ 128589,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 661))); // man frowning: medium skin tone
-		trie.insert(new int[]{ 128135,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 793))); // person getting haircut: medium skin tone
-		trie.insert(new int[]{ 128135,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 793))); // woman getting haircut: medium skin tone
-		trie.insert(new int[]{ 128135,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 793))); // woman getting haircut: medium skin tone
-		trie.insert(new int[]{ 128135,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 67, 793))); // man getting haircut: medium skin tone
-		trie.insert(new int[]{ 128135,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 793))); // man getting haircut: medium skin tone
-		trie.insert(new int[]{ 128134,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 199, 793))); // person getting massage: medium skin tone
-		trie.insert(new int[]{ 128134,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 793))); // woman getting massage: medium skin tone
-		trie.insert(new int[]{ 128134,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 793))); // woman getting massage: medium skin tone
-		trie.insert(new int[]{ 128134,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 793))); // man getting massage: medium skin tone
-		trie.insert(new int[]{ 128134,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 793))); // man getting massage: medium skin tone
-		trie.insert(new int[]{ 129494,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 1))); // person in steamy room: medium skin tone
-		trie.insert(new int[]{ 129494,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 133))); // woman in steamy room: medium skin tone
-		trie.insert(new int[]{ 129494,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 133))); // woman in steamy room: medium skin tone
-		trie.insert(new int[]{ 129494,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 331, 67))); // man in steamy room: medium skin tone
-		trie.insert(new int[]{ 129494,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 67))); // man in steamy room: medium skin tone
-		trie.insert(new int[]{ 128133,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 793))); // nail polish: medium skin tone
-		trie.insert(new int[]{ 129331,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 199, 595))); // selfie: medium skin tone
-		trie.insert(new int[]{ 128131,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 463, 793))); // woman dancing: medium skin tone
-		trie.insert(new int[]{ 128378,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 265))); // man dancing: medium skin tone
-		trie.insert(new int[]{ 128372,65039 }, new ParseResult(3, new SpriteCoordinates(1, 4, 793, 529))); // man in suit levitating
-		trie.insert(new int[]{ 128372 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 529))); // man in suit levitating
-		trie.insert(new int[]{ 129489,8205,129469 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 331))); // person in manual wheelchair
-		trie.insert(new int[]{ 129489,129469 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 331))); // person in manual wheelchair
-		trie.insert(new int[]{ 128105,8205,129469 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 859))); // woman in manual wheelchair
-		trie.insert(new int[]{ 128105,129469 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 859))); // woman in manual wheelchair
-		trie.insert(new int[]{ 128104,8205,129469 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 925))); // man in manual wheelchair
-		trie.insert(new int[]{ 128104,129469 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 925))); // man in manual wheelchair
-		trie.insert(new int[]{ 129489,8205,129468 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 331))); // person in motorized wheelchair
-		trie.insert(new int[]{ 129489,129468 }, new ParseResult(4, new SpriteCoordinates(1, 4, 199, 331))); // person in motorized wheelchair
-		trie.insert(new int[]{ 128105,8205,129468 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 859))); // woman in motorized wheelchair
-		trie.insert(new int[]{ 128105,129468 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 859))); // woman in motorized wheelchair
-		trie.insert(new int[]{ 128104,8205,129468 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 925))); // man in motorized wheelchair
-		trie.insert(new int[]{ 128104,129468 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 925))); // man in motorized wheelchair
-		trie.insert(new int[]{ 128694 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 661))); // person walking
-		trie.insert(new int[]{ 128694,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 661))); // woman walking
-		trie.insert(new int[]{ 128694,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 199, 661))); // woman walking
-		trie.insert(new int[]{ 128694,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 661))); // man walking
-		trie.insert(new int[]{ 128694,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 133, 661))); // man walking
-		trie.insert(new int[]{ 129489,127995,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 4, 133, 463))); // person with probing cane: light skin tone
-		trie.insert(new int[]{ 129489,127995,129455 }, new ParseResult(6, new SpriteCoordinates(1, 4, 133, 463))); // person with probing cane: light skin tone
-		trie.insert(new int[]{ 128105,8205,129455 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 1))); // woman with probing cane
-		trie.insert(new int[]{ 128105,129455 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 1))); // woman with probing cane
-		trie.insert(new int[]{ 128104,8205,129455 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 925))); // man with probing cane
-		trie.insert(new int[]{ 128104,129455 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 925))); // man with probing cane
-		trie.insert(new int[]{ 129486 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 463))); // person kneeling
-		trie.insert(new int[]{ 129486,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 67))); // woman kneeling
-		trie.insert(new int[]{ 129486,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 529, 67))); // woman kneeling
-		trie.insert(new int[]{ 129486,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 1))); // man kneeling
-		trie.insert(new int[]{ 129486,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 529, 1))); // man kneeling
-		trie.insert(new int[]{ 127939 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1057, 661))); // person running
-		trie.insert(new int[]{ 127939,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 793))); // woman running
-		trie.insert(new int[]{ 127939,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1057, 793))); // woman running
-		trie.insert(new int[]{ 127939,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 727))); // man running
-		trie.insert(new int[]{ 127939,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1057, 727))); // man running
-		trie.insert(new int[]{ 129485 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 133))); // person standing
-		trie.insert(new int[]{ 129485,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 265))); // woman standing
-		trie.insert(new int[]{ 129485,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 529, 265))); // woman standing
-		trie.insert(new int[]{ 129485,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 199))); // man standing
-		trie.insert(new int[]{ 129485,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 529, 199))); // man standing
-		trie.insert(new int[]{ 129489,8205,129309,8205,129489 }, new ParseResult(8, new SpriteCoordinates(1, 4, 265, 331))); // people holding hands
-		trie.insert(new int[]{ 129489,129309,129489 }, new ParseResult(6, new SpriteCoordinates(1, 4, 265, 331))); // people holding hands
-		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128105 }, new ParseResult(8, new SpriteCoordinates(1, 4, 727, 859))); // couple with heart: woman, woman
-		trie.insert(new int[]{ 128105,10084,128105 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 859))); // couple with heart: woman, woman
-		trie.insert(new int[]{ 128106 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 859))); // family
-		trie.insert(new int[]{ 128105,8205,128105,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 4, 925, 67))); // family: woman, woman, boy
-		trie.insert(new int[]{ 128105,128105,128102 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 67))); // family: woman, woman, boy
-		trie.insert(new int[]{ 128104,8205,128104,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 4, 925, 925))); // family: man, man, girl
-		trie.insert(new int[]{ 128104,128104,128103 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 925))); // family: man, man, girl
-		trie.insert(new int[]{ 128105,8205,128103,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 4, 925, 133))); // family: woman, girl, boy
-		trie.insert(new int[]{ 128105,128103,128102 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 133))); // family: woman, girl, boy
-		trie.insert(new int[]{ 128104,8205,128102,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 4, 991, 1))); // family: man, boy, boy
-		trie.insert(new int[]{ 128104,128102,128102 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 1))); // family: man, boy, boy
-		trie.insert(new int[]{ 129466 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 397))); // safety vest
-		trie.insert(new int[]{ 128084 }, new ParseResult(2, new SpriteCoordinates(1, 4, 727, 991))); // necktie
-		trie.insert(new int[]{ 129407 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 529))); // flat shoe
-		trie.insert(new int[]{ 129406 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 1))); // hiking boot
-		trie.insert(new int[]{ 129506 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 133))); // billed cap
-		trie.insert(new int[]{ 128141 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 661))); // ring
-		trie.insert(new int[]{ 129523 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 133))); // luggage
-		trie.insert(new int[]{ 129456 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 529))); // red hair
-		trie.insert(new int[]{ 128517 }, new ParseResult(2, new SpriteCoordinates(1, 5, 397, 727))); // grinning face with sweat
-		trie.insert(new int[]{ 128578 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 463))); // slightly smiling face
-		trie.insert(new int[]{ 129392 }, new ParseResult(2, new SpriteCoordinates(1, 5, 199, 529))); // smiling face with hearts
-		trie.insert(new int[]{ 128539 }, new ParseResult(2, new SpriteCoordinates(1, 5, 331, 727))); // face with tongue
-		trie.insert(new int[]{ 129299 }, new ParseResult(2, new SpriteCoordinates(1, 5, 661, 1))); // nerd face
-		trie.insert(new int[]{ 128542 }, new ParseResult(2, new SpriteCoordinates(1, 5, 265, 727))); // disappointed face
-		trie.insert(new int[]{ 128547 }, new ParseResult(2, new SpriteCoordinates(1, 5, 199, 727))); // persevering face
-		trie.insert(new int[]{ 128557 }, new ParseResult(2, new SpriteCoordinates(1, 5, 67, 727))); // loudly crying face
-		trie.insert(new int[]{ 128563 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1, 727))); // flushed face
-		trie.insert(new int[]{ 128549 }, new ParseResult(2, new SpriteCoordinates(1, 5, 133, 727))); // sad but relieved face
-		trie.insert(new int[]{ 129323 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 463))); // shushing face
-		trie.insert(new int[]{ 128580 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 397))); // face with rolling eyes
-		trie.insert(new int[]{ 128564 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 661))); // sleeping face
-		trie.insert(new int[]{ 129314 }, new ParseResult(2, new SpriteCoordinates(1, 5, 133, 595))); // nauseated face
-		trie.insert(new int[]{ 129297 }, new ParseResult(2, new SpriteCoordinates(1, 5, 661, 67))); // money-mouth face
-		trie.insert(new int[]{ 128122 }, new ParseResult(2, new SpriteCoordinates(1, 5, 529, 793))); // goblin
-		trie.insert(new int[]{ 128125 }, new ParseResult(2, new SpriteCoordinates(1, 5, 397, 793))); // alien
-		trie.insert(new int[]{ 128569 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 595))); // cat with tears of joy
-		trie.insert(new int[]{ 128574 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 529))); // pouting cat
-		trie.insert(new int[]{ 129330,127999 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 265))); // palms up together: dark skin tone
-		trie.insert(new int[]{ 128080,127999 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 991))); // open hands: dark skin tone
-		trie.insert(new int[]{ 128588,127999 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 661))); // raising hands: dark skin tone
-		trie.insert(new int[]{ 128079,127999 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 991))); // clapping hands: dark skin tone
-		trie.insert(new int[]{ 128077,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 925, 991))); // thumbs up: medium-dark skin tone
-		trie.insert(new int[]{ 128078,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 991))); // thumbs down: medium-dark skin tone
-		trie.insert(new int[]{ 128074,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 67))); // oncoming fist: medium-dark skin tone
-		trie.insert(new int[]{ 9994,127998 }, new ParseResult(3, new SpriteCoordinates(1, 5, 67, 67))); // raised fist: medium-dark skin tone
-		trie.insert(new int[]{ 129307,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 595))); // left-facing fist: medium-dark skin tone
-		trie.insert(new int[]{ 129308,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 595))); // right-facing fist: medium-dark skin tone
-		trie.insert(new int[]{ 129310,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 595))); // crossed fingers: medium-dark skin tone
-		trie.insert(new int[]{ 9996,127998 }, new ParseResult(3, new SpriteCoordinates(1, 5, 67, 1))); // victory hand: medium-dark skin tone
-		trie.insert(new int[]{ 129311,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 595))); // love-you gesture: medium-dark skin tone
-		trie.insert(new int[]{ 129304,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 595))); // sign of the horns: medium-dark skin tone
-		trie.insert(new int[]{ 128076,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 991, 991))); // OK hand: medium-dark skin tone
-		trie.insert(new int[]{ 129295,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 133))); // pinching hand: medium-dark skin tone
-		trie.insert(new int[]{ 129292,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 199))); // pinched fingers: medium-dark skin tone
-		trie.insert(new int[]{ 128072,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 199))); // backhand index pointing left: medium-dark skin tone
-		trie.insert(new int[]{ 128073,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 133))); // backhand index pointing right: medium-dark skin tone
-		trie.insert(new int[]{ 128070,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 331))); // backhand index pointing up: medium-dark skin tone
-		trie.insert(new int[]{ 128071,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 265))); // backhand index pointing down: medium-dark skin tone
-		trie.insert(new int[]{ 9757,127998 }, new ParseResult(3, new SpriteCoordinates(1, 5, 133, 1))); // index pointing up: medium-dark skin tone
-		trie.insert(new int[]{ 9995,127998 }, new ParseResult(3, new SpriteCoordinates(1, 5, 1, 67))); // raised hand: medium-dark skin tone
-		trie.insert(new int[]{ 129306,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 595))); // raised back of hand: medium-dark skin tone
-		trie.insert(new int[]{ 128400,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 727))); // hand with fingers splayed: medium-dark skin tone
-		trie.insert(new int[]{ 128406,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 727))); // vulcan salute: medium-dark skin tone
-		trie.insert(new int[]{ 128075,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 1))); // waving hand: medium-dark skin tone
-		trie.insert(new int[]{ 129305,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 595))); // call me hand: medium-dark skin tone
-		trie.insert(new int[]{ 128170,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 199))); // flexed biceps: medium-dark skin tone
-		trie.insert(new int[]{ 128405,127997 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 727))); // middle finger: medium skin tone
-		trie.insert(new int[]{ 9997,127997 }, new ParseResult(3, new SpriteCoordinates(1, 5, 1, 1))); // writing hand: medium skin tone
-		trie.insert(new int[]{ 128591,127997 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 463))); // folded hands: medium skin tone
-		trie.insert(new int[]{ 129462,127997 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 463))); // foot: medium skin tone
-		trie.insert(new int[]{ 129461,127997 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 529))); // leg: medium skin tone
-		trie.insert(new int[]{ 128068 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1057, 397))); // mouth
-		trie.insert(new int[]{ 128066,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 529))); // ear: medium-light skin tone
-		trie.insert(new int[]{ 129467,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 1))); // ear with hearing aid: medium-light skin tone
-		trie.insert(new int[]{ 128067,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 463))); // nose: medium-light skin tone
-		trie.insert(new int[]{ 128064 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1057, 595))); // eyes
-		trie.insert(new int[]{ 128101 }, new ParseResult(2, new SpriteCoordinates(1, 5, 265, 991))); // busts in silhouette
-		trie.insert(new int[]{ 128118,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 1))); // baby: medium-dark skin tone
-		trie.insert(new int[]{ 128103,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 991))); // girl: medium-dark skin tone
-		trie.insert(new int[]{ 129490,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 199))); // child: medium-dark skin tone
-		trie.insert(new int[]{ 128102,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 991))); // boy: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 859))); // woman: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 331))); // person: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 925))); // man: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 1))); // person: medium-dark skin tone, curly hair
-		trie.insert(new int[]{ 129489,127998,129457 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 1))); // person: medium-dark skin tone, curly hair
-		trie.insert(new int[]{ 128105,127998,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 859))); // woman, curly haired: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129457 }, new ParseResult(6, new SpriteCoordinates(1, 5, 793, 859))); // woman, curly haired: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 925))); // man, curly haired: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129457 }, new ParseResult(6, new SpriteCoordinates(1, 5, 859, 925))); // man, curly haired: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 67))); // person: medium-dark skin tone, red hair
-		trie.insert(new int[]{ 129489,127998,129456 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 67))); // person: medium-dark skin tone, red hair
-		trie.insert(new int[]{ 128105,127998,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 859))); // woman, red haired: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129456 }, new ParseResult(6, new SpriteCoordinates(1, 5, 859, 859))); // woman, red haired: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 925))); // man, red haired: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129456 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 925))); // man, red haired: medium-dark skin tone
-		trie.insert(new int[]{ 128113,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 595))); // blond-haired woman: medium-dark skin tone
-		trie.insert(new int[]{ 128113,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 595))); // blond-haired woman: medium-dark skin tone
-		trie.insert(new int[]{ 128113,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 463))); // blond-haired person: medium-dark skin tone
-		trie.insert(new int[]{ 128113,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 529))); // blond-haired man: medium-dark skin tone
-		trie.insert(new int[]{ 128113,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 529))); // blond-haired man: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 331))); // person: medium-dark skin tone, white hair
-		trie.insert(new int[]{ 129489,127998,129459 }, new ParseResult(6, new SpriteCoordinates(1, 5, 265, 331))); // person: medium-dark skin tone, white hair
-		trie.insert(new int[]{ 128105,127998,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 859))); // woman, white haired: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129459 }, new ParseResult(6, new SpriteCoordinates(1, 5, 661, 859))); // woman, white haired: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 925))); // man, white haired: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129459 }, new ParseResult(6, new SpriteCoordinates(1, 5, 727, 925))); // man, white haired: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 331))); // person: medium-dark skin tone, bald
-		trie.insert(new int[]{ 129489,127998,129458 }, new ParseResult(6, new SpriteCoordinates(1, 5, 331, 331))); // person: medium-dark skin tone, bald
-		trie.insert(new int[]{ 128105,127998,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 859))); // woman, bald: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,129458 }, new ParseResult(6, new SpriteCoordinates(1, 5, 727, 859))); // woman, bald: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 925))); // man, bald: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,129458 }, new ParseResult(6, new SpriteCoordinates(1, 5, 793, 925))); // man, bald: medium-dark skin tone
-		trie.insert(new int[]{ 129492,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 67))); // bearded person: medium-dark skin tone
-		trie.insert(new int[]{ 128117,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 67))); // old woman: medium-dark skin tone
-		trie.insert(new int[]{ 129491,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 133))); // older person: medium-dark skin tone
-		trie.insert(new int[]{ 128116,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 133))); // old man: medium-dark skin tone
-		trie.insert(new int[]{ 128114,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 397))); // man with Chinese cap: medium-dark skin tone
-		trie.insert(new int[]{ 128115,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 199))); // person wearing turban: medium-dark skin tone
-		trie.insert(new int[]{ 128115,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 331))); // woman wearing turban: medium-dark skin tone
-		trie.insert(new int[]{ 128115,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 331))); // woman wearing turban: medium-dark skin tone
-		trie.insert(new int[]{ 128115,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 265))); // man wearing turban: medium-dark skin tone
-		trie.insert(new int[]{ 128115,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 265))); // man wearing turban: medium-dark skin tone
-		trie.insert(new int[]{ 129493,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 1))); // woman with headscarf: medium-dark skin tone
-		trie.insert(new int[]{ 128110,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 859))); // police officer: medium-dark skin tone
-		trie.insert(new int[]{ 128110,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 859))); // woman police officer: medium-dark skin tone
-		trie.insert(new int[]{ 128110,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 859))); // woman police officer: medium-dark skin tone
-		trie.insert(new int[]{ 128110,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 859))); // man police officer: medium-dark skin tone
-		trie.insert(new int[]{ 128110,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 859))); // man police officer: medium-dark skin tone
-		trie.insert(new int[]{ 128119,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 793))); // construction worker: medium-dark skin tone
-		trie.insert(new int[]{ 128119,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 793))); // woman construction worker: medium-dark skin tone
-		trie.insert(new int[]{ 128119,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 793))); // woman construction worker: medium-dark skin tone
-		trie.insert(new int[]{ 128119,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 793))); // man construction worker: medium-dark skin tone
-		trie.insert(new int[]{ 128119,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 793))); // man construction worker: medium-dark skin tone
-		trie.insert(new int[]{ 128130,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 793))); // guard: medium-dark skin tone
-		trie.insert(new int[]{ 128130,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 793))); // woman guard: medium-dark skin tone
-		trie.insert(new int[]{ 128130,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 793))); // woman guard: medium-dark skin tone
-		trie.insert(new int[]{ 128130,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 793))); // man guard: medium-dark skin tone
-		trie.insert(new int[]{ 128130,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 793))); // man guard: medium-dark skin tone
-		trie.insert(new int[]{ 128373,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 727))); // detective: medium-dark skin tone
-		trie.insert(new int[]{ 128373,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 67))); // woman detective: medium-dark skin tone
-		trie.insert(new int[]{ 128373,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 67))); // woman detective: medium-dark skin tone
-		trie.insert(new int[]{ 128373,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 1))); // man detective: medium-dark skin tone
-		trie.insert(new int[]{ 128373,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 1))); // man detective: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 331))); // health worker: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,9877 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 331))); // health worker: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 859))); // woman health worker: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,9877 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 859))); // woman health worker: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 925))); // man health worker: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,9877 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 925))); // man health worker: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 199))); // farmer: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127806 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 199))); // farmer: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 859))); // woman farmer: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127806 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 859))); // woman farmer: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 859))); // man farmer: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127806 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 859))); // man farmer: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 133))); // cook: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127859 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 133))); // cook: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 793))); // woman cook: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127859 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 793))); // woman cook: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 793))); // man cook: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127859 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 793))); // man cook: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 397))); // student: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127891 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 397))); // student: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 661))); // woman student: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127891 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 661))); // woman student: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 661))); // man student: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127891 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 661))); // man student: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 397))); // singer: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127908 }, new ParseResult(6, new SpriteCoordinates(1, 5, 331, 397))); // singer: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 595))); // woman singer: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127908 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 595))); // woman singer: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 595))); // man singer: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127908 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 595))); // man singer: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 397))); // teacher: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127979 }, new ParseResult(6, new SpriteCoordinates(1, 5, 199, 397))); // teacher: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 463))); // woman teacher: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127979 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 463))); // woman teacher: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 463))); // man teacher: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127979 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 463))); // man teacher: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 397))); // factory worker: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127981 }, new ParseResult(6, new SpriteCoordinates(1, 5, 133, 397))); // factory worker: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 397))); // woman factory worker: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127981 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 397))); // woman factory worker: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 397))); // man factory worker: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127981 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 397))); // man factory worker: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 397))); // technologist: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,128187 }, new ParseResult(6, new SpriteCoordinates(1, 5, 67, 397))); // technologist: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 331))); // woman technologist: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,128187 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 331))); // woman technologist: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 331))); // man technologist: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,128187 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 331))); // man technologist: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 397))); // office worker: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,128188 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1, 397))); // office worker: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 265))); // woman office worker: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,128188 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 265))); // woman office worker: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 265))); // man office worker: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,128188 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 265))); // man office worker: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 331))); // mechanic: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,128295 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 331))); // mechanic: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 199))); // woman mechanic: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,128295 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 199))); // woman mechanic: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 199))); // man mechanic: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,128295 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 199))); // man mechanic: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 265))); // scientist: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,128300 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 265))); // scientist: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 133))); // woman scientist: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,128300 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 133))); // woman scientist: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 133))); // man scientist: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,128300 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 133))); // man scientist: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 397))); // artist: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127912 }, new ParseResult(6, new SpriteCoordinates(1, 5, 265, 397))); // artist: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 529))); // woman artist: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127912 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 529))); // woman artist: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 529))); // man artist: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127912 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 529))); // man artist: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 133))); // firefighter: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,128658 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 133))); // firefighter: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 1))); // woman firefighter: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,128658 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 1))); // woman firefighter: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 1))); // man firefighter: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,128658 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 1))); // man firefighter: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 331))); // pilot: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,9992 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 331))); // pilot: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 859))); // woman pilot: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,9992 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 859))); // woman pilot: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 925))); // man pilot: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,9992 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 925))); // man pilot: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 199))); // astronaut: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,128640 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 199))); // astronaut: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 67))); // woman astronaut: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,128640 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 67))); // woman astronaut: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 67))); // man astronaut: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,128640 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 67))); // man astronaut: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 331))); // judge: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,9878 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 331))); // judge: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 859))); // woman judge: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,9878 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 859))); // woman judge: medium-dark skin tone
+		trie.insert(new int[]{ 9996,127999 }, new ParseResult(3, new SpriteCoordinates(1, 3, 67, 1))); // victory hand: dark skin tone
+		trie.insert(new int[]{ 129311,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 661))); // love-you gesture: dark skin tone
+		trie.insert(new int[]{ 129304,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 67))); // sign of the horns: dark skin tone
+		trie.insert(new int[]{ 128076,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 1123))); // OK hand: dark skin tone
+		trie.insert(new int[]{ 129295,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 199))); // pinching hand: dark skin tone
+		trie.insert(new int[]{ 129292,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 265))); // pinched fingers: dark skin tone
+		trie.insert(new int[]{ 128072,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 463, 1123))); // backhand index pointing left: dark skin tone
+		trie.insert(new int[]{ 128073,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 1123))); // backhand index pointing right: dark skin tone
+		trie.insert(new int[]{ 128070,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 1123))); // backhand index pointing up: dark skin tone
+		trie.insert(new int[]{ 128071,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 1123))); // backhand index pointing down: dark skin tone
+		trie.insert(new int[]{ 9757,127999 }, new ParseResult(3, new SpriteCoordinates(1, 3, 133, 1))); // index pointing up: dark skin tone
+		trie.insert(new int[]{ 9995,127999 }, new ParseResult(3, new SpriteCoordinates(1, 3, 1, 67))); // raised hand: dark skin tone
+		trie.insert(new int[]{ 129306,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 661))); // raised back of hand: dark skin tone
+		trie.insert(new int[]{ 128400,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 793))); // hand with fingers splayed: dark skin tone
+		trie.insert(new int[]{ 128406,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 793))); // vulcan salute: dark skin tone
+		trie.insert(new int[]{ 128075,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 1123))); // waving hand: dark skin tone
+		trie.insert(new int[]{ 129305,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 1))); // call me hand: dark skin tone
+		trie.insert(new int[]{ 128170,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 793))); // flexed biceps: dark skin tone
+		trie.insert(new int[]{ 128405,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 793))); // middle finger: medium-dark skin tone
+		trie.insert(new int[]{ 9997,127998 }, new ParseResult(3, new SpriteCoordinates(1, 3, 1, 1))); // writing hand: medium-dark skin tone
+		trie.insert(new int[]{ 128591,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 529))); // folded hands: medium-dark skin tone
+		trie.insert(new int[]{ 129462,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 529))); // foot: medium-dark skin tone
+		trie.insert(new int[]{ 129461,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1, 595))); // leg: medium-dark skin tone
+		trie.insert(new int[]{ 129463 }, new ParseResult(2, new SpriteCoordinates(1, 3, 595, 463))); // tooth
+		trie.insert(new int[]{ 128066,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 1123))); // ear: medium-dark skin tone
+		trie.insert(new int[]{ 129467,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 1))); // ear with hearing aid: medium-dark skin tone
+		trie.insert(new int[]{ 128067,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 1123))); // nose: medium-dark skin tone
+		trie.insert(new int[]{ 129728 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1, 133))); // anatomical heart
+		trie.insert(new int[]{ 129730 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 67))); // people hugging
+		trie.insert(new int[]{ 128118,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 859))); // baby: dark skin tone
+		trie.insert(new int[]{ 128103,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1123, 661))); // girl: dark skin tone
+		trie.insert(new int[]{ 129490,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 331))); // child: dark skin tone
+		trie.insert(new int[]{ 128102,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1123, 727))); // boy: dark skin tone
+		trie.insert(new int[]{ 128105,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1, 925))); // woman: dark skin tone
+		trie.insert(new int[]{ 129489,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 331))); // person: dark skin tone
+		trie.insert(new int[]{ 128104,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 397))); // man: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 397))); // person: dark skin tone, curly hair
+		trie.insert(new int[]{ 129489,127999,129457 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 397))); // person: dark skin tone, curly hair
+		trie.insert(new int[]{ 128105,127999,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 925))); // woman, curly haired: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129457 }, new ParseResult(6, new SpriteCoordinates(1, 3, 529, 925))); // woman, curly haired: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 925))); // man, curly haired: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129457 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1057, 925))); // man, curly haired: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 397))); // person: dark skin tone, red hair
+		trie.insert(new int[]{ 129489,127999,129456 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 397))); // person: dark skin tone, red hair
+		trie.insert(new int[]{ 128105,127999,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 925))); // woman, red haired: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129456 }, new ParseResult(6, new SpriteCoordinates(1, 3, 595, 925))); // woman, red haired: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 991))); // man, red haired: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129456 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1057, 991))); // man, red haired: dark skin tone
+		trie.insert(new int[]{ 128113,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 199))); // blond-haired woman: dark skin tone
+		trie.insert(new int[]{ 128113,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 199))); // blond-haired woman: dark skin tone
+		trie.insert(new int[]{ 128113,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 925, 67))); // blond-haired person: dark skin tone
+		trie.insert(new int[]{ 128113,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 133))); // blond-haired man: dark skin tone
+		trie.insert(new int[]{ 128113,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 133))); // blond-haired man: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 265))); // person: dark skin tone, white hair
+		trie.insert(new int[]{ 129489,127999,129459 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 265))); // person: dark skin tone, white hair
+		trie.insert(new int[]{ 128105,127999,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 925))); // woman, white haired: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129459 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 925))); // woman, white haired: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 793))); // man, white haired: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129459 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1057, 793))); // man, white haired: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 331))); // person: dark skin tone, bald
+		trie.insert(new int[]{ 129489,127999,129458 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 331))); // person: dark skin tone, bald
+		trie.insert(new int[]{ 128105,127999,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 925))); // woman, bald: dark skin tone
+		trie.insert(new int[]{ 128105,127999,129458 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 925))); // woman, bald: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 859))); // man, bald: dark skin tone
+		trie.insert(new int[]{ 128104,127999,129458 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1057, 859))); // man, bald: dark skin tone
+		trie.insert(new int[]{ 129492,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 265))); // bearded person: dark skin tone
+		trie.insert(new int[]{ 129492,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 331))); // man: dark skin tone, beard
+		trie.insert(new int[]{ 129492,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 331))); // man: dark skin tone, beard
+		trie.insert(new int[]{ 129492,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 331))); // woman: dark skin tone, beard
+		trie.insert(new int[]{ 129492,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 331))); // woman: dark skin tone, beard
+		trie.insert(new int[]{ 128117,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 859))); // old woman: dark skin tone
+		trie.insert(new int[]{ 129491,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 331))); // older person: dark skin tone
+		trie.insert(new int[]{ 128116,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 859))); // old man: dark skin tone
+		trie.insert(new int[]{ 128114,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 925, 1))); // man with Chinese cap: dark skin tone
+		trie.insert(new int[]{ 128115,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 859))); // person wearing turban: dark skin tone
+		trie.insert(new int[]{ 128115,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 859))); // woman wearing turban: dark skin tone
+		trie.insert(new int[]{ 128115,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 859))); // woman wearing turban: dark skin tone
+		trie.insert(new int[]{ 128115,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 859))); // man wearing turban: dark skin tone
+		trie.insert(new int[]{ 128115,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 859))); // man wearing turban: dark skin tone
+		trie.insert(new int[]{ 129493,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 199))); // woman with headscarf: dark skin tone
+		trie.insert(new int[]{ 128110,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 925, 463))); // police officer: dark skin tone
+		trie.insert(new int[]{ 128110,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 595))); // woman police officer: dark skin tone
+		trie.insert(new int[]{ 128110,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 595))); // woman police officer: dark skin tone
+		trie.insert(new int[]{ 128110,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 529))); // man police officer: dark skin tone
+		trie.insert(new int[]{ 128110,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 529))); // man police officer: dark skin tone
+		trie.insert(new int[]{ 128119,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 859))); // construction worker: dark skin tone
+		trie.insert(new int[]{ 128119,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 859))); // woman construction worker: dark skin tone
+		trie.insert(new int[]{ 128119,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 859))); // woman construction worker: dark skin tone
+		trie.insert(new int[]{ 128119,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 859))); // man construction worker: dark skin tone
+		trie.insert(new int[]{ 128119,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 859))); // man construction worker: dark skin tone
+		trie.insert(new int[]{ 128130,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 595))); // guard: dark skin tone
+		trie.insert(new int[]{ 128130,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 727))); // woman guard: dark skin tone
+		trie.insert(new int[]{ 128130,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 727))); // woman guard: dark skin tone
+		trie.insert(new int[]{ 128130,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 661))); // man guard: dark skin tone
+		trie.insert(new int[]{ 128130,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 661))); // man guard: dark skin tone
+		trie.insert(new int[]{ 128373,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 793))); // detective: dark skin tone
+		trie.insert(new int[]{ 128373,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 793))); // woman detective: dark skin tone
+		trie.insert(new int[]{ 128373,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 661, 793))); // woman detective: dark skin tone
+		trie.insert(new int[]{ 128373,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 793))); // man detective: dark skin tone
+		trie.insert(new int[]{ 128373,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 793))); // man detective: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 199))); // health worker: dark skin tone
+		trie.insert(new int[]{ 129489,127999,9877 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 199))); // health worker: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 925))); // woman health worker: dark skin tone
+		trie.insert(new int[]{ 128105,127999,9877 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 925))); // woman health worker: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 727))); // man health worker: dark skin tone
+		trie.insert(new int[]{ 128104,127999,9877 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1057, 727))); // man health worker: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 463))); // farmer: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127806 }, new ParseResult(6, new SpriteCoordinates(1, 3, 133, 463))); // farmer: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 661))); // woman farmer: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127806 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 661))); // woman farmer: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 1057))); // man farmer: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127806 }, new ParseResult(6, new SpriteCoordinates(1, 3, 859, 1057))); // man farmer: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 463))); // cook: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127859 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 463))); // cook: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 595))); // woman cook: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127859 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 595))); // woman cook: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 1057))); // man cook: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127859 }, new ParseResult(6, new SpriteCoordinates(1, 3, 793, 1057))); // man cook: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 331))); // student: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127891 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 331))); // student: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 463))); // woman student: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127891 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 463))); // woman student: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 1057))); // man student: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127891 }, new ParseResult(6, new SpriteCoordinates(1, 3, 661, 1057))); // man student: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 265))); // singer: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127908 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 265))); // singer: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 397))); // woman singer: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127908 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 397))); // woman singer: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 1057))); // man singer: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127908 }, new ParseResult(6, new SpriteCoordinates(1, 3, 595, 1057))); // man singer: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 133))); // teacher: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127979 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 133))); // teacher: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 265))); // woman teacher: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127979 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 265))); // woman teacher: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 1057))); // man teacher: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127979 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 1057))); // man teacher: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 67))); // factory worker: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127981 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 67))); // factory worker: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 199))); // woman factory worker: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127981 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 199))); // woman factory worker: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 1057))); // man factory worker: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127981 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 1057))); // man factory worker: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 1))); // technologist: dark skin tone
+		trie.insert(new int[]{ 129489,127999,128187 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 1))); // technologist: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 133))); // woman technologist: dark skin tone
+		trie.insert(new int[]{ 128105,127999,128187 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 133))); // woman technologist: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 1057))); // man technologist: dark skin tone
+		trie.insert(new int[]{ 128104,127999,128187 }, new ParseResult(6, new SpriteCoordinates(1, 3, 331, 1057))); // man technologist: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 397))); // office worker: dark skin tone
+		trie.insert(new int[]{ 129489,127999,128188 }, new ParseResult(6, new SpriteCoordinates(1, 3, 397, 397))); // office worker: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 67))); // woman office worker: dark skin tone
+		trie.insert(new int[]{ 128105,127999,128188 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 67))); // woman office worker: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 1057))); // man office worker: dark skin tone
+		trie.insert(new int[]{ 128104,127999,128188 }, new ParseResult(6, new SpriteCoordinates(1, 3, 265, 1057))); // man office worker: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 397))); // mechanic: dark skin tone
+		trie.insert(new int[]{ 129489,127999,128295 }, new ParseResult(6, new SpriteCoordinates(1, 3, 331, 397))); // mechanic: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 1))); // woman mechanic: dark skin tone
+		trie.insert(new int[]{ 128105,127999,128295 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 1))); // woman mechanic: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 1057))); // man mechanic: dark skin tone
+		trie.insert(new int[]{ 128104,127999,128295 }, new ParseResult(6, new SpriteCoordinates(1, 3, 199, 1057))); // man mechanic: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 397))); // scientist: dark skin tone
+		trie.insert(new int[]{ 129489,127999,128300 }, new ParseResult(6, new SpriteCoordinates(1, 3, 265, 397))); // scientist: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 925))); // woman scientist: dark skin tone
+		trie.insert(new int[]{ 128105,127999,128300 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 925))); // woman scientist: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 1057))); // man scientist: dark skin tone
+		trie.insert(new int[]{ 128104,127999,128300 }, new ParseResult(6, new SpriteCoordinates(1, 3, 133, 1057))); // man scientist: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 199))); // artist: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127912 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 199))); // artist: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 331))); // woman artist: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127912 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 331))); // woman artist: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 1057))); // man artist: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127912 }, new ParseResult(6, new SpriteCoordinates(1, 3, 529, 1057))); // man artist: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 397))); // firefighter: dark skin tone
+		trie.insert(new int[]{ 129489,127999,128658 }, new ParseResult(6, new SpriteCoordinates(1, 3, 133, 397))); // firefighter: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 925))); // woman firefighter: dark skin tone
+		trie.insert(new int[]{ 128105,127999,128658 }, new ParseResult(6, new SpriteCoordinates(1, 3, 793, 925))); // woman firefighter: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 1057))); // man firefighter: dark skin tone
+		trie.insert(new int[]{ 128104,127999,128658 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 1057))); // man firefighter: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 67))); // pilot: dark skin tone
+		trie.insert(new int[]{ 129489,127999,9992 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 67))); // pilot: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 925))); // woman pilot: dark skin tone
+		trie.insert(new int[]{ 128105,127999,9992 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 925))); // woman pilot: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 595))); // man pilot: dark skin tone
+		trie.insert(new int[]{ 128104,127999,9992 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1057, 595))); // man pilot: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 397))); // astronaut: dark skin tone
+		trie.insert(new int[]{ 129489,127999,128640 }, new ParseResult(6, new SpriteCoordinates(1, 3, 199, 397))); // astronaut: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 925))); // woman astronaut: dark skin tone
+		trie.insert(new int[]{ 128105,127999,128640 }, new ParseResult(6, new SpriteCoordinates(1, 3, 859, 925))); // woman astronaut: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 1057))); // man astronaut: dark skin tone
+		trie.insert(new int[]{ 128104,127999,128640 }, new ParseResult(6, new SpriteCoordinates(1, 3, 67, 1057))); // man astronaut: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 133))); // judge: dark skin tone
+		trie.insert(new int[]{ 129489,127999,9878 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 133))); // judge: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 925))); // woman judge: dark skin tone
+		trie.insert(new int[]{ 128105,127999,9878 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 925))); // woman judge: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1057, 661))); // man judge: dark skin tone
+		trie.insert(new int[]{ 128104,127999,9878 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1057, 661))); // man judge: dark skin tone
+		trie.insert(new int[]{ 128112,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 925, 265))); // person with veil: dark skin tone
+		trie.insert(new int[]{ 128112,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 397))); // woman with veil: dark skin tone
+		trie.insert(new int[]{ 128112,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 397))); // woman with veil: dark skin tone
+		trie.insert(new int[]{ 128112,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 331))); // man with veil: dark skin tone
+		trie.insert(new int[]{ 128112,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 331))); // man with veil: dark skin tone
+		trie.insert(new int[]{ 129333,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 1))); // person in tuxedo: dark skin tone
+		trie.insert(new int[]{ 129333,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 133))); // woman in tuxedo: dark skin tone
+		trie.insert(new int[]{ 129333,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 661, 133))); // woman in tuxedo: dark skin tone
+		trie.insert(new int[]{ 129333,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 67))); // man in tuxedo: dark skin tone
+		trie.insert(new int[]{ 129333,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 661, 67))); // man in tuxedo: dark skin tone
+		trie.insert(new int[]{ 128120,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 859))); // princess: dark skin tone
+		trie.insert(new int[]{ 129332,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 199))); // prince: dark skin tone
+		trie.insert(new int[]{ 129464,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 265))); // superhero: dark skin tone
+		trie.insert(new int[]{ 129464,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 397))); // woman superhero: dark skin tone
+		trie.insert(new int[]{ 129464,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 397))); // woman superhero: dark skin tone
+		trie.insert(new int[]{ 129464,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 331))); // man superhero: dark skin tone
+		trie.insert(new int[]{ 129464,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 331))); // man superhero: dark skin tone
+		trie.insert(new int[]{ 129465,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 67))); // supervillain: dark skin tone
+		trie.insert(new int[]{ 129465,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 199))); // woman supervillain: dark skin tone
+		trie.insert(new int[]{ 129465,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 199))); // woman supervillain: dark skin tone
+		trie.insert(new int[]{ 129465,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 133))); // man supervillain: dark skin tone
+		trie.insert(new int[]{ 129465,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 133))); // man supervillain: dark skin tone
+		trie.insert(new int[]{ 129399,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 595))); // ninja: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 397))); // mx claus: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127876 }, new ParseResult(6, new SpriteCoordinates(1, 3, 463, 397))); // mx claus: dark skin tone
+		trie.insert(new int[]{ 129334,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 595))); // Mrs. Claus: dark skin tone
+		trie.insert(new int[]{ 127877,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1057, 1123))); // Santa Claus: dark skin tone
+		trie.insert(new int[]{ 129497,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 133, 265))); // mage: dark skin tone
+		trie.insert(new int[]{ 129497,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 265))); // woman mage: dark skin tone
+		trie.insert(new int[]{ 129497,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 265))); // woman mage: dark skin tone
+		trie.insert(new int[]{ 129497,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 265))); // man mage: dark skin tone
+		trie.insert(new int[]{ 129497,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 265))); // man mage: dark skin tone
+		trie.insert(new int[]{ 129501,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 67))); // elf: dark skin tone
+		trie.insert(new int[]{ 129501,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 199))); // woman elf: dark skin tone
+		trie.insert(new int[]{ 129501,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 199))); // woman elf: dark skin tone
+		trie.insert(new int[]{ 129501,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 133))); // man elf: dark skin tone
+		trie.insert(new int[]{ 129501,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 133))); // man elf: dark skin tone
+		trie.insert(new int[]{ 129499,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 1))); // vampire: dark skin tone
+		trie.insert(new int[]{ 129499,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 133))); // woman vampire: dark skin tone
+		trie.insert(new int[]{ 129499,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 133))); // woman vampire: dark skin tone
+		trie.insert(new int[]{ 129499,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 67))); // man vampire: dark skin tone
+		trie.insert(new int[]{ 129499,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 67))); // man vampire: dark skin tone
+		trie.insert(new int[]{ 129502,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 1))); // man genie
+		trie.insert(new int[]{ 129502,9794 }, new ParseResult(3, new SpriteCoordinates(1, 3, 199, 1))); // man genie
+		trie.insert(new int[]{ 129500,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 199))); // merperson: dark skin tone
+		trie.insert(new int[]{ 129500,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 199))); // mermaid: dark skin tone
+		trie.insert(new int[]{ 129500,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 199))); // mermaid: dark skin tone
+		trie.insert(new int[]{ 129500,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 199))); // merman: dark skin tone
+		trie.insert(new int[]{ 129500,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 199))); // merman: dark skin tone
+		trie.insert(new int[]{ 129498,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 265, 199))); // fairy: dark skin tone
+		trie.insert(new int[]{ 129498,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 265))); // woman fairy: dark skin tone
+		trie.insert(new int[]{ 129498,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 265))); // woman fairy: dark skin tone
+		trie.insert(new int[]{ 129498,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 265))); // man fairy: dark skin tone
+		trie.insert(new int[]{ 129498,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 265))); // man fairy: dark skin tone
+		trie.insert(new int[]{ 128124,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 859))); // baby angel: dark skin tone
+		trie.insert(new int[]{ 129328,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 463))); // pregnant woman: dark skin tone
+		trie.insert(new int[]{ 129329,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 397))); // breast-feeding: dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 463))); // person feeding baby: dark skin tone
+		trie.insert(new int[]{ 129489,127999,127868 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1, 463))); // person feeding baby: dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 3, 991, 529))); // woman feeding baby: dark skin tone
+		trie.insert(new int[]{ 128105,127999,127868 }, new ParseResult(6, new SpriteCoordinates(1, 3, 991, 529))); // woman feeding baby: dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 1057))); // man feeding baby: dark skin tone
+		trie.insert(new int[]{ 128104,127999,127868 }, new ParseResult(6, new SpriteCoordinates(1, 3, 727, 1057))); // man feeding baby: dark skin tone
+		trie.insert(new int[]{ 128583,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 727))); // person bowing: dark skin tone
+		trie.insert(new int[]{ 128583,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 727))); // woman bowing: dark skin tone
+		trie.insert(new int[]{ 128583,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 661, 727))); // woman bowing: dark skin tone
+		trie.insert(new int[]{ 128583,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 595, 727))); // man bowing: dark skin tone
+		trie.insert(new int[]{ 128583,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 595, 727))); // man bowing: dark skin tone
+		trie.insert(new int[]{ 128129,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 793))); // person tipping hand: dark skin tone
+		trie.insert(new int[]{ 128129,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 859))); // woman tipping hand: dark skin tone
+		trie.insert(new int[]{ 128129,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 859))); // woman tipping hand: dark skin tone
+		trie.insert(new int[]{ 128129,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 859))); // man tipping hand: dark skin tone
+		trie.insert(new int[]{ 128129,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 859))); // man tipping hand: dark skin tone
+		trie.insert(new int[]{ 128581,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 133))); // person gesturing NO: dark skin tone
+		trie.insert(new int[]{ 128581,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 265))); // woman gesturing NO: dark skin tone
+		trie.insert(new int[]{ 128581,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 265))); // woman gesturing NO: dark skin tone
+		trie.insert(new int[]{ 128581,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 199))); // man gesturing NO: dark skin tone
+		trie.insert(new int[]{ 128581,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 199))); // man gesturing NO: dark skin tone
+		trie.insert(new int[]{ 128582,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 727))); // person gesturing OK: dark skin tone
+		trie.insert(new int[]{ 128582,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 67))); // woman gesturing OK: dark skin tone
+		trie.insert(new int[]{ 128582,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 67))); // woman gesturing OK: dark skin tone
+		trie.insert(new int[]{ 128582,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 1))); // man gesturing OK: dark skin tone
+		trie.insert(new int[]{ 128582,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 793, 1))); // man gesturing OK: dark skin tone
+		trie.insert(new int[]{ 128587,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 727))); // person raising hand: dark skin tone
+		trie.insert(new int[]{ 128587,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 727))); // woman raising hand: dark skin tone
+		trie.insert(new int[]{ 128587,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 727))); // woman raising hand: dark skin tone
+		trie.insert(new int[]{ 128587,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 397, 727))); // man raising hand: dark skin tone
+		trie.insert(new int[]{ 128587,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 397, 727))); // man raising hand: dark skin tone
+		trie.insert(new int[]{ 129487,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1, 529))); // deaf person: dark skin tone
+		trie.insert(new int[]{ 129487,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 529))); // deaf woman: dark skin tone
+		trie.insert(new int[]{ 129487,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 529))); // deaf woman: dark skin tone
+		trie.insert(new int[]{ 129487,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 529))); // deaf man: dark skin tone
+		trie.insert(new int[]{ 129487,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 529))); // deaf man: dark skin tone
+		trie.insert(new int[]{ 129318,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 1, 661))); // person facepalming: dark skin tone
+		trie.insert(new int[]{ 129318,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 661))); // woman facepalming: dark skin tone
+		trie.insert(new int[]{ 129318,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 661))); // woman facepalming: dark skin tone
+		trie.insert(new int[]{ 129318,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 67, 661))); // man facepalming: dark skin tone
+		trie.insert(new int[]{ 129318,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 67, 661))); // man facepalming: dark skin tone
+		trie.insert(new int[]{ 129335,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 595))); // person shrugging: dark skin tone
+		trie.insert(new int[]{ 129335,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 595))); // woman shrugging: dark skin tone
+		trie.insert(new int[]{ 129335,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 595))); // woman shrugging: dark skin tone
+		trie.insert(new int[]{ 129335,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 595))); // man shrugging: dark skin tone
+		trie.insert(new int[]{ 129335,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 595))); // man shrugging: dark skin tone
+		trie.insert(new int[]{ 128590,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 595))); // person pouting: dark skin tone
+		trie.insert(new int[]{ 128590,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1, 727))); // woman pouting: dark skin tone
+		trie.insert(new int[]{ 128590,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1, 727))); // woman pouting: dark skin tone
+		trie.insert(new int[]{ 128590,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 661))); // man pouting: dark skin tone
+		trie.insert(new int[]{ 128590,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 661))); // man pouting: dark skin tone
+		trie.insert(new int[]{ 128589,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 67, 727))); // person frowning: dark skin tone
+		trie.insert(new int[]{ 128589,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 199, 727))); // woman frowning: dark skin tone
+		trie.insert(new int[]{ 128589,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 199, 727))); // woman frowning: dark skin tone
+		trie.insert(new int[]{ 128589,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 133, 727))); // man frowning: dark skin tone
+		trie.insert(new int[]{ 128589,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 133, 727))); // man frowning: dark skin tone
+		trie.insert(new int[]{ 128135,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 67))); // person getting haircut: dark skin tone
+		trie.insert(new int[]{ 128135,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 199))); // woman getting haircut: dark skin tone
+		trie.insert(new int[]{ 128135,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 199))); // woman getting haircut: dark skin tone
+		trie.insert(new int[]{ 128135,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 133))); // man getting haircut: dark skin tone
+		trie.insert(new int[]{ 128135,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 133))); // man getting haircut: dark skin tone
+		trie.insert(new int[]{ 128134,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 265))); // person getting massage: dark skin tone
+		trie.insert(new int[]{ 128134,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 397))); // woman getting massage: dark skin tone
+		trie.insert(new int[]{ 128134,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 397))); // woman getting massage: dark skin tone
+		trie.insert(new int[]{ 128134,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 331))); // man getting massage: dark skin tone
+		trie.insert(new int[]{ 128134,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 331))); // man getting massage: dark skin tone
+		trie.insert(new int[]{ 129494,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 1))); // person in steamy room: dark skin tone
+		trie.insert(new int[]{ 129494,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 133))); // woman in steamy room: dark skin tone
+		trie.insert(new int[]{ 129494,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 133))); // woman in steamy room: dark skin tone
+		trie.insert(new int[]{ 129494,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 67))); // man in steamy room: dark skin tone
+		trie.insert(new int[]{ 129494,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 67))); // man in steamy room: dark skin tone
+		trie.insert(new int[]{ 128133,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 463))); // nail polish: dark skin tone
+		trie.insert(new int[]{ 129331,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 661, 265))); // selfie: dark skin tone
+		trie.insert(new int[]{ 128131,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 529))); // woman dancing: dark skin tone
+		trie.insert(new int[]{ 128378,127998 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 793))); // man dancing: medium-dark skin tone
+		trie.insert(new int[]{ 128372,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 793))); // man in suit levitating: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 133))); // person in manual wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,129469 }, new ParseResult(6, new SpriteCoordinates(1, 3, 529, 133))); // person in manual wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 3, 661, 991))); // woman in manual wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129469 }, new ParseResult(6, new SpriteCoordinates(1, 3, 661, 991))); // woman in manual wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1123, 331))); // man in manual wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129469 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1123, 331))); // man in manual wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 199))); // person in motorized wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,129468 }, new ParseResult(6, new SpriteCoordinates(1, 3, 529, 199))); // person in motorized wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 991))); // woman in motorized wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129468 }, new ParseResult(6, new SpriteCoordinates(1, 3, 727, 991))); // woman in motorized wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1123, 397))); // man in motorized wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129468 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1123, 397))); // man in motorized wheelchair: medium-light skin tone
+		trie.insert(new int[]{ 128694,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 331))); // person walking: medium-light skin tone
+		trie.insert(new int[]{ 128694,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 463))); // woman walking: medium-light skin tone
+		trie.insert(new int[]{ 128694,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 463))); // woman walking: medium-light skin tone
+		trie.insert(new int[]{ 128694,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 727, 397))); // man walking: medium-light skin tone
+		trie.insert(new int[]{ 128694,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 727, 397))); // man walking: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 265))); // person with probing cane: medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,129455 }, new ParseResult(6, new SpriteCoordinates(1, 3, 529, 265))); // person with probing cane: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 3, 793, 991))); // woman with probing cane: medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,129455 }, new ParseResult(6, new SpriteCoordinates(1, 3, 793, 991))); // woman with probing cane: medium-light skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 3, 1123, 67))); // man with probing cane: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129455 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1123, 67))); // man with probing cane: medium skin tone
+		trie.insert(new int[]{ 129486,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 199, 529))); // person kneeling: medium-light skin tone
+		trie.insert(new int[]{ 129486,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 529))); // woman kneeling: medium-light skin tone
+		trie.insert(new int[]{ 129486,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 529))); // woman kneeling: medium-light skin tone
+		trie.insert(new int[]{ 129486,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 265, 529))); // man kneeling: medium-light skin tone
+		trie.insert(new int[]{ 129486,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 265, 529))); // man kneeling: medium-light skin tone
+		trie.insert(new int[]{ 127939,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 793, 1123))); // person running: medium-light skin tone
+		trie.insert(new int[]{ 127939,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 1123))); // woman running: medium-light skin tone
+		trie.insert(new int[]{ 127939,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 925, 1123))); // woman running: medium-light skin tone
+		trie.insert(new int[]{ 127939,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 859, 1123))); // man running: medium-light skin tone
+		trie.insert(new int[]{ 127939,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 859, 1123))); // man running: medium-light skin tone
+		trie.insert(new int[]{ 129485,127996 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 529))); // person standing: medium-light skin tone
+		trie.insert(new int[]{ 129485,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 529, 529))); // woman standing: medium-light skin tone
+		trie.insert(new int[]{ 129485,127996,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 529, 529))); // woman standing: medium-light skin tone
+		trie.insert(new int[]{ 129485,127996,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 463, 529))); // man standing: medium-light skin tone
+		trie.insert(new int[]{ 129485,127996,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 463, 529))); // man standing: medium-light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129309,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 529, 463))); // people holding hands: light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127995,129309,129489,127996 }, new ParseResult(10, new SpriteCoordinates(1, 3, 529, 463))); // people holding hands: light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129309,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 3, 529, 331))); // people holding hands: medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127996,129309,129489,127997 }, new ParseResult(10, new SpriteCoordinates(1, 3, 529, 331))); // people holding hands: medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129309,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 463, 463))); // people holding hands: medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127997,129309,129489,127998 }, new ParseResult(10, new SpriteCoordinates(1, 3, 463, 463))); // people holding hands: medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129309,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 3, 331, 463))); // people holding hands: medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127998,129309,129489,127999 }, new ParseResult(10, new SpriteCoordinates(1, 3, 331, 463))); // people holding hands: medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128107 }, new ParseResult(2, new SpriteCoordinates(1, 3, 925, 661))); // woman and man holding hands
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 3, 925, 991))); // woman and man holding hands: medium light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 3, 925, 991))); // woman and man holding hands: medium light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 331, 991))); // woman and man holding hands: medium skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 3, 331, 991))); // woman and man holding hands: medium skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 3, 67, 991))); // woman and man holding hands: medium dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 3, 67, 991))); // woman and man holding hands: medium dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 727, 925))); // woman and man holding hands: dark skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 3, 727, 925))); // woman and man holding hands: dark skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1057, 133))); // women holding hands: light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128105,127998 }, new ParseResult(10, new SpriteCoordinates(1, 3, 1057, 133))); // women holding hands: light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 3, 859, 991))); // women holding hands: medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128105,127999 }, new ParseResult(10, new SpriteCoordinates(1, 3, 859, 991))); // women holding hands: medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1, 991))); // women holding hands: medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128105,127995 }, new ParseResult(10, new SpriteCoordinates(1, 3, 1, 991))); // women holding hands: medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 661, 925))); // women holding hands: dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128105,127996 }, new ParseResult(10, new SpriteCoordinates(1, 3, 661, 925))); // women holding hands: dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1123, 595))); // men holding hands: light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127995,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 3, 1123, 595))); // men holding hands: light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1123, 463))); // men holding hands: medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127996,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 3, 1123, 463))); // men holding hands: medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1123, 133))); // men holding hands: medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127997,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 3, 1123, 133))); // men holding hands: medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1057, 1057))); // men holding hands: medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127998,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 3, 1057, 1057))); // men holding hands: medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128145 }, new ParseResult(2, new SpriteCoordinates(1, 3, 859, 1))); // couple with heart
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 3, 529, 1))); // couple with heart: person, person, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127996,10084,129489,127995 }, new ParseResult(9, new SpriteCoordinates(1, 3, 529, 1))); // couple with heart: person, person, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 397, 463))); // couple with heart: person, person, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127997,10084,129489,127996 }, new ParseResult(9, new SpriteCoordinates(1, 3, 397, 463))); // couple with heart: person, person, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 3, 199, 463))); // couple with heart: person, person, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127998,10084,129489,127997 }, new ParseResult(9, new SpriteCoordinates(1, 3, 199, 463))); // couple with heart: person, person, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 331, 331))); // couple with heart: person, person, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127999,10084,129489,127998 }, new ParseResult(9, new SpriteCoordinates(1, 3, 331, 331))); // couple with heart: person, person, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1057, 67))); // couple with heart: woman, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 3, 1057, 67))); // couple with heart: woman, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 3, 595, 991))); // couple with heart: woman, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 3, 595, 991))); // couple with heart: woman, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 3, 991, 925))); // couple with heart: woman, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 3, 991, 925))); // couple with heart: woman, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 133, 925))); // couple with heart: woman, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 3, 133, 925))); // couple with heart: woman, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1057, 1))); // couple with heart: woman, woman, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128105,127996 }, new ParseResult(9, new SpriteCoordinates(1, 3, 1057, 1))); // couple with heart: woman, woman, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 3, 529, 991))); // couple with heart: woman, woman, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128105,127997 }, new ParseResult(9, new SpriteCoordinates(1, 3, 529, 991))); // couple with heart: woman, woman, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 265, 991))); // couple with heart: woman, woman, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128105,127998 }, new ParseResult(9, new SpriteCoordinates(1, 3, 265, 991))); // couple with heart: woman, woman, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 3, 991, 859))); // couple with heart: woman, woman, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128105,127999 }, new ParseResult(9, new SpriteCoordinates(1, 3, 991, 859))); // couple with heart: woman, woman, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,8205,10084,65039,8205,128104 }, new ParseResult(8, new SpriteCoordinates(1, 3, 1057, 199))); // couple with heart: man, man
+		trie.insert(new int[]{ 128104,10084,128104 }, new ParseResult(5, new SpriteCoordinates(1, 3, 1057, 199))); // couple with heart: man, man
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1123, 265))); // couple with heart: man, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 3, 1123, 265))); // couple with heart: man, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1123, 1))); // couple with heart: man, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 3, 1123, 1))); // couple with heart: man, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 3, 991, 1057))); // couple with heart: man, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 3, 991, 1057))); // couple with heart: man, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 3, 1057, 529))); // couple with heart: man, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 3, 1057, 529))); // couple with heart: man, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,128139,8205,129489,127998 }, new ParseResult(15, new SpriteCoordinates(1, 3, 529, 397))); // kiss: person, person, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127995,10084,128139,129489,127998 }, new ParseResult(11, new SpriteCoordinates(1, 3, 529, 397))); // kiss: person, person, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,128139,8205,129489,127999 }, new ParseResult(15, new SpriteCoordinates(1, 3, 529, 67))); // kiss: person, person, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127996,10084,128139,129489,127999 }, new ParseResult(11, new SpriteCoordinates(1, 3, 529, 67))); // kiss: person, person, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,128139,8205,129489,127995 }, new ParseResult(15, new SpriteCoordinates(1, 3, 265, 463))); // kiss: person, person, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127998,10084,128139,129489,127995 }, new ParseResult(11, new SpriteCoordinates(1, 3, 265, 463))); // kiss: person, person, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,128139,8205,129489,127996 }, new ParseResult(15, new SpriteCoordinates(1, 3, 397, 1))); // kiss: person, person, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127999,10084,128139,129489,127996 }, new ParseResult(11, new SpriteCoordinates(1, 3, 397, 1))); // kiss: person, person, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 3, 991, 991))); // kiss: woman, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 3, 991, 991))); // kiss: woman, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 3, 463, 991))); // kiss: woman, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 3, 463, 991))); // kiss: woman, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 3, 199, 991))); // kiss: woman, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 3, 199, 991))); // kiss: woman, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 3, 991, 793))); // kiss: woman, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 3, 991, 793))); // kiss: woman, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128139,8205,128105 }, new ParseResult(11, new SpriteCoordinates(1, 3, 925, 727))); // kiss: woman, woman
+		trie.insert(new int[]{ 128105,10084,128139,128105 }, new ParseResult(7, new SpriteCoordinates(1, 3, 925, 727))); // kiss: woman, woman
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128105,127995 }, new ParseResult(15, new SpriteCoordinates(1, 3, 397, 991))); // kiss: woman, woman, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128105,127995 }, new ParseResult(11, new SpriteCoordinates(1, 3, 397, 991))); // kiss: woman, woman, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128105,127996 }, new ParseResult(15, new SpriteCoordinates(1, 3, 133, 991))); // kiss: woman, woman, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128105,127996 }, new ParseResult(11, new SpriteCoordinates(1, 3, 133, 991))); // kiss: woman, woman, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128105,127997 }, new ParseResult(15, new SpriteCoordinates(1, 3, 991, 727))); // kiss: woman, woman, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128105,127997 }, new ParseResult(11, new SpriteCoordinates(1, 3, 991, 727))); // kiss: woman, woman, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128105,127998 }, new ParseResult(15, new SpriteCoordinates(1, 3, 67, 925))); // kiss: woman, woman, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128105,127998 }, new ParseResult(11, new SpriteCoordinates(1, 3, 67, 925))); // kiss: woman, woman, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 3, 1123, 529))); // kiss: man, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 3, 1123, 529))); // kiss: man, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 3, 1123, 199))); // kiss: man, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 3, 1123, 199))); // kiss: man, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 3, 925, 1057))); // kiss: man, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 3, 925, 1057))); // kiss: man, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 3, 1057, 463))); // kiss: man, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 3, 1057, 463))); // kiss: man, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,8205,128105,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 3, 1057, 265))); // family: man, woman, girl
+		trie.insert(new int[]{ 128104,128105,128103 }, new ParseResult(6, new SpriteCoordinates(1, 3, 1057, 265))); // family: man, woman, girl
+		trie.insert(new int[]{ 128105,8205,128105,8205,128103,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 3, 925, 793))); // family: woman, woman, girl, boy
+		trie.insert(new int[]{ 128105,128105,128103,128102 }, new ParseResult(8, new SpriteCoordinates(1, 3, 925, 793))); // family: woman, woman, girl, boy
+		trie.insert(new int[]{ 128104,8205,128104,8205,128102,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 3, 1057, 331))); // family: man, man, boy, boy
+		trie.insert(new int[]{ 128104,128104,128102,128102 }, new ParseResult(8, new SpriteCoordinates(1, 3, 1057, 331))); // family: man, man, boy, boy
+		trie.insert(new int[]{ 128105,8205,128103,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 3, 925, 859))); // family: woman, girl, girl
+		trie.insert(new int[]{ 128105,128103,128103 }, new ParseResult(6, new SpriteCoordinates(1, 3, 925, 859))); // family: woman, girl, girl
+		trie.insert(new int[]{ 129526 }, new ParseResult(2, new SpriteCoordinates(1, 3, 67, 133))); // yarn
+		trie.insert(new int[]{ 128085 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1123, 991))); // t-shirt
+		trie.insert(new int[]{ 128089 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1123, 925))); // bikini
+		trie.insert(new int[]{ 128097 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1123, 793))); // woman’s sandal
+		trie.insert(new int[]{ 129510 }, new ParseResult(2, new SpriteCoordinates(1, 3, 133, 133))); // socks
+		trie.insert(new int[]{ 127891 }, new ParseResult(2, new SpriteCoordinates(1, 3, 991, 1123))); // graduation cap
+		trie.insert(new int[]{ 128091 }, new ParseResult(2, new SpriteCoordinates(1, 3, 1123, 859))); // purse
+		trie.insert(new int[]{ 128374,65039 }, new ParseResult(3, new SpriteCoordinates(1, 3, 463, 793))); // sunglasses
+		trie.insert(new int[]{ 128374 }, new ParseResult(2, new SpriteCoordinates(1, 3, 463, 793))); // sunglasses
+		trie.insert(new int[]{ 129458 }, new ParseResult(2, new SpriteCoordinates(1, 3, 67, 595))); // bald
+		trie.insert(new int[]{ 128518 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 661))); // grinning squinting face
+		trie.insert(new int[]{ 128519 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 595))); // smiling face with halo
+		trie.insert(new int[]{ 128525 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 463))); // smiling face with heart-eyes
+		trie.insert(new int[]{ 128523 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 529))); // face savoring food
+		trie.insert(new int[]{ 129488 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 397))); // face with monocle
+		trie.insert(new int[]{ 128530 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 331))); // unamused face
+		trie.insert(new int[]{ 9785,65039 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 67))); // frowning face
+		trie.insert(new int[]{ 9785 }, new ParseResult(1, new SpriteCoordinates(1, 4, 133, 67))); // frowning face
+		trie.insert(new int[]{ 128546 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 265))); // crying face
+		trie.insert(new int[]{ 129324 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 331))); // face with symbols on mouth
+		trie.insert(new int[]{ 128561 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 133))); // face screaming in fear
+		trie.insert(new int[]{ 129300 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 661))); // thinking face
+		trie.insert(new int[]{ 128528 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 397))); // neutral face
+		trie.insert(new int[]{ 128551 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 199))); // anguished face
+		trie.insert(new int[]{ 128565 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 67))); // dizzy face
+		trie.insert(new int[]{ 129319 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 397))); // sneezing face
+		trie.insert(new int[]{ 129400 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 595))); // disguised face
+		trie.insert(new int[]{ 128169 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 793))); // pile of poo
+		trie.insert(new int[]{ 129302 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 661))); // robot
+		trie.insert(new int[]{ 128572 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 1))); // cat with wry smile
+		trie.insert(new int[]{ 129330,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 133))); // palms up together: light skin tone
+		trie.insert(new int[]{ 128080,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 991))); // open hands: light skin tone
+		trie.insert(new int[]{ 128588,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 661))); // raising hands: light skin tone
+		trie.insert(new int[]{ 128079,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 1057))); // clapping hands: light skin tone
+		trie.insert(new int[]{ 128077 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 1123))); // thumbs up
+		trie.insert(new int[]{ 128078 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 1123))); // thumbs down
+		trie.insert(new int[]{ 128074 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 1123))); // oncoming fist
+		trie.insert(new int[]{ 9994 }, new ParseResult(1, new SpriteCoordinates(1, 4, 67, 67))); // raised fist
+		trie.insert(new int[]{ 129307 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 661))); // left-facing fist
+		trie.insert(new int[]{ 129308 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 661))); // right-facing fist
+		trie.insert(new int[]{ 129310 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 661))); // crossed fingers
+		trie.insert(new int[]{ 9996,65039 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 1))); // victory hand
+		trie.insert(new int[]{ 9996 }, new ParseResult(1, new SpriteCoordinates(1, 4, 67, 1))); // victory hand
+		trie.insert(new int[]{ 129311 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 661))); // love-you gesture
+		trie.insert(new int[]{ 129304 }, new ParseResult(2, new SpriteCoordinates(1, 4, 397, 661))); // sign of the horns
+		trie.insert(new int[]{ 128076 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 1123))); // OK hand
+		trie.insert(new int[]{ 129295 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 661))); // pinching hand
+		trie.insert(new int[]{ 129292 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 661))); // pinched fingers
+		trie.insert(new int[]{ 128072 }, new ParseResult(2, new SpriteCoordinates(1, 4, 397, 1123))); // backhand index pointing left
+		trie.insert(new int[]{ 128073 }, new ParseResult(2, new SpriteCoordinates(1, 4, 331, 1123))); // backhand index pointing right
+		trie.insert(new int[]{ 128070 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 1123))); // backhand index pointing up
+		trie.insert(new int[]{ 128071 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 1123))); // backhand index pointing down
+		trie.insert(new int[]{ 9757,65039 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 133))); // index pointing up
+		trie.insert(new int[]{ 9757 }, new ParseResult(1, new SpriteCoordinates(1, 4, 1, 133))); // index pointing up
+		trie.insert(new int[]{ 9995 }, new ParseResult(1, new SpriteCoordinates(1, 4, 1, 67))); // raised hand
+		trie.insert(new int[]{ 129306 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 661))); // raised back of hand
+		trie.insert(new int[]{ 128400 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 793))); // hand with fingers splayed
+		trie.insert(new int[]{ 128406 }, new ParseResult(2, new SpriteCoordinates(1, 4, 793, 727))); // vulcan salute
+		trie.insert(new int[]{ 128075 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 1123))); // waving hand
+		trie.insert(new int[]{ 129305 }, new ParseResult(2, new SpriteCoordinates(1, 4, 331, 661))); // call me hand
+		trie.insert(new int[]{ 128170 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 793))); // flexed biceps
+		trie.insert(new int[]{ 129470 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 529))); // mechanical arm
+		trie.insert(new int[]{ 128405,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 793))); // middle finger: dark skin tone
+		trie.insert(new int[]{ 9997,127999 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 1))); // writing hand: dark skin tone
+		trie.insert(new int[]{ 128591,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 199))); // folded hands: dark skin tone
+		trie.insert(new int[]{ 129462,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 463))); // foot: dark skin tone
+		trie.insert(new int[]{ 129461,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 529))); // leg: dark skin tone
+		trie.insert(new int[]{ 128069 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 1123))); // tongue
+		trie.insert(new int[]{ 128066,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 1123))); // ear: dark skin tone
+		trie.insert(new int[]{ 129467,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 1))); // ear with hearing aid: dark skin tone
+		trie.insert(new int[]{ 128067,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 1123))); // nose: dark skin tone
+		trie.insert(new int[]{ 129729 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 133))); // lungs
+		trie.insert(new int[]{ 128118 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 859))); // baby
+		trie.insert(new int[]{ 128103 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1123, 661))); // girl
+		trie.insert(new int[]{ 129490 }, new ParseResult(2, new SpriteCoordinates(1, 4, 331, 331))); // child
+		trie.insert(new int[]{ 128102 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1123, 727))); // boy
+		trie.insert(new int[]{ 128105 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 925))); // woman
+		trie.insert(new int[]{ 129489 }, new ParseResult(2, new SpriteCoordinates(1, 4, 397, 1))); // person
+		trie.insert(new int[]{ 128104 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1057, 133))); // man
+		trie.insert(new int[]{ 129489,8205,129457 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 397))); // person: curly hair
+		trie.insert(new int[]{ 129489,129457 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 397))); // person: curly hair
+		trie.insert(new int[]{ 128105,8205,129457 }, new ParseResult(5, new SpriteCoordinates(1, 4, 463, 925))); // woman: curly hair
+		trie.insert(new int[]{ 128105,129457 }, new ParseResult(4, new SpriteCoordinates(1, 4, 463, 925))); // woman: curly hair
+		trie.insert(new int[]{ 128104,8205,129457 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 529))); // man: curly hair
+		trie.insert(new int[]{ 128104,129457 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 529))); // man: curly hair
+		trie.insert(new int[]{ 129489,8205,129456 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 397))); // person: red hair
+		trie.insert(new int[]{ 129489,129456 }, new ParseResult(4, new SpriteCoordinates(1, 4, 67, 397))); // person: red hair
+		trie.insert(new int[]{ 128105,8205,129456 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 925))); // woman: red hair
+		trie.insert(new int[]{ 128105,129456 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 925))); // woman: red hair
+		trie.insert(new int[]{ 128104,8205,129456 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 595))); // man: red hair
+		trie.insert(new int[]{ 128104,129456 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 595))); // man: red hair
+		trie.insert(new int[]{ 128113,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 133))); // woman: blond hair
+		trie.insert(new int[]{ 128113,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 925, 133))); // woman: blond hair
+		trie.insert(new int[]{ 128113 }, new ParseResult(2, new SpriteCoordinates(1, 4, 925, 1))); // person: blond hair
+		trie.insert(new int[]{ 128113,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 67))); // man: blond hair
+		trie.insert(new int[]{ 128113,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 925, 67))); // man: blond hair
+		trie.insert(new int[]{ 129489,8205,129459 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 265))); // person: white hair
+		trie.insert(new int[]{ 129489,129459 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 265))); // person: white hair
+		trie.insert(new int[]{ 128105,8205,129459 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 925))); // woman: white hair
+		trie.insert(new int[]{ 128105,129459 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 925))); // woman: white hair
+		trie.insert(new int[]{ 128104,8205,129459 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 397))); // man: white hair
+		trie.insert(new int[]{ 128104,129459 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 397))); // man: white hair
+		trie.insert(new int[]{ 129489,8205,129458 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 331))); // person: bald
+		trie.insert(new int[]{ 129489,129458 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 331))); // person: bald
+		trie.insert(new int[]{ 128105,8205,129458 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 925))); // woman: bald
+		trie.insert(new int[]{ 128105,129458 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 925))); // woman: bald
+		trie.insert(new int[]{ 128104,8205,129458 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 463))); // man: bald
+		trie.insert(new int[]{ 128104,129458 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 463))); // man: bald
+		trie.insert(new int[]{ 129492 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 331))); // person: beard
+		trie.insert(new int[]{ 129492,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 331))); // man: beard
+		trie.insert(new int[]{ 129492,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 133, 331))); // man: beard
+		trie.insert(new int[]{ 129492,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 331))); // woman: beard
+		trie.insert(new int[]{ 129492,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 199, 331))); // woman: beard
+		trie.insert(new int[]{ 128117 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 859))); // old woman
+		trie.insert(new int[]{ 129491 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 331))); // older person
+		trie.insert(new int[]{ 128116 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 859))); // old man
+		trie.insert(new int[]{ 128114 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 859))); // man with Chinese cap
+		trie.insert(new int[]{ 128115 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 859))); // person wearing turban
+		trie.insert(new int[]{ 128115,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 859))); // woman wearing turban
+		trie.insert(new int[]{ 128115,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 793, 859))); // woman wearing turban
+		trie.insert(new int[]{ 128115,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 859))); // man wearing turban
+		trie.insert(new int[]{ 128115,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 727, 859))); // man wearing turban
+		trie.insert(new int[]{ 129493 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 331))); // woman with headscarf
+		trie.insert(new int[]{ 128110 }, new ParseResult(2, new SpriteCoordinates(1, 4, 925, 463))); // police officer
+		trie.insert(new int[]{ 128110,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 595))); // woman police officer
+		trie.insert(new int[]{ 128110,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 925, 595))); // woman police officer
+		trie.insert(new int[]{ 128110,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 529))); // man police officer
+		trie.insert(new int[]{ 128110,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 925, 529))); // man police officer
+		trie.insert(new int[]{ 128119 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 859))); // construction worker
+		trie.insert(new int[]{ 128119,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 859))); // woman construction worker
+		trie.insert(new int[]{ 128119,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 397, 859))); // woman construction worker
+		trie.insert(new int[]{ 128119,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 859))); // man construction worker
+		trie.insert(new int[]{ 128119,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 859))); // man construction worker
+		trie.insert(new int[]{ 128130 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 595))); // guard
+		trie.insert(new int[]{ 128130,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 727))); // woman guard
+		trie.insert(new int[]{ 128130,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 859, 727))); // woman guard
+		trie.insert(new int[]{ 128130,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 661))); // man guard
+		trie.insert(new int[]{ 128130,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 859, 661))); // man guard
+		trie.insert(new int[]{ 128373 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 793))); // detective
+		trie.insert(new int[]{ 128373,65039,8205,9792,65039 }, new ParseResult(6, new SpriteCoordinates(1, 4, 331, 793))); // woman detective
+		trie.insert(new int[]{ 128373,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 793))); // woman detective
+		trie.insert(new int[]{ 128373,65039,8205,9794,65039 }, new ParseResult(6, new SpriteCoordinates(1, 4, 265, 793))); // man detective
+		trie.insert(new int[]{ 128373,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 793))); // man detective
+		trie.insert(new int[]{ 129489,8205,9877,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 199))); // health worker
+		trie.insert(new int[]{ 129489,9877 }, new ParseResult(3, new SpriteCoordinates(1, 4, 397, 199))); // health worker
+		trie.insert(new int[]{ 128105,8205,9877,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 925))); // woman health worker
+		trie.insert(new int[]{ 128105,9877 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 925))); // woman health worker
+		trie.insert(new int[]{ 128104,8205,9877,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 331))); // man health worker
+		trie.insert(new int[]{ 128104,9877 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1057, 331))); // man health worker
+		trie.insert(new int[]{ 129489,8205,127806 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 331))); // farmer
+		trie.insert(new int[]{ 129489,127806 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 331))); // farmer
+		trie.insert(new int[]{ 128105,8205,127806 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 67))); // woman farmer
+		trie.insert(new int[]{ 128105,127806 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 67))); // woman farmer
+		trie.insert(new int[]{ 128104,8205,127806 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 595))); // man farmer
+		trie.insert(new int[]{ 128104,127806 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 595))); // man farmer
+		trie.insert(new int[]{ 129489,8205,127859 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 265))); // cook
+		trie.insert(new int[]{ 129489,127859 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 265))); // cook
+		trie.insert(new int[]{ 128105,8205,127859 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 1))); // woman cook
+		trie.insert(new int[]{ 128105,127859 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 1))); // woman cook
+		trie.insert(new int[]{ 128104,8205,127859 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 529))); // man cook
+		trie.insert(new int[]{ 128104,127859 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 529))); // man cook
+		trie.insert(new int[]{ 129489,8205,127891 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 67))); // student
+		trie.insert(new int[]{ 129489,127891 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 67))); // student
+		trie.insert(new int[]{ 128105,8205,127891 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 991))); // woman student
+		trie.insert(new int[]{ 128105,127891 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 991))); // woman student
+		trie.insert(new int[]{ 128104,8205,127891 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 397))); // man student
+		trie.insert(new int[]{ 128104,127891 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 397))); // man student
+		trie.insert(new int[]{ 129489,8205,127908 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 1))); // singer
+		trie.insert(new int[]{ 129489,127908 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 1))); // singer
+		trie.insert(new int[]{ 128105,8205,127908 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 991))); // woman singer
+		trie.insert(new int[]{ 128105,127908 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 991))); // woman singer
+		trie.insert(new int[]{ 128104,8205,127908 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 331))); // man singer
+		trie.insert(new int[]{ 128104,127908 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 331))); // man singer
+		trie.insert(new int[]{ 129489,8205,127979 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 463))); // teacher
+		trie.insert(new int[]{ 129489,127979 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 463))); // teacher
+		trie.insert(new int[]{ 128105,8205,127979 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 991))); // woman teacher
+		trie.insert(new int[]{ 128105,127979 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 991))); // woman teacher
+		trie.insert(new int[]{ 128104,8205,127979 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 199))); // man teacher
+		trie.insert(new int[]{ 128104,127979 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 199))); // man teacher
+		trie.insert(new int[]{ 129489,8205,127981 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 463))); // factory worker
+		trie.insert(new int[]{ 129489,127981 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 463))); // factory worker
+		trie.insert(new int[]{ 128105,8205,127981 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 991))); // woman factory worker
+		trie.insert(new int[]{ 128105,127981 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 991))); // woman factory worker
+		trie.insert(new int[]{ 128104,8205,127981 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 133))); // man factory worker
+		trie.insert(new int[]{ 128104,127981 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 133))); // man factory worker
+		trie.insert(new int[]{ 129489,8205,128187 }, new ParseResult(5, new SpriteCoordinates(1, 4, 463, 1))); // technologist
+		trie.insert(new int[]{ 129489,128187 }, new ParseResult(4, new SpriteCoordinates(1, 4, 463, 1))); // technologist
+		trie.insert(new int[]{ 128105,8205,128187 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 925))); // woman technologist
+		trie.insert(new int[]{ 128105,128187 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 925))); // woman technologist
+		trie.insert(new int[]{ 128104,8205,128187 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 991))); // man technologist
+		trie.insert(new int[]{ 128104,128187 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 991))); // man technologist
+		trie.insert(new int[]{ 129489,8205,128188 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 397))); // office worker
+		trie.insert(new int[]{ 129489,128188 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 397))); // office worker
+		trie.insert(new int[]{ 128105,8205,128188 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 925))); // woman office worker
+		trie.insert(new int[]{ 128105,128188 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 925))); // woman office worker
+		trie.insert(new int[]{ 128104,8205,128188 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 925))); // man office worker
+		trie.insert(new int[]{ 128104,128188 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 925))); // man office worker
+		trie.insert(new int[]{ 129489,8205,128295 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 397))); // mechanic
+		trie.insert(new int[]{ 129489,128295 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 397))); // mechanic
+		trie.insert(new int[]{ 128105,8205,128295 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 925))); // woman mechanic
+		trie.insert(new int[]{ 128105,128295 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 925))); // woman mechanic
+		trie.insert(new int[]{ 128104,8205,128295 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 859))); // man mechanic
+		trie.insert(new int[]{ 128104,128295 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 859))); // man mechanic
+		trie.insert(new int[]{ 129489,8205,128300 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 397))); // scientist
+		trie.insert(new int[]{ 129489,128300 }, new ParseResult(4, new SpriteCoordinates(1, 4, 265, 397))); // scientist
+		trie.insert(new int[]{ 128105,8205,128300 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 925))); // woman scientist
+		trie.insert(new int[]{ 128105,128300 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 925))); // woman scientist
+		trie.insert(new int[]{ 128104,8205,128300 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 793))); // man scientist
+		trie.insert(new int[]{ 128104,128300 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 793))); // man scientist
+		trie.insert(new int[]{ 129489,8205,127912 }, new ParseResult(5, new SpriteCoordinates(1, 4, 463, 463))); // artist
+		trie.insert(new int[]{ 129489,127912 }, new ParseResult(4, new SpriteCoordinates(1, 4, 463, 463))); // artist
+		trie.insert(new int[]{ 128105,8205,127912 }, new ParseResult(5, new SpriteCoordinates(1, 4, 793, 991))); // woman artist
+		trie.insert(new int[]{ 128105,127912 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 991))); // woman artist
+		trie.insert(new int[]{ 128104,8205,127912 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 265))); // man artist
+		trie.insert(new int[]{ 128104,127912 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 265))); // man artist
+		trie.insert(new int[]{ 129489,8205,128658 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 397))); // firefighter
+		trie.insert(new int[]{ 129489,128658 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 397))); // firefighter
+		trie.insert(new int[]{ 128105,8205,128658 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 925))); // woman firefighter
+		trie.insert(new int[]{ 128105,128658 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 925))); // woman firefighter
+		trie.insert(new int[]{ 128104,8205,128658 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 661))); // man firefighter
+		trie.insert(new int[]{ 128104,128658 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 661))); // man firefighter
+		trie.insert(new int[]{ 129489,8205,9992,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 67))); // pilot
+		trie.insert(new int[]{ 129489,9992 }, new ParseResult(3, new SpriteCoordinates(1, 4, 397, 67))); // pilot
+		trie.insert(new int[]{ 128105,8205,9992,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 925))); // woman pilot
+		trie.insert(new int[]{ 128105,9992 }, new ParseResult(3, new SpriteCoordinates(1, 4, 133, 925))); // woman pilot
+		trie.insert(new int[]{ 128104,8205,9992,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 199))); // man pilot
+		trie.insert(new int[]{ 128104,9992 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1057, 199))); // man pilot
+		trie.insert(new int[]{ 129489,8205,128640 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 397))); // astronaut
+		trie.insert(new int[]{ 129489,128640 }, new ParseResult(4, new SpriteCoordinates(1, 4, 199, 397))); // astronaut
+		trie.insert(new int[]{ 128105,8205,128640 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 925))); // woman astronaut
+		trie.insert(new int[]{ 128105,128640 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 925))); // woman astronaut
+		trie.insert(new int[]{ 128104,8205,128640 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 727))); // man astronaut
+		trie.insert(new int[]{ 128104,128640 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1057, 727))); // man astronaut
+		trie.insert(new int[]{ 129489,8205,9878,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 133))); // judge
+		trie.insert(new int[]{ 129489,9878 }, new ParseResult(3, new SpriteCoordinates(1, 4, 397, 133))); // judge
+		trie.insert(new int[]{ 128105,8205,9878,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 925))); // woman judge
+		trie.insert(new int[]{ 128105,9878 }, new ParseResult(3, new SpriteCoordinates(1, 4, 199, 925))); // woman judge
+		trie.insert(new int[]{ 128104,8205,9878,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1057, 265))); // man judge
+		trie.insert(new int[]{ 128104,9878 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1057, 265))); // man judge
+		trie.insert(new int[]{ 128112 }, new ParseResult(2, new SpriteCoordinates(1, 4, 925, 199))); // person with veil
+		trie.insert(new int[]{ 128112,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 331))); // woman with veil
+		trie.insert(new int[]{ 128112,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 925, 331))); // woman with veil
+		trie.insert(new int[]{ 128112,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 265))); // man with veil
+		trie.insert(new int[]{ 128112,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 925, 265))); // man with veil
+		trie.insert(new int[]{ 129333 }, new ParseResult(2, new SpriteCoordinates(1, 4, 463, 595))); // person in tuxedo
+		trie.insert(new int[]{ 129333,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 595))); // woman in tuxedo
+		trie.insert(new int[]{ 129333,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 595, 595))); // woman in tuxedo
+		trie.insert(new int[]{ 129333,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 595))); // man in tuxedo
+		trie.insert(new int[]{ 129333,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 529, 595))); // man in tuxedo
+		trie.insert(new int[]{ 128120 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 859))); // princess
+		trie.insert(new int[]{ 129332 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 1))); // prince
+		trie.insert(new int[]{ 129464 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 265))); // superhero
+		trie.insert(new int[]{ 129464,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 397))); // woman superhero
+		trie.insert(new int[]{ 129464,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 595, 397))); // woman superhero
+		trie.insert(new int[]{ 129464,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 331))); // man superhero
+		trie.insert(new int[]{ 129464,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 595, 331))); // man superhero
+		trie.insert(new int[]{ 129465 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 67))); // supervillain
+		trie.insert(new int[]{ 129465,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 199))); // woman supervillain
+		trie.insert(new int[]{ 129465,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 595, 199))); // woman supervillain
+		trie.insert(new int[]{ 129465,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 595, 133))); // man supervillain
+		trie.insert(new int[]{ 129465,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 595, 133))); // man supervillain
+		trie.insert(new int[]{ 129399 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 595))); // ninja
+		trie.insert(new int[]{ 129489,8205,127876 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 133))); // mx claus
+		trie.insert(new int[]{ 129489,127876 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 133))); // mx claus
+		trie.insert(new int[]{ 129334 }, new ParseResult(2, new SpriteCoordinates(1, 4, 397, 595))); // Mrs. Claus
+		trie.insert(new int[]{ 127877 }, new ParseResult(2, new SpriteCoordinates(1, 4, 991, 1123))); // Santa Claus
+		trie.insert(new int[]{ 129497 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 265))); // mage
+		trie.insert(new int[]{ 129497,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 67))); // woman mage
+		trie.insert(new int[]{ 129497,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 67))); // woman mage
+		trie.insert(new int[]{ 129497,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 1))); // man mage
+		trie.insert(new int[]{ 129497,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 1))); // man mage
+		trie.insert(new int[]{ 129501 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 199))); // elf
+		trie.insert(new int[]{ 129501,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 199))); // woman elf
+		trie.insert(new int[]{ 129501,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 133, 199))); // woman elf
+		trie.insert(new int[]{ 129501,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 199))); // man elf
+		trie.insert(new int[]{ 129501,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 199))); // man elf
+		trie.insert(new int[]{ 129499 }, new ParseResult(2, new SpriteCoordinates(1, 4, 265, 133))); // vampire
+		trie.insert(new int[]{ 129499,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 265))); // woman vampire
+		trie.insert(new int[]{ 129499,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 265))); // woman vampire
+		trie.insert(new int[]{ 129499,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 199))); // man vampire
+		trie.insert(new int[]{ 129499,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 199))); // man vampire
+		trie.insert(new int[]{ 129503 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 133))); // zombie
+		trie.insert(new int[]{ 129500 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 199))); // merperson
+		trie.insert(new int[]{ 129500,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 67))); // mermaid
+		trie.insert(new int[]{ 129500,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 67))); // mermaid
+		trie.insert(new int[]{ 129500,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 1))); // merman
+		trie.insert(new int[]{ 129500,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 1))); // merman
+		trie.insert(new int[]{ 129498 }, new ParseResult(2, new SpriteCoordinates(1, 4, 67, 265))); // fairy
+		trie.insert(new int[]{ 129498,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 265))); // woman fairy
+		trie.insert(new int[]{ 129498,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 199, 265))); // woman fairy
+		trie.insert(new int[]{ 129498,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 265))); // man fairy
+		trie.insert(new int[]{ 129498,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 133, 265))); // man fairy
+		trie.insert(new int[]{ 128124 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 859))); // baby angel
+		trie.insert(new int[]{ 129328 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 265))); // pregnant woman
+		trie.insert(new int[]{ 129329 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 199))); // breast-feeding
+		trie.insert(new int[]{ 129489,8205,127868 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 199))); // person feeding baby
+		trie.insert(new int[]{ 129489,127868 }, new ParseResult(4, new SpriteCoordinates(1, 4, 529, 199))); // person feeding baby
+		trie.insert(new int[]{ 128105,8205,127868 }, new ParseResult(5, new SpriteCoordinates(1, 4, 991, 991))); // woman feeding baby
+		trie.insert(new int[]{ 128105,127868 }, new ParseResult(4, new SpriteCoordinates(1, 4, 991, 991))); // woman feeding baby
+		trie.insert(new int[]{ 128104,8205,127868 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1123, 463))); // man feeding baby
+		trie.insert(new int[]{ 128104,127868 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1123, 463))); // man feeding baby
+		trie.insert(new int[]{ 128583 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 727))); // person bowing
+		trie.insert(new int[]{ 128583,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 727))); // woman bowing
+		trie.insert(new int[]{ 128583,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 727))); // woman bowing
+		trie.insert(new int[]{ 128583,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 727))); // man bowing
+		trie.insert(new int[]{ 128583,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 727))); // man bowing
+		trie.insert(new int[]{ 128129 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 793))); // person tipping hand
+		trie.insert(new int[]{ 128129,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 859))); // woman tipping hand
+		trie.insert(new int[]{ 128129,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 859))); // woman tipping hand
+		trie.insert(new int[]{ 128129,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 859))); // man tipping hand
+		trie.insert(new int[]{ 128129,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 859))); // man tipping hand
+		trie.insert(new int[]{ 128581 }, new ParseResult(2, new SpriteCoordinates(1, 4, 595, 727))); // person gesturing NO
+		trie.insert(new int[]{ 128581,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 727))); // woman gesturing NO
+		trie.insert(new int[]{ 128581,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 727, 727))); // woman gesturing NO
+		trie.insert(new int[]{ 128581,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 727))); // man gesturing NO
+		trie.insert(new int[]{ 128581,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 661, 727))); // man gesturing NO
+		trie.insert(new int[]{ 128582 }, new ParseResult(2, new SpriteCoordinates(1, 4, 397, 727))); // person gesturing OK
+		trie.insert(new int[]{ 128582,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 529, 727))); // woman gesturing OK
+		trie.insert(new int[]{ 128582,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 529, 727))); // woman gesturing OK
+		trie.insert(new int[]{ 128582,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 463, 727))); // man gesturing OK
+		trie.insert(new int[]{ 128582,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 463, 727))); // man gesturing OK
+		trie.insert(new int[]{ 128587 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 727))); // person raising hand
+		trie.insert(new int[]{ 128587,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 727))); // woman raising hand
+		trie.insert(new int[]{ 128587,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 133, 727))); // woman raising hand
+		trie.insert(new int[]{ 128587,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 727))); // man raising hand
+		trie.insert(new int[]{ 128587,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 727))); // man raising hand
+		trie.insert(new int[]{ 129487 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 463))); // deaf person
 	}
 
 	public static void init4(IntTrie<ParseResult> trie) {
-		trie.insert(new int[]{ 128104,127998,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 925))); // man judge: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,9878 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 925))); // man judge: medium-dark skin tone
-		trie.insert(new int[]{ 128112,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 661))); // person with veil: medium-dark skin tone
-		trie.insert(new int[]{ 128112,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 793))); // woman with veil: medium-dark skin tone
-		trie.insert(new int[]{ 128112,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 793))); // woman with veil: medium-dark skin tone
-		trie.insert(new int[]{ 128112,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 727))); // man with veil: medium-dark skin tone
-		trie.insert(new int[]{ 128112,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 727))); // man with veil: medium-dark skin tone
-		trie.insert(new int[]{ 129333,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 529))); // person in tuxedo: medium-dark skin tone
-		trie.insert(new int[]{ 129333,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 67))); // woman in tuxedo: medium-dark skin tone
-		trie.insert(new int[]{ 129333,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 67))); // woman in tuxedo: medium-dark skin tone
-		trie.insert(new int[]{ 129333,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 1))); // man in tuxedo: medium-dark skin tone
-		trie.insert(new int[]{ 129333,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 1))); // man in tuxedo: medium-dark skin tone
-		trie.insert(new int[]{ 128120,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 793))); // princess: medium-dark skin tone
-		trie.insert(new int[]{ 129332,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 133))); // prince: medium-dark skin tone
-		trie.insert(new int[]{ 129464,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 265))); // superhero: medium-dark skin tone
-		trie.insert(new int[]{ 129464,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 397))); // woman superhero: medium-dark skin tone
-		trie.insert(new int[]{ 129464,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 397))); // woman superhero: medium-dark skin tone
-		trie.insert(new int[]{ 129464,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 331))); // man superhero: medium-dark skin tone
-		trie.insert(new int[]{ 129464,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 331))); // man superhero: medium-dark skin tone
-		trie.insert(new int[]{ 129465,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 67))); // supervillain: medium-dark skin tone
-		trie.insert(new int[]{ 129465,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 199))); // woman supervillain: medium-dark skin tone
-		trie.insert(new int[]{ 129465,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 199))); // woman supervillain: medium-dark skin tone
-		trie.insert(new int[]{ 129465,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 133))); // man supervillain: medium-dark skin tone
-		trie.insert(new int[]{ 129465,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 133))); // man supervillain: medium-dark skin tone
-		trie.insert(new int[]{ 129399,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 529))); // ninja: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 1))); // mx claus: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127876 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 1))); // mx claus: medium-dark skin tone
-		trie.insert(new int[]{ 129334,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 529))); // Mrs. Claus: medium-dark skin tone
-		trie.insert(new int[]{ 127877,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 859))); // Santa Claus: medium-dark skin tone
-		trie.insert(new int[]{ 129497,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 199))); // mage: medium-dark skin tone
-		trie.insert(new int[]{ 129497,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 265))); // woman mage: medium-dark skin tone
-		trie.insert(new int[]{ 129497,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 265))); // woman mage: medium-dark skin tone
-		trie.insert(new int[]{ 129497,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 265))); // man mage: medium-dark skin tone
-		trie.insert(new int[]{ 129497,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 265))); // man mage: medium-dark skin tone
-		trie.insert(new int[]{ 129501,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 133))); // elf: medium-dark skin tone
-		trie.insert(new int[]{ 129501,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 1))); // woman elf: medium-dark skin tone
-		trie.insert(new int[]{ 129501,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 1))); // woman elf: medium-dark skin tone
-		trie.insert(new int[]{ 129501,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 133))); // man elf: medium-dark skin tone
-		trie.insert(new int[]{ 129501,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 133))); // man elf: medium-dark skin tone
-		trie.insert(new int[]{ 129499,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 199))); // vampire: medium-dark skin tone
-		trie.insert(new int[]{ 129499,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 199))); // woman vampire: medium-dark skin tone
-		trie.insert(new int[]{ 129499,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 199))); // woman vampire: medium-dark skin tone
-		trie.insert(new int[]{ 129499,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 199))); // man vampire: medium-dark skin tone
-		trie.insert(new int[]{ 129499,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 199))); // man vampire: medium-dark skin tone
-		trie.insert(new int[]{ 129502,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 133))); // woman genie
-		trie.insert(new int[]{ 129502,9792 }, new ParseResult(3, new SpriteCoordinates(1, 5, 1, 133))); // woman genie
-		trie.insert(new int[]{ 129500,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 67))); // merperson: medium-dark skin tone
-		trie.insert(new int[]{ 129500,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 199))); // mermaid: medium-dark skin tone
-		trie.insert(new int[]{ 129500,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 199))); // mermaid: medium-dark skin tone
-		trie.insert(new int[]{ 129500,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 133))); // merman: medium-dark skin tone
-		trie.insert(new int[]{ 129500,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 133))); // merman: medium-dark skin tone
-		trie.insert(new int[]{ 129498,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 1))); // fairy: medium-dark skin tone
-		trie.insert(new int[]{ 129498,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 133))); // woman fairy: medium-dark skin tone
-		trie.insert(new int[]{ 129498,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 133))); // woman fairy: medium-dark skin tone
-		trie.insert(new int[]{ 129498,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 67))); // man fairy: medium-dark skin tone
-		trie.insert(new int[]{ 129498,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 67))); // man fairy: medium-dark skin tone
-		trie.insert(new int[]{ 128124,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 793))); // baby angel: medium-dark skin tone
-		trie.insert(new int[]{ 129328,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 397))); // pregnant woman: medium-dark skin tone
-		trie.insert(new int[]{ 129329,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 331))); // breast-feeding: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 67))); // person feeding baby: medium-dark skin tone
-		trie.insert(new int[]{ 129489,127998,127868 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 67))); // person feeding baby: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 727))); // woman feeding baby: medium-dark skin tone
-		trie.insert(new int[]{ 128105,127998,127868 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 727))); // woman feeding baby: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 727))); // man feeding baby: medium-dark skin tone
-		trie.insert(new int[]{ 128104,127998,127868 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 727))); // man feeding baby: medium-dark skin tone
-		trie.insert(new int[]{ 128583,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 661))); // person bowing: medium-dark skin tone
-		trie.insert(new int[]{ 128583,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 661))); // woman bowing: medium-dark skin tone
-		trie.insert(new int[]{ 128583,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 661))); // woman bowing: medium-dark skin tone
-		trie.insert(new int[]{ 128583,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 661))); // man bowing: medium-dark skin tone
-		trie.insert(new int[]{ 128583,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 661))); // man bowing: medium-dark skin tone
-		trie.insert(new int[]{ 128129,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 793))); // person tipping hand: medium-dark skin tone
-		trie.insert(new int[]{ 128129,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 793))); // woman tipping hand: medium-dark skin tone
-		trie.insert(new int[]{ 128129,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 793))); // woman tipping hand: medium-dark skin tone
-		trie.insert(new int[]{ 128129,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 793))); // man tipping hand: medium-dark skin tone
-		trie.insert(new int[]{ 128129,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 793))); // man tipping hand: medium-dark skin tone
-		trie.insert(new int[]{ 128581,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 199))); // person gesturing NO: medium-dark skin tone
-		trie.insert(new int[]{ 128581,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 331))); // woman gesturing NO: medium-dark skin tone
-		trie.insert(new int[]{ 128581,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 331))); // woman gesturing NO: medium-dark skin tone
-		trie.insert(new int[]{ 128581,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 265))); // man gesturing NO: medium-dark skin tone
-		trie.insert(new int[]{ 128581,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 265))); // man gesturing NO: medium-dark skin tone
-		trie.insert(new int[]{ 128582,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 1))); // person gesturing OK: medium-dark skin tone
-		trie.insert(new int[]{ 128582,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 133))); // woman gesturing OK: medium-dark skin tone
-		trie.insert(new int[]{ 128582,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 133))); // woman gesturing OK: medium-dark skin tone
-		trie.insert(new int[]{ 128582,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 67))); // man gesturing OK: medium-dark skin tone
-		trie.insert(new int[]{ 128582,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 67))); // man gesturing OK: medium-dark skin tone
-		trie.insert(new int[]{ 128587,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 661))); // person raising hand: medium-dark skin tone
-		trie.insert(new int[]{ 128587,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 661))); // woman raising hand: medium-dark skin tone
-		trie.insert(new int[]{ 128587,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 661))); // woman raising hand: medium-dark skin tone
-		trie.insert(new int[]{ 128587,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 661))); // man raising hand: medium-dark skin tone
-		trie.insert(new int[]{ 128587,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 397, 661))); // man raising hand: medium-dark skin tone
-		trie.insert(new int[]{ 129487,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 397))); // deaf person: medium-dark skin tone
-		trie.insert(new int[]{ 129487,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 463))); // deaf woman: medium-dark skin tone
-		trie.insert(new int[]{ 129487,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 463))); // deaf woman: medium-dark skin tone
-		trie.insert(new int[]{ 129487,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 463))); // deaf man: medium-dark skin tone
-		trie.insert(new int[]{ 129487,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 463))); // deaf man: medium-dark skin tone
-		trie.insert(new int[]{ 129318,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 529))); // person facepalming: medium-dark skin tone
-		trie.insert(new int[]{ 129318,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 595))); // woman facepalming: medium-dark skin tone
-		trie.insert(new int[]{ 129318,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 595))); // woman facepalming: medium-dark skin tone
-		trie.insert(new int[]{ 129318,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 595))); // man facepalming: medium-dark skin tone
-		trie.insert(new int[]{ 129318,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 595))); // man facepalming: medium-dark skin tone
-		trie.insert(new int[]{ 129335,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 529))); // person shrugging: medium-dark skin tone
-		trie.insert(new int[]{ 129335,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 529))); // woman shrugging: medium-dark skin tone
-		trie.insert(new int[]{ 129335,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 397, 529))); // woman shrugging: medium-dark skin tone
-		trie.insert(new int[]{ 129335,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 529))); // man shrugging: medium-dark skin tone
-		trie.insert(new int[]{ 129335,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 529))); // man shrugging: medium-dark skin tone
-		trie.insert(new int[]{ 128590,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 529))); // person pouting: medium-dark skin tone
-		trie.insert(new int[]{ 128590,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 661))); // woman pouting: medium-dark skin tone
-		trie.insert(new int[]{ 128590,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 661))); // woman pouting: medium-dark skin tone
-		trie.insert(new int[]{ 128590,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 595))); // man pouting: medium-dark skin tone
-		trie.insert(new int[]{ 128590,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 595))); // man pouting: medium-dark skin tone
-		trie.insert(new int[]{ 128589,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 661))); // person frowning: medium-dark skin tone
-		trie.insert(new int[]{ 128589,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 661))); // woman frowning: medium-dark skin tone
-		trie.insert(new int[]{ 128589,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 661))); // woman frowning: medium-dark skin tone
-		trie.insert(new int[]{ 128589,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 661))); // man frowning: medium-dark skin tone
-		trie.insert(new int[]{ 128589,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 661))); // man frowning: medium-dark skin tone
-		trie.insert(new int[]{ 128135,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 265))); // person getting haircut: medium-dark skin tone
-		trie.insert(new int[]{ 128135,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 397))); // woman getting haircut: medium-dark skin tone
-		trie.insert(new int[]{ 128135,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 397))); // woman getting haircut: medium-dark skin tone
-		trie.insert(new int[]{ 128135,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 331))); // man getting haircut: medium-dark skin tone
-		trie.insert(new int[]{ 128135,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 331))); // man getting haircut: medium-dark skin tone
-		trie.insert(new int[]{ 128134,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 463))); // person getting massage: medium-dark skin tone
-		trie.insert(new int[]{ 128134,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 595))); // woman getting massage: medium-dark skin tone
-		trie.insert(new int[]{ 128134,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 595))); // woman getting massage: medium-dark skin tone
-		trie.insert(new int[]{ 128134,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 529))); // man getting massage: medium-dark skin tone
-		trie.insert(new int[]{ 128134,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 529))); // man getting massage: medium-dark skin tone
-		trie.insert(new int[]{ 129494,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 265))); // person in steamy room: medium-dark skin tone
-		trie.insert(new int[]{ 129494,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 265))); // woman in steamy room: medium-dark skin tone
-		trie.insert(new int[]{ 129494,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 265))); // woman in steamy room: medium-dark skin tone
-		trie.insert(new int[]{ 129494,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 265))); // man in steamy room: medium-dark skin tone
-		trie.insert(new int[]{ 129494,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 265))); // man in steamy room: medium-dark skin tone
-		trie.insert(new int[]{ 128133,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 661))); // nail polish: medium-dark skin tone
-		trie.insert(new int[]{ 129331,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 199))); // selfie: medium-dark skin tone
-		trie.insert(new int[]{ 128131,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 727))); // woman dancing: medium-dark skin tone
-		trie.insert(new int[]{ 128378,127999 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 727))); // man dancing: dark skin tone
-		trie.insert(new int[]{ 128372,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 133))); // man in suit levitating: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 265))); // person in manual wheelchair: light skin tone
-		trie.insert(new int[]{ 129489,127995,129469 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 265))); // person in manual wheelchair: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 925))); // woman in manual wheelchair: light skin tone
-		trie.insert(new int[]{ 128105,127995,129469 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1, 925))); // woman in manual wheelchair: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 925))); // man in manual wheelchair: light skin tone
-		trie.insert(new int[]{ 128104,127995,129469 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 925))); // man in manual wheelchair: light skin tone
-		trie.insert(new int[]{ 129489,127995,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 331))); // person in motorized wheelchair: light skin tone
-		trie.insert(new int[]{ 129489,127995,129468 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 331))); // person in motorized wheelchair: light skin tone
-		trie.insert(new int[]{ 128105,127995,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 925))); // woman in motorized wheelchair: light skin tone
-		trie.insert(new int[]{ 128105,127995,129468 }, new ParseResult(6, new SpriteCoordinates(1, 5, 67, 925))); // woman in motorized wheelchair: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 991))); // man in motorized wheelchair: light skin tone
-		trie.insert(new int[]{ 128104,127995,129468 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1, 991))); // man in motorized wheelchair: light skin tone
-		trie.insert(new int[]{ 128694,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 265))); // person walking: light skin tone
-		trie.insert(new int[]{ 128694,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 397))); // woman walking: light skin tone
-		trie.insert(new int[]{ 128694,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 397))); // woman walking: light skin tone
-		trie.insert(new int[]{ 128694,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 331))); // man walking: light skin tone
-		trie.insert(new int[]{ 128694,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 331))); // man walking: light skin tone
-		trie.insert(new int[]{ 129489,8205,129455 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 265))); // person with probing cane
-		trie.insert(new int[]{ 129489,129455 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 265))); // person with probing cane
-		trie.insert(new int[]{ 128105,127995,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 925))); // woman with probing cane: light skin tone
-		trie.insert(new int[]{ 128105,127995,129455 }, new ParseResult(6, new SpriteCoordinates(1, 5, 133, 925))); // woman with probing cane: light skin tone
-		trie.insert(new int[]{ 128104,127995,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 991))); // man with probing cane: light skin tone
-		trie.insert(new int[]{ 128104,127995,129455 }, new ParseResult(6, new SpriteCoordinates(1, 5, 67, 991))); // man with probing cane: light skin tone
-		trie.insert(new int[]{ 129486,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 463))); // person kneeling: light skin tone
-		trie.insert(new int[]{ 129486,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 463))); // woman kneeling: light skin tone
-		trie.insert(new int[]{ 129486,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 463))); // woman kneeling: light skin tone
-		trie.insert(new int[]{ 129486,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 463))); // man kneeling: light skin tone
-		trie.insert(new int[]{ 129486,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 463))); // man kneeling: light skin tone
-		trie.insert(new int[]{ 127939,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 661))); // person running: light skin tone
-		trie.insert(new int[]{ 127939,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 793))); // woman running: light skin tone
-		trie.insert(new int[]{ 127939,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1057, 793))); // woman running: light skin tone
-		trie.insert(new int[]{ 127939,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 727))); // man running: light skin tone
-		trie.insert(new int[]{ 127939,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1057, 727))); // man running: light skin tone
-		trie.insert(new int[]{ 129485,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 463))); // person standing: light skin tone
-		trie.insert(new int[]{ 129485,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 463))); // woman standing: light skin tone
-		trie.insert(new int[]{ 129485,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 463))); // woman standing: light skin tone
-		trie.insert(new int[]{ 129485,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 463))); // man standing: light skin tone
-		trie.insert(new int[]{ 129485,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 397, 463))); // man standing: light skin tone
-		trie.insert(new int[]{ 128107 }, new ParseResult(2, new SpriteCoordinates(1, 5, 199, 859))); // woman and man holding hands
-		trie.insert(new int[]{ 128104,8205,10084,65039,8205,128104 }, new ParseResult(8, new SpriteCoordinates(1, 5, 199, 925))); // couple with heart: man, man
-		trie.insert(new int[]{ 128104,10084,128104 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 925))); // couple with heart: man, man
-		trie.insert(new int[]{ 128104,8205,128105,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 5, 265, 925))); // family: man, woman, boy
-		trie.insert(new int[]{ 128104,128105,128102 }, new ParseResult(6, new SpriteCoordinates(1, 5, 265, 925))); // family: man, woman, boy
-		trie.insert(new int[]{ 128105,8205,128105,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 5, 265, 859))); // family: woman, woman, girl
-		trie.insert(new int[]{ 128105,128105,128103 }, new ParseResult(6, new SpriteCoordinates(1, 5, 265, 859))); // family: woman, woman, girl
-		trie.insert(new int[]{ 128104,8205,128104,8205,128103,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 5, 331, 925))); // family: man, man, girl, boy
-		trie.insert(new int[]{ 128104,128104,128103,128102 }, new ParseResult(8, new SpriteCoordinates(1, 5, 331, 925))); // family: man, man, girl, boy
-		trie.insert(new int[]{ 128105,8205,128102,8205,128102 }, new ParseResult(8, new SpriteCoordinates(1, 5, 331, 859))); // family: woman, boy, boy
-		trie.insert(new int[]{ 128105,128102,128102 }, new ParseResult(6, new SpriteCoordinates(1, 5, 331, 859))); // family: woman, boy, boy
-		trie.insert(new int[]{ 128104,8205,128103,8205,128103 }, new ParseResult(8, new SpriteCoordinates(1, 5, 397, 925))); // family: man, girl, girl
-		trie.insert(new int[]{ 128104,128103,128103 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 925))); // family: man, girl, girl
-		trie.insert(new int[]{ 128090 }, new ParseResult(2, new SpriteCoordinates(1, 5, 463, 991))); // woman’s clothes
-		trie.insert(new int[]{ 128087 }, new ParseResult(2, new SpriteCoordinates(1, 5, 529, 991))); // dress
-		trie.insert(new int[]{ 128096 }, new ParseResult(2, new SpriteCoordinates(1, 5, 331, 991))); // high-heeled shoe
-		trie.insert(new int[]{ 129652 }, new ParseResult(2, new SpriteCoordinates(1, 5, 133, 67))); // thong sandal
-		trie.insert(new int[]{ 128082 }, new ParseResult(2, new SpriteCoordinates(1, 5, 661, 991))); // woman’s hat
-		trie.insert(new int[]{ 128093 }, new ParseResult(2, new SpriteCoordinates(1, 5, 397, 991))); // clutch bag
-		trie.insert(new int[]{ 128083 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 991))); // glasses
-		trie.insert(new int[]{ 129459 }, new ParseResult(2, new SpriteCoordinates(1, 5, 67, 529))); // white hair
+		trie.insert(new int[]{ 129487,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 529))); // deaf woman
+		trie.insert(new int[]{ 129487,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 529))); // deaf woman
+		trie.insert(new int[]{ 129487,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 529))); // deaf man
+		trie.insert(new int[]{ 129487,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 1, 529))); // deaf man
+		trie.insert(new int[]{ 129318 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 463))); // person facepalming
+		trie.insert(new int[]{ 129318,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 595))); // woman facepalming
+		trie.insert(new int[]{ 129318,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 661, 595))); // woman facepalming
+		trie.insert(new int[]{ 129318,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 661, 529))); // man facepalming
+		trie.insert(new int[]{ 129318,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 661, 529))); // man facepalming
+		trie.insert(new int[]{ 129335 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 595))); // person shrugging
+		trie.insert(new int[]{ 129335,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 595))); // woman shrugging
+		trie.insert(new int[]{ 129335,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 595))); // woman shrugging
+		trie.insert(new int[]{ 129335,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 595))); // man shrugging
+		trie.insert(new int[]{ 129335,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 265, 595))); // man shrugging
+		trie.insert(new int[]{ 128590 }, new ParseResult(2, new SpriteCoordinates(1, 4, 727, 265))); // person pouting
+		trie.insert(new int[]{ 128590,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 397))); // woman pouting
+		trie.insert(new int[]{ 128590,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 727, 397))); // woman pouting
+		trie.insert(new int[]{ 128590,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 331))); // man pouting
+		trie.insert(new int[]{ 128590,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 727, 331))); // man pouting
+		trie.insert(new int[]{ 128589 }, new ParseResult(2, new SpriteCoordinates(1, 4, 727, 463))); // person frowning
+		trie.insert(new int[]{ 128589,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 595))); // woman frowning
+		trie.insert(new int[]{ 128589,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 727, 595))); // woman frowning
+		trie.insert(new int[]{ 128589,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 529))); // man frowning
+		trie.insert(new int[]{ 128589,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 727, 529))); // man frowning
+		trie.insert(new int[]{ 128135 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 67))); // person getting haircut
+		trie.insert(new int[]{ 128135,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 199))); // woman getting haircut
+		trie.insert(new int[]{ 128135,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 859, 199))); // woman getting haircut
+		trie.insert(new int[]{ 128135,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 133))); // man getting haircut
+		trie.insert(new int[]{ 128135,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 859, 133))); // man getting haircut
+		trie.insert(new int[]{ 128134 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 265))); // person getting massage
+		trie.insert(new int[]{ 128134,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 397))); // woman getting massage
+		trie.insert(new int[]{ 128134,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 859, 397))); // woman getting massage
+		trie.insert(new int[]{ 128134,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 331))); // man getting massage
+		trie.insert(new int[]{ 128134,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 859, 331))); // man getting massage
+		trie.insert(new int[]{ 129494 }, new ParseResult(2, new SpriteCoordinates(1, 4, 331, 133))); // person in steamy room
+		trie.insert(new int[]{ 129494,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 265))); // woman in steamy room
+		trie.insert(new int[]{ 129494,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 265))); // woman in steamy room
+		trie.insert(new int[]{ 129494,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 331, 199))); // man in steamy room
+		trie.insert(new int[]{ 129494,9794 }, new ParseResult(3, new SpriteCoordinates(1, 4, 331, 199))); // man in steamy room
+		trie.insert(new int[]{ 128133 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 463))); // nail polish
+		trie.insert(new int[]{ 129331 }, new ParseResult(2, new SpriteCoordinates(1, 4, 661, 67))); // selfie
+		trie.insert(new int[]{ 128131 }, new ParseResult(2, new SpriteCoordinates(1, 4, 859, 529))); // woman dancing
+		trie.insert(new int[]{ 128378 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 793))); // man dancing
+		trie.insert(new int[]{ 128111 }, new ParseResult(2, new SpriteCoordinates(1, 4, 925, 397))); // people with bunny ears
+		trie.insert(new int[]{ 128372,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 397, 793))); // man in suit levitating: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 331))); // person in manual wheelchair: medium skin tone
+		trie.insert(new int[]{ 129489,127997,129469 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 331))); // person in manual wheelchair: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 859))); // woman in manual wheelchair: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129469 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 859))); // woman in manual wheelchair: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 4, 661, 1057))); // man in manual wheelchair: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129469 }, new ParseResult(6, new SpriteCoordinates(1, 4, 661, 1057))); // man in manual wheelchair: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 397))); // person in motorized wheelchair: medium skin tone
+		trie.insert(new int[]{ 129489,127997,129468 }, new ParseResult(6, new SpriteCoordinates(1, 4, 463, 397))); // person in motorized wheelchair: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 4, 991, 925))); // woman in motorized wheelchair: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129468 }, new ParseResult(6, new SpriteCoordinates(1, 4, 991, 925))); // woman in motorized wheelchair: medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 1057))); // man in motorized wheelchair: medium skin tone
+		trie.insert(new int[]{ 128104,127997,129468 }, new ParseResult(6, new SpriteCoordinates(1, 4, 727, 1057))); // man in motorized wheelchair: medium skin tone
+		trie.insert(new int[]{ 128694,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 1))); // person walking: medium skin tone
+		trie.insert(new int[]{ 128694,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 133))); // woman walking: medium skin tone
+		trie.insert(new int[]{ 128694,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 133))); // woman walking: medium skin tone
+		trie.insert(new int[]{ 128694,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 727, 67))); // man walking: medium skin tone
+		trie.insert(new int[]{ 128694,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 727, 67))); // man walking: medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 463))); // person with probing cane: medium skin tone
+		trie.insert(new int[]{ 129489,127997,129455 }, new ParseResult(6, new SpriteCoordinates(1, 4, 1, 463))); // person with probing cane: medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 4, 1, 991))); // woman with probing cane: medium skin tone
+		trie.insert(new int[]{ 128105,127997,129455 }, new ParseResult(6, new SpriteCoordinates(1, 4, 1, 991))); // woman with probing cane: medium skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 1057))); // man with probing cane: medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,129455 }, new ParseResult(6, new SpriteCoordinates(1, 4, 925, 1057))); // man with probing cane: medium-light skin tone
+		trie.insert(new int[]{ 129486,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 529))); // person kneeling: medium skin tone
+		trie.insert(new int[]{ 129486,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 265, 529))); // woman kneeling: medium skin tone
+		trie.insert(new int[]{ 129486,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 265, 529))); // woman kneeling: medium skin tone
+		trie.insert(new int[]{ 129486,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 199, 529))); // man kneeling: medium skin tone
+		trie.insert(new int[]{ 129486,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 199, 529))); // man kneeling: medium skin tone
+		trie.insert(new int[]{ 127939,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 1123))); // person running: medium skin tone
+		trie.insert(new int[]{ 127939,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 925, 1123))); // woman running: medium skin tone
+		trie.insert(new int[]{ 127939,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 925, 1123))); // woman running: medium skin tone
+		trie.insert(new int[]{ 127939,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 859, 1123))); // man running: medium skin tone
+		trie.insert(new int[]{ 127939,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 859, 1123))); // man running: medium skin tone
+		trie.insert(new int[]{ 129485,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 331, 529))); // person standing: medium skin tone
+		trie.insert(new int[]{ 129485,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 463, 529))); // woman standing: medium skin tone
+		trie.insert(new int[]{ 129485,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 4, 463, 529))); // woman standing: medium skin tone
+		trie.insert(new int[]{ 129485,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 4, 397, 529))); // man standing: medium skin tone
+		trie.insert(new int[]{ 129485,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 4, 397, 529))); // man standing: medium skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129309,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 4, 265, 463))); // people holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127995,129309,129489,127997 }, new ParseResult(10, new SpriteCoordinates(1, 4, 265, 463))); // people holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129309,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 4, 133, 463))); // people holding hands: medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127996,129309,129489,127998 }, new ParseResult(10, new SpriteCoordinates(1, 4, 133, 463))); // people holding hands: medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127997,8205,129309,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 4, 67, 463))); // people holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127997,129309,129489,127999 }, new ParseResult(10, new SpriteCoordinates(1, 4, 67, 463))); // people holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129309,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 4, 463, 133))); // people holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127999,129309,129489,127995 }, new ParseResult(10, new SpriteCoordinates(1, 4, 463, 133))); // people holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128107,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 1, 925))); // woman and man holding hands: light skin tone
+		trie.insert(new int[]{ 128107,127996 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 859))); // woman and man holding hands: medium-light skin tone
+		trie.insert(new int[]{ 128107,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 793))); // woman and man holding hands: medium skin tone
+		trie.insert(new int[]{ 128107,127998 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 727))); // woman and man holding hands: medium-dark skin tone
+		trie.insert(new int[]{ 128107,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 925, 661))); // woman and man holding hands: dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 4, 595, 991))); // women holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128105,127999 }, new ParseResult(10, new SpriteCoordinates(1, 4, 595, 991))); // women holding hands: light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 4, 67, 991))); // women holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128105,127995 }, new ParseResult(10, new SpriteCoordinates(1, 4, 67, 991))); // women holding hands: medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 529))); // women holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128105,127996 }, new ParseResult(10, new SpriteCoordinates(1, 4, 991, 529))); // women holding hands: medium dark skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 331))); // women holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128105,127997 }, new ParseResult(10, new SpriteCoordinates(1, 4, 991, 331))); // women holding hands: dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 4, 1123, 67))); // men holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127995,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 4, 1123, 67))); // men holding hands: light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 1057))); // men holding hands: medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127996,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 4, 991, 1057))); // men holding hands: medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127997,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 4, 793, 1057))); // men holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127997,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 4, 793, 1057))); // men holding hands: medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 4, 331, 1057))); // men holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127999,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 4, 331, 1057))); // men holding hands: dark skin tone, light skin tone
+		trie.insert(new int[]{ 128145,127995 }, new ParseResult(4, new SpriteCoordinates(1, 4, 859, 1))); // couple with heart: light skin tone
+		trie.insert(new int[]{ 128145,127996 }, new ParseResult(4, new SpriteCoordinates(1, 4, 793, 793))); // couple with heart: medium-light skin tone
+		trie.insert(new int[]{ 128145,127997 }, new ParseResult(4, new SpriteCoordinates(1, 4, 727, 793))); // couple with heart: medium skin tone
+		trie.insert(new int[]{ 128145,127998 }, new ParseResult(4, new SpriteCoordinates(1, 4, 661, 793))); // couple with heart: medium-dark skin tone
+		trie.insert(new int[]{ 128145,127999 }, new ParseResult(4, new SpriteCoordinates(1, 4, 595, 793))); // couple with heart: dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 4, 529, 991))); // couple with heart: woman, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 4, 529, 991))); // couple with heart: woman, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 793))); // couple with heart: woman, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 4, 991, 793))); // couple with heart: woman, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 463))); // couple with heart: woman, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 4, 991, 463))); // couple with heart: woman, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 265))); // couple with heart: woman, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 4, 991, 265))); // couple with heart: woman, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 4, 463, 991))); // couple with heart: woman, woman, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128105,127997 }, new ParseResult(9, new SpriteCoordinates(1, 4, 463, 991))); // couple with heart: woman, woman, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 4, 265, 991))); // couple with heart: woman, woman, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128105,127998 }, new ParseResult(9, new SpriteCoordinates(1, 4, 265, 991))); // couple with heart: woman, woman, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 727))); // couple with heart: woman, woman, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128105,127999 }, new ParseResult(9, new SpriteCoordinates(1, 4, 991, 727))); // couple with heart: woman, woman, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 4, 991, 199))); // couple with heart: woman, woman, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128105,127995 }, new ParseResult(9, new SpriteCoordinates(1, 4, 991, 199))); // couple with heart: woman, woman, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 4, 1123, 1))); // couple with heart: man, man, light skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 4, 1123, 1))); // couple with heart: man, man, light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 4, 859, 1057))); // couple with heart: man, man, medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 4, 859, 1057))); // couple with heart: man, man, medium-light skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 4, 595, 1057))); // couple with heart: man, man, medium skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 4, 595, 1057))); // couple with heart: man, man, medium skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 4, 463, 1057))); // couple with heart: man, man, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 4, 463, 1057))); // couple with heart: man, man, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 4, 265, 1057))); // couple with heart: man, man, dark skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 4, 265, 1057))); // couple with heart: man, man, dark skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,128139,8205,129489,127999 }, new ParseResult(15, new SpriteCoordinates(1, 4, 199, 463))); // kiss: person, person, light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127995,10084,128139,129489,127999 }, new ParseResult(11, new SpriteCoordinates(1, 4, 199, 463))); // kiss: person, person, light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,128139,8205,129489,127995 }, new ParseResult(15, new SpriteCoordinates(1, 4, 463, 265))); // kiss: person, person, medium skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127997,10084,128139,129489,127995 }, new ParseResult(11, new SpriteCoordinates(1, 4, 463, 265))); // kiss: person, person, medium skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,128139,8205,129489,127996 }, new ParseResult(15, new SpriteCoordinates(1, 4, 463, 199))); // kiss: person, person, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127998,10084,128139,129489,127996 }, new ParseResult(11, new SpriteCoordinates(1, 4, 463, 199))); // kiss: person, person, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,128139,8205,129489,127997 }, new ParseResult(15, new SpriteCoordinates(1, 4, 463, 67))); // kiss: person, person, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127999,10084,128139,129489,127997 }, new ParseResult(11, new SpriteCoordinates(1, 4, 463, 67))); // kiss: person, person, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 4, 397, 991))); // kiss: woman, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 4, 397, 991))); // kiss: woman, man, light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 4, 199, 991))); // kiss: woman, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 4, 199, 991))); // kiss: woman, man, medium-light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 4, 991, 661))); // kiss: woman, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 4, 991, 661))); // kiss: woman, man, medium skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 4, 991, 133))); // kiss: woman, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 4, 991, 133))); // kiss: woman, man, dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128105,127995 }, new ParseResult(15, new SpriteCoordinates(1, 4, 331, 991))); // kiss: woman, woman, light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128105,127995 }, new ParseResult(11, new SpriteCoordinates(1, 4, 331, 991))); // kiss: woman, woman, light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128105,127996 }, new ParseResult(15, new SpriteCoordinates(1, 4, 133, 991))); // kiss: woman, woman, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128105,127996 }, new ParseResult(11, new SpriteCoordinates(1, 4, 133, 991))); // kiss: woman, woman, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128105,127997 }, new ParseResult(15, new SpriteCoordinates(1, 4, 991, 595))); // kiss: woman, woman, medium skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128105,127997 }, new ParseResult(11, new SpriteCoordinates(1, 4, 991, 595))); // kiss: woman, woman, medium skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128105,127998 }, new ParseResult(15, new SpriteCoordinates(1, 4, 991, 397))); // kiss: woman, woman, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128105,127998 }, new ParseResult(11, new SpriteCoordinates(1, 4, 991, 397))); // kiss: woman, woman, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128105,127999 }, new ParseResult(15, new SpriteCoordinates(1, 4, 991, 67))); // kiss: woman, woman, dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128105,127999 }, new ParseResult(11, new SpriteCoordinates(1, 4, 991, 67))); // kiss: woman, woman, dark skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 4, 1057, 1057))); // kiss: man, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 4, 1057, 1057))); // kiss: man, man, light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 4, 529, 1057))); // kiss: man, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 4, 529, 1057))); // kiss: man, man, medium skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 4, 397, 1057))); // kiss: man, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 4, 397, 1057))); // kiss: man, man, medium-dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 4, 199, 1057))); // kiss: man, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 4, 199, 1057))); // kiss: man, man, dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,8205,128105,8205,128103,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 4, 1, 1057))); // family: man, woman, girl, boy
+		trie.insert(new int[]{ 128104,128105,128103,128102 }, new ParseResult(8, new SpriteCoordinates(1, 4, 1, 1057))); // family: man, woman, girl, boy
+		trie.insert(new int[]{ 128105,8205,128105,8205,128102,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 4, 991, 1))); // family: woman, woman, boy, boy
+		trie.insert(new int[]{ 128105,128105,128102,128102 }, new ParseResult(8, new SpriteCoordinates(1, 4, 991, 1))); // family: woman, woman, boy, boy
+		trie.insert(new int[]{ 128104,8205,128104,8205,128103,8205,128103 }, new ParseResult(11, new SpriteCoordinates(1, 4, 67, 1057))); // family: man, man, girl, girl
+		trie.insert(new int[]{ 128104,128104,128103,128103 }, new ParseResult(8, new SpriteCoordinates(1, 4, 67, 1057))); // family: man, man, girl, girl
+		trie.insert(new int[]{ 128104,8205,128102 }, new ParseResult(5, new SpriteCoordinates(1, 4, 133, 1057))); // family: man, boy
+		trie.insert(new int[]{ 128104,128102 }, new ParseResult(4, new SpriteCoordinates(1, 4, 133, 1057))); // family: man, boy
+		trie.insert(new int[]{ 129525 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 1))); // thread
+		trie.insert(new int[]{ 128086 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1123, 925))); // jeans
+		trie.insert(new int[]{ 129649 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 133))); // one-piece swimsuit
+		trie.insert(new int[]{ 128098 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1123, 793))); // woman’s boot
+		trie.insert(new int[]{ 129508 }, new ParseResult(2, new SpriteCoordinates(1, 4, 199, 67))); // gloves
+		trie.insert(new int[]{ 9937,65039 }, new ParseResult(2, new SpriteCoordinates(1, 4, 133, 1))); // rescue worker’s helmet
+		trie.insert(new int[]{ 9937 }, new ParseResult(1, new SpriteCoordinates(1, 4, 133, 1))); // rescue worker’s helmet
+		trie.insert(new int[]{ 128092 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1123, 859))); // handbag
+		trie.insert(new int[]{ 129405 }, new ParseResult(2, new SpriteCoordinates(1, 4, 1, 595))); // goggles
+		trie.insert(new int[]{ 128517 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1, 793))); // grinning face with sweat
+		trie.insert(new int[]{ 128578 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 1))); // slightly smiling face
+		trie.insert(new int[]{ 129392 }, new ParseResult(2, new SpriteCoordinates(1, 5, 199, 595))); // smiling face with hearts
+		trie.insert(new int[]{ 128539 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 595))); // face with tongue
+		trie.insert(new int[]{ 129299 }, new ParseResult(2, new SpriteCoordinates(1, 5, 529, 661))); // nerd face
+		trie.insert(new int[]{ 128542 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 529))); // disappointed face
+		trie.insert(new int[]{ 128547 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 463))); // persevering face
+		trie.insert(new int[]{ 128557 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 331))); // loudly crying face
+		trie.insert(new int[]{ 129327 }, new ParseResult(2, new SpriteCoordinates(1, 5, 661, 397))); // exploding head
+		trie.insert(new int[]{ 128552 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 397))); // fearful face
+		trie.insert(new int[]{ 129325 }, new ParseResult(2, new SpriteCoordinates(1, 5, 661, 463))); // face with hand over mouth
+		trie.insert(new int[]{ 128529 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 661))); // expressionless face
+		trie.insert(new int[]{ 128558 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 265))); // face with open mouth
+		trie.insert(new int[]{ 128565,8205,128171 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 199))); // face with spiral eyes
+		trie.insert(new int[]{ 128565,128171 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 199))); // face with spiral eyes
+		trie.insert(new int[]{ 128567 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 133))); // face with medical mask
+		trie.insert(new int[]{ 128520 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 727))); // smiling face with horns
+		trie.insert(new int[]{ 128123 }, new ParseResult(2, new SpriteCoordinates(1, 5, 67, 859))); // ghost
+		trie.insert(new int[]{ 127875 }, new ParseResult(2, new SpriteCoordinates(1, 5, 925, 1123))); // jack-o-lantern
+		trie.insert(new int[]{ 128573 }, new ParseResult(2, new SpriteCoordinates(1, 5, 793, 67))); // kissing cat
+		trie.insert(new int[]{ 129330,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 199))); // palms up together: medium-light skin tone
+		trie.insert(new int[]{ 128080,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1123, 925))); // open hands: medium-light skin tone
+		trie.insert(new int[]{ 128588,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 661))); // raising hands: medium-light skin tone
+		trie.insert(new int[]{ 128079,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1123, 991))); // clapping hands: medium-light skin tone
+		trie.insert(new int[]{ 128077,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 1123))); // thumbs up: light skin tone
+		trie.insert(new int[]{ 128078,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1123, 1057))); // thumbs down: light skin tone
+		trie.insert(new int[]{ 128074,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 1123))); // oncoming fist: light skin tone
+		trie.insert(new int[]{ 9994,127995 }, new ParseResult(3, new SpriteCoordinates(1, 5, 67, 67))); // raised fist: light skin tone
+		trie.insert(new int[]{ 129307,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 661))); // left-facing fist: light skin tone
+		trie.insert(new int[]{ 129308,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 661))); // right-facing fist: light skin tone
+		trie.insert(new int[]{ 129310,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 661))); // crossed fingers: light skin tone
+		trie.insert(new int[]{ 9996,127995 }, new ParseResult(3, new SpriteCoordinates(1, 5, 67, 1))); // victory hand: light skin tone
+		trie.insert(new int[]{ 129311,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 661))); // love-you gesture: light skin tone
+		trie.insert(new int[]{ 129304,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 661))); // sign of the horns: light skin tone
+		trie.insert(new int[]{ 128076,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 1123))); // OK hand: light skin tone
+		trie.insert(new int[]{ 129295,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 661))); // pinching hand: light skin tone
+		trie.insert(new int[]{ 129292,127996 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 661))); // pinched fingers: medium-light skin tone
+		trie.insert(new int[]{ 128072,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 1123))); // backhand index pointing left: light skin tone
+		trie.insert(new int[]{ 128073,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 1123))); // backhand index pointing right: light skin tone
+		trie.insert(new int[]{ 128070,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 1123))); // backhand index pointing up: light skin tone
+		trie.insert(new int[]{ 128071,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 1123))); // backhand index pointing down: light skin tone
+		trie.insert(new int[]{ 9757,127995 }, new ParseResult(3, new SpriteCoordinates(1, 5, 133, 1))); // index pointing up: light skin tone
+		trie.insert(new int[]{ 9995,127995 }, new ParseResult(3, new SpriteCoordinates(1, 5, 1, 67))); // raised hand: light skin tone
+		trie.insert(new int[]{ 129306,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 661))); // raised back of hand: light skin tone
+		trie.insert(new int[]{ 128400,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 793))); // hand with fingers splayed: light skin tone
+		trie.insert(new int[]{ 128406,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 793))); // vulcan salute: light skin tone
+		trie.insert(new int[]{ 128075,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 1123))); // waving hand: light skin tone
+		trie.insert(new int[]{ 129305,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 661))); // call me hand: light skin tone
+		trie.insert(new int[]{ 128170,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 793))); // flexed biceps: light skin tone
+		trie.insert(new int[]{ 128405 }, new ParseResult(2, new SpriteCoordinates(1, 5, 133, 793))); // middle finger
+		trie.insert(new int[]{ 9997,65039 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1, 1))); // writing hand
+		trie.insert(new int[]{ 9997 }, new ParseResult(1, new SpriteCoordinates(1, 5, 1, 1))); // writing hand
+		trie.insert(new int[]{ 128591 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 199))); // folded hands
+		trie.insert(new int[]{ 129462 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 529))); // foot
+		trie.insert(new int[]{ 129461 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1, 595))); // leg
+		trie.insert(new int[]{ 129471 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 1))); // mechanical leg
+		trie.insert(new int[]{ 128066 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 1123))); // ear
+		trie.insert(new int[]{ 129467 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 67))); // ear with hearing aid
+		trie.insert(new int[]{ 128067 }, new ParseResult(2, new SpriteCoordinates(1, 5, 529, 1123))); // nose
+		trie.insert(new int[]{ 128099 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1123, 727))); // footprints
+		trie.insert(new int[]{ 129460 }, new ParseResult(2, new SpriteCoordinates(1, 5, 67, 595))); // bone
+		trie.insert(new int[]{ 128118,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 859))); // baby: light skin tone
+		trie.insert(new int[]{ 128103,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1123, 595))); // girl: light skin tone
+		trie.insert(new int[]{ 129490,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 331))); // child: light skin tone
+		trie.insert(new int[]{ 128102,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1123, 661))); // boy: light skin tone
+		trie.insert(new int[]{ 128105,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 991, 463))); // woman: light skin tone
+		trie.insert(new int[]{ 129489,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 397))); // person: light skin tone
+		trie.insert(new int[]{ 128104,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 1057))); // man: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 331))); // person: light skin tone, curly hair
+		trie.insert(new int[]{ 129489,127995,129457 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 331))); // person: light skin tone, curly hair
+		trie.insert(new int[]{ 128105,127995,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 991))); // woman, curly haired: light skin tone
+		trie.insert(new int[]{ 128105,127995,129457 }, new ParseResult(6, new SpriteCoordinates(1, 5, 67, 991))); // woman, curly haired: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129457 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 1057))); // man, curly haired: light skin tone
+		trie.insert(new int[]{ 128104,127995,129457 }, new ParseResult(6, new SpriteCoordinates(1, 5, 595, 1057))); // man, curly haired: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 397))); // person: light skin tone, red hair
+		trie.insert(new int[]{ 129489,127995,129456 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 397))); // person: light skin tone, red hair
+		trie.insert(new int[]{ 128105,127995,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 991))); // woman, red haired: light skin tone
+		trie.insert(new int[]{ 128105,127995,129456 }, new ParseResult(6, new SpriteCoordinates(1, 5, 133, 991))); // woman, red haired: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129456 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 1057))); // man, red haired: light skin tone
+		trie.insert(new int[]{ 128104,127995,129456 }, new ParseResult(6, new SpriteCoordinates(1, 5, 661, 1057))); // man, red haired: light skin tone
+		trie.insert(new int[]{ 128113,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 67))); // blond-haired woman: light skin tone
+		trie.insert(new int[]{ 128113,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 67))); // blond-haired woman: light skin tone
+		trie.insert(new int[]{ 128113,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 859))); // blond-haired person: light skin tone
+		trie.insert(new int[]{ 128113,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 1))); // blond-haired man: light skin tone
+		trie.insert(new int[]{ 128113,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 1))); // blond-haired man: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 199))); // person: light skin tone, white hair
+		trie.insert(new int[]{ 129489,127995,129459 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 199))); // person: light skin tone, white hair
+		trie.insert(new int[]{ 128105,127995,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 925))); // woman, white haired: light skin tone
+		trie.insert(new int[]{ 128105,127995,129459 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 925))); // woman, white haired: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129459 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 1057))); // man, white haired: light skin tone
+		trie.insert(new int[]{ 128104,127995,129459 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 1057))); // man, white haired: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 265))); // person: light skin tone, bald
+		trie.insert(new int[]{ 129489,127995,129458 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 265))); // person: light skin tone, bald
+		trie.insert(new int[]{ 128105,127995,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 991))); // woman, bald: light skin tone
+		trie.insert(new int[]{ 128105,127995,129458 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1, 991))); // woman, bald: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129458 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 1057))); // man, bald: light skin tone
+		trie.insert(new int[]{ 128104,127995,129458 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 1057))); // man, bald: light skin tone
+		trie.insert(new int[]{ 129492,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 265))); // bearded person: light skin tone
+		trie.insert(new int[]{ 129492,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 331))); // man: light skin tone, beard
+		trie.insert(new int[]{ 129492,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 331))); // man: light skin tone, beard
+		trie.insert(new int[]{ 129492,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 331))); // woman: light skin tone, beard
+		trie.insert(new int[]{ 129492,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 331))); // woman: light skin tone, beard
+		trie.insert(new int[]{ 128117,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 859))); // old woman: light skin tone
+		trie.insert(new int[]{ 129491,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 331))); // older person: light skin tone
+		trie.insert(new int[]{ 128116,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 859))); // old man: light skin tone
+		trie.insert(new int[]{ 128114,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 859))); // man with Chinese cap: light skin tone
+		trie.insert(new int[]{ 128115,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 859))); // person wearing turban: light skin tone
+		trie.insert(new int[]{ 128115,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 859))); // woman wearing turban: light skin tone
+		trie.insert(new int[]{ 128115,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 859))); // woman wearing turban: light skin tone
+		trie.insert(new int[]{ 128115,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 859))); // man wearing turban: light skin tone
+		trie.insert(new int[]{ 128115,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 859))); // man wearing turban: light skin tone
+		trie.insert(new int[]{ 129493,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 199))); // woman with headscarf: light skin tone
+		trie.insert(new int[]{ 128110,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 925, 397))); // police officer: light skin tone
+		trie.insert(new int[]{ 128110,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 529))); // woman police officer: light skin tone
+		trie.insert(new int[]{ 128110,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 529))); // woman police officer: light skin tone
+		trie.insert(new int[]{ 128110,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 463))); // man police officer: light skin tone
+		trie.insert(new int[]{ 128110,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 463))); // man police officer: light skin tone
+		trie.insert(new int[]{ 128119,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 859))); // construction worker: light skin tone
+		trie.insert(new int[]{ 128119,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 859))); // woman construction worker: light skin tone
+		trie.insert(new int[]{ 128119,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 859))); // woman construction worker: light skin tone
+		trie.insert(new int[]{ 128119,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 859))); // man construction worker: light skin tone
+		trie.insert(new int[]{ 128119,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 859))); // man construction worker: light skin tone
+		trie.insert(new int[]{ 128130,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 463))); // guard: light skin tone
+		trie.insert(new int[]{ 128130,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 595))); // woman guard: light skin tone
+		trie.insert(new int[]{ 128130,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 595))); // woman guard: light skin tone
+		trie.insert(new int[]{ 128130,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 529))); // man guard: light skin tone
+		trie.insert(new int[]{ 128130,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 529))); // man guard: light skin tone
+		trie.insert(new int[]{ 128373,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 793))); // detective: light skin tone
+		trie.insert(new int[]{ 128373,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 793))); // woman detective: light skin tone
+		trie.insert(new int[]{ 128373,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 793))); // woman detective: light skin tone
+		trie.insert(new int[]{ 128373,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 793))); // man detective: light skin tone
+		trie.insert(new int[]{ 128373,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 397, 793))); // man detective: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 133))); // health worker: light skin tone
+		trie.insert(new int[]{ 129489,127995,9877 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 133))); // health worker: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 859))); // woman health worker: light skin tone
+		trie.insert(new int[]{ 128105,127995,9877 }, new ParseResult(5, new SpriteCoordinates(1, 5, 991, 859))); // woman health worker: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,9877,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 1057))); // man health worker: light skin tone
+		trie.insert(new int[]{ 128104,127995,9877 }, new ParseResult(5, new SpriteCoordinates(1, 5, 397, 1057))); // man health worker: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 463))); // farmer: light skin tone
+		trie.insert(new int[]{ 129489,127995,127806 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 463))); // farmer: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 67))); // woman farmer: light skin tone
+		trie.insert(new int[]{ 128105,127995,127806 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1057, 67))); // woman farmer: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127806 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 529))); // man farmer: light skin tone
+		trie.insert(new int[]{ 128104,127995,127806 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 529))); // man farmer: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 397))); // cook: light skin tone
+		trie.insert(new int[]{ 129489,127995,127859 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 397))); // cook: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 1))); // woman cook: light skin tone
+		trie.insert(new int[]{ 128105,127995,127859 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1057, 1))); // woman cook: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127859 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 463))); // man cook: light skin tone
+		trie.insert(new int[]{ 128104,127995,127859 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 463))); // man cook: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 199))); // student: light skin tone
+		trie.insert(new int[]{ 129489,127995,127891 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 199))); // student: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 991))); // woman student: light skin tone
+		trie.insert(new int[]{ 128105,127995,127891 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 991))); // woman student: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127891 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 331))); // man student: light skin tone
+		trie.insert(new int[]{ 128104,127995,127891 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 331))); // man student: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 133))); // singer: light skin tone
+		trie.insert(new int[]{ 129489,127995,127908 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 133))); // singer: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 991))); // woman singer: light skin tone
+		trie.insert(new int[]{ 128105,127995,127908 }, new ParseResult(6, new SpriteCoordinates(1, 5, 859, 991))); // woman singer: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127908 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 265))); // man singer: light skin tone
+		trie.insert(new int[]{ 128104,127995,127908 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 265))); // man singer: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 1))); // teacher: light skin tone
+		trie.insert(new int[]{ 129489,127995,127979 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 1))); // teacher: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 991))); // woman teacher: light skin tone
+		trie.insert(new int[]{ 128105,127995,127979 }, new ParseResult(6, new SpriteCoordinates(1, 5, 727, 991))); // woman teacher: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127979 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 133))); // man teacher: light skin tone
+		trie.insert(new int[]{ 128104,127995,127979 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 133))); // man teacher: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 463))); // factory worker: light skin tone
+		trie.insert(new int[]{ 129489,127995,127981 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 463))); // factory worker: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 991))); // woman factory worker: light skin tone
+		trie.insert(new int[]{ 128105,127995,127981 }, new ParseResult(6, new SpriteCoordinates(1, 5, 661, 991))); // woman factory worker: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127981 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 67))); // man factory worker: light skin tone
+		trie.insert(new int[]{ 128104,127995,127981 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 67))); // man factory worker: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 463))); // technologist: light skin tone
+		trie.insert(new int[]{ 129489,127995,128187 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 463))); // technologist: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 991))); // woman technologist: light skin tone
+		trie.insert(new int[]{ 128105,127995,128187 }, new ParseResult(6, new SpriteCoordinates(1, 5, 595, 991))); // woman technologist: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,128187 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 1))); // man technologist: light skin tone
+		trie.insert(new int[]{ 128104,127995,128187 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 1))); // man technologist: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 463))); // office worker: light skin tone
+		trie.insert(new int[]{ 129489,127995,128188 }, new ParseResult(6, new SpriteCoordinates(1, 5, 331, 463))); // office worker: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 991))); // woman office worker: light skin tone
+		trie.insert(new int[]{ 128105,127995,128188 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 991))); // woman office worker: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,128188 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 1057))); // man office worker: light skin tone
+		trie.insert(new int[]{ 128104,127995,128188 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1057, 1057))); // man office worker: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 463))); // mechanic: light skin tone
+		trie.insert(new int[]{ 129489,127995,128295 }, new ParseResult(6, new SpriteCoordinates(1, 5, 265, 463))); // mechanic: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 991))); // woman mechanic: light skin tone
+		trie.insert(new int[]{ 128105,127995,128295 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 991))); // woman mechanic: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,128295 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 1057))); // man mechanic: light skin tone
+		trie.insert(new int[]{ 128104,127995,128295 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 1057))); // man mechanic: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 463))); // scientist: light skin tone
+		trie.insert(new int[]{ 129489,127995,128300 }, new ParseResult(6, new SpriteCoordinates(1, 5, 199, 463))); // scientist: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 991))); // woman scientist: light skin tone
+		trie.insert(new int[]{ 128105,127995,128300 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 991))); // woman scientist: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,128300 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 1057))); // man scientist: light skin tone
+		trie.insert(new int[]{ 128104,127995,128300 }, new ParseResult(6, new SpriteCoordinates(1, 5, 925, 1057))); // man scientist: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 67))); // artist: light skin tone
+		trie.insert(new int[]{ 129489,127995,127912 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 67))); // artist: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 991))); // woman artist: light skin tone
+		trie.insert(new int[]{ 128105,127995,127912 }, new ParseResult(6, new SpriteCoordinates(1, 5, 793, 991))); // woman artist: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127912 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 199))); // man artist: light skin tone
+		trie.insert(new int[]{ 128104,127995,127912 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 199))); // man artist: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 463))); // firefighter: light skin tone
+		trie.insert(new int[]{ 129489,127995,128658 }, new ParseResult(6, new SpriteCoordinates(1, 5, 67, 463))); // firefighter: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 991))); // woman firefighter: light skin tone
+		trie.insert(new int[]{ 128105,127995,128658 }, new ParseResult(6, new SpriteCoordinates(1, 5, 265, 991))); // woman firefighter: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,128658 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 1057))); // man firefighter: light skin tone
+		trie.insert(new int[]{ 128104,127995,128658 }, new ParseResult(6, new SpriteCoordinates(1, 5, 793, 1057))); // man firefighter: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 1))); // pilot: light skin tone
+		trie.insert(new int[]{ 129489,127995,9992 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 1))); // pilot: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 727))); // woman pilot: light skin tone
+		trie.insert(new int[]{ 128105,127995,9992 }, new ParseResult(5, new SpriteCoordinates(1, 5, 991, 727))); // woman pilot: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,9992,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 1057))); // man pilot: light skin tone
+		trie.insert(new int[]{ 128104,127995,9992 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 1057))); // man pilot: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 463))); // astronaut: light skin tone
+		trie.insert(new int[]{ 129489,127995,128640 }, new ParseResult(6, new SpriteCoordinates(1, 5, 133, 463))); // astronaut: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 991))); // woman astronaut: light skin tone
+		trie.insert(new int[]{ 128105,127995,128640 }, new ParseResult(6, new SpriteCoordinates(1, 5, 331, 991))); // woman astronaut: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,128640 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 1057))); // man astronaut: light skin tone
+		trie.insert(new int[]{ 128104,127995,128640 }, new ParseResult(6, new SpriteCoordinates(1, 5, 859, 1057))); // man astronaut: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 67))); // judge: light skin tone
+		trie.insert(new int[]{ 129489,127995,9878 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 67))); // judge: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 793))); // woman judge: light skin tone
+		trie.insert(new int[]{ 128105,127995,9878 }, new ParseResult(5, new SpriteCoordinates(1, 5, 991, 793))); // woman judge: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,9878,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 1057))); // man judge: light skin tone
+		trie.insert(new int[]{ 128104,127995,9878 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 1057))); // man judge: light skin tone
+		trie.insert(new int[]{ 128112,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 925, 133))); // person with veil: light skin tone
+		trie.insert(new int[]{ 128112,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 265))); // woman with veil: light skin tone
+		trie.insert(new int[]{ 128112,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 265))); // woman with veil: light skin tone
+		trie.insert(new int[]{ 128112,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 925, 199))); // man with veil: light skin tone
+		trie.insert(new int[]{ 128112,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 199))); // man with veil: light skin tone
+		trie.insert(new int[]{ 129333,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 595))); // person in tuxedo: light skin tone
+		trie.insert(new int[]{ 129333,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 1))); // woman in tuxedo: light skin tone
+		trie.insert(new int[]{ 129333,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 1))); // woman in tuxedo: light skin tone
+		trie.insert(new int[]{ 129333,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 595))); // man in tuxedo: light skin tone
+		trie.insert(new int[]{ 129333,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 595))); // man in tuxedo: light skin tone
+		trie.insert(new int[]{ 128120,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 859))); // princess: light skin tone
+		trie.insert(new int[]{ 129332,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 67))); // prince: light skin tone
+		trie.insert(new int[]{ 129464,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 331))); // superhero: light skin tone
+		trie.insert(new int[]{ 129464,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 463))); // woman superhero: light skin tone
+		trie.insert(new int[]{ 129464,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 463))); // woman superhero: light skin tone
+		trie.insert(new int[]{ 129464,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 397))); // man superhero: light skin tone
+		trie.insert(new int[]{ 129464,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 397))); // man superhero: light skin tone
+		trie.insert(new int[]{ 129465,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 133))); // supervillain: light skin tone
+		trie.insert(new int[]{ 129465,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 265))); // woman supervillain: light skin tone
+		trie.insert(new int[]{ 129465,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 265))); // woman supervillain: light skin tone
+		trie.insert(new int[]{ 129465,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 199))); // man supervillain: light skin tone
+		trie.insert(new int[]{ 129465,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 595, 199))); // man supervillain: light skin tone
+		trie.insert(new int[]{ 129399,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 595))); // ninja: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127876 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 265))); // mx claus: light skin tone
+		trie.insert(new int[]{ 129489,127995,127876 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 265))); // mx claus: light skin tone
+		trie.insert(new int[]{ 129334,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 463, 595))); // Mrs. Claus: light skin tone
+		trie.insert(new int[]{ 127877,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 1123))); // Santa Claus: light skin tone
+		trie.insert(new int[]{ 129497,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 133, 265))); // mage: light skin tone
+		trie.insert(new int[]{ 129497,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 265))); // woman mage: light skin tone
+		trie.insert(new int[]{ 129497,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 265))); // woman mage: light skin tone
+		trie.insert(new int[]{ 129497,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 265))); // man mage: light skin tone
+		trie.insert(new int[]{ 129497,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 265))); // man mage: light skin tone
+		trie.insert(new int[]{ 129501,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 67))); // elf: light skin tone
+		trie.insert(new int[]{ 129501,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 199))); // woman elf: light skin tone
+		trie.insert(new int[]{ 129501,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 199))); // woman elf: light skin tone
+		trie.insert(new int[]{ 129501,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 133))); // man elf: light skin tone
+		trie.insert(new int[]{ 129501,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 133))); // man elf: light skin tone
+		trie.insert(new int[]{ 129499,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 1))); // vampire: light skin tone
+		trie.insert(new int[]{ 129499,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 133))); // woman vampire: light skin tone
+		trie.insert(new int[]{ 129499,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 133))); // woman vampire: light skin tone
+		trie.insert(new int[]{ 129499,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 67))); // man vampire: light skin tone
+		trie.insert(new int[]{ 129499,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 67))); // man vampire: light skin tone
+		trie.insert(new int[]{ 129503,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 1))); // woman zombie
+		trie.insert(new int[]{ 129503,9792 }, new ParseResult(3, new SpriteCoordinates(1, 5, 199, 1))); // woman zombie
+		trie.insert(new int[]{ 129500,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 67, 199))); // merperson: light skin tone
+		trie.insert(new int[]{ 129500,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 199, 199))); // mermaid: light skin tone
+		trie.insert(new int[]{ 129500,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 199, 199))); // mermaid: light skin tone
+		trie.insert(new int[]{ 129500,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 199))); // merman: light skin tone
+		trie.insert(new int[]{ 129500,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 199))); // merman: light skin tone
+		trie.insert(new int[]{ 129498,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 199))); // fairy: light skin tone
+		trie.insert(new int[]{ 129498,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 265))); // woman fairy: light skin tone
+		trie.insert(new int[]{ 129498,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 265))); // woman fairy: light skin tone
+		trie.insert(new int[]{ 129498,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 265))); // man fairy: light skin tone
+		trie.insert(new int[]{ 129498,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 265))); // man fairy: light skin tone
+		trie.insert(new int[]{ 128124,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 859))); // baby angel: light skin tone
+		trie.insert(new int[]{ 129328,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 331))); // pregnant woman: light skin tone
+		trie.insert(new int[]{ 129329,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 265))); // breast-feeding: light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 331))); // person feeding baby: light skin tone
+		trie.insert(new int[]{ 129489,127995,127868 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 331))); // person feeding baby: light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 5, 991, 991))); // woman feeding baby: light skin tone
+		trie.insert(new int[]{ 128105,127995,127868 }, new ParseResult(6, new SpriteCoordinates(1, 5, 991, 991))); // woman feeding baby: light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,127868 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1123, 397))); // man feeding baby: light skin tone
+		trie.insert(new int[]{ 128104,127995,127868 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1123, 397))); // man feeding baby: light skin tone
+		trie.insert(new int[]{ 128583,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 727))); // person bowing: light skin tone
+		trie.insert(new int[]{ 128583,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 727))); // woman bowing: light skin tone
+		trie.insert(new int[]{ 128583,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 727))); // woman bowing: light skin tone
+		trie.insert(new int[]{ 128583,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 727))); // man bowing: light skin tone
+		trie.insert(new int[]{ 128583,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 727))); // man bowing: light skin tone
+		trie.insert(new int[]{ 128129,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 661))); // person tipping hand: light skin tone
+		trie.insert(new int[]{ 128129,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 793))); // woman tipping hand: light skin tone
+		trie.insert(new int[]{ 128129,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 793))); // woman tipping hand: light skin tone
+		trie.insert(new int[]{ 128129,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 727))); // man tipping hand: light skin tone
+		trie.insert(new int[]{ 128129,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 727))); // man tipping hand: light skin tone
+		trie.insert(new int[]{ 128581,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 595, 727))); // person gesturing NO: light skin tone
+		trie.insert(new int[]{ 128581,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 727))); // woman gesturing NO: light skin tone
+		trie.insert(new int[]{ 128581,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 727))); // woman gesturing NO: light skin tone
+		trie.insert(new int[]{ 128581,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 727))); // man gesturing NO: light skin tone
+		trie.insert(new int[]{ 128581,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 727))); // man gesturing NO: light skin tone
+		trie.insert(new int[]{ 128582,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 727))); // person gesturing OK: light skin tone
+		trie.insert(new int[]{ 128582,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 727))); // woman gesturing OK: light skin tone
+		trie.insert(new int[]{ 128582,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 727))); // woman gesturing OK: light skin tone
+		trie.insert(new int[]{ 128582,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 727))); // man gesturing OK: light skin tone
+		trie.insert(new int[]{ 128582,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 727))); // man gesturing OK: light skin tone
+		trie.insert(new int[]{ 128587,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 727))); // person raising hand: light skin tone
+		trie.insert(new int[]{ 128587,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 727))); // woman raising hand: light skin tone
+		trie.insert(new int[]{ 128587,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 727))); // woman raising hand: light skin tone
+		trie.insert(new int[]{ 128587,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 727))); // man raising hand: light skin tone
+		trie.insert(new int[]{ 128587,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 727))); // man raising hand: light skin tone
+		trie.insert(new int[]{ 129487,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 529))); // deaf person: light skin tone
+		trie.insert(new int[]{ 129487,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 133, 529))); // deaf woman: light skin tone
+		trie.insert(new int[]{ 129487,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 133, 529))); // deaf woman: light skin tone
+		trie.insert(new int[]{ 129487,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 67, 529))); // deaf man: light skin tone
+		trie.insert(new int[]{ 129487,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 529))); // deaf man: light skin tone
+		trie.insert(new int[]{ 129318,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 529))); // person facepalming: light skin tone
+		trie.insert(new int[]{ 129318,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 661))); // woman facepalming: light skin tone
+		trie.insert(new int[]{ 129318,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 661))); // woman facepalming: light skin tone
+		trie.insert(new int[]{ 129318,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 661, 595))); // man facepalming: light skin tone
+		trie.insert(new int[]{ 129318,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 661, 595))); // man facepalming: light skin tone
+		trie.insert(new int[]{ 129335,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 595))); // person shrugging: light skin tone
+		trie.insert(new int[]{ 129335,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 595))); // woman shrugging: light skin tone
+		trie.insert(new int[]{ 129335,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 397, 595))); // woman shrugging: light skin tone
+		trie.insert(new int[]{ 129335,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 595))); // man shrugging: light skin tone
+		trie.insert(new int[]{ 129335,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 595))); // man shrugging: light skin tone
+		trie.insert(new int[]{ 128590,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 265))); // person pouting: light skin tone
+		trie.insert(new int[]{ 128590,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 397))); // woman pouting: light skin tone
+		trie.insert(new int[]{ 128590,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 397))); // woman pouting: light skin tone
+		trie.insert(new int[]{ 128590,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 331))); // man pouting: light skin tone
+		trie.insert(new int[]{ 128590,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 331))); // man pouting: light skin tone
+		trie.insert(new int[]{ 128589,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 463))); // person frowning: light skin tone
+		trie.insert(new int[]{ 128589,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 595))); // woman frowning: light skin tone
+		trie.insert(new int[]{ 128589,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 595))); // woman frowning: light skin tone
+		trie.insert(new int[]{ 128589,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 529))); // man frowning: light skin tone
+		trie.insert(new int[]{ 128589,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 529))); // man frowning: light skin tone
+		trie.insert(new int[]{ 128135,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 793, 793))); // person getting haircut: light skin tone
+		trie.insert(new int[]{ 128135,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 67))); // woman getting haircut: light skin tone
+		trie.insert(new int[]{ 128135,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 67))); // woman getting haircut: light skin tone
+		trie.insert(new int[]{ 128135,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 1))); // man getting haircut: light skin tone
+		trie.insert(new int[]{ 128135,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 1))); // man getting haircut: light skin tone
+		trie.insert(new int[]{ 128134,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 133))); // person getting massage: light skin tone
+		trie.insert(new int[]{ 128134,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 265))); // woman getting massage: light skin tone
+		trie.insert(new int[]{ 128134,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 265))); // woman getting massage: light skin tone
+		trie.insert(new int[]{ 128134,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 859, 199))); // man getting massage: light skin tone
+		trie.insert(new int[]{ 128134,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 859, 199))); // man getting massage: light skin tone
+		trie.insert(new int[]{ 129494,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 331, 1))); // person in steamy room: light skin tone
+		trie.insert(new int[]{ 129494,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 133))); // woman in steamy room: light skin tone
+		trie.insert(new int[]{ 129494,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 133))); // woman in steamy room: light skin tone
+		trie.insert(new int[]{ 129494,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 67))); // man in steamy room: light skin tone
+		trie.insert(new int[]{ 129494,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 67))); // man in steamy room: light skin tone
+		trie.insert(new int[]{ 128133,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 331))); // nail polish: light skin tone
+		trie.insert(new int[]{ 129331,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 133))); // selfie: light skin tone
+		trie.insert(new int[]{ 128131,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 859, 397))); // woman dancing: light skin tone
+		trie.insert(new int[]{ 128378,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 265, 793))); // man dancing: light skin tone
+		trie.insert(new int[]{ 128111,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 331))); // women with bunny ears
+		trie.insert(new int[]{ 128111,9792 }, new ParseResult(3, new SpriteCoordinates(1, 5, 925, 331))); // women with bunny ears
+		trie.insert(new int[]{ 128372,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 529, 793))); // man in suit levitating: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 133))); // person in manual wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,129469 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 133))); // person in manual wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 925))); // woman in manual wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129469 }, new ParseResult(6, new SpriteCoordinates(1, 5, 463, 925))); // woman in manual wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129469 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 595))); // man in manual wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129469 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1057, 595))); // man in manual wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 199))); // person in motorized wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,129468 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 199))); // person in motorized wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 925))); // woman in motorized wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129468 }, new ParseResult(6, new SpriteCoordinates(1, 5, 529, 925))); // woman in motorized wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129468 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 661))); // man in motorized wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129468 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1057, 661))); // man in motorized wheelchair: medium-dark skin tone
+		trie.insert(new int[]{ 128694,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 727, 1))); // person walking: medium-dark skin tone
+		trie.insert(new int[]{ 128694,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 133))); // woman walking: medium-dark skin tone
+		trie.insert(new int[]{ 128694,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 133))); // woman walking: medium-dark skin tone
+		trie.insert(new int[]{ 128694,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 67))); // man walking: medium-dark skin tone
+		trie.insert(new int[]{ 128694,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 67))); // man walking: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 5, 397, 265))); // person with probing cane: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,129455 }, new ParseResult(6, new SpriteCoordinates(1, 5, 397, 265))); // person with probing cane: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 5, 595, 925))); // woman with probing cane: medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,129455 }, new ParseResult(6, new SpriteCoordinates(1, 5, 595, 925))); // woman with probing cane: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129455 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 727))); // man with probing cane: medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,129455 }, new ParseResult(6, new SpriteCoordinates(1, 5, 1057, 727))); // man with probing cane: medium-dark skin tone
+		trie.insert(new int[]{ 129486,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 199, 529))); // person kneeling: medium-dark skin tone
+		trie.insert(new int[]{ 129486,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 331, 529))); // woman kneeling: medium-dark skin tone
+		trie.insert(new int[]{ 129486,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 331, 529))); // woman kneeling: medium-dark skin tone
+		trie.insert(new int[]{ 129486,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 265, 529))); // man kneeling: medium-dark skin tone
+		trie.insert(new int[]{ 129486,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 265, 529))); // man kneeling: medium-dark skin tone
+		trie.insert(new int[]{ 127939,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 1123))); // person running: medium-dark skin tone
+		trie.insert(new int[]{ 127939,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 793, 1123))); // woman running: medium-dark skin tone
+		trie.insert(new int[]{ 127939,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 793, 1123))); // woman running: medium-dark skin tone
+		trie.insert(new int[]{ 127939,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 727, 1123))); // man running: medium-dark skin tone
+		trie.insert(new int[]{ 127939,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 727, 1123))); // man running: medium-dark skin tone
+		trie.insert(new int[]{ 129485,127998 }, new ParseResult(4, new SpriteCoordinates(1, 5, 397, 529))); // person standing: medium-dark skin tone
+		trie.insert(new int[]{ 129485,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 529, 529))); // woman standing: medium-dark skin tone
+		trie.insert(new int[]{ 129485,127998,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 529, 529))); // woman standing: medium-dark skin tone
+		trie.insert(new int[]{ 129485,127998,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 463, 529))); // man standing: medium-dark skin tone
+		trie.insert(new int[]{ 129485,127998,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 463, 529))); // man standing: medium-dark skin tone
+		trie.insert(new int[]{ 129489,127995,8205,129309,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1, 463))); // people holding hands: light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127995,129309,129489,127998 }, new ParseResult(10, new SpriteCoordinates(1, 5, 1, 463))); // people holding hands: light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127996,8205,129309,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 5, 265, 397))); // people holding hands: medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127996,129309,129489,127999 }, new ParseResult(10, new SpriteCoordinates(1, 5, 265, 397))); // people holding hands: medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,129309,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 5, 397, 331))); // people holding hands: medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127998,129309,129489,127995 }, new ParseResult(10, new SpriteCoordinates(1, 5, 397, 331))); // people holding hands: medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127999,8205,129309,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 331, 331))); // people holding hands: dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127999,129309,129489,127996 }, new ParseResult(10, new SpriteCoordinates(1, 5, 331, 331))); // people holding hands: dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 199, 991))); // woman and man holding hands: light skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127995,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 5, 199, 991))); // woman and man holding hands: light skin tone, medium light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 5, 991, 397))); // woman and man holding hands: medium light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128104,127997 }, new ParseResult(10, new SpriteCoordinates(1, 5, 991, 397))); // woman and man holding hands: medium light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 991, 1))); // woman and man holding hands: medium skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 5, 991, 1))); // woman and man holding hands: medium skin tone, medium dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 5, 727, 925))); // woman and man holding hands: medium dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 5, 727, 925))); // woman and man holding hands: medium dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128109 }, new ParseResult(2, new SpriteCoordinates(1, 5, 925, 595))); // women holding hands
+		trie.insert(new int[]{ 128105,127996,8205,129309,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 5, 991, 331))); // women holding hands: medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127996,129309,128105,127995 }, new ParseResult(10, new SpriteCoordinates(1, 5, 991, 331))); // women holding hands: medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,129309,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 925, 925))); // women holding hands: medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,129309,128105,127996 }, new ParseResult(10, new SpriteCoordinates(1, 5, 925, 925))); // women holding hands: medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,129309,8205,128105,127997 }, new ParseResult(12, new SpriteCoordinates(1, 5, 661, 925))); // women holding hands: medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127998,129309,128105,127997 }, new ParseResult(10, new SpriteCoordinates(1, 5, 661, 925))); // women holding hands: medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,8205,129309,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 133, 925))); // women holding hands: dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,129309,128105,127998 }, new ParseResult(10, new SpriteCoordinates(1, 5, 133, 925))); // women holding hands: dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127995,8205,129309,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 727, 1057))); // men holding hands: light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127995,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 5, 727, 1057))); // men holding hands: light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127996,8205,129309,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 5, 67, 1057))); // men holding hands: medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127996,129309,128104,127999 }, new ParseResult(10, new SpriteCoordinates(1, 5, 67, 1057))); // men holding hands: medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,129309,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1057, 793))); // men holding hands: medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127998,129309,128104,127995 }, new ParseResult(10, new SpriteCoordinates(1, 5, 1057, 793))); // men holding hands: medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127999,8205,129309,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1057, 397))); // men holding hands: dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127999,129309,128104,127996 }, new ParseResult(10, new SpriteCoordinates(1, 5, 1057, 397))); // men holding hands: dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,129489,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 397, 397))); // couple with heart: person, person, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127995,10084,129489,127996 }, new ParseResult(9, new SpriteCoordinates(1, 5, 397, 397))); // couple with heart: person, person, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,129489,127997 }, new ParseResult(12, new SpriteCoordinates(1, 5, 133, 397))); // couple with heart: person, person, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127996,10084,129489,127997 }, new ParseResult(9, new SpriteCoordinates(1, 5, 133, 397))); // couple with heart: person, person, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1, 397))); // couple with heart: person, person, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127997,10084,129489,127998 }, new ParseResult(9, new SpriteCoordinates(1, 5, 1, 397))); // couple with heart: person, person, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 5, 397, 1))); // couple with heart: person, person, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 129489,127998,10084,129489,127999 }, new ParseResult(9, new SpriteCoordinates(1, 5, 397, 1))); // couple with heart: person, person, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,8205,10084,65039,8205,128104 }, new ParseResult(8, new SpriteCoordinates(1, 5, 925, 661))); // couple with heart: woman, man
+		trie.insert(new int[]{ 128105,10084,128104 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 661))); // couple with heart: woman, man
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128104,127995 }, new ParseResult(12, new SpriteCoordinates(1, 5, 991, 265))); // couple with heart: woman, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128104,127995 }, new ParseResult(9, new SpriteCoordinates(1, 5, 991, 265))); // couple with heart: woman, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 859, 925))); // couple with heart: woman, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 5, 859, 925))); // couple with heart: woman, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 5, 397, 925))); // couple with heart: woman, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 5, 397, 925))); // couple with heart: woman, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 67, 925))); // couple with heart: woman, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 5, 67, 925))); // couple with heart: woman, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128105,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 991, 661))); // couple with heart: woman, woman, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128105,127998 }, new ParseResult(9, new SpriteCoordinates(1, 5, 991, 661))); // couple with heart: woman, woman, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128105,127999 }, new ParseResult(12, new SpriteCoordinates(1, 5, 991, 199))); // couple with heart: woman, woman, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128105,127999 }, new ParseResult(9, new SpriteCoordinates(1, 5, 991, 199))); // couple with heart: woman, woman, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128105,127995 }, new ParseResult(12, new SpriteCoordinates(1, 5, 331, 925))); // couple with heart: woman, woman, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128105,127995 }, new ParseResult(9, new SpriteCoordinates(1, 5, 331, 925))); // couple with heart: woman, woman, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128105,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1, 925))); // couple with heart: woman, woman, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128105,127996 }, new ParseResult(9, new SpriteCoordinates(1, 5, 1, 925))); // couple with heart: woman, woman, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127995,8205,10084,65039,8205,128104,127996 }, new ParseResult(12, new SpriteCoordinates(1, 5, 199, 1057))); // couple with heart: man, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127995,10084,128104,127996 }, new ParseResult(9, new SpriteCoordinates(1, 5, 199, 1057))); // couple with heart: man, man, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128104,127997 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1, 1057))); // couple with heart: man, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128104,127997 }, new ParseResult(9, new SpriteCoordinates(1, 5, 1, 1057))); // couple with heart: man, man, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128104,127998 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1057, 925))); // couple with heart: man, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128104,127998 }, new ParseResult(9, new SpriteCoordinates(1, 5, 1057, 925))); // couple with heart: man, man, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128104,127999 }, new ParseResult(12, new SpriteCoordinates(1, 5, 1057, 529))); // couple with heart: man, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128104,127999 }, new ParseResult(9, new SpriteCoordinates(1, 5, 1057, 529))); // couple with heart: man, man, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128143 }, new ParseResult(2, new SpriteCoordinates(1, 5, 727, 793))); // kiss
+		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,128139,8205,129489,127995 }, new ParseResult(15, new SpriteCoordinates(1, 5, 199, 397))); // kiss: person, person, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127996,10084,128139,129489,127995 }, new ParseResult(11, new SpriteCoordinates(1, 5, 199, 397))); // kiss: person, person, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 129489,127997,8205,10084,65039,8205,128139,8205,129489,127996 }, new ParseResult(15, new SpriteCoordinates(1, 5, 67, 397))); // kiss: person, person, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127997,10084,128139,129489,127996 }, new ParseResult(11, new SpriteCoordinates(1, 5, 67, 397))); // kiss: person, person, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,128139,8205,129489,127997 }, new ParseResult(15, new SpriteCoordinates(1, 5, 397, 67))); // kiss: person, person, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127998,10084,128139,129489,127997 }, new ParseResult(11, new SpriteCoordinates(1, 5, 397, 67))); // kiss: person, person, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 129489,127999,8205,10084,65039,8205,128139,8205,129489,127998 }, new ParseResult(15, new SpriteCoordinates(1, 5, 265, 331))); // kiss: person, person, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 129489,127999,10084,128139,129489,127998 }, new ParseResult(11, new SpriteCoordinates(1, 5, 265, 331))); // kiss: person, person, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 5, 991, 595))); // kiss: woman, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 5, 991, 595))); // kiss: woman, man, light skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128104,127999 }, new ParseResult(15, new SpriteCoordinates(1, 5, 991, 133))); // kiss: woman, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 5, 991, 133))); // kiss: woman, man, medium-light skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 5, 265, 925))); // kiss: woman, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 5, 265, 925))); // kiss: woman, man, medium-dark skin tone, light skin tone
+		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 5, 925, 859))); // kiss: woman, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127999,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 5, 925, 859))); // kiss: woman, man, dark skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,8205,10084,65039,8205,128139,8205,128105,127996 }, new ParseResult(15, new SpriteCoordinates(1, 5, 991, 529))); // kiss: woman, woman, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127995,10084,128139,128105,127996 }, new ParseResult(11, new SpriteCoordinates(1, 5, 991, 529))); // kiss: woman, woman, light skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128105,127996,8205,10084,65039,8205,128139,8205,128105,127997 }, new ParseResult(15, new SpriteCoordinates(1, 5, 991, 67))); // kiss: woman, woman, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127996,10084,128139,128105,127997 }, new ParseResult(11, new SpriteCoordinates(1, 5, 991, 67))); // kiss: woman, woman, medium-light skin tone, medium skin tone
+		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128105,127998 }, new ParseResult(15, new SpriteCoordinates(1, 5, 793, 925))); // kiss: woman, woman, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127997,10084,128139,128105,127998 }, new ParseResult(11, new SpriteCoordinates(1, 5, 793, 925))); // kiss: woman, woman, medium skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128105,127999 }, new ParseResult(15, new SpriteCoordinates(1, 5, 199, 925))); // kiss: woman, woman, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128105,127998,10084,128139,128105,127999 }, new ParseResult(11, new SpriteCoordinates(1, 5, 199, 925))); // kiss: woman, woman, medium-dark skin tone, dark skin tone
+		trie.insert(new int[]{ 128104,8205,10084,65039,8205,128139,8205,128104 }, new ParseResult(11, new SpriteCoordinates(1, 5, 1057, 133))); // kiss: man, man
+		trie.insert(new int[]{ 128104,10084,128139,128104 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1057, 133))); // kiss: man, man
+		trie.insert(new int[]{ 128104,127996,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 5, 1057, 991))); // kiss: man, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127996,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 5, 1057, 991))); // kiss: man, man, medium-light skin tone, light skin tone
+		trie.insert(new int[]{ 128104,127997,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 5, 1057, 859))); // kiss: man, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127997,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 5, 1057, 859))); // kiss: man, man, medium skin tone, medium-light skin tone
+		trie.insert(new int[]{ 128104,127998,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 5, 1057, 463))); // kiss: man, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127998,10084,128139,128104,127997 }, new ParseResult(11, new SpriteCoordinates(1, 5, 1057, 463))); // kiss: man, man, medium-dark skin tone, medium skin tone
+		trie.insert(new int[]{ 128104,127999,8205,10084,65039,8205,128139,8205,128104,127998 }, new ParseResult(15, new SpriteCoordinates(1, 5, 1057, 331))); // kiss: man, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,127999,10084,128139,128104,127998 }, new ParseResult(11, new SpriteCoordinates(1, 5, 1057, 331))); // kiss: man, man, dark skin tone, medium-dark skin tone
+		trie.insert(new int[]{ 128104,8205,128105,8205,128102,8205,128102 }, new ParseResult(11, new SpriteCoordinates(1, 5, 1057, 199))); // family: man, woman, boy, boy
+		trie.insert(new int[]{ 128104,128105,128102,128102 }, new ParseResult(8, new SpriteCoordinates(1, 5, 1057, 199))); // family: man, woman, boy, boy
+		trie.insert(new int[]{ 128105,8205,128105,8205,128103,8205,128103 }, new ParseResult(11, new SpriteCoordinates(1, 5, 925, 727))); // family: woman, woman, girl, girl
+		trie.insert(new int[]{ 128105,128105,128103,128103 }, new ParseResult(8, new SpriteCoordinates(1, 5, 925, 727))); // family: woman, woman, girl, girl
+		trie.insert(new int[]{ 128105,8205,128102 }, new ParseResult(5, new SpriteCoordinates(1, 5, 925, 793))); // family: woman, boy
+		trie.insert(new int[]{ 128105,128102 }, new ParseResult(4, new SpriteCoordinates(1, 5, 925, 793))); // family: woman, boy
+		trie.insert(new int[]{ 128104,8205,128103 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1057, 265))); // family: man, girl
+		trie.insert(new int[]{ 128104,128103 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1057, 265))); // family: man, girl
+		trie.insert(new int[]{ 129509 }, new ParseResult(2, new SpriteCoordinates(1, 5, 67, 133))); // coat
+		trie.insert(new int[]{ 129650 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1, 133))); // briefs
+		trie.insert(new int[]{ 128088 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1123, 859))); // kimono
+		trie.insert(new int[]{ 128094 }, new ParseResult(2, new SpriteCoordinates(1, 5, 1123, 793))); // man’s shoe
+		trie.insert(new int[]{ 129507 }, new ParseResult(2, new SpriteCoordinates(1, 5, 133, 133))); // scarf
+		trie.insert(new int[]{ 129686 }, new ParseResult(2, new SpriteCoordinates(1, 5, 133, 67))); // military helmet
+		trie.insert(new int[]{ 128188 }, new ParseResult(2, new SpriteCoordinates(1, 5, 595, 793))); // briefcase
+		trie.insert(new int[]{ 127746 }, new ParseResult(2, new SpriteCoordinates(1, 5, 991, 1123))); // closed umbrella
 		trie.insert(new int[]{ 128054 }, new ParseResult(2, new SpriteCoordinates(2, 0, 133, 595))); // dog face
 		trie.insert(new int[]{ 128049 }, new ParseResult(2, new SpriteCoordinates(2, 0, 463, 595))); // cat face
 		trie.insert(new int[]{ 128045 }, new ParseResult(2, new SpriteCoordinates(2, 0, 661, 67))); // mouse face
@@ -2640,6 +3246,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 128033 }, new ParseResult(2, new SpriteCoordinates(2, 0, 199, 661))); // blowfish
 		trie.insert(new int[]{ 128032 }, new ParseResult(2, new SpriteCoordinates(2, 0, 265, 661))); // tropical fish
 		trie.insert(new int[]{ 128031 }, new ParseResult(2, new SpriteCoordinates(2, 0, 331, 661))); // fish
+	}
+
+	public static void init5(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129453 }, new ParseResult(2, new SpriteCoordinates(2, 0, 265, 265))); // seal
 		trie.insert(new int[]{ 128044 }, new ParseResult(2, new SpriteCoordinates(2, 0, 661, 133))); // dolphin
 		trie.insert(new int[]{ 128051 }, new ParseResult(2, new SpriteCoordinates(2, 0, 331, 595))); // spouting whale
@@ -3003,9 +3612,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129342,127995,9794 }, new ParseResult(5, new SpriteCoordinates(4, 0, 331, 397))); // man playing handball: light skin tone
 		trie.insert(new int[]{ 129342,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(4, 0, 133, 397))); // man playing handball: medium skin tone
 		trie.insert(new int[]{ 129342,127997,9794 }, new ParseResult(5, new SpriteCoordinates(4, 0, 133, 397))); // man playing handball: medium skin tone
-	}
-
-	public static void init5(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129342,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(4, 0, 397, 331))); // man playing handball: dark skin tone
 		trie.insert(new int[]{ 129342,127999,9794 }, new ParseResult(5, new SpriteCoordinates(4, 0, 397, 331))); // man playing handball: dark skin tone
 		trie.insert(new int[]{ 127948,127995 }, new ParseResult(4, new SpriteCoordinates(4, 0, 331, 661))); // person golfing: light skin tone
@@ -3288,6 +3894,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129496,127998 }, new ParseResult(4, new SpriteCoordinates(4, 1, 133, 265))); // person in lotus position: medium-dark skin tone
 		trie.insert(new int[]{ 129496,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(4, 1, 67, 265))); // woman in lotus position
 		trie.insert(new int[]{ 129496,9792 }, new ParseResult(3, new SpriteCoordinates(4, 1, 67, 265))); // woman in lotus position
+	}
+
+	public static void init6(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129496,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(4, 1, 331, 133))); // woman in lotus position: medium-light skin tone
 		trie.insert(new int[]{ 129496,127996,9792 }, new ParseResult(5, new SpriteCoordinates(4, 1, 331, 133))); // woman in lotus position: medium-light skin tone
 		trie.insert(new int[]{ 129496,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(4, 1, 265, 265))); // woman in lotus position: medium-dark skin tone
@@ -3591,93 +4200,93 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127753 }, new ParseResult(2, new SpriteCoordinates(5, 0, 661, 661))); // bridge at night
 		trie.insert(new int[]{ 127745 }, new ParseResult(2, new SpriteCoordinates(5, 0, 727, 331))); // foggy
 		trie.insert(new int[]{ 8986 }, new ParseResult(1, new SpriteCoordinates(6, 0, 1, 265))); // watch
-		trie.insert(new int[]{ 128241 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 727))); // mobile phone
-		trie.insert(new int[]{ 128242 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 727))); // mobile phone with arrow
-		trie.insert(new int[]{ 128187 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 859))); // laptop computer
+		trie.insert(new int[]{ 128241 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 265))); // mobile phone
+		trie.insert(new int[]{ 128242 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 199))); // mobile phone with arrow
+		trie.insert(new int[]{ 128187 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 133))); // laptop computer
 		trie.insert(new int[]{ 9000,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 133))); // keyboard
 		trie.insert(new int[]{ 9000 }, new ParseResult(1, new SpriteCoordinates(6, 0, 265, 133))); // keyboard
-		trie.insert(new int[]{ 128421,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 265))); // desktop computer
-		trie.insert(new int[]{ 128421 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 265))); // desktop computer
-		trie.insert(new int[]{ 128424,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 199))); // printer
-		trie.insert(new int[]{ 128424 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 199))); // printer
-		trie.insert(new int[]{ 128433,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 133))); // computer mouse
-		trie.insert(new int[]{ 128433 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 133))); // computer mouse
-		trie.insert(new int[]{ 128434,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 67))); // trackball
-		trie.insert(new int[]{ 128434 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 67))); // trackball
-		trie.insert(new int[]{ 128377,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 1, 661))); // joystick
-		trie.insert(new int[]{ 128377 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 661))); // joystick
-		trie.insert(new int[]{ 128476,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 199, 595))); // clamp
-		trie.insert(new int[]{ 128476 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 595))); // clamp
-		trie.insert(new int[]{ 128189 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 859))); // computer disk
-		trie.insert(new int[]{ 128190 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 859))); // floppy disk
-		trie.insert(new int[]{ 128191 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 859))); // optical disk
-		trie.insert(new int[]{ 128192 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 859))); // dvd
-		trie.insert(new int[]{ 128252 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 727))); // videocassette
-		trie.insert(new int[]{ 128247 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 727))); // camera
-		trie.insert(new int[]{ 128248 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 727))); // camera with flash
-		trie.insert(new int[]{ 128249 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 727))); // video camera
-		trie.insert(new int[]{ 127909 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 925))); // movie camera
-		trie.insert(new int[]{ 128253,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 199, 727))); // film projector
-		trie.insert(new int[]{ 128253 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 727))); // film projector
-		trie.insert(new int[]{ 127902,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 133, 925))); // film frames
-		trie.insert(new int[]{ 127902 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 925))); // film frames
-		trie.insert(new int[]{ 128222 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 793))); // telephone receiver
+		trie.insert(new int[]{ 128421,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 595))); // desktop computer
+		trie.insert(new int[]{ 128421 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 595))); // desktop computer
+		trie.insert(new int[]{ 128424,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 529))); // printer
+		trie.insert(new int[]{ 128424 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 529))); // printer
+		trie.insert(new int[]{ 128433,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 463))); // computer mouse
+		trie.insert(new int[]{ 128433 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 463))); // computer mouse
+		trie.insert(new int[]{ 128434,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 397))); // trackball
+		trie.insert(new int[]{ 128434 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 397))); // trackball
+		trie.insert(new int[]{ 128377,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 331, 661))); // joystick
+		trie.insert(new int[]{ 128377 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 661))); // joystick
+		trie.insert(new int[]{ 128476,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 595))); // clamp
+		trie.insert(new int[]{ 128476 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 595))); // clamp
+		trie.insert(new int[]{ 128189 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 67))); // computer disk
+		trie.insert(new int[]{ 128190 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 1))); // floppy disk
+		trie.insert(new int[]{ 128191 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 859))); // optical disk
+		trie.insert(new int[]{ 128192 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 859))); // dvd
+		trie.insert(new int[]{ 128252 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 727))); // videocassette
+		trie.insert(new int[]{ 128247 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 133))); // camera
+		trie.insert(new int[]{ 128248 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 67))); // camera with flash
+		trie.insert(new int[]{ 128249 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 1))); // video camera
+		trie.insert(new int[]{ 127909 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 925))); // movie camera
+		trie.insert(new int[]{ 128253,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 727))); // film projector
+		trie.insert(new int[]{ 128253 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 727))); // film projector
+		trie.insert(new int[]{ 127902,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 463, 925))); // film frames
+		trie.insert(new int[]{ 127902 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 925))); // film frames
+		trie.insert(new int[]{ 128222 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 793))); // telephone receiver
 		trie.insert(new int[]{ 9742,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 199))); // telephone
 		trie.insert(new int[]{ 9742 }, new ParseResult(1, new SpriteCoordinates(6, 0, 67, 199))); // telephone
-		trie.insert(new int[]{ 128223 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 793))); // pager
-		trie.insert(new int[]{ 128224 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 793))); // fax machine
-		trie.insert(new int[]{ 128250 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 727))); // television
-		trie.insert(new int[]{ 128251 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 727))); // radio
-		trie.insert(new int[]{ 127897,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 331, 925))); // studio microphone
-		trie.insert(new int[]{ 127897 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 925))); // studio microphone
-		trie.insert(new int[]{ 127898,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 265, 925))); // level slider
-		trie.insert(new int[]{ 127898 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 925))); // level slider
-		trie.insert(new int[]{ 127899,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 199, 925))); // control knobs
-		trie.insert(new int[]{ 127899 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 925))); // control knobs
+		trie.insert(new int[]{ 128223 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 793))); // pager
+		trie.insert(new int[]{ 128224 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 793))); // fax machine
+		trie.insert(new int[]{ 128250 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 727))); // television
+		trie.insert(new int[]{ 128251 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 727))); // radio
+		trie.insert(new int[]{ 127897,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 925))); // studio microphone
+		trie.insert(new int[]{ 127897 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 925))); // studio microphone
+		trie.insert(new int[]{ 127898,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 595, 925))); // level slider
+		trie.insert(new int[]{ 127898 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 925))); // level slider
+		trie.insert(new int[]{ 127899,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 925))); // control knobs
+		trie.insert(new int[]{ 127899 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 925))); // control knobs
 		trie.insert(new int[]{ 129517 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 463))); // compass
 		trie.insert(new int[]{ 9201,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 1))); // stopwatch
 		trie.insert(new int[]{ 9201 }, new ParseResult(1, new SpriteCoordinates(6, 0, 265, 1))); // stopwatch
 		trie.insert(new int[]{ 9202,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 199))); // timer clock
 		trie.insert(new int[]{ 9202 }, new ParseResult(1, new SpriteCoordinates(6, 0, 199, 199))); // timer clock
 		trie.insert(new int[]{ 9200 }, new ParseResult(1, new SpriteCoordinates(6, 0, 265, 67))); // alarm clock
-		trie.insert(new int[]{ 128368,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 133, 661))); // mantelpiece clock
-		trie.insert(new int[]{ 128368 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 661))); // mantelpiece clock
+		trie.insert(new int[]{ 128368,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 463, 661))); // mantelpiece clock
+		trie.insert(new int[]{ 128368 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 661))); // mantelpiece clock
 		trie.insert(new int[]{ 8987 }, new ParseResult(1, new SpriteCoordinates(6, 0, 265, 199))); // hourglass done
 		trie.insert(new int[]{ 9203 }, new ParseResult(1, new SpriteCoordinates(6, 0, 133, 199))); // hourglass not done
-		trie.insert(new int[]{ 128225 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 793))); // satellite antenna
-		trie.insert(new int[]{ 128267 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 727))); // battery
-		trie.insert(new int[]{ 128268 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 727))); // electric plug
-		trie.insert(new int[]{ 128161 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 397))); // light bulb
-		trie.insert(new int[]{ 128294 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 67))); // flashlight
-		trie.insert(new int[]{ 128367,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 199, 661))); // candle
-		trie.insert(new int[]{ 128367 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 661))); // candle
+		trie.insert(new int[]{ 128225 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 793))); // satellite antenna
+		trie.insert(new int[]{ 128267 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 727))); // battery
+		trie.insert(new int[]{ 128268 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 727))); // electric plug
+		trie.insert(new int[]{ 128161 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 727))); // light bulb
+		trie.insert(new int[]{ 128294 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 397))); // flashlight
+		trie.insert(new int[]{ 128367,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 661))); // candle
+		trie.insert(new int[]{ 128367 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 661))); // candle
 		trie.insert(new int[]{ 129684 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 1))); // diya lamp
 		trie.insert(new int[]{ 129519 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 463))); // fire extinguisher
 		trie.insert(new int[]{ 128738,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 265))); // oil drum
 		trie.insert(new int[]{ 128738 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 265))); // oil drum
-		trie.insert(new int[]{ 128184 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 859))); // money with wings
-		trie.insert(new int[]{ 128181 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 67))); // dollar banknote
-		trie.insert(new int[]{ 128180 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 133))); // yen banknote
-		trie.insert(new int[]{ 128182 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 1))); // euro banknote
-		trie.insert(new int[]{ 128183 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 859))); // pound banknote
+		trie.insert(new int[]{ 128184 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 199))); // money with wings
+		trie.insert(new int[]{ 128181 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 397))); // dollar banknote
+		trie.insert(new int[]{ 128180 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 463))); // yen banknote
+		trie.insert(new int[]{ 128182 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 331))); // euro banknote
+		trie.insert(new int[]{ 128183 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 265))); // pound banknote
 		trie.insert(new int[]{ 129689 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 331))); // coin
-		trie.insert(new int[]{ 128176 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 265))); // money bag
-		trie.insert(new int[]{ 128179 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 199))); // credit card
-		trie.insert(new int[]{ 128142 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 463))); // gem stone
+		trie.insert(new int[]{ 128176 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 595))); // money bag
+		trie.insert(new int[]{ 128179 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 529))); // credit card
+		trie.insert(new int[]{ 128142 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 793))); // gem stone
 		trie.insert(new int[]{ 9878,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 67))); // balance scale
 		trie.insert(new int[]{ 9878 }, new ParseResult(1, new SpriteCoordinates(6, 0, 199, 67))); // balance scale
 		trie.insert(new int[]{ 129692 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 331))); // ladder
 		trie.insert(new int[]{ 129520 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 463))); // toolbox
 		trie.insert(new int[]{ 129691 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 331))); // screwdriver
-		trie.insert(new int[]{ 128295 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 1))); // wrench
-		trie.insert(new int[]{ 128296 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 661))); // hammer
+		trie.insert(new int[]{ 128295 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 331))); // wrench
+		trie.insert(new int[]{ 128296 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 265))); // hammer
 		trie.insert(new int[]{ 9874,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 199))); // hammer and pick
 		trie.insert(new int[]{ 9874 }, new ParseResult(1, new SpriteCoordinates(6, 0, 1, 199))); // hammer and pick
 		trie.insert(new int[]{ 128736,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 397))); // hammer and wrench
 		trie.insert(new int[]{ 128736 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 397))); // hammer and wrench
 		trie.insert(new int[]{ 9935,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 67))); // pick
 		trie.insert(new int[]{ 9935 }, new ParseResult(1, new SpriteCoordinates(6, 0, 133, 67))); // pick
-		trie.insert(new int[]{ 128297 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 661))); // nut and bolt
+		trie.insert(new int[]{ 128297 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 199))); // nut and bolt
 		trie.insert(new int[]{ 9881,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 133))); // gear
 		trie.insert(new int[]{ 9881 }, new ParseResult(1, new SpriteCoordinates(6, 0, 133, 133))); // gear
 		trie.insert(new int[]{ 129521 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 463))); // brick
@@ -3686,68 +4295,65 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129693 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 331))); // hook
 		trie.insert(new int[]{ 129698 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 67))); // knot
 		trie.insert(new int[]{ 129522 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 463))); // magnet
-		trie.insert(new int[]{ 128299 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 661))); // pistol
-		trie.insert(new int[]{ 128163 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 331))); // bomb
+		trie.insert(new int[]{ 128299 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 67))); // pistol
+		trie.insert(new int[]{ 128163 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 661))); // bomb
 		trie.insert(new int[]{ 129512 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 67))); // firecracker
 		trie.insert(new int[]{ 129683 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 67))); // axe
 		trie.insert(new int[]{ 129690 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 331))); // carpentry saw
-		trie.insert(new int[]{ 128298 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 661))); // kitchen knife
-		trie.insert(new int[]{ 128481,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 1, 595))); // dagger
-		trie.insert(new int[]{ 128481 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 595))); // dagger
+		trie.insert(new int[]{ 128298 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 133))); // kitchen knife
+		trie.insert(new int[]{ 128481,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 331, 595))); // dagger
+		trie.insert(new int[]{ 128481 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 595))); // dagger
 		trie.insert(new int[]{ 9876,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 133))); // crossed swords
 		trie.insert(new int[]{ 9876 }, new ParseResult(1, new SpriteCoordinates(6, 0, 199, 133))); // crossed swords
 		trie.insert(new int[]{ 128737,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 331))); // shield
 		trie.insert(new int[]{ 128737 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 331))); // shield
-		trie.insert(new int[]{ 128684 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 397))); // cigarette
+		trie.insert(new int[]{ 128684 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 595))); // cigarette
 		trie.insert(new int[]{ 9904,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 133))); // coffin
 		trie.insert(new int[]{ 9904 }, new ParseResult(1, new SpriteCoordinates(6, 0, 67, 133))); // coffin
 		trie.insert(new int[]{ 129702 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 265))); // headstone
 		trie.insert(new int[]{ 9905,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 133))); // funeral urn
 		trie.insert(new int[]{ 9905 }, new ParseResult(1, new SpriteCoordinates(6, 0, 1, 133))); // funeral urn
-		trie.insert(new int[]{ 127994 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 793))); // amphora
+		trie.insert(new int[]{ 127994 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 925))); // amphora
 		trie.insert(new int[]{ 129668 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 397))); // magic wand
-		trie.insert(new int[]{ 128302 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 661))); // crystal ball
-		trie.insert(new int[]{ 128255 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 727))); // prayer beads
+		trie.insert(new int[]{ 128302 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 661))); // crystal ball
+		trie.insert(new int[]{ 128255 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 727))); // prayer beads
 		trie.insert(new int[]{ 129535 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 397))); // nazar amulet
-		trie.insert(new int[]{ 128136 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 727))); // barber pole
+		trie.insert(new int[]{ 128136 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 925))); // barber pole
 		trie.insert(new int[]{ 9879,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 1))); // alembic
 		trie.insert(new int[]{ 9879 }, new ParseResult(1, new SpriteCoordinates(6, 0, 199, 1))); // alembic
-		trie.insert(new int[]{ 128301 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 661))); // telescope
-		trie.insert(new int[]{ 128300 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 661))); // microscope
-	}
-
-	public static void init6(IntTrie<ParseResult> trie) {
-		trie.insert(new int[]{ 128371,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 67, 661))); // hole
-		trie.insert(new int[]{ 128371 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 661))); // hole
+		trie.insert(new int[]{ 128301 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 661))); // telescope
+		trie.insert(new int[]{ 128300 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 1))); // microscope
+		trie.insert(new int[]{ 128371,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 397, 661))); // hole
+		trie.insert(new int[]{ 128371 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 661))); // hole
 		trie.insert(new int[]{ 129695 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 265))); // window
 		trie.insert(new int[]{ 129657 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 397))); // adhesive bandage
 		trie.insert(new int[]{ 129658 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 397))); // stethoscope
-		trie.insert(new int[]{ 128138 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 595))); // pill
-		trie.insert(new int[]{ 128137 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 661))); // syringe
+		trie.insert(new int[]{ 128138 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 925))); // pill
+		trie.insert(new int[]{ 128137 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 925))); // syringe
 		trie.insert(new int[]{ 129656 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 397))); // drop of blood
 		trie.insert(new int[]{ 129516 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 463))); // dna
 		trie.insert(new int[]{ 129440 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 199))); // microbe
 		trie.insert(new int[]{ 129515 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 463))); // petri dish
 		trie.insert(new int[]{ 129514 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 1))); // test tube
-		trie.insert(new int[]{ 127777,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 925, 925))); // thermometer
-		trie.insert(new int[]{ 127777 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 925))); // thermometer
+		trie.insert(new int[]{ 127777,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 991, 265))); // thermometer
+		trie.insert(new int[]{ 127777 }, new ParseResult(2, new SpriteCoordinates(6, 0, 991, 265))); // thermometer
 		trie.insert(new int[]{ 129700 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 265))); // mouse trap
 		trie.insert(new int[]{ 129529 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 199))); // broom
 		trie.insert(new int[]{ 129530 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 133))); // basket
 		trie.insert(new int[]{ 129697 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 133))); // sewing needle
 		trie.insert(new int[]{ 129531 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 67))); // roll of paper
-		trie.insert(new int[]{ 128701 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 265))); // toilet
+		trie.insert(new int[]{ 128701 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 595))); // toilet
 		trie.insert(new int[]{ 129696 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 199))); // plunger
 		trie.insert(new int[]{ 129699 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 1))); // bucket
-		trie.insert(new int[]{ 128688 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 331))); // potable water
-		trie.insert(new int[]{ 128703 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 199))); // shower
-		trie.insert(new int[]{ 128705 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 529))); // bathtub
-		trie.insert(new int[]{ 128704 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 529))); // person taking bath
-		trie.insert(new int[]{ 128704,127995 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 133))); // person taking bath: light skin tone
-		trie.insert(new int[]{ 128704,127996 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 67))); // person taking bath: medium-light skin tone
-		trie.insert(new int[]{ 128704,127997 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 1))); // person taking bath: medium skin tone
-		trie.insert(new int[]{ 128704,127998 }, new ParseResult(4, new SpriteCoordinates(6, 0, 529, 529))); // person taking bath: medium-dark skin tone
-		trie.insert(new int[]{ 128704,127999 }, new ParseResult(4, new SpriteCoordinates(6, 0, 463, 529))); // person taking bath: dark skin tone
+		trie.insert(new int[]{ 128688 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 595))); // potable water
+		trie.insert(new int[]{ 128703 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 529))); // shower
+		trie.insert(new int[]{ 128705 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 67))); // bathtub
+		trie.insert(new int[]{ 128704 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 133))); // person taking bath
+		trie.insert(new int[]{ 128704,127995 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 463))); // person taking bath: light skin tone
+		trie.insert(new int[]{ 128704,127996 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 397))); // person taking bath: medium-light skin tone
+		trie.insert(new int[]{ 128704,127997 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 331))); // person taking bath: medium skin tone
+		trie.insert(new int[]{ 128704,127998 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 265))); // person taking bath: medium-dark skin tone
+		trie.insert(new int[]{ 128704,127999 }, new ParseResult(4, new SpriteCoordinates(6, 0, 595, 199))); // person taking bath: dark skin tone
 		trie.insert(new int[]{ 129701 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 265))); // toothbrush
 		trie.insert(new int[]{ 129532 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 1))); // soap
 		trie.insert(new int[]{ 129682 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 133))); // razor
@@ -3755,351 +4361,363 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129524 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 397))); // lotion bottle
 		trie.insert(new int[]{ 128718,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 67, 529))); // bellhop bell
 		trie.insert(new int[]{ 128718 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 529))); // bellhop bell
-		trie.insert(new int[]{ 128273 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 397))); // key
-		trie.insert(new int[]{ 128477,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 133, 595))); // old key
-		trie.insert(new int[]{ 128477 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 595))); // old key
-		trie.insert(new int[]{ 128682 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 463))); // door
+		trie.insert(new int[]{ 128273 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 727))); // key
+		trie.insert(new int[]{ 128477,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 463, 595))); // old key
+		trie.insert(new int[]{ 128477 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 595))); // old key
+		trie.insert(new int[]{ 128682 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 595))); // door
 		trie.insert(new int[]{ 129681 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 199))); // chair
 		trie.insert(new int[]{ 129694 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 331))); // mirror
-		trie.insert(new int[]{ 128715,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 265, 529))); // couch and lamp
-		trie.insert(new int[]{ 128715 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 529))); // couch and lamp
+		trie.insert(new int[]{ 128715,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 595, 1))); // couch and lamp
+		trie.insert(new int[]{ 128715 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 1))); // couch and lamp
 		trie.insert(new int[]{ 128719,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 1, 529))); // bed
 		trie.insert(new int[]{ 128719 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 529))); // bed
 		trie.insert(new int[]{ 128716 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 529))); // person in bed
+		trie.insert(new int[]{ 128716,127995 }, new ParseResult(4, new SpriteCoordinates(6, 0, 529, 529))); // person in bed: light skin tone
+		trie.insert(new int[]{ 128716,127996 }, new ParseResult(4, new SpriteCoordinates(6, 0, 463, 529))); // person in bed: medium-light skin tone
+		trie.insert(new int[]{ 128716,127997 }, new ParseResult(4, new SpriteCoordinates(6, 0, 397, 529))); // person in bed: medium skin tone
+		trie.insert(new int[]{ 128716,127998 }, new ParseResult(4, new SpriteCoordinates(6, 0, 331, 529))); // person in bed: medium-dark skin tone
+		trie.insert(new int[]{ 128716,127999 }, new ParseResult(4, new SpriteCoordinates(6, 0, 265, 529))); // person in bed: dark skin tone
 		trie.insert(new int[]{ 129528 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 265))); // teddy bear
-		trie.insert(new int[]{ 128444,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 1))); // framed picture
-		trie.insert(new int[]{ 128444 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 1))); // framed picture
+		trie.insert(new int[]{ 128444,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 331))); // framed picture
+		trie.insert(new int[]{ 128444 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 331))); // framed picture
 		trie.insert(new int[]{ 128717,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 133, 529))); // shopping bags
 		trie.insert(new int[]{ 128717 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 529))); // shopping bags
 		trie.insert(new int[]{ 128722 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 463))); // shopping cart
-		trie.insert(new int[]{ 127873 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 925))); // wrapped gift
-		trie.insert(new int[]{ 127880 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 925))); // balloon
-		trie.insert(new int[]{ 127887 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 925))); // carp streamer
-		trie.insert(new int[]{ 127872 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 925))); // ribbon
-		trie.insert(new int[]{ 127882 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 925))); // confetti ball
-		trie.insert(new int[]{ 127881 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 925))); // party popper
+		trie.insert(new int[]{ 127873 }, new ParseResult(2, new SpriteCoordinates(6, 0, 991, 133))); // wrapped gift
+		trie.insert(new int[]{ 127880 }, new ParseResult(2, new SpriteCoordinates(6, 0, 991, 67))); // balloon
+		trie.insert(new int[]{ 127887 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 925))); // carp streamer
+		trie.insert(new int[]{ 127872 }, new ParseResult(2, new SpriteCoordinates(6, 0, 991, 199))); // ribbon
+		trie.insert(new int[]{ 127882 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 925))); // confetti ball
+		trie.insert(new int[]{ 127881 }, new ParseResult(2, new SpriteCoordinates(6, 0, 991, 1))); // party popper
 		trie.insert(new int[]{ 129669 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 331))); // piñata
 		trie.insert(new int[]{ 129670 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 265))); // nesting dolls
-		trie.insert(new int[]{ 127886 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 925))); // Japanese dolls
-		trie.insert(new int[]{ 127982 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 925))); // red paper lantern
-		trie.insert(new int[]{ 127888 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 925))); // wind chime
+		trie.insert(new int[]{ 127886 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 925))); // Japanese dolls
+		trie.insert(new int[]{ 127982 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 925))); // red paper lantern
+		trie.insert(new int[]{ 127888 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 925))); // wind chime
 		trie.insert(new int[]{ 129511 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 133))); // red envelope
 		trie.insert(new int[]{ 9993,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 67))); // envelope
 		trie.insert(new int[]{ 9993 }, new ParseResult(1, new SpriteCoordinates(6, 0, 1, 67))); // envelope
-		trie.insert(new int[]{ 128233 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 463))); // envelope with arrow
-		trie.insert(new int[]{ 128232 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 529))); // incoming envelope
-		trie.insert(new int[]{ 128231 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 595))); // e-mail
-		trie.insert(new int[]{ 128140 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 529))); // love letter
-		trie.insert(new int[]{ 128229 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 727))); // inbox tray
-		trie.insert(new int[]{ 128228 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 793))); // outbox tray
-		trie.insert(new int[]{ 128230 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 661))); // package
-		trie.insert(new int[]{ 127991,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 925, 859))); // label
-		trie.insert(new int[]{ 127991 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 859))); // label
-		trie.insert(new int[]{ 128234 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 397))); // closed mailbox with lowered flag
-		trie.insert(new int[]{ 128235 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 331))); // closed mailbox with raised flag
-		trie.insert(new int[]{ 128236 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 265))); // open mailbox with raised flag
-		trie.insert(new int[]{ 128237 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 199))); // open mailbox with lowered flag
-		trie.insert(new int[]{ 128238 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 133))); // postbox
-		trie.insert(new int[]{ 128239 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 67))); // postal horn
+		trie.insert(new int[]{ 128233 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 793))); // envelope with arrow
+		trie.insert(new int[]{ 128232 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 793))); // incoming envelope
+		trie.insert(new int[]{ 128231 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 793))); // e-mail
+		trie.insert(new int[]{ 128140 }, new ParseResult(2, new SpriteCoordinates(6, 0, 925, 859))); // love letter
+		trie.insert(new int[]{ 128229 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 793))); // inbox tray
+		trie.insert(new int[]{ 128228 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 793))); // outbox tray
+		trie.insert(new int[]{ 128230 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 793))); // package
+		trie.insert(new int[]{ 127991,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 265, 925))); // label
+		trie.insert(new int[]{ 127991 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 925))); // label
+		trie.insert(new int[]{ 128234 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 727))); // closed mailbox with lowered flag
+		trie.insert(new int[]{ 128235 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 661))); // closed mailbox with raised flag
+		trie.insert(new int[]{ 128236 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 595))); // open mailbox with raised flag
+		trie.insert(new int[]{ 128237 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 529))); // open mailbox with lowered flag
+		trie.insert(new int[]{ 128238 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 463))); // postbox
+		trie.insert(new int[]{ 128239 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 397))); // postal horn
 		trie.insert(new int[]{ 129703 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 265))); // placard
-		trie.insert(new int[]{ 128220 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 793))); // scroll
-		trie.insert(new int[]{ 128195 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 859))); // page with curl
-		trie.insert(new int[]{ 128196 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 859))); // page facing up
-		trie.insert(new int[]{ 128209 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 199))); // bookmark tabs
+		trie.insert(new int[]{ 128220 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 793))); // scroll
+		trie.insert(new int[]{ 128195 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 859))); // page with curl
+		trie.insert(new int[]{ 128196 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 859))); // page facing up
+		trie.insert(new int[]{ 128209 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 529))); // bookmark tabs
 		trie.insert(new int[]{ 129534 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 397))); // receipt
-		trie.insert(new int[]{ 128202 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 661))); // bar chart
-		trie.insert(new int[]{ 128200 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 793))); // chart increasing
-		trie.insert(new int[]{ 128201 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 727))); // chart decreasing
-		trie.insert(new int[]{ 128466,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 331, 595))); // spiral notepad
-		trie.insert(new int[]{ 128466 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 595))); // spiral notepad
-		trie.insert(new int[]{ 128467,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 265, 595))); // spiral calendar
-		trie.insert(new int[]{ 128467 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 595))); // spiral calendar
-		trie.insert(new int[]{ 128198 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 859))); // tear-off calendar
-		trie.insert(new int[]{ 128197 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 859))); // calendar
-		trie.insert(new int[]{ 128465,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 397, 595))); // wastebasket
-		trie.insert(new int[]{ 128465 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 595))); // wastebasket
-		trie.insert(new int[]{ 128199 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 859))); // card index
-		trie.insert(new int[]{ 128451,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 529, 595))); // card file box
-		trie.insert(new int[]{ 128451 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 595))); // card file box
-		trie.insert(new int[]{ 128499,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 595, 529))); // ballot box with ballot
-		trie.insert(new int[]{ 128499 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 529))); // ballot box with ballot
-		trie.insert(new int[]{ 128452,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 463, 595))); // file cabinet
-		trie.insert(new int[]{ 128452 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 595))); // file cabinet
-		trie.insert(new int[]{ 128203 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 595))); // clipboard
-		trie.insert(new int[]{ 128193 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 859))); // file folder
-		trie.insert(new int[]{ 128194 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 859))); // open file folder
-		trie.insert(new int[]{ 128450,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 595, 595))); // card index dividers
-		trie.insert(new int[]{ 128450 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 595))); // card index dividers
-		trie.insert(new int[]{ 128478,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 67, 595))); // rolled-up newspaper
-		trie.insert(new int[]{ 128478 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 595))); // rolled-up newspaper
-		trie.insert(new int[]{ 128240 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 1))); // newspaper
-		trie.insert(new int[]{ 128211 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 67))); // notebook
-		trie.insert(new int[]{ 128212 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 1))); // notebook with decorative cover
-		trie.insert(new int[]{ 128210 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 133))); // ledger
-		trie.insert(new int[]{ 128213 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 793))); // closed book
-		trie.insert(new int[]{ 128215 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 793))); // green book
-		trie.insert(new int[]{ 128216 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 793))); // blue book
-		trie.insert(new int[]{ 128217 }, new ParseResult(2, new SpriteCoordinates(6, 0, 529, 793))); // orange book
-		trie.insert(new int[]{ 128218 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 793))); // books
-		trie.insert(new int[]{ 128214 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 793))); // open book
-		trie.insert(new int[]{ 128278 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 199))); // bookmark
+		trie.insert(new int[]{ 128202 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 859))); // bar chart
+		trie.insert(new int[]{ 128200 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 859))); // chart increasing
+		trie.insert(new int[]{ 128201 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 859))); // chart decreasing
+		trie.insert(new int[]{ 128466,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 1))); // spiral notepad
+		trie.insert(new int[]{ 128466 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 1))); // spiral notepad
+		trie.insert(new int[]{ 128467,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 595, 595))); // spiral calendar
+		trie.insert(new int[]{ 128467 }, new ParseResult(2, new SpriteCoordinates(6, 0, 595, 595))); // spiral calendar
+		trie.insert(new int[]{ 128198 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 859))); // tear-off calendar
+		trie.insert(new int[]{ 128197 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 859))); // calendar
+		trie.insert(new int[]{ 128465,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 67))); // wastebasket
+		trie.insert(new int[]{ 128465 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 67))); // wastebasket
+		trie.insert(new int[]{ 128199 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 859))); // card index
+		trie.insert(new int[]{ 128451,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 199))); // card file box
+		trie.insert(new int[]{ 128451 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 199))); // card file box
+		trie.insert(new int[]{ 128499,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 265, 595))); // ballot box with ballot
+		trie.insert(new int[]{ 128499 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 595))); // ballot box with ballot
+		trie.insert(new int[]{ 128452,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 133))); // file cabinet
+		trie.insert(new int[]{ 128452 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 133))); // file cabinet
+		trie.insert(new int[]{ 128203 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 859))); // clipboard
+		trie.insert(new int[]{ 128193 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 859))); // file folder
+		trie.insert(new int[]{ 128194 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 859))); // open file folder
+		trie.insert(new int[]{ 128450,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 265))); // card index dividers
+		trie.insert(new int[]{ 128450 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 265))); // card index dividers
+		trie.insert(new int[]{ 128478,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 397, 595))); // rolled-up newspaper
+		trie.insert(new int[]{ 128478 }, new ParseResult(2, new SpriteCoordinates(6, 0, 397, 595))); // rolled-up newspaper
+		trie.insert(new int[]{ 128240 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 331))); // newspaper
+		trie.insert(new int[]{ 128211 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 397))); // notebook
+		trie.insert(new int[]{ 128212 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 331))); // notebook with decorative cover
+		trie.insert(new int[]{ 128210 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 463))); // ledger
+		trie.insert(new int[]{ 128213 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 265))); // closed book
+		trie.insert(new int[]{ 128215 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 133))); // green book
+		trie.insert(new int[]{ 128216 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 67))); // blue book
+		trie.insert(new int[]{ 128217 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 1))); // orange book
+		trie.insert(new int[]{ 128218 }, new ParseResult(2, new SpriteCoordinates(6, 0, 793, 793))); // books
+		trie.insert(new int[]{ 128214 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 199))); // open book
+		trie.insert(new int[]{ 128278 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 529))); // bookmark
 		trie.insert(new int[]{ 129527 }, new ParseResult(2, new SpriteCoordinates(6, 0, 463, 331))); // safety pin
-		trie.insert(new int[]{ 128279 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 133))); // link
-		trie.insert(new int[]{ 128206 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 397))); // paperclip
-		trie.insert(new int[]{ 128391,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 595))); // linked paperclips
-		trie.insert(new int[]{ 128391 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 595))); // linked paperclips
-		trie.insert(new int[]{ 128208 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 265))); // triangular ruler
-		trie.insert(new int[]{ 128207 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 331))); // straight ruler
+		trie.insert(new int[]{ 128279 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 463))); // link
+		trie.insert(new int[]{ 128206 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 727))); // paperclip
+		trie.insert(new int[]{ 128391,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 265, 661))); // linked paperclips
+		trie.insert(new int[]{ 128391 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 661))); // linked paperclips
+		trie.insert(new int[]{ 128208 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 595))); // triangular ruler
+		trie.insert(new int[]{ 128207 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 661))); // straight ruler
 		trie.insert(new int[]{ 129518 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 463))); // abacus
-		trie.insert(new int[]{ 128204 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 529))); // pushpin
-		trie.insert(new int[]{ 128205 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 463))); // round pushpin
+		trie.insert(new int[]{ 128204 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 859))); // pushpin
+		trie.insert(new int[]{ 128205 }, new ParseResult(2, new SpriteCoordinates(6, 0, 859, 793))); // round pushpin
 		trie.insert(new int[]{ 9986,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 67))); // scissors
 		trie.insert(new int[]{ 9986 }, new ParseResult(1, new SpriteCoordinates(6, 0, 67, 67))); // scissors
-		trie.insert(new int[]{ 128394,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 529))); // pen
-		trie.insert(new int[]{ 128394 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 529))); // pen
-		trie.insert(new int[]{ 128395,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 463))); // fountain pen
-		trie.insert(new int[]{ 128395 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 463))); // fountain pen
+		trie.insert(new int[]{ 128394,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 199, 661))); // pen
+		trie.insert(new int[]{ 128394 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 661))); // pen
+		trie.insert(new int[]{ 128395,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 133, 661))); // fountain pen
+		trie.insert(new int[]{ 128395 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 661))); // fountain pen
 		trie.insert(new int[]{ 10002,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 1))); // black nib
 		trie.insert(new int[]{ 10002 }, new ParseResult(1, new SpriteCoordinates(6, 0, 1, 1))); // black nib
-		trie.insert(new int[]{ 128396,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 397))); // paintbrush
-		trie.insert(new int[]{ 128396 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 397))); // paintbrush
-		trie.insert(new int[]{ 128397,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 661, 331))); // crayon
-		trie.insert(new int[]{ 128397 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 331))); // crayon
-		trie.insert(new int[]{ 128221 }, new ParseResult(2, new SpriteCoordinates(6, 0, 331, 793))); // memo
+		trie.insert(new int[]{ 128396,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 67, 661))); // paintbrush
+		trie.insert(new int[]{ 128396 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 661))); // paintbrush
+		trie.insert(new int[]{ 128397,65039 }, new ParseResult(3, new SpriteCoordinates(6, 0, 1, 661))); // crayon
+		trie.insert(new int[]{ 128397 }, new ParseResult(2, new SpriteCoordinates(6, 0, 1, 661))); // crayon
+		trie.insert(new int[]{ 128221 }, new ParseResult(2, new SpriteCoordinates(6, 0, 661, 793))); // memo
 		trie.insert(new int[]{ 9999,65039 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 1))); // pencil
 		trie.insert(new int[]{ 9999 }, new ParseResult(1, new SpriteCoordinates(6, 0, 67, 1))); // pencil
-		trie.insert(new int[]{ 128269 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 661))); // magnifying glass tilted left
-		trie.insert(new int[]{ 128270 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 595))); // magnifying glass tilted right
-		trie.insert(new int[]{ 128271 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 529))); // locked with pen
-		trie.insert(new int[]{ 128272 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 463))); // locked with key
-		trie.insert(new int[]{ 128274 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 331))); // locked
-		trie.insert(new int[]{ 128275 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 265))); // unlocked
+		trie.insert(new int[]{ 128269 }, new ParseResult(2, new SpriteCoordinates(6, 0, 265, 727))); // magnifying glass tilted left
+		trie.insert(new int[]{ 128270 }, new ParseResult(2, new SpriteCoordinates(6, 0, 199, 727))); // magnifying glass tilted right
+		trie.insert(new int[]{ 128271 }, new ParseResult(2, new SpriteCoordinates(6, 0, 133, 727))); // locked with pen
+		trie.insert(new int[]{ 128272 }, new ParseResult(2, new SpriteCoordinates(6, 0, 67, 727))); // locked with key
+		trie.insert(new int[]{ 128274 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 661))); // locked
+		trie.insert(new int[]{ 128275 }, new ParseResult(2, new SpriteCoordinates(6, 0, 727, 595))); // unlocked
 		trie.insert(new int[]{ 10084,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 133))); // red heart
 		trie.insert(new int[]{ 10084 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 133))); // red heart
-		trie.insert(new int[]{ 129505 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 331))); // orange heart
-		trie.insert(new int[]{ 128155 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 397))); // yellow heart
-		trie.insert(new int[]{ 128154 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 463))); // green heart
-		trie.insert(new int[]{ 128153 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 529))); // blue heart
-		trie.insert(new int[]{ 128156 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 331))); // purple heart
-		trie.insert(new int[]{ 128420 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 727))); // black heart
-		trie.insert(new int[]{ 129294 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 397))); // brown heart
-		trie.insert(new int[]{ 129293 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 463))); // white heart
-		trie.insert(new int[]{ 128148 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 859))); // broken heart
-		trie.insert(new int[]{ 10083,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 199))); // heart exclamation
-		trie.insert(new int[]{ 10083 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 199))); // heart exclamation
-		trie.insert(new int[]{ 128149 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 793))); // two hearts
-		trie.insert(new int[]{ 128158 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 199))); // revolving hearts
-		trie.insert(new int[]{ 128147 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 925))); // beating heart
-		trie.insert(new int[]{ 128151 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 661))); // growing heart
-		trie.insert(new int[]{ 128150 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 727))); // sparkling heart
-		trie.insert(new int[]{ 128152 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 595))); // heart with arrow
-		trie.insert(new int[]{ 128157 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 265))); // heart with ribbon
-		trie.insert(new int[]{ 128159 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 133))); // heart decoration
-		trie.insert(new int[]{ 9774,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 199))); // peace symbol
-		trie.insert(new int[]{ 9774 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 199))); // peace symbol
-		trie.insert(new int[]{ 10013,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 331))); // latin cross
-		trie.insert(new int[]{ 10013 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 331))); // latin cross
-		trie.insert(new int[]{ 9770,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 265))); // star and crescent
-		trie.insert(new int[]{ 9770 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 265))); // star and crescent
-		trie.insert(new int[]{ 128329,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 793, 793))); // om
-		trie.insert(new int[]{ 128329 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 793))); // om
-		trie.insert(new int[]{ 9784,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 67))); // wheel of dharma
-		trie.insert(new int[]{ 9784 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 67))); // wheel of dharma
-		trie.insert(new int[]{ 10017,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 265))); // star of David
-		trie.insert(new int[]{ 10017 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 265))); // star of David
-		trie.insert(new int[]{ 128303 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 859))); // dotted six-pointed star
-		trie.insert(new int[]{ 128334 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 793))); // menorah
-		trie.insert(new int[]{ 9775,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 133))); // yin yang
-		trie.insert(new int[]{ 9775 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 133))); // yin yang
-		trie.insert(new int[]{ 9766,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 331))); // orthodox cross
-		trie.insert(new int[]{ 9766 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 331))); // orthodox cross
-		trie.insert(new int[]{ 128720 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 67))); // place of worship
-		trie.insert(new int[]{ 9934 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 331))); // Ophiuchus
-		trie.insert(new int[]{ 9800 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 463))); // Aries
-		trie.insert(new int[]{ 9801 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 463))); // Taurus
-		trie.insert(new int[]{ 9802 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 463))); // Gemini
-		trie.insert(new int[]{ 9803 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 463))); // Cancer
-		trie.insert(new int[]{ 9804 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 463))); // Leo
-		trie.insert(new int[]{ 9805 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 463))); // Virgo
-		trie.insert(new int[]{ 9806 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 463))); // Libra
-		trie.insert(new int[]{ 9807 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 397))); // Scorpio
-		trie.insert(new int[]{ 9808 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 331))); // Sagittarius
-		trie.insert(new int[]{ 9809 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 265))); // Capricorn
-		trie.insert(new int[]{ 9810 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 199))); // Aquarius
-		trie.insert(new int[]{ 9811 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 133))); // Pisces
-		trie.insert(new int[]{ 127380 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 859))); // ID button
-		trie.insert(new int[]{ 9883,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 331))); // atom symbol
-		trie.insert(new int[]{ 9883 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 331))); // atom symbol
-		trie.insert(new int[]{ 127569 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 991))); // Japanese “acceptable” button
-		trie.insert(new int[]{ 9762,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 463))); // radioactive
-		trie.insert(new int[]{ 9762 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 463))); // radioactive
-		trie.insert(new int[]{ 9763,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 397))); // biohazard
-		trie.insert(new int[]{ 9763 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 397))); // biohazard
-		trie.insert(new int[]{ 128244 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 925))); // mobile phone off
-		trie.insert(new int[]{ 128243 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 925))); // vibration mode
-		trie.insert(new int[]{ 127542 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 991))); // Japanese “not free of charge” button
-		trie.insert(new int[]{ 127514 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 265))); // Japanese “free of charge” button
-		trie.insert(new int[]{ 127544 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 991))); // Japanese “application” button
-		trie.insert(new int[]{ 127546 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 991))); // Japanese “open for business” button
-		trie.insert(new int[]{ 127543,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 859, 991))); // Japanese “monthly amount” button
-		trie.insert(new int[]{ 127543 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 991))); // Japanese “monthly amount” button
-		trie.insert(new int[]{ 10036,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 133))); // eight-pointed star
-		trie.insert(new int[]{ 10036 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 133))); // eight-pointed star
-		trie.insert(new int[]{ 127386 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 463))); // VS button
-		trie.insert(new int[]{ 128174 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 925))); // white flower
-		trie.insert(new int[]{ 127568 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 991))); // Japanese “bargain” button
+		trie.insert(new int[]{ 129505 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 463))); // orange heart
+		trie.insert(new int[]{ 128155 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 529))); // yellow heart
+		trie.insert(new int[]{ 128154 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 595))); // green heart
+		trie.insert(new int[]{ 128153 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 661))); // blue heart
+		trie.insert(new int[]{ 128156 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 463))); // purple heart
+		trie.insert(new int[]{ 128420 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 1))); // black heart
+		trie.insert(new int[]{ 129294 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 529))); // brown heart
+		trie.insert(new int[]{ 129293 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 595))); // white heart
+		trie.insert(new int[]{ 128148 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 991))); // broken heart
+		trie.insert(new int[]{ 10083,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 265))); // heart exclamation
+		trie.insert(new int[]{ 10083 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 265))); // heart exclamation
+		trie.insert(new int[]{ 128149 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 925))); // two hearts
+		trie.insert(new int[]{ 128158 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 331))); // revolving hearts
+		trie.insert(new int[]{ 128147 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 991))); // beating heart
+		trie.insert(new int[]{ 128151 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 793))); // growing heart
+		trie.insert(new int[]{ 128150 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 859))); // sparkling heart
+		trie.insert(new int[]{ 128152 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 727))); // heart with arrow
+		trie.insert(new int[]{ 128157 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 397))); // heart with ribbon
+		trie.insert(new int[]{ 10084,65039,8205,129657 }, new ParseResult(5, new SpriteCoordinates(7, 0, 265, 199))); // mending heart
+		trie.insert(new int[]{ 10084,129657 }, new ParseResult(3, new SpriteCoordinates(7, 0, 265, 199))); // mending heart
+		trie.insert(new int[]{ 10084,65039,8205,128293 }, new ParseResult(5, new SpriteCoordinates(7, 0, 1, 265))); // heart on fire
+		trie.insert(new int[]{ 10084,128293 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1, 265))); // heart on fire
+		trie.insert(new int[]{ 128159 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 265))); // heart decoration
+		trie.insert(new int[]{ 9774,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 331))); // peace symbol
+		trie.insert(new int[]{ 9774 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 331))); // peace symbol
+		trie.insert(new int[]{ 10013,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 331))); // latin cross
+		trie.insert(new int[]{ 10013 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 331))); // latin cross
+		trie.insert(new int[]{ 9770,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 397))); // star and crescent
+		trie.insert(new int[]{ 9770 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 397))); // star and crescent
+		trie.insert(new int[]{ 128329,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 859, 67))); // om
+		trie.insert(new int[]{ 128329 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 67))); // om
+		trie.insert(new int[]{ 9784,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 199))); // wheel of dharma
+		trie.insert(new int[]{ 9784 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 199))); // wheel of dharma
+		trie.insert(new int[]{ 10017,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 331))); // star of David
+		trie.insert(new int[]{ 10017 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 331))); // star of David
+		trie.insert(new int[]{ 128303 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 859))); // dotted six-pointed star
+		trie.insert(new int[]{ 128334 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 1))); // menorah
+		trie.insert(new int[]{ 9775,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 265))); // yin yang
+		trie.insert(new int[]{ 9775 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 265))); // yin yang
+		trie.insert(new int[]{ 9766,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 463))); // orthodox cross
+		trie.insert(new int[]{ 9766 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 463))); // orthodox cross
+		trie.insert(new int[]{ 128720 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 199))); // place of worship
+		trie.insert(new int[]{ 9934 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 67))); // Ophiuchus
+		trie.insert(new int[]{ 9800 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 1))); // Aries
+		trie.insert(new int[]{ 9801 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 463))); // Taurus
+		trie.insert(new int[]{ 9802 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 463))); // Gemini
+		trie.insert(new int[]{ 9803 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 463))); // Cancer
+		trie.insert(new int[]{ 9804 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 463))); // Leo
+		trie.insert(new int[]{ 9805 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 463))); // Virgo
+		trie.insert(new int[]{ 9806 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 463))); // Libra
+		trie.insert(new int[]{ 9807 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 463))); // Scorpio
+		trie.insert(new int[]{ 9808 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 463))); // Sagittarius
+		trie.insert(new int[]{ 9809 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 397))); // Capricorn
+		trie.insert(new int[]{ 9810 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 331))); // Aquarius
+		trie.insert(new int[]{ 9811 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 265))); // Pisces
+		trie.insert(new int[]{ 127380 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 991))); // ID button
+		trie.insert(new int[]{ 9883,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 397))); // atom symbol
+		trie.insert(new int[]{ 9883 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 397))); // atom symbol
+		trie.insert(new int[]{ 127569 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 991))); // Japanese “acceptable” button
+		trie.insert(new int[]{ 9762,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 529))); // radioactive
+		trie.insert(new int[]{ 9762 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 529))); // radioactive
+	}
+
+	public static void init7(IntTrie<ParseResult> trie) {
+		trie.insert(new int[]{ 9763,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 529))); // biohazard
+		trie.insert(new int[]{ 9763 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 529))); // biohazard
+		trie.insert(new int[]{ 128244 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 925))); // mobile phone off
+		trie.insert(new int[]{ 128243 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 925))); // vibration mode
+		trie.insert(new int[]{ 127542 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 1))); // Japanese “not free of charge” button
+		trie.insert(new int[]{ 127514 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 397))); // Japanese “free of charge” button
+		trie.insert(new int[]{ 127544 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 991))); // Japanese “application” button
+		trie.insert(new int[]{ 127546 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 991))); // Japanese “open for business” button
+		trie.insert(new int[]{ 127543,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 991, 991))); // Japanese “monthly amount” button
+		trie.insert(new int[]{ 127543 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 991))); // Japanese “monthly amount” button
+		trie.insert(new int[]{ 10036,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 265))); // eight-pointed star
+		trie.insert(new int[]{ 10036 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 265))); // eight-pointed star
+		trie.insert(new int[]{ 127386 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 595))); // VS button
+		trie.insert(new int[]{ 128174 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 925))); // white flower
+		trie.insert(new int[]{ 127568 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 991))); // Japanese “bargain” button
 		trie.insert(new int[]{ 12953,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 1))); // Japanese “secret” button
 		trie.insert(new int[]{ 12953 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 1))); // Japanese “secret” button
 		trie.insert(new int[]{ 12951,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 1))); // Japanese “congratulations” button
 		trie.insert(new int[]{ 12951 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 1))); // Japanese “congratulations” button
-		trie.insert(new int[]{ 127540 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 1))); // Japanese “passing grade” button
-		trie.insert(new int[]{ 127541 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 991))); // Japanese “no vacancy” button
-		trie.insert(new int[]{ 127545 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 991))); // Japanese “discount” button
-		trie.insert(new int[]{ 127538 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 133))); // Japanese “prohibited” button
-		trie.insert(new int[]{ 127344,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 331, 1057))); // A button (blood type)
-		trie.insert(new int[]{ 127344 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 1057))); // A button (blood type)
-		trie.insert(new int[]{ 127345,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 265, 1057))); // B button (blood type)
-		trie.insert(new int[]{ 127345 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 1057))); // B button (blood type)
-		trie.insert(new int[]{ 127374 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 1057))); // AB button (blood type)
-		trie.insert(new int[]{ 127377 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 1057))); // CL button
-		trie.insert(new int[]{ 127358,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 199, 1057))); // O button (blood type)
-		trie.insert(new int[]{ 127358 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 1057))); // O button (blood type)
-		trie.insert(new int[]{ 127384 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 595))); // SOS button
-		trie.insert(new int[]{ 10060 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 1))); // cross mark
+		trie.insert(new int[]{ 127540 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 133))); // Japanese “passing grade” button
+		trie.insert(new int[]{ 127541 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 67))); // Japanese “no vacancy” button
+		trie.insert(new int[]{ 127545 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 991))); // Japanese “discount” button
+		trie.insert(new int[]{ 127538 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 265))); // Japanese “prohibited” button
+		trie.insert(new int[]{ 127344,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 463, 1057))); // A button (blood type)
+		trie.insert(new int[]{ 127344 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 1057))); // A button (blood type)
+		trie.insert(new int[]{ 127345,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 397, 1057))); // B button (blood type)
+		trie.insert(new int[]{ 127345 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 1057))); // B button (blood type)
+		trie.insert(new int[]{ 127374 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 1057))); // AB button (blood type)
+		trie.insert(new int[]{ 127377 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 1057))); // CL button
+		trie.insert(new int[]{ 127358,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 331, 1057))); // O button (blood type)
+		trie.insert(new int[]{ 127358 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 1057))); // O button (blood type)
+		trie.insert(new int[]{ 127384 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 727))); // SOS button
+		trie.insert(new int[]{ 10060 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 133))); // cross mark
 		trie.insert(new int[]{ 11093 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 1))); // hollow red circle
-		trie.insert(new int[]{ 128721 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 1))); // stop sign
-		trie.insert(new int[]{ 9940 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 331))); // no entry
-		trie.insert(new int[]{ 128219 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 925))); // name badge
-		trie.insert(new int[]{ 128683 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 727))); // prohibited
-		trie.insert(new int[]{ 128175 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 925))); // hundred points
-		trie.insert(new int[]{ 128162 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 1))); // anger symbol
-		trie.insert(new int[]{ 9832,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 397))); // hot springs
-		trie.insert(new int[]{ 9832 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 397))); // hot springs
-		trie.insert(new int[]{ 128695 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 727))); // no pedestrians
-		trie.insert(new int[]{ 128687 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 727))); // no littering
-		trie.insert(new int[]{ 128691 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 727))); // no bicycles
-		trie.insert(new int[]{ 128689 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 727))); // non-potable water
-		trie.insert(new int[]{ 128286 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 859))); // no one under eighteen
-		trie.insert(new int[]{ 128245 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 925))); // no mobile phones
-		trie.insert(new int[]{ 128685 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 727))); // no smoking
-		trie.insert(new int[]{ 10071 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 265))); // exclamation mark
-		trie.insert(new int[]{ 10069 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 265))); // white exclamation mark
-		trie.insert(new int[]{ 10067 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 265))); // question mark
-		trie.insert(new int[]{ 10068 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 265))); // white question mark
-		trie.insert(new int[]{ 8252,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 265))); // double exclamation mark
-		trie.insert(new int[]{ 8252 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 265))); // double exclamation mark
-		trie.insert(new int[]{ 8265,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 199))); // exclamation question mark
-		trie.insert(new int[]{ 8265 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 199))); // exclamation question mark
-		trie.insert(new int[]{ 128261 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 529))); // dim button
-		trie.insert(new int[]{ 128262 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 463))); // bright button
+		trie.insert(new int[]{ 128721 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 133))); // stop sign
+		trie.insert(new int[]{ 9940 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 1))); // no entry
+		trie.insert(new int[]{ 128219 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 925))); // name badge
+		trie.insert(new int[]{ 128683 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 727))); // prohibited
+		trie.insert(new int[]{ 128175 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 925))); // hundred points
+		trie.insert(new int[]{ 128162 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 133))); // anger symbol
+		trie.insert(new int[]{ 9832,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 397))); // hot springs
+		trie.insert(new int[]{ 9832 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 397))); // hot springs
+		trie.insert(new int[]{ 128695 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 727))); // no pedestrians
+		trie.insert(new int[]{ 128687 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 727))); // no littering
+		trie.insert(new int[]{ 128691 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 727))); // no bicycles
+		trie.insert(new int[]{ 128689 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 727))); // non-potable water
+		trie.insert(new int[]{ 128286 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 859))); // no one under eighteen
+		trie.insert(new int[]{ 128245 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 925))); // no mobile phones
+		trie.insert(new int[]{ 128685 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 727))); // no smoking
+		trie.insert(new int[]{ 10071 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 265))); // exclamation mark
+		trie.insert(new int[]{ 10069 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 265))); // white exclamation mark
+		trie.insert(new int[]{ 10067 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 1))); // question mark
+		trie.insert(new int[]{ 10068 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 265))); // white question mark
+		trie.insert(new int[]{ 8252,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 397))); // double exclamation mark
+		trie.insert(new int[]{ 8252 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 397))); // double exclamation mark
+		trie.insert(new int[]{ 8265,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 331))); // exclamation question mark
+		trie.insert(new int[]{ 8265 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 331))); // exclamation question mark
+		trie.insert(new int[]{ 128261 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 661))); // dim button
+		trie.insert(new int[]{ 128262 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 595))); // bright button
 		trie.insert(new int[]{ 12349,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 67))); // part alternation mark
 		trie.insert(new int[]{ 12349 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 67))); // part alternation mark
-		trie.insert(new int[]{ 9888,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 199))); // warning
-		trie.insert(new int[]{ 9888 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 199))); // warning
-		trie.insert(new int[]{ 128696 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 727))); // children crossing
-		trie.insert(new int[]{ 128305 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 793))); // trident emblem
-		trie.insert(new int[]{ 9884,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 265))); // fleur-de-lis
-		trie.insert(new int[]{ 9884 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 265))); // fleur-de-lis
-		trie.insert(new int[]{ 128304 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 859))); // Japanese symbol for beginner
-		trie.insert(new int[]{ 9851,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 397))); // recycling symbol
-		trie.insert(new int[]{ 9851 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 397))); // recycling symbol
-		trie.insert(new int[]{ 9989 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 331))); // check mark button
-		trie.insert(new int[]{ 127535 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 199))); // Japanese “reserved” button
-		trie.insert(new int[]{ 128185 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 925))); // chart increasing with yen
-		trie.insert(new int[]{ 10055,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 67))); // sparkle
-		trie.insert(new int[]{ 10055 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 67))); // sparkle
-		trie.insert(new int[]{ 10035,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 199))); // eight-spoked asterisk
-		trie.insert(new int[]{ 10035 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 199))); // eight-spoked asterisk
-		trie.insert(new int[]{ 10062 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 265))); // cross mark button
-		trie.insert(new int[]{ 127760 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 991))); // globe with meridians
-		trie.insert(new int[]{ 128160 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 67))); // diamond with a dot
-		trie.insert(new int[]{ 9410,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 1))); // circled M
-		trie.insert(new int[]{ 9410 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 1))); // circled M
-		trie.insert(new int[]{ 127744 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 991))); // cyclone
-		trie.insert(new int[]{ 128164 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 925))); // zzz
-		trie.insert(new int[]{ 127975 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 991))); // ATM sign
-		trie.insert(new int[]{ 128702 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 397))); // water closet
-		trie.insert(new int[]{ 9855 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 397))); // wheelchair symbol
-		trie.insert(new int[]{ 127359,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 133, 1057))); // P button
-		trie.insert(new int[]{ 127359 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 1057))); // P button
-		trie.insert(new int[]{ 127539 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 67))); // Japanese “vacancy” button
-		trie.insert(new int[]{ 127490,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1057, 331))); // Japanese “service charge” button
-		trie.insert(new int[]{ 127490 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 331))); // Japanese “service charge” button
-		trie.insert(new int[]{ 128706 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 331))); // passport control
-		trie.insert(new int[]{ 128707 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 265))); // customs
-		trie.insert(new int[]{ 128708 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 199))); // baggage claim
-		trie.insert(new int[]{ 128709 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 133))); // left luggage
-		trie.insert(new int[]{ 128727 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 661))); // elevator
-		trie.insert(new int[]{ 128697 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 661))); // men’s room
-		trie.insert(new int[]{ 128698 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 595))); // women’s room
-		trie.insert(new int[]{ 128700 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 463))); // baby symbol
-		trie.insert(new int[]{ 128699 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 529))); // restroom
-		trie.insert(new int[]{ 128686 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 727))); // litter in bin sign
-		trie.insert(new int[]{ 127910 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 991))); // cinema
-		trie.insert(new int[]{ 128246 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 925))); // antenna bars
-		trie.insert(new int[]{ 127489 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 397))); // Japanese “here” button
-		trie.insert(new int[]{ 128291 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 859))); // input symbols
-		trie.insert(new int[]{ 8505,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 67))); // information
-		trie.insert(new int[]{ 8505 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 67))); // information
-		trie.insert(new int[]{ 128292 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 859))); // input latin letters
-		trie.insert(new int[]{ 128289 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 859))); // input latin lowercase
-		trie.insert(new int[]{ 128288 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 859))); // input latin uppercase
-		trie.insert(new int[]{ 127382 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 727))); // NG button
-		trie.insert(new int[]{ 127383 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 661))); // OK button
-		trie.insert(new int[]{ 127385 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 529))); // UP! button
-		trie.insert(new int[]{ 127378 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 991))); // COOL button
-		trie.insert(new int[]{ 127381 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 793))); // NEW button
-		trie.insert(new int[]{ 127379 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 925))); // FREE button
-		trie.insert(new int[]{ 48,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 793))); // keycap: 0
-		trie.insert(new int[]{ 48,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 793))); // keycap: 0
-		trie.insert(new int[]{ 49,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 661))); // keycap: 1
-		trie.insert(new int[]{ 49,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 661))); // keycap: 1
-		trie.insert(new int[]{ 50,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 529))); // keycap: 2
-		trie.insert(new int[]{ 50,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 529))); // keycap: 2
-		trie.insert(new int[]{ 51,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 397))); // keycap: 3
-		trie.insert(new int[]{ 51,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 397))); // keycap: 3
-		trie.insert(new int[]{ 52,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 265))); // keycap: 4
-		trie.insert(new int[]{ 52,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 265))); // keycap: 4
-		trie.insert(new int[]{ 53,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 133))); // keycap: 5
-		trie.insert(new int[]{ 53,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 133))); // keycap: 5
-		trie.insert(new int[]{ 54,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 1))); // keycap: 6
-		trie.insert(new int[]{ 54,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 1))); // keycap: 6
-		trie.insert(new int[]{ 55,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 991, 1057))); // keycap: 7
-		trie.insert(new int[]{ 55,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 1057))); // keycap: 7
-		trie.insert(new int[]{ 56,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 859, 1057))); // keycap: 8
-		trie.insert(new int[]{ 56,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 1057))); // keycap: 8
-		trie.insert(new int[]{ 57,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 727, 1057))); // keycap: 9
-		trie.insert(new int[]{ 57,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 1057))); // keycap: 9
-		trie.insert(new int[]{ 128287 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 859))); // keycap: 10
-		trie.insert(new int[]{ 128290 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 859))); // input numbers
-		trie.insert(new int[]{ 35,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 1057))); // keycap: #
-		trie.insert(new int[]{ 35,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 1057))); // keycap: #
-		trie.insert(new int[]{ 42,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 925))); // keycap: *
-		trie.insert(new int[]{ 42,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 925))); // keycap: *
-		trie.insert(new int[]{ 9167,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 595))); // eject button
-		trie.insert(new int[]{ 9167 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 595))); // eject button
-		trie.insert(new int[]{ 9654,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 529))); // play button
-		trie.insert(new int[]{ 9654 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 529))); // play button
-		trie.insert(new int[]{ 9208,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 199))); // pause button
-		trie.insert(new int[]{ 9208 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 199))); // pause button
-		trie.insert(new int[]{ 9199,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 265))); // play or pause button
-		trie.insert(new int[]{ 9199 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 265))); // play or pause button
-		trie.insert(new int[]{ 9209,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 133))); // stop button
-		trie.insert(new int[]{ 9209 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 133))); // stop button
-		trie.insert(new int[]{ 9210,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 67))); // record button
-		trie.insert(new int[]{ 9210 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 67))); // record button
-		trie.insert(new int[]{ 9197,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 397))); // next track button
-		trie.insert(new int[]{ 9197 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 397))); // next track button
-		trie.insert(new int[]{ 9198,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 331))); // last track button
-		trie.insert(new int[]{ 9198 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 331))); // last track button
-		trie.insert(new int[]{ 9193 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 595))); // fast-forward button
-		trie.insert(new int[]{ 9194 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 595))); // fast reverse button
-		trie.insert(new int[]{ 9195 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 529))); // fast up button
-		trie.insert(new int[]{ 9196 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 463))); // fast down button
-		trie.insert(new int[]{ 9664,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 529))); // reverse button
-		trie.insert(new int[]{ 9664 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 529))); // reverse button
-		trie.insert(new int[]{ 128316 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 67))); // upwards button
-		trie.insert(new int[]{ 128317 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 1))); // downwards button
+		trie.insert(new int[]{ 9888,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 331))); // warning
+		trie.insert(new int[]{ 9888 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 331))); // warning
+		trie.insert(new int[]{ 128696 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 727))); // children crossing
+		trie.insert(new int[]{ 128305 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 859))); // trident emblem
+		trie.insert(new int[]{ 9884,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 397))); // fleur-de-lis
+		trie.insert(new int[]{ 9884 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 397))); // fleur-de-lis
+		trie.insert(new int[]{ 128304 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 859))); // Japanese symbol for beginner
+		trie.insert(new int[]{ 9851,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 397))); // recycling symbol
+		trie.insert(new int[]{ 9851 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 397))); // recycling symbol
+		trie.insert(new int[]{ 9989 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 331))); // check mark button
+		trie.insert(new int[]{ 127535 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 331))); // Japanese “reserved” button
+		trie.insert(new int[]{ 128185 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 925))); // chart increasing with yen
+		trie.insert(new int[]{ 10055,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 199))); // sparkle
+		trie.insert(new int[]{ 10055 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 199))); // sparkle
+		trie.insert(new int[]{ 10035,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 331))); // eight-spoked asterisk
+		trie.insert(new int[]{ 10035 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 331))); // eight-spoked asterisk
+		trie.insert(new int[]{ 10062 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 67))); // cross mark button
+		trie.insert(new int[]{ 127760 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 991))); // globe with meridians
+		trie.insert(new int[]{ 128160 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 199))); // diamond with a dot
+		trie.insert(new int[]{ 9410,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 133))); // circled M
+		trie.insert(new int[]{ 9410 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 133))); // circled M
+		trie.insert(new int[]{ 127744 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 991))); // cyclone
+		trie.insert(new int[]{ 128164 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 67))); // zzz
+		trie.insert(new int[]{ 127975 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 991))); // ATM sign
+		trie.insert(new int[]{ 128702 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 529))); // water closet
+		trie.insert(new int[]{ 9855 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 397))); // wheelchair symbol
+		trie.insert(new int[]{ 127359,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 265, 1057))); // P button
+		trie.insert(new int[]{ 127359 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 1057))); // P button
+		trie.insert(new int[]{ 127539 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 199))); // Japanese “vacancy” button
+		trie.insert(new int[]{ 127490,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1057, 463))); // Japanese “service charge” button
+		trie.insert(new int[]{ 127490 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 463))); // Japanese “service charge” button
+		trie.insert(new int[]{ 128706 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 463))); // passport control
+		trie.insert(new int[]{ 128707 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 397))); // customs
+		trie.insert(new int[]{ 128708 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 331))); // baggage claim
+		trie.insert(new int[]{ 128709 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 265))); // left luggage
+		trie.insert(new int[]{ 128727 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 67))); // elevator
+		trie.insert(new int[]{ 128697 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 727))); // men’s room
+		trie.insert(new int[]{ 128698 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 727))); // women’s room
+		trie.insert(new int[]{ 128700 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 595))); // baby symbol
+		trie.insert(new int[]{ 128699 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 661))); // restroom
+		trie.insert(new int[]{ 128686 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 727))); // litter in bin sign
+		trie.insert(new int[]{ 127910 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 991))); // cinema
+		trie.insert(new int[]{ 128246 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 925))); // antenna bars
+		trie.insert(new int[]{ 127489 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 529))); // Japanese “here” button
+		trie.insert(new int[]{ 128291 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 859))); // input symbols
+		trie.insert(new int[]{ 8505,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 199))); // information
+		trie.insert(new int[]{ 8505 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 199))); // information
+		trie.insert(new int[]{ 128292 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 859))); // input latin letters
+		trie.insert(new int[]{ 128289 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 859))); // input latin lowercase
+		trie.insert(new int[]{ 128288 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 859))); // input latin uppercase
+		trie.insert(new int[]{ 127382 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 859))); // NG button
+		trie.insert(new int[]{ 127383 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 793))); // OK button
+		trie.insert(new int[]{ 127385 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 661))); // UP! button
+		trie.insert(new int[]{ 127378 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 1057))); // COOL button
+		trie.insert(new int[]{ 127381 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 925))); // NEW button
+		trie.insert(new int[]{ 127379 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 1057))); // FREE button
+		trie.insert(new int[]{ 48,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 925))); // keycap: 0
+		trie.insert(new int[]{ 48,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 925))); // keycap: 0
+		trie.insert(new int[]{ 49,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 793))); // keycap: 1
+		trie.insert(new int[]{ 49,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 793))); // keycap: 1
+		trie.insert(new int[]{ 50,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 661))); // keycap: 2
+		trie.insert(new int[]{ 50,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 661))); // keycap: 2
+		trie.insert(new int[]{ 51,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 529))); // keycap: 3
+		trie.insert(new int[]{ 51,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 529))); // keycap: 3
+		trie.insert(new int[]{ 52,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 397))); // keycap: 4
+		trie.insert(new int[]{ 52,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 397))); // keycap: 4
+		trie.insert(new int[]{ 53,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 265))); // keycap: 5
+		trie.insert(new int[]{ 53,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 265))); // keycap: 5
+		trie.insert(new int[]{ 54,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 133))); // keycap: 6
+		trie.insert(new int[]{ 54,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 133))); // keycap: 6
+		trie.insert(new int[]{ 55,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 1))); // keycap: 7
+		trie.insert(new int[]{ 55,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 1))); // keycap: 7
+		trie.insert(new int[]{ 56,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 991, 1057))); // keycap: 8
+		trie.insert(new int[]{ 56,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 1057))); // keycap: 8
+		trie.insert(new int[]{ 57,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 859, 1057))); // keycap: 9
+		trie.insert(new int[]{ 57,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 1057))); // keycap: 9
+		trie.insert(new int[]{ 128287 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 859))); // keycap: 10
+		trie.insert(new int[]{ 128290 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 859))); // input numbers
+		trie.insert(new int[]{ 35,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 67, 1123))); // keycap: #
+		trie.insert(new int[]{ 35,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 1123))); // keycap: #
+		trie.insert(new int[]{ 42,65039,8419 }, new ParseResult(3, new SpriteCoordinates(7, 0, 1123, 1057))); // keycap: *
+		trie.insert(new int[]{ 42,8419 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 1057))); // keycap: *
+		trie.insert(new int[]{ 9167,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 595))); // eject button
+		trie.insert(new int[]{ 9167 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 595))); // eject button
+		trie.insert(new int[]{ 9654,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 529))); // play button
+		trie.insert(new int[]{ 9654 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 529))); // play button
+		trie.insert(new int[]{ 9208,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 331))); // pause button
+		trie.insert(new int[]{ 9208 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 331))); // pause button
+		trie.insert(new int[]{ 9199,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 397))); // play or pause button
+		trie.insert(new int[]{ 9199 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 397))); // play or pause button
+		trie.insert(new int[]{ 9209,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 265))); // stop button
+		trie.insert(new int[]{ 9209 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 265))); // stop button
+		trie.insert(new int[]{ 9210,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 199))); // record button
+		trie.insert(new int[]{ 9210 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 199))); // record button
+		trie.insert(new int[]{ 9197,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 529))); // next track button
+		trie.insert(new int[]{ 9197 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 529))); // next track button
+		trie.insert(new int[]{ 9198,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 463))); // last track button
+		trie.insert(new int[]{ 9198 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 463))); // last track button
+		trie.insert(new int[]{ 9193 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 595))); // fast-forward button
+		trie.insert(new int[]{ 9194 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 595))); // fast reverse button
+		trie.insert(new int[]{ 9195 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 595))); // fast up button
+		trie.insert(new int[]{ 9196 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 595))); // fast down button
+		trie.insert(new int[]{ 9664,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 529))); // reverse button
+		trie.insert(new int[]{ 9664 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 529))); // reverse button
+		trie.insert(new int[]{ 128316 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 199))); // upwards button
+		trie.insert(new int[]{ 128317 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 133))); // downwards button
 		trie.insert(new int[]{ 10145,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 199))); // right arrow
 		trie.insert(new int[]{ 10145 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 199))); // right arrow
 		trie.insert(new int[]{ 11013,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 1))); // left arrow
@@ -4108,165 +4726,165 @@ public class EmojiParser {
 		trie.insert(new int[]{ 11014 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 133))); // up arrow
 		trie.insert(new int[]{ 11015,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 133))); // down arrow
 		trie.insert(new int[]{ 11015 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 133))); // down arrow
-		trie.insert(new int[]{ 8599,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 595))); // up-right arrow
-		trie.insert(new int[]{ 8599 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 595))); // up-right arrow
-		trie.insert(new int[]{ 8600,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 595))); // down-right arrow
-		trie.insert(new int[]{ 8600 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 595))); // down-right arrow
-		trie.insert(new int[]{ 8601,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 595))); // down-left arrow
-		trie.insert(new int[]{ 8601 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 595))); // down-left arrow
-		trie.insert(new int[]{ 8598,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 595))); // up-left arrow
-		trie.insert(new int[]{ 8598 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 595))); // up-left arrow
-		trie.insert(new int[]{ 8597,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 595))); // up-down arrow
-		trie.insert(new int[]{ 8597 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 595))); // up-down arrow
-		trie.insert(new int[]{ 8596,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 1))); // left-right arrow
-		trie.insert(new int[]{ 8596 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 1))); // left-right arrow
-		trie.insert(new int[]{ 8618,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 595))); // left arrow curving right
-		trie.insert(new int[]{ 8618 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 595))); // left arrow curving right
-		trie.insert(new int[]{ 8617,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 595))); // right arrow curving left
-		trie.insert(new int[]{ 8617 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 595))); // right arrow curving left
+		trie.insert(new int[]{ 8599,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 595))); // up-right arrow
+		trie.insert(new int[]{ 8599 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 595))); // up-right arrow
+		trie.insert(new int[]{ 8600,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 595))); // down-right arrow
+		trie.insert(new int[]{ 8600 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 595))); // down-right arrow
+		trie.insert(new int[]{ 8601,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 595))); // down-left arrow
+		trie.insert(new int[]{ 8601 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 595))); // down-left arrow
+		trie.insert(new int[]{ 8598,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 1))); // up-left arrow
+		trie.insert(new int[]{ 8598 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 1))); // up-left arrow
+		trie.insert(new int[]{ 8597,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 67))); // up-down arrow
+		trie.insert(new int[]{ 8597 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 67))); // up-down arrow
+		trie.insert(new int[]{ 8596,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 133))); // left-right arrow
+		trie.insert(new int[]{ 8596 }, new ParseResult(1, new SpriteCoordinates(7, 0, 661, 133))); // left-right arrow
+		trie.insert(new int[]{ 8618,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 595))); // left arrow curving right
+		trie.insert(new int[]{ 8618 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 595))); // left arrow curving right
+		trie.insert(new int[]{ 8617,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 595))); // right arrow curving left
+		trie.insert(new int[]{ 8617 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 595))); // right arrow curving left
 		trie.insert(new int[]{ 10548,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 133))); // right arrow curving up
 		trie.insert(new int[]{ 10548 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 133))); // right arrow curving up
 		trie.insert(new int[]{ 10549,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 67))); // right arrow curving down
 		trie.insert(new int[]{ 10549 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 67))); // right arrow curving down
-		trie.insert(new int[]{ 128256 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 859))); // shuffle tracks button
-		trie.insert(new int[]{ 128257 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 793))); // repeat button
-		trie.insert(new int[]{ 128258 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 727))); // repeat single button
-		trie.insert(new int[]{ 128260 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 595))); // counterclockwise arrows button
-		trie.insert(new int[]{ 128259 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 661))); // clockwise vertical arrows
-		trie.insert(new int[]{ 127925 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 991))); // musical note
-		trie.insert(new int[]{ 127926 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 991))); // musical notes
+		trie.insert(new int[]{ 128256 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 925))); // shuffle tracks button
+		trie.insert(new int[]{ 128257 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 925))); // repeat button
+		trie.insert(new int[]{ 128258 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 859))); // repeat single button
+		trie.insert(new int[]{ 128260 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 727))); // counterclockwise arrows button
+		trie.insert(new int[]{ 128259 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 793))); // clockwise vertical arrows
+		trie.insert(new int[]{ 127925 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 991))); // musical note
+		trie.insert(new int[]{ 127926 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 991))); // musical notes
 		trie.insert(new int[]{ 10133 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 67))); // plus sign
 		trie.insert(new int[]{ 10134 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 1))); // minus sign
 		trie.insert(new int[]{ 10135 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 199))); // division sign
-		trie.insert(new int[]{ 10006,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 331))); // multiplication sign
-		trie.insert(new int[]{ 10006 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 331))); // multiplication sign
-		trie.insert(new int[]{ 9854,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 397))); // infinity
-		trie.insert(new int[]{ 9854 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 397))); // infinity
-		trie.insert(new int[]{ 128178 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 925))); // heavy dollar sign
-		trie.insert(new int[]{ 128177 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 925))); // currency exchange
-		trie.insert(new int[]{ 8482,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 133))); // trade mark
-		trie.insert(new int[]{ 169,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 1057))); // copyright
-		trie.insert(new int[]{ 174,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 1057))); // registered
+		trie.insert(new int[]{ 10006,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 331))); // multiplication sign
+		trie.insert(new int[]{ 10006 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 331))); // multiplication sign
+		trie.insert(new int[]{ 9854,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 397))); // infinity
+		trie.insert(new int[]{ 9854 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 397))); // infinity
+		trie.insert(new int[]{ 128178 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 925))); // heavy dollar sign
+		trie.insert(new int[]{ 128177 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 925))); // currency exchange
+		trie.insert(new int[]{ 8482,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 265))); // trade mark
+		trie.insert(new int[]{ 169,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 1057))); // copyright
+		trie.insert(new int[]{ 174,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 1057))); // registered
 		trie.insert(new int[]{ 12336,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 67))); // wavy dash
 		trie.insert(new int[]{ 12336 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 67))); // wavy dash
 		trie.insert(new int[]{ 10160 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 199))); // curly loop
 		trie.insert(new int[]{ 10175 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 199))); // double curly loop
-		trie.insert(new int[]{ 128282 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 859))); // END arrow
-		trie.insert(new int[]{ 128281 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 859))); // BACK arrow
-		trie.insert(new int[]{ 128283 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 859))); // ON! arrow
-		trie.insert(new int[]{ 128285 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 859))); // TOP arrow
-		trie.insert(new int[]{ 128284 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 859))); // SOON arrow
-		trie.insert(new int[]{ 10004,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 331))); // check mark
-		trie.insert(new int[]{ 10004 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 331))); // check mark
-		trie.insert(new int[]{ 9745,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 529))); // check box with check
-		trie.insert(new int[]{ 9745 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 529))); // check box with check
-		trie.insert(new int[]{ 128280 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 1))); // radio button
-		trie.insert(new int[]{ 9898 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 67))); // white circle
-		trie.insert(new int[]{ 9899 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 1))); // black circle
-		trie.insert(new int[]{ 128308 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 595))); // red circle
-		trie.insert(new int[]{ 128309 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 529))); // blue circle
-		trie.insert(new int[]{ 128996 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 661))); // brown circle
-		trie.insert(new int[]{ 128995 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 661))); // purple circle
-		trie.insert(new int[]{ 128994 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 661))); // green circle
-		trie.insert(new int[]{ 128993 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 661))); // yellow circle
-		trie.insert(new int[]{ 128992 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 661))); // orange circle
-		trie.insert(new int[]{ 128314 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 199))); // red triangle pointed up
-		trie.insert(new int[]{ 128315 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 133))); // red triangle pointed down
-		trie.insert(new int[]{ 128312 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 331))); // small orange diamond
-		trie.insert(new int[]{ 128313 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 265))); // small blue diamond
-		trie.insert(new int[]{ 128310 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 463))); // large orange diamond
-		trie.insert(new int[]{ 128311 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 397))); // large blue diamond
-		trie.insert(new int[]{ 128307 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 661))); // white square button
-		trie.insert(new int[]{ 128306 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 727))); // black square button
-		trie.insert(new int[]{ 9642,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 529))); // black small square
-		trie.insert(new int[]{ 9642 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 529))); // black small square
-		trie.insert(new int[]{ 9643,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 529))); // white small square
-		trie.insert(new int[]{ 9643 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 529))); // white small square
-		trie.insert(new int[]{ 9726 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 529))); // black medium-small square
-		trie.insert(new int[]{ 9725 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 529))); // white medium-small square
-		trie.insert(new int[]{ 9724,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 529))); // black medium square
-		trie.insert(new int[]{ 9724 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 529))); // black medium square
-		trie.insert(new int[]{ 9723,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 529))); // white medium square
-		trie.insert(new int[]{ 9723 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 529))); // white medium square
+		trie.insert(new int[]{ 128282 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 1))); // END arrow
+		trie.insert(new int[]{ 128281 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 67))); // BACK arrow
+		trie.insert(new int[]{ 128283 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 859))); // ON! arrow
+		trie.insert(new int[]{ 128285 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 859))); // TOP arrow
+		trie.insert(new int[]{ 128284 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 859))); // SOON arrow
+		trie.insert(new int[]{ 10004,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 331))); // check mark
+		trie.insert(new int[]{ 10004 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 331))); // check mark
+		trie.insert(new int[]{ 9745,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 529))); // check box with check
+		trie.insert(new int[]{ 9745 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 529))); // check box with check
+		trie.insert(new int[]{ 128280 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 133))); // radio button
+		trie.insert(new int[]{ 9898 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 199))); // white circle
+		trie.insert(new int[]{ 9899 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 133))); // black circle
+		trie.insert(new int[]{ 128308 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 727))); // red circle
+		trie.insert(new int[]{ 128309 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 661))); // blue circle
+		trie.insert(new int[]{ 128996 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 661))); // brown circle
+		trie.insert(new int[]{ 128995 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 661))); // purple circle
+		trie.insert(new int[]{ 128994 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 661))); // green circle
+		trie.insert(new int[]{ 128993 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 661))); // yellow circle
+		trie.insert(new int[]{ 128992 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 1))); // orange circle
+		trie.insert(new int[]{ 128314 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 331))); // red triangle pointed up
+		trie.insert(new int[]{ 128315 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 265))); // red triangle pointed down
+		trie.insert(new int[]{ 128312 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 463))); // small orange diamond
+		trie.insert(new int[]{ 128313 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 397))); // small blue diamond
+		trie.insert(new int[]{ 128310 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 595))); // large orange diamond
+		trie.insert(new int[]{ 128311 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 529))); // large blue diamond
+		trie.insert(new int[]{ 128307 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 793))); // white square button
+		trie.insert(new int[]{ 128306 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 859))); // black square button
+		trie.insert(new int[]{ 9642,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 67))); // black small square
+		trie.insert(new int[]{ 9642 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 67))); // black small square
+		trie.insert(new int[]{ 9643,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 1))); // white small square
+		trie.insert(new int[]{ 9643 }, new ParseResult(1, new SpriteCoordinates(7, 0, 595, 1))); // white small square
+		trie.insert(new int[]{ 9726 }, new ParseResult(1, new SpriteCoordinates(7, 0, 199, 529))); // black medium-small square
+		trie.insert(new int[]{ 9725 }, new ParseResult(1, new SpriteCoordinates(7, 0, 265, 529))); // white medium-small square
+		trie.insert(new int[]{ 9724,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 529))); // black medium square
+		trie.insert(new int[]{ 9724 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 529))); // black medium square
+		trie.insert(new int[]{ 9723,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 529))); // white medium square
+		trie.insert(new int[]{ 9723 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 529))); // white medium square
 		trie.insert(new int[]{ 11035 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 133))); // black large square
 		trie.insert(new int[]{ 11036 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 67))); // white large square
-		trie.insert(new int[]{ 128999 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 661))); // orange square
-		trie.insert(new int[]{ 128998 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 661))); // blue square
-		trie.insert(new int[]{ 128997 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 661))); // red square
-		trie.insert(new int[]{ 129003 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 529))); // brown square
-		trie.insert(new int[]{ 129002 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 595))); // purple square
-		trie.insert(new int[]{ 129001 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 661))); // green square
-		trie.insert(new int[]{ 129000 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 661))); // yellow square
-		trie.insert(new int[]{ 128264 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 331))); // speaker low volume
-		trie.insert(new int[]{ 128263 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 397))); // muted speaker
-		trie.insert(new int[]{ 128265 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 265))); // speaker medium volume
-		trie.insert(new int[]{ 128266 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 199))); // speaker high volume
-		trie.insert(new int[]{ 128276 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 133))); // bell
-		trie.insert(new int[]{ 128277 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 67))); // bell with slash
-		trie.insert(new int[]{ 128227 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 925))); // megaphone
-		trie.insert(new int[]{ 128226 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 925))); // loudspeaker
-		trie.insert(new int[]{ 128488,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 595, 727))); // left speech bubble
-		trie.insert(new int[]{ 128488 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 727))); // left speech bubble
-		trie.insert(new int[]{ 128065,65039,8205,128488,65039 }, new ParseResult(7, new SpriteCoordinates(7, 0, 1, 991))); // eye in speech bubble
-		trie.insert(new int[]{ 128065,128488 }, new ParseResult(4, new SpriteCoordinates(7, 0, 1, 991))); // eye in speech bubble
-		trie.insert(new int[]{ 128172 }, new ParseResult(2, new SpriteCoordinates(7, 0, 859, 925))); // speech balloon
-		trie.insert(new int[]{ 128173 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 925))); // thought balloon
-		trie.insert(new int[]{ 128495,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 529, 727))); // right anger bubble
-		trie.insert(new int[]{ 128495 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 727))); // right anger bubble
-		trie.insert(new int[]{ 9824,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 67))); // spade suit
-		trie.insert(new int[]{ 9824 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 67))); // spade suit
-		trie.insert(new int[]{ 9827,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 1))); // club suit
-		trie.insert(new int[]{ 9827 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 1))); // club suit
-		trie.insert(new int[]{ 9829,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 397))); // heart suit
-		trie.insert(new int[]{ 9829 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 397))); // heart suit
-		trie.insert(new int[]{ 9830,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 397))); // diamond suit
-		trie.insert(new int[]{ 9830 }, new ParseResult(1, new SpriteCoordinates(7, 0, 331, 397))); // diamond suit
-		trie.insert(new int[]{ 127183 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 1057))); // joker
-		trie.insert(new int[]{ 127924 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 991))); // flower playing cards
-		trie.insert(new int[]{ 126980 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 1057))); // mahjong red dragon
-		trie.insert(new int[]{ 128336 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 793))); // one o’clock
-		trie.insert(new int[]{ 128337 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 793))); // two o’clock
-		trie.insert(new int[]{ 128338 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 793))); // three o’clock
-		trie.insert(new int[]{ 128339 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 793))); // four o’clock
-		trie.insert(new int[]{ 128340 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 793))); // five o’clock
-		trie.insert(new int[]{ 128341 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 793))); // six o’clock
-		trie.insert(new int[]{ 128342 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 793))); // seven o’clock
-		trie.insert(new int[]{ 128343 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 793))); // eight o’clock
-		trie.insert(new int[]{ 128344 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 793))); // nine o’clock
-		trie.insert(new int[]{ 128345 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 793))); // ten o’clock
-		trie.insert(new int[]{ 128346 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 793))); // eleven o’clock
-		trie.insert(new int[]{ 128347 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 727))); // twelve o’clock
-		trie.insert(new int[]{ 128348 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 661))); // one-thirty
-		trie.insert(new int[]{ 128349 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 595))); // two-thirty
-		trie.insert(new int[]{ 128350 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 529))); // three-thirty
-		trie.insert(new int[]{ 128351 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 463))); // four-thirty
-		trie.insert(new int[]{ 128352 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 397))); // five-thirty
-		trie.insert(new int[]{ 128353 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 331))); // six-thirty
-		trie.insert(new int[]{ 128354 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 265))); // seven-thirty
-		trie.insert(new int[]{ 128355 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 199))); // eight-thirty
-		trie.insert(new int[]{ 128356 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 133))); // nine-thirty
-		trie.insert(new int[]{ 128357 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 67))); // ten-thirty
-		trie.insert(new int[]{ 128358 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 1))); // eleven-thirty
-		trie.insert(new int[]{ 128359 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 727))); // twelve-thirty
-		trie.insert(new int[]{ 48,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 727))); // digit zero
-		trie.insert(new int[]{ 49,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 595))); // digit one
-		trie.insert(new int[]{ 50,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 463))); // digit two
-		trie.insert(new int[]{ 51,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 331))); // digit three
-		trie.insert(new int[]{ 52,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 199))); // digit four
-		trie.insert(new int[]{ 53,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 67))); // digit five
-		trie.insert(new int[]{ 54,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 1057))); // digit six
-		trie.insert(new int[]{ 55,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 1057))); // digit seven
-		trie.insert(new int[]{ 56,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 1057))); // digit eight
-		trie.insert(new int[]{ 57,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 1057))); // digit nine
-		trie.insert(new int[]{ 35,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 991))); // pound symbol
-		trie.insert(new int[]{ 42,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 859))); // asterisk
-		trie.insert(new int[]{ 9792,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 1))); // female sign
-		trie.insert(new int[]{ 9792 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 1))); // female sign
-		trie.insert(new int[]{ 9794,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 463))); // male sign
-		trie.insert(new int[]{ 9794 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 463))); // male sign
-		trie.insert(new int[]{ 9895 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 133))); // transgender symbol
-		trie.insert(new int[]{ 9877,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 397))); // medical symbol
-		trie.insert(new int[]{ 9877 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 397))); // medical symbol
+		trie.insert(new int[]{ 128999 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 661))); // orange square
+		trie.insert(new int[]{ 128998 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 661))); // blue square
+		trie.insert(new int[]{ 128997 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 661))); // red square
+		trie.insert(new int[]{ 129003 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 661))); // brown square
+		trie.insert(new int[]{ 129002 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 661))); // purple square
+		trie.insert(new int[]{ 129001 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 661))); // green square
+		trie.insert(new int[]{ 129000 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 661))); // yellow square
+		trie.insert(new int[]{ 128264 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 463))); // speaker low volume
+		trie.insert(new int[]{ 128263 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 529))); // muted speaker
+		trie.insert(new int[]{ 128265 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 397))); // speaker medium volume
+		trie.insert(new int[]{ 128266 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 331))); // speaker high volume
+		trie.insert(new int[]{ 128276 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 265))); // bell
+		trie.insert(new int[]{ 128277 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 199))); // bell with slash
+		trie.insert(new int[]{ 128227 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 925))); // megaphone
+		trie.insert(new int[]{ 128226 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 925))); // loudspeaker
+		trie.insert(new int[]{ 128488,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 727, 727))); // left speech bubble
+		trie.insert(new int[]{ 128488 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 727))); // left speech bubble
+		trie.insert(new int[]{ 128065,65039,8205,128488,65039 }, new ParseResult(7, new SpriteCoordinates(7, 0, 133, 991))); // eye in speech bubble
+		trie.insert(new int[]{ 128065,128488 }, new ParseResult(4, new SpriteCoordinates(7, 0, 133, 991))); // eye in speech bubble
+		trie.insert(new int[]{ 128172 }, new ParseResult(2, new SpriteCoordinates(7, 0, 991, 1))); // speech balloon
+		trie.insert(new int[]{ 128173 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 925))); // thought balloon
+		trie.insert(new int[]{ 128495,65039 }, new ParseResult(3, new SpriteCoordinates(7, 0, 661, 727))); // right anger bubble
+		trie.insert(new int[]{ 128495 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 727))); // right anger bubble
+		trie.insert(new int[]{ 9824,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 199))); // spade suit
+		trie.insert(new int[]{ 9824 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 199))); // spade suit
+		trie.insert(new int[]{ 9827,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 133))); // club suit
+		trie.insert(new int[]{ 9827 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 133))); // club suit
+		trie.insert(new int[]{ 9829,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 67))); // heart suit
+		trie.insert(new int[]{ 9829 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 67))); // heart suit
+		trie.insert(new int[]{ 9830,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 1))); // diamond suit
+		trie.insert(new int[]{ 9830 }, new ParseResult(1, new SpriteCoordinates(7, 0, 463, 1))); // diamond suit
+		trie.insert(new int[]{ 127183 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 1057))); // joker
+		trie.insert(new int[]{ 127924 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 991))); // flower playing cards
+		trie.insert(new int[]{ 126980 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 1057))); // mahjong red dragon
+		trie.insert(new int[]{ 128336 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 793))); // one o’clock
+		trie.insert(new int[]{ 128337 }, new ParseResult(2, new SpriteCoordinates(7, 0, 727, 793))); // two o’clock
+		trie.insert(new int[]{ 128338 }, new ParseResult(2, new SpriteCoordinates(7, 0, 661, 793))); // three o’clock
+		trie.insert(new int[]{ 128339 }, new ParseResult(2, new SpriteCoordinates(7, 0, 595, 793))); // four o’clock
+		trie.insert(new int[]{ 128340 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 793))); // five o’clock
+		trie.insert(new int[]{ 128341 }, new ParseResult(2, new SpriteCoordinates(7, 0, 463, 793))); // six o’clock
+		trie.insert(new int[]{ 128342 }, new ParseResult(2, new SpriteCoordinates(7, 0, 397, 793))); // seven o’clock
+		trie.insert(new int[]{ 128343 }, new ParseResult(2, new SpriteCoordinates(7, 0, 331, 793))); // eight o’clock
+		trie.insert(new int[]{ 128344 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 793))); // nine o’clock
+		trie.insert(new int[]{ 128345 }, new ParseResult(2, new SpriteCoordinates(7, 0, 199, 793))); // ten o’clock
+		trie.insert(new int[]{ 128346 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 793))); // eleven o’clock
+		trie.insert(new int[]{ 128347 }, new ParseResult(2, new SpriteCoordinates(7, 0, 67, 793))); // twelve o’clock
+		trie.insert(new int[]{ 128348 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 793))); // one-thirty
+		trie.insert(new int[]{ 128349 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 727))); // two-thirty
+		trie.insert(new int[]{ 128350 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 661))); // three-thirty
+		trie.insert(new int[]{ 128351 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 595))); // four-thirty
+		trie.insert(new int[]{ 128352 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 529))); // five-thirty
+		trie.insert(new int[]{ 128353 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 463))); // six-thirty
+		trie.insert(new int[]{ 128354 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 397))); // seven-thirty
+		trie.insert(new int[]{ 128355 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 331))); // eight-thirty
+		trie.insert(new int[]{ 128356 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 265))); // nine-thirty
+		trie.insert(new int[]{ 128357 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 199))); // ten-thirty
+		trie.insert(new int[]{ 128358 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 133))); // eleven-thirty
+		trie.insert(new int[]{ 128359 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 67))); // twelve-thirty
+		trie.insert(new int[]{ 48,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 859))); // digit zero
+		trie.insert(new int[]{ 49,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 727))); // digit one
+		trie.insert(new int[]{ 50,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 595))); // digit two
+		trie.insert(new int[]{ 51,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 463))); // digit three
+		trie.insert(new int[]{ 52,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 331))); // digit four
+		trie.insert(new int[]{ 53,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 199))); // digit five
+		trie.insert(new int[]{ 54,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 67))); // digit six
+		trie.insert(new int[]{ 55,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1057, 1057))); // digit seven
+		trie.insert(new int[]{ 56,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 925, 1057))); // digit eight
+		trie.insert(new int[]{ 57,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 793, 1057))); // digit nine
+		trie.insert(new int[]{ 35,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 1123))); // pound symbol
+		trie.insert(new int[]{ 42,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1123, 991))); // asterisk
+		trie.insert(new int[]{ 9792,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 133))); // female sign
+		trie.insert(new int[]{ 9792 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 133))); // female sign
+		trie.insert(new int[]{ 9794,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 529, 67))); // male sign
+		trie.insert(new int[]{ 9794 }, new ParseResult(1, new SpriteCoordinates(7, 0, 529, 67))); // male sign
+		trie.insert(new int[]{ 9895 }, new ParseResult(1, new SpriteCoordinates(7, 0, 397, 265))); // transgender symbol
+		trie.insert(new int[]{ 9877,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 133, 397))); // medical symbol
+		trie.insert(new int[]{ 9877 }, new ParseResult(1, new SpriteCoordinates(7, 0, 133, 397))); // medical symbol
 		trie.insert(new int[]{ 127987,65039 }, new ParseResult(3, new SpriteCoordinates(8, 0, 1, 133))); // white flag
 		trie.insert(new int[]{ 127987 }, new ParseResult(2, new SpriteCoordinates(8, 0, 1, 133))); // white flag
 		trie.insert(new int[]{ 127988 }, new ParseResult(2, new SpriteCoordinates(8, 0, 67, 1))); // black flag
@@ -4274,7 +4892,7 @@ public class EmojiParser {
 		trie.insert(new int[]{ 128681 }, new ParseResult(2, new SpriteCoordinates(8, 0, 1, 1))); // triangular flag
 		trie.insert(new int[]{ 127987,65039,8205,127752 }, new ParseResult(6, new SpriteCoordinates(8, 0, 133, 133))); // rainbow flag
 		trie.insert(new int[]{ 127987,127752 }, new ParseResult(4, new SpriteCoordinates(8, 0, 133, 133))); // rainbow flag
-		trie.insert(new int[]{ 127987,8205,9895,65039 }, new ParseResult(5, new SpriteCoordinates(8, 0, 67, 133))); // transgender flag
+		trie.insert(new int[]{ 127987,65039,8205,9895,65039 }, new ParseResult(6, new SpriteCoordinates(8, 0, 67, 133))); // transgender flag
 		trie.insert(new int[]{ 127987,9895 }, new ParseResult(3, new SpriteCoordinates(8, 0, 67, 133))); // transgender flag
 		trie.insert(new int[]{ 127988,8205,9760,65039 }, new ParseResult(5, new SpriteCoordinates(8, 0, 133, 67))); // pirate flag
 		trie.insert(new int[]{ 127988,9760 }, new ParseResult(3, new SpriteCoordinates(8, 0, 133, 67))); // pirate flag
@@ -4334,9 +4952,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127464,127472 }, new ParseResult(4, new SpriteCoordinates(8, 0, 859, 925))); // flag: Cook Islands
 		trie.insert(new int[]{ 127464,127479 }, new ParseResult(4, new SpriteCoordinates(8, 0, 463, 925))); // flag: Costa Rica
 		trie.insert(new int[]{ 127464,127470 }, new ParseResult(4, new SpriteCoordinates(8, 0, 925, 925))); // flag: Côte d’Ivoire
-	}
-
-	public static void init7(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 127469,127479 }, new ParseResult(4, new SpriteCoordinates(8, 0, 661, 793))); // flag: Croatia
 		trie.insert(new int[]{ 127464,127482 }, new ParseResult(4, new SpriteCoordinates(8, 0, 397, 925))); // flag: Cuba
 		trie.insert(new int[]{ 127464,127484 }, new ParseResult(4, new SpriteCoordinates(8, 0, 265, 925))); // flag: Curaçao
@@ -4515,6 +5130,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127481,127483 }, new ParseResult(4, new SpriteCoordinates(8, 0, 331, 331))); // flag: Tuvalu
 		trie.insert(new int[]{ 127482,127468 }, new ParseResult(4, new SpriteCoordinates(8, 0, 67, 331))); // flag: Uganda
 		trie.insert(new int[]{ 127482,127462 }, new ParseResult(4, new SpriteCoordinates(8, 0, 133, 331))); // flag: Ukraine
+	}
+
+	public static void init8(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 127462,127466 }, new ParseResult(4, new SpriteCoordinates(8, 0, 1057, 661))); // flag: United Arab Emirates
 		trie.insert(new int[]{ 127468,127463 }, new ParseResult(4, new SpriteCoordinates(8, 0, 331, 859))); // flag: United Kingdom
 		trie.insert(new int[]{ 127988,917607,917602,917605,917614,917607,917631 }, new ParseResult(14, new SpriteCoordinates(8, 0, 133, 1))); // flag: England

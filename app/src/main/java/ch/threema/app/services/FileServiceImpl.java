@@ -1119,11 +1119,16 @@ public class FileServiceImpl implements FileService {
 			throw new Exception("Unable to scale thumbnail");
 		}
 
+		saveThumbnail(messageModel, resizedThumbnailBytes);
+	}
+
+	@Override
+	public void saveThumbnail(AbstractMessageModel messageModel, byte[] thumbnailBytes) throws Exception {
 		File thumbnailFile = this.getMessageThumbnail(messageModel);
 		if (thumbnailFile != null) {
 			FileUtil.createNewFileOrLog(thumbnailFile, logger);
 			logger.info("Writing thumbnail...");
-			this.writeFile(resizedThumbnailBytes, thumbnailFile);
+			this.writeFile(thumbnailBytes, thumbnailFile);
 		}
 	}
 

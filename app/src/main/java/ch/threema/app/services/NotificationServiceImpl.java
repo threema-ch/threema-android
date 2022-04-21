@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
@@ -111,6 +112,7 @@ import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
+import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
 import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
 import static ch.threema.app.ThreemaApplication.WORK_SYNC_NOTIFICATION_ID;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
@@ -647,7 +649,7 @@ public class NotificationServiceImpl implements NotificationService {
 									StatusBarNotification[] notifications = notificationManager.getActiveNotifications();
 									for (StatusBarNotification notification : notifications) {
 										if (notification.getId() == newestGroup.getNotificationId()) {
-											NotificationServiceImpl.this.notify(newestGroup.getNotificationId(), builder);
+											NotificationServiceImpl.this.notify(newestGroup.getNotificationId(), builder, null);
 											break;
 										}
 									}
@@ -658,7 +660,7 @@ public class NotificationServiceImpl implements NotificationService {
 						}
 					}, 4000);
 				} else {
-					this.notify(newestGroup.getNotificationId(), builder);
+					this.notify(newestGroup.getNotificationId(), builder, notificationSchema);
 				}
 			} else {
 				createSingleNotification(newestGroup,
@@ -1497,7 +1499,7 @@ public class NotificationServiceImpl implements NotificationService {
 					.setOnlyAlertOnce(false)
 					.setContentIntent(getPendingIntentForActivity(HomeActivity.class));
 
-		this.notify(ThreemaApplication.NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID, builder);
+		this.notify(ThreemaApplication.NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID, builder, null);
 
 		showIconBadge(0);
 
@@ -1533,7 +1535,7 @@ public class NotificationServiceImpl implements NotificationService {
 					.setOnlyAlertOnce(false)
 					.setContentIntent(getPendingIntentForActivity(HomeActivity.class));
 
-		this.notify(ThreemaApplication.NEW_MESSAGE_LOCKED_NOTIFICATION_ID, builder);
+		this.notify(ThreemaApplication.NEW_MESSAGE_LOCKED_NOTIFICATION_ID, builder, null);
 
 		logger.info("Showing generic notification (master key locked)");
 	}
@@ -1570,7 +1572,7 @@ public class NotificationServiceImpl implements NotificationService {
 					createPendingIntentWithTaskStack(notificationIntent);
 					builder.setContentIntent(pendingIntent);
 
-					this.notify(ThreemaApplication.NETWORK_BLOCKED_NOTIFICATION_ID, builder);
+					this.notify(ThreemaApplication.NETWORK_BLOCKED_NOTIFICATION_ID, builder, null);
 					logger.info("Showing network blocked notification");
 					return;
 				}
@@ -1607,7 +1609,7 @@ public class NotificationServiceImpl implements NotificationService {
 					.setPriority(NotificationCompat.PRIORITY_MAX)
 					.setAutoCancel(true);
 
-		this.notify(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID, builder);
+		this.notify(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID, builder, null);
 	}
 
 
@@ -1639,7 +1641,7 @@ public class NotificationServiceImpl implements NotificationService {
 			builder.addAction(R.drawable.ic_sd_card_black_24dp, context.getString(R.string.check_now), pendingIntent);
 		}
 
-		this.notify(ThreemaApplication.NOT_ENOUGH_DISK_SPACE_NOTIFICATION_ID, builder);
+		this.notify(ThreemaApplication.NOT_ENOUGH_DISK_SPACE_NOTIFICATION_ID, builder, null);
 	}
 
 	private PendingIntent createPendingIntentWithTaskStack(Intent intent) {
@@ -1693,7 +1695,7 @@ public class NotificationServiceImpl implements NotificationService {
 						.setStyle(new NotificationCompat.BigTextStyle().bigText(content))
 						.addAction(R.drawable.ic_refresh_white_24dp, context.getString(R.string.try_again), sendPendingIntent);
 
-			this.notify(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID, builder);
+			this.notify(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID, builder, null);
 		} else {
 			this.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
 		}
@@ -1720,7 +1722,7 @@ public class NotificationServiceImpl implements NotificationService {
 							.setContentText(content)
 							.setStyle(new NotificationCompat.BigTextStyle().bigText(content));
 
-			this.notify(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID, builder);
+			this.notify(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID, builder, null);
 		} else {
 			this.cancel(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID);
 		}
@@ -1738,7 +1740,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void showIdentityStatesSyncProgress() {
-		showSyncProgress(ThreemaApplication.IDENTITY_SYNC_NOTIFICATION_ID, NOTIFICATION_CHANNEL_IDENTITY_SYNC, R.string.synchronize_contact);
+		showSyncProgress(ThreemaApplication.IDENTITY_SYNC_NOTIFICATION_ID, NOTIFICATION_CHANNEL_IDENTITY_SYNC, R.string.synchronizing);
 	}
 
 	@Override
@@ -1764,7 +1766,7 @@ public class NotificationServiceImpl implements NotificationService {
 				.setLocalOnly(true)
 				.setOnlyAlertOnce(true);
 
-		this.notify(notificationId, builder);
+		this.notify(notificationId, builder, null);
 	}
 
 
@@ -1810,7 +1812,7 @@ public class NotificationServiceImpl implements NotificationService {
 							.setPriority(NotificationCompat.PRIORITY_HIGH)
 							.setAutoCancel(true);
 
-			this.notify(ThreemaApplication.NEW_SYNCED_CONTACTS_NOTIFICATION_ID, builder);
+			this.notify(ThreemaApplication.NEW_SYNCED_CONTACTS_NOTIFICATION_ID, builder, null);
 		}
 	}
 
@@ -1820,9 +1822,24 @@ public class NotificationServiceImpl implements NotificationService {
 	 * @param builder
 	 */
 
-	private void notify(int id, NotificationCompat.Builder builder) {
+	private void notify(int id, NotificationCompat.Builder builder, @Nullable NotificationSchema schema) {
 		try {
 			notificationManagerCompat.notify(id, builder.build());
+		} catch (SecurityException e) {
+			// some phones revoke access to selected sound files for notifications after an OS upgrade
+			logger.error("Can't show notification", e);
+			if (schema != null && schema.getSoundUri() != null && !DEFAULT_NOTIFICATION_URI.equals(schema.getSoundUri())) {
+				// create a new schema with default sound
+				NotificationSchemaImpl newSchema = new NotificationSchemaImpl(this.context);
+				newSchema.setSoundUri(DEFAULT_NOTIFICATION_URI);
+				newSchema.setVibrate(schema.vibrate()).setColor(schema.getColor());
+				builder.setChannelId(NotificationBuilderWrapper.init(context, NOTIFICATION_CHANNEL_CHAT, newSchema, false));
+				try {
+					notificationManagerCompat.notify(id, builder.build());
+				} catch (Exception ex) {
+					logger.error("Failed to show fallback notification", ex);
+				}
+			}
 		} catch (Exception e) {
 			// catch FileUriExposedException - see https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
 			logger.error("Exception", e);
@@ -1936,7 +1953,7 @@ public class NotificationServiceImpl implements NotificationService {
 				.setContentTitle(this.context.getString(R.string.app_name))
 				.setContentText(msg)
 				.setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
-		this.notify(ThreemaApplication.WEB_RESUME_FAILED_NOTIFICATION_ID, builder);
+		this.notify(ThreemaApplication.WEB_RESUME_FAILED_NOTIFICATION_ID, builder, null);
 	}
 
 	@Override
@@ -2004,7 +2021,7 @@ public class NotificationServiceImpl implements NotificationService {
 				.setPriority(NotificationCompat.PRIORITY_HIGH)
 				.setAutoCancel(true);
 
-		this.notify(ThreemaApplication.GROUP_RESPONSE_NOTIFICATION_ID, builder);
+		this.notify(ThreemaApplication.GROUP_RESPONSE_NOTIFICATION_ID, builder, null);
 	}
 
 	@Override
@@ -2068,7 +2085,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 		addGroupLinkActions(notifBuilder, acceptPendingIntent, rejectPendingIntent);
 
-		this.notify(requestIdNonce, notifBuilder);
+		this.notify(requestIdNonce, notifBuilder, null);
 	}
 
 }

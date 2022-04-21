@@ -23,12 +23,19 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.widget.Toast;
 
+import java.io.File;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.FileService;
 import ch.threema.app.services.UserService;
+import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.storage.models.ContactModel;
 
 import static androidx.core.content.ContextCompat.startActivity;
@@ -57,5 +64,28 @@ public class ShareUtil {
 		shareIntent.setType("text/plain");
 		shareIntent.putExtra(Intent.EXTRA_TEXT, text);
 		startActivity(context, Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
+	}
+
+	/**
+	 * Share the logfile with another application.
+	 *
+	 * @param context     the context
+	 * @param fileService the file service
+	 */
+	public static void shareLogfile(@NonNull Context context, @NonNull FileService fileService) {
+		File zipFile = DebugLogFileBackend.getZipFile(fileService);
+		if (zipFile == null) {
+			Toast.makeText(context, context.getResources().getString(R.string.try_again), Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		Uri uriToLogfile = fileService.getShareFileUri(zipFile, "debug_log.zip");
+
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		shareIntent.setType("application/zip");
+		shareIntent.putExtra(Intent.EXTRA_STREAM, uriToLogfile);
+		shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+		startActivity(context, Intent.createChooser(shareIntent, context.getResources().getString(R.string.share_via)), null);
 	}
 }

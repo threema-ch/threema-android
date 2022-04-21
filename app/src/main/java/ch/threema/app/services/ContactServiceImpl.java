@@ -90,6 +90,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -1296,7 +1297,8 @@ public class ContactServiceImpl implements ContactService {
 		ContactModel newContact;
 
 		try {
-			publicKey = this.contactStore.fetchPublicKeyForIdentity(identity);
+			Contact contact = this.contactStore.fetchPublicKeyForIdentity(identity, true);
+			publicKey = contact != null ? contact.getPublicKey() : null;
 
 			if (publicKey == null) {
 				throw new InvalidEntryException(R.string.connection_error);
@@ -1429,7 +1431,7 @@ public class ContactServiceImpl implements ContactService {
 			return;
 		}
 
-		if (contactStore.getPublicKeyForIdentity(identity, false) == null) {
+		if (contactStore.getContactForIdentity(identity, false, true) == null) {
 			LicenseService.Credentials credentials = this.licenseService.loadCredentials();
 			if ((credentials instanceof UserCredentials)) {
 				try {

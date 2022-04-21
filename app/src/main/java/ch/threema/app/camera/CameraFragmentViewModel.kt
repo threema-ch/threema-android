@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,23 +19,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.voip.receivers;
+package ch.threema.app.camera
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import androidx.camera.core.CameraSelector
+import androidx.lifecycle.ViewModel
 
-import org.slf4j.Logger;
-
-import ch.threema.app.voip.services.CallRejectService;
-import ch.threema.base.utils.LoggingUtil;
-
-public class CallRejectReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CallRejectReceiver");
-
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		logger.info("onReceive");
-		CallRejectService.enqueueWork(context, intent);
-	}
+class CameraFragmentViewModel : ViewModel() {
+    var lensFacing: Int = CameraSelector.LENS_FACING_BACK
 }

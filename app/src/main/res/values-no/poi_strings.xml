@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Grend</string>
+    <string name="village">Landsby</string>
+    <string name="town">By</string>
+    <string name="isolated_dwelling">Enkel bosetning</string>
+    <string name="island">Øy</string>
+    <string name="islet">Holme</string>
+    <string name="suburb">Forstad</string>
+    <string name="city">By</string>
+    <string name="city_block">Kvartal</string>
+    <string name="neighbourhood">Nabolag</string>
+    <string name="locality">Posisjon</string>
+    <string name="state">Stat</string>
+    <string name="farm">Gård</string>
+    <string name="street">Gate</string>
+    <string name="country">Land</string>
+</resources>

@@ -99,7 +99,8 @@ public class DistributionListModelFactory extends ModelFactory {
 							.setId(cursorHelper.getInt(DistributionListModel.COLUMN_ID))
 							.setName(cursorHelper.getString(DistributionListModel.COLUMN_NAME))
 							.setCreatedAt(cursorHelper.getDateByString(DistributionListModel.COLUMN_CREATED_AT))
-							.setArchived(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ARCHIVED));
+							.setArchived(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ARCHIVED))
+							.setHidden(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_HIDDEN));
 
 					return false;
 				}
@@ -147,6 +148,7 @@ public class DistributionListModelFactory extends ModelFactory {
 		contentValues.put(DistributionListModel.COLUMN_NAME, distributionListModel.getName());
 		contentValues.put(DistributionListModel.COLUMN_CREATED_AT, distributionListModel.getCreatedAt() != null ? CursorHelper.dateAsStringFormat.get().format(distributionListModel.getCreatedAt()) : null);
 		contentValues.put(DistributionListModel.COLUMN_IS_ARCHIVED, distributionListModel.isArchived());
+		contentValues.put(DistributionListModel.COLUMN_IS_HIDDEN, distributionListModel.isHidden());
 
 		return contentValues;
 	}
@@ -210,23 +212,31 @@ public class DistributionListModelFactory extends ModelFactory {
 
 		//sort by id!
 		String orderBy = null;
+		// do not show hidden distribution lists by default
+		String where = DistributionListModel.COLUMN_IS_HIDDEN + " !=1";
 
-		if(filter != null) {
-			if(!filter.sortingByDate()) {
+		if (filter != null) {
+			if (!filter.sortingByDate()) {
 				orderBy = DistributionListModel.COLUMN_CREATED_AT + " " + (filter.sortingAscending() ? "ASC" : "DESC");
 			}
+			if (filter.showHidden()) {
+				where = null;
+			}
+		}
+
+		if (where != null) {
+			queryBuilder.appendWhere(where);
 		}
 
 		return convert(
 				queryBuilder,
 				orderBy);
-
 	}
 
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `distribution_list` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `name` VARCHAR , `createdAt` VARCHAR, `isArchived` TINYINT DEFAULT 0 );"
+				"CREATE TABLE `distribution_list` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `name` VARCHAR , `createdAt` VARCHAR, `isArchived` TINYINT DEFAULT 0 , `isHidden` TINYINT DEFAULT 0 );"
 		};
 	}
 }

@@ -19,6 +19,11 @@
 			android:key="@string/preferences__sendlog"
 			android:summary="@string/prefs_sendlog_summary"
 			android:title="@string/prefs_sendlog"/>
+		<Preference
+			android:dependency="@string/preferences__message_log_switch"
+			android:key="@string/preferences__exportlog"
+			android:summary="@string/prefs_exportlog_summary"
+			android:title="@string/prefs_exportlog"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_network"

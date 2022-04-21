@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -38,6 +39,8 @@ import java.util.Calendar;
 import java.util.Set;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationChannelCompat;
+import androidx.core.app.NotificationChannelGroupCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
@@ -221,15 +224,42 @@ public class DNDUtil {
 	}
 
 	/**
-	 * Check if the contact specified in messageReceiver is muted in the system. "Starred" contacts may override the global DND setting in "priority" mode
-	 * and should be signalled.
+	 * Check if the contact specified in messageReceiver is muted in the system.
+	 *
+	 * Notifications in Android are one big mess!
+	 *
+	 * "Starred" contacts may override the global DND setting in "priority" mode
+	 * and should be signalled (needless to say this applies to contacts that are linked with a system contact only).
+	 * Also, notification channels can be configured to override the system's DND setting. Accordingly we should signal them too.
+	 * Additionally, notifications may be blocked on a notification channel group level. In that case, ignore any DND override settings
+	 *
+	 * I dare not imagine if this will work on Xiaomi devices with their hideous tinkering on top of the normal Android notification system...
+	 *
 	 * @param messageReceiver A MessageReceiver representing a ContactModel
+	 * @param notification The notification
 	 * @param notificationManager
 	 * @param notificationManagerCompat
-	 * @return false if the contact is not muted in the system and a ringtone should be played, false otherwise
+	 * @return true if no ringtone should ne played, false otherwise
 	 */
-	public boolean isSystemMuted(MessageReceiver messageReceiver, NotificationManager notificationManager, NotificationManagerCompat notificationManagerCompat) {
+	public boolean isSystemMuted(MessageReceiver messageReceiver, @Nullable Notification notification, NotificationManager notificationManager, NotificationManagerCompat notificationManagerCompat) {
 		boolean isSystemMuted = !notificationManagerCompat.areNotificationsEnabled();
+		boolean canBypassDND = false;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notification != null) {
+			NotificationChannelCompat notificationChannelCompat = notificationManagerCompat.getNotificationChannelCompat(notification.getChannelId());
+			if (notificationChannelCompat != null) {
+				String groupName = notificationChannelCompat.getGroup();
+				if (groupName != null) {
+					NotificationChannelGroupCompat notificationChannelGroupCompat = notificationManagerCompat.getNotificationChannelGroupCompat(groupName);
+					if (notificationChannelGroupCompat != null) {
+						if (notificationChannelGroupCompat.isBlocked()) {
+							return true;
+						}
+					}
+				}
+				canBypassDND = notificationChannelCompat.canBypassDnd();
+			}
+		}
 
 		if (messageReceiver instanceof ContactMessageReceiver) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -246,6 +276,7 @@ public class DNDUtil {
 				}
 			}
 		}
-		return isSystemMuted;
+
+		return isSystemMuted && !canBypassDND;
 	}
 }

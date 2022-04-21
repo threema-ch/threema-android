@@ -530,15 +530,24 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	@NonNull
 	public String[] getList(String listName) {
-		String[] res = this.preferenceStore.getStringArray(listName, true);
-		if (res == null) {
-			res = this.preferenceStore.getStringArray(listName);
-			if (res == null) {
-				return new String[0];
+		return  getList(listName, true);
+	}
+
+	@Override
+	@NonNull
+	public String[] getList(String listName, boolean encrypted) {
+		String[] res = this.preferenceStore.getStringArray(listName, encrypted);
+		if (res == null && encrypted) {
+			// check if we have an old unencrypted identity list - migrate if necessary and return its values
+			if (this.preferenceStore.has(listName)) {
+				res = this.preferenceStore.getStringArray(listName, false);
+				this.preferenceStore.remove(listName, false);
+				if (res != null) {
+					this.preferenceStore.save(listName, res, true);
+				}
 			}
 		}
-
-		return res;
+		return res != null ? res : new String[0];
 	}
 
 	@Override
@@ -1444,16 +1453,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setCameraLensFacing(int lensFacing) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__camera_lens_facing), lensFacing);
-	}
-
-	@Override
-	public int getCameraLensFacing() {
-		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__camera_lens_facing));
-	}
-
-	@Override
 	public void setPipPosition(int pipPosition) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__pip_position), pipPosition);
 	}
@@ -1549,5 +1548,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public float getAudioPlaybackSpeed() {
 		return this.preferenceStore.getFloat(this.getKeyName(R.string.preferences__audio_playback_speed), 1f);
+	}
+
+	@Override
+	public int getMultipleRecipientsTooltipCount() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__tooltip_multi_recipients));
+	}
+
+	@Override
+	public void incrementMultipleRecipientsTooltipCount() {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_multi_recipients), getMultipleRecipientsTooltipCount() + 1);
 	}
 }

@@ -794,6 +794,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 			case STATE_RECORDING:
 				activateSensors(true);
 				pauseButton.setImageResource(R.drawable.ic_pause);
+				pauseButton.clearColorFilter();
 				pauseButton.setVisibility(supportsPauseResume() ? View.VISIBLE : View.INVISIBLE);
 				pauseButton.setContentDescription(getString(R.string.pause));
 				playButton.setImageResource(R.drawable.ic_stop);
@@ -808,6 +809,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 			case STATE_PAUSED:
 				activateSensors(false);
 				pauseButton.setImageResource(R.drawable.ic_record);
+				pauseButton.setColorFilter(getResources().getColor(R.color.material_red), PorterDuff.Mode.SRC_IN);
 				pauseButton.setVisibility(supportsPauseResume() ? View.VISIBLE : View.INVISIBLE);
 				pauseButton.setContentDescription(getString(R.string.continue_recording));
 				playButton.setImageResource(R.drawable.ic_stop);
@@ -815,7 +817,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 				recordImage.setVisibility(View.INVISIBLE);
 				stopBlinking();
 				stopTimer();
-				inhibitPinLock(false);
+				inhibitPinLock(true);
 				break;
 			case STATE_PLAYING_PAUSED:
 				activateSensors(false);

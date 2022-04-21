@@ -37,7 +37,7 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
 
     private var saveMediaPreference: Preference? = null
 
-    private val preferenceService = getInitialPreferenceService()
+    private val preferenceService = requirePreferenceService()
 
     override fun initializePreferences() {
         super.initializePreferences()

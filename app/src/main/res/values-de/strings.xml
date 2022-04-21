@@ -86,7 +86,7 @@
 	<string name="prefs_title_sum_message_log_on">Ereignisse und Netzwerkinformationen werden in die Datei debug_log.txt geloggt</string>
 	<string name="prefs_title_sum_message_log_off">Ereignisse werden nicht geloggt</string>
 	<string name="prefs_reset_push">Push-Token zurücksetzen</string>
-	<string name="prefs_sum_reset_push">Gerät neu bei FCM//HMS registrieren</string>
+	<string name="prefs_sum_reset_push">Gerät neu bei FCM/HMS registrieren</string>
 	<string name="prefs_notification_preview">Vorschau anzeigen</string>
 	<string name="image_size_small">Klein (640x640)</string>
 	<string name="image_size_medium">Mittel (1024x1024)</string>
@@ -681,6 +681,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="chat_deleted">%d Chat(s) gelöscht</string>
 	<string name="prefs_sendlog">Logdatei versenden</string>
 	<string name="prefs_sendlog_summary">Logdatei für Problemanalyse an Threema senden</string>
+	<string name="prefs_exportlog">Logdatei teilen</string>
+	<string name="prefs_exportlog_summary">Logdatei für Problemanalyse teilen</string>
 	<string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
 	<string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.
 	</string>
@@ -1456,4 +1458,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="organization_type">Organisation</string>
 	<string name="permission_bluetooth_connect_required">Aktivieren Sie die «Geräte in der Nähe»-Berechtigung, um verbundene Bluetooth-Geräte zu finden</string>
 	<string name="threema_push_start_webclient_sessions_manually">Threema Push ist aktiviert. Threema Web und Desktop-Sitzungen müssen daher manuell gestartet werden.</string>
+	<string name="tooltip_multiple_recipients_title">Neu: Mehrere Empfänger</string>
+	<string name="tooltip_multiple_recipients_text">Lang tippen, um mehrere Empfänger zu wählen und allen die gleiche Nachricht zu senden.</string>
+	<string name="synchronizing">Synchronisation läuft…</string>
 </resources>

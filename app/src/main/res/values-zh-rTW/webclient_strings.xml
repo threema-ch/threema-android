@@ -17,7 +17,7 @@
     <string name="webclient_unnamed_session">未命名工作階段</string>
     <string name="webclient_session_remove">移除工作階段</string>
     <string name="webclient_welcome_title">在您的電腦上聊天！</string>
-    <string name="webclient_welcome_explain">桌面版應用程式/網頁版可讓您在桌上型電腦或筆記型電腦上聊天，同时擁有對所有聯絡人，多媒體和聊天甚至過去對話記錄的完全取用權限。\n\n<b>電話和電腦之間的所有通訊都是完全端到端加密的</b>，如果電話和電腦都在同一網路上，則使用直接連線。\n\n請注意：當桌面版應用程式/網頁版執行時，可能會消耗更多電量。您可以隨時開啟或停用。</string>
+    <string name="webclient_welcome_explain">桌面版應用程式/網頁版可讓您在桌上型電腦或筆記型電腦上聊天，同時擁有對所有聯絡人，多媒體和聊天甚至過去對話記錄的完全取用權限。\n\n<b>電話和電腦之間的所有通訊都是完全端到端加密的</b>，如果電話和電腦都在同一網路上，則使用直接連線。\n\n請注意：當桌面版應用程式/網頁版執行時，可能會消耗更多電量。您可以隨時開啟或停用。</string>
     <string name="webclient_launch">立即啟動桌面版應用程式/網頁版</string>
     <string name="webclient_qr_scan_message">請掃描螢幕上顯示的QR碼。</string>
     <string name="webclient_invalid_qr_code">QR碼無效</string>

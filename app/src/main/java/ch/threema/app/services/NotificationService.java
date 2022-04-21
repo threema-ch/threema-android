@@ -75,6 +75,7 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_CHAT_ID_PREFIX = "ch";
 	String NOTIFICATION_CHANNEL_VOIP_ID_PREFIX = "voip";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE_ID_PREFIX = "chu";
+	String NOTIFICATION_CHANNEL_REJECT_SERVICE = "reject";
 
 	interface NotificationSchema {
 		boolean vibrate();

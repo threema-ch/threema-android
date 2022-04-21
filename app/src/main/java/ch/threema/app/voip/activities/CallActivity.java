@@ -1813,7 +1813,7 @@ public class CallActivity extends ThreemaActivity implements
 			rejectIntent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, contact.getIdentity());
 			rejectIntent.putExtra(VoipCallService.EXTRA_CALL_ID, callId);
 			rejectIntent.putExtra(CallRejectService.EXTRA_REJECT_REASON, reason);
-			CallRejectService.enqueueWork(this, rejectIntent);
+			ContextCompat.startForegroundService(this, rejectIntent);
 		} else if (this.activityMode == MODE_ACTIVE_CALL) {
 			VoipUtil.sendVoipCommand(CallActivity.this, VoipCallService.class, VoipCallService.ACTION_HANGUP);
 			setResult(RESULT_CANCELED);

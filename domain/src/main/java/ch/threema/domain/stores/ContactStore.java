@@ -30,13 +30,14 @@ import ch.threema.domain.models.Contact;
  */
 public interface ContactStore {
 	/**
-	 * Obtain the public key for the given identity and creates a contact if it doesn't already exist
+	 * Obtain the public key for the given identity and wrap it in a contact object.
 	 *
 	 * @param identity desired identity
 	 * @param fetch if true, attempt to synchronously fetch the key from the server if necessary
+	 * @param saveContact if true, save the contact if it does not exist
 	 * @return public key, or null if not found (or fetch failed)
 	 */
-	@Nullable byte[] getPublicKeyForIdentity(@NonNull String identity, boolean fetch);
+	@Nullable Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact);
 
 	/**
 	 * Return the contact with the specified identity.
@@ -51,6 +52,15 @@ public interface ContactStore {
 	 * If a contact already exists, update it.
 	 */
 	void addContact(@NonNull Contact contact);
+
+	/**
+	 * Add a contact to the contact store. If it already exists, update it. The given contact object
+	 * is modified when the hide argument is true.
+	 *
+	 * @param contact the contact that is added or updated
+	 * @param hide if true, updates the contact model object and adds or updates the contact; otherwise the contact is added/updated as is
+	 */
+	void addContact(@NonNull Contact contact, boolean hide);
 
 	/**
 	 * Remove a contact from the contact store.

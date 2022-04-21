@@ -23,6 +23,7 @@ package ch.threema.app.services;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ContactModel;
@@ -33,10 +34,13 @@ public interface DistributionListService extends AvatarService<DistributionListM
 	interface DistributionListFilter {
 		boolean sortingByDate();
 		boolean sortingAscending();
+		boolean showHidden();
 	}
 
 	DistributionListModel getById(int id);
-	DistributionListModel createDistributionList(String name, String[] memberIdentities) throws ThreemaException;
+	DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) throws ThreemaException;
+	DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities, boolean isHidden) throws ThreemaException;
+
 	DistributionListModel updateDistributionList(DistributionListModel distributionListModel, String name, String[] memberIdentities) throws ThreemaException;
 
 	boolean addMemberToDistributionList(DistributionListModel distributionListModel, String identity);

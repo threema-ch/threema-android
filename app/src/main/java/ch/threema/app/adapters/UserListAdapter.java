@@ -49,7 +49,6 @@ import ch.threema.app.ui.CheckableView;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
-import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
@@ -184,6 +183,8 @@ public class UserListAdapter extends FilterableListAdapter {
 				this.contactService,
 				holder
 		);
+
+		position += ((ListView)parent).getHeaderViewsCount();
 
 		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
 

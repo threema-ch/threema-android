@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Threema Work for Android</string>
+    <string name="enter_serial_body">Vennligst skriv inn påloggingsinformasjon som har blitt gitt av ditt firma eller organisasjon</string>
+    <string name="serial_required_want_exit">Lisens er ugyldig. Vil du prøve igjen eller avslutte Threema?</string>
+    <string name="checking_serial">Sjekker påloggingsinformasjon</string>
+    <string name="username_hint">Brukernavn</string>
+    <string name="new_wizard_works_like_phone_number">Din Threema ID fungerer på samme måte som et telefonnummer. Dine kontakter kan nå deg gjennom denne ID-en.</string>
+    <string name="new_wizard_nickname_explain">Kontaktene dine vil se ditt kallenavn i varslene sine.</string>
+    <string name="new_wizard_help_your_friends_find_you">Hjelp kontaktene dine å finne deg!</string>
+    <string name="new_wizard_find_friends">Finn kontaktene dine i Threema Work</string>
+    <string name="new_wizard_sync_contacts_explain">Skru på for å se hvilke kontakter som allerede bruker Threema eller Threema Work.</string>
+    <string name="new_wizard_anonymous_confirm">Du har ikke skrevet et telefonnummer eller en e-postadresse for å koble til din Threema ID. Du vil ikke dukke opp på kontaktlister. Vil du virkelig bruke Threema Work anonymt?</string>
+    <string name="new_wizard_setup_threema">Konfigurer Threema Work</string>
+    <string name="new_wizard_welcome">Velkommen til Threema Work!</string>
+    <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike Threema ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine kontakter og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Kontaktene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
+    <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan Threema Work hjelpe dine kontakter å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema Work helt anonymt, så kan du hoppe over dette trinnet.</string>
+    <string name="threema_contact">Threema Work kontakt</string>
+    <string name="menu_about">Om Threema Work</string>
+    <string name="list_theme_light">Lys</string>
+    <string name="list_theme_dark">Mørk (standard)</string>
+    <string name="private_threema_download"><![CDATA[Om du er en privat bruker, vennligst <a href="https://play.google.com/store/apps/details?id=ch.threema.app">trykk her</a> for å laste ned Threema.]]></string>
+    <string name="directory_search">Søk i katalogen</string>
+    <string name="directory_title">Bedriftskatalog</string>
+    <string name="directory_empty_view_text">Ingen oppføringer funnet\n\nVennligst skriv inn minst 3 tegn av et navn for å kunne søke i bedriftskatalogen etter Threema brukere</string>
+</resources>

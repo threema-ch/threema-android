@@ -487,13 +487,17 @@ public class VoipBluetoothManager {
 			// hack / bold assumption - fallback to list of bonded devices
 			if (bluetoothHeadset != null) {
 				if (bluetoothAdapter != null && BluetoothProfile.STATE_CONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)) {
-					Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
-					for (BluetoothDevice bondedDevice : bondedDevices) {
-						if (bondedDevice.getType() == DEVICE_TYPE_CLASSIC &&
-							bondedDevice.getBluetoothClass().hasService(BluetoothClass.Service.AUDIO) &&
-							bondedDevice.getBondState() == BOND_BONDED) {
-							devices.add(bondedDevice);
+					try {
+						Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
+						for (BluetoothDevice bondedDevice : bondedDevices) {
+							if (bondedDevice.getType() == DEVICE_TYPE_CLASSIC &&
+								bondedDevice.getBluetoothClass().hasService(BluetoothClass.Service.AUDIO) &&
+								bondedDevice.getBondState() == BOND_BONDED) {
+								devices.add(bondedDevice);
+							}
 						}
+					} catch (SecurityException ex) {
+						logger.error("Unable to get bonded devices", ex);
 					}
 				}
 			}

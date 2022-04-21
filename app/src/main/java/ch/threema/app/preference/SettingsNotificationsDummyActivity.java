@@ -23,7 +23,6 @@ package ch.threema.app.preference;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.ThreemaApplication;

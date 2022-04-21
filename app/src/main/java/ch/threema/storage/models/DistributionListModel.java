@@ -24,6 +24,7 @@ package ch.threema.storage.models;
 import java.util.Date;
 import java.util.Objects;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.Utils;
 
 public class DistributionListModel implements ReceiverModel {
@@ -34,18 +35,19 @@ public class DistributionListModel implements ReceiverModel {
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_CREATED_AT = "createdAt";
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this distribution list has been archived by user */
+	public static final String COLUMN_IS_HIDDEN = "isHidden"; /* whether this distribution list is hidden from view */
 
 	private int id;
 	private String name;
 	private Date createdAt;
-	private boolean isArchived;
+	private boolean isArchived, isHidden;
 
 	// dummy class
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public DistributionListModel setName(String name) {
+	public DistributionListModel setName(@Nullable String name) {
 		this.name = Utils.truncateUTF8String(name, DISTRIBUTIONLIST_NAME_MAX_LENGTH_BYTES);
 		return this;
 	}
@@ -74,6 +76,15 @@ public class DistributionListModel implements ReceiverModel {
 
 	public DistributionListModel setArchived(boolean archived) {
 		isArchived = archived;
+		return this;
+	}
+
+	public boolean isHidden() {
+		return isHidden;
+	}
+
+	public DistributionListModel setHidden(boolean hidden) {
+		isHidden = hidden;
 		return this;
 	}
 

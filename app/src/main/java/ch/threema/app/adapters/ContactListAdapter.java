@@ -543,9 +543,13 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		ContactModel contactModel;
 
 		for (int position: checkedItems) {
-			contactModel = ovalues.get(position);
-			if (contactModel != null) {
-				contacts.add(contactModel);
+			try {
+				contactModel = ovalues.get(position);
+				if (contactModel != null) {
+					contacts.add(contactModel);
+				}
+			} catch (IndexOutOfBoundsException e) {
+				checkedItems.remove(position);
 			}
 		}
 		return contacts;

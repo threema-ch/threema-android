@@ -12,7 +12,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.71"
+def app_version = "4.72"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -92,7 +92,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 736
+        versionCode 738
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -125,6 +125,7 @@ android {
         buildConfigField "String", "SAFE_SERVER_URL", "\"https://safe-%h.threema.ch/\""
         buildConfigField "String", "WEB_SERVER_URL", "\"https://web.threema.ch/\""
         buildConfigField "String", "ONPREM_ID_PREFIX", "\"O\""
+        buildConfigField "String", "LOG_TAG", "\"3ma\""
 
         buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "null"
         buildConfigField "boolean", "SEND_CONSUMED_DELIVERY_RECEIPTS", "false"
@@ -191,6 +192,7 @@ android {
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWork\""
             buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.threema.ch/\""
             buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.threema.ch/\""
+            buildConfigField "String", "LOG_TAG", "\"3mawrk\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
@@ -236,6 +238,7 @@ android {
             buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.test.threema.ch/\""
             buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.test.threema.ch/\""
             buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.test.threema.ch/\""
+            buildConfigField "String", "LOG_TAG", "\"3mawrk\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
@@ -272,6 +275,7 @@ android {
             buildConfigField "String", "BLOB_SERVER_UPLOAD_URL", "null"
             buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "null"
             buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "new String[] {\"ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=\", \"Hrk8aCjwKkXySubI7CZ3y9Sx+oToEHjNkGw98WSRneU=\", \"5pEn1T/5bhecNWrp9NgUQweRfgVtu/I8gRb3VxGP7k4=\"}"
+            buildConfigField "String", "LOG_TAG", "\"3maop\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemaonprem\""
@@ -303,6 +307,7 @@ android {
             buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.test.threema.ch/\""
             buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.test.threema.ch/\""
             buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.test.threema.ch/\""
+            buildConfigField "String", "LOG_TAG", "\"3mared\""
 
             buildConfigField "boolean", "SEND_CONSUMED_DELIVERY_RECEIPTS", "true"
 
@@ -331,6 +336,7 @@ android {
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWork\""
             buildConfigField "String", "WORK_SERVER_URL", "\"https://apip-work.threema.ch/\""
             buildConfigField "String", "WORK_SERVER_IPV6_URL", "\"https://ds-apip-work.threema.ch/\""
+            buildConfigField "String", "LOG_TAG", "\"3mawrk\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
@@ -688,9 +694,9 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
-    implementation "androidx.camera:camera-camera2:1.1.0-beta02"
-    implementation "androidx.camera:camera-lifecycle:1.1.0-beta02"
-    implementation "androidx.camera:camera-view:1.1.0-beta02"
+    implementation "androidx.camera:camera-camera2:1.1.0-beta03"
+    implementation "androidx.camera:camera-lifecycle:1.1.0-beta03"
+    implementation "androidx.camera:camera-view:1.1.0-beta03"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
@@ -727,8 +733,8 @@ dependencies {
     }
 
     // Glide components
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.github.bumptech.glide:glide:4.13.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.1'
 
     // kotlin
     implementation "androidx.core:core-ktx:1.7.0"
@@ -821,7 +827,7 @@ dependencies {
     // Huawei related libraries (only for hms* build variants)
     def huaweiDependencies = [
         // HMS push
-        'com.huawei.hms:push:5.0.4.302': [
+        'com.huawei.hms:push:6.3.0.304': [
             // Exclude agconnect dependency, we'll replace it with the vendored version below
             [group: 'com.huawei.agconnect'],
         ],
@@ -832,8 +838,8 @@ dependencies {
         hmsImplementation(dependency) { excludes.each { exclude it } }
         hms_workImplementation(dependency) { excludes.each { exclude it } }
     }
-    hmsImplementation(name: 'agconnect-core-1.4.0.300', ext: 'aar')
-    hms_workImplementation(name: 'agconnect-core-1.4.0.300', ext: 'aar')
+    hmsImplementation(name: 'agconnect-core-1.5.0.300', ext: 'aar')
+    hms_workImplementation(name: 'agconnect-core-1.5.0.300', ext: 'aar')
 }
 
 sonarqube {

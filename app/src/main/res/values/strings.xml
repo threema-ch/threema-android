@@ -613,6 +613,8 @@
 	<string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) deleted</string>
 	<string name="prefs_sendlog">Send Log</string>
 	<string name="prefs_sendlog_summary">Send Logfile to Threema for further analysis in case of problems</string>
+	<string name="prefs_exportlog">Export Log</string>
+	<string name="prefs_exportlog_summary">Share logfile with another app</string>
 	<string name="permission_storage_required">To save or send media, allow Threema permission to access storage.</string>
 	<string name="permission_location_required">To send a location, allow Threema permission to access your position.</string>
 	<string name="permission_contacts_required">To send contacts, allow Threema permission to read contacts.</string>
@@ -1399,4 +1401,7 @@
 	<string name="organization_type">Organization</string>
 	<string name="permission_bluetooth_connect_required">Enable \"Nearby devices\" permission to locate connected Bluetooth headsets</string>
 	<string name="threema_push_start_webclient_sessions_manually">Threema Push is active. Threema Web and Desktop sessions must thus be launched manually.</string>
+	<string name="tooltip_multiple_recipients_title">New: Multiple recipients</string>
+	<string name="tooltip_multiple_recipients_text">Long tap to select multiple recipients to send the same message to.</string>
+	<string name="synchronizing">Synchronizing…</string>
 </resources>

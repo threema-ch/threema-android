@@ -31,6 +31,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import ch.threema.app.BuildConfig;
 import ch.threema.logging.LogLevel;
 import ch.threema.logging.backend.LogcatBackend;
 
@@ -64,21 +65,21 @@ public class LogcatBackendTest {
 		backend.print(Log.WARN, "ch.threema.app.Hello", null, "hello");
 		PowerMockito.verifyStatic(Log.class, times(1));
 		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.WARN, "3ma", "Hello: hello");
+		this.assertLogArguments(Log.WARN, BuildConfig.LOG_TAG, "Hello: hello");
 
 		backend.print(Log.INFO, "ch.threema.domain.Bye", null, "goodbye");
 		PowerMockito.verifyStatic(Log.class, times(2));
 		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.INFO, "3ma", "Bye: goodbye");
+		this.assertLogArguments(Log.INFO, BuildConfig.LOG_TAG, "Bye: goodbye");
 
 		backend.print(Log.INFO, "ch.threema.app.subpackage.Abcd", null, "msg");
 		PowerMockito.verifyStatic(Log.class, times(3));
 		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.INFO, "3ma", "subpackage.Abcd: msg");
+		this.assertLogArguments(Log.INFO, BuildConfig.LOG_TAG, "subpackage.Abcd: msg");
 
 		backend.print(Log.ERROR, "any.other.package", null, "hmmmm");
 		PowerMockito.verifyStatic(Log.class, times(4));
 		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.ERROR, "3ma", "any.other.package: hmmmm");
+		this.assertLogArguments(Log.ERROR, BuildConfig.LOG_TAG, "any.other.package: hmmmm");
 	}
 }

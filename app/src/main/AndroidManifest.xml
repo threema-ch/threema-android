@@ -155,8 +155,6 @@
 		</intent>
 	</queries>
 
-	<uses-sdk tools:overrideLibrary="androidx.camera.core, androidx.camera.camera2,
-		androidx.camera.lifecycle, androidx.camera.view, me.zhanghai.android.fastscroll" />
 
 	<application
 		android:name=".ThreemaApplication"
@@ -878,7 +876,6 @@
 			android:exported="false"/>
 		<service
 			android:name=".voip.services.CallRejectService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
 			android:exported="false"/>
 		<service
 			android:name=".webclient.services.SessionAndroidService"
@@ -950,9 +947,6 @@
 			android:exported="false">
 		</receiver>
 		<receiver android:name=".receivers.FetchMessagesBroadcastReceiver"/>
-		<receiver
-			android:name=".voip.receivers.CallRejectReceiver"
-			android:exported="false"/>
 		<receiver android:name=".voip.receivers.VoipMediaButtonReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.MEDIA_BUTTON"/>

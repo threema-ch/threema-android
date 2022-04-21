@@ -43,7 +43,7 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 	protected void initializePreferences() {
 		RateDialog rateDialog = RateDialog.newInstance(getString(R.string.rate_title));
 		rateDialog.setTargetFragment(SettingsRateFragment.this, 0);
-		rateDialog.show(getFragmentManager(), DIALOG_TAG_RATE);
+		rateDialog.show(getParentFragmentManager(), DIALOG_TAG_RATE);
 	}
 
 	private boolean startRating(Uri uri) throws ActivityNotFoundException {
@@ -75,15 +75,11 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 
 	@Override
 	public void onYes(String tag, Object data) {
-		switch (tag) {
-			case DIALOG_TAG_RATE_ON_GOOGLE_PLAY:
-				if (!startRating(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID))) {
-					startRating(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID));
-				}
-				requireActivity().onBackPressed();
-				break;
-			default:
-				break;
+		if (DIALOG_TAG_RATE_ON_GOOGLE_PLAY.equals(tag)) {
+			if (!startRating(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID))) {
+				startRating(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID));
+			}
+			requireActivity().onBackPressed();
 		}
 	}
 

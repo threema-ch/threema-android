@@ -39,7 +39,7 @@ import ch.threema.app.utils.ConfigUtils.THEME_DARK
 class SettingsFragment(private val onResumeCallback: () -> Unit = {}) : ThreemaPreferenceFragment() {
     private var preferencePairs: List<Pair<Preference, String>> = listOf()
     private var selectedPrefView: View? = null
-    private val preferenceService = getInitialPreferenceService()
+    private val preferenceService = requirePreferenceService()
 
     override fun onResume() {
         super.onResume()

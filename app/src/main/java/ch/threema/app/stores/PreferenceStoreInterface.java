@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public interface PreferenceStoreInterface {
@@ -56,7 +57,7 @@ public interface PreferenceStoreInterface {
 
 	void saveIntegerHashMap(String key, HashMap<Integer, Integer> things);
 
-	void save(String key, String[] things, boolean crypt);
+	void save(String key, @NonNull String[] things, boolean crypt);
 
 	void save(String key, long thing);
 
@@ -141,4 +142,6 @@ public interface PreferenceStoreInterface {
 	Map<String, ?> getAllNonCrypted();
 
 	Set<String> getStringSet(String key, int defaultRes);
+
+	boolean has(String listName);
 }

@@ -27,9 +27,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.R
@@ -134,12 +133,10 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
         transaction.commit()
 
         if (!ConfigUtils.isTabletLayout()) {
-            fragment.lifecycle.addObserver(object : LifecycleObserver {
+            fragment.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 // When the fragment is resumed, the correct title is set. This is needed for nested
                 // preference fragments such as the about fragment (when coming back from troubleshooting)
-                @Suppress("unused")
-                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-                fun fragmentIsResumed() {
+                override fun onResume(owner: LifecycleOwner) {
                     supportActionBar?.title = pref.title
                 }
             })

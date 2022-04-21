@@ -176,8 +176,8 @@ public class ProtocolTest {
 	private static ContactStore createFakeContactStore() {
 		return new ContactStore() {
 			@Override
-			public byte[] getPublicKeyForIdentity(@NonNull String identity, boolean fetch) {
-				return new byte[256];
+			public Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact) {
+				return new Contact(identity, new byte[256]);
 			}
 
 			@Override
@@ -187,6 +187,9 @@ public class ProtocolTest {
 
 			@Override
 			public void addContact(@NonNull Contact contact) { }
+
+			@Override
+			public void addContact(@NonNull Contact contact, boolean hide) { }
 
 			@Override
 			public void removeContact(@NonNull Contact contact) { }

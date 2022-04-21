@@ -50,6 +50,7 @@
 	<string name="preferences__emoji_style" translatable="false">pref_key_emoji_style</string>
 	<string name="preferences__fontstyle" translatable="false">pref_key_font_style</string>
 	<string name="preferences__sendlog" translatable="false">pref_key_sendlog</string>
+	<string name="preferences__exportlog" translatable="false">pref_key_exportlog</string>
 	<string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
 	<string name="preferences__lockout_timeout" translatable="false">pref_key_lock_timeout</string>
 	<string name="preferences__wizard_running" translatable="false">pref_wizard_running</string>
@@ -180,4 +181,5 @@
 	<string name="preferences__voicerecorder_bluetooth_disabled" translatable="false">pref_voicerecorder_bluetooth_disabled</string>
 	<string name="preferences__audio_playback_speed" translatable="false">pref_audio_playback_speed</string>
 	<string name="preferences__use_system_ringtone" translatable="false">pref_use_system_ringtone</string>
+	<string name="preferences__tooltip_multi_recipients" translatable="false">pref_tooltip_multi_recipients</string>
 </resources>

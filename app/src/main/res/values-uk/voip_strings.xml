@@ -56,7 +56,7 @@
     <string name="voip_connection_lost">З\'єднання втрачено</string>
     <string name="prefs_voip_reject_incoming_calls_title">Відхиляти телефонні виклики</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Відхиляти вхідні дзвінки на телефон, коли триває виклик Threema.</string>
-    <string name="voip_contact_not_found">Не знайдено контакта Threema за цим номером.</string>
+    <string name="voip_contact_not_found">Контакта Threema за цим номером не знайдено.</string>
     <string name="voip_another_pstn_call">Неможливо почати виклик Threema, поки триває звичайний телефонний виклик.</string>
     <string name="voip_call_status_off_hours">Виклик у неробочий час</string>
     <string name="voip_peer_video_disabled">Контакт вимкнув відеовиклики.</string>

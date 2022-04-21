@@ -149,7 +149,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 	}
 
 	private void viewLocation(AbstractMessageModel messageModel, final View v) {
-		if (!ConfigUtils.hasNoMapboxSupport()) {
+		if (!ConfigUtils.hasNoMapLibreSupport()) {
 			if (messageModel != null) {
 				LocationDataModel locationData = messageModel.getLocationData();
 				if (locationData != null) {

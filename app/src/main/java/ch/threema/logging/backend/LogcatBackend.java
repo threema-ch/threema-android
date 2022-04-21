@@ -27,14 +27,15 @@ import org.slf4j.helpers.MessageFormatter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.logging.LogLevel;
+import ch.threema.app.BuildConfig;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.logging.LogLevel;
 
 /**
  * A logging backend that logs to the ADB logcat.
  */
 public class LogcatBackend implements LogBackend {
-	private final static String TAG = "3ma";
+	private final static String TAG = BuildConfig.LOG_TAG;
 	private final @LogLevel int minLogLevel;
 
 	// For tags starting with these prefixes, the package path is stripped

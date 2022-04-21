@@ -27,10 +27,7 @@ import androidx.annotation.XmlRes
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.services.FileService
-import ch.threema.app.services.PreferenceService
-import ch.threema.app.services.SynchronizeContactsService
-import ch.threema.app.services.WallpaperService
+import ch.threema.app.services.*
 import ch.threema.app.services.license.LicenseService
 import ch.threema.base.utils.LoggingUtil
 
@@ -88,7 +85,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
     protected fun <T : Preference> getPref(string: String): T = findPreference(string)
             ?: preferenceNotFound(string)
 
-    protected fun getInitialPreferenceService(): PreferenceService {
+    protected fun requirePreferenceService(): PreferenceService {
         ThreemaApplication.getServiceManager()?.preferenceService?.let {
             return it
         }
@@ -96,7 +93,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
         throw IllegalStateException("Could not get preference service")
     }
 
-    protected fun getInitialLicenceService(): LicenseService<*> {
+    protected fun requireLicenceService(): LicenseService<*> {
         ThreemaApplication.getServiceManager()?.licenseService?.let {
             return it
         }
@@ -104,7 +101,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
         throw IllegalStateException("Could not get license service")
     }
 
-    protected fun getInitialWallpaperService(): WallpaperService {
+    protected fun requireWallpaperService(): WallpaperService {
         ThreemaApplication.getServiceManager()?.wallpaperService?.let {
             return it
         }
@@ -112,20 +109,35 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
         throw IllegalStateException("Could not get wallpaper service")
     }
 
-    protected fun getInitialFileService(): FileService {
-        ThreemaApplication.getServiceManager()?.fileService?.let {
-            return it
-        }
-        logger.error("Could not get file service")
-        throw IllegalStateException("Could not get file service")
-    }
-
-    protected fun getInitialSynchronizeContactsService(): SynchronizeContactsService {
+    protected fun requireSynchronizeContactsService(): SynchronizeContactsService {
         ThreemaApplication.getServiceManager()?.synchronizeContactsService?.let {
             return it
         }
         logger.error("Could not get synchronize contacts service")
         throw IllegalStateException("Could not get synchronize contacts service")
+    }
+
+    protected fun requireContactService(): ContactService {
+        ThreemaApplication.getServiceManager()?.contactService?.let {
+            return it
+        }
+        logger.error("Could not get contact service")
+        throw IllegalStateException("Could not get contact service")
+    }
+
+    protected fun requireHiddenChatListService(): DeadlineListService {
+        ThreemaApplication.getServiceManager()?.hiddenChatsListService?.let {
+            return it
+        }
+        logger.error("Could not get hidden chat list service")
+        throw IllegalStateException("Could not get hidden chat list service")
+    }
+
+    protected fun requireScreenLockService(): SystemScreenLockService {
+        ThreemaApplication.getServiceManager()?.screenLockService?.let {
+            return it
+        }
+        throw IllegalStateException("Could not get screen lock service")
     }
 
     /**

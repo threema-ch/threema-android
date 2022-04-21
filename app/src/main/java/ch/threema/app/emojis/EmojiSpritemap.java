@@ -354,6 +354,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// face exhaling (1f62e-1f4a8)
+		list.add(new EmojiInfo("\uD83D\uDE2E\u200D\uD83D\uDCA8",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// angry face (1f620)
 		list.add(new EmojiInfo("\uD83D\uDE20",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -380,6 +386,12 @@ public class EmojiSpritemap {
 		));
 		// flushed face (1f633)
 		list.add(new EmojiInfo("\uD83D\uDE33",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// face in clouds (1f636-1f32b)
+		list.add(new EmojiInfo("\uD83D\uDE36\u200D\uD83C\uDF2B\uFE0F",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -542,6 +554,12 @@ public class EmojiSpritemap {
 		));
 		// dizzy face (1f635)
 		list.add(new EmojiInfo("\uD83D\uDE35",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// face with spiral eyes (1f635-1f4ab)
+		list.add(new EmojiInfo("\uD83D\uDE35\u200D\uD83D\uDCAB",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -2010,12 +2028,6 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
-		// bone (1f9b4)
-		list.add(new EmojiInfo("\uD83E\uDDB4",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
 		// tongue (1f445)
 		list.add(new EmojiInfo("\uD83D\uDC45",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -2162,6 +2174,12 @@ public class EmojiSpritemap {
 		));
 		// lungs (1fac1)
 		list.add(new EmojiInfo("\uD83E\uDEC1",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// bone (1f9b4)
+		list.add(new EmojiInfo("\uD83E\uDDB4",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -2452,31 +2470,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDB1",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-light skin tone, curly hair (1f9d1-1f3fc-1f9b1)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDDB1",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium skin tone, curly hair (1f9d1-1f3fd-1f9b1)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDDB1",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-dark skin tone, curly hair (1f9d1-1f3fe-1f9b1)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDDB1",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: dark skin tone, curly hair (1f9d1-1f3ff-1f9b1)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDDB1",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman: curly hair (1f469-1f9b1)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83E\uDDB1",
@@ -2560,31 +2578,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDB0",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-light skin tone, red hair (1f9d1-1f3fc-1f9b0)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDDB0",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium skin tone, red hair (1f9d1-1f3fd-1f9b0)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDDB0",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-dark skin tone, red hair (1f9d1-1f3fe-1f9b0)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDDB0",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: dark skin tone, red hair (1f9d1-1f3ff-1f9b0)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDDB0",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman: red hair (1f469-1f9b0)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83E\uDDB0",
@@ -2698,7 +2716,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC71",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC71\uD83C\uDFFB","\uD83D\uDC71\uD83C\uDFFC","\uD83D\uDC71\uD83C\uDFFD","\uD83D\uDC71\uD83C\uDFFE","\uD83D\uDC71\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC71\u200D\u2642\uFE0F","\uD83D\uDC71\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// blond-haired person: light skin tone (1f471-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC71\uD83C\uDFFB",
@@ -2734,37 +2752,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC71\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC71\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDC71\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDC71\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDC71\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDC71\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// blond-haired man: light skin tone (1f471-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDC71\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// blond-haired man: medium-light skin tone (1f471-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDC71\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// blond-haired man: medium skin tone (1f471-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDC71\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// blond-haired man: medium-dark skin tone (1f471-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDC71\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// blond-haired man: dark skin tone (1f471-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDC71\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: white hair (1f9d1-1f9b3)
 		list.add(new EmojiInfo("\uD83E\uDDD1\u200D\uD83E\uDDB3",
@@ -2776,31 +2794,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDB3",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-light skin tone, white hair (1f9d1-1f3fc-1f9b3)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDDB3",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium skin tone, white hair (1f9d1-1f3fd-1f9b3)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDDB3",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-dark skin tone, white hair (1f9d1-1f3fe-1f9b3)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDDB3",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: dark skin tone, white hair (1f9d1-1f3ff-1f9b3)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDDB3",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman: white hair (1f469-1f9b3)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83E\uDDB3",
@@ -2884,31 +2902,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDB2",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-light skin tone, bald (1f9d1-1f3fc-1f9b2)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDDB2",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium skin tone, bald (1f9d1-1f3fd-1f9b2)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDDB2",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: medium-dark skin tone, bald (1f9d1-1f3fe-1f9b2)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDDB2",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person: dark skin tone, bald (1f9d1-1f3ff-1f9b2)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDDB2",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman: bald (1f469-1f9b2)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83E\uDDB2",
@@ -2982,11 +3000,11 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
-		// man: beard (1f9d4)
+		// person: beard (1f9d4)
 		list.add(new EmojiInfo("\uD83E\uDDD4",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDD4\uD83C\uDFFB","\uD83E\uDDD4\uD83C\uDFFC","\uD83E\uDDD4\uD83C\uDFFD","\uD83E\uDDD4\uD83C\uDFFE","\uD83E\uDDD4\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// bearded person: light skin tone (1f9d4-1f3fb)
 		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFB",
@@ -3014,6 +3032,78 @@ public class EmojiSpritemap {
 		));
 		// bearded person: dark skin tone (1f9d4-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// man: beard (1f9d4-2642)
+		list.add(new EmojiInfo("\uD83E\uDDD4\u200D\u2642\uFE0F",
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDD4\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDDD4\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDDD4\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDDD4\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDDD4\uD83C\uDFFF\u200D\u2642\uFE0F" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// man: light skin tone, beard (1f9d4-1f3fb-2642)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFB\u200D\u2642\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// man: medium-light skin tone, beard (1f9d4-1f3fc-2642)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFC\u200D\u2642\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// man: medium skin tone, beard (1f9d4-1f3fd-2642)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFD\u200D\u2642\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// man: medium-dark skin tone, beard (1f9d4-1f3fe-2642)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFE\u200D\u2642\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// man: dark skin tone, beard (1f9d4-1f3ff-2642)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFF\u200D\u2642\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman: beard (1f9d4-2640)
+		list.add(new EmojiInfo("\uD83E\uDDD4\u200D\u2640\uFE0F",
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDD4\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDD4\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDD4\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDD4\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDD4\uD83C\uDFFF\u200D\u2640\uFE0F" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman: light skin tone, beard (1f9d4-1f3fb-2640)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFB\u200D\u2640\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman: medium-light skin tone, beard (1f9d4-1f3fc-2640)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFC\u200D\u2640\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman: medium skin tone, beard (1f9d4-1f3fd-2640)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFD\u200D\u2640\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman: medium-dark skin tone, beard (1f9d4-1f3fe-2640)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFE\u200D\u2640\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman: dark skin tone, beard (1f9d4-1f3ff-2640)
+		list.add(new EmojiInfo("\uD83E\uDDD4\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -3166,7 +3256,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC73",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC73\uD83C\uDFFB","\uD83D\uDC73\uD83C\uDFFC","\uD83D\uDC73\uD83C\uDFFD","\uD83D\uDC73\uD83C\uDFFE","\uD83D\uDC73\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC73\u200D\u2642\uFE0F","\uD83D\uDC73\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person wearing turban: light skin tone (1f473-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC73\uD83C\uDFFB",
@@ -3238,37 +3328,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC73\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC73\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDC73\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDC73\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDC73\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDC73\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man wearing turban: light skin tone (1f473-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDC73\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man wearing turban: medium-light skin tone (1f473-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDC73\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man wearing turban: medium skin tone (1f473-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDC73\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man wearing turban: medium-dark skin tone (1f473-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDC73\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man wearing turban: dark skin tone (1f473-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDC73\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman with headscarf (1f9d5)
 		list.add(new EmojiInfo("\uD83E\uDDD5",
@@ -3310,7 +3400,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC6E",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC6E\uD83C\uDFFB","\uD83D\uDC6E\uD83C\uDFFC","\uD83D\uDC6E\uD83C\uDFFD","\uD83D\uDC6E\uD83C\uDFFE","\uD83D\uDC6E\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC6E\u200D\u2642\uFE0F","\uD83D\uDC6E\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// police officer: light skin tone (1f46e-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC6E\uD83C\uDFFB",
@@ -3382,43 +3472,43 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC6E\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC6E\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDC6E\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDC6E\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDC6E\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDC6E\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man police officer: light skin tone (1f46e-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDC6E\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man police officer: medium-light skin tone (1f46e-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDC6E\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man police officer: medium skin tone (1f46e-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDC6E\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man police officer: medium-dark skin tone (1f46e-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDC6E\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man police officer: dark skin tone (1f46e-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDC6E\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// construction worker (1f477)
 		list.add(new EmojiInfo("\uD83D\uDC77",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC77\uD83C\uDFFB","\uD83D\uDC77\uD83C\uDFFC","\uD83D\uDC77\uD83C\uDFFD","\uD83D\uDC77\uD83C\uDFFE","\uD83D\uDC77\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC77\u200D\u2642\uFE0F","\uD83D\uDC77\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// construction worker: light skin tone (1f477-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC77\uD83C\uDFFB",
@@ -3490,43 +3580,43 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC77\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC77\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDC77\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDC77\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDC77\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDC77\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man construction worker: light skin tone (1f477-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDC77\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man construction worker: medium-light skin tone (1f477-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDC77\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man construction worker: medium skin tone (1f477-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDC77\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man construction worker: medium-dark skin tone (1f477-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDC77\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man construction worker: dark skin tone (1f477-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDC77\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// guard (1f482)
 		list.add(new EmojiInfo("\uD83D\uDC82",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC82\uD83C\uDFFB","\uD83D\uDC82\uD83C\uDFFC","\uD83D\uDC82\uD83C\uDFFD","\uD83D\uDC82\uD83C\uDFFE","\uD83D\uDC82\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC82\u200D\u2642\uFE0F","\uD83D\uDC82\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// guard: light skin tone (1f482-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC82\uD83C\uDFFB",
@@ -3598,43 +3688,43 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC82\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC82\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDC82\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDC82\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDC82\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDC82\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man guard: light skin tone (1f482-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDC82\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man guard: medium-light skin tone (1f482-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDC82\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man guard: medium skin tone (1f482-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDC82\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man guard: medium-dark skin tone (1f482-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDC82\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man guard: dark skin tone (1f482-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDC82\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// detective (1f575)
 		list.add(new EmojiInfo("\uD83D\uDD75",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDD75\uD83C\uDFFB","\uD83D\uDD75\uD83C\uDFFC","\uD83D\uDD75\uD83C\uDFFD","\uD83D\uDD75\uD83C\uDFFE","\uD83D\uDD75\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDD75\uFE0F\u200D\u2642\uFE0F","\uD83D\uDD75\uFE0F\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// detective: light skin tone (1f575-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDD75\uD83C\uDFFB",
@@ -3706,37 +3796,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDD75\uFE0F\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDD75\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDD75\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDD75\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDD75\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDD75\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man detective: light skin tone (1f575-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDD75\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man detective: medium-light skin tone (1f575-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDD75\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man detective: medium skin tone (1f575-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDD75\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man detective: medium-dark skin tone (1f575-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDD75\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man detective: dark skin tone (1f575-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDD75\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// health worker (1f9d1-2695)
 		list.add(new EmojiInfo("\uD83E\uDDD1\u200D\u2695\uFE0F",
@@ -3748,31 +3838,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2695\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// health worker: medium-light skin tone (1f9d1-1f3fc-2695)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2695\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// health worker: medium skin tone (1f9d1-1f3fd-2695)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2695\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// health worker: medium-dark skin tone (1f9d1-1f3fe-2695)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2695\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// health worker: dark skin tone (1f9d1-1f3ff-2695)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2695\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman health worker (1f469-2695)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2695\uFE0F",
@@ -3856,31 +3946,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDF3E",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// farmer: medium-light skin tone (1f9d1-1f3fc-1f33e)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDF3E",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// farmer: medium skin tone (1f9d1-1f3fd-1f33e)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDF3E",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// farmer: medium-dark skin tone (1f9d1-1f3fe-1f33e)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDF3E",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// farmer: dark skin tone (1f9d1-1f3ff-1f33e)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDF3E",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman farmer (1f469-1f33e)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDF3E",
@@ -3964,31 +4054,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDF73",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// cook: medium-light skin tone (1f9d1-1f3fc-1f373)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDF73",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// cook: medium skin tone (1f9d1-1f3fd-1f373)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDF73",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// cook: medium-dark skin tone (1f9d1-1f3fe-1f373)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDF73",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// cook: dark skin tone (1f9d1-1f3ff-1f373)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDF73",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman cook (1f469-1f373)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDF73",
@@ -4072,31 +4162,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDF93",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// student: medium-light skin tone (1f9d1-1f3fc-1f393)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDF93",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// student: medium skin tone (1f9d1-1f3fd-1f393)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDF93",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// student: medium-dark skin tone (1f9d1-1f3fe-1f393)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDF93",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// student: dark skin tone (1f9d1-1f3ff-1f393)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDF93",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman student (1f469-1f393)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDF93",
@@ -4180,31 +4270,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDFA4",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// singer: medium-light skin tone (1f9d1-1f3fc-1f3a4)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDFA4",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// singer: medium skin tone (1f9d1-1f3fd-1f3a4)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDFA4",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// singer: medium-dark skin tone (1f9d1-1f3fe-1f3a4)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDFA4",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// singer: dark skin tone (1f9d1-1f3ff-1f3a4)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDFA4",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman singer (1f469-1f3a4)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDFA4",
@@ -4288,31 +4378,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDFEB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// teacher: medium-light skin tone (1f9d1-1f3fc-1f3eb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDFEB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// teacher: medium skin tone (1f9d1-1f3fd-1f3eb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDFEB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// teacher: medium-dark skin tone (1f9d1-1f3fe-1f3eb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDFEB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// teacher: dark skin tone (1f9d1-1f3ff-1f3eb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDFEB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman teacher (1f469-1f3eb)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDFEB",
@@ -4396,31 +4486,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDFED",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// factory worker: medium-light skin tone (1f9d1-1f3fc-1f3ed)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDFED",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// factory worker: medium skin tone (1f9d1-1f3fd-1f3ed)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDFED",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// factory worker: medium-dark skin tone (1f9d1-1f3fe-1f3ed)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDFED",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// factory worker: dark skin tone (1f9d1-1f3ff-1f3ed)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDFED",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman factory worker (1f469-1f3ed)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDFED",
@@ -4504,31 +4594,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83D\uDCBB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// technologist: medium-light skin tone (1f9d1-1f3fc-1f4bb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83D\uDCBB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// technologist: medium skin tone (1f9d1-1f3fd-1f4bb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83D\uDCBB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// technologist: medium-dark skin tone (1f9d1-1f3fe-1f4bb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDCBB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// technologist: dark skin tone (1f9d1-1f3ff-1f4bb)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83D\uDCBB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman technologist (1f469-1f4bb)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83D\uDCBB",
@@ -4612,31 +4702,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83D\uDCBC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// office worker: medium-light skin tone (1f9d1-1f3fc-1f4bc)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83D\uDCBC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// office worker: medium skin tone (1f9d1-1f3fd-1f4bc)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83D\uDCBC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// office worker: medium-dark skin tone (1f9d1-1f3fe-1f4bc)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDCBC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// office worker: dark skin tone (1f9d1-1f3ff-1f4bc)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83D\uDCBC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman office worker (1f469-1f4bc)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83D\uDCBC",
@@ -4720,31 +4810,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83D\uDD27",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mechanic: medium-light skin tone (1f9d1-1f3fc-1f527)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83D\uDD27",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mechanic: medium skin tone (1f9d1-1f3fd-1f527)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83D\uDD27",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mechanic: medium-dark skin tone (1f9d1-1f3fe-1f527)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDD27",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mechanic: dark skin tone (1f9d1-1f3ff-1f527)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83D\uDD27",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman mechanic (1f469-1f527)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83D\uDD27",
@@ -4828,31 +4918,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83D\uDD2C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// scientist: medium-light skin tone (1f9d1-1f3fc-1f52c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83D\uDD2C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// scientist: medium skin tone (1f9d1-1f3fd-1f52c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83D\uDD2C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// scientist: medium-dark skin tone (1f9d1-1f3fe-1f52c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDD2C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// scientist: dark skin tone (1f9d1-1f3ff-1f52c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83D\uDD2C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman scientist (1f469-1f52c)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83D\uDD2C",
@@ -4936,31 +5026,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDFA8",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// artist: medium-light skin tone (1f9d1-1f3fc-1f3a8)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDFA8",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// artist: medium skin tone (1f9d1-1f3fd-1f3a8)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDFA8",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// artist: medium-dark skin tone (1f9d1-1f3fe-1f3a8)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDFA8",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// artist: dark skin tone (1f9d1-1f3ff-1f3a8)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDFA8",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman artist (1f469-1f3a8)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDFA8",
@@ -5044,31 +5134,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83D\uDE92",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// firefighter: medium-light skin tone (1f9d1-1f3fc-1f692)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83D\uDE92",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// firefighter: medium skin tone (1f9d1-1f3fd-1f692)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83D\uDE92",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// firefighter: medium-dark skin tone (1f9d1-1f3fe-1f692)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDE92",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// firefighter: dark skin tone (1f9d1-1f3ff-1f692)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83D\uDE92",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman firefighter (1f469-1f692)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83D\uDE92",
@@ -5152,31 +5242,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2708\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// pilot: medium-light skin tone (1f9d1-1f3fc-2708)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2708\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// pilot: medium skin tone (1f9d1-1f3fd-2708)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2708\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// pilot: medium-dark skin tone (1f9d1-1f3fe-2708)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2708\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// pilot: dark skin tone (1f9d1-1f3ff-2708)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2708\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman pilot (1f469-2708)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2708\uFE0F",
@@ -5260,31 +5350,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83D\uDE80",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// astronaut: medium-light skin tone (1f9d1-1f3fc-1f680)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83D\uDE80",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// astronaut: medium skin tone (1f9d1-1f3fd-1f680)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83D\uDE80",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// astronaut: medium-dark skin tone (1f9d1-1f3fe-1f680)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDE80",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// astronaut: dark skin tone (1f9d1-1f3ff-1f680)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83D\uDE80",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman astronaut (1f469-1f680)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83D\uDE80",
@@ -5368,31 +5458,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2696\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// judge: medium-light skin tone (1f9d1-1f3fc-2696)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2696\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// judge: medium skin tone (1f9d1-1f3fd-2696)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2696\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// judge: medium-dark skin tone (1f9d1-1f3fe-2696)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2696\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// judge: dark skin tone (1f9d1-1f3ff-2696)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2696\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman judge (1f469-2696)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2696\uFE0F",
@@ -5476,31 +5566,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC70\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person with veil: medium-light skin tone (1f470-1f3fc)
 		list.add(new EmojiInfo("\uD83D\uDC70\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person with veil: medium skin tone (1f470-1f3fd)
 		list.add(new EmojiInfo("\uD83D\uDC70\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person with veil: medium-dark skin tone (1f470-1f3fe)
 		list.add(new EmojiInfo("\uD83D\uDC70\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person with veil: dark skin tone (1f470-1f3ff)
 		list.add(new EmojiInfo("\uD83D\uDC70\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman with veil (1f470-2640)
 		list.add(new EmojiInfo("\uD83D\uDC70\u200D\u2640\uFE0F",
@@ -5584,31 +5674,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD35\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in tuxedo: medium-light skin tone (1f935-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD35\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in tuxedo: medium skin tone (1f935-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD35\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in tuxedo: medium-dark skin tone (1f935-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD35\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in tuxedo: dark skin tone (1f935-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD35\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman in tuxedo (1f935-2640)
 		list.add(new EmojiInfo("\uD83E\uDD35\u200D\u2640\uFE0F",
@@ -5764,31 +5854,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDB8\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB8\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDB8\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// superhero: medium-light skin tone (1f9b8-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDB8\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB8\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDB8\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// superhero: medium skin tone (1f9b8-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDB8\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB8\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDB8\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// superhero: medium-dark skin tone (1f9b8-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDB8\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB8\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDB8\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// superhero: dark skin tone (1f9b8-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDB8\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB8\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDB8\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman superhero (1f9b8-2640)
 		list.add(new EmojiInfo("\uD83E\uDDB8\u200D\u2640\uFE0F",
@@ -5872,42 +5962,42 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB9\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// supervillain: medium-light skin tone (1f9b9-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB9\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// supervillain: medium skin tone (1f9b9-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB9\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// supervillain: medium-dark skin tone (1f9b9-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB9\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// supervillain: dark skin tone (1f9b9-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDB9\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
-		));
-		// woman supervillain: light skin tone (1f9b9-1f3fb-2640)
-		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFB\u200D\u2640\uFE0F",
-			EmojiSpritemap.DIVERSITY_CHILD, null,
-			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// woman supervillain (1f9b9-2640)
 		list.add(new EmojiInfo("\uD83E\uDDB9\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDB9\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDB9\uD83C\uDFFF\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman supervillain: light skin tone (1f9b9-1f3fb-2640)
+		list.add(new EmojiInfo("\uD83E\uDDB9\uD83C\uDFFB\u200D\u2640\uFE0F",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// woman supervillain: medium-light skin tone (1f9b9-1f3fc-2640)
@@ -6124,31 +6214,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD9\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD9\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDD9\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mage: medium-light skin tone (1f9d9-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDD9\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD9\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDD9\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mage: medium skin tone (1f9d9-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDD9\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD9\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDD9\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mage: medium-dark skin tone (1f9d9-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDD9\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD9\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDD9\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mage: dark skin tone (1f9d9-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDD9\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD9\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDD9\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman mage (1f9d9-2640)
 		list.add(new EmojiInfo("\uD83E\uDDD9\u200D\u2640\uFE0F",
@@ -6232,31 +6322,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDDD\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDD\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDDD\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// elf: medium-light skin tone (1f9dd-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDDD\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDD\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDDD\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// elf: medium skin tone (1f9dd-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDDD\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDD\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDDD\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// elf: medium-dark skin tone (1f9dd-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDDD\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDD\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDDD\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// elf: dark skin tone (1f9dd-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDDD\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDD\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDDD\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman elf (1f9dd-2640)
 		list.add(new EmojiInfo("\uD83E\uDDDD\u200D\u2640\uFE0F",
@@ -6340,31 +6430,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDDB\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDB\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDDB\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// vampire: medium-light skin tone (1f9db-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDDB\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDB\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDDB\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// vampire: medium skin tone (1f9db-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDDB\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDB\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDDB\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// vampire: medium-dark skin tone (1f9db-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDDB\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDB\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDDB\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// vampire: dark skin tone (1f9db-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDDB\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDB\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDDB\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman vampire (1f9db-2640)
 		list.add(new EmojiInfo("\uD83E\uDDDB\u200D\u2640\uFE0F",
@@ -6484,31 +6574,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDDC\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDC\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDDC\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// merperson: medium-light skin tone (1f9dc-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDDC\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDC\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDDC\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// merperson: medium skin tone (1f9dc-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDDC\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDC\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDDC\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// merperson: medium-dark skin tone (1f9dc-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDDC\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDC\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDDC\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// merperson: dark skin tone (1f9dc-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDDC\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDC\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDDC\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// mermaid (1f9dc-2640)
 		list.add(new EmojiInfo("\uD83E\uDDDC\u200D\u2640\uFE0F",
@@ -6592,31 +6682,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDDA\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDA\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDDA\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// fairy: medium-light skin tone (1f9da-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDDA\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDA\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDDA\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// fairy: medium skin tone (1f9da-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDDA\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDA\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDDA\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// fairy: medium-dark skin tone (1f9da-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDDA\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDA\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDDA\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// fairy: dark skin tone (1f9da-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDDA\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDDA\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDDA\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman fairy (1f9da-2640)
 		list.add(new EmojiInfo("\uD83E\uDDDA\u200D\u2640\uFE0F",
@@ -6808,31 +6898,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83C\uDF7C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person feeding baby: medium-light skin tone (1f9d1-1f3fc-1f37c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83C\uDF7C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person feeding baby: medium skin tone (1f9d1-1f3fd-1f37c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83C\uDF7C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person feeding baby: medium-dark skin tone (1f9d1-1f3fe-1f37c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83C\uDF7C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person feeding baby: dark skin tone (1f9d1-1f3ff-1f37c)
 		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83C\uDF7C",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman feeding baby (1f469-1f37c)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\uD83C\uDF7C",
@@ -6910,7 +7000,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE47",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE47\uD83C\uDFFB","\uD83D\uDE47\uD83C\uDFFC","\uD83D\uDE47\uD83C\uDFFD","\uD83D\uDE47\uD83C\uDFFE","\uD83D\uDE47\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDE47\u200D\u2642\uFE0F","\uD83D\uDE47\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person bowing: light skin tone (1f647-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDE47\uD83C\uDFFB",
@@ -6982,43 +7072,43 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE47\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE47\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDE47\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDE47\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDE47\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDE47\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bowing: light skin tone (1f647-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDE47\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bowing: medium-light skin tone (1f647-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDE47\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bowing: medium skin tone (1f647-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDE47\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bowing: medium-dark skin tone (1f647-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDE47\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bowing: dark skin tone (1f647-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDE47\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person tipping hand (1f481)
 		list.add(new EmojiInfo("\uD83D\uDC81",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC81\uD83C\uDFFB","\uD83D\uDC81\uD83C\uDFFC","\uD83D\uDC81\uD83C\uDFFD","\uD83D\uDC81\uD83C\uDFFE","\uD83D\uDC81\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC81\u200D\u2642\uFE0F","\uD83D\uDC81\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person tipping hand: light skin tone (1f481-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC81\uD83C\uDFFB",
@@ -7054,37 +7144,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC81\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC81\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDC81\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDC81\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDC81\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDC81\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman tipping hand: light skin tone (1f481-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDC81\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman tipping hand: medium-light skin tone (1f481-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDC81\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman tipping hand: medium skin tone (1f481-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDC81\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman tipping hand: medium-dark skin tone (1f481-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDC81\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman tipping hand: dark skin tone (1f481-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDC81\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man tipping hand (1f481-2642)
 		list.add(new EmojiInfo("\uD83D\uDC81\u200D\u2642\uFE0F",
@@ -7126,7 +7216,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE45",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE45\uD83C\uDFFB","\uD83D\uDE45\uD83C\uDFFC","\uD83D\uDE45\uD83C\uDFFD","\uD83D\uDE45\uD83C\uDFFE","\uD83D\uDE45\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDE45\u200D\u2642\uFE0F","\uD83D\uDE45\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person gesturing NO: light skin tone (1f645-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDE45\uD83C\uDFFB",
@@ -7162,37 +7252,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE45\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE45\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDE45\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDE45\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDE45\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDE45\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing NO: light skin tone (1f645-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDE45\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing NO: medium-light skin tone (1f645-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDE45\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing NO: medium skin tone (1f645-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDE45\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing NO: medium-dark skin tone (1f645-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDE45\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing NO: dark skin tone (1f645-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDE45\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man gesturing NO (1f645-2642)
 		list.add(new EmojiInfo("\uD83D\uDE45\u200D\u2642\uFE0F",
@@ -7234,7 +7324,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE46",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE46\uD83C\uDFFB","\uD83D\uDE46\uD83C\uDFFC","\uD83D\uDE46\uD83C\uDFFD","\uD83D\uDE46\uD83C\uDFFE","\uD83D\uDE46\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDE46\u200D\u2642\uFE0F","\uD83D\uDE46\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person gesturing OK: light skin tone (1f646-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDE46\uD83C\uDFFB",
@@ -7270,37 +7360,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE46\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE46\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDE46\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDE46\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDE46\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDE46\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing OK: light skin tone (1f646-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDE46\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing OK: medium-light skin tone (1f646-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDE46\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing OK: medium skin tone (1f646-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDE46\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing OK: medium-dark skin tone (1f646-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDE46\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman gesturing OK: dark skin tone (1f646-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDE46\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man gesturing OK (1f646-2642)
 		list.add(new EmojiInfo("\uD83D\uDE46\u200D\u2642\uFE0F",
@@ -7342,7 +7432,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE4B",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE4B\uD83C\uDFFB","\uD83D\uDE4B\uD83C\uDFFC","\uD83D\uDE4B\uD83C\uDFFD","\uD83D\uDE4B\uD83C\uDFFE","\uD83D\uDE4B\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDE4B\u200D\u2642\uFE0F","\uD83D\uDE4B\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person raising hand: light skin tone (1f64b-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDE4B\uD83C\uDFFB",
@@ -7378,37 +7468,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE4B\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE4B\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDE4B\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDE4B\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDE4B\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDE4B\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman raising hand: light skin tone (1f64b-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4B\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman raising hand: medium-light skin tone (1f64b-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4B\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman raising hand: medium skin tone (1f64b-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4B\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman raising hand: medium-dark skin tone (1f64b-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4B\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman raising hand: dark skin tone (1f64b-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4B\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man raising hand (1f64b-2642)
 		list.add(new EmojiInfo("\uD83D\uDE4B\u200D\u2642\uFE0F",
@@ -7456,31 +7546,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDCF\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDCF\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDCF\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// deaf person: medium-light skin tone (1f9cf-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDCF\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDCF\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDCF\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// deaf person: medium skin tone (1f9cf-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDCF\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDCF\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDCF\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// deaf person: medium-dark skin tone (1f9cf-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDCF\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDCF\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDCF\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// deaf person: dark skin tone (1f9cf-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDCF\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDCF\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDCF\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// deaf woman (1f9cf-2640)
 		list.add(new EmojiInfo("\uD83E\uDDCF\u200D\u2640\uFE0F",
@@ -7564,31 +7654,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD26\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD26\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDD26\uD83C\uDFFB\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person facepalming: medium-light skin tone (1f926-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD26\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD26\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDD26\uD83C\uDFFC\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person facepalming: medium skin tone (1f926-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD26\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD26\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDD26\uD83C\uDFFD\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person facepalming: medium-dark skin tone (1f926-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD26\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD26\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDD26\uD83C\uDFFE\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person facepalming: dark skin tone (1f926-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD26\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD26\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83E\uDD26\uD83C\uDFFF\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman facepalming (1f926-2640)
 		list.add(new EmojiInfo("\uD83E\uDD26\u200D\u2640\uFE0F",
@@ -7672,31 +7762,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD37\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD37\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDD37\uD83C\uDFFB\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person shrugging: medium-light skin tone (1f937-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD37\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD37\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDD37\uD83C\uDFFC\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person shrugging: medium skin tone (1f937-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD37\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD37\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDD37\uD83C\uDFFD\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person shrugging: medium-dark skin tone (1f937-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD37\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD37\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDD37\uD83C\uDFFE\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person shrugging: dark skin tone (1f937-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD37\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD37\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83E\uDD37\uD83C\uDFFF\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman shrugging (1f937-2640)
 		list.add(new EmojiInfo("\uD83E\uDD37\u200D\u2640\uFE0F",
@@ -7774,7 +7864,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE4E",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE4E\uD83C\uDFFB","\uD83D\uDE4E\uD83C\uDFFC","\uD83D\uDE4E\uD83C\uDFFD","\uD83D\uDE4E\uD83C\uDFFE","\uD83D\uDE4E\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDE4E\u200D\u2642\uFE0F","\uD83D\uDE4E\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person pouting: light skin tone (1f64e-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDE4E\uD83C\uDFFB",
@@ -7810,37 +7900,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE4E\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE4E\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDE4E\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDE4E\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDE4E\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDE4E\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman pouting: light skin tone (1f64e-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4E\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman pouting: medium-light skin tone (1f64e-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4E\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman pouting: medium skin tone (1f64e-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4E\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman pouting: medium-dark skin tone (1f64e-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4E\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman pouting: dark skin tone (1f64e-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4E\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man pouting (1f64e-2642)
 		list.add(new EmojiInfo("\uD83D\uDE4E\u200D\u2642\uFE0F",
@@ -7882,7 +7972,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE4D",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE4D\uD83C\uDFFB","\uD83D\uDE4D\uD83C\uDFFC","\uD83D\uDE4D\uD83C\uDFFD","\uD83D\uDE4D\uD83C\uDFFE","\uD83D\uDE4D\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDE4D\u200D\u2642\uFE0F","\uD83D\uDE4D\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person frowning: light skin tone (1f64d-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDE4D\uD83C\uDFFB",
@@ -7918,37 +8008,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDE4D\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDE4D\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDE4D\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDE4D\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDE4D\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDE4D\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman frowning: light skin tone (1f64d-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4D\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman frowning: medium-light skin tone (1f64d-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4D\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman frowning: medium skin tone (1f64d-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4D\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman frowning: medium-dark skin tone (1f64d-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4D\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman frowning: dark skin tone (1f64d-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDE4D\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man frowning (1f64d-2642)
 		list.add(new EmojiInfo("\uD83D\uDE4D\u200D\u2642\uFE0F",
@@ -7990,7 +8080,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC87",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC87\uD83C\uDFFB","\uD83D\uDC87\uD83C\uDFFC","\uD83D\uDC87\uD83C\uDFFD","\uD83D\uDC87\uD83C\uDFFE","\uD83D\uDC87\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC87\u200D\u2642\uFE0F","\uD83D\uDC87\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person getting haircut: light skin tone (1f487-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC87\uD83C\uDFFB",
@@ -8026,37 +8116,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC87\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC87\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDC87\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDC87\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDC87\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDC87\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting haircut: light skin tone (1f487-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDC87\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting haircut: medium-light skin tone (1f487-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDC87\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting haircut: medium skin tone (1f487-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDC87\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting haircut: medium-dark skin tone (1f487-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDC87\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting haircut: dark skin tone (1f487-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDC87\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man getting haircut (1f487-2642)
 		list.add(new EmojiInfo("\uD83D\uDC87\u200D\u2642\uFE0F",
@@ -8098,7 +8188,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC86",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC86\uD83C\uDFFB","\uD83D\uDC86\uD83C\uDFFC","\uD83D\uDC86\uD83C\uDFFD","\uD83D\uDC86\uD83C\uDFFE","\uD83D\uDC86\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC86\u200D\u2642\uFE0F","\uD83D\uDC86\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person getting massage: light skin tone (1f486-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDC86\uD83C\uDFFB",
@@ -8134,37 +8224,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC86\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC86\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83D\uDC86\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83D\uDC86\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83D\uDC86\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83D\uDC86\uD83C\uDFFB\u200D\u2640\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting massage: light skin tone (1f486-1f3fb-2640)
 		list.add(new EmojiInfo("\uD83D\uDC86\uD83C\uDFFB\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting massage: medium-light skin tone (1f486-1f3fc-2640)
 		list.add(new EmojiInfo("\uD83D\uDC86\uD83C\uDFFC\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting massage: medium skin tone (1f486-1f3fd-2640)
 		list.add(new EmojiInfo("\uD83D\uDC86\uD83C\uDFFD\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting massage: medium-dark skin tone (1f486-1f3fe-2640)
 		list.add(new EmojiInfo("\uD83D\uDC86\uD83C\uDFFE\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman getting massage: dark skin tone (1f486-1f3ff-2640)
 		list.add(new EmojiInfo("\uD83D\uDC86\uD83C\uDFFF\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man getting massage (1f486-2642)
 		list.add(new EmojiInfo("\uD83D\uDC86\u200D\u2642\uFE0F",
@@ -8212,31 +8302,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD6\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD6\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDD6\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in steamy room: medium-light skin tone (1f9d6-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDD6\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD6\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDD6\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in steamy room: medium skin tone (1f9d6-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDD6\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD6\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDD6\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in steamy room: medium-dark skin tone (1f9d6-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDD6\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD6\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDD6\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in steamy room: dark skin tone (1f9d6-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDD6\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD6\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDD6\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman in steamy room (1f9d6-2640)
 		list.add(new EmojiInfo("\uD83E\uDDD6\u200D\u2640\uFE0F",
@@ -8458,13 +8548,13 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC6F",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDC6F\u200D\u2642\uFE0F","\uD83D\uDC6F\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// women with bunny ears (1f46f-2640)
 		list.add(new EmojiInfo("\uD83D\uDC6F\u200D\u2640\uFE0F",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// men with bunny ears (1f46f-2642)
 		list.add(new EmojiInfo("\uD83D\uDC6F\u200D\u2642\uFE0F",
@@ -8728,7 +8818,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEB6",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEB6\uD83C\uDFFB","\uD83D\uDEB6\uD83C\uDFFC","\uD83D\uDEB6\uD83C\uDFFD","\uD83D\uDEB6\uD83C\uDFFE","\uD83D\uDEB6\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDEB6\u200D\u2642\uFE0F","\uD83D\uDEB6\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person walking: light skin tone (1f6b6-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDEB6\uD83C\uDFFB",
@@ -8800,40 +8890,34 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEB6\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEB6\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDEB6\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDEB6\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDEB6\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDEB6\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man walking: light skin tone (1f6b6-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB6\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man walking: medium-light skin tone (1f6b6-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB6\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man walking: medium skin tone (1f6b6-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB6\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man walking: medium-dark skin tone (1f6b6-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB6\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man walking: dark skin tone (1f6b6-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB6\uD83C\uDFFF\u200D\u2642\uFE0F",
-			EmojiSpritemap.DIVERSITY_CHILD, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
-		));
-		// person with probing cane: light skin tone (1f9d1-1f3fb-1f9af)
-		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDAF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -8841,6 +8925,12 @@ public class EmojiSpritemap {
 		// person with probing cane (1f9d1-1f9af)
 		list.add(new EmojiInfo("\uD83E\uDDD1\u200D\uD83E\uDDAF",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDAF","\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDDAF","\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDDAF","\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDDAF","\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDDAF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// person with probing cane: light skin tone (1f9d1-1f3fb-1f9af)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDDAF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
@@ -8944,7 +9034,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDCE",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDCE\uD83C\uDFFB","\uD83E\uDDCE\uD83C\uDFFC","\uD83E\uDDCE\uD83C\uDFFD","\uD83E\uDDCE\uD83C\uDFFE","\uD83E\uDDCE\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDCE\u200D\u2640\uFE0F","\uD83E\uDDCE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person kneeling: light skin tone (1f9ce-1f3fb)
 		list.add(new EmojiInfo("\uD83E\uDDCE\uD83C\uDFFB",
@@ -9052,7 +9142,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFC3",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFC3\uD83C\uDFFB","\uD83C\uDFC3\uD83C\uDFFC","\uD83C\uDFC3\uD83C\uDFFD","\uD83C\uDFC3\uD83C\uDFFE","\uD83C\uDFC3\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83C\uDFC3\u200D\u2642\uFE0F","\uD83C\uDFC3\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person running: light skin tone (1f3c3-1f3fb)
 		list.add(new EmojiInfo("\uD83C\uDFC3\uD83C\uDFFB",
@@ -9124,37 +9214,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFC3\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFC3\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83C\uDFC3\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83C\uDFC3\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83C\uDFC3\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man running: light skin tone (1f3c3-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC3\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man running: medium-light skin tone (1f3c3-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man running: medium skin tone (1f3c3-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC3\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man running: medium-dark skin tone (1f3c3-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC3\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man running: dark skin tone (1f3c3-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC3\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person standing (1f9cd)
 		list.add(new EmojiInfo("\uD83E\uDDCD",
@@ -9266,73 +9356,1873 @@ public class EmojiSpritemap {
 		));
 		// people holding hands (1f9d1-1f91d-1f9d1)
 		list.add(new EmojiInfo("\uD83E\uDDD1\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB","\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFC","\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFD","\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFE","\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: light skin tone (1f9d1-1f3fb-1f91d-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// people holding hands: light skin tone, medium-light skin tone (1f9d1-1f3fb-1f91d-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: light skin tone, medium skin tone (1f9d1-1f3fb-1f91d-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: light skin tone, medium-dark skin tone (1f9d1-1f3fb-1f91d-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: light skin tone, dark skin tone (1f9d1-1f3fb-1f91d-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-light skin tone, light skin tone (1f9d1-1f3fc-1f91d-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-light skin tone (1f9d1-1f3fc-1f91d-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// people holding hands: medium-light skin tone, medium skin tone (1f9d1-1f3fc-1f91d-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-light skin tone, medium-dark skin tone (1f9d1-1f3fc-1f91d-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-light skin tone, dark skin tone (1f9d1-1f3fc-1f91d-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium skin tone, light skin tone (1f9d1-1f3fd-1f91d-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium skin tone, medium-light skin tone (1f9d1-1f3fd-1f91d-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium skin tone (1f9d1-1f3fd-1f91d-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// people holding hands: medium skin tone, medium-dark skin tone (1f9d1-1f3fd-1f91d-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium skin tone, dark skin tone (1f9d1-1f3fd-1f91d-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-dark skin tone, light skin tone (1f9d1-1f3fe-1f91d-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium dark skin tone, medium light skin tone (1f9d1-1f3fe-1f91d-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-dark skin tone, medium skin tone (1f9d1-1f3fe-1f91d-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: medium-dark skin tone (1f9d1-1f3fe-1f91d-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// people holding hands: medium-dark skin tone, dark skin tone (1f9d1-1f3fe-1f91d-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: dark skin tone, light skin tone (1f9d1-1f3ff-1f91d-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: dark skin tone, medium-light skin tone (1f9d1-1f3ff-1f91d-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: dark skin tone, medium skin tone (1f9d1-1f3ff-1f91d-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: dark skin tone, medium-dark skin tone (1f9d1-1f3ff-1f91d-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// people holding hands: dark skin tone (1f9d1-1f3ff-1f91d-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// woman and man holding hands (1f46b)
 		list.add(new EmojiInfo("\uD83D\uDC6B",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC6B\uD83C\uDFFB","\uD83D\uDC6B\uD83C\uDFFC","\uD83D\uDC6B\uD83C\uDFFD","\uD83D\uDC6B\uD83C\uDFFE","\uD83D\uDC6B\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman and man holding hands: light skin tone (1f46b-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC6B\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman and man holding hands: light skin tone, medium light skin tone (1f469-1f3fb-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: light skin tone, medium skin tone (1f469-1f3fb-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: light skin tone, medium dark skin tone (1f469-1f3fb-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: light skin tone, dark skin tone (1f469-1f3fb-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium light skin tone, light skin tone (1f469-1f3fc-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium-light skin tone (1f46b-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC6B\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman and man holding hands: medium light skin tone, medium skin tone (1f469-1f3fc-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium light skin tone, medium dark skin tone (1f469-1f3fc-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium light skin tone, dark skin tone (1f469-1f3fc-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium skin tone, light skin tone (1f469-1f3fd-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium skin tone, medium light skin tone (1f469-1f3fd-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium skin tone (1f46b-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC6B\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman and man holding hands: medium skin tone, medium dark skin tone (1f469-1f3fd-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium skin tone, dark skin tone (1f469-1f3fd-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium dark skin tone, light skin tone (1f469-1f3fe-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium dark skin tone, medium light skin tone (1f469-1f3fe-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium dark skin tone, medium skin tone (1f469-1f3fe-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: medium-dark skin tone (1f46b-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC6B\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// woman and man holding hands: medium dark skin tone, dark skin tone (1f469-1f3fe-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: dark skin tone, light skin tone (1f469-1f3ff-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: dark skin tone, medium light skin tone (1f469-1f3ff-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: dark skin tone, medium skin tone (1f469-1f3ff-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: dark skin tone, medium dark skin tone (1f469-1f3ff-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// woman and man holding hands: dark skin tone (1f46b-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC6B\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// women holding hands (1f46d)
 		list.add(new EmojiInfo("\uD83D\uDC6D",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC6D\uD83C\uDFFB","\uD83D\uDC6D\uD83C\uDFFC","\uD83D\uDC6D\uD83C\uDFFD","\uD83D\uDC6D\uD83C\uDFFE","\uD83D\uDC6D\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// women holding hands: light skin tone (1f46d-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC6D\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// women holding hands: light skin tone, medium-light skin tone (1f469-1f3fb-1f91d-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: light skin tone, medium skin tone (1f469-1f3fb-1f91d-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: light skin tone, medium-dark skin tone (1f469-1f3fb-1f91d-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: light skin tone, dark skin tone (1f469-1f3fb-1f91d-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-light skin tone, light skin tone (1f469-1f3fc-1f91d-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-light skin tone (1f46d-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC6D\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// women holding hands: medium-light skin tone, medium skin tone (1f469-1f3fc-1f91d-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-light skin tone, medium-dark skin tone (1f469-1f3fc-1f91d-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-light skin tone, dark skin tone (1f469-1f3fc-1f91d-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium skin tone, light skin tone (1f469-1f3fd-1f91d-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium skin tone, medium-light skin tone (1f469-1f3fd-1f91d-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium skin tone (1f46d-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC6D\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// women holding hands: medium skin tone, medium-dark skin tone (1f469-1f3fd-1f91d-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium skin tone, dark skin tone (1f469-1f3fd-1f91d-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-dark skin tone, light skin tone (1f469-1f3fe-1f91d-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium dark skin tone, medium light skin tone (1f469-1f3fe-1f91d-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-dark skin tone, medium skin tone (1f469-1f3fe-1f91d-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: medium-dark skin tone (1f46d-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC6D\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// women holding hands: medium-dark skin tone, dark skin tone (1f469-1f3fe-1f91d-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: dark skin tone, light skin tone (1f469-1f3ff-1f91d-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: dark skin tone, medium-light skin tone (1f469-1f3ff-1f91d-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: dark skin tone, medium skin tone (1f469-1f3ff-1f91d-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: dark skin tone, medium-dark skin tone (1f469-1f3ff-1f91d-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// women holding hands: dark skin tone (1f46d-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC6D\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// men holding hands (1f46c)
 		list.add(new EmojiInfo("\uD83D\uDC6C",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC6C\uD83C\uDFFB","\uD83D\uDC6C\uD83C\uDFFC","\uD83D\uDC6C\uD83C\uDFFD","\uD83D\uDC6C\uD83C\uDFFE","\uD83D\uDC6C\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// men holding hands: light skin tone (1f46c-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC6C\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// men holding hands: light skin tone, medium-light skin tone (1f468-1f3fb-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: light skin tone, medium skin tone (1f468-1f3fb-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: light skin tone, medium-dark skin tone (1f468-1f3fb-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: light skin tone, dark skin tone (1f468-1f3fb-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-light skin tone, light skin tone (1f468-1f3fc-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-light skin tone (1f46c-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC6C\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// men holding hands: medium-light skin tone, medium skin tone (1f468-1f3fc-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-light skin tone, medium-dark skin tone (1f468-1f3fc-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-light skin tone, dark skin tone (1f468-1f3fc-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium skin tone, light skin tone (1f468-1f3fd-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium skin tone, medium-light skin tone (1f468-1f3fd-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium skin tone (1f46c-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC6C\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// men holding hands: medium skin tone, medium-dark skin tone (1f468-1f3fd-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium skin tone, dark skin tone (1f468-1f3fd-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-dark skin tone, light skin tone (1f468-1f3fe-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium dark skin tone, medium light skin tone (1f468-1f3fe-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-dark skin tone, medium skin tone (1f468-1f3fe-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: medium-dark skin tone (1f46c-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC6C\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// men holding hands: medium-dark skin tone, dark skin tone (1f468-1f3fe-1f91d-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: dark skin tone, light skin tone (1f468-1f3ff-1f91d-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: dark skin tone, medium-light skin tone (1f468-1f3ff-1f91d-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: dark skin tone, medium skin tone (1f468-1f3ff-1f91d-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: dark skin tone, medium-dark skin tone (1f468-1f3ff-1f91d-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// men holding hands: dark skin tone (1f46c-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC6C\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// couple with heart (1f491)
 		list.add(new EmojiInfo("\uD83D\uDC91",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC91\uD83C\uDFFB","\uD83D\uDC91\uD83C\uDFFC","\uD83D\uDC91\uD83C\uDFFD","\uD83D\uDC91\uD83C\uDFFE","\uD83D\uDC91\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: light skin tone (1f491-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC91\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: person, person, light skin tone, medium-light skin tone (1f9d1-1f3fb-2764-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, light skin tone, medium skin tone (1f9d1-1f3fb-2764-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, light skin tone, medium-dark skin tone (1f9d1-1f3fb-2764-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, light skin tone, dark skin tone (1f9d1-1f3fb-2764-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium-light skin tone, light skin tone (1f9d1-1f3fc-2764-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: medium-light skin tone (1f491-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC91\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: person, person, medium-light skin tone, medium skin tone (1f9d1-1f3fc-2764-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium-light skin tone, medium-dark skin tone (1f9d1-1f3fc-2764-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium-light skin tone, dark skin tone (1f9d1-1f3fc-2764-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium skin tone, light skin tone (1f9d1-1f3fd-2764-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium skin tone, medium-light skin tone (1f9d1-1f3fd-2764-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: medium skin tone (1f491-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC91\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: person, person, medium skin tone, medium-dark skin tone (1f9d1-1f3fd-2764-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium skin tone, dark skin tone (1f9d1-1f3fd-2764-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium-dark skin tone, light skin tone (1f9d1-1f3fe-2764-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium-dark skin tone, medium-light skin tone (1f9d1-1f3fe-2764-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, medium-dark skin tone, medium skin tone (1f9d1-1f3fe-2764-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: medium-dark skin tone (1f491-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC91\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: person, person, medium-dark skin tone, dark skin tone (1f9d1-1f3fe-2764-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, dark skin tone, light skin tone (1f9d1-1f3ff-2764-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, dark skin tone, medium-light skin tone (1f9d1-1f3ff-2764-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, dark skin tone, medium skin tone (1f9d1-1f3ff-2764-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: person, person, dark skin tone, medium-dark skin tone (1f9d1-1f3ff-2764-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: dark skin tone (1f491-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC91\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// couple with heart: woman, man (1f469-2764-1f468)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2764\uFE0F\u200D\uD83D\uDC68",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB","\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC","\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD","\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE","\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, man, light skin tone (1f469-1f3fb-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, man, light skin tone, medium-light skin tone (1f469-1f3fb-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_NO
 		));
+		// couple with heart: woman, man, light skin tone, medium skin tone (1f469-1f3fb-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, light skin tone, medium-dark skin tone (1f469-1f3fb-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, light skin tone, dark skin tone (1f469-1f3fb-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-light skin tone, light skin tone (1f469-1f3fc-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-light skin tone (1f469-1f3fc-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, man, medium-light skin tone, medium skin tone (1f469-1f3fc-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-light skin tone, medium-dark skin tone (1f469-1f3fc-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-light skin tone, dark skin tone (1f469-1f3fc-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium skin tone, light skin tone (1f469-1f3fd-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium skin tone, medium-light skin tone (1f469-1f3fd-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium skin tone (1f469-1f3fd-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, man, medium skin tone, medium-dark skin tone (1f469-1f3fd-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium skin tone, dark skin tone (1f469-1f3fd-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-dark skin tone, light skin tone (1f469-1f3fe-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-dark skin tone, medium-light skin tone (1f469-1f3fe-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-dark skin tone, medium skin tone (1f469-1f3fe-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, medium-dark skin tone (1f469-1f3fe-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, man, medium-dark skin tone, dark skin tone (1f469-1f3fe-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, dark skin tone, light skin tone (1f469-1f3ff-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, dark skin tone, medium-light skin tone (1f469-1f3ff-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, dark skin tone, medium skin tone (1f469-1f3ff-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, dark skin tone, medium-dark skin tone (1f469-1f3ff-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, man, dark skin tone (1f469-1f3ff-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// couple with heart: woman, woman (1f469-2764-1f469)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2764\uFE0F\u200D\uD83D\uDC69",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFB","\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFC","\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFD","\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFE","\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, woman, light skin tone (1f469-1f3fb-2764-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, woman, light skin tone, medium-light skin tone (1f469-1f3fb-2764-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, light skin tone, medium skin tone (1f469-1f3fb-2764-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, light skin tone, medium-dark skin tone (1f469-1f3fb-2764-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, light skin tone, dark skin tone (1f469-1f3fb-2764-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-light skin tone, light skin tone (1f469-1f3fc-2764-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-light skin tone (1f469-1f3fc-2764-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, woman, medium-light skin tone, medium skin tone (1f469-1f3fc-2764-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-light skin tone, medium-dark skin tone (1f469-1f3fc-2764-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-light skin tone, dark skin tone (1f469-1f3fc-2764-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium skin tone, light skin tone (1f469-1f3fd-2764-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium skin tone, medium-light skin tone (1f469-1f3fd-2764-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium skin tone (1f469-1f3fd-2764-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, woman, medium skin tone, medium-dark skin tone (1f469-1f3fd-2764-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium skin tone, dark skin tone (1f469-1f3fd-2764-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-dark skin tone, light skin tone (1f469-1f3fe-2764-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-dark skin tone, medium-light skin tone (1f469-1f3fe-2764-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-dark skin tone, medium skin tone (1f469-1f3fe-2764-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, medium-dark skin tone (1f469-1f3fe-2764-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: woman, woman, medium-dark skin tone, dark skin tone (1f469-1f3fe-2764-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, dark skin tone, light skin tone (1f469-1f3ff-2764-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, dark skin tone, medium-light skin tone (1f469-1f3ff-2764-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, dark skin tone, medium skin tone (1f469-1f3ff-2764-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, dark skin tone, medium-dark skin tone (1f469-1f3ff-2764-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: woman, woman, dark skin tone (1f469-1f3ff-2764-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// couple with heart: man, man (1f468-2764-1f468)
 		list.add(new EmojiInfo("\uD83D\uDC68\u200D\u2764\uFE0F\u200D\uD83D\uDC68",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB","\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC","\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD","\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE","\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: man, man, light skin tone (1f468-1f3fb-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: man, man, light skin tone, medium-light skin tone (1f468-1f3fb-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, light skin tone, medium skin tone (1f468-1f3fb-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, light skin tone, medium-dark skin tone (1f468-1f3fb-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, light skin tone, dark skin tone (1f468-1f3fb-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-light skin tone, light skin tone (1f468-1f3fc-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-light skin tone (1f468-1f3fc-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: man, man, medium-light skin tone, medium skin tone (1f468-1f3fc-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-light skin tone, medium-dark skin tone (1f468-1f3fc-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-light skin tone, dark skin tone (1f468-1f3fc-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium skin tone, light skin tone (1f468-1f3fd-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium skin tone, medium-light skin tone (1f468-1f3fd-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium skin tone (1f468-1f3fd-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: man, man, medium skin tone, medium-dark skin tone (1f468-1f3fd-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium skin tone, dark skin tone (1f468-1f3fd-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-dark skin tone, light skin tone (1f468-1f3fe-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-dark skin tone, medium-light skin tone (1f468-1f3fe-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-dark skin tone, medium skin tone (1f468-1f3fe-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, medium-dark skin tone (1f468-1f3fe-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// couple with heart: man, man, medium-dark skin tone, dark skin tone (1f468-1f3fe-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, dark skin tone, light skin tone (1f468-1f3ff-2764-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, dark skin tone, medium-light skin tone (1f468-1f3ff-2764-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, dark skin tone, medium skin tone (1f468-1f3ff-2764-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, dark skin tone, medium-dark skin tone (1f468-1f3ff-2764-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// couple with heart: man, man, dark skin tone (1f468-1f3ff-2764-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// kiss (1f48f)
 		list.add(new EmojiInfo("\uD83D\uDC8F",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC8F\uD83C\uDFFB","\uD83D\uDC8F\uD83C\uDFFC","\uD83D\uDC8F\uD83C\uDFFD","\uD83D\uDC8F\uD83C\uDFFE","\uD83D\uDC8F\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: light skin tone (1f48f-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC8F\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: person, person, light skin tone, medium-light skin tone (1f9d1-1f3fb-2764-1f48b-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, light skin tone, medium skin tone (1f9d1-1f3fb-2764-1f48b-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, light skin tone, medium-dark skin tone (1f9d1-1f3fb-2764-1f48b-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, light skin tone, dark skin tone (1f9d1-1f3fb-2764-1f48b-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium-light skin tone, light skin tone (1f9d1-1f3fc-2764-1f48b-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: medium-light skin tone (1f48f-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC8F\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: person, person, medium-light skin tone, medium skin tone (1f9d1-1f3fc-2764-1f48b-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium-light skin tone, medium-dark skin tone (1f9d1-1f3fc-2764-1f48b-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium-light skin tone, dark skin tone (1f9d1-1f3fc-2764-1f48b-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium skin tone, light skin tone (1f9d1-1f3fd-2764-1f48b-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium skin tone, medium-light skin tone (1f9d1-1f3fd-2764-1f48b-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: medium skin tone (1f48f-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC8F\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: person, person, medium skin tone, medium-dark skin tone (1f9d1-1f3fd-2764-1f48b-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium skin tone, dark skin tone (1f9d1-1f3fd-2764-1f48b-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium-dark skin tone, light skin tone (1f9d1-1f3fe-2764-1f48b-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium-dark skin tone, medium-light skin tone (1f9d1-1f3fe-2764-1f48b-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, medium-dark skin tone, medium skin tone (1f9d1-1f3fe-2764-1f48b-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: medium-dark skin tone (1f48f-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC8F\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: person, person, medium-dark skin tone, dark skin tone (1f9d1-1f3fe-2764-1f48b-1f9d1-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, dark skin tone, light skin tone (1f9d1-1f3ff-2764-1f48b-1f9d1-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, dark skin tone, medium-light skin tone (1f9d1-1f3ff-2764-1f48b-1f9d1-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, dark skin tone, medium skin tone (1f9d1-1f3ff-2764-1f48b-1f9d1-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: person, person, dark skin tone, medium-dark skin tone (1f9d1-1f3ff-2764-1f48b-1f9d1-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDDD1\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83E\uDDD1\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: dark skin tone (1f48f-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC8F\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// kiss: woman, man (1f469-2764-1f48b-1f468)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB","\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC","\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD","\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE","\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, man, light skin tone (1f469-1f3fb-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, man, light skin tone, medium-light skin tone (1f469-1f3fb-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_NO
 		));
+		// kiss: woman, man, light skin tone, medium skin tone (1f469-1f3fb-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, light skin tone, medium-dark skin tone (1f469-1f3fb-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, light skin tone, dark skin tone (1f469-1f3fb-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-light skin tone, light skin tone (1f469-1f3fc-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-light skin tone (1f469-1f3fc-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, man, medium-light skin tone, medium skin tone (1f469-1f3fc-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-light skin tone, medium-dark skin tone (1f469-1f3fc-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-light skin tone, dark skin tone (1f469-1f3fc-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium skin tone, light skin tone (1f469-1f3fd-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium skin tone, medium-light skin tone (1f469-1f3fd-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium skin tone (1f469-1f3fd-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, man, medium skin tone, medium-dark skin tone (1f469-1f3fd-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium skin tone, dark skin tone (1f469-1f3fd-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-dark skin tone, light skin tone (1f469-1f3fe-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-dark skin tone, medium-light skin tone (1f469-1f3fe-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-dark skin tone, medium skin tone (1f469-1f3fe-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, medium-dark skin tone (1f469-1f3fe-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, man, medium-dark skin tone, dark skin tone (1f469-1f3fe-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, dark skin tone, light skin tone (1f469-1f3ff-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, dark skin tone, medium-light skin tone (1f469-1f3ff-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, dark skin tone, medium skin tone (1f469-1f3ff-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, dark skin tone, medium-dark skin tone (1f469-1f3ff-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, man, dark skin tone (1f469-1f3ff-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// kiss: woman, woman (1f469-2764-1f48b-1f469)
 		list.add(new EmojiInfo("\uD83D\uDC69\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFB","\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFC","\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFD","\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFE","\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, woman, light skin tone (1f469-1f3fb-2764-1f48b-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, woman, light skin tone, medium-light skin tone (1f469-1f3fb-2764-1f48b-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, light skin tone, medium skin tone (1f469-1f3fb-2764-1f48b-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, light skin tone, medium-dark skin tone (1f469-1f3fb-2764-1f48b-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, light skin tone, dark skin tone (1f469-1f3fb-2764-1f48b-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-light skin tone, light skin tone (1f469-1f3fc-2764-1f48b-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-light skin tone (1f469-1f3fc-2764-1f48b-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, woman, medium-light skin tone, medium skin tone (1f469-1f3fc-2764-1f48b-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-light skin tone, medium-dark skin tone (1f469-1f3fc-2764-1f48b-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-light skin tone, dark skin tone (1f469-1f3fc-2764-1f48b-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium skin tone, light skin tone (1f469-1f3fd-2764-1f48b-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium skin tone, medium-light skin tone (1f469-1f3fd-2764-1f48b-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium skin tone (1f469-1f3fd-2764-1f48b-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, woman, medium skin tone, medium-dark skin tone (1f469-1f3fd-2764-1f48b-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium skin tone, dark skin tone (1f469-1f3fd-2764-1f48b-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-dark skin tone, light skin tone (1f469-1f3fe-2764-1f48b-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-dark skin tone, medium-light skin tone (1f469-1f3fe-2764-1f48b-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-dark skin tone, medium skin tone (1f469-1f3fe-2764-1f48b-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, medium-dark skin tone (1f469-1f3fe-2764-1f48b-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: woman, woman, medium-dark skin tone, dark skin tone (1f469-1f3fe-2764-1f48b-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, dark skin tone, light skin tone (1f469-1f3ff-2764-1f48b-1f469-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, dark skin tone, medium-light skin tone (1f469-1f3ff-2764-1f48b-1f469-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, dark skin tone, medium skin tone (1f469-1f3ff-2764-1f48b-1f469-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, dark skin tone, medium-dark skin tone (1f469-1f3ff-2764-1f48b-1f469-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: woman, woman, dark skin tone (1f469-1f3ff-2764-1f48b-1f469-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC69\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
 		// kiss: man, man (1f468-2764-1f48b-1f468)
 		list.add(new EmojiInfo("\uD83D\uDC68\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68",
-			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB","\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC","\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD","\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE","\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: man, man, light skin tone (1f468-1f3fb-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: man, man, light skin tone, medium-light skin tone (1f468-1f3fb-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, light skin tone, medium skin tone (1f468-1f3fb-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, light skin tone, medium-dark skin tone (1f468-1f3fb-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, light skin tone, dark skin tone (1f468-1f3fb-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFB\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-light skin tone, light skin tone (1f468-1f3fc-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-light skin tone (1f468-1f3fc-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: man, man, medium-light skin tone, medium skin tone (1f468-1f3fc-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-light skin tone, medium-dark skin tone (1f468-1f3fc-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-light skin tone, dark skin tone (1f468-1f3fc-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFC\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium skin tone, light skin tone (1f468-1f3fd-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium skin tone, medium-light skin tone (1f468-1f3fd-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium skin tone (1f468-1f3fd-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: man, man, medium skin tone, medium-dark skin tone (1f468-1f3fd-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium skin tone, dark skin tone (1f468-1f3fd-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFD\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-dark skin tone, light skin tone (1f468-1f3fe-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-dark skin tone, medium-light skin tone (1f468-1f3fe-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-dark skin tone, medium skin tone (1f468-1f3fe-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, medium-dark skin tone (1f468-1f3fe-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss: man, man, medium-dark skin tone, dark skin tone (1f468-1f3fe-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFE\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, dark skin tone, light skin tone (1f468-1f3ff-2764-1f48b-1f468-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, dark skin tone, medium-light skin tone (1f468-1f3ff-2764-1f48b-1f468-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, dark skin tone, medium skin tone (1f468-1f3ff-2764-1f48b-1f468-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, dark skin tone, medium-dark skin tone (1f468-1f3ff-2764-1f48b-1f468-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// kiss: man, man, dark skin tone (1f468-1f3ff-2764-1f48b-1f468-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDC68\uD83C\uDFFF\u200D\u2764\uFE0F\u200D\uD83D\uDC8B\u200D\uD83D\uDC68\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
@@ -9340,13 +11230,13 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDC6A",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// family: man, woman, boy (1f468-1f469-1f466)
 		list.add(new EmojiInfo("\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC66",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// family: man, woman, girl (1f468-1f469-1f467)
 		list.add(new EmojiInfo("\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67",
@@ -11933,7 +13823,7 @@ public class EmojiSpritemap {
 		));
 		// snowboarder (1f3c2)
 		list.add(new EmojiInfo("\uD83C\uDFC2",
-			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFC2\uD83C\uDFFB","\uD83C\uDFC2\uD83C\uDFFC","\uD83C\uDFC2\uD83C\uDFFD","\uD83C\uDFC2\uD83C\uDFFE","\uD83C\uDFC2\uD83C\uDFFF" },
+			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
@@ -11941,31 +13831,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFC2\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// snowboarder: medium-light skin tone (1f3c2-1f3fc)
 		list.add(new EmojiInfo("\uD83C\uDFC2\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// snowboarder: medium skin tone (1f3c2-1f3fd)
 		list.add(new EmojiInfo("\uD83C\uDFC2\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// snowboarder: medium-dark skin tone (1f3c2-1f3fe)
 		list.add(new EmojiInfo("\uD83C\uDFC2\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// snowboarder: dark skin tone (1f3c2-1f3ff)
 		list.add(new EmojiInfo("\uD83C\uDFC2\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// parachute (1fa82)
 		list.add(new EmojiInfo("\uD83E\uDE82",
@@ -11977,7 +13867,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFCB",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFCB\uD83C\uDFFB","\uD83C\uDFCB\uD83C\uDFFC","\uD83C\uDFCB\uD83C\uDFFD","\uD83C\uDFCB\uD83C\uDFFE","\uD83C\uDFCB\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83C\uDFCB\uFE0F\u200D\u2642\uFE0F","\uD83C\uDFCB\uFE0F\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person lifting weights: light skin tone (1f3cb-1f3fb)
 		list.add(new EmojiInfo("\uD83C\uDFCB\uD83C\uDFFB",
@@ -12049,37 +13939,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFCB\uFE0F\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFCB\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83C\uDFCB\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83C\uDFCB\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83C\uDFCB\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83C\uDFCB\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man lifting weights: light skin tone (1f3cb-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCB\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man lifting weights: medium-light skin tone (1f3cb-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCB\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man lifting weights: medium skin tone (1f3cb-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCB\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man lifting weights: medium-dark skin tone (1f3cb-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCB\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man lifting weights: dark skin tone (1f3cb-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCB\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// people wrestling (1f93c)
 		list.add(new EmojiInfo("\uD83E\uDD3C",
@@ -12109,31 +13999,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD38\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD38\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDD38\uD83C\uDFFB\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person cartwheeling: medium-light skin tone (1f938-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD38\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD38\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDD38\uD83C\uDFFC\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person cartwheeling: medium skin tone (1f938-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD38\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD38\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDD38\uD83C\uDFFD\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person cartwheeling: medium-dark skin tone (1f938-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD38\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD38\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDD38\uD83C\uDFFE\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person cartwheeling: dark skin tone (1f938-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD38\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD38\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83E\uDD38\uD83C\uDFFF\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman cartwheeling (1f938-2640)
 		list.add(new EmojiInfo("\uD83E\uDD38\u200D\u2640\uFE0F",
@@ -12211,7 +14101,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\u26F9",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\u26F9\uD83C\uDFFB","\u26F9\uD83C\uDFFC","\u26F9\uD83C\uDFFD","\u26F9\uD83C\uDFFE","\u26F9\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\u26F9\uFE0F\u200D\u2642\uFE0F","\u26F9\uFE0F\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person bouncing ball: light skin tone (26f9-1f3fb)
 		list.add(new EmojiInfo("\u26F9\uD83C\uDFFB",
@@ -12283,37 +14173,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\u26F9\uFE0F\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\u26F9\uD83C\uDFFF\u200D\u2642\uFE0F","\u26F9\uD83C\uDFFE\u200D\u2642\uFE0F","\u26F9\uD83C\uDFFD\u200D\u2642\uFE0F","\u26F9\uD83C\uDFFC\u200D\u2642\uFE0F","\u26F9\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bouncing ball: light skin tone (26f9-1f3fb-2642)
 		list.add(new EmojiInfo("\u26F9\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bouncing ball: medium-light skin tone (26f9-1f3fc-2642)
 		list.add(new EmojiInfo("\u26F9\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bouncing ball: medium skin tone (26f9-1f3fd-2642)
 		list.add(new EmojiInfo("\u26F9\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bouncing ball: medium-dark skin tone (26f9-1f3fe-2642)
 		list.add(new EmojiInfo("\u26F9\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man bouncing ball: dark skin tone (26f9-1f3ff-2642)
 		list.add(new EmojiInfo("\u26F9\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person fencing (1f93a)
 		list.add(new EmojiInfo("\uD83E\uDD3A",
@@ -12331,31 +14221,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD3E\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3E\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDD3E\uD83C\uDFFB\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing handball: medium-light skin tone (1f93e-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD3E\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3E\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDD3E\uD83C\uDFFC\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing handball: medium skin tone (1f93e-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD3E\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3E\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDD3E\uD83C\uDFFD\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing handball: medium-dark skin tone (1f93e-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD3E\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3E\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDD3E\uD83C\uDFFE\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing handball: dark skin tone (1f93e-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD3E\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3E\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83E\uDD3E\uD83C\uDFFF\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman playing handball (1f93e-2640)
 		list.add(new EmojiInfo("\uD83E\uDD3E\u200D\u2640\uFE0F",
@@ -12433,7 +14323,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFCC",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFCC\uD83C\uDFFB","\uD83C\uDFCC\uD83C\uDFFC","\uD83C\uDFCC\uD83C\uDFFD","\uD83C\uDFCC\uD83C\uDFFE","\uD83C\uDFCC\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83C\uDFCC\uFE0F\u200D\u2642\uFE0F","\uD83C\uDFCC\uFE0F\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person golfing: light skin tone (1f3cc-1f3fb)
 		list.add(new EmojiInfo("\uD83C\uDFCC\uD83C\uDFFB",
@@ -12505,37 +14395,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFCC\uFE0F\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFCC\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83C\uDFCC\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83C\uDFCC\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83C\uDFCC\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83C\uDFCC\uD83C\uDFFF\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man golfing: light skin tone (1f3cc-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCC\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man golfing: medium-light skin tone (1f3cc-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCC\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man golfing: medium skin tone (1f3cc-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCC\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man golfing: medium-dark skin tone (1f3cc-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCC\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man golfing: dark skin tone (1f3cc-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCC\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// horse racing (1f3c7)
 		list.add(new EmojiInfo("\uD83C\uDFC7",
@@ -12583,31 +14473,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD8\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD8\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDD8\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in lotus position: medium-light skin tone (1f9d8-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDD8\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD8\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDD8\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in lotus position: medium skin tone (1f9d8-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDD8\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD8\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDD8\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in lotus position: medium-dark skin tone (1f9d8-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDD8\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD8\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDD8\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person in lotus position: dark skin tone (1f9d8-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDD8\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD8\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDD8\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman in lotus position (1f9d8-2640)
 		list.add(new EmojiInfo("\uD83E\uDDD8\u200D\u2640\uFE0F",
@@ -12685,7 +14575,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFC4",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFC4\uD83C\uDFFB","\uD83C\uDFC4\uD83C\uDFFC","\uD83C\uDFC4\uD83C\uDFFD","\uD83C\uDFC4\uD83C\uDFFE","\uD83C\uDFC4\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83C\uDFC4\u200D\u2642\uFE0F","\uD83C\uDFC4\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person surfing: light skin tone (1f3c4-1f3fb)
 		list.add(new EmojiInfo("\uD83C\uDFC4\uD83C\uDFFB",
@@ -12757,43 +14647,43 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFC4\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFC4\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83C\uDFC4\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83C\uDFC4\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83C\uDFC4\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83C\uDFC4\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man surfing: light skin tone (1f3c4-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC4\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man surfing: medium-light skin tone (1f3c4-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC4\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man surfing: medium skin tone (1f3c4-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC4\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man surfing: medium-dark skin tone (1f3c4-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC4\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man surfing: dark skin tone (1f3c4-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83C\uDFC4\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person swimming (1f3ca)
 		list.add(new EmojiInfo("\uD83C\uDFCA",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFCA\uD83C\uDFFB","\uD83C\uDFCA\uD83C\uDFFC","\uD83C\uDFCA\uD83C\uDFFD","\uD83C\uDFCA\uD83C\uDFFE","\uD83C\uDFCA\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83C\uDFCA\u200D\u2642\uFE0F","\uD83C\uDFCA\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person swimming: light skin tone (1f3ca-1f3fb)
 		list.add(new EmojiInfo("\uD83C\uDFCA\uD83C\uDFFB",
@@ -12865,37 +14755,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83C\uDFCA\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83C\uDFCA\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83C\uDFCA\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83C\uDFCA\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83C\uDFCA\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83C\uDFCA\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man swimming: light skin tone (1f3ca-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCA\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man swimming: medium-light skin tone (1f3ca-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCA\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man swimming: medium skin tone (1f3ca-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCA\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man swimming: medium-dark skin tone (1f3ca-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCA\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man swimming: dark skin tone (1f3ca-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83C\uDFCA\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing water polo (1f93d)
 		list.add(new EmojiInfo("\uD83E\uDD3D",
@@ -12907,31 +14797,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD3D\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3D\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDD3D\uD83C\uDFFB\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing water polo: medium-light skin tone (1f93d-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD3D\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3D\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDD3D\uD83C\uDFFC\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing water polo: medium skin tone (1f93d-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD3D\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3D\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDD3D\uD83C\uDFFD\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing water polo: medium-dark skin tone (1f93d-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD3D\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3D\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDD3D\uD83C\uDFFE\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person playing water polo: dark skin tone (1f93d-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD3D\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD3D\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83E\uDD3D\uD83C\uDFFF\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman playing water polo (1f93d-2640)
 		list.add(new EmojiInfo("\uD83E\uDD3D\u200D\u2640\uFE0F",
@@ -13009,7 +14899,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEA3",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEA3\uD83C\uDFFB","\uD83D\uDEA3\uD83C\uDFFC","\uD83D\uDEA3\uD83C\uDFFD","\uD83D\uDEA3\uD83C\uDFFE","\uD83D\uDEA3\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDEA3\u200D\u2642\uFE0F","\uD83D\uDEA3\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person rowing boat: light skin tone (1f6a3-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDEA3\uD83C\uDFFB",
@@ -13081,37 +14971,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEA3\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEA3\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDEA3\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDEA3\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDEA3\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDEA3\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man rowing boat: light skin tone (1f6a3-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDEA3\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man rowing boat: medium-light skin tone (1f6a3-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDEA3\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man rowing boat: medium skin tone (1f6a3-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDEA3\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man rowing boat: medium-dark skin tone (1f6a3-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDEA3\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man rowing boat: dark skin tone (1f6a3-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDEA3\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person climbing (1f9d7)
 		list.add(new EmojiInfo("\uD83E\uDDD7",
@@ -13123,31 +15013,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDDD7\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD7\uD83C\uDFFB\u200D\u2640\uFE0F","\uD83E\uDDD7\uD83C\uDFFB\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person climbing: medium-light skin tone (1f9d7-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDDD7\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD7\uD83C\uDFFC\u200D\u2640\uFE0F","\uD83E\uDDD7\uD83C\uDFFC\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person climbing: medium skin tone (1f9d7-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDDD7\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD7\uD83C\uDFFD\u200D\u2640\uFE0F","\uD83E\uDDD7\uD83C\uDFFD\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person climbing: medium-dark skin tone (1f9d7-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDDD7\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD7\uD83C\uDFFE\u200D\u2640\uFE0F","\uD83E\uDDD7\uD83C\uDFFE\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person climbing: dark skin tone (1f9d7-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDDD7\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDDD7\uD83C\uDFFF\u200D\u2640\uFE0F","\uD83E\uDDD7\uD83C\uDFFF\u200D\u2642\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman climbing (1f9d7-2640)
 		list.add(new EmojiInfo("\uD83E\uDDD7\u200D\u2640\uFE0F",
@@ -13225,7 +15115,7 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEB5",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEB5\uD83C\uDFFB","\uD83D\uDEB5\uD83C\uDFFC","\uD83D\uDEB5\uD83C\uDFFD","\uD83D\uDEB5\uD83C\uDFFE","\uD83D\uDEB5\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDEB5\u200D\u2642\uFE0F","\uD83D\uDEB5\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person mountain biking: light skin tone (1f6b5-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDEB5\uD83C\uDFFB",
@@ -13297,43 +15187,43 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEB5\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEB5\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDEB5\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDEB5\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDEB5\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDEB5\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man mountain biking: light skin tone (1f6b5-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB5\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man mountain biking: medium-light skin tone (1f6b5-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB5\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man mountain biking: medium skin tone (1f6b5-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB5\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man mountain biking: medium-dark skin tone (1f6b5-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB5\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man mountain biking: dark skin tone (1f6b5-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB5\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person biking (1f6b4)
 		list.add(new EmojiInfo("\uD83D\uDEB4",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEB4\uD83C\uDFFB","\uD83D\uDEB4\uD83C\uDFFC","\uD83D\uDEB4\uD83C\uDFFD","\uD83D\uDEB4\uD83C\uDFFE","\uD83D\uDEB4\uD83C\uDFFF" },
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83D\uDEB4\u200D\u2642\uFE0F","\uD83D\uDEB4\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_YES
+            EmojiSpritemap.DISPLAY_NO
 		));
 		// person biking: light skin tone (1f6b4-1f3fb)
 		list.add(new EmojiInfo("\uD83D\uDEB4\uD83C\uDFFB",
@@ -13405,37 +15295,37 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83D\uDEB4\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83D\uDEB4\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83D\uDEB4\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83D\uDEB4\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83D\uDEB4\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83D\uDEB4\uD83C\uDFFB\u200D\u2642\uFE0F" },
 			EmojiSpritemap.GENDER_CHILD, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man biking: light skin tone (1f6b4-1f3fb-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB4\uD83C\uDFFB\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man biking: medium-light skin tone (1f6b4-1f3fc-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB4\uD83C\uDFFC\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man biking: medium skin tone (1f6b4-1f3fd-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB4\uD83C\uDFFD\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man biking: medium-dark skin tone (1f6b4-1f3fe-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB4\uD83C\uDFFE\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// man biking: dark skin tone (1f6b4-1f3ff-2642)
 		list.add(new EmojiInfo("\uD83D\uDEB4\uD83C\uDFFF\u200D\u2642\uFE0F",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// trophy (1f3c6)
 		list.add(new EmojiInfo("\uD83C\uDFC6",
@@ -13513,31 +15403,31 @@ public class EmojiSpritemap {
 		list.add(new EmojiInfo("\uD83E\uDD39\uD83C\uDFFB",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD39\uD83C\uDFFB\u200D\u2642\uFE0F","\uD83E\uDD39\uD83C\uDFFB\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person juggling: medium-light skin tone (1f939-1f3fc)
 		list.add(new EmojiInfo("\uD83E\uDD39\uD83C\uDFFC",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD39\uD83C\uDFFC\u200D\u2642\uFE0F","\uD83E\uDD39\uD83C\uDFFC\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person juggling: medium skin tone (1f939-1f3fd)
 		list.add(new EmojiInfo("\uD83E\uDD39\uD83C\uDFFD",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD39\uD83C\uDFFD\u200D\u2642\uFE0F","\uD83E\uDD39\uD83C\uDFFD\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person juggling: medium-dark skin tone (1f939-1f3fe)
 		list.add(new EmojiInfo("\uD83E\uDD39\uD83C\uDFFE",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD39\uD83C\uDFFE\u200D\u2642\uFE0F","\uD83E\uDD39\uD83C\uDFFE\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// person juggling: dark skin tone (1f939-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDD39\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_PARENT, new String[] { "\uD83E\uDD39\uD83C\uDFFF\u200D\u2642\uFE0F","\uD83E\uDD39\uD83C\uDFFF\u200D\u2640\uFE0F" },
-            EmojiSpritemap.DISPLAY_NO
+            EmojiSpritemap.DISPLAY_YES
 		));
 		// woman juggling (1f939-2640)
 		list.add(new EmojiInfo("\uD83E\uDD39\u200D\u2640\uFE0F",
@@ -15343,6 +17233,36 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// person in bed: light skin tone (1f6cc-1f3fb)
+		list.add(new EmojiInfo("\uD83D\uDECC\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// person in bed: medium-light skin tone (1f6cc-1f3fc)
+		list.add(new EmojiInfo("\uD83D\uDECC\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// person in bed: medium skin tone (1f6cc-1f3fd)
+		list.add(new EmojiInfo("\uD83D\uDECC\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// person in bed: medium-dark skin tone (1f6cc-1f3fe)
+		list.add(new EmojiInfo("\uD83D\uDECC\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
+		// person in bed: dark skin tone (1f6cc-1f3ff)
+		list.add(new EmojiInfo("\uD83D\uDECC\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_NO
+		));
 		// teddy bear (1f9f8)
 		list.add(new EmojiInfo("\uD83E\uDDF8",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -15980,6 +17900,18 @@ public class EmojiSpritemap {
 		));
 		// heart with ribbon (1f49d)
 		list.add(new EmojiInfo("\uD83D\uDC9D",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// mending heart (2764-1fa79)
+		list.add(new EmojiInfo("\u2764\uFE0F\u200D\uD83E\uDE79",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// heart on fire (2764-1f525)
+		list.add(new EmojiInfo("\u2764\uFE0F\u200D\uD83D\uDD25",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -17748,7 +19680,7 @@ public class EmojiSpritemap {
             EmojiSpritemap.DISPLAY_YES
 		));
 		// transgender flag (1f3f3-26a7)
-		list.add(new EmojiInfo("\uD83C\uDFF3\u200D\u26A7\uFE0F",
+		list.add(new EmojiInfo("\uD83C\uDFF3\uFE0F\u200D\u26A7\uFE0F",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES

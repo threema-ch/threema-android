@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema Anrop</string>
+    <string name="voip_hangup">Legg på</string>
+    <string name="voip_toggle_mic">Mikrofon-bryter</string>
+    <string name="voip_toggle_speaker">Høyttaler-bryter</string>
+    <string name="voip_switch_cam">Bytt kamera</string>
+    <string name="voip_switch_cam_front">Byttet til frontkamera</string>
+    <string name="voip_switch_cam_rear">Byttet til kamera bak</string>
+    <string name="voip_toggle_video">Endre til videomodus</string>
+    <string name="voip_call_confirm">Vil du ringe %1$s?</string>
+    <string name="voip_error_call">Feil under Threema anrop</string>
+    <string name="voip_error_init_call">Feil ved oppkobling av anrop</string>
+    <string name="voip_notification_title">Innkommende Threema anrop</string>
+    <string name="voip_notification_text">%1$s ringer</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Kobler opp anrop</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Kobler til</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Kobler fra</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Ringer</string>
+    <string name="voip_mic_enable">Aktiver mikrofon</string>
+    <string name="voip_mic_disable">Deaktiver mikrofon</string>
+    <string name="voip_checking_compatibility">Sjekker om denne kontakten kan motta Threema anrop</string>
+    <string name="voip_incompatible">Denne kontakten kan ikke motta Threema anrop enda.</string>
+    <string name="voip_call_status_unavailable">Samtalemottaker er utilgjengelig</string>
+    <string name="voip_call_status_rejected">Avslått anrop</string>
+    <string name="voip_call_status_busy">Samtalemottaker er opptatt</string>
+    <string name="voip_call_status_busy_short">Opptatt</string>
+    <string name="voip_call_status_disabled">Threema anrop er deaktivert av mottaker</string>
+    <string name="voip_call_status_missed">Tapt anrop</string>
+    <string name="voip_call_finished_outbox">Utgående samtale</string>
+    <string name="voip_call_finished_inbox">Innkommende samtale</string>
+    <string name="voip_call_status_aborted">Samtale avbrutt</string>
+    <string name="voip_return_call">Ringe tilbake</string>
+    <string name="voip_accept">Aksepter</string>
+    <string name="voip_reject">Avvis</string>
+    <string name="voip_speakerphone">Høyttaler</string>
+    <string name="voip_wired_headset">Hodetelefon</string>
+    <string name="voip_earpiece">Telefon</string>
+    <string name="voip_bluetooth">Blåtann</string>
+    <string name="voip_none">Ikke tilgjengelig</string>
+    <string name="voip_call_finished">Threema anrop er avsluttet</string>
+    <string name="voip_another_call">Ikke mulig å koble til. Et annet Threema anrop er aktivt for øyeblikket.</string>
+    <string name="voip_prefs_title_aec">Fjerning av ekko</string>
+    <string name="voip_prefs_aec_sw">Fjerning av ekko med programvare</string>
+    <string name="voip_prefs_aec_hw">Fjerning av ekko med maskinvare</string>
+    <string name="voip_prefs_title_video_codec">Videokodeker</string>
+    <string name="voip_prefs_video_aec_hw">Maskinvareakselerert</string>
+    <string name="voip_prefs_video_codec_no_vp8">Deaktiver VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Deaktiver H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Programvarekodeker</string>
+    <string name="voip_connection_failed">Tilkobling kunne ikke etableres</string>
+    <string name="voip_connection_lost">Mistet forbindelse</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Avvis telefonanrop</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Avvis innkommende telefonanrop mens et Threema anrop er aktivt.</string>
+    <string name="voip_contact_not_found">Ingen Threema kontakt ble funnet for dette nummeret.</string>
+    <string name="voip_another_pstn_call">Ikke mulig å igangsette et anrop. Et vanlig telefonanrop er fortsatt aktivt.</string>
+    <string name="voip_call_status_off_hours">Anrop utenom arbeid</string>
+    <string name="voip_peer_video_disabled">Videoanrop har blitt deaktivert av den andre part.</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC feilsøking</string>
+    <string name="voip_prefs_webrtc_debug_summary">Start dette verktøyet for å feilsøke problemer med å etablere et anrop</string>
+    <string name="voip_webrtc_debug">WebRTC feilsøking</string>
+    <string name="voip_webrtc_debug_intro">Trykk på «Start» for å starte test.</string>
+    <string name="voip_webrtc_debug_start">Start</string>
+    <string name="voip_webrtc_debug_done">Ferdig. Om du opplever problemer med tilkoblingen til anropet, vennligst send denne loggen til Threema brukerstøtte.</string>
+    <string name="voip_webrtc_debug_copied">Kopiert til utklippstavle.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Kopier til utklippstavle</string>
+</resources>

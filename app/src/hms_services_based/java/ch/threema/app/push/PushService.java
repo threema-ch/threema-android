@@ -42,6 +42,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.push.PushRegistrationWorker.APP_ID_CONFIG_FIELD;

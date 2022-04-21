@@ -363,7 +363,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		switch (id) {
 			case R.id.attach_location:
 				if (ConfigUtils.requestLocationPermissions(this, null, PERMISSION_REQUEST_LOCATION)) {
-					if (!ConfigUtils.hasNoMapboxSupport()) {
+					if (!ConfigUtils.hasNoMapLibreSupport()) {
 						launchPlacePicker();
 					} else {
 						Toast.makeText(this, "Feature not available due to firmware error", Toast.LENGTH_LONG).show();

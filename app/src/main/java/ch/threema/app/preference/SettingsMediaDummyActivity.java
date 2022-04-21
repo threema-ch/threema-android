@@ -23,7 +23,7 @@ package ch.threema.app.preference;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 // Frontend to call the app's media settings directly from notification or system settings

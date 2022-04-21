@@ -21,9 +21,20 @@
 
 package ch.threema.app.services;
 
-public class VoiceActionService {
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
 
-	private VoiceActionService() {
+import androidx.annotation.Nullable;
+
+public class VoiceActionService extends Service {
+	public VoiceActionService() {
 		// stub, no voice assistant api in hms build
+	}
+
+	@Nullable
+	@Override
+	public IBinder onBind(Intent intent) {
+		return null;
 	}
 }

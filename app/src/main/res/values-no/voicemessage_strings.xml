@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Tar opp lyd</string>
+    <string name="recording_stopped_title">Opptak stoppet</string>
+    <string name="recording_stopped_message">Vil du sende lydopptaket nå?</string>
+    <string name="recording_canceled">Opptak ble avbrutt på grunn av en ukjent feil.</string>
+    <string name="cancel_recording">Forkast opptak</string>
+    <string name="cancel_recording_message">Vil du virkelig avbryte og forkaste opptaket?</string>
+    <string name="stop">Stopp</string>
+</resources>

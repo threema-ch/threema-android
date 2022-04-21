@@ -35,7 +35,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -55,7 +54,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -103,7 +101,6 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.preference.SettingsSecurityFragment;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -1034,6 +1031,7 @@ public class MessageSectionFragment extends MainFragment
 		Intent intent = new Intent(getContext(), RecipientListBaseActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, true);
 		intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT, false);
+		intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT_FOR_COMPOSE, true);
 		AnimationUtil.startActivityForResult(this.getActivity(), v, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 	}
 

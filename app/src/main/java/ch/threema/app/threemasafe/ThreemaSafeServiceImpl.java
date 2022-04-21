@@ -1646,6 +1646,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			public boolean sortingAscending() {
 				return false;
 			}
+
+			@Override
+			public boolean showHidden() {
+				return false;
+			}
 		})) {
 			distributionlistsArray.put(getDistributionlist(distributionListService, distributionListModel));
 		}

@@ -6,7 +6,7 @@
     <string name="checking_serial">Перевірка облікових даних</string>
     <string name="username_hint">Ім\'я користувача</string>
     <string name="new_wizard_works_like_phone_number">Ваш ID Threema подібний до номера телефону.\nВін використовується для того, щоб інші люди могли з вами зв\'язатися.</string>
-    <string name="new_wizard_nickname_explain">Ваші контакти будуть бачити цей псевдонім у сповіщеннях.</string>
+    <string name="new_wizard_nickname_explain">Ваші контакти бачитимуть цей псевдонім у своїх сповіщеннях.</string>
     <string name="new_wizard_help_your_friends_find_you">Допоможіть іншим вас знайти!</string>
     <string name="new_wizard_find_friends">Знайдіть свої контакти в Threema Work</string>
     <string name="new_wizard_sync_contacts_explain">Увімкніть, щоб бачити, хто з ваших контактів використовує Threema або Threema Work.</string>
@@ -28,5 +28,5 @@
     <string name="private_threema_download"><![CDATA[Якщо вам потрібен месенджер для особистого використання, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">торкніться тут</a>, щоб завантажити Threema.]]></string>
     <string name="directory_search">Шукати в каталозі</string>
     <string name="directory_title">Каталог компанії</string>
-    <string name="directory_empty_view_text">Нічого не знайдено\n\nВведіть принаймні 3 символи імені, щоб почати пошук користувачів Threema в каталозі вашої компанії</string>
+    <string name="directory_empty_view_text">Нічого не знайдено\n\nВведіть принаймні 3 символи імені, щоб почати пошук користувачів Threema в каталозі компанії</string>
 </resources>

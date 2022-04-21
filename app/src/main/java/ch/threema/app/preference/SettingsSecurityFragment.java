@@ -96,8 +96,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 		super.initializePreferences();
 
-		preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-		hiddenChatsListService = ThreemaApplication.getServiceManager().getHiddenChatsListService();
+		preferenceService = requirePreferenceService();
+		hiddenChatsListService = requireHiddenChatListService();
 	}
 
 	private void onCreateUnlocked() {
@@ -155,7 +155,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 		lockMechanismPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				switch ((String) newValue) {
 					case LockingMech_NONE:
 						if (hiddenChatsListService.getSize() > 0) {
@@ -169,7 +169,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 					case PreferenceService.LockingMech_PIN:
 						GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.warning, getString(R.string.password_remember_warning, getString(R.string.app_name)), R.string.ok, R.string.cancel);
 						dialog.setTargetFragment(SettingsSecurityFragment.this, 0);
-						dialog.show(getFragmentManager(), DIALOG_TAG_PASSWORD_REMINDER_PIN);
+						dialog.show(getParentFragmentManager(), DIALOG_TAG_PASSWORD_REMINDER_PIN);
 						break;
 					case PreferenceService.LockingMech_SYSTEM:
 						setSystemScreenLock();
@@ -184,7 +184,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		});
 
 		uiLockSwitchPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				boolean newCheckedValue = newValue.equals(true);
 
 				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
@@ -205,7 +205,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 		pinPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(@NonNull Preference preference) {
 				if (preference.getKey().equals(getResources().getString(R.string.preferences__pin_lock_code))) {
 					if (preferenceService.isPinSet()) {
 						setPin();
@@ -217,16 +217,16 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 		this.updateGracePreferenceSummary(gracePreference.getValue());
 		gracePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				updateGracePreferenceSummary(newValue.toString());
 				return true;
 			}
 		});
 
-		masterkeyPreference = findPreference(getResources().getString(R.string.preferences__masterkey_passphrase));
+		masterkeyPreference = getPref(getResources().getString(R.string.preferences__masterkey_passphrase));
 		masterkeyPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(@NonNull Preference preference) {
 				if (MessageDigest.isEqual(preference.getKey().getBytes(), getResources().getString(R.string.preferences__masterkey_passphrase).getBytes())) {
 					Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_PASSPHRASE_CHECK, true);
@@ -240,13 +240,13 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		masterkeySwitchPreference = findPreference(getResources().getString(R.string.preferences__masterkey_switch));
 
 		//fix wrong state
-		if (masterkeySwitchPreference.isChecked() != ThreemaApplication.getMasterKey().isProtected()) {
+		if (masterkeySwitchPreference != null && masterkeySwitchPreference.isChecked() != ThreemaApplication.getMasterKey().isProtected()) {
 			masterkeySwitchPreference.setChecked(ThreemaApplication.getMasterKey().isProtected());
 		}
 		setMasterKeyPreferenceText();
 
 		masterkeySwitchPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				boolean newCheckedValue = newValue.equals(true);
 
 				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
@@ -312,11 +312,6 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 				uiLockSwitchPreference.setEnabled(true);
 				break;
 			case PreferenceService.LockingMech_SYSTEM:
-				pinPreference.setEnabled(false);
-				gracePreference.setEnabled(true);
-				uiLockSwitchPreference.setEnabled(true);
-				preferenceService.setPin(null);
-				break;
 			case PreferenceService.LockingMech_BIOMETRIC:
 				pinPreference.setEnabled(false);
 				gracePreference.setEnabled(true);
@@ -357,7 +352,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 				case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-					ThreemaApplication.getServiceManager().getScreenLockService().setAuthenticated(true);
+					requireScreenLockService().setAuthenticated(true);
 					onCreateUnlocked();
 					break;
 				case ID_ENABLE_SYSTEM_LOCK:
@@ -389,12 +384,12 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 			// TODO
 			/* show/hide persistent notification */
-			PassphraseService.start(getActivity().getApplicationContext());
+			PassphraseService.start(requireActivity().getApplicationContext());
 		} else {
 			switch (requestCode) {
 				case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-					ThreemaApplication.getServiceManager().getScreenLockService().setAuthenticated(false);
-					getActivity().onBackPressed();
+					requireScreenLockService().setAuthenticated(false);
+					requireActivity().onBackPressed();
 					break;
 				case ThreemaActivity.ACTIVITY_ID_SET_PASSPHRASE:
 					//only switch back on set
@@ -429,7 +424,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 	@TargetApi(Build.VERSION_CODES.M)
 	private void setSystemScreenLock() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			KeyguardManager keyguardManager = (KeyguardManager) getActivity().getSystemService(Context.KEYGUARD_SERVICE);
+			KeyguardManager keyguardManager = (KeyguardManager) requireActivity().getSystemService(Context.KEYGUARD_SERVICE);
 			if (keyguardManager.isDeviceSecure()) {
 				BiometricUtil.showUnlockDialog(null, this, true, ID_ENABLE_SYSTEM_LOCK, PreferenceService.LockingMech_SYSTEM);
 			} else {
@@ -501,7 +496,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 	private void startSetPassphraseActivity() {
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.warning, getString(R.string.password_remember_warning, getString(R.string.app_name)), R.string.ok, R.string.cancel);
 		dialog.setTargetFragment(this, 0);
-		dialog.show(getFragmentManager(), DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE);
+		dialog.show(getParentFragmentManager(), DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE);
 	}
 
 	private void startChangePassphraseActivity() {
@@ -626,16 +621,10 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
 	@Override
 	public void onNo(String tag, Object data) {
-		switch (tag) {
-			case DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE:
-				break;
-			case DIALOG_TAG_PASSWORD_REMINDER_PIN:
-				// workaround to reset dropdown state
-				lockMechanismPreference.setEnabled(false);
-				lockMechanismPreference.setEnabled(true);
-				break;
-			default:
-				break;
+		if (DIALOG_TAG_PASSWORD_REMINDER_PIN.equals(tag)) {
+			// workaround to reset dropdown state
+			lockMechanismPreference.setEnabled(false);
+			lockMechanismPreference.setEnabled(true);
 		}
 	}
 

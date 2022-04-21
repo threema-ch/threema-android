@@ -246,7 +246,7 @@ public class RestoreService extends Service {
 		} else {
 			logger.debug("onStartCommand intent == null");
 
-			onFinished(null);
+			onFinished("Empty intent");
 		}
 		isRunning = false;
 
@@ -754,7 +754,7 @@ public class RestoreService extends Service {
 								try (ZipInputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
 									byte[] thumbnailBytes = IOUtils.toByteArray(inputStream);
 									if (thumbnailBytes != null) {
-										this.fileService.writeConversationMediaThumbnail(model, thumbnailBytes);
+										this.fileService.saveThumbnail(model, thumbnailBytes);
 									}
 								}
 								//
@@ -775,7 +775,7 @@ public class RestoreService extends Service {
 
 								//if no thumbnail file exist in backup, generate one
 								if (thumbnailFileHeader == null && imageData != null) {
-									this.fileService.writeConversationMediaThumbnail(model, imageData);
+									this.fileService.saveThumbnail(model, imageData);
 								}
 							}
 						}

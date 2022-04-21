@@ -1349,4 +1349,5 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="prefs_title_use_system_ringtone">Použít systémové vyzvánění</string>
     <string name="organization_type">Organizace</string>
     <string name="permission_bluetooth_connect_required">Povolte oprávnění „Zařízení v okolí“ k vyhledání připojených Bluetooth náhlavních souprav</string>
+    <string name="threema_push_start_webclient_sessions_manually">Threema Push je aktivní. Relace Threema Web a Desktop proto musí být spuštěny manuálně.</string>
 </resources>

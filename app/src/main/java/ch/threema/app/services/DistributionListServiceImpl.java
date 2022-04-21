@@ -75,14 +75,20 @@ public class DistributionListServiceImpl implements DistributionListService {
 	}
 
 	@Override
-	public DistributionListModel createDistributionList(String name, String[] memberIdentities) {
+	public DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) {
+		return createDistributionList(name, memberIdentities, false);
+	}
+
+	@Override
+	public DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities, boolean isHidden) {
 		final DistributionListModel distributionListModel = new DistributionListModel();
 		distributionListModel.setName(name);
 		distributionListModel.setCreatedAt(new Date());
+		distributionListModel.setHidden(isHidden);
 
 		//create
 		this.databaseServiceNew.getDistributionListModelFactory().create(
-				distributionListModel
+			distributionListModel
 		);
 
 

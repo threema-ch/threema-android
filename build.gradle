@@ -14,9 +14,10 @@ buildscript {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.18'
 
         // Huawei agconnect plugin
-        classpath 'com.huawei.agconnect:agcp-1.4.2.300'
-        classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.4.2.300'
-        classpath 'com.huawei.agconnect:agconnect-core-1.4.0.300@aar'
+        classpath 'com.huawei.agconnect:agcp-1.6.0.300'
+        classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.6.0.300'
+        classpath 'com.huawei.agconnect:agconnect-apms-plugin-1.5.2.302'
+        classpath 'com.huawei.agconnect:agconnect-core-1.5.0.300@aar'
 
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 

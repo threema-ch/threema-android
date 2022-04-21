@@ -22,6 +22,8 @@
 package ch.threema.app.fragments;
 
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -33,14 +35,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -68,12 +76,16 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.SnackbarUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
 public abstract class RecipientListFragment extends ListFragment implements ListView.OnItemLongClickListener {
 	public static final String ARGUMENT_MULTI_SELECT = "ms";
+	public static final String ARGUMENT_MULTI_SELECT_FOR_COMPOSE = "msi";
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListFragment");
 
 	protected ContactService contactService;
 	protected GroupService groupService;
@@ -88,7 +100,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 	protected Snackbar snackbar;
 	protected ProgressBar progressBar;
 	protected View topLayout;
-	protected boolean multiSelect = true;
+	protected boolean multiSelect = true, multiSelectIdentity = false;
 	protected FilterableListAdapter adapter;
 
 	private boolean isVisible = false;
@@ -116,6 +128,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 		Bundle bundle = getArguments();
 		if (bundle != null) {
 			multiSelect = bundle.getBoolean(ARGUMENT_MULTI_SELECT, true);
+			multiSelectIdentity = bundle.getBoolean(ARGUMENT_MULTI_SELECT_FOR_COMPOSE, false);
 		}
 
 		topLayout = inflater.inflate(R.layout.fragment_list, container, false);
@@ -173,6 +186,51 @@ public abstract class RecipientListFragment extends ListFragment implements List
 					onFloatingActionButtonClick();
 				}
 			});
+
+			if (multiSelectIdentity) {
+				floatingActionButton.setImageResource(R.drawable.ic_arrow_left);
+				floatingActionButton.setRotation(180);
+
+				if (preferenceService.getMultipleRecipientsTooltipCount() < 1) {
+					preferenceService.incrementMultipleRecipientsTooltipCount();
+
+					getListView().post(() -> {
+						try {
+							int[] location = new int[2];
+							getListView().getLocationOnScreen(location);
+
+							int itemHeight = getResources().getDimensionPixelSize(R.dimen.messagelist_item_height);
+
+							Rect rect = new Rect(
+								location[0] + 200,
+								location[1] + itemHeight,
+								location[0] + 200 + itemHeight,
+								location[1] + (itemHeight * 2));
+
+							TapTargetView.showFor(requireActivity(),
+								TapTarget.forBounds(rect, getString(R.string.tooltip_multiple_recipients_title), getString(R.string.tooltip_multiple_recipients_text))
+									.outerCircleColor(ConfigUtils.getAppTheme(getActivity()) == ConfigUtils.THEME_DARK ? R.color.dark_accent : R.color.accent_light)      // Specify a color for the outer circle
+									.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+									.targetCircleColor(android.R.color.transparent)   // Specify a color for the target circle
+									.titleTextSize(24)                  // Specify the size (in sp) of the title text
+									.titleTextColor(android.R.color.white)      // Specify the color of the title text
+									.descriptionTextSize(18)            // Specify the size (in sp) of the description text
+									.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
+									.textColor(android.R.color.white)            // Specify a color for both the title and description text
+									.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+									.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+									.drawShadow(true)                   // Whether to draw a drop shadow or not
+									.cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
+									.tintTarget(true)                   // Whether to tint the target view's color
+									.transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
+									.targetRadius(50),                  // Specify the target radius (in dp)
+								null);
+						} catch (Exception ignore) {
+							// catch null typeface exception on CROSSCALL Action-X3
+						}
+					});
+				}
+			}
 		} else {
 			floatingActionButton.hide();
 		}
@@ -232,7 +290,11 @@ public abstract class RecipientListFragment extends ListFragment implements List
 		if (getListView().getChoiceMode() == AbsListView.CHOICE_MODE_MULTIPLE) {
 			if (getAdapter().getCheckedItemCount() > 0) {
 				if (snackbar != null) {
-					snackbar.setText(getString(R.string.really_send, getRecipientList()));
+					snackbar.setText(getString(
+						multiSelectIdentity ?
+						R.string.threema_message_to :
+						R.string.really_send,
+						getRecipientList()));
 				}
 			}
 		}
@@ -261,7 +323,37 @@ public abstract class RecipientListFragment extends ListFragment implements List
 	private void onFloatingActionButtonClick() {
 		final HashSet<?> objects = adapter.getCheckedItems();
 		if (!objects.isEmpty()) {
-			((RecipientListBaseActivity) activity).prepareForwardingOrSharing(new ArrayList<>(objects));
+			if (multiSelectIdentity) {
+				ContactModel contactModel = null;
+				List<String> identities = new ArrayList<>();
+				for (Object object: objects) {
+					if (object instanceof ContactModel) {
+						contactModel = (ContactModel) object;
+						identities.add(contactModel.getIdentity());
+					}
+				}
+
+				if (identities.size() > 1) {
+					try {
+						DistributionListModel distributionListModel = distributionListService.createDistributionList(
+							null,
+							identities.toArray(new String[0]),
+							true);
+
+						((RecipientListBaseActivity) activity).prepareForwardingOrSharing(new ArrayList<>(Collections.singleton(distributionListModel)));
+
+						return;
+					} catch (ThreemaException e) {
+						logger.error("Unable to create distribution list", e);
+					}
+				} else if (identities.size() == 1) {
+					((RecipientListBaseActivity) activity).prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(contactModel)));
+					return;
+				}
+				Toast.makeText(requireContext(), R.string.contact_not_found, Toast.LENGTH_LONG).show();
+			} else {
+				((RecipientListBaseActivity) activity).prepareForwardingOrSharing(new ArrayList<>(objects));
+			}
 		}
 	}
 

@@ -32,6 +32,7 @@ import ch.threema.app.R
 import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
 
+@Suppress("unused")
 class SettingsCallsFragment : ThreemaPreferenceFragment() {
 
     private var fragmentView: View? = null
@@ -100,6 +101,7 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSION_REQUEST_READ_PHONE_STATE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

@@ -834,18 +834,21 @@ public class ComposeMessageFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Boolean hasMoreRecords) {
-				if (messageModels != null) {
-					int numberOfInsertedRecords = insertToList(messageModels, false, true, true);
-					if (numberOfInsertedRecords > 0) {
-						convListView.setSelection(convListView.getSelectedItemPosition() + numberOfInsertedRecords + 1);
+				if (composeMessageAdapter != null) {
+					if (messageModels != null) {
+						int numberOfInsertedRecords = insertToList(messageModels, false, true, true);
+						if (numberOfInsertedRecords > 0) {
+							convListView.setSelection(convListView.getSelectedItemPosition() + numberOfInsertedRecords + 1);
+						}
+					} else {
+						composeMessageAdapter.notifyDataSetChanged();
 					}
-				} else {
-					composeMessageAdapter.notifyDataSetChanged();
 				}
 
-				// Notify PullToRefreshAttacher that the refresh has activity.finished
-				swipeRefreshLayout.setRefreshing(false);
-				swipeRefreshLayout.setEnabled(hasMoreRecords);
+				if (swipeRefreshLayout != null) {
+					swipeRefreshLayout.setRefreshing(false);
+					swipeRefreshLayout.setEnabled(hasMoreRecords);
+				}
 			}
 		}.execute();
 	}
@@ -3305,6 +3308,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		this.actionBarSubtitleTextView.setVisibility(View.GONE);
 		this.actionBarSubtitleImageView.setVisibility(View.GONE);
+		this.actionBarAvatarView.setVisibility(View.VISIBLE);
 
 		this.actionBarTitleTextView.setText(this.messageReceiver.getDisplayName());
 		this.actionBarTitleTextView.setPaintFlags(this.actionBarTitleTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
@@ -3320,7 +3324,12 @@ public class ComposeMessageFragment extends Fragment implements
 		} else if (this.isDistributionListChat) {
 			actionBarSubtitleTextView.setText(this.distributionListService.getMembersString(this.distributionListModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-			actionBarAvatarView.setImageBitmap(distributionListService.getAvatar(distributionListModel, false));
+			if (this.distributionListModel.isHidden()) {
+				actionBarAvatarView.setVisibility(View.GONE);
+				actionBarTitleTextView.setText(getString(R.string.threema_message_to, ""));
+			} else {
+				actionBarAvatarView.setImageBitmap(distributionListService.getAvatar(distributionListModel, false));
+			}
 			actionBarAvatarView.setBadgeVisible(false);
 		} else {
 			if (contactModel != null) {
@@ -3701,10 +3710,6 @@ public class ComposeMessageFragment extends Fragment implements
 								listener.onModifiedAll();
 							}
 						});
-
-						if (getActivity() != null) {
-							getActivity().finish();
-						}
 					}
 			}
 		}).execute();

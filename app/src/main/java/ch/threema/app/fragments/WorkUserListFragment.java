@@ -50,7 +50,7 @@ import ch.threema.storage.models.ContactModel;
 public class WorkUserListFragment extends RecipientListFragment {
 	@Override
 	protected boolean isMultiSelectAllowed() {
-		return multiSelect;
+		return multiSelect || multiSelectIdentity;
 	}
 
 	@Override

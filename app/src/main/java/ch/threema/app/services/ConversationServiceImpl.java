@@ -988,7 +988,7 @@ public class ConversationServiceImpl implements ConversationService {
 
 				if(conversationModel == null) {
 					conversationModel = new ConversationModel(receiver);
-					if (addToCache && !distributionListModel.isArchived()) {
+					if (addToCache && !distributionListModel.isArchived() && !distributionListModel.isHidden()) {
 						synchronized (conversationCache) {
 							conversationCache.add(conversationModel);
 						}

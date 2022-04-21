@@ -152,6 +152,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private static final String DIALOG_TAG_FILECOPY = "filecopy";
 
 	public static final String INTENT_DATA_MULTISELECT = "ms";
+	public static final String INTENT_DATA_MULTISELECT_FOR_COMPOSE = "msi"; // allow multi select for composing a new message (automatically creates a distribution list)
 
 	private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
 
@@ -160,7 +161,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private MenuItem searchMenuItem;
 	private ThreemaSearchView searchView;
 
-	private boolean hideUi, hideRecents, multiSelect;
+	private boolean hideUi, hideRecents, multiSelect, multiSelectIdentities;
 	private String captionText;
 	private final List<MediaItem> mediaItems = new ArrayList<>();
 	private final List<MessageReceiver> recipientMessageReceivers = new ArrayList<>();
@@ -414,6 +415,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			try {
 				this.hideRecents = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, false);
 				this.multiSelect = intent.getBooleanExtra(INTENT_DATA_MULTISELECT, true);
+				this.multiSelectIdentities = intent.getBooleanExtra(INTENT_DATA_MULTISELECT_FOR_COMPOSE, false);
 			} catch (BadParcelableException e) {
 				logger.error("Exception", e);
 			}
@@ -1124,9 +1126,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 			Fragment fragment = null;
 
+			boolean allowMultiSelectForCompose = false;
+
 			switch (tabs.get(position)) {
 				case FRAGMENT_USERS:
 					fragment = new UserListFragment();
+					allowMultiSelectForCompose = multiSelectIdentities;
 					break;
 				case FRAGMENT_GROUPS:
 					fragment = new GroupListFragment();
@@ -1139,12 +1144,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					break;
 				case FRAGMENT_WORK_USERS:
 					fragment = new WorkUserListFragment();
+					allowMultiSelectForCompose = multiSelectIdentities;
 					break;
 			}
 
 			if (fragment != null) {
 				Bundle args = new Bundle();
 				args.putBoolean(RecipientListFragment.ARGUMENT_MULTI_SELECT, multiSelect);
+				args.putBoolean(RecipientListFragment.ARGUMENT_MULTI_SELECT_FOR_COMPOSE, allowMultiSelectForCompose);
 				fragment.setArguments(args);
 			}
 

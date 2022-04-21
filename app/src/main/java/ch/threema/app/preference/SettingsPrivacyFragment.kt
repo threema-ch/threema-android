@@ -29,6 +29,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -52,7 +53,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
 
 
-class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
+class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.DialogClickListener {
 
     private lateinit var disableScreenshot: CheckBoxPreference
     private var disableScreenshotChecked = false
@@ -61,7 +62,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
 
     private lateinit var contactSyncPreference: TwoStatePreference
 
-    private val synchronizeContactsService: SynchronizeContactsService? = getOrNull { getInitialSynchronizeContactsService() }
+    private val synchronizeContactsService: SynchronizeContactsService? = getOrNull { requireSynchronizeContactsService() }
 
     private val synchronizeContactsListener: SynchronizeContactsListener = object : SynchronizeContactsListener {
         override fun onStarted(startedRoutine: SynchronizeContactsRoutine) {
@@ -94,7 +95,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
         super.initializePreferences()
 
         disableScreenshot = getPref(R.string.preferences__hide_screenshots)
-        disableScreenshotChecked = this.disableScreenshot.isChecked ?: false
+        disableScreenshotChecked = this.disableScreenshot.isChecked
 
         if (ConfigUtils.getScreenshotsDisabled(ThreemaApplication.getServiceManager()?.preferenceService,
                         ThreemaApplication.getServiceManager()?.lockAppService)) {
@@ -246,6 +247,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSION_REQUEST_CONTACTS -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -265,7 +267,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
     }
 
     private fun enableSync() {
-        getOrNull { getInitialSynchronizeContactsService() }?.apply {
+        getOrNull { requireSynchronizeContactsService() }?.apply {
             try {
                 if (enableSync() && ConfigUtils.requestContactPermissions(requireActivity(), this@SettingsPrivacyFragment, PERMISSION_REQUEST_CONTACTS)) {
                     launchContactsSync()
@@ -279,16 +281,25 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
     }
 
     private fun disableSync() {
-        getOrNull { getInitialSynchronizeContactsService() }?.apply {
+        getOrNull { requireSynchronizeContactsService() }?.apply {
             GenericProgressDialog.newInstance(R.string.app_name, R.string.please_wait).show(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC)
-            Thread {
+            Thread ({
                 disableSync {
                     RuntimeUtil.runOnUiThread {
                         DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC, true)
                         contactSyncPreference.isChecked = false
                     }
                 }
-            }.start()
+            }, "DisableSync").start()
+        }
+    }
+
+    private fun resetReceipts() {
+        getOrNull { requireContactService() }?.apply {
+            Thread ({
+                resetReceiptsSettings()
+                RuntimeUtil.runOnUiThread { Toast.makeText(context, R.string.reset_successful, Toast.LENGTH_SHORT).show() }
+            }, "ResetReceiptSettings").start()
         }
     }
 
@@ -300,4 +311,10 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment() {
 
         private const val PERMISSION_REQUEST_CONTACTS = 1
     }
+
+    override fun onYes(tag: String?, data: Any?) {
+        resetReceipts()
+    }
+
+    override fun onNo(tag: String?, data: Any?) { }
 }

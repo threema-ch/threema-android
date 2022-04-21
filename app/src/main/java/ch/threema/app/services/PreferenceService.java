@@ -191,7 +191,9 @@ public interface PreferenceService {
 
 	void setTransmittedFeatureLevel(int featureLevel);
 
-	String[] getList(String listName);
+	@NonNull String[] getList(String listName);
+
+	@NonNull String[] getList(String listName, boolean encrypted);
 
 	void setList(String listName, String[] elements);
 
@@ -483,9 +485,6 @@ public interface PreferenceService {
 	void setCameraFlashMode(int flashMode);
 	int getCameraFlashMode();
 
-	void setCameraLensFacing(int lensFacing);
-	int getCameraLensFacing();
-
 	void setPipPosition(int pipPosition);
 	int getPipPosition();
 
@@ -513,4 +512,7 @@ public interface PreferenceService {
 
 	void setAudioPlaybackSpeed(float newSpeed);
 	float getAudioPlaybackSpeed();
+
+	int getMultipleRecipientsTooltipCount();
+	void incrementMultipleRecipientsTooltipCount();
 }

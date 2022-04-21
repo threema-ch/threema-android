@@ -54,6 +54,7 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
@@ -136,7 +137,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		} else {
 			SharedPreferences.Editor e = this.sharedPreferences.edit();
 			e.putString(key, thing);
-			e.commit();
+			e.apply();
 		}
 
 		this.fireOnChanged(key, thing);
@@ -192,7 +193,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	}
 
 	@Override
-	public void save(String key, String[] things, boolean crypt) {
+	public void save(String key, @NonNull String[] things, boolean crypt) {
 		StringBuilder sb = new StringBuilder();
 		for(String s: things) {
 			if(sb.length() > 0) {
@@ -207,7 +208,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		} else {
 			SharedPreferences.Editor e = this.sharedPreferences.edit();
 			e.putString(key, sb.toString());
-			e.commit();
+			e.apply();
 		}
 		this.fireOnChanged(key, things);
 	}
@@ -225,7 +226,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		} else {
 			SharedPreferences.Editor e = this.sharedPreferences.edit();
 			e.putLong(key, thing);
-			e.commit();
+			e.apply();
 		}
 		this.fireOnChanged(key, thing);
 	}
@@ -696,6 +697,11 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		} else {
 			return new HashSet<>(Arrays.asList(context.getResources().getStringArray(defaultRes)));
 		}
+	}
+
+	@Override
+	public boolean has(String listName) {
+		return this.sharedPreferences.contains(listName);
 	}
 
 	private void fireOnChanged(final String key, final  Object value) {

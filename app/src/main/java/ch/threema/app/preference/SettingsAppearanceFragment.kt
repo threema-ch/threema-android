@@ -36,11 +36,12 @@ import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.StateBitmapUtil
 
+@Suppress("unused")
 class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
 
     private var oldTheme: Int = 0
 
-    private val wallpaperService: WallpaperService = getInitialWallpaperService()
+    private val wallpaperService: WallpaperService = requireWallpaperService()
 
     private var showBadge: CheckBoxPreference? = null
     private var showBadgeChecked = false
@@ -166,8 +167,8 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
                         dialog.setData(newEmojiStyle)
                         dialog.setCallback(object : GenericAlertDialog.DialogClickListener {
                             override fun onYes(tag: String?, data: Any?) {
-                                ConfigUtils.setEmojiStyle(activity, android.R.attr.data)
-                                updateEmojiPrefs(android.R.attr.data)
+                                ConfigUtils.setEmojiStyle(activity, data as Int)
+                                updateEmojiPrefs(data)
                                 ConfigUtils.recreateActivity(activity)
                             }
                             override fun onNo(tag: String?, data: Any?) {

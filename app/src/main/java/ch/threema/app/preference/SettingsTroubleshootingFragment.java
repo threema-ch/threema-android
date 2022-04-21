@@ -91,6 +91,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.WebRTCDebugActivity;
 import ch.threema.app.webclient.activities.WebDiagnosticsActivity;
@@ -173,7 +174,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 		threemaPushTwoStatePreference = getPref(getResources().getString(R.string.preferences__threema_push_switch));
 		threemaPushTwoStatePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				boolean newCheckedValue = newValue.equals(true);
 				if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
 					if (newCheckedValue) {
@@ -203,7 +204,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		messageLogPreference = getPref(getResources().getString(R.string.preferences__message_log_switch));
 		messageLogPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				boolean newCheckedValue = newValue.equals(true);
 
 				DebugLogFileBackend.setEnabled(newCheckedValue);
@@ -212,19 +213,37 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 			}
 		});
 
+		PreferenceCategory loggingCategory = getPref("pref_key_logging");
 		Preference sendLogPreference = getPref(getResources().getString(R.string.preferences__sendlog));
-		sendLogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				prepareSendLogfile();
-				return true;
-			}
-		});
+		Preference exportLogPreference = getPref(getResources().getString(R.string.preferences__exportlog));
+
+		// Do not show send log preference on on prem builds
+		if (ConfigUtils.isOnPremBuild()) {
+			loggingCategory.removePreference(sendLogPreference);
+
+			// Show share options
+			exportLogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(@NonNull Preference preference) {
+					ShareUtil.shareLogfile(requireContext(), fileService);
+					return true;
+				}
+			});
+		} else {
+			loggingCategory.removePreference(exportLogPreference);
+			sendLogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(@NonNull Preference preference) {
+					prepareSendLogfile();
+					return true;
+				}
+			});
+		}
 
 		Preference resetPushPreference = getPref(getResources().getString(R.string.preferences__reset_push));
 		resetPushPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(@NonNull Preference preference) {
 				if (pushServicesInstalled) {
 					PushUtil.clearPushTokenSentDate(getActivity());
 					PushUtil.enqueuePushTokenUpdate(getContext(), false, true);
@@ -237,7 +256,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		Preference wallpaperDeletePreferences = getPref(getResources().getString(R.string.preferences__remove_wallpapers));
 		wallpaperDeletePreferences.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(@NonNull Preference preference) {
 				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.prefs_title_remove_wallpapers,
 					R.string.really_remove_wallpapers,
 					R.string.ok,
@@ -252,7 +271,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		Preference ringtoneResetPreferences = getPref(getResources().getString(R.string.preferences__reset_ringtones));
 		ringtoneResetPreferences.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(@NonNull Preference preference) {
 				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.prefs_title_reset_ringtones,
 					R.string.really_reset_ringtones,
 					R.string.ok,
@@ -266,7 +285,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 		ipv6Preferences = getPref(getResources().getString(R.string.preferences__ipv6_preferred));
 		ipv6Preferences.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 
 				boolean newCheckedValue = newValue.equals(true);
 				boolean oldCheckedValue = ((TwoStatePreference) preference).isChecked();
@@ -290,7 +309,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			powerManagerPrefs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 				@Override
-				public boolean onPreferenceClick(Preference preference) {
+				public boolean onPreferenceClick(@NonNull Preference preference) {
 					if (PowermanagerUtil.hasPowerManagerOption(SettingsTroubleshootingFragment.this.getActivity())) {
 						GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.disable_powermanager_title,
 							String.format(getString(R.string.disable_powermanager_explain), getString(R.string.app_name)),
@@ -311,7 +330,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				backgroundDataPrefs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 					@TargetApi(Build.VERSION_CODES.N)
 					@Override
-					public boolean onPreferenceClick(Preference preference) {
+					public boolean onPreferenceClick(@NonNull Preference preference) {
 						Intent intent = new Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS);
 						intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
 
@@ -330,7 +349,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 			updatePowerManagerPrefs();
 		} else {
-			PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference("pref_key_fix_device");
+			PreferenceCategory preferenceCategory = getPref("pref_key_fix_device");
 			preferenceScreen.removePreference(preferenceCategory);
 		}
 
@@ -341,7 +360,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 		echoCancelPreference.setSummary(echoCancelArray[echoCancelIndex]);
 		echoCancelPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				preference.setSummary(echoCancelArray[echoCancelValuesArrayList.indexOf(newValue.toString())]);
 				return true;
 			}
@@ -694,13 +713,9 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 	@Override
 	public void onNo(String tag, Object data) {
-		switch (tag) {
-			case DIALOG_TAG_IPV6_APP_RESTART:
-				boolean oldValue = (boolean) data;
-				ipv6Preferences.setChecked(oldValue);
-				break;
-			default:
-				break;
+		if (DIALOG_TAG_IPV6_APP_RESTART.equals(tag)) {
+			boolean oldValue = (boolean) data;
+			ipv6Preferences.setChecked(oldValue);
 		}
 	}
 

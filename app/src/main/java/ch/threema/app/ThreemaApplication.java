@@ -1064,7 +1064,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	}
 
 	private static void initMapLibre() {
-		if (ConfigUtils.hasNoMapboxSupport()) {
+		if (ConfigUtils.hasNoMapLibreSupport()) {
 			logger.debug("*** MapLibre disabled due to faulty firmware");
 		} else {
 			Mapbox.getInstance(getAppContext());

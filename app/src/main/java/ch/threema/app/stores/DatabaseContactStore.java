@@ -74,7 +74,7 @@ public class DatabaseContactStore implements ContactStore {
 	}
 
 	@Override
-	public byte[] getPublicKeyForIdentity(@NonNull String identity, boolean fetch) {
+	public Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact) {
 		Contact contact = this.getContactForIdentity(identity);
 
 		if (contact == null) {
@@ -94,7 +94,7 @@ public class DatabaseContactStore implements ContactStore {
 								//try to select again
 								contact = this.getContactForIdentity(identity);
 								if (contact != null) {
-									return contact.getPublicKey();
+									return contact;
 								}
 							}
 						}
@@ -105,7 +105,7 @@ public class DatabaseContactStore implements ContactStore {
 						}
 					}
 
-					return this.fetchPublicKeyForIdentity(identity);
+					return this.fetchPublicKeyForIdentity(identity, saveContact);
 				} catch (Exception e) {
 					logger.error("Exception", e);
 					return null;
@@ -114,62 +114,49 @@ public class DatabaseContactStore implements ContactStore {
 			return null;
 		}
 
-		return contact.getPublicKey();
+		return contact;
 	}
 
 	/**
-	 * Fetch a public key for an identity, create a contact and save it
+	 * Fetch a public key for an identity, create a contact and save it (if requested)
 	 *
 	 * @param identity Identity to add a contact for
+	 * @param saveContact save contact if it does not exist; if false, the contact is added as hidden contact
 	 * @throws ThreemaException if a contact with this identity already exists
 	 *          FileNotFoundException if identity was not found on the server
 	 * @return public key of identity in case of success, null otherwise
 	 */
 	@WorkerThread
-	public @Nullable byte[] fetchPublicKeyForIdentity(@NonNull String identity) throws FileNotFoundException, ThreemaException {
-		APIConnector.FetchIdentityResult result = null;
-		try {
-			Contact contact = this.getContactForIdentity(identity);
-			if(contact != null) {
-				//cannot fetch and save... contact already exists
-				throw new ThreemaException("contact already exists, cannot fetch and save");
-			}
-
-			result = this.apiConnector.fetchIdentity(identity);
-		}
-		catch (FileNotFoundException e) {
-			throw e;
-		} catch (Exception e) {
-			//do nothing
+	public @Nullable Contact fetchPublicKeyForIdentity(@NonNull String identity, boolean saveContact) throws FileNotFoundException, ThreemaException {
+		APIConnector.FetchIdentityResult result = getContactResult(identity);
+		if (result == null || result.publicKey == null) {
 			return null;
 		}
+
 		byte[] b = result.publicKey;
 
-		if(b != null) {
-			ContactModel contact = new ContactModel(identity, b);
-			contact.setFeatureMask(result.featureMask);
-			contact.setVerificationLevel(VerificationLevel.UNVERIFIED);
-			contact.setDateCreated(new Date());
-			contact.setIdentityType(result.type);
-			switch (result.state) {
-				case IdentityState.ACTIVE:
-					contact.setState(ContactModel.State.ACTIVE);
-					break;
-				case IdentityState.INACTIVE:
-					contact.setState(ContactModel.State.INACTIVE);
-					break;
-				case IdentityState.INVALID:
-					contact.setState(ContactModel.State.INVALID);
-					break;
-
-			}
-
-			this.addContact(contact);
-
-			return b;
+		ContactModel contact = new ContactModel(identity, b);
+		contact.setFeatureMask(result.featureMask);
+		contact.setVerificationLevel(VerificationLevel.UNVERIFIED);
+		contact.setDateCreated(new Date());
+		contact.setIdentityType(result.type);
+		switch (result.state) {
+			case IdentityState.ACTIVE:
+				contact.setState(ContactModel.State.ACTIVE);
+				break;
+			case IdentityState.INACTIVE:
+				contact.setState(ContactModel.State.INACTIVE);
+				break;
+			case IdentityState.INVALID:
+				contact.setState(ContactModel.State.INVALID);
+				break;
 		}
 
-		return null;
+		if (saveContact) {
+			this.addContact(contact);
+		}
+
+		return contact;
 	}
 
 	@Override
@@ -191,8 +178,17 @@ public class DatabaseContactStore implements ContactStore {
 
 	@Override
 	public void addContact(@NonNull Contact contact) {
+		addContact(contact, false);
+	}
+
+	@Override
+	public void addContact(@NonNull Contact contact, boolean hide) {
 		ContactModel contactModel = (ContactModel)contact;
 		boolean isUpdate = false;
+
+		if (hide) {
+			contactModel.setIsHidden(true);
+		}
 
 		ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
 		//get db record
@@ -273,5 +269,25 @@ public class DatabaseContactStore implements ContactStore {
 				listener.onRemoved(removedContactModel);
 			}
 		});
+	}
+
+	private APIConnector.FetchIdentityResult getContactResult(@NonNull String identity) throws FileNotFoundException {
+		APIConnector.FetchIdentityResult result;
+		try {
+			Contact contact = this.getContactForIdentity(identity);
+			if(contact != null) {
+				//cannot fetch and save... contact already exists
+				throw new ThreemaException("contact already exists, cannot fetch and save");
+			}
+
+			result = this.apiConnector.fetchIdentity(identity);
+		}
+		catch (FileNotFoundException e) {
+			throw e;
+		} catch (Exception e) {
+			//do nothing
+			return null;
+		}
+		return result;
 	}
 }

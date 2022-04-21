@@ -144,7 +144,7 @@ public class ConfigUtils {
 	private static String localeOverride = null;
 	private static Integer primaryColor = null, accentColor = null, miuiVersion = null;
 	private static int emojiStyle = 0;
-	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasNoMapboxSupport = null;
+	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasMapLibreSupport = null;
 	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1;
 
 	private static final float[] NEGATIVE_MATRIX = {
@@ -259,14 +259,14 @@ public class ConfigUtils {
 		return new TLSUpgradeSocketFactoryWrapper(TrustKit.getInstance().getSSLSocketFactory(host));
 	}
 
-	public static boolean hasNoMapboxSupport() {
-		/* Some broken Samsung devices crash on Mapbox initialization due to a compiler bug, see https://issuetracker.google.com/issues/37013676 */
+	public static boolean hasNoMapLibreSupport() {
+		/* Some broken Samsung devices crash on MapLibre initialization due to a compiler bug, see https://issuetracker.google.com/issues/37013676 */
 		/* Device that do not support OCSP stapling cannot use our maps and POI servers */
-		if (hasNoMapboxSupport == null) {
-			hasNoMapboxSupport =
+		if (hasMapLibreSupport == null) {
+			hasMapLibreSupport =
 				Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.MANUFACTURER.equalsIgnoreCase("marshall");
 		}
-		return hasNoMapboxSupport;
+		return hasMapLibreSupport;
 	}
 
 	public static boolean isXiaomiDevice() {
@@ -752,6 +752,9 @@ public class ConfigUtils {
 					break;
 				case "zh-rTW":
 					conf.locale = new Locale("zh", "TW");
+					break;
+				case "be-rBY":
+					conf.locale = new Locale("be", "BY");
 					break;
 				default:
 					conf.locale = new Locale(confLanguage);
