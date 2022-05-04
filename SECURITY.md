@@ -7,10 +7,13 @@ the [Cryptography Whitepaper](https://threema.ch/press-files/2_documentation/cry
 
 ## Reporting Vulnerabilities
 
-If you find a security issue in Threema, please follow responsible disclosure
-and report it to us via Threema or by encrypted email, we will try to respond
-as quickly as possible. You can find the contact details at
-[threema.ch/contact](https://threema.ch/contact) (section “Security”).
+If you discover a security issue in Threema, please adhere to the coordinated
+vulnerability disclosure model. To be eligible for a bug bounty, please [file a
+report on GObugfree](https://app.gobugfree.com/programs/threema) (where all the
+details, including the bounty levels, are listed). If you’re not interested in
+the bug bounty program, you can contact us via Threema or by email; for contact
+details, see [threema.ch/contact](https://threema.ch/en/contact) (section
+“Security”).
 
 ## Code Signing
 
