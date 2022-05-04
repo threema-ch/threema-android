@@ -30,10 +30,13 @@ This repository contains the complete source code of
 To report bugs and request new features, please contact the Threema support
 team through [threema.ch/support](https://threema.ch/support).
 
-If you find a security issue in Threema, please follow responsible disclosure
-and report it to us via Threema or by encrypted email, we will try to respond
-as quickly as possible. You can find the contact details at
-[threema.ch/contact](https://threema.ch/contact) (section "Security").
+If you discover a security issue in Threema, please adhere to the coordinated
+vulnerability disclosure model. To be eligible for a bug bounty, please [file a
+report on GObugfree](https://app.gobugfree.com/programs/threema) (where all the
+details, including the bounty levels, are listed). If you’re not interested in
+the bug bounty program, you can contact us via Threema or by email; for contact
+details, see [threema.ch/contact](https://threema.ch/en/contact) (section
+“Security”).
 
 
 ## <a name="release-policy"></a>Source Code Release Policy
@@ -97,7 +100,7 @@ the app.
 ### Allowlist
 
 The `none` build variant is used for development. It can only be used to create
-new Threema IDs if the random Device ID has been put on an "allow list" by a
+new Threema IDs if the random Device ID has been put on an “allow list” by a
 Threema employee.
 
 
@@ -146,14 +149,14 @@ The following variants are only used for development and testing within Threema:
 | `sandbox_work`       | Uses sandbox test environment¹                 | Threema Work   |
 | `red`                | Uses sandbox test environment¹                 | Threema Work   |
 
-¹ *The "sandbox" is a backend test environment that is used for internal testing
+¹ *The “sandbox” is a backend test environment that is used for internal testing
   at Threema. The sandbox backend can currently not be accessed from the public
   Internet.*
 
 
 ## <a name="building"></a>Building
 
-Before building the app, please read the "Build Variants" section above. For
+Before building the app, please read the “Build Variants” section above. For
 local testing, we recommend building and running the `store_google` or
 `store_threema` build variant.
 
@@ -179,7 +182,7 @@ assistance for building on macOS, Windows, or other operating systems.
 ### Via Android Studio
 
 The project can be imported into [Android Studio](https://developer.android.com/studio/).
-To build and deploy it to a device, click the green "Play" icon.
+To build and deploy it to a device, click the green “Play” icon.
 
 
 ## <a name="testing"></a>Testing
@@ -194,10 +197,10 @@ To run integration tests (with a device or emulator attached):
 
     ./gradlew connectedNoneDebugAndroidTest
 
-Note that integration tests run in the same app environment as your "real" app,
+Note that integration tests run in the same app environment as your “real” app,
 so data loss is possible. For example, if an integration test deletes your
 Threema ID in order to test the backup restoration process, the Threema ID in
-your "real" app may also be gone (if it was signed with the same signing key).
+your “real” app may also be gone (if it was signed with the same signing key).
 It is best to only run integration tests on a non-productive device or in an
 emulator.
 
@@ -239,7 +242,7 @@ through OneSky, see next section.
 
 ## <a name="translating"></a>Translating
 
-We manage our app translations through OneSky. If you're interested in
+We manage our app translations through OneSky. If you’re interested in
 improving translations, or if you would like to translate Threema to a new
 language, please sign up at <https://threema.oneskyapp.com/collaboration/>.
 
