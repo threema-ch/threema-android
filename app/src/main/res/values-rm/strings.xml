@@ -571,6 +571,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="blocked">Bloccà</string>
     <string name="name">Num</string>
     <string name="privacy_policy">Decleraziun davart la protecziun da datas</string>
+    <string name="terms_of_service">Cundiziuns d\'utilisaziun</string>
+    <string name="eula">Cunvegna da licenza per l\'utilisader final</string>
     <string name="save_group_changes">Vuls ti surpigliar las midadas da la gruppa?</string>
     <string name="prefs_title_fontsize">Grondezza dal text</string>
     <string name="fontsize_normal">Normal</string>
@@ -580,6 +582,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">Stizzà %d chat(s)</string>
     <string name="prefs_sendlog">Trametter la datoteca da protocol</string>
     <string name="prefs_sendlog_summary">Trametter la datoteca da protocol a Threema per analisar ils problems</string>
+    <string name="prefs_exportlog">Parter la datoteca da protocol</string>
+    <string name="prefs_exportlog_summary">Parter la datoteca da protocol per analisar ils problems</string>
     <string name="permission_storage_required">Activescha l\'autorisaziun da l\'arcun per trametter medias.</string>
     <string name="permission_location_required">Activescha l\'autorisaziun dal lieu per trametter tia posiziun.</string>
     <string name="permission_contacts_required">Activescha l\'autorisaziun dals contacts per trametter in contact.</string>
@@ -956,6 +960,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="time_remaining">anc %s</string>
     <string name="safe_configure_server_credentials_title">Autentificaziun (opziunal)</string>
     <string name="username_hint">Num d\'utilisader</string>
+    <string name="server_hint">Server</string>
     <string name="lock_option_biometric">biometric</string>
     <string name="biometric_enter_authentication">P.pl. autentifitgar per debloccar</string>
     <string name="biometric_authentication_failed">Igl ha dà in sbagl cun s\'autentifitgar</string>
@@ -1004,8 +1009,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="delete">Stizzar</string>
     <string name="num_archived_chats">%d chats archivads</string>
     <string name="continue_recording">Registrar vinavant</string>
-    <string name="tooltip_identity_popup">Smatga qua per visualisar spert tia ID da Threema u per scannar las IDs dad autras persunas</string>
-    <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
+	<string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
     <string name="invalid_backup_path">Percurs dal backup nunvalaivel</string>
     <string name="backup_data_no_permission">Nagin dretg da scriver en questa glista. P.pl. tscherner in\'autra.</string>
@@ -1230,6 +1234,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="threema_safe_backup">Backup da Threema Safe</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Emblidà il pled-clav?</a>]]></string>
     <string name="download_failed">Download betg reussì. Code dal sbagl: %d</string>
+    <string name="edit_answer">Elavurar ina resposta</string>
     <string name="share_media">Parter cun in\'autra app...</string>
     <string name="group_link_administered">Administrà</string>
     <string name="group_link_open">Avert</string>
@@ -1301,4 +1306,14 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="web_link">Colliaziun</string>
     <string name="link_copied">%s copià</string>
     <string name="invalid_onprem_id_title">Betg pussaivel d\'agiuntar</string>
+    <string name="name_given">Prenum</string>
+    <string name="name_family">Num</string>
+    <string name="full_name">Имя</string>
+    <string name="phoneTypeIsdn">ISDN</string>
+    <string name="header_nickname_entry">"Surnum"</string>
+    <string name="prefs_title_use_system_ringtone">Duvrar il tun dal sistem</string>
+    <string name="permission_bluetooth_connect_required">Activescha l\'autorisaziun «apparats en la vischinanza» per chattar apparats da bluetooth colliads.</string>
+    <string name="threema_push_start_webclient_sessions_manually">Activà Threema Push. Threema Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
+    <string name="tooltip_multiple_recipients_title">Nov: plirs retschaviders</string>
+    <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs retschaviders e trametter a tuts il medem messadi.</string>
 </resources>

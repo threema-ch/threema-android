@@ -36,6 +36,9 @@ import ch.threema.app.backuprestore.BackupChatService;
 import ch.threema.app.backuprestore.BackupChatServiceImpl;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.backuprestore.csv.BackupRestoreDataServiceImpl;
+import ch.threema.app.emojis.EmojiRecent;
+import ch.threema.app.emojis.EmojiService;
+import ch.threema.app.emojis.search.EmojiSearchIndex;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.processors.MessageAckProcessor;
@@ -202,6 +205,8 @@ public class ServiceManager {
 	private WebClientServiceManager webClientServiceManager;
 
 	private SymmetricEncryptionService symmetricEncryptionService;
+
+	private EmojiService emojiService;
 
 	public ServiceManager(ThreemaConnection connection,
 						  DatabaseServiceNew databaseServiceNew,
@@ -501,11 +506,7 @@ public class ServiceManager {
 
 	public AvatarCacheService getAvatarCacheService() throws FileSystemNotPresentException {
 		if(this.avatarCacheService == null) {
-			this.avatarCacheService = new AvatarCacheServiceImpl(
-					this.getContext(),
-					this.getIdentityStore(),
-					this.getPreferenceService(),
-					this.getFileService());
+			this.avatarCacheService = new AvatarCacheServiceImpl(this.getContext());
 		}
 
 		return this.avatarCacheService;
@@ -605,6 +606,7 @@ public class ServiceManager {
 	public @NonNull GroupService getGroupService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if(null == this.groupService) {
 			this.groupService = new GroupServiceImpl(
+					this.getContext(),
 					this.cacheService,
 					this.getApiService(),
 					this.getGroupMessagingService(),
@@ -690,7 +692,7 @@ public class ServiceManager {
 	public DistributionListService getDistributionListService() throws MasterKeyLockedException, NoIdentityException, FileSystemNotPresentException {
 		if(null == this.distributionListService) {
 			this.distributionListService = new DistributionListServiceImpl(
-					this.cacheService,
+					this.getContext(),
 					this.getAvatarCacheService(),
 					this.databaseServiceNew,
 					this.getContactService()
@@ -982,5 +984,21 @@ public class ServiceManager {
 			symmetricEncryptionService = new SymmetricEncryptionService();
 		}
 		return symmetricEncryptionService;
+	}
+
+	public @NonNull
+	EmojiService getEmojiService() {
+		if (emojiService == null) {
+			EmojiSearchIndex searchIndex = new EmojiSearchIndex(
+				getContext().getApplicationContext(),
+				getPreferenceService()
+			);
+			emojiService = new EmojiService(
+				getPreferenceService(),
+				searchIndex,
+				new EmojiRecent(getPreferenceService())
+			);
+		}
+		return emojiService;
 	}
 }

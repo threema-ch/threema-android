@@ -126,7 +126,8 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 					checkedItemPositions,
 					contactService,
 					blacklistService,
-					hiddenChatsListService
+					hiddenChatsListService,
+					preferenceService
 				);
 				setListAdapter(adapter);
 				getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);

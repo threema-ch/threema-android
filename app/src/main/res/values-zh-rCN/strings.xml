@@ -254,6 +254,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="emoji_emotions">表情符号与人物</string>
     <string name="emoji_activities">活动</string>
     <string name="emoji_flags">旗帜</string>
+    <string name="emoji_search">搜索表情符号</string>
+    <string name="emoji_search_no_result">没有搜索结果</string>
     <string name="title_lock">锁</string>
     <string name="new_messages_locked">有新消息</string>
     <string name="new_messages_locked_description">点击以查看新消息。</string>
@@ -599,7 +601,8 @@ Threema 支持的所有表情符号。</string>
     <string name="blocked">被屏蔽</string>
     <string name="name">名称</string>
     <string name="privacy_policy">隐私政策</string>
-    <string name="terms_of_service">条款</string>
+    <string name="terms_of_service">服务条款</string>
+    <string name="eula">最终用户许可协议</string>
     <string name="save_group_changes">您想保存对群组的更改吗？</string>
     <string name="prefs_title_fontsize">字体大小</string>
     <string name="fontsize_normal">正常</string>
@@ -609,6 +612,8 @@ Threema 支持的所有表情符号。</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">已删除%d个会话</string>
     <string name="prefs_sendlog">发送日志</string>
     <string name="prefs_sendlog_summary">将日志发送给 Threema，以便在出现问题时进行进一步分析</string>
+    <string name="prefs_exportlog">导出日志文件</string>
+    <string name="prefs_exportlog_summary">与其他应用分享日志文件</string>
     <string name="permission_storage_required">如要保存或发送媒体，请允许 Threema 访问存储权限。</string>
     <string name="permission_location_required">如要发送位置，请允许 Threema 访问您的位置的权限。</string>
     <string name="permission_contacts_required">如要发送联系人，请允许 Threema 读取联系人的权限。</string>
@@ -1049,11 +1054,23 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="num_archived_chats">%d个已封存的会话</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">(an empty phrase)</string>
-    <string name="whatsnew_headline">(an empty phrase)</string>
+    <string name="whatsnew_title">欢迎使用 %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[<p><b>%s 安卓版此版本的新功能：</b></p>
+<p>
+&bull; 添加了许多符合 Unicode 13.1 标准的新表情符号。😵💫❤️🔥
+</p><p>
+&bull; 按名称或含义搜索表情符号（有17种语言版本）。
+</p><p>
+&bull; 为没有设置头像的联系人和群组选定颜色。这些新的颜色将在跨平台和设备生效。
+</p><p> 
+&bull; 改进许多列表的滚动性能。
+</p><p>
+&bull; 优化媒体编辑器的布局。将发送消息前可编辑的媒体项目的数量增加到256个。
+</p><p>
+&bull; 许多小改进和错误修复。
+</p>]]></string>
     <string name="whatsnew2_title">(an empty phrase)</string>
     <string name="whatsnew2_body">(an empty phrase)</string>
-    <string name="tooltip_identity_popup">点击这里可快速显示您的 Threema ID 或扫描其他人的 ID</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
@@ -1074,7 +1091,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group">群组</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>我们的隐私政策已更新，以反映以下更改： </p>
 <p>%1$s不再依赖 Google Play 和 Google Maps 提供地图和POI数据。</p>请在<a href="%2$s">这里</a>查看完整的隐私政策。]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">未安装推送服务，无法推送消息。</string>
+    <string name="play_services_not_installed_unable_to_use_push">由于您还未安装推送服务，因此无法切换到 Google FCM 或 HMS 推送消息。</string>
     <string name="unable_to_get_current_location">无法确定当前位置。</string>
     <string name="lp_search_place_min_chars">请输入至少三个字符以搜索地点。</string>
     <string name="lp_search_place_no_matches">找不到匹配的地点。请修改您的查询。</string>
@@ -1392,4 +1409,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="organization_type">单位</string>
     <string name="permission_bluetooth_connect_required">请启用 “附近设备” 权限以定位已连接的蓝牙耳机</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push 现在已启用。您需要手动重启 Threema 网页版和桌面版会话。</string>
+    <string name="tooltip_multiple_recipients_title">新功能：一条消息同时发送到多个收件人</string>
+    <string name="tooltip_multiple_recipients_text">长按可将一条消息同时发送到多个收件人。</string>
+    <string name="synchronizing">同步中…</string>
+    <string name="self_updater_installation_failed">下载更新失败。请手动从 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下载并安装更新。</string>
+    <string name="wizard_incompatible_contact_sync_params">您可能设置了不兼容的 MDM 参数。如果用户限制设置为 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 参数 th_contact_sync 则无法设置为 true。请联系您的设备管理员以获取帮助。</string>
 </resources>

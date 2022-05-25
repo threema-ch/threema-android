@@ -80,7 +80,8 @@ public class EmojiConversationTextView extends androidx.appcompat.widget.AppComp
 	@Override
 	public void invalidateDrawable(@NonNull Drawable drawable) {
 		if (drawable instanceof EmojiDrawable) {
-			invalidate();
+			/* setHint() invalidates the view while invalidate() does not */
+			setHint(getHint());
 		} else {
 			super.invalidateDrawable(drawable);
 		}

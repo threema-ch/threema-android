@@ -4,6 +4,7 @@ plugins {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 // only apply the plugin if we are dealing with a AppGallery build
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")) {
@@ -12,7 +13,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.72"
+def app_version = "4.8"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -92,7 +93,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 738
+        versionCode 743
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -694,9 +695,9 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
-    implementation "androidx.camera:camera-camera2:1.1.0-beta03"
-    implementation "androidx.camera:camera-lifecycle:1.1.0-beta03"
-    implementation "androidx.camera:camera-view:1.1.0-beta03"
+    implementation "androidx.camera:camera-camera2:1.1.0-rc01"
+    implementation "androidx.camera:camera-lifecycle:1.1.0-rc01"
+    implementation "androidx.camera:camera-view:1.1.0-rc01"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
@@ -708,6 +709,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.paging:paging-runtime:3.1.1"
     implementation "androidx.sharetarget:sharetarget:1.1.0"
+    implementation 'androidx.room:room-runtime:2.4.2'
+    kapt 'androidx.room:room-compiler:2.4.2'
 
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
@@ -716,7 +719,7 @@ dependencies {
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.45' // make sure to update this in domain's build.gradle as well
 
     // webclient dependencies
-    implementation 'org.msgpack:msgpack-core:0.8.22!!'
+    implementation 'org.msgpack:msgpack-core:0.8.24!!'
     implementation 'com.neovisionaries:nv-websocket-client:2.9'
 
     // Backport of Streams and CompletableFuture. Remove once API level 24 is supported.
@@ -727,14 +730,14 @@ dependencies {
     }
 
     implementation 'org.saltyrtc:chunked-dc:1.0.1'
-    implementation 'ch.threema:webrtc-android:94.0.0'
+    implementation 'ch.threema:webrtc-android:100.0.0'
     implementation('org.saltyrtc:saltyrtc-task-webrtc:0.18.1') {
         exclude module: 'saltyrtc-client'
     }
 
     // Glide components
-    implementation 'com.github.bumptech.glide:glide:4.13.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.1'
+    implementation 'com.github.bumptech.glide:glide:4.13.2'
+    kapt 'com.github.bumptech.glide:compiler:4.13.2'
 
     // kotlin
     implementation "androidx.core:core-ktx:1.7.0"
@@ -742,7 +745,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     // use leak canary in debug builds
-//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+//  debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
     // test dependencies
     testImplementation "junit:junit:$junit_version"

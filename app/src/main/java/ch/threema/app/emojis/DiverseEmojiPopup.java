@@ -31,23 +31,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-import java.util.HashMap;
-
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 
 public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListener {
 
-	private static String TAG = "DiverseEmojiPopup";
-	private Context context;
-	private ImageView originalImage, type1Image, type3Image, type4Image, type5Image, type6Image;
-	private FrameLayout topLayout;
-	private View parentView, originView;
-	private EmojiManager emojiManager;
+	private final Context context;
+	private final ImageView originalImage, type1Image, type3Image, type4Image, type5Image, type6Image;
+	private final View parentView;
+	private View originView;
+	private final EmojiManager emojiManager;
+	private final EmojiService emojiService;
 	private DiverseEmojiPopupListener diverseEmojiPopupListener;
-	private HashMap<String, String> diverseEmojiPrefs;
-	private int popupHeight, popupOffsetLeft;
+	private final int popupHeight, popupOffsetLeft;
 
 	final int[] location = new int[2];
 
@@ -57,13 +55,14 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 		this.context = context;
 		this.parentView = parentView;
 		this.emojiManager = EmojiManager.getInstance(context);
+		this.emojiService = ThreemaApplication.requireServiceManager().getEmojiService();
 		this.popupHeight = 2 * context.getResources().getDimensionPixelSize(R.dimen.emoji_popup_image_margin) +
 				context.getResources().getDimensionPixelSize(R.dimen.emoji_popup_cardview_margin_bottom) +
 				context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_emoji_size);
 		this.popupOffsetLeft = context.getResources().getDimensionPixelSize(R.dimen.emoji_popup_cardview_margin_horizontal);
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		topLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_diverse_emoji, null, true);
+		FrameLayout topLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_diverse_emoji, null, true);
 
 		this.originalImage = topLayout.findViewById(R.id.image_original);
 		this.type1Image = topLayout.findViewById(R.id.image_type1);
@@ -83,9 +82,8 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 		setFocusable(true);
 	}
 
-	public void show(final View originView, final String originalEmoji, final HashMap<String, String> diverseEmojiPrefs) {
+	public void show(final View originView, final String originalEmoji) {
 		EmojiInfo originalEmojiInfo = EmojiUtil.getEmojiInfo(originalEmoji);
-		this.diverseEmojiPrefs = diverseEmojiPrefs;
 
 		if (originalEmojiInfo == null || originalEmojiInfo.diversities.length != 5) {
 			return;
@@ -142,12 +140,7 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 			this.diverseEmojiPopupListener.onClose();
 		}
 
-		AnimationUtil.popupAnimateOut(getContentView(), new Runnable() {
-			@Override
-			public void run() {
-				DiverseEmojiPopup.super.dismiss();
-			}
-		});
+		AnimationUtil.popupAnimateOut(getContentView(), super::dismiss);
 
 	}
 
@@ -162,7 +155,7 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 			diverseEmojiPopupListener.onDiverseEmojiClick((String) this.originalImage.getTag(), emojiSequence);
 			EmojiItemView emojiView = (EmojiItemView) originView;
 			if (emojiView != null) {
-				emojiView.setEmoji(diverseEmojiPrefs.containsKey(emojiSequence) ? diverseEmojiPrefs.get(emojiSequence) : emojiSequence, true,
+				emojiView.setEmoji(emojiService.getPreferredDiversity(emojiSequence), true,
 						ConfigUtils.getColorFromAttribute(context, R.attr.emoji_picker_hint));
 			}
 			dismiss();
@@ -170,7 +163,7 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 	}
 
 	public interface DiverseEmojiPopupListener {
-		void onDiverseEmojiClick(String originalEmojiSequence, String emoijSequence);
+		void onDiverseEmojiClick(String originalEmojiSequence, String emojiSequence);
 		void onOpen();
 		void onClose();
 	}

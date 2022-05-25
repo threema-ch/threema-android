@@ -65,6 +65,7 @@ public class ClientInfo extends Converter {
 	private final static String MAX_GROUP_SIZE = "maxGroupSize";
 	private final static String MAX_FILE_SIZE = "maxFileSize";
 	private final static String DISTRIBUTION_LISTS = "distributionLists";
+	private final static String QUOTES_V2 = "quotesV2";
 	private final static String IMAGE_FORMAT = "imageFormat";
 	private final static String MDM = "mdm";
 
@@ -147,6 +148,7 @@ public class ClientInfo extends Converter {
 		capabilities.put(MAX_GROUP_SIZE, BuildConfig.MAX_GROUP_SIZE);
 		capabilities.put(MAX_FILE_SIZE, ThreemaApplication.MAX_BLOB_SIZE);
 		capabilities.put(DISTRIBUTION_LISTS, true);
+		capabilities.put(QUOTES_V2, true);
 
 		// Image format
 		final MsgpackObjectBuilder imageFormat = new MsgpackObjectBuilder();

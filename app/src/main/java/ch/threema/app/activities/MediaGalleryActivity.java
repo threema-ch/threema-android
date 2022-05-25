@@ -230,7 +230,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 
 		currentType = TYPE_ALL;
 
-		this.gridView = findViewById(R.id.gridview);
+		this.gridView = findViewById(R.id.item_list);
 		this.gridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		this.gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 			@Override
@@ -379,7 +379,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 			messageReceiver = this.groupService.createReceiver(groupModel);
 			actionBarTitle = groupModel.getName();
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-			DistributionListModel distributionListModel = distributionListService.getById(intent.getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0));
+			DistributionListModel distributionListModel = distributionListService.getById(intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0));
 			try {
 				messageReceiver = distributionListService.createReceiver(distributionListModel);
 			} catch (Exception e) {

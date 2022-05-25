@@ -21,19 +21,14 @@
 
 package ch.threema.app.services.systemupdate;
 
-import androidx.annotation.NonNull;
-
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.Arrays;
 
-import ch.threema.app.ThreemaApplication;
+import androidx.annotation.NonNull;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.GroupModel;
 
 public class SystemUpdateToVersion13 implements UpdateSystemService.SystemUpdate {
 	private final SQLiteDatabase sqLiteDatabase;
@@ -64,22 +59,6 @@ public class SystemUpdateToVersion13 implements UpdateSystemService.SystemUpdate
 
 	@Override
 	public boolean runASync() {
-		//make a manually sync
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if(serviceManager != null) {
-			try {
-				GroupService groupService = serviceManager.getGroupService();
-				if(groupService != null) {
-					for(GroupModel groupModel: groupService.getAll()) {
-						if(groupModel != null) {
-							groupService.rebuildColors(groupModel);
-						}
-					}
-				}
-			} catch (Exception e) {
-				//do nothing
-			}
-		}
 		return true;
 	}
 

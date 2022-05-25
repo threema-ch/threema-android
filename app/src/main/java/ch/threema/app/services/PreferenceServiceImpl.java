@@ -346,6 +346,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public int getEmojiSearchIndexVersion() {
+		Integer version = this.preferenceStore.getInt(this.getKeyName(R.string.preferences__emoji_search_index_version));
+		return version != null ? version : -1;
+	}
+
+	@Override
+	public void setEmojiSearchIndexVersion(int version){
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__emoji_search_index_version), version);
+	}
+
+	@Override
 	public boolean useThreemaPush() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__threema_push_switch));
 	}
@@ -862,6 +873,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__message_drafts), true);
 	}
 
+	@Override
+	public void setQuoteDrafts(HashMap<String, String> quoteDrafts) {
+		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__quote_drafts), quoteDrafts, true);
+	}
+
+	@Override
+	public HashMap<String, String> getQuoteDrafts() {
+		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__quote_drafts), true);
+	}
+
 	private @NonNull
 	String getAppLogoKey(@AppTheme int theme) {
 		if (theme == ConfigUtils.THEME_DARK) {
@@ -908,13 +929,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public HashMap<String, String> getDiverseEmojiPrefs2() {
-		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis2), false);
+	public HashMap<String, String> getDiverseEmojiPrefs() {
+		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), false);
 	}
 
 	@Override
-	public void setDiverseEmojiPrefs2(HashMap<String, String> diverseEmojis) {
-		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis2), diverseEmojis, false);
+	public void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis) {
+		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), diverseEmojis, false);
 	}
 
 	public boolean isWebClientEnabled() {

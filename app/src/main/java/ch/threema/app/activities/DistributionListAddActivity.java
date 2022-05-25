@@ -70,7 +70,7 @@ public class DistributionListAddActivity extends MemberChooseActivity implements
 	protected void initData(final Bundle savedInstanceState) {
 		if (this.getIntent().hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
 			this.distributionListModel = this.distributionListService.getById(
-				this.getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0));
+				this.getIntent().getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0));
 			this.isEdit = this.distributionListModel != null;
 		}
 

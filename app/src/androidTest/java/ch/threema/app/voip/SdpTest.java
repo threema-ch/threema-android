@@ -359,14 +359,10 @@ public class SdpTest {
 				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
 				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
 				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
 			} else {
 				expectedMatchesPart1.add("^a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
 				expectedMatchesPart1.add("^a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
 				expectedMatchesPart1.add("^a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-				expectedMatchesPart1.add("^a=extmap:18 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
-				expectedMatchesPart1.add("^a=extmap:19 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
 			}
 		}
 		expectedMatchesPart1.add("^a=sendrecv$");

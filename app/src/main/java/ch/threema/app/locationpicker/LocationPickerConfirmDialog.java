@@ -21,9 +21,7 @@
 
 package ch.threema.app.locationpicker;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -52,18 +50,23 @@ import ch.threema.base.utils.LoggingUtil;
 
 public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 	private LocationConfirmDialogClickListener callback;
-	private Activity activity;
-	private String tag = null;
+
+	private static final String ARG_TITLE = "title";
+	private static final String ARG_NAME = "name";
+	private static final String ARG_LAT_LNG = "latLng";
+	private static final String ARG_LAT_LNG_BOUNDS = "latLngBounds";
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerConfirmDialog");
 
-	public static LocationPickerConfirmDialog newInstance(String title, String name, LatLng latLng, LatLngBounds latLngBounds) {
+	public static LocationPickerConfirmDialog newInstance(String title, String name, LatLng latLng, LatLngBounds latLngBounds, LocationConfirmDialogClickListener callback) {
 		LocationPickerConfirmDialog dialog = new LocationPickerConfirmDialog();
+		dialog.callback = callback;
+
 		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putString("name", name);
-		args.putParcelable("latLng", latLng);
-		args.putParcelable("latLngBounds", latLngBounds);
+		args.putString(ARG_TITLE, title);
+		args.putString(ARG_NAME, name);
+		args.putParcelable(ARG_LAT_LNG, latLng);
+		args.putParcelable(ARG_LAT_LNG_BOUNDS, latLngBounds);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -71,51 +74,26 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 
 	public interface LocationConfirmDialogClickListener {
 		void onOK(String tag, Object object);
-		void onCancel(String tag);
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		if (callback == null) {
-			try {
-				callback = (LocationConfirmDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
-
-			// called from an activity rather than a fragment
-			if (callback == null) {
-				if (activity instanceof LocationConfirmDialogClickListener) {
-					callback = (LocationConfirmDialogClickListener) activity;
-				}
-			}
-		}
-	}
-
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
-
-		this.activity = activity;
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
+		default void onCancel(String tag) {}
 	}
 
 	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String title = getArguments().getString("title");
-		String name = getArguments().getString("name");
-		LatLng latLng = getArguments().getParcelable("latLng");
+		String title = "";
+		String name = "";
+		LatLng latLng = null;
 
-		tag = this.getTag();
+		Bundle arguments = getArguments();
+		if (arguments != null) {
+			title = arguments.getString(ARG_TITLE);
+			name = arguments.getString(ARG_NAME);
+			latLng = arguments.getParcelable(ARG_LAT_LNG);
+		}
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_location_picker_confirm, null);
+		final String tag = this.getTag();
+
+		final View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_location_picker_confirm, null);
 
 		TextView addressText = dialogView.findViewById(R.id.place_address);
 		TextView nameText = dialogView.findViewById(R.id.place_name);
@@ -139,24 +117,15 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 			coordinatesText.setVisibility(View.GONE);
 		}
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), getTheme());
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), getTheme());
 		builder.setView(dialogView);
 
 		if (!TestUtil.empty(title)) {
 			builder.setTitle(title);
 		}
 
-		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				callback.onOK(tag, object);
-			}
-		});
-		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						callback.onCancel(tag);
-					}
-				}
+		builder.setPositiveButton(R.string.ok, (dialog, which) -> callback.onOK(tag, object));
+		builder.setNegativeButton(R.string.cancel, (dialog, which) -> callback.onCancel(tag)
 		);
 
 		AlertDialog alertDialog = builder.create();

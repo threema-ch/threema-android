@@ -246,6 +246,8 @@
     <string name="emoji_emotions">Smileys &amp; Mensen</string>
     <string name="emoji_activities">Activiteiten</string>
     <string name="emoji_flags">Vlaggen</string>
+    <string name="emoji_search">Emoji\'s zoeken</string>
+    <string name="emoji_search_no_result">Geen zoekresultaten</string>
     <string name="title_lock">Vergrendelen</string>
     <string name="new_messages_locked">Nieuwe berichten beschikbaar</string>
     <string name="new_messages_locked_description">Aanraken om nieuwe berichten te bekijken.</string>
@@ -576,7 +578,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="blocked">geblokkeerd</string>
     <string name="name">Naam</string>
     <string name="privacy_policy">Privacybeleid</string>
-    <string name="terms_of_service">Algemene voorwaarden</string>
+    <string name="terms_of_service">Gebruiksvoorwaarden</string>
+    <string name="eula">Licentieovereenkomst voor Eindgebruiker</string>
     <string name="save_group_changes">Wilt u de wijzigingen aan de groep opslaan?</string>
     <string name="prefs_title_fontsize">Tekstgrootte</string>
     <string name="fontsize_normal">Normaal</string>
@@ -586,6 +589,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) verwijderd</string>
     <string name="prefs_sendlog">Log versturen</string>
     <string name="prefs_sendlog_summary">Logbestand naar Threema sturen voor verdere analyse</string>
+    <string name="prefs_exportlog">Exportbestand</string>
+    <string name="prefs_exportlog_summary">Logbestand met andere app delen</string>
     <string name="permission_storage_required">Geeft Threema toegang tot uw opslag om media te kunnen versturen.</string>
     <string name="permission_location_required">Geef Threema toegang tot uw locatie om een locatie te kunnen versturen.</string>
     <string name="permission_contacts_required">Geef Threema leestoegang tot uw contactpersonen om contactpersonen te kunnen versturen.</string>
@@ -1012,7 +1017,23 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="delete">Verwijderen</string>
     <string name="num_archived_chats">%d gearchiveerde chats</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
-    <string name="tooltip_identity_popup">Tik hier om uw Threema-ID snel weer te geven of om de ID\'s van anderen te scannen</string>
+    <string name="whatsnew_title">Welkom bij %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nieuwe fuincties in deze versie van %s voor Android:</b></p>
+		<p>
+		&bull; Veel nieuwe emoji\'s volgens de Unicode 13.1-standaard. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Emoji\'s zoeken op naam of betekenis (beschikbaar in 17 talen).
+		</p><p>
+		&bull; Deterministische kleuren voor contactpersonen en -groepen die geen eigen profielafbeelding hebben. Deze nieuwe kleuren werken op verschillende platforms en apparaten.
+		</p><p>
+		&bull; Verbeterde scrolprestraties in veel lijsten.
+		</p><p>
+		&bull; Geoptimaliseerde lay-out voor de Media Editor. Het aantal media-items dat kan worden bewerkt voor verzending is verhoogd tot 256.
+		</p><p>
+		&bull; Talloze kleine verbeteringen doorgevoerd en bugs verholpen
+		</p>
+		]]></string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
     <string name="invalid_backup_path">Ongeldige back-uplocatie</string>
@@ -1032,7 +1053,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_type_content_description">%1$s %2$s bekijken of bewerken</string>
     <string name="group">Groep</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Onze Privacybeleid is bijgewerkt om de volgende verandering weer te geven:</p><p>%1$s is niet langer afhankelijk van Google Play en Google Maps om kaart- en POI-gegevens te verstrekken.</p>Kijk het volledige Privacybeleid <a href="%2$s">hier</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Services niet geinstalleer. Kan niet overschakelen naar «push».</string>
+    <string name="play_services_not_installed_unable_to_use_push">Services zijn niet geïnstalleerd. Kan niet overschakelen naar «Google FCM of HMS push».</string>
     <string name="unable_to_get_current_location">Kan huidige locatie niet bepalen.</string>
     <string name="lp_search_place_min_chars">Voer ten minste drie tekens in om een plaats te zoeken.</string>
     <string name="lp_search_place_no_matches">Geen overeenkomende plaatsen gevonden. Pas uw zoekopdracht aan.</string>
@@ -1350,4 +1371,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="organization_type">Organisatie</string>
     <string name="permission_bluetooth_connect_required">Toestemming voor \"Apparaten in de buurt\" inschakelen om verbonden Bluetooth-headsets te vinden</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push is actief. Threema Web en Desktop sessies moeten handmatig worden gestart.</string>
+    <string name="tooltip_multiple_recipients_title">Nieuw: meerdere ontvangers</string>
+    <string name="tooltip_multiple_recipients_text">Tik en houd vast om meerdere ontvangers voor hetzelfde bericht te selecteren.</string>
+    <string name="synchronizing">Synchroniseren…</string>
+    <string name="self_updater_installation_failed">De update is niet gedownload. Download en installeer de update handmatig <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
+    <string name="wizard_incompatible_contact_sync_params">Er zijn incompatibele MDM-parameters ingesteld. De Threema MDM-parameter th_contact_sync kan niet zijn ingesteld op \'True\' als gebruikersbeperking DISALLOW_MODIFY_ACCOUNTS is ingesteld. Neem contact op met de beheerder van het apparaat.</string>
 </resources>

@@ -22,8 +22,6 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,7 +83,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	private final RingtoneService ringtoneService;
 	private final ConversationService conversationService;
 	private final EmojiMarkupUtil emojiMarkupUtil;
-	private final Bitmap defaultContactImage, defaultGroupImage, defaultDistributionListImage;
 	private final StateBitmapUtil stateBitmapUtil;
 	private @ColorInt final int regularColor;
 	private @ColorInt final int ackColor;
@@ -191,9 +188,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		this.mentionOnlyChatsListService = mentionOnlyChatsListService;
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.ringtoneService = ringtoneService;
-		this.defaultContactImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_contact);
-		this.defaultGroupImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_group);
-		this.defaultDistributionListImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_distribution_list);
 		this.highlightUid = highlightUid;
 		this.clickListener = clickListener;
 
@@ -295,10 +289,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				holder.groupMemberName.setVisibility(View.GONE);
 			}
 
-			// see 01-83
-			// Spannable from = new SpannableString(fromtext);
-			// from.setSpan(new ForegroundColorSpan(R.color.message_count_color), fromtext.lastIndexOf(fromcounttext), fromtext.lastIndexOf(fromcounttext) + fromcounttext.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			// holder.fromView.setText(from);
 			holder.fromView.setText(conversationModel.getReceiver().getDisplayName());
 
 			if (messageModel != null && ((!messageModel.isOutbox() && conversationModel.hasUnreadMessage()) || this.conversationTagService.isTaggedWith(conversationModel, this.unreadTagModel))) {
@@ -338,7 +328,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			if (messageModel != null) {
 				if (hiddenChatsListService.has(uniqueId)) {
 					holder.hiddenStatus.setVisibility(View.VISIBLE);
-					// give user some privacy even in visible mode
 					holder.subjectView.setText(R.string.private_chat_subject);
 					holder.attachmentView.setVisibility(View.GONE);
 					holder.dateView.setVisibility(View.INVISIBLE);
@@ -474,18 +463,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 			AdapterUtil.styleConversation(holder.fromView, groupService, conversationModel);
 
-			// load avatars asynchronously
-			AvatarListItemUtil.loadAvatar(
-					position,
-					conversationModel,
-					this.defaultContactImage,
-					this.defaultGroupImage,
-					this.defaultDistributionListImage,
-					this.contactService,
-					this.groupService,
-					this.distributionListService,
-					holder.avatarListItemHolder
-			);
+			AvatarListItemUtil.loadAvatar(conversationModel, contactService, groupService, distributionListService, holder.avatarListItemHolder);
 
 			this.updateTypingIndicator(
 					holder,

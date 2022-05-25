@@ -29,31 +29,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import java.util.HashMap;
-
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import ch.threema.app.R;
 
 public class EmojiPagerAdapter extends PagerAdapter {
 
-	private Context context;
-	private EmojiGridAdapter.KeyClickListener listener;
-	private EmojiPicker emojiPicker;
-	private EmojiRecent emojiRecent;
-	private HashMap<String, String> diverseEmojiPrefs;
-	private LayoutInflater layoutInflater;
+	private final Context context;
+	private final EmojiGridAdapter.KeyClickListener listener;
+	private final EmojiPicker emojiPicker;
+	private final EmojiService emojiService;
+	private final LayoutInflater layoutInflater;
 
 	EmojiPagerAdapter(Context context,
 	                  EmojiPicker emojiPicker,
-	                  EmojiRecent emojiRecent,
-	                  HashMap<String, String> diverseEmojiPrefs,
+	                  EmojiService emojiService,
 	                  EmojiGridAdapter.KeyClickListener listener) {
 		this.context = context;
 		this.listener = listener;
 		this.emojiPicker = emojiPicker;
-		this.emojiRecent = emojiRecent;
-		this.diverseEmojiPrefs = diverseEmojiPrefs;
+		this.emojiService = emojiService;
 		this.layoutInflater = LayoutInflater.from(context);
 	}
 
@@ -76,8 +71,7 @@ public class EmojiPagerAdapter extends PagerAdapter {
 				return new EmojiGridAdapter(
 						context,
 						position,
-						emojiRecent,
-						diverseEmojiPrefs,
+						emojiService,
 						listener);
 			}
 

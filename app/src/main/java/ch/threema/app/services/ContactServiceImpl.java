@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.text.format.DateUtils;
+import android.widget.ImageView;
 
 import com.neilalexander.jnacl.NaCl;
 
@@ -42,11 +43,9 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,12 +53,12 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -68,6 +67,7 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactTypingListener;
 import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
@@ -80,7 +80,6 @@ import ch.threema.app.stores.DatabaseContactStore;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
-import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -139,8 +138,6 @@ public class ContactServiceImpl implements ContactService {
 	private final APIConnector apiConnector;
 	private final Timer typingTimer;
 	private final Map<String,TimerTask> typingTimerTasks;
-	private final VectorDrawableCompat contactDefaultAvatar;
-	private final int avatarSizeSmall;
 
 	private final List<String> typingIdentities = new ArrayList<>();
 
@@ -213,8 +210,6 @@ public class ContactServiceImpl implements ContactService {
 		this.typingTimer = new Timer();
 		this.typingTimerTasks = new HashMap<>();
 		this.contactModelCache = cacheService.getContactModelCache();
-		this.contactDefaultAvatar = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_contact, null);
-		this.avatarSizeSmall = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
 	}
 
 	@Override
@@ -332,15 +327,8 @@ public class ContactServiceImpl implements ContactService {
 
 		// sort
 		final boolean sortOrderFirstName = preferenceService.isContactListSortingFirstName();
-		final Collator collator = Collator.getInstance();
-		collator.setStrength(Collator.PRIMARY);
 
-		Collections.sort(result, new Comparator<ContactModel>() {
-			@Override
-			public int compare(ContactModel contactModel1, ContactModel contactModel2) {
-				return collator.compare(getSortKey(contactModel1, sortOrderFirstName), getSortKey(contactModel2, sortOrderFirstName));
-			}
-		});
+		Collections.sort(result, ContactUtil.getContactComparator(sortOrderFirstName));
 
 		if(filter != null) {
 
@@ -383,15 +371,6 @@ public class ContactServiceImpl implements ContactService {
 			}
 		}
 		return result;
-	}
-
-	private String getSortKey(ContactModel contactModel, boolean sortOrderFirstName) {
-		String key = ContactUtil.getSafeNameString(contactModel, sortOrderFirstName);
-
-		if (contactModel.getIdentity().startsWith("*")) {
-			key = "\uFFFF" + key;
-		}
-		return key;
 	}
 
 	@Override
@@ -630,9 +609,7 @@ public class ContactServiceImpl implements ContactService {
 					@Override
 					public void run() {
 						synchronized (typingIdentities) {
-							if(typingIdentities.contains(identity)) {
-								typingIdentities.remove(identity);
-							}
+							typingIdentities.remove(identity);
 						}
 
 						ListenerManager.contactTypingListeners.handle(new ListenerManager.HandleListener<ContactTypingListener>() {
@@ -869,21 +846,14 @@ public class ContactServiceImpl implements ContactService {
 		return ContactVerificationResult_NO_MATCH;
 	}
 
-	@Override
-	@Nullable
-	public Bitmap getCachedAvatar(ContactModel model) {
-		if(model == null) {
-			return null;
-		}
-		return this.avatarCacheService.getContactAvatarLowFromCache(model);
-	}
-
+	@AnyThread
 	@Override
 	@Nullable
 	public Bitmap getAvatar(ContactModel model, boolean highResolution) {
 		return getAvatar(model, highResolution, true);
 	}
 
+	@AnyThread
 	@Override
 	public Bitmap getAvatar(ContactModel contact, boolean highResolution, boolean returnDefaultAvatarIfNone) {
 		Bitmap b = null;
@@ -891,9 +861,9 @@ public class ContactServiceImpl implements ContactService {
 		if(contact != null) {
 
 			if (highResolution) {
-				b = this.avatarCacheService.getContactAvatarHigh(contact);
+				b = this.avatarCacheService.getContactAvatarHigh(contact, false, returnDefaultAvatarIfNone);
 			} else {
-				b = this.avatarCacheService.getContactAvatarLow(contact);
+				b = this.avatarCacheService.getContactAvatarLow(contact, false, returnDefaultAvatarIfNone);
 			}
 
 			//check if a business avatar update is necessary
@@ -903,34 +873,43 @@ public class ContactServiceImpl implements ContactService {
 			}
 		}
 
-		// return default avatar pic as a last resort
-		if (b == null && returnDefaultAvatarIfNone) {
-			return getDefaultAvatar(contact, highResolution);
-		}
 		return b;
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getDefaultAvatar(ContactModel contact, boolean highResolution) {
-		@ColorInt int color = ColorUtil.getInstance().getCurrentThemeGray(this.context);
-		if (avatarCacheService.getDefaultAvatarColored() && (contact != null && contact.getIdentity() != null && !contact.getIdentity().equals(identityStore.getIdentity()))) {
-			color = contact.getColor();
-		}
-
+	public Bitmap getDefaultAvatar(@Nullable ContactModel contact, boolean highResolution) {
 		if (highResolution) {
-			return this.avatarCacheService.buildHiresDefaultAvatar(color, AvatarCacheService.CONTACT_AVATAR);
+			return avatarCacheService.getContactAvatarHigh(contact, true, true);
 		} else {
-			return AvatarConverterUtil.getAvatarBitmap(contactDefaultAvatar, color, avatarSizeSmall);
+			return avatarCacheService.getContactAvatarLow(contact, true, true);
 		}
 	}
 
+	@Override
+	public @ColorInt int getAvatarColor(@Nullable ContactModel contact) {
+		if ((this.preferenceService == null || this.preferenceService.isDefaultContactPictureColored())
+			&& contact != null && contact.getIdentity() != null && !contact.getIdentity().equals(identityStore.getIdentity())) {
+			return contact.getThemedColor(context);
+		}
+		return ColorUtil.getInstance().getCurrentThemeGray(this.context);
+	}
+
+	@AnyThread
 	@Override
 	public Bitmap getNeutralAvatar(boolean highResolution) {
 		return getDefaultAvatar(null, highResolution);
 	}
 
+	@AnyThread
 	@Override
-	public void clearAvatarCache(ContactModel contactModel) {
+	public void loadAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, AvatarOptions options) {
+		avatarCacheService.loadContactAvatarIntoImage(model, imageView, options);
+	}
+
+	@AnyThread
+	@Override
+	public void clearAvatarCache(@NonNull ContactModel contactModel) {
 		if(this.avatarCacheService != null) {
 			this.avatarCacheService.reset(contactModel);
 		}
@@ -970,6 +949,7 @@ public class ContactServiceImpl implements ContactService {
 		return newContact;
 	}
 
+	@Override
 	public VerificationLevel getInitialVerificationLevel(ContactModel contactModel) {
 		// Determine whether this is a trusted public key (e.g. for *SUPPORT)
 		final byte[] pubKey = contactModel.getPublicKey();
@@ -1074,21 +1054,6 @@ public class ContactServiceImpl implements ContactService {
 				this.save(c);
 			}
 		}
-	}
-
-	@Override
-	public boolean rebuildColors() {
-		List<ContactModel> models = this.getAll(true, true);
-		if(models != null) {
-			int[] colors = ColorUtil.getInstance().generateGoogleColorPalette(models.size());
-			for(int n = 0; n < colors.length; n++) {
-				ContactModel c = models.get(n);
-				c.setColor(colors[n]);
-				this.save(c);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -1320,7 +1285,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public boolean showBadge(ContactModel contactModel) {
+	public boolean showBadge(@Nullable ContactModel contactModel) {
 		if (contactModel != null) {
 			if (ConfigUtils.isWorkBuild()) {
 				if (userService.isMe(contactModel.getIdentity())) {
@@ -1351,8 +1316,8 @@ public class ContactServiceImpl implements ContactService {
 	 * @param contactModel ContactModel to get Uri for
 	 * @return Uri of Android contact as a string or null if there's no linked contact or permission to access contacts has not been granted
 	 */
-	@Nullable
-	public String getAndroidContactLookupUriString(ContactModel contactModel) {
+	@Override
+	public @Nullable String getAndroidContactLookupUriString(ContactModel contactModel) {
 		String contactLookupUri = null;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {

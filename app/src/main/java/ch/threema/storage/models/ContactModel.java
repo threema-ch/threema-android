@@ -21,20 +21,31 @@
 
 package ch.threema.storage.models;
 
+import android.content.Context;
 import android.text.format.DateUtils;
+
+import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.utils.ColorUtil;
+import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 
 public class ContactModel extends Contact implements ReceiverModel {
+
+	private final static Logger logger = LoggingUtil.getThreemaLogger("ContactModel");
 
 	public static final String TABLE = "contacts";
 	public static final String COLUMN_IDENTITY = "identity";
@@ -48,7 +59,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	@Deprecated public static final String COLUMN_IS_SYNCHRONIZED = "isSynchronized";
 	public static final String COLUMN_FEATURE_LEVEL = "featureLevel";
 	public static final String COLUMN_STATE = "state";
-	public static final String COLUMN_COLOR = "color";
+	@Deprecated public static final String COLUMN_COLOR = "color";
+	public static final String COLUMN_ID_COLOR_INDEX = "idColorIndex";
 	public static final String COLUMN_AVATAR_EXPIRES = "avatarExpires";
 	public static final String COLUMN_IS_WORK = "isWork";
 	public static final String COLUMN_TYPE = "type";
@@ -95,7 +107,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private String threemaAndroidContactId;
 	private boolean isSynchronized;
 	private int featureMask;
-	private int color;
+	private int colorIndex = -1;
 	private boolean isWork, isHidden, isRestored, isArchived;
 	private Date avatarExpires, profilePicSent, dateCreated;
 	private @IdentityType.Type int type;
@@ -189,13 +201,87 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
-	public int getColor() {
-		return color;
+	public int getThemedColor(@NonNull Context context) {
+		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+			return getColorDark();
+		} else {
+			return getColorLight();
+		}
 	}
 
-	public ContactModel setColor(int color) {
-		this.color = color;
+	/**
+	 * Call this to set id color index. If this has not been called or the value is negative and the
+	 * color is being accessed, the hash will be recomputed to get the color index.
+	 *
+	 * @param colorIndex the id color index
+	 * @return this contact model
+	 */
+	public ContactModel setIdColorIndex(int colorIndex) {
+		this.colorIndex = colorIndex;
 		return this;
+	}
+
+	/**
+	 * Get the id color index. If the value is not initialized, this object will be updated and the
+	 * computed value will be returned.
+	 *
+	 * @return the id color index of the contact
+	 */
+	public int getIdColorIndex() {
+		if (this.colorIndex < 0) {
+			initializeIdColor();
+		}
+		return colorIndex;
+	}
+
+	/**
+	 * Compute the sha 256 hash of this identity and set the color index accordingly.
+	 */
+	public void initializeIdColor() {
+		int firstByte = computeIdColorFirstByte();
+		if (firstByte < 0) {
+			colorIndex = -1;
+		} else {
+			colorIndex = ColorUtil.getInstance().getIDColorIndex((byte) firstByte);
+		}
+	}
+
+	/**
+	 * Get the first byte of the id color hash. If there was an error computing the hash, a negative value is returned.
+	 *
+	 * @return the first byte of the id color hash
+	 */
+	private int computeIdColorFirstByte() {
+		try {
+			return ((int) MessageDigest.getInstance("SHA-256").digest(getIdentity().getBytes(StandardCharsets.UTF_8))[0]) & 0xFF;
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Could not find hashing algorithm for id color", e);
+			return -1;
+		}
+	}
+
+	/**
+	 * Get the light variant of the id color.
+	 *
+	 * @return the light id color
+	 */
+	public int getColorLight() {
+		if (colorIndex < 0) {
+			initializeIdColor();
+		}
+		return ColorUtil.getInstance().getIDColorLight(colorIndex);
+	}
+
+	/**
+	 * Get the dark variant of the id color.
+	 *
+	 * @return the dark id color
+	 */
+	public int getColorDark() {
+		if (colorIndex < 0) {
+			initializeIdColor();
+		}
+		return ColorUtil.getInstance().getIDColorDark(colorIndex);
 	}
 
 	public int getFeatureMask() {
@@ -332,7 +418,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.androidContactId,
 			this.threemaAndroidContactId,
 			this.isSynchronized,
-			this.color,
+			this.colorIndex,
 			this.state,
 			this.featureMask,
 			this.avatarExpires,

@@ -106,6 +106,9 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	protected Map<String, Integer> identityColors = null;
 	protected String filterString;
 
+	// whether this message should be displayed as a continuation of a previous message by the same sender
+	private boolean isGroupedMessage = true;
+
 	public static class ContactCache {
 		public String identity;
 		public String displayName;
@@ -328,21 +331,31 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 				}
 
 				if (holder.senderView != null) {
-					holder.senderView.setVisibility(View.VISIBLE);
-					holder.senderName.setText(c.displayName);
+					if (isGroupedMessage) {
+						holder.senderView.setVisibility(View.VISIBLE);
+						holder.senderName.setText(c.displayName);
 
-					if (identityColors != null && identityColors.containsKey(identity)) {
-						holder.senderName.setTextColor(identityColors.get(identity));
+						if (identityColors != null && identityColors.containsKey(identity)) {
+							holder.senderName.setTextColor(identityColors.get(identity));
+						} else {
+							holder.senderName.setTextColor(helper.regularColor);
+						}
 					} else {
-						holder.senderName.setTextColor(helper.regularColor);
+						// hide sender name in grouped messages
+						holder.senderView.setVisibility(View.GONE);
 					}
 				}
 
 				if (holder.avatarView != null) {
-					holder.avatarView.setImageBitmap(c.avatar);
-					holder.avatarView.setVisibility(View.VISIBLE);
-					if (c.contactModel != null) {
-						holder.avatarView.setBadgeVisible(helper.getContactService().showBadge(c.contactModel));
+					if (isGroupedMessage) {
+						holder.avatarView.setImageBitmap(c.avatar);
+						holder.avatarView.setVisibility(View.VISIBLE);
+						if (c.contactModel != null) {
+							holder.avatarView.setBadgeVisible(helper.getContactService().showBadge(c.contactModel));
+						}
+					} else {
+						// hide avatar in grouped messages
+						holder.avatarView.setVisibility(View.INVISIBLE);
 					}
 				}
 			} else {
@@ -503,5 +516,13 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 			logger.debug("*** setDefaultBackground");
 		}
+	}
+
+	/**
+	 * Set whether this message should be displayed as the continuation of a previous message by the same sender
+	 * @param grouped If this is a grouped message, following another message by the same sender
+	 */
+	public void setGroupedMessage(boolean grouped) {
+		isGroupedMessage = grouped;
 	}
 }

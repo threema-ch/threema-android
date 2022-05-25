@@ -22,8 +22,6 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +50,6 @@ public class GroupListAdapter extends FilterableListAdapter {
 	private List<GroupModel> values;
 	private List<GroupModel> ovalues;
 	private GroupListFilter groupListFilter;
-	private final Bitmap defaultGroupImage;
 	private final GroupService groupService;
 
 	public GroupListAdapter(Context context, List<GroupModel> values, List<Integer> checkedItems, GroupService groupService) {
@@ -62,7 +59,6 @@ public class GroupListAdapter extends FilterableListAdapter {
 		this.values = values;
 		this.ovalues = values;
 		this.groupService = groupService;
-		this.defaultGroupImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_group);
 
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
@@ -124,9 +120,7 @@ public class GroupListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				position,
 				groupModel,
-				this.defaultGroupImage,
 				this.groupService,
 				holder
 		);

@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Oluşturulduğu yer: %1$s ( %2$s )</string>
     <string name="webclient_active_since">Etkin olduğu tarihten beri: %s</string>
     <string name="webclient_enable">Etkinleştir Masaüstü uygulamasını / web istemcisini etkinleştir</string>
-    <string name="webclient_no_sessions_found">Bağlanmak için masaüstü uygulamasını indirin (<b>https://threema.ch/download</b>) veya bilgisayarınızda web istemcisini açın (<b>%s</b>) ve Bilgisayar ekranınızda görüntülenen QR kodunu taramak için düğmeye dokunun.</string>
+    <string name="webclient_no_sessions_found">Bağlanmak için masaüstü uygulamasını indirin ( <b> https :// Threema.ch/download </b> ) veya bilgisayarınızda web istemcisini açın ( <b> %s </b> ) ve Bilgisayar ekranınızda görüntülenen QR kodunu taramak için düğmeye dokunun.</string>
     <string name="webclient_session_rename">Oturumu yeniden adlandır</string>
     <string name="webclient_session_label">Yeni isim</string>
     <string name="webclient_session_start">Oturumu başlat</string>

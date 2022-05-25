@@ -23,13 +23,19 @@ package ch.threema.app.ui;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.AttributeSet;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 
 import org.slf4j.Logger;
+
+import java.util.regex.Pattern;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
@@ -43,9 +49,85 @@ import ch.threema.base.utils.LoggingUtil;
 public class ComposeEditText extends EmojiEditText {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");
 
+	private static final int CONTEXT_MENU_BOLD = 700;
+	private static final int CONTEXT_MENU_ITALIC = 701;
+	private static final int CONTEXT_MENU_STRIKETHRU = 702;
+	private static final int CONTEXT_MENU_GROUP = 22100;
+
 	private Context context;
 	private boolean isLocked = false;
 	private MentionTextWatcher mentionTextWatcher = null;
+
+	private final android.view.ActionMode.Callback textSelectionCallback = new android.view.ActionMode.Callback() {
+		private final Pattern pattern = Pattern.compile("\\B");
+
+		@Override
+		public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+			menu.removeGroup(CONTEXT_MENU_GROUP);
+
+			if (getText() != null) {
+				String text = getText().toString();
+				if (text.length() > 1) {
+					int start = getSelectionStart();
+					int end = getSelectionEnd();
+
+					try {
+						if ((start <= 0 || pattern.matcher(text.substring(start - 1, start)).find()) &&
+							(end >= text.length() || pattern.matcher(text.substring(end, end + 1)).find()) &&
+							!text.substring(start, end).contains("\n")) {
+							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_BOLD, 200, R.string.bold);
+							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_ITALIC, 201, R.string.italic);
+							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_STRIKETHRU, 203, R.string.strikethrough);
+						}
+					} catch (Exception e) {
+						// do not add menus if an error occurs
+					}
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+			switch (item.getItemId()) {
+				case CONTEXT_MENU_BOLD:
+					addMarkup("*");
+					break;
+				case CONTEXT_MENU_ITALIC:
+					addMarkup("_");
+					break;
+				case CONTEXT_MENU_STRIKETHRU:
+					addMarkup("~");
+					break;
+				default:
+					return false;
+			}
+			return true;
+		}
+
+		@Override
+		public void onDestroyActionMode(android.view.ActionMode mode) {
+			// nothing to do here
+		}
+
+		private void addMarkup(String string) {
+			Editable editable = getText();
+
+			if (editable != null && editable.length() > 0) {
+				int start = getSelectionStart();
+				int end = getSelectionEnd();
+
+				editable.insert(end, string);
+				editable.insert(start, string);
+			}
+			invalidate();
+		}
+	};
 
 	public ComposeEditText(Context context) {
 		super(context);
@@ -83,6 +165,11 @@ public class ComposeEditText extends EmojiEditText {
 
 		this.mentionTextWatcher = new MentionTextWatcher(this);
 		new MarkupTextWatcher(context, this);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
+			setCustomSelectionActionModeCallback(textSelectionCallback);
+		}
 	}
 
 	/**

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2022 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,24 +19,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.ui.draggablegrid;
+package ch.threema.app.emojis.search
 
-public interface DynamicGridAdapterInterface {
+import androidx.room.*
 
-    /**
-     * Determines how to reorder items dragged from <code>originalPosition</code> to <code>newPosition</code>
-     */
-    void reorderItems(int originalPosition, int newPosition);
+@Entity
+data class Emoji (
+	@PrimaryKey val sequence: String,
+	val order: Long,
+	@TypeConverters(DiversityConverters::class)
+	val diversities: List<String>?
+)
 
-    /**
-     * @return return columns number for GridView. Need for compatibility
-     * (@link android.widget.GridView#getNumColumns() requires api 11)
-     */
-    int getColumnCount();
+data class EmojiOrder (
+	val sequence: String,
+	val order: Long = 9999
+)
 
-    /**
-     * Determines whether the item in the specified <code>position</code> can be reordered.
-     */
-    boolean canReorder(int position);
-
-}
+data class EmojiDiversities (
+	val sequence: String,
+	val diversities: List<String>
+)

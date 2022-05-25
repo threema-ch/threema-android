@@ -311,6 +311,8 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			}
 		} else {
 			if (AppRestrictionUtil.isAddContactDisabled(this)) {
+				Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
+				finish();
 				return;
 			}
 

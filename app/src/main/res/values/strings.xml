@@ -256,6 +256,8 @@
 	<string name="emoji_emotions">Smilies &amp; People</string>
 	<string name="emoji_activities">Activities</string>
 	<string name="emoji_flags">Flags</string>
+	<string name="emoji_search">Search emojis</string>
+	<string name="emoji_search_no_result">No search results</string>
 	<string name="title_lock">Lock</string>
 	<string name="new_messages_locked">New messages available</string>
 	<string name="new_messages_locked_description">Touch to view new messages.</string>
@@ -1059,11 +1061,27 @@
 	<string name="delete">Delete</string>
 	<string name="num_archived_chats">%d archived chats</string>
 	<string name="continue_recording">Continue recording</string>
-	<string name="whatsnew_title"></string>
-	<string name="whatsnew_headline"></string>
+	<string name="whatsnew_title">Welcome to %1$s %2$s</string>
+	<string name="whatsnew_headline">
+		<![CDATA[
+		<p><b>New features in this version of %s for Android:</b></p>
+		<p>
+		&bull; Many new emojis in accordance with the Unicode 13.1 standard. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Search for emojis by name or meaning (available in 17 languages).
+		</p><p>
+		&bull; Deterministic colors for contacts and groups that do not have their own profile picture. These new colors are going to work across platforms and devices.
+		</p><p>
+		&bull; Improved scrolling performance in many lists.
+		</p><p>
+		&bull; Optimized layout for the Media Editor. Increased the number of media items that can be edited before sending to 256.
+		</p><p>
+		&bull; Many small improvements and bug fixes.
+		</p>
+		]]>
+	</string>
 	<string name="whatsnew2_title"></string>
 	<string name="whatsnew2_body"></string>
-	<string name="tooltip_identity_popup">Tap here to quickly display your Threema ID or to scan other people’s IDs</string>
 	<string name="tap_to_start">Tap here to start %s now.</string>
 	<string name="two_years">2 years</string>
 	<string name="invalid_backup_path">Invalid backup path</string>
@@ -1083,7 +1101,7 @@
 	<string name="edit_type_content_description">View or edit %1$s %2$s</string>
 	<string name="group">Group</string>
 	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Our Privacy Policy has been updated to reflect the following change:</p><p>%1$s no longer depends on Google Play and Google Maps to provide map and POI data.</p>Please review the full Privacy Policy <a href="%2$s">here</a>.]]></string>
-	<string name="play_services_not_installed_unable_to_use_push">Services not installed. Cannot switch to “push”.</string>
+	<string name="play_services_not_installed_unable_to_use_push">Services not installed. Cannot switch to Google FCM or HMS push.</string>
 	<string name="unable_to_get_current_location">Unable to determine current location.</string>
 	<string name="lp_search_place_min_chars">Please enter at least three characters to search for a place.</string>
 	<string name="lp_search_place_no_matches">No matching places found. Please modify your query.</string>
@@ -1404,4 +1422,6 @@
 	<string name="tooltip_multiple_recipients_title">New: Multiple recipients</string>
 	<string name="tooltip_multiple_recipients_text">Long tap to select multiple recipients to send the same message to.</string>
 	<string name="synchronizing">Synchronizing…</string>
+	<string name="self_updater_installation_failed">The download of the update failed. Please download and install the update from <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manually.</string>
+	<string name="wizard_incompatible_contact_sync_params">There are incompatible MDM parameters set. Threema MDM parameter th_contact_sync cannot be set to true if user restriction DISALLOW_MODIFY_ACCOUNTS is set. Please contact your device administrator.</string>
 </resources>

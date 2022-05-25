@@ -42,7 +42,7 @@
 		android:background="?attr/background_secondary"
 		android:minHeight="@dimen/ballotchoice_list_entry_height">
 
-		<ch.threema.app.emojis.EmojiEditText
+		<ch.threema.app.ui.ComposeEditText
 			android:id="@+id/create_choice_name"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

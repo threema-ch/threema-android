@@ -21,15 +21,28 @@
 
 package ch.threema.storage.models;
 
+import android.content.Context;
+
+import org.slf4j.Logger;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.utils.ColorUtil;
+import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 
 public class GroupModel implements ReceiverModel {
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModel");
+
 	public static final int GROUP_NAME_MAX_LENGTH_BYTES = 256;
 
 	public static final String TABLE = "m_group";
@@ -50,6 +63,7 @@ public class GroupModel implements ReceiverModel {
 	private Date synchronizedAt;
 	private boolean deleted;
 	private boolean isArchived;
+	private int colorIndex = -1;
 
 	// dummy class
 	@Nullable
@@ -123,6 +137,43 @@ public class GroupModel implements ReceiverModel {
 	public GroupModel setArchived(boolean archived) {
 		isArchived = archived;
 		return this;
+	}
+
+	public int getThemedColor(@NonNull Context context) {
+		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+			return getColorDark();
+		} else {
+			return getColorLight();
+		}
+	}
+
+	public int getColorLight() {
+		if (colorIndex < 0) {
+			computeColorIndex();
+		}
+		return ColorUtil.getInstance().getIDColorLight(colorIndex);
+	}
+
+	public int getColorDark() {
+		if (colorIndex < 0) {
+			computeColorIndex();
+		}
+		return ColorUtil.getInstance().getIDColorDark(colorIndex);
+	}
+
+	private void computeColorIndex() {
+		byte[] groupCreatorIdentity = creatorIdentity.getBytes(StandardCharsets.UTF_8);
+		byte[] apiGroupIdBin = apiGroupId.getGroupId();
+
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			md.update(groupCreatorIdentity);
+			md.update(apiGroupIdBin);
+			byte firstByte = md.digest()[0];
+			colorIndex = ColorUtil.getInstance().getIDColorIndex(firstByte);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Could not hash the identity to determine color", e);
+		}
 	}
 
 	@Override

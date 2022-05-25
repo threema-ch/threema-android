@@ -9,7 +9,7 @@
 			android:layout_height="match_parent">
 
 		<ch.threema.app.ui.FastScrollGridView
-				android:id="@+id/gridview"
+				android:id="@+id/item_list"
 				class ="ch.threema.app.ui.FastScrollGridView"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"

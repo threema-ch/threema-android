@@ -191,7 +191,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 						extras.putInt(ThreemaApplication.INTENT_DATA_GROUP, conversationModel.getGroup().getId());
 					} else if (conversationModel.isDistributionListConversation()) {
 						avatar = distributionListService.getAvatar(conversationModel.getDistributionList(), false);
-						extras.putInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, conversationModel.getDistributionList().getId());
+						extras.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, conversationModel.getDistributionList().getId());
 					}
 
 					count = Long.toString(conversationModel.getUnreadCount());

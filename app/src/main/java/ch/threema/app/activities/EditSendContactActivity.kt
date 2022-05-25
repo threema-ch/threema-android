@@ -75,7 +75,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
 
         toolbar = findViewById(R.id.toolbar_contact)
 
-        viewModel = ViewModelProvider(this).get(ContactEditViewModel::class.java)
+        viewModel = ViewModelProvider(this)[ContactEditViewModel::class.java]
 
         // Finish activity when chat activity (in "background") is clicked
         ((findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup)

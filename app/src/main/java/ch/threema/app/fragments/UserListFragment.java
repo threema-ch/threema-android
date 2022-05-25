@@ -98,7 +98,8 @@ public class UserListFragment extends RecipientListFragment {
 					checkedItemPositions,
 					contactService,
 					blacklistService,
-					hiddenChatsListService
+					hiddenChatsListService,
+					preferenceService
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

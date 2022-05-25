@@ -77,6 +77,8 @@
 	<attr name="emoji_picker_divider" format="reference|color"/>
 	<attr name="emoji_picker_top_divider" format="reference|color"/>
 	<attr name="emoji_picker_hint" format="reference|color"/>
+	<attr name="emoji_search_background" format="reference|color"/>
+	<attr name="emoji_search_stroke" format="reference|color"/>
 	<attr name="ballot_matrix_header_background" format="reference"/>
 	<attr name="image_tint_default" format="reference|color"/>
 	<attr name="mention_background" format="reference|color"/>

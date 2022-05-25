@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
@@ -56,7 +57,6 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
 import org.slf4j.Logger;
@@ -66,11 +66,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -93,17 +97,16 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 
 public class LocationPickerActivity extends ThreemaActivity implements
-		GenericAlertDialog.DialogClickListener,
-		LocationPickerAdapter.OnClickItemListener,
-		LocationPickerConfirmDialog.LocationConfirmDialogClickListener {
+	LocationPickerAdapter.OnClickItemListener {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerActivity");
 
 	private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
 	private static final String DIALOG_TAG_CONFIRM_PLACE = "conf";
 
+	private boolean firstLocationZoom = true;
+
 	private static final int REQUEST_CODE_PLACES = 22228;
-	private static final int REQUEST_CODE_LOCATION_SETTINGS = 22229;
 
 	private static final int APPBAR_HEIGHT_PERCENT = 68;
 
@@ -122,6 +125,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	private LocationManager locationManager;
 	private LocationComponent locationComponent;
 
+	private View root;
 	private List<Poi> places;
 	private EmptyRecyclerView recyclerView;
 	private TextView poilistDescription;
@@ -131,6 +135,30 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 	private LocationPickerAdapter locationPickerAdapter;
 	private ContentLoadingProgressBar loadingProgressBar;
+
+	/**
+	 * Launcher to request location permissions. When the location permission is given, it zooms to the current position (or asks to enable location services).
+	 */
+	private final ActivityResultLauncher<String[]> locationPermissionRequest = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+		if (result.get(Manifest.permission.ACCESS_FINE_LOCATION) || result.get(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+			zoomToCurrentLocationWithPermission();
+		} else {
+			if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+				ConfigUtils.showPermissionRationale(this, root, R.string.permission_location_required, new BaseTransientBottomBar.BaseCallback<>() {});
+			}
+		}
+		firstLocationZoom = false;
+	});
+
+	/**
+	 * Launcher to request location services. When the location services are enabled, it zooms to the current position.
+	 */
+	private final ActivityResultLauncher<Intent> locationEnableLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+		if (isLocationEnabled()) {
+			zoomToCurrentLocationWithLocationEnabled();
+		}
+		firstLocationZoom = false;
+	});
 
 	@SuppressLint("StaticFieldLeak")
 	private class NearbyPOITask extends AsyncTask<LatLng, Void, List<Poi>> {
@@ -143,7 +171,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		protected List<Poi> doInBackground(LatLng... latLngs) {
 			LatLng latLng = latLngs[0];
 
-			logger.debug("NearbyPoiTask: get POIs for " + latLng.toString());
+			logger.debug("NearbyPoiTask: get POIs for {}", latLng);
 
 			List<Poi> pois = new ArrayList<>();
 			NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, preferenceService);
@@ -185,6 +213,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		ConfigUtils.configureTransparentStatusBar(this);
 		((CollapsingToolbarLayout) findViewById(R.id.collapsingToolbarLayout)).setStatusBarScrimColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
 
+		root = findViewById(R.id.coordinator);
 		appBarLayout = findViewById(R.id.appbar_layout);
 		mapView = findViewById(R.id.map);
 
@@ -234,16 +263,11 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	private void initUi() {
 		recyclerView = findViewById(R.id.poi_list);
 		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-/*
-		EmptyView emptyView = new EmptyView(this, 0);
-		emptyView.setup(R.string.lp_no_nearby_places_found);
-		((ViewGroup) recyclerView.getParent()).addView(emptyView);
-		recyclerView.setEmptyView(emptyView);
-*/
+
 		findViewById(R.id.center_map).setOnClickListener(new DebouncedOnClickListener(1000) {
 			@Override
 			public void onDebouncedClick(View v) {
-				zoomToCenter();
+				zoomToCurrentLocation();
 			}
 		});
 		findViewById(R.id.search_container).setOnClickListener(new DebouncedOnClickListener(1000) {
@@ -319,56 +343,41 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
 	}
 
-	@SuppressLint("MissingPermission")
 	private void initMap() {
-		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			finish();
-			return;
-		}
+		mapView.getMapAsync(mapboxMap1 -> {
+			mapboxMap = mapboxMap1;
+			mapboxMap.setStyle(new Style.Builder().fromUri(MAP_STYLE_URL), style -> {
+				// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
+				setupLocationComponent(style);
+				// Initialize map to world view (gets changed as soon as current location is available)
+				setMapWithLocationFallback();
+				// hack: delay location query
+				mapView.postDelayed(this::zoomToCurrentLocation, 500);
+			});
+			mapboxMap.getUiSettings().setAttributionEnabled(false);
+			mapboxMap.getUiSettings().setLogoEnabled(false);
+			mapboxMap.setOnMarkerClickListener(marker -> {
+				for (Poi poi : places) {
+					if (poi.getId() == Long.parseLong(marker.getSnippet())) {
+						returnData(poi);
+						return true;
+					}
+				}
+				return false;
+			});
+			mapboxMap.addOnMoveListener(new MapboxMap.OnMoveListener() {
+				@Override
+				public void onMoveBegin(@NonNull MoveGestureDetector detector) {}
 
-		mapView.getMapAsync(new OnMapReadyCallback() {
-			@Override
-			public void onMapReady(@NonNull MapboxMap mapboxMap1) {
-				mapboxMap = mapboxMap1;
-				mapboxMap.setStyle(new Style.Builder().fromUrl(MAP_STYLE_URL), new Style.OnStyleLoaded() {
-					@Override
-					public void onStyleLoaded(@NonNull Style style) {
-						// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
-						setupLocationComponent(style);
-						// hack: delay location query
-						mapView.postDelayed(() -> zoomToCenter(), 500);
-					}
-				});
-				mapboxMap.getUiSettings().setAttributionEnabled(false);
-				mapboxMap.getUiSettings().setLogoEnabled(false);
-				mapboxMap.setOnMarkerClickListener(marker -> {
-					for (Poi poi: places) {
-						if (poi.getId() == Long.valueOf(marker.getSnippet())) {
-							returnData(poi);
-							return true;
-						}
-					}
-					return false;
-				});
-				mapboxMap.addOnMoveListener(new MapboxMap.OnMoveListener() {
-					@Override
-					public void onMoveBegin(@NonNull MoveGestureDetector detector) {}
+				@Override
+				public void onMove(@NonNull MoveGestureDetector detector) {}
 
-					@Override
-					public void onMove(@NonNull MoveGestureDetector detector) {}
-
-					@Override
-					public void onMoveEnd(@NonNull MoveGestureDetector detector) {
-						updatePois();
-					}
-				});
-				mapboxMap.addOnCameraIdleListener(new MapboxMap.OnCameraIdleListener() {
-					@Override
-					public void onCameraIdle() {
-						updatePois();
-					}
-				});
-			}
+				@Override
+				public void onMoveEnd(@NonNull MoveGestureDetector detector) {
+					updatePois();
+				}
+			});
+			mapboxMap.addOnCameraIdleListener(this::updatePois);
 		});
 	}
 
@@ -384,7 +393,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
 		locationComponent.setCameraMode(CameraMode.TRACKING);
 		locationComponent.setRenderMode(RenderMode.COMPASS);
-		locationComponent.setLocationComponentEnabled(true);
+		if (hasLocationPermission()) {
+			locationComponent.setLocationComponentEnabled(true);
+		}
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -424,9 +435,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
 								.setIcon(LocationUtil.getMarkerIcon(LocationPickerActivity.this, poi))
 								.setSnippet(String.valueOf(poi.getId()))
 						);
-						logger.debug("Add marker " + poi.getName());
+						logger.debug("Add marker {}", poi.getName());
 					} else {
-						logger.debug("Retain marker " + poi.getName());
+						logger.debug("Retain marker {}", poi.getName());
 						poiMarkerMap.remove(poi.getId());
 					}
 				}
@@ -439,7 +450,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			protected void onPostExecute(List<MarkerOptions> markerOptionsList) {
 				startTime = System.currentTimeMillis();
 				for (Map.Entry<Long, Marker> marker : poiMarkerMap.entrySet()) {
-					logger.debug("Remove marker " + marker.getValue().getTitle());
+					logger.debug("Remove marker {}", marker.getValue().getTitle());
 					mapboxMap.removeMarker(marker.getValue());
 				}
 				startTime = System.currentTimeMillis();
@@ -495,7 +506,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_location_picker, menu);
 		return true;
 	}
@@ -513,20 +524,17 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		return true;
 	}
 
-	private boolean checkLocationEnabled(LocationManager locationManager) {
-		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			setMapWithLocationFallback();
-			GenericAlertDialog.newInstance(R.string.send_location, R.string.location_services_disabled, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
-			return false;
-		}
-		return true;
-	}
-
 	private void returnData(Poi poi) {
 		String name = poi != null ? poi.getName() : null;
 		LatLng latLng = poi != null ? poi.getLatLng() : getMapCenterPosition();
 
-		LocationPickerConfirmDialog dialog = LocationPickerConfirmDialog.newInstance(getString(R.string.lp_use_this_location), name, latLng, mapboxMap.getProjection().getVisibleRegion().latLngBounds);
+		LocationPickerConfirmDialog dialog = LocationPickerConfirmDialog.newInstance(
+			getString(R.string.lp_use_this_location),
+			name,
+			latLng,
+			mapboxMap.getProjection().getVisibleRegion().latLngBounds,
+			(tag, object) -> reallyReturnData((Poi) object));
+
 		dialog.setData(poi);
 		dialog.show(getSupportFragmentManager(), DIALOG_TAG_CONFIRM_PLACE);
 	}
@@ -571,18 +579,60 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		}
 	}
 
+	/**
+	 * Zoom to current position. Asks for location permission if no location permissions are given.
+	 */
+	private void zoomToCurrentLocation() {
+		if (hasLocationPermission()) {
+			zoomToCurrentLocationWithPermission();
+			firstLocationZoom = false;
+		} else {
+			locationPermissionRequest.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+		}
+	}
+
+	/**
+	 * Zoom to current position. Only call this if location permission is given! Asks for enabling
+	 * location services if disabled.
+	 */
+	private void zoomToCurrentLocationWithPermission() {
+		if (isLocationEnabled()) {
+			zoomToCurrentLocationWithLocationEnabled();
+			return;
+		}
+		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.send_location, R.string.location_services_disabled, R.string.yes, R.string.no);
+		dialog.setCallback(new GenericAlertDialog.DialogClickListener() {
+			@Override
+			public void onYes(String tag, Object data) {
+				locationEnableLauncher.launch(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+			}
+
+			@Override
+			public void onNo(String tag, Object data) {
+				// Don't zoom to location if user does not want to activate location services
+			}
+		});
+		dialog.show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
+	}
+
+	/**
+	 * Zoom to current position. Only call this if location permissions are given and location services are enabled.
+	 */
 	@SuppressLint("MissingPermission")
-	private void zoomToCenter() {
-		if (checkLocationEnabled(locationManager)) {
-			if (locationComponent != null) {
-				Location location = locationComponent.getLastKnownLocation();
-				if (location != null) {
-					moveCameraAndUpdatePOIs(new LatLng(location.getLatitude(), location.getLongitude()), true, -1);
-				}
-				else {
-					setMapWithLocationFallback();
-					showLocationNotAvailable();
-				}
+	private void zoomToCurrentLocationWithLocationEnabled() {
+		if (locationComponent != null) {
+			if (!locationComponent.isLocationComponentEnabled()) {
+				locationComponent.setLocationComponentEnabled(true);
+				mapView.postDelayed(this::zoomToCurrentLocationWithLocationEnabled, 500);
+				return;
+			}
+			// The first (automatic) zoom to the current location is zoomed in. The following zoom to location calls don't change the zoom level.
+			int zoomLevel = firstLocationZoom ? 16 : -1;
+			Location location = locationComponent.getLastKnownLocation();
+			if (location != null) {
+				moveCameraAndUpdatePOIs(new LatLng(location.getLatitude(), location.getLongitude()), true, zoomLevel);
+			} else {
+				showLocationNotAvailable();
 			}
 		}
 	}
@@ -596,33 +646,10 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		returnData(poi);
 	}
 
-	@Override
-	public void onYes(String tag, Object data) {
-		startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_LOCATION_SETTINGS);
-	}
-
-	@Override
-	public void onNo(String tag, Object data) {
-		// don't bother, we just stay at the fallback Zuerich location
-	}
-
-	@Override
-	public void onOK(String tag, Object object) {
-		reallyReturnData((Poi) object);
-	}
-
-	@Override
-	public void onCancel(String tag) {}
-
 	@SuppressLint("MissingPermission")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
-			if (checkLocationEnabled(locationManager)) {
-				// init map again as it was skipped first time around in onCreate() without location permissions
-				initMap();
-			}
-		} else if (requestCode == REQUEST_CODE_PLACES) {
+		if (requestCode == REQUEST_CODE_PLACES) {
 			if (resultCode == RESULT_OK) {
 				logger.debug("onActivityResult");
 
@@ -643,19 +670,16 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 	private void moveCameraAndUpdatePOIs(LatLng latLng, boolean animate, int zoomLevel) {
 		long time = System.currentTimeMillis();
-		logger.debug("moveCamera to " + latLng.toString());
+		logger.debug("moveCamera to {}", latLng);
 
 		mapboxMap.cancelTransitions();
 		mapboxMap.addOnCameraIdleListener(new MapboxMap.OnCameraIdleListener() {
 			@Override
 			public void onCameraIdle() {
 				mapboxMap.removeOnCameraIdleListener(this);
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						logger.debug("camera has been moved. Time in ms = " + (System.currentTimeMillis() - time));
-						updatePois();
-					}
+				RuntimeUtil.runOnUiThread(() -> {
+					logger.debug("camera has been moved. Time in ms = {}", (System.currentTimeMillis() - time));
+					updatePois();
 				});
 			}
 		});
@@ -680,30 +704,50 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		super.onConfigurationChanged(newConfig);
 
 		if (appBarLayout != null) {
-			appBarLayout.post(new Runnable() {
-				@Override
-				public void run() {
-					adjustAppBarHeight();
-				}
-			});
+			appBarLayout.post(this::adjustAppBarHeight);
 		}
 	}
 
 	private void setMapWithLocationFallback() {
 		mapView.post(() -> {
-			// try to get a last location from gps and network provider, else update POIS around Zuerich
-			Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			LatLng lastLocation = getLastKnownPosition(locationManager);
+			if (lastLocation == null) {
+				lastPosition = new LatLng(0, 0);
+				moveCamera(lastPosition, true, 0);
+			} else {
+				lastPosition = lastLocation;
+				moveCamera(lastPosition, true, 9);
+				updatePois();
+			}
+		});
+	}
+
+	@SuppressLint("MissingPermission")
+	@Nullable
+	private LatLng getLastKnownPosition(@NonNull LocationManager locationManager) {
+		// try to get a last location from gps and network provider
+		Location location = null;
+		if (hasLocationPermission()) {
+			logger.debug("getting last known position");
+			location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			if (location == null) {
+				logger.debug("couldn't get last known position from gps; trying network");
 				location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			}
-			if (location == null) {
-				lastPosition = new LatLng(47.367302, 8.544616);
-			}
-			else {
-				lastPosition = new LatLng(location.getLatitude(), location.getLongitude());
-			}
-			moveCamera(lastPosition, true, 9);
-			updatePois();
-		});
+		}
+		if (location != null) {
+			return new LatLng(location.getLatitude(), location.getLongitude());
+		} else {
+			return null;
+		}
+	}
+
+	private boolean hasLocationPermission() {
+		return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+			ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	private boolean isLocationEnabled() {
+		return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 }

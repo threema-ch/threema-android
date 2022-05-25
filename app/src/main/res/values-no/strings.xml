@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Hold dine %s-kontakter synkronisert med din enhets kontaktliste</string>
     <string name="prefs_sum_sync_contacts_off">Ikke hold dine %s-kontakter synkronisert med din enhets kontaktliste</string>
     <string name="prefs_title_sync_contacts">Synkroniser kontakter</string>
-    <string name="prefs_sum_block_unknown_off">Hvem som helst kan sende deg en melding. Nye kontakter blir automatisk lagt til
+    <string name="prefs_sum_block_unknown_off">Hvem som helst kan sende deg en melding. Nye kontakter blir automatisk lagt til 
 når den første meldingen mottas.</string>
     <string name="prefs_sum_block_unknown_on">Bare personer på kontaktlisten din kan sende deg en melding.</string>
     <string name="prefs_title_block_unknown">Blokker ukjente</string>
@@ -246,6 +246,8 @@ når den første meldingen mottas.</string>
     <string name="emoji_emotions">Smileys &amp; personer</string>
     <string name="emoji_activities">Aktiviteter</string>
     <string name="emoji_flags">Flagg</string>
+    <string name="emoji_search">Søk etter emojier</string>
+    <string name="emoji_search_no_result">Ingen resultat for søk</string>
     <string name="title_lock">Lås</string>
     <string name="new_messages_locked">Nye meldinger tilgjengelig</string>
     <string name="new_messages_locked_description">Trykk for å vise nye meldinger.</string>
@@ -430,7 +432,7 @@ når den første meldingen mottas.</string>
     <string name="not_enough_disk_space_title">Ikke nok lagringsplass</string>
     <string name="not_enough_disk_space_text">Frigjør minst %1$s for å motta meldingen</string>
     <string name="sending_images">Sender bilder</string>
-    <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel:
+    <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel: 
 http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Samtalen vil bli sendt som en kryptert .zip fil. Vennligst skriv et passord:</string>
     <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d nye meldinger i %2$d samtaler</string>
@@ -572,6 +574,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="blocked">Blokkert</string>
     <string name="name">Navn</string>
     <string name="privacy_policy">Personvernerklæring</string>
+    <string name="terms_of_service">Vilkår for bruk</string>
+    <string name="eula">Sluttbrukerlisensavtale</string>
     <string name="save_group_changes">Ønsker du å lagre endringer til gruppe?</string>
     <string name="prefs_title_fontsize">Skriftstørrelse</string>
     <string name="fontsize_normal">Vanlig</string>
@@ -581,6 +585,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d samtale(r) slettet</string>
     <string name="prefs_sendlog">Send loggfil</string>
     <string name="prefs_sendlog_summary">Send loggfil til Threema for videre analyse, i tilfelle du har problemer</string>
+    <string name="prefs_exportlog">Eksport loggfil</string>
+    <string name="prefs_exportlog_summary">Del loggfil med en annen app</string>
     <string name="permission_storage_required">For å lagre eller sende media, gi Threema tilgang til lagring på enheten.</string>
     <string name="permission_location_required">For å sende en posisjon til andre, gi Threema tilgang til din posisjon.</string>
     <string name="permission_contacts_required">For å sende en kontakt, gi Threema tilgang til å se kontakter.</string>
@@ -1006,8 +1012,23 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="delete">Slett</string>
     <string name="num_archived_chats">%d arkiverte samtaler</string>
     <string name="continue_recording">Fortsett opptak</string>
-    <string name="whatsnew_title">(en tom frase)</string>
-    <string name="tooltip_identity_popup">Trykk her for å kjapt vise din Threema ID eller for å skanne IDen til andre</string>
+    <string name="whatsnew_title">Velkommen til %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nye funksjoner i denne versjonen av %s for Android: </b></p>
+		<p>
+		&bull; Mange nye emojier i samsvar med Unicode 13.1 standarden. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Søk etter emojier ved bruk av navn eller betydning (tilgjengelig i 17 forskjellige språk).
+		</p><p>
+		&bull; Spesifikke farger for kontakter og grupper som ikke har et profilbilde. De nye fargene vil fungere på tvers av plattformer og enheter.
+		</p><p>
+		&bull; Forbedret ytelsen ved rulling i mange lister.
+		</p><p>
+		&bull; Optimalisert utseende i redigeringsmodus. Økt mengden medier som kan bli redigert før sending, til 256 medier.
+		</p><p>
+		&bull; Mange små forbedringer og feilfikser.
+		</p>
+		]]></string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
     <string name="invalid_backup_path">Ugyldig kopiplassering</string>
@@ -1027,7 +1048,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="edit_type_content_description">Vis eller endre %1$s %2$s</string>
     <string name="group">Gruppe</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Personvernerklæringen har blitt oppdatert for å reflektere den følgende endringen:</p><p>%1$s er ikke lenger avhengig av Google Play og Google Maps for å skaffe tilgang til kart og POI-data.</p>Vennligst les hele personvernerklæringen <a href="%2$s">her</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Tjenesten er ikke installert. Kan ikke bytte til \"push\".</string>
+    <string name="play_services_not_installed_unable_to_use_push">Tjenester er ikke installert. Kan ikke bytte til Google FCM eller HMS push.</string>
     <string name="unable_to_get_current_location">Kan ikke finne posisjon.</string>
     <string name="lp_search_place_min_chars">Skriv inn minst tre tegn for å søke etter en plass.</string>
     <string name="lp_search_place_no_matches">Ingen plasser er funnet. Vennligst endre søkeordet.</string>
@@ -1345,4 +1366,9 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="organization_type">Organisasjon</string>
     <string name="permission_bluetooth_connect_required">Aktiver \"Enheter i nærheten\" tillatelse for å finne tilkoblede Blåtann hodetelefoner</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push er aktiv. Threema Web- og Skrivebordsøkter må derfor bli startet manuelt.</string>
+    <string name="tooltip_multiple_recipients_title">Nyhet: Flere mottakere</string>
+    <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
+    <string name="synchronizing">Synkroniserer...</string>
+    <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
+    <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. Threema MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
 </resources>

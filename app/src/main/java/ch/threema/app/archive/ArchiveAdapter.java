@@ -22,8 +22,6 @@
 package ch.threema.app.archive;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -67,7 +65,6 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 
 	private final Context context;
 	private ArchiveAdapter.OnClickItemListener onClickItemListener;
-	private final Bitmap defaultContactImage, defaultGroupImage, defaultDistributionListImage;
 	private ContactService contactService;
 	private GroupService groupService;
 	private DistributionListService distributionListService;
@@ -108,10 +105,6 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 	ArchiveAdapter(Context context) {
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
-
-		this.defaultContactImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_contact);
-		this.defaultGroupImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_group);
-		this.defaultDistributionListImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_distribution_list);
 
 		try {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -223,11 +216,7 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 
 			// load avatars asynchronously
 			AvatarListItemUtil.loadAvatar(
-					position,
 					conversationModel,
-					this.defaultContactImage,
-					this.defaultGroupImage,
-					this.defaultDistributionListImage,
 					this.contactService,
 					this.groupService,
 					this.distributionListService,

@@ -245,6 +245,8 @@
     <string name="emoji_emotions">Émoticônes et personnes</string>
     <string name="emoji_activities">Activités</string>
     <string name="emoji_flags">Drapeaux</string>
+    <string name="emoji_search">Rechercher des émoticônes</string>
+    <string name="emoji_search_no_result">Aucun résultat de recherche</string>
     <string name="title_lock">Verrouiller</string>
     <string name="new_messages_locked">Nouveaux messages disponibles</string>
     <string name="new_messages_locked_description">Appuyez pour afficher les nouveaux messages.</string>
@@ -576,6 +578,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="name">Nom</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="terms_of_service">Conditions d\'utilisation</string>
+    <string name="eula">Accord de licence pour utilisateur final</string>
     <string name="save_group_changes">Souhaitez-vous enregistrer les changements du groupe ?</string>
     <string name="prefs_title_fontsize">Taille de police</string>
     <string name="fontsize_normal">Normale</string>
@@ -585,6 +588,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) supprimé(s)</string>
     <string name="prefs_sendlog">Envoyer le journal</string>
     <string name="prefs_sendlog_summary">Envoyer le fichier journal à Threema pour une analyse approfondie en cas de problèmes</string>
+    <string name="prefs_exportlog">Exporter le journal</string>
+    <string name="prefs_exportlog_summary">Partager le fichier journal avec une autre application</string>
     <string name="permission_storage_required">Pour envoyer des médias, autorisez Threema à accéder à l\'espace de stockage.</string>
     <string name="permission_location_required">Pour envoyer un emplacement, autorisez Threema à accéder à votre position.</string>
     <string name="permission_contacts_required">Pour envoyer des contacts, autorisez Threema à accéder aux contacts.</string>
@@ -1010,7 +1015,23 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="delete">Supprimer</string>
     <string name="num_archived_chats">%d chats archivés</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
-    <string name="tooltip_identity_popup">Touchez ici pour afficher rapidement votre ID Threema ou scanner les ID d\'autres personnes</string>
+    <string name="whatsnew_title">Bienvenue dans %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>De nouvelles fonctionnalités dans cette version de %s pour Android :</b></p>
+		<p>
+		&bull; De nouvelles émoticônes conformément au standard Unicode 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Recherchez des émoticônes par nom ou signification (disponible en 17 langues).
+		</p><p>
+		&bull; Des couleurs déterministes pour les contacts et les groupes qui n\'ont pas leurs propres images de profil. Ces nouvelles couleurs fonctionneront sur l\'intégralité des plateformes et des appareils.
+		</p><p>
+		&bull; Une navigation plus fluide dans de nombreuses listes.
+		</p><p>
+		&bull; Une disposition améliorée pour l\'éditeur média. Augmentation du nombre d\'éléments média pouvant être modifiés avant l\'envoi à 256.
+		</p><p>
+		&bull; De nombreuses améliorations mineures et de corrections de bugs.
+		</p>
+		]]></string>
     <string name="tap_to_start">Touchez ici pour lancer %s maintenant.</string>
     <string name="two_years">2 ans</string>
     <string name="invalid_backup_path">Chemin de sauvegarde invalide</string>
@@ -1030,7 +1051,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="edit_type_content_description">Voir ou modifier %1$s %2$s</string>
     <string name="group">Groupe</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Notre politique de confidentialité a été mise à jour pour refléter le changement suivant:</p><p>%1$s ne dépend plus de Google Play et Google Maps pour fournir des cartes et des données de POI.</p>Veuillez vérifier la politique de confidentialité <a href="%2$s"> ici</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Services Play non installés. Impossible de basculer en \"push\".</string>
+    <string name="play_services_not_installed_unable_to_use_push">Services Play non installés. Impossible de basculer en Google FCM ou HMS push.</string>
     <string name="unable_to_get_current_location">Impossible de déterminer l\'emplacement actuel.</string>
     <string name="lp_search_place_min_chars">Veuillez saisir au moins trois caractères pour rechercher un lieu.</string>
     <string name="lp_search_place_no_matches">Aucun lieu correspondant trouvé. Veuillez modifier votre demande.</string>
@@ -1348,4 +1369,9 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="organization_type">Organisation</string>
     <string name="permission_bluetooth_connect_required">Activez l\'autorisation « Appareils à proximité » pour localiser les casaques Bluetooth connectés</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push est actif. Les sessions Threema Web et Desktop doivent donc être lancées manuellement.</string>
+    <string name="tooltip_multiple_recipients_title">Nouveauté : plusieurs destinataires</string>
+    <string name="tooltip_multiple_recipients_text">Faites un appui prolongé pour sélectionner plusieurs destinataires auxquels envoyer le même message.</string>
+    <string name="synchronizing">Synchronisation…</string>
+    <string name="self_updater_installation_failed">Le téléchargement de la mise à jour a échoué. Veuillez télécharger et installer manuellement la mise à jour à partir de <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
+    <string name="wizard_incompatible_contact_sync_params">Il y a des paramètres MDM incompatibles définis. Le paramètre Threema MDM th_contact_sync ne peut pas être activé si la restriction d\'utilisateur DISALLOW_MODIFY_ACCOUNTS est définie. Veuillez contacter l\'administrateur de votre appareil.</string>
 </resources>

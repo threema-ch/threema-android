@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Кантакты</string>
-    <string name="title_section1">Паведамл.</string>
-    <string name="title_compose_message">Новае паведамл.</string>
+    <string name="title_section1">Чаты</string>
+    <string name="title_compose_message">Пачаць чат</string>
     <string name="title_choose_recipient">Выбраць атрымальніка</string>
     <string name="title_keyfingerprint">Адбітак ключа</string>
     <string name="title_mythreemaid">Мой Threema ID</string>
     <string name="title_threemaid">Threema ID</string>
-    <string name="title_adduser">Новы карыстальнік</string>
+    <string name="title_adduser">Дадаць новы кантакт</string>
     <string name="title_enter_id">Увесці ID</string>
     <string name="title_invite_friend">Запрасіць сябра</string>
     <string name="invite_via">Запрасіць сябра праз...</string>
@@ -18,7 +18,7 @@
     <string name="account_links">Сувязі уліковай запісі.</string>
     <string name="menu_settings">Налады</string>
     <string name="menu_about">Аб Threema</string>
-    <string name="menu_add_contact">Дадаць кантакт</string>
+    <string name="menu_add_contact">Новы кантакт</string>
     <string name="menu_done">Гатова</string>
     <string name="compose_message_and_enter">Увядзіце тэкст</string>
     <string name="send">Адправіць</string>
@@ -42,10 +42,10 @@
     <string name="prefs_title_block_unknown">Блакаванне незнаёмых</string>
     <string name="prefs_title_read_receipts">Апавяшчаць аб чытанні</string>
     <string name="prefs_title_typing_indicator">Індыкатар набору тэксту</string>
-    <string name="prefs_media_title">Мультымедыя</string>
-    <string name="prefs_sum_media_title">Налады мультымедыя</string>
+    <string name="prefs_media_title">Медыя і сховішча</string>
+    <string name="prefs_sum_media_title">Налады медыя і захоўвання</string>
     <string name="prefs_image_size">Памер відарыса</string>
-    <string name="prefs_notification_sound">Гук апавяшчэння</string>
+    <string name="prefs_notification_sound">Гук апавяшчэнняў</string>
     <string name="prefs_sum_notification_sound">Сістэмны па змаўчанні</string>
     <string name="prefs_vibrate">Вібрацыя</string>
     <string name="prefs_sum_vibrate">Вібрацыя пры ўваходным паведамленні</string>
@@ -54,10 +54,10 @@
     <string name="prefs_title_wallpaper">Выбраць шпалеры</string>
     <string name="prefs_sum_wallpaper">Абярыце відарыс для фону</string>
     <string name="prefs_title_wallpaper_switch">Шпалеры</string>
-    <string name="prefs_title_enter">Налады Ўводу</string>
+    <string name="prefs_title_enter">Увяд. каб адправіць</string>
     <string name="prefs_sum_enter_on">Кнопка Ўвод выконвае адпраўку паведамлення</string>
     <string name="prefs_sum_enter_off">Кнопка Ўвод дадае новы радок</string>
-    <string name="prefs_system_notifications">Чат</string>
+    <string name="prefs_system_notifications">Адзіночны чат</string>
     <string name="prefs_inapp">У праграме</string>
     <string name="prefs_inapp_sounds">Гукі ў праграме</string>
     <string name="prefs_inapp_sounds_on">Прайграваць гук пры адпраўцы/атрыманні паведамленняў</string>
@@ -65,7 +65,7 @@
     <string name="prefs_inapp_vibrate">Вібрацыя ў праграме</string>
     <string name="prefs_inapp_vibrate_on">Вібраваць пры атрыманні паведамленняў</string>
     <string name="prefs_inapp_vibrate_off">Ня вібраваць пры атрыманні паведамленняў</string>
-    <string name="prefs_troubleshooting">Устараненне непаладак</string>
+    <string name="prefs_troubleshooting">Ліквідацыя непаладак</string>
     <string name="prefs_sum_troubleshooting">Аналіз і ўхіленне праблем</string>
     <string name="prefs_workarounds">Патчы</string>
     <string name="prefs_title_threema_push_switch">Выкарыст. Threema Push</string>
@@ -73,7 +73,7 @@
     <string name="prefs_sum_threema_push_off">Правярайце наяўн. новых паведамл. з дапамогай сіст. службы push-паведамл</string>
     <string name="prefs_logging">Журнал</string>
     <string name="prefs_title_message_log_switch">Запіс журналу</string>
-    <string name="prefs_title_sum_message_log_on">Падзеі будуць запісвацца ў файл debug_log.txt</string>
+    <string name="prefs_title_sum_message_log_on">Падзеі і інфармацыя аб сетцы будуць запісвацца ў файл debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">Падзеі не будуць запісвацца</string>
     <string name="prefs_reset_push">Скід push-меткі</string>
     <string name="prefs_sum_reset_push">Паўторна зарэгістраваць прыладу для атрымання push-паведамленняў з дапамогай FCM/HMS</string>
@@ -98,7 +98,7 @@
     <string name="finish">Скончыць</string>
     <string name="please_wait">Пачакайце...</string>
     <string name="wizard_first_create_id">Стварэнне вашага Threema ID...</string>
-    <string name="wizard1_sync_contacts">Выконв. сінхр. кантактаў..</string>
+    <string name="wizard1_sync_contacts">Сінхранізацыя кантактаў…</string>
     <string name="wizard2_email_hint">Увядзіце свой email</string>
     <string name="wizard2_email_linking">Прывязка email да вашага ID</string>
     <string name="wizard2_phone_hint">Увядзіце свой нум. маб.тэлефона</string>
@@ -127,8 +127,8 @@
     <string name="whoaaa">Апавяшчэнне</string>
     <string name="really_delete_message_title">Выдаліць паведамленне</string>
     <string name="really_delete_thread">Выдаліць чат</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Вы сапраўды жадаеце выдаліць %d чат?  Вы не зможаце аднавіць паведамленні.</string>
-    <string name="really_delete_contact">Вы сапраўды жадаеце выдаліць гэты кантакт і ўсе звязаныя паведамленні?</string>
+    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %d чат?  Вы не зможаце аднавіць паведамленні.</string>
+    <string name="really_delete_contact">Вы сапраўды хочаце выдаліць гэты кантакт і ўсе звязаныя паведамленні?</string>
     <string name="image_placeholder">Відарыс</string>
     <string name="invalid_threema_id">Няправільны Threema ID</string>
     <string name="contact_already_exists">Кантакт ужо існуе</string>
@@ -150,15 +150,15 @@
     <string name="backup_sum">Экспартуйце свой ID Threema</string>
     <string name="backup_and_delete">Рэз. капіяв. і выдал.</string>
     <string name="delete_id_title">Выдаліць ID</string>
-    <string name="delete_id_message">Калі ў вас няма створанай або экспартаванай рэзервовай копіі гэтага ID, вы больш ніколі не зможаце адпраўляць ці атрымліваць паведамленні, выкарыстоўваючы гэты ID.\n\nКалі вы больш не жадаеце выкарыстоўваць гэты ID, рэкамендуецца задаць пароль водгуку і адклікаць ID на сайце  .ch/revoke перад яго выдаленнем.</string>
-    <string name="delete_id_message2">Апошняе папярэджанне: вы сапраўды жадаеце выдаліць свой ID?</string>
+    <string name="delete_id_message">Калі ў вас няма створанай або экспартаванай рэзервовай копіі гэтага ID, вы больш ніколі не зможаце адпраўляць ці атрымліваць паведамленні, выкарыстоўваючы гэты ID.\n\nКалі вы больш не хочаце выкарыстоўваць гэты ID, рэкамендуецца задаць пароль водгуку і адклікаць ID на сайце  .ch/revoke перад яго выдаленнем.</string>
+    <string name="delete_id_message2">Апошняе папярэджанне: вы сапраўды хочаце выдаліць свой ID?</string>
     <string name="delete_id_sum">Назаўжды выдаліць свой ID і ўсе даныя на гэтай прыладзе</string>
     <string name="backup_password_summary">Ваш экспарт ID будзе зашыфраваны паролем. Выкарыстоўвайце спалучэнне лацінскіх літар, лічбаў і спецыяльных сімвалаў. Не забудзьцеся запісаць ці запомніць свой новы пароль!</string>
     <string name="backup_password_again_summary">Увядзіце пароль яшчэ раз</string>
     <string name="password_hint">Пароль</string>
     <string name="generating_backup_data">Выконваецца рэз.капіяванне даных</string>
     <string name="backup_id_title">Ваш экспарт ID</string>
-    <string name="backup_id_summary">Тэкставы радок паказаны вышэй, або QR-код разам з паролем, які вы выбралі, могуць выкарыстоўвацца для аднаўлення вашага ID на іншай прыладзе. Вы можаце скапіяваць яго ў прыдатнае месца, перадаць па электроннай пошце, або адсканаваць QR-код з дапамогай іншай прылады.</string>
+    <string name="backup_id_summary">Тэкставы радок, паказаны вышэй, або QR-код, а таксама пароль, які вы выбралі, можна выкарыстоўваць для аднаўлення вашага ідэнтыфікатара на іншай прыладзе.  Вы павінны скапіяваць яго ў падыходнае месца, падзяліцца ім па электроннай пошце або адсканіруйце QR-код з дапамогай іншай прылады.</string>
     <string name="support">Падтрымка</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">Наступныя рэзервовыя копіі могуць быць выкарыстаны разам з абраным паролем для аднаўлення вашага Threema ID.</string>
@@ -174,7 +174,7 @@
     <string name="masterkey_passphrase_summary">Задайце кодавую фразу, каб абараніць ваш галоўны ключ.  Звярніце ўвагу, што вам давядзецца ўводзіць яе кожны раз, калі праграма перазапускаецца</string>
     <string name="masterkey_passphrase_again_summary">Увядзіце кодавую фразу яшчэ раз</string>
     <string name="masterkey_passphrase_hint">Кодавая фраза</string>
-    <string name="master_key_locked_want_exit">Галоўны ключ усё яшчэ заблакаваны. Жадаеце паспрабаваць зноў?</string>
+    <string name="master_key_locked_want_exit">Галоўны ключ усё яшчэ заблакаваны. Хочаце паспрабаваць зноў?</string>
     <string name="click_here_to_change_passphrase">Націсніце тут, каб змяніць кодавую фразу</string>
     <string name="attach_camera">Камера</string>
     <string name="menu_restore">Аднавіць з рэзервовай копіі</string>
@@ -225,26 +225,28 @@
     <string name="deleting_thread">Выдаленне чата</string>
     <string name="enter_serial_body"><![CDATA[Калі ласка, увядзіце ваш ліцэнзійны ключ ці націсніце тут, каб атрымаць яго: https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Разблакаваць Threema</string>
-    <string name="serial_required_want_exit">Ліцэнзійны ключ з\'яўляецца несапраўдным. Вы жадаеце паспрабаваць яшчэ раз ці выйсці з Threema?</string>
+    <string name="serial_required_want_exit">Ліцэнзійны ключ з\'яўляецца несапраўдным. Вы хочаце паспрабаваць яшчэ раз ці выйсці з Threema?</string>
     <string name="checking_serial">Праверка ліцэнзіі</string>
-    <string name="update_available">Маецца абнаўленне</string>
+    <string name="update_available">Даступна абнаўленне</string>
     <string name="no_update_available">Абнаўленняў няма</string>
     <string name="download">Спампаваць</string>
-    <string name="not_now">Не цяпер</string>
+    <string name="not_now">Нагадайце мне пазней</string>
     <string name="preparing_messages">Падрыхтоўка паведамленняў</string>
     <string name="select_emoji">смайлікі</string>
     <string name="search_contact">Пошук кантакту</string>
     <string name="push_reset_title">Скід push-меткі</string>
     <string name="push_reset_text">Push-метка была скінута.</string>
     <string name="emoji_things">Прадметы</string>
-    <string name="emoji_traffic">Дарожны рух</string>
+    <string name="emoji_traffic">Падарожжы і месцы</string>
     <string name="emoji_symbols">Сімвалы</string>
-    <string name="emoji_nature">Прырода</string>
+    <string name="emoji_nature">Жывёлы і прырода</string>
     <string name="emoji_food">Ежа і напоі</string>
     <string name="emoji_recent">Апошнія</string>
-    <string name="emoji_emotions">Эмоцыі і людзі</string>
+    <string name="emoji_emotions">Смайлікі і людзі</string>
     <string name="emoji_activities">Дзеянні</string>
     <string name="emoji_flags">Сцяжкі</string>
+    <string name="emoji_search">Шукаць эмодзі</string>
+    <string name="emoji_search_no_result">Няма вынікаў пошуку</string>
     <string name="title_lock">Заблакаваць</string>
     <string name="new_messages_locked">Ёсць новыя паведамленні</string>
     <string name="new_messages_locked_description">Націсніце, каб пагляд. новыя паведамленні</string>
@@ -254,12 +256,12 @@
     <string name="prefs_masterkey_notification_newmsg_off">Новыя паведамленні не выклікаюць апавяшчэнне, калі галоўны ключ заблакаваны</string>
     <string name="prefs_masterkey_notification_newmsg_on">Новыя паведамленні выклікаюць апавяшчэнне, калі галоўны ключ заблакаваны</string>
     <string name="chat_history_attached">Журнал размовы прыкладзены.</string>
-    <string name="new_message">Новае паведамленне</string>
+    <string name="new_message">1 новае паведамленне</string>
     <string name="new_messages">новыя паведамленні</string>
     <string name="backup_data_title">Рэз. копія даных</string>
-    <string name="backup_data_password_msg">Вашы даныя будуць захаваны ў ZIP-файл ва ўнутраным сховішчы, і могуць быць адноўлены на любым Android-прыладзе. Калі ласка, увядзіце пароль для абароны рэзервовай копіі.</string>
+    <string name="backup_data_password_msg">Вашы даныя будуць захаваны ў ZIP-файл ва ўнутраным сховішчы, і могуць быць адноўлены на любой Android-прыладзе. Калі ласка, увядзіце пароль для абароны рэзервовай копіі.</string>
     <string name="restore_data_password_msg">Увядзіце пароль, які вы выкарыстоўвалі пры стварэнні гэтай рэзервовай копіі.</string>
-    <string name="backup_data_media">Уключаць медыя-файлы (можа заняць шмат часу)</string>
+    <string name="backup_data_media">Уключыце вялікія медыяфайлы (відэа, дакументы, арыгінальныя фатаграфіі)</string>
     <string name="backup_data_new">Стварыць рэз. копію даных</string>
     <string name="pinentry_enter_pin">Увядзіце Pin-код %s</string>
     <string name="pinentry_wrong_pin">Няверны PIN-код</string>
@@ -290,7 +292,7 @@
     <string name="no_matching_groups">Суполкі не знойдзены</string>
     <string name="action_leave_group">Пакінуць суполку</string>
     <string name="group_edit_title">Змяніць суполку</string>
-    <string name="really_leave_group_message">Вы сапраўды жадаеце пакінуць гэту суполку?</string>
+    <string name="really_leave_group_message">Вы сапраўды хочаце пакінуць гэту суполку?</string>
     <string name="search_no_matches">Супадзенні не знойдзены</string>
     <string name="search_no_more_matches">Больш супадзенняў няма</string>
     <string name="backup_share">Адпр. рэз. копію</string>
@@ -335,7 +337,7 @@
     <string name="prefs_title_black_list">Чорны спіс</string>
     <string name="prefs_sum_black_list">Паведамленні ад пералічаных тут ID, будуць праігнараваны.</string>
     <string name="verified">Пацверджана</string>
-    <string name="want_to_add_to_exclude_list">Гэты кантакт звязаны з запісам у тэлефоннай кнізе вашай прылады. Калі вы выдаліце ​​яго ў Threema, ён з\'явіцца зноў пасля сінхранізацыі кантактаў.\nВы жадаеце выключыць яго з сінхранізацыі?</string>
+    <string name="want_to_add_to_exclude_list">Гэты кантакт звязаны з запісам у тэлефоннай кнізе вашай прылады. Калі вы выдаліце ​​яго ў Threema, ён з\'явіцца зноў пасля сінхранізацыі кантактаў.\nВы хочаце выключыць яго з сінхранізацыі?</string>
     <string name="no">Не</string>
     <string name="yes">Так</string>
     <string name="deleting_contact">Выдаленне кантакту</string>
@@ -352,14 +354,14 @@
     <string name="prefs_sum_show_inactive_contacts_off">Хаваць неактыўныя ці выдаленыя Threema ID</string>
     <string name="contact_sorting_first_name">Імя - Прозвішча</string>
     <string name="contact_sorting_last_name">Прозвішча - Імя</string>
-    <string name="contact_format_first_name_last_name">Імя Прозвішча</string>
-    <string name="contact_format_last_name_first_name">Прозвішча Імя</string>
+    <string name="contact_format_first_name_last_name">Імя-Прозвішча</string>
+    <string name="contact_format_last_name_first_name">Прозвішча-Імя</string>
     <string name="block_contact">Заблакаваць кантакт</string>
     <string name="unblock_contact">Разблакаваць кантакт</string>
     <string name="unread_messages">Непрачыт. паведамленняў: %d</string>
-    <string name="one_unread_message">Непрачыт. паведамл.: 1</string>
+    <string name="one_unread_message">1 непрачыт. Паведамленне</string>
     <string name="really_unlink_contact_title">Адвязаць кантакт</string>
-    <string name="really_unlink_contact">Вы сапраўды жадаеце адмяніць сувязь гэтага кантакту?</string>
+    <string name="really_unlink_contact">Вы сапраўды хочаце адмяніць сувязь гэтага кантакту?</string>
     <string name="do_unlink_contact">Выд. сувязь кантакту</string>
     <string name="do_choose_other_contact">Абярыце іншы кантакт</string>
     <string name="touch_to_link">(не)</string>
@@ -369,7 +371,7 @@
     <string name="prefs_sum_fullscreen_ime_on">Клавіятура закрывае праграму, калі прылада знаходзіцца ў ландшафтным рэжыме</string>
     <string name="prefs_sum_fullscreen_ime_off">Паказваць папярэдні прагляд чата над клавіятурай, калі для гэтага дастаткова месца</string>
     <string name="add_acount_from_within_threema">Кіруйце сваім Threema ID з праграмы Threema.</string>
-    <string name="save_image">Захаваць</string>
+    <string name="save_image">Захаваць відарыс</string>
     <string name="share_image">Абагуліць відарыс</string>
     <string name="view_in_gallery">Паглядзець у галерэі</string>
     <string name="file_saved">%d Файл(ы) паспяхова захаваны(я).</string>
@@ -381,14 +383,14 @@
     <string name="title_add_distribution_list">Новы спіс рассылкі</string>
     <string name="title_edit_distribution_list">Рэдагаваць спіс рассылкі</string>
     <string name="really_delete_distribution_list">Выдаліць спіс рассылкі</string>
-    <string name="really_delete_distribution_list_message">Вы сапраўды жадаеце выдаліць гэты спіс і яго паведамленні?</string>
-    <string name="enter_distribution_list_name">Выберыце імя для гэтага спісу</string>
+    <string name="really_delete_distribution_list_message">Вы сапраўды хочаце выдаліць гэты спіс і яго паведамленні?</string>
+    <string name="enter_distribution_list_name">Выберыце назву для гэтага спісу</string>
     <string name="distribution_list">Спіс рассылкі</string>
     <string name="title_tab_distribution_list">Спісы рассылання</string>
     <string name="no_matching_distribution_lists">Няма адпаведных спісаў рассылкі</string>
     <string name="is_typing">друкуе…</string>
-    <string name="push_not_available_title">FCM не даступны</string>
-    <string name="push_not_available_text1">Мы не змаглі знайсці FCM на вашай прыладзе.</string>
+    <string name="push_not_available_title">Push сэрвіс не даступны</string>
+    <string name="push_not_available_text1">Мы не змаглі знайсці службу push на вашай прыладзе, таму што сэрвісы Google Play не ўстаноўлены або састарэлыя.</string>
     <string name="push_not_available_text2">%s будзе імкнуцца ўсталяваць сталае фонавае падлучэнне да сэрвера. Гэтая функцыя можа працаваць са збоямі, калі механізмы аптымізацыі выкарыстання акумулятара на вашай прыладзе перашкаджаюць падключэнню ў фонавым рэжыме.</string>
     <string name="backup_in_progress">Выконв. рэз.кап.або аднаўл.</string>
     <string name="backup_or_restore_success_body">Рэзервовае капіяванне даных паспяхова завершана</string>
@@ -416,7 +418,7 @@
     <string name="media_gallery_videos">Відэа</string>
     <string name="group_membership_title">Удзельнік гэтых суполак</string>
     <string name="num_items_sected">%s выбрана</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Вы сапраўды жадаеце выдаліць %d мультымедыя паведамленняў?</string>
+    <string name="really_delete_media" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %d мультымедыя паведамленняў?</string>
     <string name="check_updates">Праверыць абнаўлення</string>
     <string name="masterkey_lock_explain">Threema захоўвае кодавую фразу ў сховішчы. Калі вам даводзіцца ўводзіць кодавую фразу занадта часта, пераканайцеся, што праграмы \"Task killer\" і \"Battery saver\", якія могуць спыняць працу Threema, адключаныя.</string>
     <string name="identity_already_exists">Гэты ID ужо ёсць у вашым спісе кантактаў</string>
@@ -427,7 +429,7 @@
     <string name="contact_now_blocked">Кантакт заблакаваны</string>
     <string name="contact_now_unblocked">Кантакт разблакаваны</string>
     <string name="not_enough_disk_space_title">Недастаткова месца</string>
-    <string name="not_enough_disk_space_text">Вызваліце ​​не менш за %1$s, каб атрымаць паведамленне</string>
+    <string name="not_enough_disk_space_text">Каб атрымаць паведамленне, вызваліце мінімум %1$s</string>
     <string name="sending_images">Адпраўка відарысаў</string>
     <string name="share_conversation_body">Каб разархіваваць файл, патрэбен ZIP-архіватар з падтрымкай AES, напрыклад http://www.7-zip.org або https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Чат будзе адпраўлены зашыфраваным zip-файлам. Калі ласка, абярыце пароль:</string>
@@ -446,20 +448,19 @@
     <string name="ballot_vote_posted_successfully">Голас паспяхова пададзены</string>
     <string name="ballot_vote_posted_failed">Не ўдалося прагаласаваць</string>
     <string name="attach_ballot">Апытанне</string>
-    <string name="ballot_overview">Апытанні</string>
+    <string name="ballot_overview">Усе апытанні</string>
     <string name="ballot_copy">Кап. апытанне</string>
     <string name="ballot_remove">Выдаліць апытанне</string>
     <string name="ballot_really_delete">Выдаліць апытанне(і)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Вы сапраўды жадаеце выдаліць %1$d апытанне?  Вы не зможаце аднавіць галасы.</string>
+    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %1$d апытанне?  Вы не зможаце аднавіць галасы.</string>
     <string name="ballot_not_exist">Апытанне не існуе</string>
     <string name="ballot_tap_to_vote">Прагаласаваць</string>
     <string name="ballot_tap_to_view_results">Апыт. зачынена. Націсніце, каб паглядзець вынікі</string>
     <string name="ballot_subject_hint">Прыклад: \"Дзе будзем абедаць?\"</string>
     <string name="ballot_no_ballots_yet">Апытанняў няма.</string>
     <string name="print">Друк</string>
-    <string name="ballot_wizard0_explain">Хутка стварайце анлайн-апытанні з дапамогай Threema.  Плануйце мерапрыемствы, ці пытайце сваіх сяброў аб чым заўгодна.
-
- Калі ласка, увядзіце пытанне для галасавання.</string>
+    <string name="ballot_wizard0_explain">Хутка стварайце анлайн-апытанне непасрэдна з Threema.  Плануйце мерапрыемства, стварайце
+ апытанне або спытаеце сваіх сяброў усё, што хочаце.</string>
     <string name="ballot_add_choices">Дадаць адказы</string>
     <string name="blocked_cannot_send">Вы не можаце адпраўляць паведамленні заблакаванаму кантакту</string>
     <string name="really_block_contact">Будучыя паведамленні ад гэтага кантакту прымацца не будуць.  Працягнуць?</string>
@@ -492,13 +493,13 @@
     <string name="revocation_key_set_at">Пароль устаноўлены %1$s</string>
     <string name="prefs_sum_remove_wallpapers">Выдаліць усе персанальныя шпалеры</string>
     <string name="prefs_title_remove_wallpapers">Выдаліць усе шпалеры</string>
-    <string name="really_remove_wallpapers">Вы сапраўды жадаеце выдаліць усе шпалеры?</string>
+    <string name="really_remove_wallpapers">Вы сапраўды хочаце выдаліць усе шпалеры?</string>
     <string name="wallpapers_removed">Шпалеры выдалены</string>
     <string name="invalid_backup">Няправільныя даныя рэз. копіі. Не ўдалося аднавіць.</string>
     <string name="revocation_explain">Пароль, які вы ўвядзеце тут, дазваляе ануляваць ваш ID на https://myid.threema.ch/revoke у выпадку, калі вы страцілі свой тэлефон ці ён быў скрадзены</string>
     <string name="no_unread_messages">Няма непрачыт. паведамленняў або актывавана блакіроўка PIN</string>
     <string name="send_media">Адпр. мультымед</string>
-    <string name="rotate">Круціць</string>
+    <string name="rotate">Паварот</string>
     <string name="remove">Выдаліць</string>
     <string name="image_already_added">Гэты відарыс ўжо дададзены.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(не менш за %d сімвалаў)</string>
@@ -512,18 +513,18 @@
     <string name="open_from">Адкрыць з</string>
     <string name="file_one_contact_not_supported">%1$s не можа прымаць файлы.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Увага: %1$d кантакты(аў) не могуць прыняць ваш файл.</string>
-    <string name="mime_android_apk">пакет Android</string>
+    <string name="mime_android_apk">Пакет для Android</string>
     <string name="mime_audio">Аўдыёфайл</string>
     <string name="mime_certificate">Лічбавы сертыфікат</string>
     <string name="mime_codes">Зыходны код</string>
     <string name="mime_compressed">Архіў</string>
     <string name="mime_contact">Кантакт</string>
-    <string name="mime_event">Падзея календара</string>
+    <string name="mime_event">Каляндарная падзея</string>
     <string name="mime_font">Шрыфт</string>
     <string name="mime_image">Файл відарыса</string>
     <string name="mime_pdf">PDF-дакумент</string>
     <string name="mime_presentation">Прэзентацыя</string>
-    <string name="mime_spreadsheet">Электр. табліца</string>
+    <string name="mime_spreadsheet">Табліца</string>
     <string name="mime_text">Тэкставы файл</string>
     <string name="mime_video">Відэафайл</string>
     <string name="mime_word">Тэкставы дакумент</string>
@@ -556,7 +557,7 @@
     <string name="prefs_storage_mgmt_title">Выдаленне мультымедыя, файлаў і паведамленняў</string>
     <string name="num_messages">Колькасць паведамленняў</string>
     <string name="delete_messages_explain">Выдаліць паведамленні, старэйшыя:</string>
-    <string name="delete_message">Выдаліць паведамленні</string>
+    <string name="delete_message">Выдаліць паведамленні зараз</string>
     <string name="really_delete_messages">Калі вы працягнеце, паведамленні будуць выдаленыя. Вы не зможаце іх аднавіць.</string>
     <string name="messages_delete_explain">Вы таксама можаце поўнасцю выдаліць старыя паведамленні.</string>
     <string name="backup_started">Пачата рэзервовае капіяванне</string>
@@ -572,6 +573,8 @@
     <string name="blocked">Заблакаваны</string>
     <string name="name">Імя</string>
     <string name="privacy_policy">Палітыка прыватнасці</string>
+    <string name="terms_of_service">Умовы абслугоўвання</string>
+    <string name="eula">Ліцэнз. пагадн. канчатковага карыст.</string>
     <string name="save_group_changes">Захаваць змены ў суполцы?</string>
     <string name="prefs_title_fontsize">Памер тэксту</string>
     <string name="fontsize_normal">Звычайны</string>
@@ -581,13 +584,15 @@
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d чатаў выдалена</string>
     <string name="prefs_sendlog">Адправіць лог</string>
     <string name="prefs_sendlog_summary">Адправіць лог-файл у Threema для далейшага аналізу ў выпадку ўзнікнення праблем</string>
+    <string name="prefs_exportlog">Журнал экспарту</string>
+    <string name="prefs_exportlog_summary">Падзяліцеся файлам журнала з іншай праграмай</string>
     <string name="permission_storage_required">Каб адпраўляць медыя, дазвольце Threema доступ да сховішча.</string>
-    <string name="permission_location_required">Каб адпраўляць месцазнаходжанне, дазвольце Threema доступ да службы геапазіцыянавання.</string>
+    <string name="permission_location_required">Каб адправіць месцазнаходжанне, дазвольце Threema атрымаць доступ да вашай пазіцыі.</string>
     <string name="permission_contacts_required">Каб адпраўляць кантакты, дазвольце Threema чытанне кантактаў.</string>
     <string name="message_declined">Не згодны</string>
     <string name="notifications_settings">Налады апавяшчэнняў</string>
     <string name="notifications_default">Налады па змаўчанні</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">% d г.</string>
+    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">На працягу %d гадзін</string>
     <string name="notifications_until">Да% s</string>
     <string name="notifications_mute">Прыглушаны</string>
     <string name="notifications_choose_sound">Выбраць гук</string>
@@ -599,7 +604,7 @@
     <string name="off">Выключана</string>
     <string name="new_wizard_select_country">Абярыце вашу краіну</string>
     <string name="new_wizard_lets_get_started">Пачнём!</string>
-    <string name="new_wizard_setup_threema">Налады Threema</string>
+    <string name="new_wizard_setup_threema">Наладзіць зараз</string>
     <string name="new_wizard_restore_id_backup">Аднавіць экспартаваны ID</string>
     <string name="new_wizard_welcome">Сардэчна запрашаем у Threema!</string>
     <string name="new_wizard_move_finger">Соўгайце пальцам па экране</string>
@@ -619,7 +624,7 @@
     <string name="new_wizard_linked_to">Прывязана да</string>
     <string name="new_wizard_need_internet">Неабходна стабільнае падключэнне да інтэрнэту для стварэння вашага Threema ID. Калі ласка, паспрабуйце яшчэ раз.</string>
     <string name="new_wizard_more_information">Больш інфармацыі</string>
-    <string name="new_wizard_use_id_as_nickname">Жадаеце выкарыстоўваць свой Threema ID у якасці ніка?</string>
+    <string name="new_wizard_use_id_as_nickname">Хочаце выкарыстоўваць свой Threema ID у якасці ніка?</string>
     <string name="new_wizard_phone_email_invalid">Тэлефонны нумар або email, які вы ўвялі - несапраўдны.\nКалі ласка, выпраўце, перш чым працягнуць.</string>
     <string name="new_wizard_phone_invalid">Тэлефонны нумар, які вы ўвялі, несапраўдны.\nВыпраўце нумар, перш чым працягнуць.</string>
     <string name="new_wizard_info_fingerprint">Соўваючы пальцам па экране, вы ствараеце выпадковыя даныя (званыя энтрапіяй), якія выкарыстоўваюцца для стварэння пары ключоў, звязаных з вашым новым унікальным Threema ID. Пара ключоў складаецца з <b>адчыненага ключа</b>, які рассылаецца вашым сябрам, і <b>зачыненага ключа</b>, які бяспечна захоўваецца ў вашым тэлефоне. Вашыя сябры будуць шыфраваць паведамленні пры дапамозе адчыненага ключа.  Толькі ўладальнік зачыненага ключа, і ніхто іншы, можа расшыфраваць гэтыя паведамленні.</string>
@@ -641,8 +646,8 @@
     <string name="status_ballot_user_modified_vote">\"%1$s\" змяніў(ла) голас за \"%2$s\"</string>
     <string name="status_ballot_all_votes">Галасоў за «%1$s»</string>
     <string name="restore">Аднавіць</string>
-    <string name="new_wizard_anonymous_confirm">Вы не ўказалі ні нумар мабільнага тэлефона, ні адрас электроннай пошты для прывязкі да вашага Threema ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў.  Вы сапраўды жадаеце выкарыстоўваць Threema ананімна?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Вы не ўказалі нумар мабільнага тэлефона для прывязкі да свайго Threema ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў. Вы сапраўды жадаеце выкарыстоўваць Threema ананімна?</string>
+    <string name="new_wizard_anonymous_confirm">Вы не ўказалі ні нумар мабільнага тэлефона, ні адрас электроннай пошты для прывязкі да вашага Threema ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў.  Вы сапраўды хочаце выкарыстоўваць Threema ананімна?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Вы не ўказалі нумар мабільнага тэлефона для прывязкі да свайго Threema ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў. Вы сапраўды хочаце выкарыстоўваць Threema ананімна?</string>
     <string name="new_wizard_scan_id_backup">Або скануйце QR-код свайго экспарту ID</string>
     <string name="error_saving_file">Памылка захавання файла. Праверце дазволы.</string>
     <string name="wait_one_minute">Калі ласка, пачакайце SMS не менш за 10 хвілін, перш, чым запытаць званок.</string>
@@ -650,7 +655,7 @@
     <string name="backup_data">Рэз. копія даных</string>
     <string name="really_leave_group_admin_message">Вы з\'яўляецеся адміністратарам гэтай суполкі. Калі вы пакінеце яе зараз, яна стане некіравальнай. Іншыя ўдзельнікі будуць па-ранейшаму мець магчымасць мець зносіны, але змены больш будуць немагчымыя.</string>
     <string name="action_delete_group">Выдаліць суполку</string>
-    <string name="delete_my_group_message">Вы сапраўды жадаеце выдаліць гэтую суполку? Усе яе ўдзельнікі будуць выдалены.</string>
+    <string name="delete_my_group_message">Вы сапраўды хочаце выдаліць гэтую суполку? Усе яе ўдзельнікі будуць выдалены.</string>
     <string name="error_out_of_memory">Недастаткова месца ў сховішчы для завяршэння аперацыі</string>
     <string name="configure">Наладзіць</string>
     <string name="file_is_not_audio">Няма гукавога файла</string>
@@ -667,7 +672,7 @@
     <string name="prefs_proximity_sensor_explain">Ужываць гутарковы дынамік для прайгравання галасавых паведамленняў, калі датчык набліжэння зачынены</string>
     <string name="error_creating_group">Памылка стварэння суполкі</string>
     <string name="no_media_found_generic">Медыяфайлаў у гэтым чаце не знойдзена</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">За раз можна адрэдагаваць не больш за %d малюнкаў</string>
+    <string name="max_images_reached" tools:ignore="PluralsCandidate">Макс.  %d элементаў можна рэдагаваць адначасова</string>
     <string name="enter_description">Калі ласка, апішыце памылку/праблему тут.</string>
     <string name="add_caption_hint">Дадаць подпіс</string>
     <string name="disable">Адключыць</string>
@@ -675,7 +680,7 @@
     <string name="invalid_input">Няправільны ўвод</string>
     <string name="already_licensed">Ужо ліцэнзавана</string>
     <string name="hide_chat">Прыватныя чаты</string>
-    <string name="really_hide_chat_message">Вы жадаеце пазначыць гэты чат як прыватны? Выкарыстоўвайце меню для пераключэння бачнасці прыватных чатаў у спісе паведамленняў.</string>
+    <string name="really_hide_chat_message">Вы хочаце пазначыць гэты чат як прыватны? Выкарыстоўвайце меню для пераключэння бачнасці прыватных чатаў у спісе паведамленняў.</string>
     <string name="chat_hidden">Чат пазначаны як прыватны</string>
     <string name="title_show_private_chats">Паказаць прыватныя чаты</string>
     <string name="title_hide_private_chats">Схаваць прыватныя чаты</string>
@@ -685,7 +690,7 @@
     <string name="lock_option_pin">PIN-код</string>
     <string name="lock_option_screenlock">Сістэмная блакіроўка экрана</string>
     <string name="hide_chat_message_explain">Threema дазваляе абараніць пэўныя чаты з дапамогай PIN-кода і часова схаваць іх са спісу паведамленняў. Для таго, каб выкарыстоўваць прыватныя чаты, калі ласка, усталюйце PIN-код або актывуйце сістэмнае блакаванне экрана (Android 6.0+) у наладах.</string>
-    <string name="set_lock">Нал.абар.дост.</string>
+    <string name="set_lock">Наладзьце зараз</string>
     <string name="prefs_title_access_protection">Абарона доступу</string>
     <string name="private_chat_subject">Прыватны</string>
     <string name="grace_thirty_seconds">30 секунд</string>
@@ -702,19 +707,19 @@
     <string name="cannot_open_file">Немагчыма адкрыць файл</string>
     <string name="prefs_title_image_attach_previews">Хуткі выбар відарыса</string>
     <string name="prefs_sum_image_attach_previews">Адлюстроўваць спіс нядаўна даданых відарысаў ва ўсплываючым акне</string>
-    <string name="prefs_title_direct_share">Direct Share</string>
+    <string name="prefs_title_direct_share">Прамы абмен</string>
     <string name="prefs_sum_direct_share">Паказваць апошнія чаты пры сумесным выкарыстанні з іншымі праграмамі</string>
     <string name="restore_disable_energy_saving">Калі ласка, падключыце тэлефон да зараднай прылады і адключыце ўсе энергазберагальныя опцыі, каб прадухіліць перапыненне працэсу рэзервовага капіявання або аднаўлення.</string>
-    <string name="draft">Праект</string>
+    <string name="draft">Чарнавік</string>
     <string name="prefs_bigger_single_emojis">Вялікія адзіночныя смайлікі</string>
-    <string name="wizard1_sync_work">Сінхранізацыя даных...</string>
-    <string name="notification_hidden_text">Змесціва ўтоена</string>
+    <string name="wizard1_sync_work">Сінхранізацыя даных Threema Work...</string>
+    <string name="notification_hidden_text">Змест схаваны</string>
     <string name="really_reset_ringtones">Скінуць налады гукавых апавяшчэнняў па змаўчанні?</string>
     <string name="reset_ringtones_confirm">Налады гукавых апавяшчэнняў былі скінутыя.</string>
     <string name="prefs_language_override">Мова</string>
-    <string name="threema_channel_intro">Канал Threema дае вам навіны аб усіх падзеях Threema. Жадаеце падпісацца на канал і дадаць яго ў спіс кантактаў? Гэта бясплатна, і вы можаце адпісацца ў любы час.</string>
+    <string name="threema_channel_intro">Канал Threema дае вам навіны аб усім Threema.  Вы хочаце падпісацца на канал Threema і дадаць яго ў свае кантакты?  Гэта бясплатна, і вы можаце адмовіцца ад падпіскі ў любы час.</string>
     <string name="quote">Цытаваць</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Вы сапраўды жадаеце выдаліць %1$d кантактаў і ўсе звязаныя чаты?</string>
+    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %1$d кантактаў і ўсе звязаныя чаты?</string>
     <string name="contacts_deleted">Кантакты былі выдалены</string>
     <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d кантактаў не могуць быць выдалены, бо яны ўсё яшчэ з\'яўляюцца ўдзельнікамі суполкі</string>
     <string name="take_photo">Сфатаграфаваць</string>
@@ -731,7 +736,7 @@
     <string name="battery_optimizations_explain">Энергазберажэнне перашкаджае карэктнай працы %1$s, калі ваш тэлефон пераходзіць у спячы рэжым. Калі ласка, адключыце энергазберажэнне для %2$s.</string>
     <string name="battery_optimizations_disable_guide">Абярыце «Усе праграмы» у выпадальным меню</string>
     <string name="battery_optimizations_disable_guide_ctd">Шукаць %s у спісе і адключыць энергазберажэнне</string>
-    <string name="battery_optimizations_disable_confirm">Вы сапраўды жадаеце захаваць энергазберажэнне для %1$s?  %2$s не будзе працаваць карэктна.</string>
+    <string name="battery_optimizations_disable_confirm">Вы сапраўды хочаце захаваць энергазберажэнне для %1$s?  %2$s не будзе працаваць карэктна.</string>
     <string name="enter_text_hint">Увядзіце тэкст</string>
     <string name="backup_explain_text">Калі вы страціце вашу прыладу, ніхто не зможа аднавіць ваш Threema ID або чаты, калі ў вас няма рэзервовай копіі. Калі ласка, захавайце вашыя даныя, выкарыстоўваючы адпаведныя параметры рэзервовага капіявання.</string>
     <string name="data_backup_explain">Рэзервовыя копіі даных змяшчаюць:\n &#9679; Ваш ID і вашу ключавую пару\n &#9679; Кантакты і ўзровень даверу да іх\n &#9679; Сяброўства ў суполках\n &#9679; Чаты\n &#9679; Мультымедыя і файлы (апцыянальна)\n Даныя будуць захаваны ў зашыфраваным ZIP-файле.  Рэкамендуецца перамясціць файл з прылады пасля паспяховага завяршэння рэзервовага капіявання.</string>
@@ -784,14 +789,14 @@
     <string name="prefs_summary_force_turn_on">Прымусова рэтрансляваць усе званкі праз сэрверы Threema з абаронай вашага IP-адрасу. Можа пагаршацца якасць сувязі.</string>
     <string name="permission_record_audio_required">Для здзяйснення нешыфраваных званкоў і адпраўкі галасавых паведамленняў дазвольце Threema доступ да мікрафона.</string>
     <string name="prefs_voice_call_notifications">Галасавыя званкі</string>
-    <string name="prefs_voice_call_sound">Сігн. званка</string>
+    <string name="prefs_voice_call_sound">Рынгтон</string>
     <string name="prefs_sum_voice_call_sound">Абярыце сігнал для ўваходных званкоў Threema</string>
     <string name="prefs_sum_voice_call_vibrate">Вібрацыя пры ўваходных званках Threema</string>
     <string name="prefs_title_voip_enable">Уключыць званкі Threema</string>
     <string name="webclient_invalid_push_token_message">Патрабуецца запуск уручную</string>
     <string name="threema_work_contact">Рабочы кантакт Threema</string>
     <string name="permission_phone_required">Даць дазвол на кіраванне тэлефоннымі званкамі пры выкарыстанні званкоў Threema</string>
-    <string name="strikethrough">Пункцыя</string>
+    <string name="strikethrough">Закрэсліванне</string>
     <string name="italic">Курсіў</string>
     <string name="bold">Паўтлусты</string>
     <string name="shortcut_choice_title">Стварыце цэтлік для...</string>
@@ -810,7 +815,7 @@
     <string name="prefs_title_notification_priority">Прыярытэт</string>
     <string name="pin">Пазначыць</string>
     <string name="unpin">Зняць</string>
-    <string name="location_services_disabled">Службы вызначэння месцазнаходжання адключаны. Жадаеце ўключыць іх зараз?</string>
+    <string name="location_services_disabled">Службы вызначэння месцазнаходжання адключаны. Хочаце ўключыць іх зараз?</string>
     <string name="send_location">Адправіць месцазн.</string>
     <string name="unknown_address">Невядомы адрас</string>
     <string name="your_location">Ваша месцазнаходж.</string>
@@ -829,7 +834,7 @@
     <string name="rate_title">Ацаніць Threema</string>
     <string name="rate_thank_you">Дзякуем за водгук!</string>
     <string name="disabled_by_policy_short">Функцыя адключана адміністратарам</string>
-    <string name="rate_forward_to_play_store">Можа жадаеце таксама ацаніць нас у Google Play?</string>
+    <string name="rate_forward_to_play_store">Можа хочаце таксама ацаніць нас у Google Play?</string>
     <string name="rate_error">Не атрымалася адправіць ваш водгук на сэрвер. Пераканайцеся, што вы падлучаныя да Інтэрнэту, і паспрабуйце яшчэ раз.</string>
     <string name="off_unless_i_was_mentioned">Актыўна, калі мяне не ўзгадвалі</string>
     <string name="dnd">Не турбаваць</string>
@@ -841,7 +846,7 @@
     <string name="no_matching_work_contacts">Правераных адміністратарам кантактаў Threema Work не знойдзена</string>
     <string name="all">Усе</string>
     <string name="webclient_session_stop_all">Закрыць усё</string>
-    <string name="webclient_running_sessions">Запушчаных сесій Threema Web: %d</string>
+    <string name="webclient_running_sessions">%d сеанс(ы) запушчаны</string>
     <string name="passphrase_service_name">Служба кодавых фраз</string>
     <string name="passphrase_service_description">Апавяшчэнне пры разблакіроўцы кодавай фразы</string>
     <string name="webclient_service_description">Апавяшчэнне пры актыўнай сесіі Threema Web</string>
@@ -854,7 +859,7 @@
     <string name="tooltip_imagepaint">Больш крэатыву!  Націсніце на кнопку з чароўнай палачкай і напішыце нешта ад рукі або дадайце стыкеры і тэкст да сваіх малюнкаў перад тым, як іх адпраўляць.</string>
     <string name="call_ongoing">Бягучы выклік</string>
     <string name="ballot_received_votes">Лік атрыманых галасоў: %1$d/%2$d</string>
-    <string name="quote_not_found">Каціровачнае паведамл. не знойдзена</string>
+    <string name="quote_not_found">Паведамленне з цытатамі не знойдзена</string>
     <string name="ballot_secret">сакрэтным</string>
     <string name="password_too_short_generic">Занадта кароткі пароль</string>
     <string name="passwords_dont_match">Паролі не супадаюць</string>
@@ -865,16 +870,16 @@
     <string name="unchanged">без змен</string>
     <string name="safe_learn_more_button">Даведацца больш</string>
     <string name="safe_enable_explain">Усё, што вам трэба для чата, захоўваецца на вашай прыладзе. У нас няма вашага ўліковага запісу, і мы не зможам дапамагчы вам, калі вы страціце тэлефон або выпадкова выдаліце ​​даныя.\n\n Threema Safe стварае аўтаматычныя рэзервовыя копіі ўсіх важных даных, у тым ліку вашых ключоў, вашага спісу кантактаў і суполак (але не кантэнту паведамленняў). Даныя ў ананімным выглядзе захоўваюцца на абраным вамі абароненым сэрверы.</string>
-    <string name="safe_disable_confirm">Сапраўды працягнуць без уключэння Threema Safe?</string>
+    <string name="safe_disable_confirm">Вы хочаце працягнуць без уключэння Threema Safe?  Пры выкарыстанні Threema Safe вы можаце аднавіць свой Threema ID, кантакты і суполкі ў выпадку, калі вы страціце доступ да прылады.</string>
     <string name="safe_configure_choose_password">Абярыце пароль. Гэты пароль спатрэбіцца вам для аднаўлення даных з рэзервовай копіі Threema Safe.</string>
     <string name="safe_configure_choose_server">Абярыце сэрвер Threema Safe</string>
     <string name="safe_configure_server_explain">Можна выкарыстоўваць сэрвер Threema Safe або паказаць пабочны сэрвер для рэзервовага капіявання.</string>
     <string name="safe_use_default_server">Сэрвер па змаўчанні</string>
-    <string name="safe_test_server">Тэставаць сэрвер</string>
+    <string name="safe_test_server">Тэставы сервер</string>
     <string name="safe_advanced_options">Пашыраныя налады</string>
     <string name="safe_enter_password">Увядзіце пароль Threema Safe</string>
     <string name="safe_threema_id">Ваш ID Threema</string>
-    <string name="safe_restore_enter_id">Увядзіце ID Threema, які вы жадаеце аднавіць</string>
+    <string name="safe_restore_enter_id">Увядзіце ID Threema, які вы хочаце аднавіць</string>
     <string name="safe_search_id_title">Увядзіце нумар мабільнага ці email, звязаны з вашым ID</string>
     <string name="safe_id_lookup">Пошук ID Threema</string>
     <string name="safe_no_id_found">ID Threema не знойдзены</string>
@@ -889,8 +894,8 @@
     <string name="safe_configure_choose_password_force">Задайце надзейны пароль, каб абараніць свой ID Threema з дапамогай Threema Safe. Абавязкова запомніце пароль!</string>
     <string name="safe_deactivate">Адключыць Threema Safe</string>
     <string name="safe_deactivate_explain">Калі адключыць Threema Safe, усе існуючыя рэзервовыя копіі будуць выдалены з сэрвера. Працягнуць?</string>
-    <string name="add_group_members">Д-ць удз.супол.</string>
-    <string name="contact_add_confirm">Вы жадаеце дадаць новы кантакт «%1$s» у ваш сьпіс кантактаў?</string>
+    <string name="add_group_members">Новы удзельнік</string>
+    <string name="contact_add_confirm">Вы хочаце дадаць новы кантакт «%1$s» у ваш сьпіс кантактаў?</string>
     <string name="password_bad">Ненадзейны пароль</string>
     <string name="prefs_fix_background_data">Уключыць фонавую перадачу даных</string>
     <string name="prefs_fix_background_data_desc">Каб атрымліваць паведамленні, калі Threema працуе ў фонавым рэжыме, уключыце фонавую перадачу даных і неабмежаваны трафік</string>
@@ -925,8 +930,8 @@
     <string name="emptying_chat">Ачыстка чата ...</string>
     <string name="set_private">Схаваць чат</string>
     <string name="unset_private">Паказаць чат</string>
-    <string name="delete_group_message">Вы жадаеце выйсці з суполкі і цалкам выдаліць яе?  Усе паведамленні ў ёй будуць выдалены.</string>
-    <string name="delete_left_group_message">Вы сапраўды жадаеце выдаліць гэтую суполку?  Усе паведамленні ў ёй будуць выдалены.</string>
+    <string name="delete_group_message">Вы хочаце выйсці з суполкі і цалкам выдаліць яе?  Усе паведамленні ў ёй будуць выдалены.</string>
+    <string name="delete_left_group_message">Вы сапраўды хочаце выдаліць гэтую суполку?  Усе паведамленні ў ёй будуць выдалены.</string>
     <string name="chats">Чаты</string>
     <string name="notification_setting_ignored">УСЕ ЗМЕНЫ БУДУЦЬ ІГНАРАВАЦЦА!</string>
     <string name="notification_channel_alerts">Папярэджанні і памылкі</string>
@@ -973,7 +978,7 @@
     <string name="message_too_long">Гэта пав-е занадта доўгае. Не магч-а адпр-ць.</string>
     <string name="database_migration_no_space">Збой пераносу базы даных: нядосыць месца на прыладзе.</string>
     <string name="advanced_options">Пашыраныя параметры</string>
-    <string name="url_warning_body">Імя хаста спасылкі, якую вы збіраецеся адкрыць, выклікае падазрэнні:\n\n Імя хаста, якое адлюстроўваецца: <b>%s</b>\n Рэальнае імя хаста: <b>%s</b>\n\n Магчыма, гэта спроба завабіць вас на падроблены сайт.\n\n Жадаеце працягнуць?</string>
+    <string name="url_warning_body">Імя хоста спасылкі, якую вы збіраецеся адкрыць, падазрона:\n\n Адлюстраванае імя хаста: <b>%s</b>\n Сапраўднае імя хаста: <b>%s</b>\n\n Гэта можа быць спробай падмануць вас, каб адкрыць сайт, выдаючы сябе за нешта іншае.\n\n Вы ўсё роўна хочаце працягнуць?</string>
     <string name="url_warning_title">Папярэджанне аб фішынгу</string>
     <string name="permission_camera_qr_required">Для сканавання QR-кодаў праграме Threema патрабуецца доступ да камеры</string>
     <string name="voice_action_title">Галасавыя дзеянні</string>
@@ -1009,7 +1014,21 @@
     <string name="delete">Выдаліць</string>
     <string name="num_archived_chats">Архіваваных чатаў: %d</string>
     <string name="continue_recording">Працягнуць запіс</string>
-    <string name="tooltip_identity_popup">Краніце тут, каб хутка паказаць свой Threema ID або сканаваць ID іншых карыстальнікаў</string>
+    <string name="whatsnew_title">Вітаем у %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[<p><b>Новыя функцыі ў гэтай версіі %s для Android:</b></p>
+<p>
+Шмат новых эмодзі ў адпаведнасці са стандартам Unicode 13.1. 😵‍💫❤️‍🔥
+</p><p>
+Шукайце эмодзі па назве або значэнні (даступна на 17 мовах).
+</p><p>
+Дэтэрмінаваныя колеры для кантактаў і суполак, якія не маюць уласнага відарыса профілю. Гэтыя новыя колеры будуць працаваць на розных платформах і прыладах.
+</p><p>
+Палепшаная прадукцыйнасць пракруткі ў многіх спісах.
+</p><p>
+ Аптымізаваны макет для медыя-рэдактара. Павялічана колькасць медыяэлементаў, якія можна рэдагаваць перад адпраўкай, да 256.
+</p><p>
+Шмат невялікіх паляпшэнняў і выпраўленняў памылак.
+</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1029,7 +1048,7 @@
     <string name="edit_type_content_description">Прагляд/рэдакцір.  %1$s %2$s</string>
     <string name="group">Суполка</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Наша палітыка канфідэнцыяльнасці была абноўлена, каб адлюстраваць наступную змену:</p><p>%1$s больш не залежыць ад Google Play і Google Maps у прадастаўленні карты і даных POI.</p>Прагладзіце палітыку прыватнасці<a href="%2$s">тут</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Сэрвісы не ўстаноўлены. Немагчыма пераключыцца на \"push-дастаўку\".</string>
+    <string name="play_services_not_installed_unable_to_use_push">Службы не ўсталяваны. Немагчыма пераключыцца на Google FCM або HMS Push.</string>
     <string name="unable_to_get_current_location">Немагчыма вызначыць бягучае месцазнаходжанне.</string>
     <string name="lp_search_place_min_chars">Для пошуку месца ўвядзіце не менш за тры сімвалы.</string>
     <string name="lp_search_place_no_matches">Такія месцы не знойдзены. Скарэктуйце свой запыт.</string>
@@ -1105,7 +1124,7 @@
     <string name="insert_datetime">Устаўце дату і час</string>
     <string name="prefs_sum_disable_smart_replies">Душыць функцыю «Смарт-адказ» у апавяшчэннях Android</string>
     <string name="prefs_title_disable_smart_replies">Адключыць \"Смарт-адказ\"</string>
-    <string name="url_warning_body_alt">Імя хаста спасылкі, якую вы збіраецеся адкрыць, выклікае падазрэнні.\n\nМагчыма, гэта спроба завабіць вас на падроблены сайт.\n\nЖадаеце працягнуць?</string>
+    <string name="url_warning_body_alt">Імя хаста спасылкі, якую вы збіраецеся адкрыць, выклікае падазрэнні.\n\nМагчыма, гэта спроба завабіць вас на падроблены сайт.\n\nХочаце працягнуць?</string>
     <string name="read_on">Чытаць далей</string>
     <string name="forward_text">Пераслаць тэкст</string>
     <string name="an_error_occurred_during_send">Пры адпраўцы аднаго або некалькіх паведамленняў адбылася памылка.</string>
@@ -1167,7 +1186,7 @@
     <string name="set_backup_path">Задаць шлях да р.копіі</string>
     <string name="set_backup_path_intro">На наступным экране абярыце тэчку, у якой трэба захоўваць рэзервовыя копіі даных.</string>
     <string name="discard_changes_title">Адмяніць змены</string>
-    <string name="group_join_request_message_info"><![CDATA[Напішыце кароткае паведамленне адміністратару суполкі <b>%1$s</b>, расказаўшы, чаму вы жадаеце ўступіць у суполку <b>%2$s</b>.]]></string>
+    <string name="group_join_request_message_info"><![CDATA[Напішыце кароткае паведамленне адміністратару суполкі <b>%1$s</b>, расказаўшы, чаму вы хочаце ўступіць у суполку <b>%2$s</b>.]]></string>
     <string name="group_join_request">Запыт уступлення ў суполку</string>
     <string name="group_join_request_for">Запыт уступлення ў суполку %s</string>
     <string name="group_link_default_name">Безназ. спасылка</string>
@@ -1194,7 +1213,7 @@
     <string name="group_requests_none_outgoing">Няма адпраўленых запытаў уступлення ў суполку. Запыты можна дасылаць праз спасылкі на суполку, створаныя адміністратарам суполкі.</string>
     <string name="notification_channel_group_join_response">Апавяшчэнне аб адказе на запыт ўступлення ў суполку</string>
     <string name="group_qr_code_title">QR-код суполкі</string>
-    <string name="group_link_qr_desc"><![CDATA[Абагульце гэтую спасылку на суполку з людзьмі, якіх вы жадаеце бачыць у суполцы: <b>%s</b>.]]></string>
+    <string name="group_link_qr_desc"><![CDATA[Абагульце гэтую спасылку на суполку з людзьмі, якіх вы хочаце бачыць у суполцы: <b>%s</b>.]]></string>
     <string name="new_group_link_success">Дадад. новая спасылка</string>
     <string name="link_administration_off_explain">Гэта спасылка ўжо наладжана і адпраўлена раней, змяніць яе ўласцівасці ўжо нельга. Стварыце новую спасылку з патрэбнымі ўласцівасцямі.</string>
     <string name="group_link_update_success">Спасылка паспяхова абноўлена</string>
@@ -1341,10 +1360,15 @@
     <string name="relationTypeParent">Бацька</string>
     <string name="relationTypeSpouse">Муж, жонка</string>
     <string name="contact_property_key">"Ключ"</string>
-    <string name="header_nickname_entry">"Псеўданім"</string>
+    <string name="header_nickname_entry">"Нік"</string>
     <string name="contact_picture_content_description">Відарыс кантакта</string>
     <string name="prefs_title_use_system_ringtone">Ужываць сіст. мелодыю выкліку</string>
     <string name="organization_type">Арганізацыя</string>
     <string name="permission_bluetooth_connect_required">Актывуйце дазвол \"Прылады паблізу\" для пошуку падлучаных гарнітур Bluetooth</string>
     <string name="threema_push_start_webclient_sessions_manually">Функцыя Threema Push актыўная. Такім чынам, сеансы вэб-версіі і версіі для ПК трэба запускаць уручную.</string>
+    <string name="tooltip_multiple_recipients_title">Навінка: некалькі атрымальнікаў</string>
+    <string name="tooltip_multiple_recipients_text">Зацісніце кнопку, каб выбраць некалькі атрымальнікаў для адпраўкі ім аднаго і таго ж паведамлення.</string>
+    <string name="synchronizing">Сінхранізацыя…</string>
+    <string name="self_updater_installation_failed">Не атрымалася загрузіць абнаўленне.  Спампуйце і ўсталюйце абнаўленне з <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ўручную.</string>
+    <string name="wizard_incompatible_contact_sync_params">Устаноўлены несумяшчальныя параметры MDM.  Параметр Threema MDM th_contact_sync не можа мець значэнне true, калі ўсталявана абмежаванне карыстальніка DISALLOW_MODIFY_ACCOUNTS.  Звярніцеся да адміністратара вашай прылады.</string>
 </resources>

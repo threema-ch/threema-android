@@ -42,6 +42,7 @@ import com.google.android.material.shape.ShapeAppearanceModel;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -61,14 +62,14 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachAdapter");
 
 	private final Context context;
-	private List<MediaAttachItem> mediaItems;
+	private List<MediaAttachItem> mediaAttachItems;
 	private final MediaAttachAdapter.ItemClickListener clickListener;
 	private final MediaAttachViewModel mediaAttachViewModel;
 	private final int columnCount;
 
 	public MediaAttachAdapter(Context context, MediaAttachAdapter.ItemClickListener clickListener, int columnCount) {
 		this.context = context;
-		this.mediaItems = new ArrayList<>();
+		this.mediaAttachItems = new ArrayList<>();
 		this.clickListener = clickListener;
 		this.columnCount = columnCount;
 		this.mediaAttachViewModel = new ViewModelProvider((MediaSelectionBaseActivity)context).get(MediaAttachViewModel.class);
@@ -120,8 +121,8 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 	 */
 	@Override
 	public void onBindViewHolder(@NonNull MediaGalleryHolder holder, int position) {
-		if (mediaItems.size() > 0) {
-			final MediaAttachItem mediaAttachItem = mediaItems.get(position);
+		if (mediaAttachItems.size() > 0) {
+			final MediaAttachItem mediaAttachItem = mediaAttachItems.get(position);
 			// required item ID to check on recycling
 			holder.itemId = mediaAttachItem.getId();
 			CheckableFrameLayout contentView = holder.contentView;
@@ -203,11 +204,11 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 
 	@Override
 	public int getItemCount() {
-		return mediaItems.size();
+		return mediaAttachItems.size();
 	}
 
-	public List<MediaAttachItem> getMediaItems() {
-		return mediaItems;
+	public List<MediaAttachItem> getMediaAttachItems() {
+		return mediaAttachItems;
 	}
 
 	@Override
@@ -220,8 +221,25 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 		return position;
 	}
 
-	public void setMediaItems(List<MediaAttachItem> items){
-		mediaItems = items;
+	public void clearSelection() {
+		HashMap<Integer, MediaAttachItem> selectedMediaAttachItems = mediaAttachViewModel.getSelectedMediaItemsHashMap();
+		List<Integer> changedItems = new ArrayList<>();
+
+		for (int i = 0; i < mediaAttachItems.size(); i++) {
+			if (selectedMediaAttachItems.containsKey(mediaAttachItems.get(i).getId())) {
+				changedItems.add(i);
+			}
+		}
+
+		mediaAttachViewModel.clearSelection();
+
+		for (Integer changedItem: changedItems) {
+			notifyItemChanged(changedItem);
+		}
+	}
+
+	public void setMediaAttachItems(List<MediaAttachItem> items){
+		mediaAttachItems = items;
 		notifyDataSetChanged();
 	}
 

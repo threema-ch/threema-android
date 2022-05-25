@@ -1825,7 +1825,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	@Override
 	@AnyThread
 	public void onIceConnected(long callId) {
-		logCallInfo(callId, "ICE connected");
+		logCallInfo(callId, "ICE connected (wasConnected={})", this.iceWasConnected);
 		this.iceConnected = true;
 		if (this.iceWasConnected) {
 			// If we were previously connected, then the connection problem sound
@@ -2066,8 +2066,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			logCallInfo(callId, "Stopping looping sound...");
 			this.mediaPlayer.stop();
 			this.mediaPlayer.release();
+			this.mediaPlayer = null;
+		} else {
+			logCallWarning(callId, "stopLoopingSound: mediaPlayer is null");
 		}
-		this.mediaPlayer = null;
 	}
 
 	/**

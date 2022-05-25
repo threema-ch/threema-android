@@ -358,6 +358,7 @@ public interface NotificationService {
 
 	void showWebclientResumeFailed(String msg);
 	void cancelRestartNotification();
+	void cancelRestoreNotification();
 	void resetConversationNotifications();
 
 	void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,

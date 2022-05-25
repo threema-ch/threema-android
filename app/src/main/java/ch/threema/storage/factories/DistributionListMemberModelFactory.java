@@ -39,7 +39,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
 		super(databaseService, DistributionListMemberModel.TABLE);
 	}
 
-	public DistributionListMemberModel getByDistributionListIdAndIdentity(int groupId, String identity) {
+	public DistributionListMemberModel getByDistributionListIdAndIdentity(long distributionListId, String identity) {
 		if (identity == null) {
 			return null;
 		}
@@ -48,17 +48,17 @@ public class DistributionListMemberModelFactory extends ModelFactory {
 				DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "=? "
 						+ " AND " + DistributionListMemberModel.COLUMN_IDENTITY + "=?",
 				new String[]{
-						String.valueOf(groupId),
+						String.valueOf(distributionListId),
 						identity
 				});
 	}
 
-	public List<DistributionListMemberModel> getByDistributionListId(int groupId) {
+	public List<DistributionListMemberModel> getByDistributionListId(long distributionListId) {
 		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
 				null,
 				DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",
 				new String[]{
-						String.valueOf(groupId)
+						String.valueOf(distributionListId)
 				},
 				null,
 				null,
@@ -187,7 +187,7 @@ public class DistributionListMemberModelFactory extends ModelFactory {
 		return null;
 	}
 
-	public int deleteByDistributionListId(int distributionListId) {
+	public int deleteByDistributionListId(long distributionListId) {
 		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
 				DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",
 				new String[] {

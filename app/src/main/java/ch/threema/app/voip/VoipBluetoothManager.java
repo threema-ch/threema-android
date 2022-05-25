@@ -579,8 +579,7 @@ public class VoipBluetoothManager {
 				}
 			}
 		} catch (SecurityException e) {
-			// some calls on localAdapter may cause SecurityExceptions on some devices
-			logger.error("BT logging failed", e);
+			logger.info("Bluetooth adapter info logging failed: " + e.getMessage());
 		}
 	}
 

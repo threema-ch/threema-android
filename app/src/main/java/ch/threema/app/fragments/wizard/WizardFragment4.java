@@ -33,6 +33,7 @@ import java.util.Objects;
 import androidx.appcompat.widget.SwitchCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
+import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 
@@ -49,8 +50,6 @@ public class WizardFragment4 extends WizardFragment {
 		TextView title = rootView.findViewById(R.id.wizard_title);
 		title.setText(R.string.new_wizard_find_friends);
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
-
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard4);
 		contentViewStub.inflate();
@@ -65,15 +64,18 @@ public class WizardFragment4 extends WizardFragment {
 			textView.setVisibility(View.VISIBLE);
 		}
 
+		Boolean contactSyncRestriction = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync));
+
 		OnSettingsChangedListener settingsChangedListener = (OnSettingsChangedListener) requireActivity();
-		if (SynchronizeContactsUtil.isRestrictedProfile(requireActivity()) &&
-				!ConfigUtils.isWorkRestricted()) {
+		if (SynchronizeContactsUtil.isRestrictedProfile(requireActivity())) {
 			// restricted user profiles cannot add accounts
 			syncContactsSwitch.setChecked(false);
 			syncContactsSwitch.setEnabled(false);
 			settingsChangedListener.onSyncContactsSet(false);
+			rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
 		} else {
-			if (callback.isReadOnlyProfile()) {
+			if (contactSyncRestriction != null) {
+				syncContactsSwitch.setChecked(contactSyncRestriction);
 				syncContactsSwitch.setEnabled(false);
 				rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
 			} else {

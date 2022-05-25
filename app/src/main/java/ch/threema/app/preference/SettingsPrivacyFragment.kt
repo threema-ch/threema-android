@@ -148,8 +148,10 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
     }
 
     private fun updateView() {
-        contactSyncPreference.apply {
-            isEnabled = synchronizeContactsService?.isSynchronizationInProgress != true
+        if (AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync)) == null && !SynchronizeContactsUtil.isRestrictedProfile(activity)) {
+            contactSyncPreference.apply {
+                isEnabled = synchronizeContactsService?.isSynchronizationInProgress != true
+            }
         }
     }
 
@@ -195,6 +197,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
             if (value != null) {
                 contactSyncPreference.isEnabled = false
                 contactSyncPreference.isSelectable = false
+                contactSyncPreference.isChecked = value
             }
         }
     }

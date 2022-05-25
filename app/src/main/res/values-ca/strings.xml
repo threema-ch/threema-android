@@ -1031,8 +1031,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="delete">Eliminar</string>
     <string name="num_archived_chats">%d xats arxivats</string>
     <string name="continue_recording">Continuar gravant</string>
-    <string name="tooltip_identity_popup">Toqueu aquí per mostrar ràpidament la vostra ID de Threema o per escanejar la ID d\'altra gent</string>
-    <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
+	<string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
     <string name="invalid_backup_path">Camí de còpia no vàlid</string>
     <string name="backup_data_no_permission">No es pot escriure en aquest directori. Escolliu-ne un altre.</string>

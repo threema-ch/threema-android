@@ -118,7 +118,7 @@ public class SystemUpdateToVersion43 extends UpdateToVersion implements UpdateSy
 					}
 
 					if (oldMessageDraftsMap.containsKey(oldUid)) {
-						ThreemaApplication.putMessageDraft(getNewUid(rawUid), oldMessageDraftsMap.get(oldUid));
+						ThreemaApplication.putMessageDraft(getNewUid(rawUid), oldMessageDraftsMap.get(oldUid), null);
 					}
 				}
 			}
@@ -147,7 +147,7 @@ public class SystemUpdateToVersion43 extends UpdateToVersion implements UpdateSy
 					}
 
 					if (oldMessageDraftsMap.containsKey(oldUid)) {
-						ThreemaApplication.putMessageDraft(getNewUid(rawUid), oldMessageDraftsMap.get(oldUid));
+						ThreemaApplication.putMessageDraft(getNewUid(rawUid), oldMessageDraftsMap.get(oldUid), null);
 					}
 				}
 			}

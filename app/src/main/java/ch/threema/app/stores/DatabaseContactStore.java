@@ -32,7 +32,6 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
@@ -203,11 +202,6 @@ public class DatabaseContactStore implements ContactStore {
 			}
 		}
 
-		if (contactModel.getColor() == 0) {
-			// rebuild color for the contact model
-			long count = this.databaseServiceNew.getContactModelFactory().count();
-			contactModel.setColor(ColorUtil.getInstance().getRecordColor((int) count));
-		}
 		contactModelFactory.createOrUpdate(contactModel);
 
 		// Fire listeners

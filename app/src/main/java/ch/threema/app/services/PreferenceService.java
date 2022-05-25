@@ -167,6 +167,10 @@ public interface PreferenceService {
 
 	void setRecentEmojis2(LinkedList<String> list);
 
+	int getEmojiSearchIndexVersion();
+
+	void setEmojiSearchIndexVersion(int version);
+
 	/**
 	 * Whether to use Threema Push instead of another push service.
 	 */
@@ -318,6 +322,10 @@ public interface PreferenceService {
 
 	HashMap<String,String> getMessageDrafts();
 
+	void setQuoteDrafts(HashMap<String, String> quoteDrafts);
+
+	HashMap<String,String> getQuoteDrafts();
+
 	void setAppLogo(@NonNull String url, @AppTheme int theme);
 	void clearAppLogo(@AppTheme int theme);
 	void clearAppLogos();
@@ -328,9 +336,9 @@ public interface PreferenceService {
 
 	String getLocaleOverride();
 
-	HashMap<String, String> getDiverseEmojiPrefs2();
+	HashMap<String, String> getDiverseEmojiPrefs();
 
-	void setDiverseEmojiPrefs2(HashMap<String, String> diverseEmojis);
+	void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis);
 
 	boolean isWebClientEnabled();
 	void setWebClientEnabled(boolean enabled);

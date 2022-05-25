@@ -23,7 +23,6 @@ package ch.threema.app.adapters;
 
 import android.Manifest;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +45,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -170,10 +170,11 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		if (holder instanceof ItemHolder) {
 			ItemHolder itemHolder = (ItemHolder) holder;
 			final GroupModel groupModel = getItem(position);
-			Bitmap avatar = this.groupService.getAvatar(groupModel, false);
+
+			this.groupService.loadAvatarIntoImage(groupModel, itemHolder.avatarView, AvatarOptions.DEFAULT);
 
 			itemHolder.nameView.setText(groupModel.getName());
-			itemHolder.avatarView.setImageBitmap(avatar);
+
 			if (groupService.isGroupOwner(groupModel)) {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_outline);
 			} else {

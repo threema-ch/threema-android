@@ -481,7 +481,7 @@ public final class ShortcutUtil {
 				persistableBundle.putInt(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
 				break;
 			case MessageReceiver.Type_DISTRIBUTION_LIST:
-				persistableBundle.putInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
+				persistableBundle.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
 				break;
 			default:
 				break;

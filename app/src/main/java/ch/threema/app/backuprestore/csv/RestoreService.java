@@ -77,7 +77,6 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BackupUtils;
 import ch.threema.app.utils.CSVReader;
 import ch.threema.app.utils.CSVRow;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -121,6 +120,7 @@ public class RestoreService extends Service {
 
 	public static final String EXTRA_RESTORE_BACKUP_FILE = "file";
 	public static final String EXTRA_RESTORE_BACKUP_PASSWORD = "pwd";
+	private static final int MAX_THUMBNAIL_SIZE_BYTES = 5 * 1024 * 1024; // do not restore thumbnails that are bigger than 5 MB
 
 	private ServiceManager serviceManager;
 	private ContactService contactService;
@@ -136,7 +136,7 @@ public class RestoreService extends Service {
 	private NotificationCompat.Builder notificationBuilder;
 
 	private static final int RESTORE_NOTIFICATION_ID = 981772;
-	private static final int RESTORE_COMPLETION_NOTIFICATION_ID = 981773;
+	public static final int RESTORE_COMPLETION_NOTIFICATION_ID = 981773;
 	private static final String EXTRA_ID_CANCEL = "cnc";
 
 	private final RestoreResultImpl restoreResult = new RestoreResultImpl();
@@ -360,11 +360,11 @@ public class RestoreService extends Service {
 	}
 
 	private RestoreSettings restoreSettings;
-	private final HashMap<String, Integer> groupIdMap = new HashMap<String, Integer>();
-	private final HashMap<String, Integer> ballotIdMap = new HashMap<String, Integer>();
-	private final HashMap<Integer, Integer> ballotOldIdMap = new HashMap<Integer, Integer>();
-	private final HashMap<String, Integer> ballotChoiceIdMap = new HashMap<String, Integer>();
-	private final HashMap<String, Integer> distributionListIdMap = new HashMap<String, Integer>();
+	private final HashMap<String, Integer> groupIdMap = new HashMap<>();
+	private final HashMap<String, Integer> ballotIdMap = new HashMap<>();
+	private final HashMap<Integer, Integer> ballotOldIdMap = new HashMap<>();
+	private final HashMap<String, Integer> ballotChoiceIdMap = new HashMap<>();
+	private final HashMap<String, Long> distributionListIdMap = new HashMap<>();
 
 	private boolean writeToDb = false;
 
@@ -753,7 +753,7 @@ public class RestoreService extends Service {
 							if (thumbnailFileHeader != null) {
 								try (ZipInputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
 									byte[] thumbnailBytes = IOUtils.toByteArray(inputStream);
-									if (thumbnailBytes != null) {
+									if (thumbnailBytes != null && thumbnailBytes.length < MAX_THUMBNAIL_SIZE_BYTES) {
 										this.fileService.saveThumbnail(model, thumbnailBytes);
 									}
 								}
@@ -775,7 +775,7 @@ public class RestoreService extends Service {
 
 								//if no thumbnail file exist in backup, generate one
 								if (thumbnailFileHeader == null && imageData != null) {
-									this.fileService.saveThumbnail(model, imageData);
+									this.fileService.writeConversationMediaThumbnail(model, imageData);
 								}
 							}
 						}
@@ -804,7 +804,6 @@ public class RestoreService extends Service {
 					if (writeToDb) {
 						//set the default color
 						ContactModelFactory contactModelFactory = databaseServiceNew.getContactModelFactory();
-						contactModel.setColor(ColorUtil.getInstance().getRecordColor((int)contactModelFactory.count()));
 						contactModelFactory.createOrUpdate(contactModel);
 						restoreResult.incContactSuccess();
 					}
@@ -1307,7 +1306,7 @@ public class RestoreService extends Service {
 				if (writeToDb) {
 					updateProgress(STEP_SIZE_MESSAGES);
 
-					Integer distributionListId = null;
+					Long distributionListId = null;
 
 					if (distributionListIdMap.containsKey(apiId)) {
 						distributionListId = distributionListIdMap.get(apiId);
@@ -1358,7 +1357,7 @@ public class RestoreService extends Service {
 		return res;
 	}
 
-	private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, int distributionListId) throws ThreemaException {
+	private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, long distributionListId) throws ThreemaException {
 		List<DistributionListMemberModel> res = new ArrayList<DistributionListMemberModel>();
 		for(String identity: row.getStrings(Tags.TAG_DISTRIBUTION_MEMBERS)) {
 			if(!TestUtil.empty(identity)) {

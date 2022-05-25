@@ -517,7 +517,6 @@ public class BackupService extends Service {
 			Tags.TAG_CONTACT_FIRST_NAME,
 			Tags.TAG_CONTACT_LAST_NAME,
 			Tags.TAG_CONTACT_NICK_NAME,
-			Tags.TAG_CONTACT_COLOR,
 			Tags.TAG_CONTACT_HIDDEN,
 			Tags.TAG_CONTACT_ARCHIVED
 		};
@@ -560,7 +559,6 @@ public class BackupService extends Service {
 						.write(Tags.TAG_CONTACT_FIRST_NAME, contactModel.getFirstName())
 						.write(Tags.TAG_CONTACT_LAST_NAME, contactModel.getLastName())
 						.write(Tags.TAG_CONTACT_NICK_NAME, contactModel.getPublicNickName())
-						.write(Tags.TAG_CONTACT_COLOR, contactModel.getColor())
 						.write(Tags.TAG_CONTACT_HIDDEN, contactModel.isHidden())
 						.write(Tags.TAG_CONTACT_ARCHIVED, contactModel.isArchived())
 						.write();

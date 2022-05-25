@@ -143,6 +143,8 @@
 		<item name="emoji_picker_divider">@color/emoji_picker_divider</item>
 		<item name="emoji_picker_top_divider">@color/emoji_picker_top_divider</item>
 		<item name="emoji_picker_hint">@color/emoji_picker_hint</item>
+		<item name="emoji_search_background">@android:color/white</item>
+		<item name="emoji_search_stroke">@color/compose_stroke</item>
 		<item name="mention_background">@color/mention_background</item>
 		<item name="mention_background_inverted">@color/mention_background_inverted</item>
 		<item name="mention_text_color">@color/text_color_primary</item>
@@ -382,6 +384,8 @@
 		<item name="emoji_picker_divider">@color/dark_emoji_picker_divider</item>
 		<item name="emoji_picker_top_divider">@color/dark_emoji_picker_top_divider</item>
 		<item name="emoji_picker_hint">@color/dark_emoji_picker_hint</item>
+		<item name="emoji_search_background">@color/dark_emoji_picker_search_background</item>
+		<item name="emoji_search_stroke">@color/dark_compose_bubble</item>
 		<item name="mention_background">@color/dark_mention_background</item>
 		<item name="mention_background_inverted">@color/dark_mention_background_inverted</item>
 		<item name="mention_text_color">@color/dark_text_color_primary</item>

@@ -69,6 +69,10 @@ public class EmojiParser {
 		EmojiParser.init6(EmojiParser.trie);
 		EmojiParser.init7(EmojiParser.trie);
 		EmojiParser.init8(EmojiParser.trie);
+		EmojiParser.init9(EmojiParser.trie);
+		EmojiParser.init10(EmojiParser.trie);
+		EmojiParser.init11(EmojiParser.trie);
+		EmojiParser.init12(EmojiParser.trie);
 	}
 
 
@@ -547,6 +551,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 128105,127995,10084,128139,128104,127999 }, new ParseResult(11, new SpriteCoordinates(1, 0, 925, 991))); // kiss: woman, man, light skin tone, dark skin tone
 		trie.insert(new int[]{ 128105,127997,8205,10084,65039,8205,128139,8205,128104,127995 }, new ParseResult(15, new SpriteCoordinates(1, 0, 925, 925))); // kiss: woman, man, medium skin tone, light skin tone
 		trie.insert(new int[]{ 128105,127997,10084,128139,128104,127995 }, new ParseResult(11, new SpriteCoordinates(1, 0, 925, 925))); // kiss: woman, man, medium skin tone, light skin tone
+	}
+
+	public static void init2(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 128105,127998,8205,10084,65039,8205,128139,8205,128104,127996 }, new ParseResult(15, new SpriteCoordinates(1, 0, 661, 925))); // kiss: woman, man, medium-dark skin tone, medium-light skin tone
 		trie.insert(new int[]{ 128105,127998,10084,128139,128104,127996 }, new ParseResult(11, new SpriteCoordinates(1, 0, 661, 925))); // kiss: woman, man, medium-dark skin tone, medium-light skin tone
 		trie.insert(new int[]{ 128105,127999,8205,10084,65039,8205,128139,8205,128104,127997 }, new ParseResult(15, new SpriteCoordinates(1, 0, 199, 925))); // kiss: woman, man, dark skin tone, medium skin tone
@@ -852,9 +859,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129501,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 133))); // woman elf: medium skin tone
 		trie.insert(new int[]{ 129501,127997,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 199, 67))); // man elf: medium skin tone
 		trie.insert(new int[]{ 129501,127997,9794 }, new ParseResult(5, new SpriteCoordinates(1, 1, 199, 67))); // man elf: medium skin tone
-	}
-
-	public static void init2(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129499,127997 }, new ParseResult(4, new SpriteCoordinates(1, 1, 199, 199))); // vampire: medium skin tone
 		trie.insert(new int[]{ 129499,127997,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 1, 265, 67))); // woman vampire: medium skin tone
 		trie.insert(new int[]{ 129499,127997,9792 }, new ParseResult(5, new SpriteCoordinates(1, 1, 265, 67))); // woman vampire: medium skin tone
@@ -1026,6 +1030,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 128104,127999,129309,128104,127998 }, new ParseResult(10, new SpriteCoordinates(1, 1, 1057, 793))); // men holding hands: dark skin tone, medium-dark skin tone
 		trie.insert(new int[]{ 129489,127995,8205,10084,65039,8205,129489,127998 }, new ParseResult(12, new SpriteCoordinates(1, 1, 529, 397))); // couple with heart: person, person, light skin tone, medium-dark skin tone
 		trie.insert(new int[]{ 129489,127995,10084,129489,127998 }, new ParseResult(9, new SpriteCoordinates(1, 1, 529, 397))); // couple with heart: person, person, light skin tone, medium-dark skin tone
+	}
+
+	public static void init3(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129489,127996,8205,10084,65039,8205,129489,127999 }, new ParseResult(12, new SpriteCoordinates(1, 1, 529, 199))); // couple with heart: person, person, medium-light skin tone, dark skin tone
 		trie.insert(new int[]{ 129489,127996,10084,129489,127999 }, new ParseResult(9, new SpriteCoordinates(1, 1, 529, 199))); // couple with heart: person, person, medium-light skin tone, dark skin tone
 		trie.insert(new int[]{ 129489,127998,8205,10084,65039,8205,129489,127995 }, new ParseResult(12, new SpriteCoordinates(1, 1, 397, 199))); // couple with heart: person, person, medium-dark skin tone, light skin tone
@@ -1501,6 +1508,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127939,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 859, 1123))); // person running: light skin tone
 		trie.insert(new int[]{ 127939,127995,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 991, 1123))); // woman running: light skin tone
 		trie.insert(new int[]{ 127939,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 2, 991, 1123))); // woman running: light skin tone
+	}
+
+	public static void init4(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 127939,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 2, 925, 1123))); // man running: light skin tone
 		trie.insert(new int[]{ 127939,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 2, 925, 1123))); // man running: light skin tone
 		trie.insert(new int[]{ 129485,127995 }, new ParseResult(4, new SpriteCoordinates(1, 2, 397, 529))); // person standing: light skin tone
@@ -1656,9 +1666,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129307,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 595, 661))); // left-facing fist: dark skin tone
 		trie.insert(new int[]{ 129308,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 529, 661))); // right-facing fist: dark skin tone
 		trie.insert(new int[]{ 129310,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 397, 661))); // crossed fingers: dark skin tone
-	}
-
-	public static void init3(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 9996,127999 }, new ParseResult(3, new SpriteCoordinates(1, 3, 67, 1))); // victory hand: dark skin tone
 		trie.insert(new int[]{ 129311,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 661))); // love-you gesture: dark skin tone
 		trie.insert(new int[]{ 129304,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 727, 67))); // sign of the horns: dark skin tone
@@ -1981,6 +1988,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129494,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 331, 1))); // person in steamy room: dark skin tone
 		trie.insert(new int[]{ 129494,127999,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 133))); // woman in steamy room: dark skin tone
 		trie.insert(new int[]{ 129494,127999,9792 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 133))); // woman in steamy room: dark skin tone
+	}
+
+	public static void init5(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129494,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 3, 331, 67))); // man in steamy room: dark skin tone
 		trie.insert(new int[]{ 129494,127999,9794 }, new ParseResult(5, new SpriteCoordinates(1, 3, 331, 67))); // man in steamy room: dark skin tone
 		trie.insert(new int[]{ 128133,127999 }, new ParseResult(4, new SpriteCoordinates(1, 3, 859, 463))); // nail polish: dark skin tone
@@ -2465,7 +2475,7 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129487 }, new ParseResult(2, new SpriteCoordinates(1, 4, 529, 463))); // deaf person
 	}
 
-	public static void init4(IntTrie<ParseResult> trie) {
+	public static void init6(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129487,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 67, 529))); // deaf woman
 		trie.insert(new int[]{ 129487,9792 }, new ParseResult(3, new SpriteCoordinates(1, 4, 67, 529))); // deaf woman
 		trie.insert(new int[]{ 129487,8205,9794,65039 }, new ParseResult(5, new SpriteCoordinates(1, 4, 1, 529))); // deaf man
@@ -2942,6 +2952,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129498,127995,9792 }, new ParseResult(5, new SpriteCoordinates(1, 5, 67, 265))); // woman fairy: light skin tone
 		trie.insert(new int[]{ 129498,127995,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(1, 5, 1, 265))); // man fairy: light skin tone
 		trie.insert(new int[]{ 129498,127995,9794 }, new ParseResult(5, new SpriteCoordinates(1, 5, 1, 265))); // man fairy: light skin tone
+	}
+
+	public static void init7(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 128124,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 1, 859))); // baby angel: light skin tone
 		trie.insert(new int[]{ 129328,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 331))); // pregnant woman: light skin tone
 		trie.insert(new int[]{ 129329,127995 }, new ParseResult(4, new SpriteCoordinates(1, 5, 661, 265))); // breast-feeding: light skin tone
@@ -3246,9 +3259,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 128033 }, new ParseResult(2, new SpriteCoordinates(2, 0, 199, 661))); // blowfish
 		trie.insert(new int[]{ 128032 }, new ParseResult(2, new SpriteCoordinates(2, 0, 265, 661))); // tropical fish
 		trie.insert(new int[]{ 128031 }, new ParseResult(2, new SpriteCoordinates(2, 0, 331, 661))); // fish
-	}
-
-	public static void init5(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129453 }, new ParseResult(2, new SpriteCoordinates(2, 0, 265, 265))); // seal
 		trie.insert(new int[]{ 128044 }, new ParseResult(2, new SpriteCoordinates(2, 0, 661, 133))); // dolphin
 		trie.insert(new int[]{ 128051 }, new ParseResult(2, new SpriteCoordinates(2, 0, 331, 595))); // spouting whale
@@ -3354,6 +3364,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127763 }, new ParseResult(2, new SpriteCoordinates(2, 0, 595, 859))); // first quarter moon
 		trie.insert(new int[]{ 127764 }, new ParseResult(2, new SpriteCoordinates(2, 0, 529, 859))); // waxing gibbous moon
 		trie.insert(new int[]{ 127769 }, new ParseResult(2, new SpriteCoordinates(2, 0, 199, 859))); // crescent moon
+	}
+
+	public static void init8(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 127758 }, new ParseResult(2, new SpriteCoordinates(2, 0, 859, 859))); // globe showing Americas
 		trie.insert(new int[]{ 127757 }, new ParseResult(2, new SpriteCoordinates(2, 0, 925, 1))); // globe showing Europe-Africa
 		trie.insert(new int[]{ 127759 }, new ParseResult(2, new SpriteCoordinates(2, 0, 793, 859))); // globe showing Asia-Australia
@@ -3752,6 +3765,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 128692,127997,9794 }, new ParseResult(5, new SpriteCoordinates(4, 0, 133, 595))); // man biking: medium skin tone
 		trie.insert(new int[]{ 128692,127999,8205,9794,65039 }, new ParseResult(7, new SpriteCoordinates(4, 0, 595, 529))); // man biking: dark skin tone
 		trie.insert(new int[]{ 128692,127999,9794 }, new ParseResult(5, new SpriteCoordinates(4, 0, 595, 529))); // man biking: dark skin tone
+	}
+
+	public static void init9(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129351 }, new ParseResult(2, new SpriteCoordinates(4, 0, 397, 67))); // 1st place medal
 		trie.insert(new int[]{ 129353 }, new ParseResult(2, new SpriteCoordinates(4, 0, 397, 1))); // 3rd place medal
 		trie.insert(new int[]{ 127894,65039 }, new ParseResult(3, new SpriteCoordinates(4, 0, 793, 793))); // military medal
@@ -3894,9 +3910,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 129496,127998 }, new ParseResult(4, new SpriteCoordinates(4, 1, 133, 265))); // person in lotus position: medium-dark skin tone
 		trie.insert(new int[]{ 129496,8205,9792,65039 }, new ParseResult(5, new SpriteCoordinates(4, 1, 67, 265))); // woman in lotus position
 		trie.insert(new int[]{ 129496,9792 }, new ParseResult(3, new SpriteCoordinates(4, 1, 67, 265))); // woman in lotus position
-	}
-
-	public static void init6(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 129496,127996,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(4, 1, 331, 133))); // woman in lotus position: medium-light skin tone
 		trie.insert(new int[]{ 129496,127996,9792 }, new ParseResult(5, new SpriteCoordinates(4, 1, 331, 133))); // woman in lotus position: medium-light skin tone
 		trie.insert(new int[]{ 129496,127998,8205,9792,65039 }, new ParseResult(7, new SpriteCoordinates(4, 1, 265, 265))); // woman in lotus position: medium-dark skin tone
@@ -4173,6 +4186,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127963 }, new ParseResult(2, new SpriteCoordinates(5, 0, 661, 67))); // classical building
 		trie.insert(new int[]{ 9962 }, new ParseResult(1, new SpriteCoordinates(5, 0, 133, 133))); // church
 		trie.insert(new int[]{ 128332 }, new ParseResult(2, new SpriteCoordinates(5, 0, 397, 529))); // mosque
+	}
+
+	public static void init10(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 128333 }, new ParseResult(2, new SpriteCoordinates(5, 0, 331, 529))); // synagogue
 		trie.insert(new int[]{ 128725 }, new ParseResult(2, new SpriteCoordinates(5, 0, 331, 265))); // hindu temple
 		trie.insert(new int[]{ 128331 }, new ParseResult(2, new SpriteCoordinates(5, 0, 463, 529))); // kaaba
@@ -4550,7 +4566,7 @@ public class EmojiParser {
 		trie.insert(new int[]{ 9762 }, new ParseResult(1, new SpriteCoordinates(7, 0, 67, 529))); // radioactive
 	}
 
-	public static void init7(IntTrie<ParseResult> trie) {
+	public static void init11(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 9763,65039 }, new ParseResult(2, new SpriteCoordinates(7, 0, 1, 529))); // biohazard
 		trie.insert(new int[]{ 9763 }, new ParseResult(1, new SpriteCoordinates(7, 0, 1, 529))); // biohazard
 		trie.insert(new int[]{ 128244 }, new ParseResult(2, new SpriteCoordinates(7, 0, 265, 925))); // mobile phone off
@@ -4930,6 +4946,9 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127483,127468 }, new ParseResult(4, new SpriteCoordinates(8, 0, 133, 265))); // flag: British Virgin Islands
 		trie.insert(new int[]{ 127463,127475 }, new ParseResult(4, new SpriteCoordinates(8, 0, 1, 991))); // flag: Brunei
 		trie.insert(new int[]{ 127463,127468 }, new ParseResult(4, new SpriteCoordinates(8, 0, 397, 991))); // flag: Bulgaria
+	}
+
+	public static void init12(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 127463,127467 }, new ParseResult(4, new SpriteCoordinates(8, 0, 463, 991))); // flag: Burkina Faso
 		trie.insert(new int[]{ 127463,127470 }, new ParseResult(4, new SpriteCoordinates(8, 0, 265, 991))); // flag: Burundi
 		trie.insert(new int[]{ 127472,127469 }, new ParseResult(4, new SpriteCoordinates(8, 0, 793, 133))); // flag: Cambodia
@@ -5130,9 +5149,6 @@ public class EmojiParser {
 		trie.insert(new int[]{ 127481,127483 }, new ParseResult(4, new SpriteCoordinates(8, 0, 331, 331))); // flag: Tuvalu
 		trie.insert(new int[]{ 127482,127468 }, new ParseResult(4, new SpriteCoordinates(8, 0, 67, 331))); // flag: Uganda
 		trie.insert(new int[]{ 127482,127462 }, new ParseResult(4, new SpriteCoordinates(8, 0, 133, 331))); // flag: Ukraine
-	}
-
-	public static void init8(IntTrie<ParseResult> trie) {
 		trie.insert(new int[]{ 127462,127466 }, new ParseResult(4, new SpriteCoordinates(8, 0, 1057, 661))); // flag: United Arab Emirates
 		trie.insert(new int[]{ 127468,127463 }, new ParseResult(4, new SpriteCoordinates(8, 0, 331, 859))); // flag: United Kingdom
 		trie.insert(new int[]{ 127988,917607,917602,917605,917614,917607,917631 }, new ParseResult(14, new SpriteCoordinates(8, 0, 133, 1))); // flag: England

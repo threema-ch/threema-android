@@ -34,8 +34,8 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.models.VerificationLevel;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.QueryBuilder;
@@ -136,7 +136,7 @@ public class ContactModelFactory extends ModelFactory {
 					.setIsWork(cursorFactory.getInt(ContactModel.COLUMN_IS_WORK) == 1)
 					.setIdentityType(cursorFactory.getInt(ContactModel.COLUMN_TYPE))
 					.setFeatureMask(cursorFactory.getInt(ContactModel.COLUMN_FEATURE_LEVEL))
-					.setColor(cursorFactory.getInt(ContactModel.COLUMN_COLOR))
+					.setIdColorIndex(cursorFactory.getInt(ContactModel.COLUMN_ID_COLOR_INDEX))
 					.setIsHidden(cursorFactory.getInt(ContactModel.COLUMN_IS_HIDDEN) == 1)
 					.setAvatarExpires(cursorFactory.getDate(ContactModel.COLUMN_AVATAR_EXPIRES))
 					.setProfilePicSentDate(cursorFactory.getDate(ContactModel.COLUMN_PROFILE_PIC_SENT_DATE))
@@ -219,7 +219,7 @@ public class ContactModelFactory extends ModelFactory {
 		contentValues.put(ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID, contactModel.getThreemaAndroidContactId());
 		contentValues.put(ContactModel.COLUMN_IS_SYNCHRONIZED, contactModel.isSynchronized());
 		contentValues.put(ContactModel.COLUMN_FEATURE_LEVEL, contactModel.getFeatureMask());
-		contentValues.put(ContactModel.COLUMN_COLOR, contactModel.getColor());
+		contentValues.put(ContactModel.COLUMN_ID_COLOR_INDEX, contactModel.getIdColorIndex());
 		contentValues.put(ContactModel.COLUMN_AVATAR_EXPIRES, contactModel.getAvatarExpires() != null ?
 				contactModel.getAvatarExpires().getTime()
 				: null);
@@ -276,7 +276,7 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID + "` VARCHAR ," +
 						"`" + ContactModel.COLUMN_IS_SYNCHRONIZED + "` SMALLINT DEFAULT 0 ," +
 						"`" + ContactModel.COLUMN_FEATURE_LEVEL + "` INTEGER DEFAULT 0 NOT NULL ," +
-						"`" + ContactModel.COLUMN_COLOR + "` INTEGER ," +
+						"`" + ContactModel.COLUMN_ID_COLOR_INDEX + "` INTEGER ," +
 						"`" + ContactModel.COLUMN_AVATAR_EXPIRES + "` BIGINT," +
 						"`" + ContactModel.COLUMN_IS_WORK + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_TYPE + "` INT DEFAULT 0," +

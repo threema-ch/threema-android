@@ -62,7 +62,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 	private final ConversationListener listener;
 
 	// Dispatchers
-	private MessageDispatcher updateDispatcher;
+	private final MessageDispatcher updateDispatcher;
 
 	// Services
 	private final ContactService contactService;
@@ -144,13 +144,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		@AnyThread
 		public void onNew(ConversationModel conversationModel) {
 			// Notify webclient in background thread
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_NEW);
-				}
-			});
+			handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_NEW));
 		}
 
 		@Override
@@ -158,32 +152,21 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
 			logger.debug("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
 			// Notify webclient in background thread
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					ConversationUpdateHandler.this.respond(modifiedConversationModel, ARGUMENT_MODE_MODIFIED);
-				}
-			});
+			handler.post(() -> ConversationUpdateHandler.this.respond(modifiedConversationModel, ARGUMENT_MODE_MODIFIED));
 		}
 
 		@Override
 		@AnyThread
 		public void onRemoved(ConversationModel conversationModel) {
 			// Notify webclient in background thread
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_REMOVED);
-				}
-			});
+			handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_REMOVED));
 		}
 
 		@Override
 		@AnyThread
 		public void onModifiedAll() {
 			// TODO: Do we need to implement this?
+			logger.debug("onModifiedAll");
 		}
 	}
 }

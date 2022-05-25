@@ -30,36 +30,46 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.LockableViewPager;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-public class EmojiPicker extends LinearLayout {
+public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiPicker");
 
-	private Context context;
+	private final ArrayList<EmojiPickerListener> emojiPickerListeners = new ArrayList<>();
+	private EmojiService emojiService;
+
 	private View emojiPickerView;
 	private LockableViewPager viewPager;
-	private EmojiRecent emojiRecent;
-	private ArrayList<EmojiPickerListener> emojiPickerListeners = new ArrayList<>();
 	private EmojiKeyListener emojiKeyListener;
-	private PreferenceService preferenceService;
 	private DiverseEmojiPopup diverseEmojiPopup;
 	private EmojiDetailPopup emojiDetailPopup;
 	private RecentEmojiRemovePopup recentRemovePopup;
-	private HashMap<String, String> diversePrefs;
+	private RelativeLayout pickerHeader;
+	private EmojiSearchWidget emojiSearchWidget;
+
+	private final LinearLayout.LayoutParams searchLayoutParams = new LinearLayout.LayoutParams(
+		ViewGroup.LayoutParams.MATCH_PARENT,
+		ViewGroup.LayoutParams.WRAP_CONTENT
+	);
+	private ViewGroup.LayoutParams pickerLayoutParams = new LinearLayout.LayoutParams(
+		ViewGroup.LayoutParams.MATCH_PARENT,
+		ViewGroup.LayoutParams.WRAP_CONTENT
+	);
 
 	public final static String RECENT_VIEW_TAG = "0";
 
@@ -73,9 +83,6 @@ public class EmojiPicker extends LinearLayout {
 
 	public EmojiPicker(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-
-		this.preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-		this.diversePrefs = preferenceService.getDiverseEmojiPrefs2();
 	}
 
 	public void addEmojiPickerListener(EmojiPickerListener listener) {
@@ -90,32 +97,31 @@ public class EmojiPicker extends LinearLayout {
 		this.emojiKeyListener = listener;
 	}
 
-	public void init(Context context) {
-		this.context = context;
-		this.emojiRecent = new EmojiRecent();
+	public void init(EmojiService emojiService) {
+		this.emojiService = emojiService;
+
 		this.emojiPickerView = LayoutInflater.from(getContext()).inflate(R.layout.emoji_picker, this, true);
 
-		this.recentRemovePopup = new RecentEmojiRemovePopup(context,  this.emojiPickerView);
+		initEmojiSearchWidget();
+
+		this.recentRemovePopup = new RecentEmojiRemovePopup(getContext(),  this.emojiPickerView);
 		this.recentRemovePopup.setListener(this::removeEmojiFromRecent);
 
-		this.emojiDetailPopup = new EmojiDetailPopup(context, this.emojiPickerView);
+		this.emojiDetailPopup = new EmojiDetailPopup(getContext(), this.emojiPickerView);
 		this.emojiDetailPopup.setListener(emojiSequence -> {
 			if (emojiKeyListener != null) {
 				emojiKeyListener.onEmojiClick(emojiSequence);
-				addEmojiToRecent(emojiSequence);
+				emojiService.addToRecentEmojis(emojiSequence);
 			}
 		});
 
-		this.diverseEmojiPopup = new DiverseEmojiPopup(context, this.emojiPickerView);
+		this.diverseEmojiPopup = new DiverseEmojiPopup(getContext(), this.emojiPickerView);
 		this.diverseEmojiPopup.setListener(new DiverseEmojiPopup.DiverseEmojiPopupListener() {
 			@Override
 			public void onDiverseEmojiClick(String parentEmojiSequence, String emojiSequence) {
 				emojiKeyListener.onEmojiClick(emojiSequence);
-
-				diversePrefs.remove(parentEmojiSequence);
-				diversePrefs.put(parentEmojiSequence, emojiSequence);
-				addEmojiToRecent(emojiSequence);
-				preferenceService.setDiverseEmojiPrefs2(diversePrefs);
+				emojiService.setDiverseEmojiPreference(parentEmojiSequence, emojiSequence);
+				emojiService.addToRecentEmojis(emojiSequence);
 			}
 
 			@Override
@@ -140,17 +146,9 @@ public class EmojiPicker extends LinearLayout {
 		return getVisibility() == VISIBLE;
 	}
 
-	public void show(int height) {
-		final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
-		setLayoutParams(params);
-
-		logger.info("Show EmojiPicker. Height = " + height);
-
-		setVisibility(VISIBLE);
-
-		for (EmojiPickerListener listener : this.emojiPickerListeners) {
-			listener.onEmojiPickerOpen();
-		}
+	public void show(int pickerHeight) {
+		pickerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, pickerHeight);
+		showEmojiPicker();
 	}
 
 	public void hide() {
@@ -162,16 +160,80 @@ public class EmojiPicker extends LinearLayout {
 		for (EmojiPickerListener listener : this.emojiPickerListeners) {
 			listener.onEmojiPickerClose();
 		}
-		this.emojiRecent.saveToPrefs();
+		this.emojiService.saveRecentEmojis();
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
-	private EmojiPagerAdapter initPagerAdapter() {
+	public void onKeyboardShown() {
+		if (!emojiSearchWidget.isShown() || !emojiSearchWidget.searchInput.hasFocus()) {
+			hide();
+		}
+	}
+
+	public void onKeyboardHidden() {
+		if (emojiSearchWidget.isShown()) {
+			emojiService.saveRecentEmojis();
+		}
+	}
+
+	@Override
+	public void onShowPicker() {
+		// Switch back from emoji search to picker.
+		// In order to avoid flickering the displaying is delegated to the enclosing listener
+		setVisibility(GONE);
+		if (emojiKeyListener != null) {
+			emojiKeyListener.onShowPicker();
+		}
+	}
+
+	@Override
+	public void onEmojiClick(@NonNull String emojiSequence) {
+		if (emojiKeyListener != null) {
+			emojiKeyListener.onEmojiClick(emojiSequence);
+		}
+	}
+
+	@Override
+	public void onHideEmojiSearch() {
+		hide();
+	}
+
+	private void showEmojiSearch() {
+		setLayoutParams(searchLayoutParams);
+		emojiSearchWidget.setVisibility(VISIBLE);
+		emojiSearchWidget.searchInput.requestFocus();
+		EditTextUtil.showSoftKeyboard(emojiSearchWidget.searchInput);
+		pickerHeader.setVisibility(GONE);
+		viewPager.setVisibility(GONE);
+	}
+
+	private void showEmojiPicker() {
+		logger.info("Show EmojiPicker. Height = {}", pickerLayoutParams.height);
+		refreshRecentView();
+
+		setLayoutParams(pickerLayoutParams);
+
+		pickerHeader.setVisibility(VISIBLE);
+		viewPager.setVisibility(VISIBLE);
+		emojiSearchWidget.setVisibility(GONE);
+
+		setVisibility(VISIBLE);
+
+		for (EmojiPickerListener listener : this.emojiPickerListeners) {
+			listener.onEmojiPickerOpen();
+		}
+	}
+
+	private void initEmojiSearchWidget() {
+		emojiSearchWidget = findViewById(R.id.emoji_search);
+		emojiSearchWidget.init(this, emojiService);
+	}
+
+	private void initPagerAdapter() {
 		EmojiGridAdapter.KeyClickListener keyClickListener = new EmojiGridAdapter.KeyClickListener() {
 			@Override
 			public void onEmojiKeyClicked(String emojiCodeString) {
 				emojiKeyListener.onEmojiClick(emojiCodeString);
-				addEmojiToRecent(emojiCodeString);
+				emojiService.addToRecentEmojis(emojiCodeString);
 			}
 
 			@Override
@@ -185,14 +247,14 @@ public class EmojiPicker extends LinearLayout {
 			}
 		};
 
-		this.viewPager = emojiPickerView.findViewById(R.id.emoji_pager);
+		pickerHeader = findViewById(R.id.emoji_picker_header);
+		viewPager = findViewById(R.id.emoji_pager);
 		int currentItem = this.viewPager.getCurrentItem();
 
 		EmojiPagerAdapter emojiPagerAdapter = new EmojiPagerAdapter(
-			context,
+			getContext(),
 			this,
-			this.emojiRecent,
-			this.diversePrefs,
+			emojiService,
 			keyClickListener);
 
 		this.viewPager.setAdapter(emojiPagerAdapter);
@@ -220,7 +282,7 @@ public class EmojiPicker extends LinearLayout {
 			@Override
 			public void onPageSelected(int position) {
 				if (position == 0) {
-					if (emojiRecent.syncRecents()) {
+					if (emojiService.syncRecentEmojis()) {
 						refreshRecentView();
 					}
 				}
@@ -233,10 +295,16 @@ public class EmojiPicker extends LinearLayout {
 		});
 
 		// show first regular tab if there are no recent emojis
-		if (currentItem == 0 && emojiRecent.getNumberOfRecentEmojis() == 0) {
+		if (currentItem == 0 && emojiService.hasNoRecentEmojis()) {
 			this.viewPager.setCurrentItem(1);
 		}
 
+		initEmojiSearchButton();
+		initEmojiBackspaceButton();
+	}
+
+	@SuppressLint("ClickableViewAccessibility")
+	private void initEmojiBackspaceButton() {
 		LinearLayout backspaceButton = emojiPickerView.findViewById(R.id.backspace_button);
 		if (backspaceButton != null) {
 			backspaceButton.setOnTouchListener(new OnTouchListener() {
@@ -269,8 +337,19 @@ public class EmojiPicker extends LinearLayout {
 				}
 			});
 		}
+	}
 
-		return emojiPagerAdapter;
+	private void initEmojiSearchButton() {
+		ImageButton searchButton = emojiPickerView.findViewById(R.id.search_button);
+		if (emojiService.isEmojiSearchAvailable()) {
+			logger.debug("Emoji search available; prepare search index.");
+			emojiService.prepareEmojiSearch();
+			searchButton.setVisibility(View.VISIBLE);
+			searchButton.setOnClickListener(v -> showEmojiSearch());
+		} else {
+			searchButton.setVisibility(View.GONE);
+			searchButton.setOnClickListener(null);
+		}
 	}
 
 	private void onRecentListLongClicked(View view, String emojiSequence) {
@@ -280,7 +359,7 @@ public class EmojiPicker extends LinearLayout {
 	private void onEmojiLongClicked(View view, String emojiSequence) {
 		EmojiInfo emojiInfo = EmojiUtil.getEmojiInfo(emojiSequence);
 		if (emojiInfo != null && emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT) {
-			diverseEmojiPopup.show(view, emojiSequence, diversePrefs);
+			diverseEmojiPopup.show(view, emojiSequence);
 		} else {
 			emojiDetailPopup.show(view, emojiSequence);
 		}
@@ -291,10 +370,10 @@ public class EmojiPicker extends LinearLayout {
 	}
 
 	public String getGroupTitle(int id) {
-		return context.getString(EmojiManager.getGroupName(id)).toUpperCase();
+		return getContext().getString(EmojiManager.getGroupName(id)).toUpperCase();
 	}
 
-	public void refreshRecentView() {
+	private void refreshRecentView() {
 		// update recent gridview
 		GridView view = emojiPickerView.findViewWithTag(RECENT_VIEW_TAG);
 
@@ -304,12 +383,8 @@ public class EmojiPicker extends LinearLayout {
 		}
 	}
 
-	public void addEmojiToRecent(String emojiSequence) {
-		emojiRecent.add(emojiSequence);
-	}
-
-	public void removeEmojiFromRecent(String emojiSequence) {
-		emojiRecent.remove(emojiSequence);
+	private void removeEmojiFromRecent(String emojiSequence) {
+		emojiService.removeRecentEmoji(emojiSequence);
 		refreshRecentView();
 	}
 
@@ -321,5 +396,6 @@ public class EmojiPicker extends LinearLayout {
 	public interface EmojiKeyListener {
 		void onBackspaceClick();
 		void onEmojiClick(String emojiCodeString);
+		void onShowPicker();
 	}
 }

@@ -303,10 +303,6 @@ public class ConfigUtils {
 		return miuiVersion;
 	}
 
-	public static boolean canCreateV2Quotes() {
-		return true;
-	}
-
 	public static int getAppTheme(Context context) {
 		if (appTheme == THEME_NONE) {
 			appTheme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences__theme), "2"));
@@ -732,7 +728,7 @@ public class ConfigUtils {
 			String confLanguage = res.getConfiguration().locale.getLanguage();
 
 			if (localeOverride.isEmpty()) {
-				if (systemLanguage != null && systemLanguage.equals(confLanguage)) {
+				if (systemLanguage.equals(confLanguage)) {
 					return;
 				} else {
 					confLanguage = systemLanguage;

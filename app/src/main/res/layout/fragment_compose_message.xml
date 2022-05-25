@@ -8,7 +8,7 @@
 	android:orientation="vertical">
 
 	<!-- http://stackoverflow.com/questions/21201569/android-resize-only-parts-of-view-with-soft-keyboard-on-screen -->
-	<ScrollView
+	<ch.threema.app.ui.LockableScrollView
 		android:id="@+id/wallpaper_scroll"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -25,7 +25,7 @@
 			android:visibility="gone"
 			android:importantForAccessibility="no"/>
 
-	</ScrollView>
+	</ch.threema.app.ui.LockableScrollView>
 
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:id="@+id/coordinator"

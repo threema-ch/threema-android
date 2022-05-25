@@ -422,7 +422,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 			String identity = IntentDataUtil.getIdentity(intent);
 			int groupId = IntentDataUtil.getGroupId(intent);
-			int distributionListID = IntentDataUtil.getDistributionListId(intent);
+			long distributionListID = IntentDataUtil.getDistributionListId(intent);
 
 			if (TestUtil.empty(identity) && groupId == -1 && distributionListID == -1) {
 				// maybe a shortcut?
@@ -435,7 +435,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						} else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_GROUP)) {
 							groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP);
 						} else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-							distributionListID = bundle.getInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
+							distributionListID = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
 						}
 					}
 				}

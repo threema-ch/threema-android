@@ -43,6 +43,7 @@ import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
  */
 public class MediaItem implements Parcelable {
 	@MediaType private int type;
+	private Uri originalUri; // Uri of original media item before creating a local copy
 	private Uri uri;
 	private int rotation;
 	private int exifRotation;
@@ -137,6 +138,7 @@ public class MediaItem implements Parcelable {
 		videoSize = in.readInt();
 		filename = in.readString();
 		deleteAfterUse = in.readInt() != 0;
+		originalUri = in.readParcelable(Uri.class.getClassLoader());
 	}
 
 	@Override
@@ -157,6 +159,7 @@ public class MediaItem implements Parcelable {
 		dest.writeInt(videoSize);
 		dest.writeString(filename);
 		dest.writeInt(deleteAfterUse ? 1 : 0);
+		dest.writeParcelable(originalUri, flags);
 	}
 
 	@Override
@@ -316,5 +319,20 @@ public class MediaItem implements Parcelable {
 	 */
 	public void setDeleteAfterUse(boolean deleteAfterUse) {
 		this.deleteAfterUse = deleteAfterUse;
+	}
+
+	public @Nullable Uri getOriginalUri() {
+		if (originalUri == null) {
+			return uri;
+		}
+		return originalUri;
+	}
+
+	/**
+	 * Set this to the original location of the file before creating a copy for persistence across activities
+	 * @param originalUri Uri of the original media file
+	 */
+	public void setOriginalUri(Uri originalUri) {
+		this.originalUri = originalUri;
 	}
 }

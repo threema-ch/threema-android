@@ -1080,7 +1080,6 @@
 	<string name="delete">Törlés</string>
 	<string name="num_archived_chats">%d archivált csevegés</string>
 	<string name="continue_recording">Felvétel folytatása</string>
-	<string name="tooltip_identity_popup">Kattintson ide, ha meg szeretné tekinteni Threema ID-ját, vagy beolvasni mások ID-it</string>
 	<string name="tap_to_start">Kattintson ide a %s indításához.</string>
 	<string name="two_years">2 év</string>
 	<string name="invalid_backup_path">Érvénytelen mentési útvonal</string>

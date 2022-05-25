@@ -1334,6 +1334,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 * Cancel all pending call notifications.
 	 */
 	void cancelCallNotificationsForNewCall() {
+		this.stopRingtone();
+
 		synchronized (this.callNotificationTags) {
 			logger.info("Cancelling all {} call notifications", this.callNotificationTags.size());
 			for (String tag : this.callNotificationTags) {

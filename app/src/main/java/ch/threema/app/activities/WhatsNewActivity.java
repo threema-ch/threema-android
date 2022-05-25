@@ -21,11 +21,13 @@
 
 package ch.threema.app.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -41,14 +43,14 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_whatsnew);
-/*
-		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, getString(R.string.app_name)));
-		((TextView) findViewById(R.id.whatsnew_body)).setText(getString(R.string.whatsnew_headline, getString(R.string.app_name)));
-*/
+
+		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, getString(R.string.app_name), BuildConfig.VERSION_NAME));
+		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew_headline, getString(R.string.app_name))));
+
 		findViewById(R.id.next_text).setOnClickListener(v -> {
-			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
+/*			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
 			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
-			finish();
+*/			finish();
 		});
 
 		if (!getIntent().getBooleanExtra(EXTRA_NO_ANIMATION, false)) {

@@ -2661,7 +2661,11 @@ public class MessageServiceImpl implements MessageService {
 				} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())) {
 					if (TestUtil.empty(messageModel.getFileData().getCaption())) {
 						String durationString = messageModel.getFileData().getDurationString();
-						return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + " (" + durationString + ")");
+						if ("00:00".equals(durationString)) {
+							return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder));
+						} else {
+							return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + " (" + durationString + ")");
+						}
 					} else {
 						return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}

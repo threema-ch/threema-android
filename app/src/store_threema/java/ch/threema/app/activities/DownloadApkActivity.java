@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -37,12 +38,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.text.SpannableString;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
-
-import java.io.File;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -68,7 +71,6 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 	private static final String PREF_STRING = "download_apk_dialog_time";
 
 	private static final String BUNDLE_DOWNLOAD_ID = "download_id";
-	private static final String BUNDLE_FILE_PATH = "download_file_path";
 
 	private static final int PERMISSION_REQUEST_WRITE_FILE = 9919;
 
@@ -76,12 +78,15 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 
 	private SharedPreferences sharedPreferences;
 	private String downloadUrl;
-	private DownloadUtil.DownloadState downloadState;
+	private long downloadId = -1;
+
+	private int numFailures = 0;
 
 	private final ActivityResultLauncher<Intent> requestUnknownSourcesSettingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 		result -> {
-			if (downloadState != null) {
-				installPackage(downloadState.getDestinationUri());
+			DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+			if (downloadId > 0) {
+				installPackage(downloadManager.getUriForDownloadedFile(downloadId));
 			} else {
 				logger.error("downloadState should not be null");
 			}
@@ -94,54 +99,57 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 
 			//check if the broadcast message is for our Enqueued download
 			final long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+			downloadId = referenceId;
 
 			if (referenceId > 0 && context != null) {
-				downloadState = DownloadUtil.getNewestDownloadState(referenceId);
-				if (downloadState != null) {
-					int status = 0, reason = 0;
-					DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-					DownloadManager.Query query = new DownloadManager.Query();
-					query.setFilterById(downloadState.getDownloadId());
-					Cursor cursor = null;
-					try {
-						cursor = downloadManager.query(query);
-						if (cursor.moveToFirst()) {
-							status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-							reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-						}
-					} finally {
-						if (cursor != null) {
-							cursor.close();
-						}
+				int status = 0, reason = 0;
+				DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+				DownloadManager.Query query = new DownloadManager.Query();
+				query.setFilterById(referenceId);
+				Cursor cursor = null;
+				try {
+					cursor = downloadManager.query(query);
+					if (cursor.moveToFirst()) {
+						status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+						reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
 					}
+				} finally {
+					if (cursor != null) {
+						cursor.close();
+					}
+				}
 
-					if (status == DownloadManager.STATUS_SUCCESSFUL) {
-						Uri uri = downloadManager.getUriForDownloadedFile(referenceId);
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !getPackageManager().canRequestPackageInstalls()) {
-								try {
-									requestUnknownSourcesSettingsLauncher.launch(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).setData(Uri.parse(String.format("package:%s", getPackageName()))));
-								} catch (ActivityNotFoundException e) {
-									logger.error("No activity for unknown sources", e);
-									Toast.makeText(getApplicationContext(), getString(R.string.enable_unknown_sources, getString(R.string.app_name)), Toast.LENGTH_LONG).show();
-									finishUp();
-								}
-							} else {
-								installPackage(uri);
+				if (status == DownloadManager.STATUS_SUCCESSFUL) {
+					Uri uri = downloadManager.getUriForDownloadedFile(referenceId);
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !getPackageManager().canRequestPackageInstalls()) {
+							try {
+								requestUnknownSourcesSettingsLauncher.launch(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).setData(Uri.parse(String.format("package:%s", getPackageName()))));
+							} catch (ActivityNotFoundException e) {
+								logger.error("No activity for unknown sources", e);
+								Toast.makeText(getApplicationContext(), getString(R.string.enable_unknown_sources, getString(R.string.app_name)), Toast.LENGTH_LONG).show();
+								finishUp();
 							}
-							return;
 						} else {
-							Uri fileUri = Uri.fromFile(downloadState.getDestinationFile());
+							installPackage(uri);
+						}
+						return;
+					} else {
+						try {
 							Intent installIntent = new Intent(Intent.ACTION_VIEW);
-							installIntent.setDataAndType(fileUri, "application/vnd.android.package-archive");
+							installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
 							installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							context.startActivity(installIntent);
+						} catch (Exception e) {
+							logger.error("Error while installing apk for Android < N", e);
+							showHelpOnUpdateFailure();
+							return;
 						}
-					} else {
-						Toast.makeText(getApplicationContext(), getString(R.string.download_failed, reason), Toast.LENGTH_LONG).show();
 					}
-					finishUp();
+				} else {
+					Toast.makeText(getApplicationContext(), getString(R.string.download_failed, reason), Toast.LENGTH_LONG).show();
 				}
+				finishUp();
 			}
 		}
 	};
@@ -150,20 +158,34 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 		new Handler().postDelayed(this::finish, 1000);
 	}
 
+	/**
+	 * Use this on Android N and newer.
+	 *
+	 * @param downloadedFileUri the uri of the downloaded apk file
+	 */
 	private void installPackage(@NonNull Uri downloadedFileUri) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !getPackageManager().canRequestPackageInstalls()) {
 			Toast.makeText(getApplicationContext(), getString(R.string.enable_unknown_sources, getString(R.string.app_name)), Toast.LENGTH_LONG).show();
+			finishUp();
 		} else {
 			Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
 			installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			installIntent.setData(downloadedFileUri);
+			logger.info("Downloaded file to: {}", downloadedFileUri.getPath());
 			try {
 				startActivity(installIntent);
+				finishUp();
 			} catch (Exception e) {
-				logger.error("error installing apk", e);
+				numFailures++;
+				logger.error("Error installing apk", e);
+				if (numFailures > 1) {
+					showHelpOnUpdateFailure();
+					return;
+				}
+				// Try to download it on external directory (needed for some OPPO, OnePlus and realme devices)
+				reallyDownload(IntentDataUtil.getUrl(getIntent()));
 			}
 		}
-		finishUp();
 	}
 
 	@Override
@@ -175,27 +197,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 		}
 
 		if (savedInstanceState != null) {
-			long downloadID = savedInstanceState.getLong(BUNDLE_DOWNLOAD_ID, -1);
-			if (downloadID >= 0) {
-				downloadState = new DownloadUtil.DownloadState() {
-					private final DownloadManager manager = (DownloadManager) DownloadApkActivity.this.getSystemService(Context.DOWNLOAD_SERVICE);
-
-					@Override
-					public long getDownloadId() {
-						return downloadID;
-					}
-
-					@Override
-					public Uri getDestinationUri() {
-						return manager.getUriForDownloadedFile(getDownloadId());
-					}
-
-					@Override
-					public File getDestinationFile() {
-						return new File(savedInstanceState.getString(BUNDLE_FILE_PATH));
-					}
-				};
-			}
+			downloadId = savedInstanceState.getLong(BUNDLE_DOWNLOAD_ID, -1);
 		}
 
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
@@ -218,10 +220,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (downloadState != null) {
-			outState.putLong(BUNDLE_DOWNLOAD_ID, downloadState.getDownloadId());
-			outState.putString(BUNDLE_FILE_PATH, downloadState.getDestinationFile().getPath());
-		}
+		outState.putLong(BUNDLE_DOWNLOAD_ID, downloadId);
 	}
 
 	@Override
@@ -247,7 +246,7 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 
 	private void reallyDownload(String data) {
 		GenericProgressDialog.newInstance(R.string.downloading, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING);
-		DownloadUtil.downloadUpdate(this, data);
+		DownloadUtil.downloadUpdate(this, data, numFailures > 0); // if num failures > 0 then retry downloading it into public downloads
 	}
 
 	@Override
@@ -270,4 +269,19 @@ public class DownloadApkActivity extends AppCompatActivity implements GenericAle
 			}
 		}
 	}
+
+	private void showHelpOnUpdateFailure() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		SpannableString failMessage = new SpannableString(getString(R.string.self_updater_installation_failed));
+		Linkify.addLinks(failMessage, Linkify.WEB_URLS);
+		builder.setMessage(failMessage).setTitle(R.string.error).setPositiveButton(R.string.ok, (dialog, which) -> {
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://shop.threema.ch/download"));
+			startActivity(browserIntent);
+			finish();
+		}).setNegativeButton(R.string.cancel, (dialog, which) -> finish());
+		AlertDialog dialog = builder.create();
+		dialog.show();
+		((TextView)dialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+	}
+
 }

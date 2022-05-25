@@ -97,7 +97,7 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 
 		if(ballotModel != null) {
 			final ContactModel contactModel = this.contactService.getByIdentity(ballotModel.getCreatorIdentity());
-			AvatarListItemUtil.loadAvatar(position, contactModel, null, contactService, holder);
+			AvatarListItemUtil.loadAvatar(contactModel, contactService, holder);
 
 			if(holder.name != null) {
 				holder.name.setText(ballotModel.getName());

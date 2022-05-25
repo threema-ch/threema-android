@@ -245,6 +245,8 @@
     <string name="emoji_emotions">Smilies e pessoas</string>
     <string name="emoji_activities">Atividades</string>
     <string name="emoji_flags">Marcações</string>
+    <string name="emoji_search">Procure emojis</string>
+    <string name="emoji_search_no_result">Nenhum resultado de busca</string>
     <string name="title_lock">Bloquear</string>
     <string name="new_messages_locked">Nova mensagem disponível</string>
     <string name="new_messages_locked_description">Toque para ver as novas mensagens.</string>
@@ -576,7 +578,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="blocked">bloqueado</string>
     <string name="name">Nome</string>
     <string name="privacy_policy">Política de Privacidade</string>
-    <string name="terms_of_service">Termos e Condições</string>
+    <string name="terms_of_service">Termos de Serviço</string>
+    <string name="eula">Contrato de Licença de Usuário Final</string>
     <string name="save_group_changes">Você gostaria de salvar as alterações no grupo?</string>
     <string name="prefs_title_fontsize">Tamanho do texto</string>
     <string name="fontsize_normal">Normal</string>
@@ -586,6 +589,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d conversa(s) excluída(s)</string>
     <string name="prefs_sendlog">Enviar registro</string>
     <string name="prefs_sendlog_summary">Enviar arquivo de log para o Threema para uma análise mais aprofundada em caso de problemas</string>
+    <string name="prefs_exportlog">Exportar Log</string>
+    <string name="prefs_exportlog_summary">Compartilhe o arquivo de log com outro aplicativo</string>
     <string name="permission_storage_required">Para enviar mídia, permita que o Threema acesse o armazenamento.</string>
     <string name="permission_location_required">Para enviar uma localização, permita que o Threema acesse sua posição.</string>
     <string name="permission_contacts_required">Para enviar contatos, permita que o Threema leia os contatos.</string>
@@ -1014,7 +1019,23 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="delete">Excluir</string>
     <string name="num_archived_chats">%d conversas arquivadas</string>
     <string name="continue_recording">Continuar gravação</string>
-    <string name="tooltip_identity_popup">Toque aqui para exibir a sua ID do Threema ou escanear IDs de outras pessoas</string>
+    <string name="whatsnew_title">Boas-vindas ao %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Novos recursos nesta versão do %s para Android:</b></p>
+		<p>
+		&bull; Vários novos emojis de acordo com o padrão Unicode 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Procure emojis pelo nome ou significado (disponível em 17 idiomas).
+		</p><p>
+		&bull; Cores determinísticas para contatos e grupos que não possuem imagem de perfil própria. As novas cores funcionarão em diferentes plataformas e dispositivos.
+		</p><p>
+		&bull; Melhor desempenho de rolagem em várias listas.
+		</p><p>
+		&bull; Layout otimizado para o Editor de Mídia. Aumentamos o número de itens de mídia que podem ser editados antes do envio para 256.
+		</p><p>
+		&bull; Diversas melhorias menores e correções de bugs
+		</p>
+		]]></string>
     <string name="tap_to_start">Toque aqui para iniciar o %s agora.</string>
     <string name="two_years">2 anos</string>
     <string name="invalid_backup_path">Caminho de backup inválido</string>
@@ -1034,7 +1055,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="edit_type_content_description">Ver ou editar %1$s %2$s</string>
     <string name="group">Grupo</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>A nossa Política de Privacidade foi actualizada para reflectir a seguinte alteração:</p><p>%1$s já não depende do Google Play e do Google Maps para fornecer mapas e dados POI.</p>Por favor reveja a Política de Privacidade completa <a href="%2$s">aqui</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Services não instalado. Não é possível trocar para \"push\".</string>
+    <string name="play_services_not_installed_unable_to_use_push">Serviços não instalados. Não é possível trocar para push do Google FCM ou HMS.</string>
     <string name="unable_to_get_current_location">Não é possível determinar a localização atual.</string>
     <string name="lp_search_place_min_chars">Digite pelo menos 3 caracteres para procurar por um lugar.</string>
     <string name="lp_search_place_no_matches">Nenhum lugar correspondente encontrado. Modifique a sua consulta.</string>
@@ -1352,4 +1373,9 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="organization_type">Organização</string>
     <string name="permission_bluetooth_connect_required">Habilite a permissão \"Dispositivos próximos\" para localizar fones de ouvido conectados por Bluetooth</string>
     <string name="threema_push_start_webclient_sessions_manually">O Push do Threema está ativo. Assim, as sessões do Threema Web e Desktop devem ser abertas manualmente.</string>
+    <string name="tooltip_multiple_recipients_title">Novo: Vários destinatários.</string>
+    <string name="tooltip_multiple_recipients_text">Dê um toque longo para selecionar vários destinatários para enviar a mesma mensagem.</string>
+    <string name="synchronizing">Sincronizando...</string>
+    <string name="self_updater_installation_failed">O download da atualização falhou. Faça o download e instale a atualização em <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manualmente.</string>
+    <string name="wizard_incompatible_contact_sync_params">Há parâmetros MDM incompatíveis definidos. O parâmetro MDM do Threema th_contact_sync não pode ser definido como verdadeiro se a restrição de usuário DISALLOW_MODIFY_ACCOUNTS estiver definida. Entre em contato com o administrador do seu dispositivo.</string>
 </resources>

@@ -21,22 +21,24 @@
 
 package ch.threema.app.services;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.widget.ImageView;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
+import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.utils.Base32;
@@ -49,26 +51,26 @@ public class DistributionListServiceImpl implements DistributionListService {
 
 	private static final String DISTRIBUTION_LIST_UID_PREFIX = "d-";
 
-	private final CacheService cacheService;
+	private final Context context;
 	private final AvatarCacheService avatarCacheService;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final ContactService contactService;
 
 	public DistributionListServiceImpl(
-			CacheService cacheService,
+			Context context,
 			AvatarCacheService avatarCacheService,
 			DatabaseServiceNew databaseServiceNew,
 			ContactService contactService
 	)
 	{
-		this.cacheService = cacheService;
+		this.context = context;
 		this.avatarCacheService = avatarCacheService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.contactService = contactService;
 	}
 
 	@Override
-	public DistributionListModel getById(int id) {
+	public DistributionListModel getById(long id) {
 		return this.databaseServiceNew.getDistributionListModelFactory().getById(
 				id
 		);
@@ -131,39 +133,44 @@ public class DistributionListServiceImpl implements DistributionListService {
 
 	@Override
 	@Nullable
-	public Bitmap getCachedAvatar(DistributionListModel o) {
-		if(o == null) {
-			return null;
-		}
+	public Bitmap getAvatar(DistributionListModel model, boolean highResolution) {
+		return avatarCacheService.getDistributionListAvatarLow(model);
+	}
 
-		return this.avatarCacheService.getDistributionListAvatarLowFromCache(o);
+	@Nullable
+	@Override
+	public Bitmap getAvatar(@Nullable DistributionListModel model, boolean highResolution, boolean returnDefaultAvatarIfNone) {
+		return avatarCacheService.getDistributionListAvatarLow(model);
 	}
 
 	@Override
-	public Bitmap getAvatar(DistributionListModel model, boolean highResolution) {
-		if (model == null) {
-			return null;
+	public void loadAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, AvatarOptions options) {
+		avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options);
+	}
+
+	@Nullable
+	@Override
+	public Bitmap getDefaultAvatar(@Nullable DistributionListModel model, boolean highResolution) {
+		return avatarCacheService.getDistributionListAvatarLow(model);
+	}
+
+	@Nullable
+	@Override
+	public Bitmap getNeutralAvatar(boolean highResolution) {
+		return avatarCacheService.getDistributionListAvatarLow(null);
+	}
+
+	@Override
+	public void clearAvatarCache(@NonNull DistributionListModel model) {
+		// Nothing to do, as distribution list avatars currently aren't being cached
+	}
+
+	@Override
+	public @ColorInt int getAvatarColor(@Nullable DistributionListModel distributionList) {
+		if (distributionList != null) {
+			return distributionList.getThemedColor(context);
 		}
-
-		int colors[] = this.cacheService.getDistributionListColors(model, false, new CacheService.CreateCachedColorList() {
-			@Override
-			public int[] create() {
-				Collection<ContactModel> coloredMembers = Functional.filter(getMembers(model), new IPredicateNonNull<ContactModel>() {
-					@Override
-					public boolean apply(@NonNull ContactModel type) {
-						return type.getColor() != 0;
-					}
-				});
-
-				int[] colors = new int[coloredMembers.size()];
-				int n = 0;
-				for(ContactModel contactModel: coloredMembers) {
-					colors[n++] = contactModel.getColor();
-				}
-				return colors;
-			}
-		});
-		return this.avatarCacheService.getDistributionListAvatarLow(model, colors);
+		return ColorUtil.getInstance().getCurrentThemeGray(context);
 	}
 
 	@Override
@@ -274,7 +281,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 	}
 
 	@Override
-	public List<ContactModel> getMembers(DistributionListModel distributionListModel) {
+	public List<ContactModel> getMembers(@Nullable DistributionListModel distributionListModel) {
 		List<ContactModel> contactModels = new ArrayList<>();
 		if (distributionListModel != null) {
 			for (DistributionListMemberModel distributionListMemberModel : this.getDistributionListMembers(distributionListModel)) {
@@ -313,25 +320,13 @@ public class DistributionListServiceImpl implements DistributionListService {
 		if (distributionListModel != null) {
 			try {
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				messageDigest.update((DISTRIBUTION_LIST_UID_PREFIX + String.valueOf(distributionListModel.getId())).getBytes());
+				messageDigest.update((DISTRIBUTION_LIST_UID_PREFIX + distributionListModel.getId()).getBytes());
 				return Base32.encode(messageDigest.digest());
 			} catch (NoSuchAlgorithmException e) {
 				//
 			}
 		}
 		return "";
-	}
-
-	@Override
-	public int getPrimaryColor(DistributionListModel distributionListModel) {
-		if(distributionListModel != null) {
-			//get members
-			List<ContactModel> contactModels = this.getMembers(distributionListModel);
-			if(contactModels.size() > 0) {
-				return contactModels.get(0).getColor();
-			}
-		}
-		return 0;
 	}
 
 	@Override

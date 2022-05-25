@@ -23,7 +23,6 @@ package ch.threema.app.activities.ballot;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
@@ -49,7 +48,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
-import ch.threema.app.dialogs.TextEntryDialog;
+import ch.threema.app.dialogs.FormatTextEntryDialog;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
@@ -57,7 +56,7 @@ import ch.threema.storage.models.ballot.BallotChoiceModel;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 
-public class BallotWizardFragment1 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener, TextEntryDialog.TextEntryDialogClickListener {
+public class BallotWizardFragment1 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener {
 	private static final String DIALOG_TAG_SELECT_DATE = "selectDate";
 	private static final String DIALOG_TAG_SELECT_TIME = "selectTime";
 	private static final String DIALOG_TAG_SELECT_DATETIME = "selectDateTime";
@@ -255,39 +254,32 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
 	@Override
 	public void onEditClicked(int position) {
 		this.editItemPosition = position;
-		TextEntryDialog alertDialog = TextEntryDialog.newInstance(
+		FormatTextEntryDialog alertDialog = FormatTextEntryDialog.newInstance(
 			R.string.edit_answer, 0,
 			R.string.ok,
 			R.string.cancel,
 			ballotChoiceModelList.get(position).getName(),
-			InputType.TYPE_CLASS_TEXT,
-			TextEntryDialog.INPUT_FILTER_TYPE_NONE,
-			5);
-		alertDialog.setTargetFragment(this, 0);
-		alertDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_ANSWER);
-	}
-
-	@Override
-	public void onYes(String tag, String text) {
-		if (!TestUtil.empty(text)) {
-			synchronized (ballotChoiceModelList) {
-				if (editItemPosition != -1) {
-					ballotChoiceModelList.get(editItemPosition).setName(text);
-					listAdapter.notifyItemChanged(editItemPosition);
+			5, new FormatTextEntryDialog.FormatTextEntryDialogClickListener() {
+				@Override
+				public void onYes(String text) {
+					if (!TestUtil.empty(text)) {
+						synchronized (ballotChoiceModelList) {
+							if (editItemPosition != -1) {
+								ballotChoiceModelList.get(editItemPosition).setName(text);
+								listAdapter.notifyItemChanged(editItemPosition);
+							}
+							editItemPosition = -1;
+						}
+					}
+					createChoiceEditText.requestFocus();
 				}
-				editItemPosition = -1;
-			}
-		}
-		createChoiceEditText.requestFocus();
-	}
 
-	@Override
-	public void onNeutral(String tag) {
-	}
-
-	@Override
-	public void onNo(String tag) {
-		createChoiceEditText.requestFocus();
+				@Override
+				public void onNo() {
+					createChoiceEditText.requestFocus();
+				}
+			});
+		alertDialog.show(getParentFragmentManager(), DIALOG_TAG_EDIT_ANSWER);
 	}
 
 	@Override

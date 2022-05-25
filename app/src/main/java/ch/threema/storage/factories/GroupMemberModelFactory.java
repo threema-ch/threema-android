@@ -33,6 +33,7 @@ import java.util.Map;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
 
 public class GroupMemberModelFactory extends ModelFactory {
@@ -195,13 +196,12 @@ public class GroupMemberModelFactory extends ModelFactory {
 		return null;
 	}
 
-	public Map<String, Integer> getColors(int groupId) {
-		//TODO use const instead fix table names!
-		Cursor c = this.databaseService.getReadableDatabase().rawQuery("SELECT c.identity, c.color " +
-				"FROM group_member gm " +
-				"INNER JOIN contacts c " +
-				"	ON c.identity = gm.identity " +
-				"WHERE gm.groupId = ? AND LENGTH(c.identity) > 0 AND LENGTH(c.color) > 0", new String[]{
+	public Map<String, Integer> getIDColorIndices(int groupId) {
+		Cursor c = this.databaseService.getReadableDatabase().rawQuery("SELECT c." + ContactModel.COLUMN_IDENTITY + ", c." + ContactModel.COLUMN_ID_COLOR_INDEX +
+				" FROM " + GroupMemberModel.TABLE + " gm " +
+				"INNER JOIN " + ContactModel.TABLE + " c " +
+				"	ON c." + ContactModel.COLUMN_IDENTITY + " = gm." + GroupMemberModel.COLUMN_IDENTITY + " " +
+				"WHERE gm." + GroupMemberModel.COLUMN_GROUP_ID + " = ? AND LENGTH(c." + ContactModel.COLUMN_IDENTITY + ") > 0 AND LENGTH(c." + ContactModel.COLUMN_ID_COLOR_INDEX + ") > 0", new String[]{
 				String.valueOf(groupId)
 		});
 		Map<String, Integer>  colors = new HashMap<>();

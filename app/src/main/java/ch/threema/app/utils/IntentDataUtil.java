@@ -268,9 +268,9 @@ public class IntentDataUtil {
 		return -1;
 	}
 
-	public static int getDistributionListId(Intent intent) {
+	public static long getDistributionListId(Intent intent) {
 		if(intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-			return intent.getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, -1);
+			return intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, -1);
 		}
 		return -1;
 	}
@@ -388,7 +388,7 @@ public class IntentDataUtil {
 			int groupId = extras.getInt(ThreemaApplication.INTENT_DATA_GROUP, 0);
 			return groupService.createReceiver(groupService.getById(groupId));
 		} else if (extras.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-			int distId = extras.getInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
+			long distId = extras.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
 			return distributionListService.createReceiver(distributionListService.getById(distId));
 		}
 
@@ -432,8 +432,8 @@ public class IntentDataUtil {
 			}
 		}
 		if (intent.hasExtra(INTENT_DATA_DIST_LIST)) {
-			ArrayList<Integer> distributionListIds = intent.getIntegerArrayListExtra(INTENT_DATA_DIST_LIST);
-			for (int distributionListId : distributionListIds) {
+			ArrayList<Long> distributionListIds = (ArrayList<Long>) intent.getSerializableExtra(INTENT_DATA_DIST_LIST);
+			for (long distributionListId : distributionListIds) {
 				messageReceivers.add(distributionListService.createReceiver(distributionListService.getById(distributionListId)));
 			}
 		}
@@ -467,7 +467,7 @@ public class IntentDataUtil {
 	public static Intent addMessageReceiversToIntent(Intent intent, MessageReceiver[] messageReceivers) {
 		ArrayList<String> contactIds = new ArrayList<>();
 		ArrayList<Integer> groupIds = new ArrayList<>();
-		ArrayList<Integer> distributionListIds = new ArrayList<>();
+		ArrayList<Long> distributionListIds = new ArrayList<>();
 
 		for (MessageReceiver messageReceiver: messageReceivers) {
 			switch (messageReceiver.getType()) {

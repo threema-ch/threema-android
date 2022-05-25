@@ -258,6 +258,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="emoji_emotions">ifadeler &amp; İnsanlar</string>
     <string name="emoji_activities">Faaliyetler</string>
     <string name="emoji_flags">Bayraklar</string>
+    <string name="emoji_search">Emojileri ara</string>
+    <string name="emoji_search_no_result">"Arama sonucu bulunamadı "</string>
     <string name="title_lock">Kilit</string>
     <string name="new_messages_locked">Yeni Mesajlar mevcut</string>
     <string name="new_messages_locked_description">Yeni mesajları görüntülemek için dokunun.</string>
@@ -592,7 +594,8 @@ Yalnızca WiFi ağlarına dosya yüklemenizi ve indirmenizi öneririz .</string>
     <string name="blocked">Bloke edilmiş</string>
     <string name="name">Ad</string>
     <string name="privacy_policy">Gizlilik Politikası</string>
-    <string name="terms_of_service">Şartlar ve koşullar</string>
+    <string name="terms_of_service">"Kullanım Şartları "</string>
+    <string name="eula">Son kullanıcı Lisans Anlaşması</string>
     <string name="save_group_changes">Gruptaki değişiklikleri kaydetmek ister misiniz?</string>
     <string name="prefs_title_fontsize">Yazı Boyutu</string>
     <string name="fontsize_normal">Düzenli</string>
@@ -602,6 +605,8 @@ Yalnızca WiFi ağlarına dosya yüklemenizi ve indirmenizi öneririz .</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d sohbet silindi</string>
     <string name="prefs_sendlog">Günlük Gönder</string>
     <string name="prefs_sendlog_summary">Sorun olması durumunda daha ayrıntılı analiz için kayıt dosyasını Threema\'ya gönderin</string>
+    <string name="prefs_exportlog">Günlüğü Dışa Aktar</string>
+    <string name="prefs_exportlog_summary">Günlük dosyasını başka bir uygulamayla paylaşın</string>
     <string name="permission_storage_required">Medya kaydetmek veya göndermek için Threema\'nın depolama alanına erişmesine izin verin.</string>
     <string name="permission_location_required">Konum göndermek için Threema\'nın konumunuza erişmesine izin verin.</string>
     <string name="permission_contacts_required">Kişileri göndermek için Threema\'nın kişilere erişmesine izin verin.</string>
@@ -1039,7 +1044,21 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="delete">Sil</string>
     <string name="num_archived_chats">%d arşivlenmiş sohbet</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="tooltip_identity_popup">Threema Kimliğinizi hızlı bir şekilde görüntülemek veya diğer kişilerin kimliklerini taramak için buraya dokunun</string>
+    <string name="whatsnew_title">"%1$s %2$s'a hoş geldiniz "</string>
+    <string name="whatsnew_headline"><![CDATA[<p> <b> Android için %s sürümündeki yeni özellikler: </b> </p>
+<p>
+&yenilik; Unicode 13.1 standardına uygun birçok yeni emoji. 😵‍💫❤️‍🔥
+</p> <p>
+&eklenen; Emojileri ada veya anlama göre arayın (17 dilde mevcuttur).
+</p> <p>
+&eklenen; Kendi profil resmi olmayan kişiler ve gruplar için deterministik renkler. Bu yeni renkler, platformlar ve cihazlar arasında çalışacak.
+</p> <p>
+&eklenen; Birçok listede iyileştirilmiş kaydırma performansı.
+</p> <p>
+&eklenen; Medya Düzenleyici için optimize edilmiş düzen. 256\'ya gönderilmeden önce düzenlenebilecek medya öğelerinin sayısı artırıldı.
+</p> <p>
+&eklenen; Birçok küçük iyileştirme ve hata düzeltmesi.
+</p> ]]></string>
     <string name="tap_to_start">%s\'i şimdi başlatmak için buraya hafifçe vurun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme yolu</string>
@@ -1059,7 +1078,7 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="edit_type_content_description">görüntüleyin veya düzenleyin %1$s %2$s öğesini görüntüleyin veya düzenleyin</string>
     <string name="group">Grup</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p> Gizlilik Politikamız aşağıdaki değişikliği yansıtacak şekilde güncellendi: </p> <p> %1$s artık harita ve İÇN verileri sağlamak için Google Play ve Google Haritalar\'a bağlı değil. </p> Lütfen gizlilik politikasının tamamını <a href="%2$s"> burada </a> inceleyin .]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Hizmetleri yüklenemedi. «Push» konumuna geçilemiyor.</string>
+    <string name="play_services_not_installed_unable_to_use_push">"Hizmetler yüklenmedi. Google FCM veya HMS push'a geçilemiyor. "</string>
     <string name="unable_to_get_current_location">Mevcut konum belirlenemedi.</string>
     <string name="lp_search_place_min_chars">Bir yer aramak için lütfen en az üç karakter girin.</string>
     <string name="lp_search_place_no_matches">Eşleşen yer bulunamadı. Lütfen sorgunuzu değiştirin.</string>
@@ -1377,4 +1396,10 @@ yöneticisiz kalır . Diğer üyeler yine de sohbet edebilecek, ancak artık de�
     <string name="prefs_title_use_system_ringtone">Sistem zil sesini kullan</string>
     <string name="organization_type">Kuruluş</string>
     <string name="permission_bluetooth_connect_required">Bağlı Bluetooth kulaklıkları bulmak için \"Yakındaki cihazlar\" iznini etkinleştirin</string>
+    <string name="threema_push_start_webclient_sessions_manually">Threema Push etkin. Threema Web ve Masaüstü oturumları bu nedenle manuel olarak başlatılmalıdır.</string>
+    <string name="tooltip_multiple_recipients_title">Yeni: Birden çok alıcı</string>
+    <string name="tooltip_multiple_recipients_text">Aynı mesajı göndermek üzere birden fazla alıcı seçmek için uzun dokunun.</string>
+    <string name="synchronizing">Senkronizasyon...</string>
+    <string name="self_updater_installation_failed">Güncelleştirme başarısız oldu. <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manually adresinden manuel kurulum gerçekleştiriniz.</string>
+    <string name="wizard_incompatible_contact_sync_params">"Uyumsuz MDM parametreleri seti var. Kullanıcı kısıtlaması DISALLOW_MODIFY_ACCOUNTS ayarlanmışsa, Threema MDM parametresi th_contact_sync true olarak ayarlanamaz. Lütfen cihaz yöneticinize başvurun. "</string>
 </resources>

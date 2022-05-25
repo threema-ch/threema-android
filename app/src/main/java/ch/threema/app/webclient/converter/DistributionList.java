@@ -21,11 +21,10 @@
 
 package ch.threema.app.webclient.converter;
 
-import androidx.annotation.AnyThread;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.AnyThread;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
@@ -97,7 +96,7 @@ public class DistributionList extends Converter {
 
 	public static String getColor(DistributionListModel distributionList) throws ConversionException {
 		try {
-			return String.format("#%06X", (0xFFFFFF & getDistributionListService().getPrimaryColor(distributionList)));
+			return String.format("#%06X", (0xFFFFFF & distributionList.getColorLight()));
 		} catch (NullPointerException e) {
 			throw new ConversionException(e.toString());
 		}

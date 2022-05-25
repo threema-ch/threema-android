@@ -48,35 +48,6 @@ import ch.threema.base.utils.LoggingUtil;
 public class DownloadUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadUtil");
 
-	private static DownloadState newestDownloadState;
-
-	/**
-	 * Contains the necessary information to find the downloaded apk
-	 */
-	public interface DownloadState {
-		/**
-		 * The id that can be used to check if the correct download has succeeded (or failed)
-		 */
-		long getDownloadId();
-
-		/**
-		 * The destination uri of the apk (is used from >= Android N)
-		 */
-		Uri getDestinationUri();
-
-		/**
-		 * The destination file of the apk (is used until Android M)
-		 */
-		File getDestinationFile();
-	}
-
-	public static DownloadState getNewestDownloadState(long extraDownloadId) {
-		if (newestDownloadState != null && newestDownloadState.getDownloadId() == extraDownloadId) {
-			return newestDownloadState;
-		}
-		return null;
-	}
-
 	/**
 	 * Get the external download path. This is NOT used in Android version N or higher.
 	 *
@@ -94,14 +65,16 @@ public class DownloadUtil {
 	}
 
 	/**
-	 * For Android N and higher, this returns the default update filename from string resources. For
-	 * older Android versions, it returns a filename that does not exist yet in the download path.
+	 * This returns the default update filename from string resources. If the apk should be downloaded
+	 * into the public external downloads directory (needed on older devices < Android N), then a
+	 * filename is chosen that does not yet exist in the downloads directory.
 	 *
-	 * @param context the context is needed for getting
+	 * @param context the context is needed for getting the filename from resources
+	 * @param toPublicExternalDirectory if true, the filename will be unique in the downloads directory
 	 * @return the filename of the new apk file
 	 */
-	private static String getFileName(Context context) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+	private static String getFileName(Context context, boolean toPublicExternalDirectory) {
+		if (!toPublicExternalDirectory) {
 			return context.getString(R.string.shop_download_filename);
 		}
 
@@ -125,21 +98,29 @@ public class DownloadUtil {
 	 *
 	 * @param context     the application context
 	 * @param downloadUrl the download URL
-	 * @return the download state on success, null otherwise
+	 * @param toPublicExternalDirectory if true, the file is downloaded into the public downloads directory. This parameter is ignored on Android versions < N
+	 * @return the download id
 	 */
-	public static @Nullable
-	DownloadState downloadUpdate(@NonNull Context context, @Nullable String downloadUrl) {
-		logger.info("Downloading update");
+	public static long downloadUpdate(@NonNull Context context, @Nullable String downloadUrl, boolean toPublicExternalDirectory) {
+		// On older android versions we need to download it into the public external downloads directory
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+			toPublicExternalDirectory = true;
+		}
+		if (toPublicExternalDirectory) {
+			logger.info("Downloading update to public downloads directory");
+		} else {
+			logger.info("Downloading update to default location");
+		}
 
 		if (downloadUrl == null) {
-			return null;
+			return -1;
 		}
 
 		Uri uri = Uri.parse(downloadUrl).buildUpon()
 			.appendQueryParameter("download", "true")
 			.build();
 
-		return newestDownloadState = download(context, uri);
+		return download(context, uri, toPublicExternalDirectory);
 	}
 
 	/**
@@ -147,46 +128,33 @@ public class DownloadUtil {
 	 *
 	 * @param context the application context
 	 * @param url     the url of the apk file
-	 * @return the download state on success, null otherwise
+	 * @param toPublicExternalDirectory if true, the file is downloaded into the public downloads directory
+	 * @return the download id
 	 */
-	private static DownloadState download(
+	private static long download(
 		@NonNull Context context,
-		@NonNull Uri url
+		@NonNull Uri url,
+		boolean toPublicExternalDirectory
 	) {
-		String destinationFileName = getFileName(context);
+		String destinationFileName = getFileName(context, toPublicExternalDirectory);
 
 		logger.info("Update target file name: {}", destinationFileName);
 		try {
 			DownloadManager.Request request = new DownloadManager.Request(url);
 			request.setTitle(destinationFileName);
 			request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+			if (toPublicExternalDirectory) {
 				request.setDestinationUri(Uri.fromFile(new File(getDownloadPath(), destinationFileName)));
 			}
 			// enqueue file for download
 			DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 			final long id = manager.enqueue(request);
-			logger.info("Enqueued update download");
+			logger.info("Enqueued update download with id {}", id);
 
-			return new DownloadState() {
-				@Override
-				public long getDownloadId() {
-					return id;
-				}
-
-				@Override
-				public Uri getDestinationUri() {
-					return manager.getUriForDownloadedFile(id);
-				}
-
-				@Override
-				public File getDestinationFile() {
-					return new File(getDownloadPath().getPath(), destinationFileName);
-				}
-			};
+			return id;
 		} catch (Exception e) {
 			logger.error("Exception while downloading update", e);
-			return null;
+			return -1;
 		}
 	}
 

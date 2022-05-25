@@ -245,6 +245,8 @@
     <string name="emoji_emotions">Smajlíci a lidé</string>
     <string name="emoji_activities">Aktivity</string>
     <string name="emoji_flags">Vlajky</string>
+    <string name="emoji_search">Vyhledat emoji</string>
+    <string name="emoji_search_no_result">Žádné výsledky vyhledávání</string>
     <string name="title_lock">Uzamknout</string>
     <string name="new_messages_locked">Jsou dostupné nové zprávy</string>
     <string name="new_messages_locked_description">Klepnutím zobrazíte nové zprávy.</string>
@@ -575,7 +577,8 @@ možné je obnovit.</string>
     <string name="blocked">blokovaný</string>
     <string name="name">Název</string>
     <string name="privacy_policy">Zásady ochrany osobních údajů</string>
-    <string name="terms_of_service">Smluvní podmínky</string>
+    <string name="terms_of_service">Podmínky služby</string>
+    <string name="eula">Licenční smlouva s koncovým uživatelem</string>
     <string name="save_group_changes">Přejete si uložit provedené změny ve skupině?</string>
     <string name="prefs_title_fontsize">Velikost textu</string>
     <string name="fontsize_normal">Základní</string>
@@ -585,6 +588,8 @@ možné je obnovit.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">Odstraněných konverzací: %d</string>
     <string name="prefs_sendlog">Odeslat záznam</string>
     <string name="prefs_sendlog_summary">Odeslat soubor se záznamem společnosti Threema pro další analýzu, pokud nastanou problémy</string>
+    <string name="prefs_exportlog">Exportovat záznam</string>
+    <string name="prefs_exportlog_summary">Sdílet soubor se záznamem s jinou aplikací</string>
     <string name="permission_storage_required">Chcete‑li uložit či odeslat média, povolte aplikaci Threema oprávnění přístupu k úložišti.</string>
     <string name="permission_location_required">Chcete‑li odeslat polohu, povolte aplikaci Threema oprávnění přístupu k poloze vašeho zařízení.</string>
     <string name="permission_contacts_required">Chcete‑li odeslat kontakty, povolte aplikaci Threema oprávnění přístupu ke kontaktům.</string>
@@ -1012,7 +1017,23 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="delete">Odstranit</string>
     <string name="num_archived_chats">Archivovaných konverzací: %d</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
-    <string name="tooltip_identity_popup">Klepnutím sem zobrazíte vaše Threema ID nebo naskenujete ID ostatních uživatelů</string>
+    <string name="whatsnew_title">Vítejte v %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nové funkce v této verzi aplikace %s pro Android:</b></p>
+		<p>
+		&bull; Spousta nových emoji v souladu se standardem Unicode 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Vyhledávejte emoji podle názvu nebo významu (dostupné v 17 jazycích).
+		</p><p>
+		&bull; Deterministické barvy pro kontakty a skupiny, které nemají svůj vlastní profilový obrázek. Tyto nové barvy budou fungovat napříč platformami a zařízeními.
+		</p><p>
+		&bull; V mnoha seznamech byl vylepšen výkon scrollování.
+		</p><p>
+		&bull; Optimalizované rozvržení pro Editor médií. Byl zvýšen počet mediálních položek, které mohou být před odesláním editovány, na 256.
+		</p><p>
+		&bull; Spousta menších vylepšení a opravy chyb.
+		</p>
+		]]></string>
     <string name="tap_to_start">Klepnutím sem spustíte aplikaci %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pro zálohu dat</string>
@@ -1032,7 +1053,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="edit_type_content_description">Zobrazit nebo upravit %1$s %2$s</string>
     <string name="group">Skupina</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Naše zásady ochrany osobních údajů byly aktualizovány tak, aby odpovídaly následující změně:</p><p>Údaje aplikace %1$s již nejsou závislé na službě Google Play a Mapách Google. Nejsou poskytována data z map a ze zajímavých míst.</p>Celé znění zásad ochrany osobních údajů najdete <a href="%2$s">zde</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Služby Google Play nejsou nainstalovány. Nelze tak použít push oznámení.</string>
+    <string name="play_services_not_installed_unable_to_use_push">Služby Google Play nejsou nainstalovány. Nelze proto použít Google FCM nebo HMS push.</string>
     <string name="unable_to_get_current_location">Nelze určit aktuální polohu.</string>
     <string name="lp_search_place_min_chars">Chcete‑li vyhledat místo, zadejte alespoň tři znaky.</string>
     <string name="lp_search_place_no_matches">Nebyla nalezena žádná odpovídající místa. Upravte prosím váš dotaz.</string>
@@ -1350,4 +1371,9 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="organization_type">Organizace</string>
     <string name="permission_bluetooth_connect_required">Povolte oprávnění „Zařízení v okolí“ k vyhledání připojených Bluetooth náhlavních souprav</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push je aktivní. Relace Threema Web a Desktop proto musí být spuštěny manuálně.</string>
+    <string name="tooltip_multiple_recipients_title">Nové: Více příjemců</string>
+    <string name="tooltip_multiple_recipients_text">Dlouhým klepnutím vyberte více příjemců, kterým poté můžete odeslat stejnou zprávu.</string>
+    <string name="synchronizing">Synchronizace...</string>
+    <string name="self_updater_installation_failed">Stažení aktualizace selhalo. Stáhněte a nainstalujte aktualizaci z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ručně.</string>
+    <string name="wizard_incompatible_contact_sync_params">Jsou nastaveny nekompatibilní MDM parametry. Threema MDM parametr th_contact_sync nemůže být nastaven na „true“, jestliže je nastaveno uživatelské omezení DISALLOW_MODIFY_ACCOUNTS. Kontaktujte prosím správce vašeho zařízení.</string>
 </resources>

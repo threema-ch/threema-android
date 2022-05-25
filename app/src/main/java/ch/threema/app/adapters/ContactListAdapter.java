@@ -22,8 +22,6 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +87,6 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 	private List<ContactModel> values, ovalues, recentlyAdded = new ArrayList<>();
 	private ContactListFilter contactListFilter;
 	private final AvatarListener avatarListener;
-	private final Bitmap defaultContactImage;
 	private final HashMap<String, Integer> alphaIndexer = new HashMap<String, Integer>();
 	private final HashMap<Integer, String> positionIndexer = new HashMap<Integer, String>();
 	private String[] sections;
@@ -110,7 +107,6 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		this.contactService = contactService;
 		this.preferenceService = preferenceService;
 		this.blackListIdentityService = blackListIdentityService;
-		this.defaultContactImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_contact);
 		this.avatarListener = avatarListener;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -380,9 +376,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		}
 
 		AvatarListItemUtil.loadAvatar(
-				position,
 				contactModel,
-				this.defaultContactImage,
 				this.contactService,
 				holder);
 

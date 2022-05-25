@@ -70,6 +70,33 @@
 		</FrameLayout>
 
 		<FrameLayout
+			android:id="@+id/item_count_container"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_above="@+id/bottom_panel"
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="8dp"
+			android:layout_marginBottom="8dp"
+			android:layout_alignParentLeft="true"
+			android:background="@drawable/shape_mediaviewer_caption_background"
+			android:paddingBottom="4dp"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:paddingTop="4dp">
+
+			<TextView
+				android:id="@+id/item_count"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:textColor="@android:color/white"
+				android:maxLines="1"
+				android:ellipsize="end"
+				android:textSize="12sp"/>
+
+		</FrameLayout>
+
+		<FrameLayout
 			android:id="@+id/recipient_container"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -100,7 +127,7 @@
 			android:id="@+id/bottom_panel"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_above="@+id/gridview"
+			android:layout_above="@+id/item_list"
 			android:layout_alignWithParentIfMissing="true"
 			android:paddingTop="4dp"
 			android:paddingBottom="4dp"
@@ -174,17 +201,13 @@
 
 		</FrameLayout>
 
-		<ch.threema.app.ui.draggablegrid.DynamicGridView
-			android:id="@+id/gridview"
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/item_list"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
-			android:drawSelectorOnTop="false"
+			android:scrollbars="none"
 			android:gravity="center"
-			android:horizontalSpacing="0dp"
-			android:listSelector="@drawable/media_gallery_item_selector"
-			android:numColumns="@integer/gridview_num_columns"
-			android:verticalSpacing="0dp"
 			android:background="#77000000"/>
 
 	</RelativeLayout>

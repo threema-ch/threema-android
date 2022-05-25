@@ -81,6 +81,14 @@ public class AvatarView extends FrameLayout {
 		avatar.requestLayout();
 	}
 
+	/**
+	 * This returns the avatar image view. This is mainly needed for glide to directly set the avatars.
+	 * @return the image view of the avatar drawable
+	 */
+	public ImageView getAvatarView() {
+		return avatar;
+	}
+
 	public void setBadgeVisible(boolean visibile) {
 		badge.setVisibility(visibile ? VISIBLE : GONE);
 	}

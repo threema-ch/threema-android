@@ -36,6 +36,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.listeners.ServerMessageListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
@@ -55,6 +56,7 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 	private static final String FIELD_QUOTE = "quote";
 	private static final String FIELD_QUOTE_IDENTITY = "identity";
 	private static final String FIELD_QUOTE_TEXT = "text";
+	private static final String FIELD_QUOTE_MESSAGE_ID = "messageId";
 
 	@AnyThread
 	public TextMessageCreateHandler(MessageDispatcher dispatcher,
@@ -82,14 +84,27 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 					false,
 					new String[]{
 						FIELD_QUOTE_IDENTITY,
-						FIELD_QUOTE_TEXT
+						FIELD_QUOTE_TEXT,
+						FIELD_QUOTE_MESSAGE_ID,
 					}
 				);
-				// TODO: provide AbstractMessageModel of quoted message
-				text = QuoteUtil.quote(text,
+
+				AbstractMessageModel quotedMessageModel = null;
+				int quotedMessageID = Integer.valueOf(quoteMap.get(FIELD_QUOTE_MESSAGE_ID).toString());
+				if (receivers.get(0) instanceof ContactMessageReceiver) {
+					quotedMessageModel = messageService.getContactMessageModel(quotedMessageID, true);
+				} else if (receivers.get(0) instanceof GroupMessageReceiver) {
+					quotedMessageModel = messageService.getGroupMessageModel(quotedMessageID, true);
+				} else {
+					logger.info("Unsupported receiver type for quotes");
+				}
+
+				if (quotedMessageModel != null) {
+					text = QuoteUtil.quote(text,
 						quoteMap.get(FIELD_QUOTE_IDENTITY).toString(),
-						quoteMap.get(FIELD_TEXT).toString(),
-						null);
+						quoteMap.get(FIELD_QUOTE_TEXT).toString(),
+						quotedMessageModel);
+				}
 			}
 			catch (MessagePackException x) {
 				logger.error("Ignoring MessagePackException when handling quote", x);

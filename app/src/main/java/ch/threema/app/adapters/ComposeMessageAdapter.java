@@ -35,9 +35,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ListView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -98,11 +102,43 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	private int groupId;
 	private final EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
 	private CharSequence currentConstraint = "";
+	private final int bubblePaddingLeftRight;
+	private final int bubblePaddingBottom;
+	private final int bubblePaddingBottomGrouped;
 
 	private int firstUnreadPos = -1, unreadMessagesCount;
 	private final Context context;
 
 	private final LayoutInflater layoutInflater;
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({
+		TYPE_SEND,
+		TYPE_RECV,
+		TYPE_STATUS,
+		TYPE_FIRST_UNREAD,
+		TYPE_MEDIA_SEND,
+		TYPE_MEDIA_RECV,
+		TYPE_LOCATION_SEND,
+		TYPE_LOCATION_RECV,
+		TYPE_AUDIO_SEND,
+		TYPE_AUDIO_RECV,
+		TYPE_FILE_SEND,
+		TYPE_FILE_RECV,
+		TYPE_BALLOT_SEND,
+		TYPE_BALLOT_RECV,
+		TYPE_ANIMGIF_SEND,
+		TYPE_ANIMGIF_RECV,
+		TYPE_TEXT_QUOTE_SEND,
+		TYPE_TEXT_QUOTE_RECV,
+		TYPE_STATUS_DATA_SEND,
+		TYPE_STATUS_DATA_RECV,
+		TYPE_DATE_SEPARATOR,
+		TYPE_FILE_MEDIA_SEND,
+		TYPE_FILE_MEDIA_RECV,
+		TYPE_FILE_VIDEO_SEND
+	})
+	public @interface ItemType {}
 
 	public static final int TYPE_SEND = 0;
 	public static final int TYPE_RECV = 1;
@@ -128,7 +164,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	public static final int TYPE_FILE_MEDIA_SEND = 21;
 	public static final int TYPE_FILE_MEDIA_RECV = 22;
 	public static final int TYPE_FILE_VIDEO_SEND = 23;
-
 
 	// don't forget to update this after adding new types:
 	private static final int TYPE_MAX_COUNT = TYPE_FILE_VIDEO_SEND + 1;
@@ -204,6 +239,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				maxBubbleTextLength,
 				maxQuoteTextLength
 		);
+
+		this.bubblePaddingLeftRight = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_left_right);
+		this.bubblePaddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_bottom);
+		this.bubblePaddingBottomGrouped = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_bottom_grouped);
 	}
 
 	/**
@@ -240,10 +279,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	}
 
 	@Override
-	public int getItemViewType(int position) {
+	public @ItemType int getItemViewType(int position) {
 		if (position < values.size()) {
 			final AbstractMessageModel m = this.getItem(position);
-			return this.getType(m);
+			return this.getItemType(m);
 		}
 		return TYPE_STATUS;
 	}
@@ -257,7 +296,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		return null;
 	}
 
-	private int getType(AbstractMessageModel m) {
+	private @ItemType int getItemType(AbstractMessageModel m) {
 		if(m != null) {
 			if(m.isStatusMessage()) {
 				// Special handling for data status messages
@@ -270,7 +309,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					case LOCATION:
 						return o ? TYPE_LOCATION_SEND : TYPE_LOCATION_RECV;
 					case IMAGE:
-						return o ? TYPE_MEDIA_SEND : TYPE_MEDIA_RECV;
+						/* fallthrough */
 					case VIDEO:
 						return o ? TYPE_MEDIA_SEND : TYPE_MEDIA_RECV;
 					case VOICEMESSAGE:
@@ -305,8 +344,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		return TYPE_RECV;
 	}
 
-	private int getLayoutByType(int typeId) {
-		switch (typeId) {
+	private @LayoutRes int getLayoutByItemType(@ItemType int itemTypeId) {
+		switch (itemTypeId) {
 			case TYPE_SEND:
 				return R.layout.conversation_list_item_send;
 			case TYPE_RECV:
@@ -367,14 +406,14 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	@NonNull
 	@SuppressLint("WrongViewCast")
 	@Override
-	public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		View itemView = convertView;
 		final ComposeMessageHolder holder;
 		final AbstractMessageModel messageModel = values.get(position);
 		final MessageType messageType = messageModel.getType();
 
-		int itemType = this.getType(messageModel);
-		int itemLayout = this.getLayoutByType(itemType);
+		@ItemType int itemType = this.getItemType(messageModel);
+		int itemLayout = this.getLayoutByItemType(itemType);
 
 		if (messageModel.isStatusMessage() && messageModel instanceof FirstUnreadMessageModel) {
 			firstUnreadPos = position;
@@ -385,10 +424,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			holder = new ComposeMessageHolder();
 			itemView = this.layoutInflater.inflate(itemLayout, parent, false);
 
-			if(itemView != null) {
+			if (itemView != null) {
 				holder.bodyTextView = itemView.findViewById(R.id.text_view);
 				holder.messageBlockView = itemView.findViewById(R.id.message_block);
-				if (itemType != TYPE_STATUS && itemType != TYPE_FIRST_UNREAD && itemType != TYPE_DATE_SEPARATOR) {
+				if (isUserMessage(itemType)) {
 					holder.senderView = itemView.findViewById(R.id.group_sender_view);
 					holder.senderName = itemView.findViewById(R.id.group_sender_name);
 					holder.dateView = itemView.findViewById(R.id.date_view);
@@ -421,14 +460,21 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			}
 
 			// make sure height is re-set to zero to force redraw of item layout if it's recycled after swipe-to-delete
-			if (itemType == TYPE_STATUS || itemType == TYPE_FIRST_UNREAD || itemType == TYPE_DATE_SEPARATOR) {
-				itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, 0));
-			} else {
+			if (isUserMessage(itemType)) {
 				itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, 0));
+				if (messageModel.isOutbox()) {
+					holder.messageBlockView.setBackgroundResource(R.drawable.bubble_send_selector);
+				} else {
+					holder.messageBlockView.setBackgroundResource(R.drawable.bubble_recv_selector);
+				}
+
+			} else {
+				itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, 0));
 			}
 		}
 		holder.position = position;
 
+		final boolean showAvatar = adjustMarginsForMessageGrouping(holder, itemView, itemType);
 		final ChatAdapterDecorator decorator;
 
 		if (itemType == TYPE_FIRST_UNREAD) {
@@ -487,6 +533,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 
 			if(groupId > 0) {
 				decorator.setGroupMessage(groupId, this.identityColors);
+				decorator.setGroupedMessage(showAvatar);
 			}
 
 			if(this.onClickListener != null) {
@@ -518,12 +565,93 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			/* show matches in decorator */
 			decorator.setFilter(convListFilter.getFilterString());
 		}
-		if(parent != null && parent instanceof ListView) {
+		if (parent != null && parent instanceof ListView) {
 			decorator.setInListView(((ListView) parent));
 		}
 		decorator.decorate(holder, position);
 
 		return itemView;
+	}
+
+	/**
+	 * Adjust margins of item view so that items from the same sender may be displayed in a grouped fashion
+	 * To be used in getView() call
+	 * @param holder Holder object containing the current position within the Adapter in holder.position
+	 * @param itemView The View for the current item
+	 * @param itemType The Type the item is representing
+	 * @return true if it's the first item in a group, false if it's a consecutive iitem
+	 */
+	private boolean adjustMarginsForMessageGrouping(ComposeMessageHolder holder, View itemView, @ItemType int itemType) {
+		boolean isFirstItemInGroup = true;
+
+		if (itemView != null) {
+			int paddingBottom = bubblePaddingBottom;
+			AbstractMessageModel currentItem = values.get(holder.position);
+
+			if (isUserMessage(itemType)) {
+				if (values.size() > holder.position + 1) {
+					AbstractMessageModel nextItem = values.get(holder.position + 1);
+
+					if (isUserMessage(getItemType(nextItem))) {
+						if (isConsecutiveItem(currentItem, nextItem)) {
+							paddingBottom = bubblePaddingBottomGrouped;
+						}
+					}
+				}
+				if (holder.position > 0) {
+					AbstractMessageModel previousItem = values.get(holder.position - 1);
+
+					if (isUserMessage(getItemType(previousItem))) {
+						if (isConsecutiveItem(currentItem, previousItem)) {
+							if (currentItem.isOutbox()) {
+								holder.messageBlockView.setBackgroundResource(R.drawable.bubble_send_selector_no_arrow);
+							} else {
+								holder.messageBlockView.setBackgroundResource(R.drawable.bubble_recv_selector_no_arrow);
+							}
+							isFirstItemInGroup = false;
+						}
+					}
+				}
+			}
+
+			if (itemView.getPaddingBottom() != paddingBottom) {
+				itemView.setPadding(bubblePaddingLeftRight, 0, bubblePaddingLeftRight, paddingBottom);
+			}
+		}
+		return isFirstItemInGroup;
+	}
+
+	/**
+	 * Detect if the provided two messageModels are from the same sender
+	 * @param firstModel AbstractMessageModel of first item
+	 * @param secondModel AbstractMessageModel of second item
+	 * @return true if sender is equal and items may possibly be grouped
+	 */
+	private boolean isConsecutiveItem(@Nullable AbstractMessageModel firstModel, @Nullable AbstractMessageModel secondModel) {
+		if (firstModel != null && secondModel != null) {
+			if (firstModel.isOutbox() == secondModel.isOutbox()) {
+				if (groupId > 0) {
+					if (firstModel.getIdentity() == null) {
+						// I am the sender
+						return secondModel.getIdentity()  == null;
+					} else {
+						return firstModel.getIdentity().equals(secondModel.getIdentity());
+					}
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the message of the provided type is a message originating from a user or if it's a system, status or stub/placeholder message
+	 * @param itemType Type to check
+	 * @return true if it's a user-generated message, false otherwise
+	 */
+	private boolean isUserMessage(@ItemType int itemType) {
+		return (itemType != TYPE_STATUS && itemType != TYPE_FIRST_UNREAD && itemType != TYPE_DATE_SEPARATOR);
 	}
 
 	public class ConversationListFilter extends Filter {

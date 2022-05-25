@@ -285,6 +285,8 @@
 	<string name="emoji_recent">Zuletzt</string>
 	<string name="emoji_emotions">Emotionen</string>
 	<string name="emoji_activities">Aktivitäten</string>
+	<string name="emoji_search">Emoji suchen</string>
+	<string name="emoji_search_no_result">Keine Suchergebnisse</string>
 	<string name="title_lock">Sperren</string>
 	<string name="new_messages_locked">Neue Nachrichten verfügbar</string>
 	<string name="new_messages_locked_description">Zum Anzeigen berühren</string>
@@ -1135,7 +1137,25 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="delete">Löschen</string>
 	<string name="num_archived_chats">%d archivierte Chats</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="tooltip_identity_popup">Tippen Sie hier, um schnell Ihre Threema-ID anzuzeigen oder die IDs von anderen Personen zu scannen</string>
+	<string name="whatsnew_title">Willkommen zu %1$s %2$s</string>
+	<string name="whatsnew_headline">
+		<![CDATA[
+		<p><b>Neue Funktionen in dieser Version von %s für Android</b></p>
+		<p>
+		&bull; Viele neue Emojis gemäss dem Unicode 13.1-Standard. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Suche nach Emojis nach Namen oder Bedeutung (verfügbar in 17 Sprachen).
+		</p><p>
+		&bull; Deterministische Farben für Kontakte und Gruppen, die kein eigenes Profilbild haben. Diese neuen Farben sind künftig plattform- und geräteübergreifend.
+		</p><p>
+		&bull; Verbesserte Scroll-Performance in vielen Listen.
+		</p><p>
+		&bull; Optimiertes Layout für den Medieneditor. Die Anzahl der Medienelemente, die vor dem Senden bearbeitet werden können, wurde auf 256 erhöht.
+		</p><p>
+		&bull; Viele kleine Verbesserungen und Fehlerbehebungen.
+		</p>
+		]]>
+	</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
 	<string name="two_years">2 Jahre</string>
 	<string name="invalid_backup_path">Ungültiger Backup-Pfad</string>
@@ -1155,7 +1175,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="edit_type_content_description">%1$s %2$s anzeigen oder bearbeiten</string>
 	<string name="group">Gruppe</string>
 	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Unsere Datenschutzerklärung wurde angepasst, um die folgende Änderung widerzuspiegeln:</p><p>%1$s ist nicht mehr von Google Play und Google Maps abhängig, um Karten- und OVI-Daten bereitzustellen.</p>Bitte überprüfen Sie die vollständige Datenschutzerklärung <a href="%2$s">hier</a>.]]></string>
-	<string name="play_services_not_installed_unable_to_use_push">Dienste nicht installiert. Kann nicht auf «Push» umschalten.</string>
+	<string name="play_services_not_installed_unable_to_use_push">Dienste nicht installiert. Kann nicht auf Google FCM- oder HMS-Push umschalten.</string>
 	<string name="unable_to_get_current_location">Der aktuelle Standort kann nicht ermittelt werden.</string>
 	<string name="lp_search_place_min_chars">Bitte geben Sie mindestens 3 Zeichen ein, um nach einem Ort zu suchen.</string>
 	<string name="lp_search_place_no_matches">Keine übereinstimmenden Orte gefunden. Bitte ändern Sie Ihre Abfrage.</string>
@@ -1461,4 +1481,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="tooltip_multiple_recipients_title">Neu: Mehrere Empfänger</string>
 	<string name="tooltip_multiple_recipients_text">Lang tippen, um mehrere Empfänger zu wählen und allen die gleiche Nachricht zu senden.</string>
 	<string name="synchronizing">Synchronisation läuft…</string>
+	<string name="self_updater_installation_failed">Der Download des Updates ist fehlgeschlagen. Bitte laden Sie das Update von der Webseite <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> herunter und installieren Sie es manuell.</string>
+	<string name="wizard_incompatible_contact_sync_params">Es sind inkompatible MDM Parameter gesetzt. Der Threema MDM Parameter th_contact_sync kann nicht auf true gesetzt werden, wenn die Restriction DISALLOW_MODIFY_ACCOUNTS aktiviert ist. Bitte kontaktieren Sie Ihren Systemadministator.</string>
 </resources>

@@ -654,7 +654,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				GroupModel model;
 
 				try {
-					Bitmap avatar = groupService.getAvatar(groupModel, true);
+					Bitmap avatar = groupService.getAvatar(groupModel, true, false);
 
 					model = groupService.createGroup(
 							newGroupName,

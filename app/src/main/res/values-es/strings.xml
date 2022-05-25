@@ -23,7 +23,6 @@
     <string name="compose_message_and_enter">Introducir mensaje</string>
     <string name="send">Enviar</string>
     <string name="prefs_privacy">Privacidad</string>
-    <string name="terms_of_service">Términos y condiciones</string>
     <string name="prefs_notifications">Notificaciones</string>
     <string name="prefs_chatdisplay">Pantalla de chat</string>
     <string name="prefs_security">Seguridad</string>
@@ -247,6 +246,8 @@
     <string name="emoji_emotions">Caras sonrientes y personas</string>
     <string name="emoji_activities">Actividades</string>
     <string name="emoji_flags">Banderas</string>
+    <string name="emoji_search">Buscar emojis</string>
+    <string name="emoji_search_no_result">Sin resultados de búsqueda</string>
     <string name="title_lock">Bloquear</string>
     <string name="new_messages_locked">Nuevo mensaje disponible</string>
     <string name="new_messages_locked_description">Tocar para mostrar</string>
@@ -579,6 +580,8 @@ almacenado.</string>
     <string name="blocked">bloqueado</string>
     <string name="name">Nombre</string>
     <string name="privacy_policy">Política de privacidad</string>
+    <string name="terms_of_service">Términos del servicio</string>
+    <string name="eula">Contrato de licencia de usuario final</string>
     <string name="save_group_changes">¿Quiere guardar los cambios del grupo?</string>
     <string name="prefs_title_fontsize">Tamaño de texto</string>
     <string name="fontsize_normal">Normal</string>
@@ -588,6 +591,8 @@ almacenado.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) eliminado(s)</string>
     <string name="prefs_sendlog">Enviar registro</string>
     <string name="prefs_sendlog_summary">Envíe un archivo de registro a Threema para su posterior análisis en caso de problemas</string>
+    <string name="prefs_exportlog">Exportar registro</string>
+    <string name="prefs_exportlog_summary">Compartir archivo de registro con otra app</string>
     <string name="permission_storage_required">Para enviar archivos multimedia, permita a Threema acceder a su almacenamiento.</string>
     <string name="permission_location_required">Para enviar una ubicación, permita a Threema acceder a su posición.</string>
     <string name="permission_contacts_required">Para enviar contactos, permita a Threema acceder a su agenda de contactos.</string>
@@ -1019,7 +1024,23 @@ almacenado.</string>
     <string name="delete">Borrar</string>
     <string name="num_archived_chats">%d chats archivados</string>
     <string name="continue_recording">Continuar grabando</string>
-    <string name="tooltip_identity_popup">Toque aquí para visualizar rápidamente su ID de Threema o para escanear el ID de otras personas.</string>
+    <string name="whatsnew_title">Bienvenido a %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nuevas funciones en esta versión de %s para Android:</b></p>
+		<p>
+		&bull; Muchos emojis nuevos de acuerdo con el estándar Unicode 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Búsqueda de emojis por nombre o significado (disponible en 17 idiomas).
+		</p><p>
+		&bull; Colores deterministas para contactos y grupos que no tienen su propia foto de perfil. Estos nuevos colores funcionarán en todas las plataformas y dispositivos.
+		</p><p>
+		&bull; Rendimiento de desplazamiento mejorado en muchas listas.
+		</p><p>
+		&bull; Diseño optimizado para el Editor de archivos multimedia. Se ha aumentado la cantidad de elementos multimedia que se pueden editar antes de enviar a 256.
+		</p><p>
+		&bull; Muchas pequeñas mejoras y correcciones de errores.
+		</p>
+		]]></string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
     <string name="invalid_backup_path">Ruta de backup no válida</string>
@@ -1039,7 +1060,7 @@ almacenado.</string>
     <string name="edit_type_content_description">Ver o editar %1$s %2$s</string>
     <string name="group">Grupo</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Nuestra política de privacidad se ha actualizado para reflejar el siguiente cambio:</p><p>%1$s ya no depende de Google Play y Google Maps para proporcionar datos de mapas y puntos de interés.</p>Por favor, revise la política de privacidad completa <a href="%2$s">aquí </a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Los servicios no están instalados. No se puede cambiar a «push».</string>
+    <string name="play_services_not_installed_unable_to_use_push">Servicios no instalados. No se puede cambiar a Google FCM ni HMS push.</string>
     <string name="unable_to_get_current_location">No se puede determinar la ubicación actual.</string>
     <string name="lp_search_place_min_chars">Introduce tres caracteres como mínimo para buscar un lugar.</string>
     <string name="lp_search_place_no_matches">No se encuentran lugares coincidentes. Modifica tu consulta.</string>
@@ -1358,4 +1379,9 @@ almacenado.</string>
     <string name="organization_type">Organización</string>
     <string name="permission_bluetooth_connect_required">Active el permiso \"Dispositivos cercanos\" para localizar auriculares bluetooth conectados</string>
     <string name="threema_push_start_webclient_sessions_manually">Se ha activado Threema Push. Por lo tanto, las sesiones de Threema Web y Desktop deben iniciarse manualmente.</string>
+    <string name="tooltip_multiple_recipients_title">Nuevo: varios destinatarios</string>
+    <string name="tooltip_multiple_recipients_text">Mantén pulsado para seleccionar varios destinatarios a los que enviar el mismo mensaje.</string>
+    <string name="synchronizing">Sincronizando...</string>
+    <string name="self_updater_installation_failed">Error al descargar la actualización. Descargue e instale la actualización desde <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manualmente.</string>
+    <string name="wizard_incompatible_contact_sync_params">Se han establecido parámetros MDM incompatibles. El parámetro MDM th_contact_sync de Threema no se puede establecer en verdadero si se ha establecido la restricción de usuario DISALLOW_MODIFY_ACCOUNTS. Contacte con el administrador de su dispositivo.</string>
 </resources>

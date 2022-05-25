@@ -37,7 +37,7 @@ public interface DistributionListService extends AvatarService<DistributionListM
 		boolean showHidden();
 	}
 
-	DistributionListModel getById(int id);
+	DistributionListModel getById(long id);
 	DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) throws ThreemaException;
 	DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities, boolean isHidden) throws ThreemaException;
 
@@ -61,8 +61,6 @@ public interface DistributionListService extends AvatarService<DistributionListM
 	DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel);
 
 	String getUniqueIdString(DistributionListModel distributionListModel);
-
-	int getPrimaryColor(DistributionListModel distributionListModel);
 
 	void setIsArchived(DistributionListModel distributionListModel, boolean archived);
 }

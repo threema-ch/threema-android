@@ -285,6 +285,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static boolean isDeviceIdle;
 	private static boolean ipv6 = false;
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
+	private static HashMap<String, String> quoteDrafts = new HashMap<>();
 
 	public static ExecutorService sendMessageExecutorService = Executors.newFixedThreadPool(4);
 	public static ExecutorService sendMessageSingleThreadExecutorService = Executors.newSingleThreadExecutor();
@@ -726,14 +727,21 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		return masterKey;
 	}
 
-	public static void putMessageDraft(String chatId, CharSequence value) {
+	public static void putMessageDraft(String chatId, CharSequence value, @Nullable AbstractMessageModel quotedMessageModel) {
 		if (value == null || value.toString().trim().length() < 1) {
 			messageDrafts.remove(chatId);
+			quoteDrafts.remove(chatId);
 		} else {
 			messageDrafts.put(chatId, value.toString());
+			if (quotedMessageModel != null) {
+				quoteDrafts.put(chatId, quotedMessageModel.getApiMessageId());
+			} else {
+				quoteDrafts.remove(chatId);
+			}
 		}
 		try {
 			getServiceManager().getPreferenceService().setMessageDrafts(messageDrafts);
+			getServiceManager().getPreferenceService().setQuoteDrafts(quoteDrafts);
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
@@ -746,9 +754,17 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		return null;
 	}
 
+	public static String getQuoteDraft(String chatId) {
+		if (quoteDrafts.containsKey(chatId)) {
+			return quoteDrafts.get(chatId);
+		}
+		return null;
+	}
+
 	private static void retrieveMessageDraftsFromStorage() {
 		try {
 			messageDrafts = getServiceManager().getPreferenceService().getMessageDrafts();
+			quoteDrafts = getServiceManager().getPreferenceService().getQuoteDrafts();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="title_section2">Контакти</string>
+    <string name="title_section2">контактів</string>
     <string name="title_section1">Чати</string>
     <string name="title_compose_message">Почати чат</string>
     <string name="title_choose_recipient">Виберіть одержувача</string>
@@ -11,7 +11,7 @@
     <string name="title_enter_id">Вказати ID</string>
     <string name="title_invite_friend">Запросити друга</string>
     <string name="invite_via">Запросити друга через…</string>
-    <string name="invite_email_body">Вітаю!\n\nЯ використовую %1$s — безпечний месенджер, який захищає конфіденційність своїх користувачів.\n\nМій ID Threema: https://threema.id/%2$s\n\nПропоную спілкуватися через %1$s!\n\nДо зв\'язку!\n</string>
+    <string name="invite_email_body">Вітаю!\n\nЯ використовую %1$s — безпечний месенджер, який захищає конфіденційність своїх користувачів.\n\nМій ID Threema: https://threema.id/%2$s\n\nПропоную спілкуватися через %1$s.\n\nДо зв\'язку!\n</string>
     <string name="invite_sms_body">Вітаю! Пропоную використовувати %1$s для безпечного та конфіденційного спілкування. Мій ID Threema: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. Безпечний месенджер для конфіденційного спілкування</string>
     <string name="enter_id_hint">Вкажіть ID Threema</string>
@@ -20,7 +20,7 @@
     <string name="menu_about">Про Threema</string>
     <string name="menu_add_contact">Додати контакт</string>
     <string name="menu_done">OK</string>
-    <string name="compose_message_and_enter">Написати повідомлення…</string>
+    <string name="compose_message_and_enter">Написати…</string>
     <string name="send">Надіслати</string>
     <string name="prefs_privacy">Конфіденційність</string>
     <string name="prefs_notifications">Звуки та сповіщення</string>
@@ -39,7 +39,7 @@
     <string name="prefs_title_sync_contacts">Синхронізувати контакти</string>
     <string name="prefs_sum_block_unknown_off">Будь-хто може надсилати вам повідомлення. Нові контакти автоматично додаватимуться
 		до списку, щойно від них надійде перше повідомлення.</string>
-    <string name="prefs_sum_block_unknown_on">Лише люди з вашого списку контактів можуть надсилати вам повідомлення.</string>
+    <string name="prefs_sum_block_unknown_on">Лише люди з вашого списку контактів можуть надсилати вам повідомлення</string>
     <string name="prefs_title_block_unknown">Блокувати невідомі</string>
     <string name="prefs_title_read_receipts">Надсилати статус прочитання</string>
     <string name="prefs_title_typing_indicator">Надсилати індикатор вводу</string>
@@ -255,6 +255,7 @@
     <string name="emoji_emotions">Смайлики та люди</string>
     <string name="emoji_activities">Заняття</string>
     <string name="emoji_flags">Прапори</string>
+    <string name="emoji_search_no_result">Немає результатів пошуку</string>
     <string name="title_lock">Заблокувати</string>
     <string name="new_messages_locked">Доступні нові повідомлення</string>
     <string name="new_messages_locked_description">Торкніться, щоб переглянути їх.</string>
@@ -274,7 +275,7 @@
     <string name="restore_data_password_msg">Введіть пароль, який ви вказали під час створення цієї резервної копії.</string>
     <string name="backup_data_media">Додати великі медіафайли (відео, документи, оригінали зображень)</string>
     <string name="backup_data_new">Створити резервну копію</string>
-    <string name="pinentry_enter_pin">Введіть свій PIN-код %s, щоб продовжити</string>
+    <string name="pinentry_enter_pin">Введіть PIN-код %s, щоб продовжити.</string>
     <string name="pinentry_wrong_pin">PIN-код неправильний</string>
     <string name="prefs_sum_security_pin">Блокувати доступ до інтерфейсу</string>
     <string name="prefs_title_pin_switch">Блокувати додаток</string>
@@ -296,7 +297,7 @@
     <string name="group_select_at_least_two">Щоб продовжити, виберіть принаймні одного учасника</string>
     <string name="group_select_max" tools:ignore="PluralsCandidate">Ви перевищили максимальну кількість учасників групи (%1$d)</string>
     <string name="search">Пошук</string>
-    <string name="hint_search_keyword">Пошук за словом</string>
+    <string name="hint_search_keyword">Введіть текст</string>
     <string name="add_group_owner">Засновник групи</string>
     <string name="title_tab_users">Контакти</string>
     <string name="title_tab_groups">Групи</string>
@@ -425,12 +426,12 @@
     <string name="verification_level1_explain">Невідомий контакт. Ця людина не зв\'язала номер телефону чи адресу ел. пошти зі своїм ID або у вашій телефонній книзі немає цієї інформації.</string>
     <string name="state_dialog_received">Отримано</string>
     <string name="prefs_title_hide_screenshots">Без ескізів і знімків екрана</string>
-    <string name="prefs_summary_hide_screenshots">Не показувати вміст Threema в меню останніх додатків і заборонити робити
-		знімки певних екранів</string>
+    <string name="prefs_summary_hide_screenshots">Не показувати вміст Threema в меню останніх додатків і блокувати зйомку
+		певних екранів</string>
     <string name="media_gallery">Галерея медіафайлів</string>
     <string name="media_file_not_found">Не вдалося відкрити медіафайл, оскільки його видалено або не завантажено з сервера.</string>
     <string name="no_media_found">У цьому чаті медіа типу \"%s\" не знайдено</string>
-    <string name="media_gallery_all">Все</string>
+    <string name="media_gallery_all">Усе</string>
     <string name="media_gallery_pictures">Зображення</string>
     <string name="media_gallery_videos">Відео</string>
     <string name="group_membership_title">Є учасником таких груп:</string>
@@ -518,7 +519,7 @@
     <string name="invalid_backup">Недійсна резервна копія. Неможливо відновити.</string>
     <string name="revocation_explain">Пароль, який ви вводите тут, дає змогу відкликати ваш ID на сторінці
 		https://myid.threema.ch/revoke у випадку його втрати або крадіжки</string>
-    <string name="no_unread_messages">Немає непрочитаних повідомлень або активовано блокування PIN</string>
+    <string name="no_unread_messages">Немає непрочитаних повідомлень або активовано блокування PIN-кодом</string>
     <string name="send_media">Надіслати медіафайли</string>
     <string name="rotate">Повернути</string>
     <string name="remove">Видалити</string>
@@ -526,7 +527,7 @@
     <string name="password_too_short" tools:ignore="PluralsCandidate">Мін. %d символів.</string>
     <string name="mark_read">Позначити як прочитаний</string>
     <string name="attach_document">Файл</string>
-    <string name="parent_directory">Батьківський каталог</string>
+    <string name="parent_directory">Перейти вище</string>
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Внутрішня пам\'ять</string>
     <string name="no_activity_for_mime_type">Немає додатків, які можуть відкрити цей файл.</string>
@@ -552,7 +553,7 @@
     <string name="no_filename"><![CDATA[<Без назви>]]></string>
     <string name="send_as_files">Надіслати як файл</string>
     <string name="send_as_files_warning">Коли ви надсилаєте нестиснені файли та зображення великого розміру, ваш оператор
-		мобільного зв\'язку може стягувати додаткову плату за передачу даних. Радимо передавати й завантажувати файли лише в
+		мобільного зв\'язку може стягувати додаткову плату за передавання даних. Радимо передавати й завантажувати файли лише в
 		мережах Wi-Fi.</string>
     <string name="prefs_theme">Тема оформлення</string>
     <string name="list_theme_light">Світла (за умовчанням)</string>
@@ -571,10 +572,10 @@
     <string name="one_week">1 тиждень</string>
     <string name="everything">Усі</string>
     <string name="delete_media_files_time">Видалити медіа- та інші файли, яким понад:</string>
-    <string name="storage_explain">Якщо у вас закінчується пам\'ять, ви можете видалити старі зашифровані медіафайли,
-		щоб звільнити місце. Ескізи буде збережено. Цей процес не запускається автоматично. Щоб видалити файли, потрібно натиснути одну з кнопок нижче.</string>
+    <string name="storage_explain">Якщо у вас закінчується пам\'ять, ви можете видалити старі зашифровані медіафайли (крім ескізів),
+		щоб звільнити місце. Цей процес не запускається автоматично. Щоб видалити файли, натисніть одну з кнопок нижче.</string>
     <string name="delete_data">Видалити дані</string>
-    <string name="delete_date_confirm_message">Якщо продовжити, файли буде видалено. Збережуться лише
+    <string name="delete_date_confirm_message">Якщо продовжити, файли буде видалено. Залишаться лише
 		ескізи.</string>
     <string name="media_files_deleted" tools:ignore="PluralsCandidate">Видалено файлів: %d</string>
     <string name="storage_management">Керування сховищем</string>
@@ -586,7 +587,7 @@
     <string name="really_delete_messages">Якщо продовжити, усі повідомлення буде видалено назавжди. Ви не зможете
 		їх відновити.</string>
     <string name="messages_delete_explain">Ви також можете остаточно видалити застарілі повідомлення.</string>
-    <string name="backup_started">Запущено резервне копіювання</string>
+    <string name="backup_started">Розпочато резервне копіювання</string>
     <string name="invalid_data">Недійсні дані. Неможливо надіслати.</string>
     <string name="prefs_emoji_style">Стиль емодзі</string>
     <string name="prefs_android_emojis">Емодзі системи</string>
@@ -601,6 +602,8 @@
     <string name="blocked">заблоковано</string>
     <string name="name">Назва</string>
     <string name="privacy_policy">Політика конфіденційності</string>
+    <string name="terms_of_service">Умови використання</string>
+    <string name="eula">Ліцензійна угода</string>
     <string name="save_group_changes">Зберегти зміни в групі?</string>
     <string name="prefs_title_fontsize">Розмір шрифту</string>
     <string name="fontsize_normal">Звичайний</string>
@@ -610,6 +613,8 @@
     <string name="chat_deleted" tools:ignore="PluralsCandidate">Видалено чатів: %d</string>
     <string name="prefs_sendlog">Надіслати журнал</string>
     <string name="prefs_sendlog_summary">Надішліть файл журналу в Threema для подальшого аналізу, якщо ви зіткнулися з несправностями</string>
+    <string name="prefs_exportlog">Експортувати журнал</string>
+    <string name="prefs_exportlog_summary">Поділіться файлом журналу в іншому додатку</string>
     <string name="permission_storage_required">Щоб зберігати та надсилати медіафайли, надайте Threema доступ до сховища.</string>
     <string name="permission_location_required">Щоб надіслати розташування, надайте Threema доступ до геоданих.</string>
     <string name="permission_contacts_required">Щоб надіслати контакти, надайте Threema доступ до них.</string>
@@ -627,13 +632,13 @@
     <string name="on">увімкнено</string>
     <string name="off">вимкнено</string>
     <string name="new_wizard_select_country">Виберіть свою країну</string>
-    <string name="new_wizard_lets_get_started">Розпочнімо!</string>
+    <string name="new_wizard_lets_get_started">Почнімо!</string>
     <string name="new_wizard_setup_threema">Налаштувати</string>
     <string name="new_wizard_restore_id_backup">Відновити експортований ID</string>
     <string name="new_wizard_welcome">Вітаємо в Threema!</string>
     <string name="new_wizard_move_finger">Проводьте пальцем по екрану, щоб створити новий ID Threema.</string>
     <string name="new_wizard_this_is_your_id">Ваш ID Threema:</string>
-    <string name="new_wizard_works_like_phone_number">Ваш ID Threema подібний до номера телефону.\nВін використовується для того, щоб інші люди могли з вами зв\'язатися.</string>
+    <string name="new_wizard_works_like_phone_number">Ваш ID Threema подібний до номера телефону.\nВін потрібен для того, щоб інші могли з вами зв\'язатися.</string>
     <string name="new_wizard_choose_nickname">Виберіть псевдонім</string>
     <string name="new_wizard_nickname_explain">Ваші друзі бачитимуть цей псевдонім у своїх сповіщеннях.</string>
     <string name="new_wizard_hint_enter_nickname">Введіть псевдонім</string>
@@ -705,17 +710,17 @@
     <string name="select_all">Вибрати все</string>
     <string name="deleting_messages">Видалення повідомлень</string>
     <string name="media_gallery_files">Файли</string>
-    <string name="prefs_gif_autoplay">Автоматично відтворювати файли GIF</string>
+    <string name="prefs_gif_autoplay">Відтворювати файли GIF</string>
     <string name="media_gallery_audio">Голосові повідомлення</string>
     <string name="action_clone_group">Копіювати групу</string>
     <string name="clone_group_message">Ви створите копію цієї групи та станете її адміністратором. Продовжити?</string>
-    <string name="prefs_proximity_sensor">Використовувати датчик відстані</string>
-    <string name="prefs_proximity_sensor_explain">Відтворювати голосові повідомлення через слуховий динамік, якщо датчик відстані прикрито</string>
+    <string name="prefs_proximity_sensor">Датчик відстані</string>
+    <string name="prefs_proximity_sensor_explain">Відтворювати голосові повідомлення через слуховий динамік, коли ви тримаєте пристрій біля вуха</string>
     <string name="error_creating_group">Не вдалося створити або оновити групу</string>
     <string name="no_media_found_generic">У цьому чаті медіафайлів не знайдено</string>
     <string name="max_images_reached" tools:ignore="PluralsCandidate">Макс. кількість об\'єктів для одночасного редагування: %d</string>
     <string name="enter_description">Опишіть помилку або несправність.</string>
-    <string name="add_caption_hint">Додати підпис (необов\'язково)</string>
+    <string name="add_caption_hint">Додати підпис</string>
     <string name="disable">Вимкнути</string>
     <string name="continue_anyway">Продовжити</string>
     <string name="invalid_input">Недійсні дані</string>
@@ -752,7 +757,7 @@
     <string name="prefs_sum_direct_share">Показувати нещодавні чати, коли ви ділитеся файлами з інших додатків</string>
     <string name="restore_disable_energy_saving">Підключіть зарядний пристрій і вимкніть усі параметри енергозбереження, щоб резервне копіювання або відновлення було виконано без перебоїв.</string>
     <string name="draft">Чернетка</string>
-    <string name="prefs_bigger_single_emojis">Окремі емодзі більшого розміру</string>
+    <string name="prefs_bigger_single_emojis">Великі окремі емодзі</string>
     <string name="wizard1_sync_work">Сихнронізація даних Threema Work…</string>
     <string name="notification_hidden_text">Вміст приховано</string>
     <string name="really_reset_ringtones">Скинути налаштування звуку сповіщень до значень за умовчанням?</string>
@@ -825,9 +830,9 @@
     <string name="threema_message_to">Написати контакту \"%s\"</string>
     <string name="threema_call_with">Подзвонити контакту \"%s\"</string>
     <string name="prefs_title_voip">Виклики Threema</string>
-    <string name="prefs_title_force_turn">Завжди ретранслювати виклики</string>
-    <string name="prefs_summary_force_turn_off">Встановлювати пряме з\'єднання, коли це можливо, і ретранслювати виклики через сервери Threema тільки з непідтвердженими контактами. Ваша IP-адреса може стати відома іншим.</string>
-    <string name="prefs_summary_force_turn_on">Ретранслювати всі виклики через сервери Threema, щоб захистити вашу IP-адресу. Може впливати на якість з\'єднання під час викликів.</string>
+    <string name="prefs_title_force_turn">Завжди ретранслювати</string>
+    <string name="prefs_summary_force_turn_off">Ретранслювати через сервери Threema тільки виклики з непідтвердженими контактами, а з рештою встановлювати пряме з\'єднання. Ваша IP-адреса може стати відомою іншим.</string>
+    <string name="prefs_summary_force_turn_on">Ретранслювати всі виклики через сервери Threema, щоб захистити вашу IP-адресу. Якість з\'єднання під час викликів може погіршитися.</string>
     <string name="permission_record_audio_required">Щоб здійснювати зашифровані виклики та надсилати голосові повідомлення, надайте доступ до мікрофона.</string>
     <string name="prefs_voice_call_notifications">Виклики Threema</string>
     <string name="prefs_voice_call_sound">Звук дзвінка</string>
@@ -848,7 +853,7 @@
     <string name="error_attaching_files">Не вдалося додати вкладення.</string>
     <string name="prefs_fix_powermanager_problems">Вимкнути енергозбереження</string>
     <string name="prefs_fix_powermanager_problems_desc">Дозволити Threema працювати у фоновому режимі, щоб отримувати повідомлення, навіть коли додаток неактивний</string>
-    <string name="disable_powermanager_explain">На наступному екрані переконайтеся, що до додатка %s не застосовуються жодні обмеження щодо використання акумулятора. Натисніть \"Назад\", коли завершите.</string>
+    <string name="disable_powermanager_explain">На наступному екрані переконайтеся, що до додатка %s не застосовуються обмеження щодо використання акумулятора. Натисніть \"Назад\", коли завершите.</string>
     <string name="disable_autostart_explain">На наступному екрані переконайтеся, що %s є в списку додатків, які можуть запускатися автоматично. Натисніть \"Назад\", коли завершите.</string>
     <string name="notification_priority_default">Низький</string>
     <string name="notification_priority_high">Високий</string>
@@ -939,7 +944,7 @@
     <string name="contact_add_confirm">Додати новий контакт \"%1$s\" до вашого списку контактів?</string>
     <string name="password_bad">Ненадійний пароль</string>
     <string name="prefs_fix_background_data">Увімкнути фонові дані</string>
-    <string name="prefs_fix_background_data_desc">Щоб отримувати повідомлення, коли Threema працює у фоновому режимі, увімкніть \"Фонові дані\" і \"Необмежене використання трафіку\".</string>
+    <string name="prefs_fix_background_data_desc">Щоб отримувати повідомлення, коли Threema працює у фоновому режимі, увімкніть \"Фонові дані\" і \"Необмежене використання трафіку\"</string>
     <string name="prefs_fix_device">Налаштування пристрою</string>
     <string name="safe_successful">Виконано</string>
     <string name="safe_unsuccessful">Помилка</string>
@@ -1012,7 +1017,7 @@
     <string name="biometric_authentication_successful">Авторизовано</string>
     <string name="work_safe_forced_explain">Ваш адміністратор ввімкнув Threema Safe на вашому пристрої.</string>
     <string name="pin_locked_cannot_send">Додаток заблоковано. Неможливо надіслати.</string>
-    <string name="prefs_summary_hide_screenshots_notice">Коли в меню \"Безпека\" ввімкнено функцію \"Блокувати додаток\", ми приховуємо вміст Threema та забороняємо робити знімки екрана, щоб захистити вашу конфіденційність</string>
+    <string name="prefs_summary_hide_screenshots_notice">Коли в меню \"Безпека\" ввімкнено функцію \"Блокувати додаток\", ми приховуємо вміст Threema та блокуємо зйомку екрана, щоб захистити вашу конфіденційність.</string>
     <string name="work_select_categories">Виберіть категорії</string>
     <string name="my_profile">Мій профіль</string>
     <string name="message_too_long">Повідомлення задовге. Неможливо надіслати.</string>
@@ -1054,12 +1059,7 @@
     <string name="delete">Видалити</string>
     <string name="num_archived_chats">Архівованих чатів: %d</string>
     <string name="continue_recording">Продовжити запис</string>
-    <string name="whatsnew_title">(порожня фраза)</string>
-    <string name="whatsnew_headline">(порожня фраза)</string>
-    <string name="whatsnew2_title">(порожня фраза)</string>
-    <string name="whatsnew2_body">(порожня фраза)</string>
-    <string name="tooltip_identity_popup">Торкніться тут, щоб швидко показати свій ID Threema або відсканувати ID інших людей.</string>
-    <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
+	<string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
     <string name="two_years">2 роки</string>
     <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
     <string name="backup_data_no_permission">Неможливо записувати у вказаний каталог. Виберіть інший.</string>
@@ -1092,11 +1092,11 @@
     <string name="audio_mute_due_to_focus_loss">Звук тимчасово вимкнено через перемикання на інший додаток</string>
     <string name="restore_data_backup_explain">Щоб відновити дані з резервної копії, спершу видаліть свій ID Threema на екрані \"Мій профіль\".\n\nКоли додаток перезапуститься, натисніть \"Відновити з рез. копії\" &gt; \"Інші варіанти відновлення\" &gt; \"Резервне копіювання\" і виберіть файл резервної копії, з якого потрібно відновити дані.</string>
     <string name="audio_focus_loss_complete">Виклик завершено через втрату доступу до звуку.</string>
-    <string name="tap_for_picture_hold_for_video">Торкніться, щоб зробити фото, або утримуйте, щоб записати відео</string>
+    <string name="tap_for_picture_hold_for_video">Торкніться для фото, утримуйте для відео</string>
     <string name="sending_media">Надсилання медіафайлів</string>
     <string name="permission_record_video_audio_required">Щоб записати відео, надайте доступ до мікрофона.</string>
     <string name="media_files">Файли</string>
-    <string name="auto_download_limit_explain">Відео та файли розміром понад %s буде завантажено лише на вимогу</string>
+    <string name="auto_download_limit_explain">Відео та файли розміром понад %s буде завантажено лише на вимогу.</string>
     <string name="quoted_message_deleted">Цитоване повідомлення більше недоступне</string>
     <string name="searching">Триває пошук…</string>
     <string name="prefs_work_life_balance">Режим \"Не турбувати\"</string>
@@ -1130,7 +1130,7 @@
     <string name="videocall_profile_max_quality">Максимальна якість</string>
     <string name="unable_to_play_video">Не вдалося відтворити відео</string>
     <string name="tooltip_voip_turn_on_camera">Торкніться тут, щоб увімкнути камеру</string>
-    <string name="prefs_videocall_profile_explain">Реальна якість зображення залежить від мережі та налаштувань контакта, з яким ви спілкуєтеся</string>
+    <string name="prefs_videocall_profile_explain">Реальна якість зображення залежить від мережі та налаштувань контакта, з яким ви спілкуєтеся.</string>
     <string name="permission_camera_videocall_required">Щоб здійснювати відеовиклики, надайте доступ до камери.</string>
     <string name="feedback">Відгуки</string>
     <string name="tooltip_voip_enable_speakerphone">Торкніться тут, щоб увімкнути гучний зв\'язок</string>
@@ -1175,7 +1175,7 @@
     <string name="error_unable_loading_media_thumb">Помилка. Не вдалося завантажити ескіз медіафайлу.</string>
     <string name="select">Вибрати</string>
     <string name="filter_list">Фільтрувати список</string>
-    <string name="hint_filter_list">Введіть текст для фільтрування</string>
+    <string name="hint_filter_list">Введіть текст</string>
     <string name="add">Додати</string>
     <string name="threema_message_from">Повідомлення від \"%s\"</string>
     <string name="show_text">Показати текст</string>
@@ -1312,7 +1312,7 @@
     <string name="unable_to_determine_recording_length">Запис порожній або його тривалість визначити неможливо</string>
     <string name="prefs_header_receipts">Статуси</string>
     <string name="prefs_title_reset_receipts">Скинути індивідуальні налаштування</string>
-    <string name="prefs_sum_reset_receipts">Скинути індивідуальні налаштування статусу прочитання та індикатора вводу для контактів до параметрів за умовчанням.</string>
+    <string name="prefs_sum_reset_receipts">Скинути індивідуальні налаштування статусу прочитання та індикатора вводу для контактів до параметрів за умовчанням</string>
     <string name="reset_successful">Скинуто до налаштувань за умовчанням</string>
     <string name="group_link_add">Додати посилання на групу</string>
     <string name="group_requests_show_menu_title">Показати відкриті запити на приєднання</string>
@@ -1396,4 +1396,7 @@
     <string name="organization_type">Організація</string>
     <string name="permission_bluetooth_connect_required">Щоб знаходити підключені Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\".</string>
     <string name="threema_push_start_webclient_sessions_manually">Увімкнено push-сповіщення Threema. Сеанси веб-клієнта та додатка для ПК потрібно запускати вручну.</string>
+    <string name="tooltip_multiple_recipients_title">Нове: Множинні отримувачі</string>
+    <string name="tooltip_multiple_recipients_text">Тривалим натисканням обирайте множинних отримувачів, яким надсилатиметься те саме повідомлення.</string>
+    <string name="synchronizing">Синхронізація...</string>
 </resources>

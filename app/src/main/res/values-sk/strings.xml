@@ -207,7 +207,7 @@
     <string name="prefs_header_other">Iné</string>
     <string name="an_error_occurred">Vyskytla sa chyba</string>
     <string name="an_error_occurred_more">Vyskytla sa chyba: “%1$s”</string>
-    <string name="acknowledge">Súhlasím</string>
+    <string name="acknowledge">Súhlas</string>
     <string name="decline">Nesúhlasím</string>
     <string name="forward_message">Preposlať správu</string>
     <string name="file_is_not_a_image">Vybratý súbor nie je obrázok</string>
@@ -246,6 +246,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="emoji_emotions">Smajlíci a ľudia</string>
     <string name="emoji_activities">Aktivity</string>
     <string name="emoji_flags">Vlajky</string>
+    <string name="emoji_search">Vyhľadať emotikony</string>
+    <string name="emoji_search_no_result">Nič nenájdené</string>
     <string name="title_lock">Uzamknúť</string>
     <string name="new_messages_locked">Nové správy sú dostupné</string>
     <string name="new_messages_locked_description">Kliknutím zobrazíte nové správy</string>
@@ -573,7 +575,8 @@ Už ich nebude možné obnoviť.</string>
     <string name="blocked">blokovaný</string>
     <string name="name">Názov</string>
     <string name="privacy_policy">Ochrana osobných údajov</string>
-    <string name="terms_of_service">Zmluvné podmienky</string>
+    <string name="terms_of_service">Podmienky používania</string>
+    <string name="eula">Licenčná zmluva s koncovým používateľom</string>
     <string name="save_group_changes">Chcete uložiť zmeny v skupine?</string>
     <string name="prefs_title_fontsize">Veľkosť písma</string>
     <string name="fontsize_normal">Základné</string>
@@ -583,6 +586,8 @@ Už ich nebude možné obnoviť.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">Vymazané konverzácie: %d</string>
     <string name="prefs_sendlog">Odoslať log</string>
     <string name="prefs_sendlog_summary">V prípade problémov odoslať spoločnosti Threema log súbor pre ďalšiu analýzu</string>
+    <string name="prefs_exportlog">Exportovať log</string>
+    <string name="prefs_exportlog_summary">Zdieľať log súbor s inou aplikáciou</string>
     <string name="permission_storage_required">Ak chcete ukladať či odosielať médiá, povolte aplikácii Threema oprávnenie pristupu k úložisku.</string>
     <string name="permission_location_required">Ak chcete odosielať polohu, povolte aplikácii Threema oprávnenie prístupu k polohe vašeho zariadenia.</string>
     <string name="permission_contacts_required">Ak chcete odosielať kontakty, povolte aplikácii Threema oprávnenie čítať kontakty.</string>
@@ -1009,7 +1014,22 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="delete">Odstrániť</string>
     <string name="num_archived_chats">Archivované konverzácie: %d</string>
     <string name="continue_recording">Pokračovať v nahrávaní</string>
-    <string name="tooltip_identity_popup">Kliknutím sem zobrazíte vaše Threema ID, alebo oskenujete ID ostatných užívateľov</string>
+    <string name="whatsnew_title">Vitajte v %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+<p><b>Nové funkcie v tejto verzii %s pre Android:</b></p>
+<p>
+&bull; Mnoho nových emotikonov v súlade so štandardom Unicode 13.1. 😵‍💫❤️‍🔥
+</p><p>
+&bull; Vyhľadajte emotikony podľa názvu alebo významu (dostupné v 17 jazykoch).
+</p><p>
+&bull; Deterministické farby pre kontakty a skupiny, ktoré nemajú vlastný profilový obrázok. Tieto nové farby budú fungovať naprieč platformami a zariadeniami.
+</p><p>
+&bull; Vylepšený výkon posúvania v mnohých zoznamoch.
+</p><p>
+&bull; Optimalizované rozloženie pre editor médií. Zvýšil sa počet mediálnych položiek, ktoré je možné pred odoslaním upraviť, na 256.
+</p><p>
+&bull; Veľa malých vylepšení a opráv chýb.
+</p> ]]></string>
     <string name="tap_to_start">Kliknutím sem spustíte aplikáciu %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pre zálohu</string>
@@ -1029,7 +1049,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="edit_type_content_description">Zobraziť alebo upraviť %1$s %2$s</string>
     <string name="group">Skupina</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Naše zásady ochrany osobných údajov boli aktualizované tak, aby zodpovedali nasledujúcim zmenám:</p><p>Údaje %1$s už nie sú závislé na službe Google Play a Google Mapy, ktoré poskytovali mapy a body záujmu.</p>Popis Zásad ochrany osobných údajov nájdete <a href="%2$s">tu</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Služby Google Play nie sú nainštalované. Nie je možné použiť \"push\".</string>
+    <string name="play_services_not_installed_unable_to_use_push">Služby nie sú nainštalované. Nedá sa prepnúť na Google FCM alebo HMS push.</string>
     <string name="unable_to_get_current_location">Nie je možné získať aktuálnu polohu.</string>
     <string name="lp_search_place_min_chars">Ak chcete vyhľadať miesto, zadajte aspoň tri znaky.</string>
     <string name="lp_search_place_no_matches">Neboli nájdené zodpovedajúce miesta. Upravte prosím dotaz.</string>
@@ -1321,7 +1341,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="phoneTypeWork">Práca</string>
     <string name="phoneTypePager">Pager</string>
     <string name="phoneTypeOther">Iné</string>
-    <string name="phoneTypeCar">Telefón v aute</string>
+    <string name="phoneTypeCar">Vozidlo</string>
     <string name="phoneTypeIsdn">ISDN</string>
     <string name="phoneTypeOtherFax">Iný fax</string>
     <string name="eventTypeCustom">Vlastné</string>
@@ -1347,4 +1367,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="organization_type">Organizácia</string>
     <string name="permission_bluetooth_connect_required">Povoliť „Zariadenia v blízkosti“ na vyhľadanie pripojených Bluetooth slúchadiel</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push je aktívna. Relácie Threema Web a Desktop sa preto musia spúšťať manuálne.</string>
+    <string name="tooltip_multiple_recipients_title">Novinka: Viacerí príjemcovia</string>
+    <string name="tooltip_multiple_recipients_text">Dlhým klepnutím vyberiete viacerých príjemcov, ktorým chcete poslať rovnakú správu.</string>
+    <string name="synchronizing">Synchronizuje sa…</string>
+    <string name="self_updater_installation_failed">Sťahovanie aktualizácie zlyhalo. Stiahnite si a nainštalujte aktualizáciu z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuálne.</string>
+    <string name="wizard_incompatible_contact_sync_params">Sú nastavené nekompatibilné parametre MDM. Parameter Threema MDM th_contact_sync nemožno nastaviť na hodnotu true, ak je nastavené obmedzenie používateľa DISALLOW_MODIFY_ACCOUNTS. Kontaktujte správcu svojho zariadenia.</string>
 </resources>

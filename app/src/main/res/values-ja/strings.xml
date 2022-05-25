@@ -1017,8 +1017,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="delete">削除</string>
     <string name="num_archived_chats">%d 件のアーカイブされたトーク</string>
     <string name="continue_recording">録音を続ける</string>
-    <string name="tooltip_identity_popup">ここをタップすると、自分のThreema IDを素早く表示したり、他の人のIDをスキャンすることができます。</string>
-    <string name="tap_to_start">タップして %s を始めましょう</string>
+	<string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">バックアップのパスが無効です</string>
     <string name="backup_data_no_permission">このディレクトリには書き込めません。別のディレクトリを選択してください。</string>

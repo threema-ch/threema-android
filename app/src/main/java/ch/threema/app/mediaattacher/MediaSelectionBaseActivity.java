@@ -87,7 +87,6 @@ import ch.threema.app.activities.UnlockMasterKeyActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.ui.CheckableFrameLayout;
 import ch.threema.app.ui.CheckableView;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
@@ -537,7 +536,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		if (shouldShowMediaGrid()) {
 			// Observe the LiveData for current selection, passing in this activity as the LifecycleOwner and Observer.
 			mediaAttachViewModel.getCurrentMedia().observe(this, currentlyShowingItems -> {
-				mediaAttachAdapter.setMediaItems(currentlyShowingItems);
+				mediaAttachAdapter.setMediaAttachItems(currentlyShowingItems);
 				imagePreviewPagerAdapter.setMediaItems(currentlyShowingItems);
 				// Data loaded, we can now properly calculate the peek height and set/reset UI to expanded state
 				updatePeekHeight();
@@ -916,7 +915,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected void setFirstVisibleItemDate(){
 		int firstVisible = gridLayoutManager.findFirstVisibleItemPosition();
 		if (firstVisible >= 0){
-			MediaAttachItem item = mediaAttachAdapter.getMediaItems().get(firstVisible);
+			MediaAttachItem item = mediaAttachAdapter.getMediaAttachItems().get(firstVisible);
 			dateView.post(() -> {
 				dateTextView.setMaxLines(1);
 				dateTextView.setText(LocaleUtil.formatDateRelative(item.getDateModified() * 1000));
@@ -945,15 +944,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			// finish when clicking transparent area showing the chat behind the attacher
 			case R.id.cancel:
 				if (mediaAttachAdapter != null) {
-					for (int childCount = mediaAttachRecyclerView.getChildCount(), i = 0; i < childCount; ++i) {
-						final RecyclerView.ViewHolder holder = mediaAttachRecyclerView.getChildViewHolder(mediaAttachRecyclerView.getChildAt(i));
-						if (mediaAttachViewModel.getSelectedMediaItemsHashMap().containsKey(((MediaAttachAdapter.MediaGalleryHolder) holder).itemId)) {
-							final CheckableFrameLayout checkableFrameLayout = ((MediaAttachAdapter.MediaGalleryHolder) holder).contentView;
-							checkableFrameLayout.setChecked(false);
-						}
-
-					}
-					mediaAttachViewModel.clearSelection();
+					mediaAttachAdapter.clearSelection();
 					onItemChecked(0);
 				}
 				break;

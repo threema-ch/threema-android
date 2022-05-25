@@ -138,10 +138,6 @@ public interface GroupService extends AvatarService<GroupModel> {
 
 	GroupMessageReceiver createReceiver(GroupModel groupModel);
 
-	Bitmap getDefaultAvatar(GroupModel groupModel, boolean highResolution);
-
-	Bitmap getNeutralAvatar(boolean highResolution);
-
 	boolean isGroupOwner(GroupModel groupModel);
 	boolean isGroupMember(GroupModel groupModel);
 
@@ -152,9 +148,13 @@ public interface GroupService extends AvatarService<GroupModel> {
 
 	int getOtherMemberCount(GroupModel model);
 
-	int getPrimaryColor(GroupModel groupModel);
-	boolean rebuildColors(GroupModel model);
-	Map<String, Integer> getGroupMemberColors(GroupModel model);
+	/**
+	 * Get a map from the group member identity to its id color index.
+	 *
+	 * @param model the group model
+	 * @return a map with the ID color indices of the members
+	 */
+	Map<String, Integer> getGroupMemberIDColorIndices(GroupModel model);
 
 	boolean sendEmptySync(GroupModel groupModel, String receiverIdentity);
 

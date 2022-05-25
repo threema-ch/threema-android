@@ -35,6 +35,7 @@ import android.widget.Button;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
@@ -47,6 +48,20 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class TextEntryDialog extends ThreemaDialogFragment {
+
+	public static final String ARG_TITLE = "title";
+	public static final String ARG_MESSAGE = "message";
+	public static final String ARG_POSITIVE = "positive";
+	public static final String ARG_NEUTRAL = "neutral";
+	public static final String ARG_NEGATIVE = "negative";
+	public static final String ARG_TEXT = "text";
+	public static final String ARG_INPUT_TYPE = "inputType";
+	public static final String ARG_INPUT_FILTER_TYPE = "inputFilterType";
+	public static final String ARG_MAX_LINES = "maxLines";
+	public static final String ARG_MAX_LENGTH = "maxLength";
+	public static final String ARG_MIN_LENGTH = "minLength";
+	public static final String ARG_ENABLE_FORMATTING = "enableFormatting";
+
 	private TextEntryDialogClickListener callback;
 	private Activity activity;
 	private AlertDialog alertDialog;
@@ -62,14 +77,14 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	                                          String text, int inputType, int inputFilterType) {
 		TextEntryDialog dialog = new TextEntryDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("neutral", neutral);
-		args.putInt("negative", negative);
-		args.putString("text", text);
-		args.putInt("inputType", inputType);
-		args.putInt("inputFilterType", inputFilterType);
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEUTRAL, neutral);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putString(ARG_TEXT, text);
+		args.putInt(ARG_INPUT_TYPE, inputType);
+		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -81,14 +96,14 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	                                          int maxLines) {
 		TextEntryDialog dialog = new TextEntryDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putString("text", text);
-		args.putInt("inputType", inputType);
-		args.putInt("inputFilterType", inputFilterType);
-		args.putInt("maxLines", maxLines);
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putString(ARG_TEXT, text);
+		args.putInt(ARG_INPUT_TYPE, inputType);
+		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+		args.putInt(ARG_MAX_LINES, maxLines);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -99,15 +114,15 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	                                          String text, int inputType, int inputFilterType, int maxLength) {
 		TextEntryDialog dialog = new TextEntryDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("neutral", neutral);
-		args.putInt("negative", negative);
-		args.putString("text", text);
-		args.putInt("inputType", inputType);
-		args.putInt("inputFilterType", inputFilterType);
-		args.putInt("maxLength", maxLength);
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEUTRAL, neutral);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putString(ARG_TEXT, text);
+		args.putInt(ARG_INPUT_TYPE, inputType);
+		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+		args.putInt(ARG_MAX_LENGTH, maxLength);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -118,13 +133,13 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	                                          String text, int inputType, int inputFilterType) {
 		TextEntryDialog dialog = new TextEntryDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putString("text", text);
-		args.putInt("inputType", inputType);
-		args.putInt("inputFilterType", inputFilterType);
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putString(ARG_TEXT, text);
+		args.putInt(ARG_INPUT_TYPE, inputType);
+		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -135,12 +150,12 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	                                          int maxLines, int maxLength) {
 		TextEntryDialog dialog = new TextEntryDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putInt("maxLines", maxLines);
-		args.putInt("maxLength", maxLength);
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putInt(ARG_MAX_LINES, maxLines);
+		args.putInt(ARG_MAX_LENGTH, maxLength);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -151,13 +166,33 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	                                          int maxLines, int maxLength, int minLength) {
 		TextEntryDialog dialog = new TextEntryDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putInt("maxLines", maxLines);
-		args.putInt("maxLength", maxLength);
-		args.putInt("minLength", minLength);
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putInt(ARG_MAX_LINES, maxLines);
+		args.putInt(ARG_MAX_LENGTH, maxLength);
+		args.putInt(ARG_MIN_LENGTH, minLength);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+	                                          @StringRes int positive, @StringRes int negative,
+	                                          String text, int inputType, int inputFilterType,
+	                                          int maxLines, boolean enableFormatting) {
+		TextEntryDialog dialog = new TextEntryDialog();
+		Bundle args = new Bundle();
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE, message);
+		args.putInt(ARG_POSITIVE, positive);
+		args.putInt(ARG_NEGATIVE, negative);
+		args.putString(ARG_TEXT, text);
+		args.putInt(ARG_INPUT_TYPE, inputType);
+		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+		args.putInt(ARG_MAX_LINES, maxLines);
+		args.putBoolean(ARG_ENABLE_FORMATTING, enableFormatting);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -200,26 +235,36 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 		this.activity = activity;
 	}
 
+	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		int message = getArguments().getInt("message");
-		int positive = getArguments().getInt("positive");
-		int neutral = getArguments().getInt("neutral");
-		int negative = getArguments().getInt("negative");
-		String text = getArguments().getString("text", "");
-		int inputType = getArguments().getInt("inputType");
-		inputFilterType = getArguments().getInt("inputFilterType", 0);
-		int maxLength = getArguments().getInt("maxLength", 0);
-		int maxLines = getArguments().getInt("maxLines", 0);
-		minLength = getArguments().getInt("minLength", 0);
+		int title = getArguments().getInt(ARG_TITLE);
+		int message = getArguments().getInt(ARG_MESSAGE);
+		int positive = getArguments().getInt(ARG_POSITIVE);
+		int neutral = getArguments().getInt(ARG_NEUTRAL);
+		int negative = getArguments().getInt(ARG_NEGATIVE);
+		String text = getArguments().getString(ARG_TEXT, "");
+		int inputType = getArguments().getInt(ARG_INPUT_TYPE);
+		inputFilterType = getArguments().getInt(ARG_INPUT_FILTER_TYPE, 0);
+		int maxLength = getArguments().getInt(ARG_MAX_LENGTH, 0);
+		int maxLines = getArguments().getInt(ARG_MAX_LINES, 0);
+		minLength = getArguments().getInt(ARG_MIN_LENGTH, 0);
 
 		final String tag = this.getTag();
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry, null);
 
-		final EmojiEditText editText = dialogView.findViewById(R.id.edit_text);
-		final TextInputLayout editTextLayout = dialogView.findViewById(R.id.text_input_layout);
+		final TextInputLayout editTextLayout;
+		final EmojiEditText editText;
+
+		if (getArguments().getBoolean(ARG_ENABLE_FORMATTING, false)) {
+			editTextLayout = dialogView.findViewById(R.id.format_text_input_layout);
+			editText = dialogView.findViewById(R.id.format_edit_text);
+		} else {
+			editTextLayout = dialogView.findViewById(R.id.text_input_layout);
+			editText = dialogView.findViewById(R.id.edit_text);
+		}
+		editTextLayout.setVisibility(View.VISIBLE);
 
 		editText.setText(text);
 		if (text != null && text.length() > 0) {
@@ -278,7 +323,7 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 			editTextLayout.setHint(getString(message));
 		}
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
 		builder.setView(dialogView);
 
 		if (title != 0) {

@@ -47,16 +47,13 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion14;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion15;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion16;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion17;
-import ch.threema.app.services.systemupdate.SystemUpdateToVersion18;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion19;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion20;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion21;
-import ch.threema.app.services.systemupdate.SystemUpdateToVersion23;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion24;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion25;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion27;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion28;
-import ch.threema.app.services.systemupdate.SystemUpdateToVersion30;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion31;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion32;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion33;
@@ -100,6 +97,7 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion69;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion7;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion70;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion71;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion72;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion8;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
 import ch.threema.app.utils.FileUtil;
@@ -134,7 +132,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "threema.db";
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion71.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion72.VERSION;
 
 	private final Context context;
 	private final String key;
@@ -476,10 +474,6 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion17(sqLiteDatabase));
 		}
 
-		if (oldVersion < 18) {
-			this.updateSystemService.addUpdate(new SystemUpdateToVersion18(sqLiteDatabase));
-		}
-
 		if (oldVersion < 19) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion19(sqLiteDatabase));
 		}
@@ -490,10 +484,6 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 
 		if (oldVersion < 21) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion21(this, sqLiteDatabase));
-		}
-
-		if (oldVersion < 23) {
-			this.updateSystemService.addUpdate(new SystemUpdateToVersion23(sqLiteDatabase));
 		}
 
 		if (oldVersion < 24) {
@@ -511,16 +501,12 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		if (oldVersion < 28) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion28(sqLiteDatabase));
 		}
-		if (oldVersion < 30) {
-			this.updateSystemService.addUpdate(new SystemUpdateToVersion30(sqLiteDatabase));
-		}
 		if (oldVersion < 31) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion31(this.context));
 		}
 		if (oldVersion < 32) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion32(sqLiteDatabase));
 		}
-
 		if (oldVersion < 33) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion33(this, sqLiteDatabase));
 		}
@@ -634,6 +620,9 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion71.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion71(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion72.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion72(sqLiteDatabase));
 		}
 	}
 

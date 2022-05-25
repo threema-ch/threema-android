@@ -102,6 +102,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
+import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
@@ -190,6 +191,7 @@ public class MessageSectionFragment extends MainFragment
 
 	private ServiceManager serviceManager;
 	private ConversationService conversationService;
+	private AvatarCacheService avatarCacheService;
 	private ContactService contactService;
 	private GroupService groupService;
 	private MessageService messageService;
@@ -380,6 +382,7 @@ public class MessageSectionFragment extends MainFragment
 	protected boolean checkInstances() {
 		return TestUtil.required(
 				this.serviceManager,
+				this.avatarCacheService,
 				this.contactListener,
 				this.groupService,
 				this.conversationService,
@@ -398,6 +401,7 @@ public class MessageSectionFragment extends MainFragment
 
 		if (this.serviceManager != null) {
 			try {
+				this.avatarCacheService = this.serviceManager.getAvatarCacheService();
 				this.contactService = this.serviceManager.getContactService();
 				this.groupService = this.serviceManager.getGroupService();
 				this.messageService = this.serviceManager.getMessageService();
@@ -1526,15 +1530,13 @@ public class MessageSectionFragment extends MainFragment
 								recyclerView.setAdapter(messageListAdapter);
 							}
 
-							if (messageListAdapter != null) {
-								try {
-									messageListAdapter.setData(conversationModels, changedPositions);
-								} catch (IndexOutOfBoundsException e) {
-									logger.debug("Failed to set adapter data", e);
-								}
-								// make sure footer is refreshed
-								messageListAdapter.refreshFooter();
+							try {
+								messageListAdapter.setData(conversationModels, changedPositions);
+							} catch (IndexOutOfBoundsException e) {
+								logger.debug("Failed to set adapter data", e);
 							}
+							// make sure footer is refreshed
+							messageListAdapter.refreshFooter();
 
 							if (recyclerView != null) {
 								if (scrollToPosition != null) {

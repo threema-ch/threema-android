@@ -973,16 +973,16 @@ public class ConversationServiceImpl implements ConversationService {
 	}
 
 
-	private class DistributionListConversationModelParser extends ConversationModelParser<Integer, DistributionListMessageModel, DistributionListModel> {
+	private class DistributionListConversationModelParser extends ConversationModelParser<Long, DistributionListMessageModel, DistributionListModel> {
 		@Override
-		public boolean belongsTo(ConversationModel conversationModel, Integer distributionListId) {
+		public boolean belongsTo(ConversationModel conversationModel, Long distributionListId) {
 			return conversationModel.getDistributionList() != null &&
 					conversationModel.getDistributionList().getId() == distributionListId;
 		}
 
 		@Override
 		public ConversationModel parseResult(ConversationResult result, ConversationModel conversationModel, boolean addToCache) {
-			final DistributionListModel distributionListModel = distributionListService.getById(Integer.valueOf(result.refId));
+			final DistributionListModel distributionListModel = distributionListService.getById(Long.parseLong(result.refId));
 			DistributionListMessageReceiver receiver = distributionListService.createReceiver(distributionListModel);
 			if (distributionListModel != null) {
 
@@ -1008,7 +1008,7 @@ public class ConversationServiceImpl implements ConversationService {
 		}
 
 		@Override
-		public List<ConversationResult> select(Integer distributionListId) {
+		public List<ConversationResult> select(Long distributionListId) {
 			return this.parse("SELECT MAX(dm.id), COUNT(dm.id), d.id FROM distribution_list d " +
 					"LEFT OUTER JOIN distribution_list_message dm " +
 					"ON dm.distributionListId = d.id " +
@@ -1032,12 +1032,12 @@ public class ConversationServiceImpl implements ConversationService {
 		}
 
 		@Override
-		protected Integer getIndex(DistributionListMessageModel messageModel) {
+		protected Long getIndex(DistributionListMessageModel messageModel) {
 			return messageModel != null ? messageModel.getDistributionListId() : null;
 		}
 
 		@Override
-		protected Integer getIndex(DistributionListModel distributionListModel) {
+		protected Long getIndex(DistributionListModel distributionListModel) {
 			return distributionListModel != null ? distributionListModel.getId() : null;
 		}
 	}
