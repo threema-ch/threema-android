@@ -65,29 +65,52 @@
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		android:orientation="vertical">
 
-		<com.google.android.material.chip.ChipGroup
-			android:id="@+id/chip_group"
+		<HorizontalScrollView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp"
-			app:chipSpacingHorizontal="4dp"
-			app:chipSpacingVertical="0dp"
-			app:lineSpacing="-4dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintTop_toTopOf="parent"
-			app:singleLine="false"
-			android:visibility="gone" />
+			android:scrollbarSize="0dp"
+			android:scrollbars="none">
+
+			<com.google.android.material.chip.ChipGroup
+				android:id="@+id/chip_group"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingLeft="16dp"
+				android:paddingTop="0dp"
+				android:paddingRight="16dp"
+				android:paddingBottom="-1dp"
+				app:chipSpacingHorizontal="4dp"
+				app:chipSpacingVertical="0dp"
+				app:singleLine="true"
+				android:visibility="gone" />
+
+		</HorizontalScrollView>
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 		<ch.threema.app.ui.EmptyRecyclerView
 			android:id="@+id/recycler"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_marginTop="4dp"
-			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+			android:layout_marginTop="4dp"/>
+
+		<TextView
+			android:id="@+id/empty_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal|center_vertical"
+			android:layout_marginTop="16dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+			android:text="@string/directory_empty_view_text" />
+
+		</FrameLayout>
 
 	</LinearLayout>
 

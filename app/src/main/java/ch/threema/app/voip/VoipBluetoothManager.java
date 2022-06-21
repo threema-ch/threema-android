@@ -31,6 +31,7 @@
 
 package ch.threema.app.voip;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
@@ -328,7 +329,7 @@ public class VoipBluetoothManager {
 	public void start() {
 		ThreadUtils.checkIsOnMainThread();
 		logger.debug("start");
-		if (!hasPermission(apprtcContext, android.Manifest.permission.BLUETOOTH)) {
+		if (!hasPermission(apprtcContext, android.Manifest.permission.BLUETOOTH) && !hasPermission(apprtcContext, Manifest.permission.BLUETOOTH_CONNECT)) {
 			logger.warn("Process (pid=" + Process.myPid() + ") lacks BLUETOOTH permission");
 			return;
 		}
@@ -381,7 +382,11 @@ public class VoipBluetoothManager {
 	 */
 	public void stop() {
 		ThreadUtils.checkIsOnMainThread();
-		unregisterReceiver(bluetoothHeadsetReceiver);
+		try {
+			unregisterReceiver(bluetoothHeadsetReceiver);
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to unregister bluetooth headset receiver", e);
+		}
 		logger.debug("stop: BT state=" + bluetoothState);
 		if (bluetoothAdapter != null) {
 			// Stop BT SCO connection with remote device if needed.

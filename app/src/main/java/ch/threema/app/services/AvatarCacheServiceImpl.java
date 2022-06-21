@@ -324,7 +324,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 		@Override
 		int getHashCode() {
-			if (model != null) {
+			if (model != null && model.getIdentity() != null) {
 				return model.getIdentity().hashCode();
 			}
 			return -1;

@@ -32,6 +32,6 @@
 	<string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>
-	<string name="directory_empty_view_text">No entries found\n\nPlease enter at least 3 characters of a name to begin searching in your company\'s directory of Threema users</string>
+	<string name="directory_empty_view_text">No entries found\n\nPlease enter at least 3 characters of a name to begin searching in your company\'s directory or select a category by tapping on the filter icon.</string>
 	<string name="threema_work_url" translatable="false">https://threema.ch/%s/work</string>
 </resources>

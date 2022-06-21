@@ -118,7 +118,7 @@ public class LocaleServiceImpl implements LocaleService {
 		Phonenumber.PhoneNumber parsedPhoneNumber;
 		try {
 			parsedPhoneNumber = this.getPhoneNumberUtil().parse(phoneNumber, this.getCountryIsoCode());
-		} catch (NumberParseException e) {
+		} catch (NumberParseException | IllegalStateException e) {
 			return null;
 		}
 

@@ -41,6 +41,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.group.IncomingGroupJoinRequestService;
+import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -146,8 +147,8 @@ public class NotificationActionService extends IntentService {
 	private void ack(@NonNull AbstractMessageModel messageModel) {
 		lifetimeService.acquireConnection(TAG);
 
-		messageService.sendUserAcknowledgement(messageModel);
-		messageService.markMessageAsRead(messageModel, notificationService);
+		messageService.sendUserAcknowledgement(messageModel, true);
+		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
 
 		showToast(R.string.message_acknowledged);
 
@@ -157,8 +158,8 @@ public class NotificationActionService extends IntentService {
 	private void dec(@NonNull AbstractMessageModel messageModel) {
 		lifetimeService.acquireConnection(TAG);
 
-		messageService.sendUserDecline(messageModel);
-		messageService.markMessageAsRead(messageModel, notificationService);
+		messageService.sendUserDecline(messageModel, true);
+		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
 
 		showToast(R.string.message_declined);
 

@@ -127,7 +127,6 @@
     <string name="whoaaa">Апавяшчэнне</string>
     <string name="really_delete_message_title">Выдаліць паведамленне</string>
     <string name="really_delete_thread">Выдаліць чат</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %d чат?  Вы не зможаце аднавіць паведамленні.</string>
     <string name="really_delete_contact">Вы сапраўды хочаце выдаліць гэты кантакт і ўсе звязаныя паведамленні?</string>
     <string name="image_placeholder">Відарыс</string>
     <string name="invalid_threema_id">Няправільны Threema ID</string>
@@ -221,7 +220,7 @@
     <string name="saving_media">Захав. мультымедыя</string>
     <string name="file_is_not_a_video">Выбраны файл не з\'яўляецца відэа</string>
     <string name="masterkey_is_unlocked">Галоўны ключ разблакаваны</string>
-    <string name="file_too_large">Памер файла перавышае дапушчальныя 50 Мб.</string>
+    <string name="file_too_large">Памер файла перавышае дапушчальныя %1$d Мб.</string>
     <string name="deleting_thread">Выдаленне чата</string>
     <string name="enter_serial_body"><![CDATA[Калі ласка, увядзіце ваш ліцэнзійны ключ ці націсніце тут, каб атрымаць яго: https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Разблакаваць Threema</string>
@@ -377,7 +376,6 @@
     <string name="file_saved">%d Файл(ы) паспяхова захаваны(я).</string>
     <string name="token_register_failed">Не ўдалося скінуць push-метку. Калі ласка, паспрабуйце пазней.</string>
     <string name="internet_connection_required">Няма падлучэння да інтэрнэту.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d паведамленняў не могуць быць адпраўлены</string>
     <string name="prefs_sum_save_media">Аўтаматычна загружаць, расшыфроўваць, і захоўваць у галерэю ўваходныя мультымедыя-файлы</string>
     <string name="prefs_save_media">Аўтазахаванне ў галерэю</string>
     <string name="title_add_distribution_list">Новы спіс рассылкі</string>
@@ -624,6 +622,8 @@
     <string name="new_wizard_linked_to">Прывязана да</string>
     <string name="new_wizard_need_internet">Неабходна стабільнае падключэнне да інтэрнэту для стварэння вашага Threema ID. Калі ласка, паспрабуйце яшчэ раз.</string>
     <string name="new_wizard_more_information">Больш інфармацыі</string>
+    <string name="contact_details_id_copied">ID скапіяваны ў буфер абмену</string>
+    <string name="contact_details_nickname_copied">Нік скапіяваны ў буфер абмену</string>
     <string name="new_wizard_use_id_as_nickname">Хочаце выкарыстоўваць свой Threema ID у якасці ніка?</string>
     <string name="new_wizard_phone_email_invalid">Тэлефонны нумар або email, які вы ўвялі - несапраўдны.\nКалі ласка, выпраўце, перш чым працягнуць.</string>
     <string name="new_wizard_phone_invalid">Тэлефонны нумар, які вы ўвялі, несапраўдны.\nВыпраўце нумар, перш чым працягнуць.</string>
@@ -702,7 +702,6 @@
     <string name="grace_never">Ніколі (уручную)</string>
     <string name="never">Ніколі</string>
     <string name="unhide_chats_confirm">Калі адключыць абарону доступу, вашыя прыватныя чаты зноў стануць бачнымі.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Выбрана відарысаў %d</string>
     <string name="verification_started">Праверка пачалася</string>
     <string name="cannot_open_file">Немагчыма адкрыць файл</string>
     <string name="prefs_title_image_attach_previews">Хуткі выбар відарыса</string>
@@ -1370,5 +1369,38 @@
     <string name="tooltip_multiple_recipients_text">Зацісніце кнопку, каб выбраць некалькі атрымальнікаў для адпраўкі ім аднаго і таго ж паведамлення.</string>
     <string name="synchronizing">Сінхранізацыя…</string>
     <string name="self_updater_installation_failed">Не атрымалася загрузіць абнаўленне.  Спампуйце і ўсталюйце абнаўленне з <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ўручную.</string>
+    <string name="spam_first_contact">Гэты чат ад невядомага кантакту</string>
+    <string name="spam_report">Паведаміць пра спам</string>
+    <string name="spam_report_dialog_explain">Калі вы працягнеце, ID і нік гэтага кантакту будуць перададзены Threema разам з вашым ID.  Змест або асабістыя даныя не адпраўляюцца.  Кантакт не будзе апавешчаны пра гэта.</string>
+    <string name="spam_report_dialog_block_checkbox">Таксама заблакіруйце гэты кантакт і выдаліце ​​чат</string>
+    <string name="spam_report_dialog_title">Паведаміць %s</string>
+    <string name="spam_successfully_reported">Паведамляецца, што ID рассылае спам.</string>
+    <string name="spam_error_reporting">Адбылася памылка падчас паведамлення пра спам: %s</string>
+    <string name="spam_report_short">Справаздача</string>
     <string name="wizard_incompatible_contact_sync_params">Устаноўлены несумяшчальныя параметры MDM.  Параметр Threema MDM th_contact_sync не можа мець значэнне true, калі ўсталявана абмежаванне карыстальніка DISALLOW_MODIFY_ACCOUNTS.  Звярніцеся да адміністратара вашай прылады.</string>
+    <string name="messages_cannot_be_recovered">Вы не зможаце аднавіць паведамленні.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="few">%d кантактаў</item>
+        <item quantity="many">%d кантакты</item>
+        <item quantity="one">%d кантакт</item>
+        <item quantity="other">%d кантактаў</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d чат?</item>
+        <item quantity="few">Вы сапраўды хочаце выдаліць %d чат?</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %d чат?</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %d чат?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="few">Не ўдалося адправіць паведамленні</item>
+        <item quantity="many">Не ўдалося адправіць паведамленні</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Не ўдалося адправіць паведамленне</item>
+        <item quantity="other">Немагчыма адправіць %1$d паведамленні</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="few">Выбрана відарысаў %d</item>
+        <item quantity="many">Выбрана відарысы %d</item>
+        <item quantity="one">Выбрана відарысаў %d</item>
+        <item quantity="other">Выбрана %d відарысаў</item>
+    </plurals>
 </resources>

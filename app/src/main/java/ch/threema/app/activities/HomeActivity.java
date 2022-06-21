@@ -618,7 +618,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void showWhatsNew() {
-		final boolean skipWhatsNew = false; // set this to false if you want to show a What's New screen
+		final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
 
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
@@ -1003,11 +1003,15 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			}
 
 			// For libre builds of Threema, always ask user to disable battery permissions
-			if (BuildFlavor.forceThreemaPush() && !DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(this)) {
-				final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
-				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
-				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
-				startActivityForResult(intent, 12345);
+			if (BuildFlavor.forceThreemaPush()) {
+				preferenceService.setUseThreemaPush(true);
+
+				if (!DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(this)) {
+					final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
+					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
+					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
+					startActivityForResult(intent, 12345);
+				}
 			}
 		}
 

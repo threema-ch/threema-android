@@ -74,6 +74,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         initTranslatorPref()
     }
 
+    override fun getPreferenceTitleResource(): Int = R.string.menu_about
+
     override fun getPreferenceResource(): Int = R.xml.preference_about
 
     private fun initLicensePref() {

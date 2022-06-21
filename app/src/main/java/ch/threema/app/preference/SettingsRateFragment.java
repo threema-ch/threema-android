@@ -94,6 +94,11 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 	}
 
 	@Override
+	public int getPreferenceTitleResource() {
+		return R.string.rate_title;
+	}
+
+	@Override
 	public int getPreferenceResource() {
 		return R.xml.preference_rate;
 	}

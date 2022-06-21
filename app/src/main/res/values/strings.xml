@@ -130,8 +130,6 @@
 	<string name="whoaaa">Notice</string>
 	<string name="really_delete_message_title">Delete message</string>
 	<string name="really_delete_thread">Delete chat</string>
-	<string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Do you really want to delete %d chat(s)? You will not be able to recover
-		the messages.</string>
 	<string name="really_delete_contact">Do you really want to delete this contact and all associated messages?</string>
 	<string name="image_placeholder">Image</string>
 	<string name="invalid_threema_id">Invalid Threema ID</string>
@@ -232,7 +230,7 @@
 	<string name="saving_media">Saving media</string>
 	<string name="file_is_not_a_video">Selected file is not a video</string>
 	<string name="masterkey_is_unlocked">Master key is unlocked</string>
-	<string name="file_too_large">File is larger than the maximum of 50 MB</string>
+	<string name="file_too_large">File is larger than the maximum of %1$d MB</string>
 	<string name="deleting_thread">Deleting chat</string>
 	<string name="enter_serial_body"><![CDATA[Please enter your shop license key. You can <a href="https://shop.threema.ch/">purchase</a> a license or <a href="https://shop.threema.ch/retrieve_keys">retrieve</a> your keys in case you already purchased a license previously.]]></string>
 	<string name="enter_serial_title">Unlock Threema</string>
@@ -395,7 +393,6 @@
 	<string name="file_saved">%d file(s) successfully saved.</string>
 	<string name="token_register_failed">Failed to update push token, please try again later.</string>
 	<string name="internet_connection_required">No Internet connection.</string>
-	<string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d Message(s) could not be sent</string>
 	<string name="prefs_sum_save_media">Save incoming pictures and videos as well as outgoing camera pictures in unencrypted form</string>
 	<string name="prefs_save_media">Auto-save to gallery</string>
 	<string name="title_add_distribution_list">New distribution list</string>
@@ -655,6 +652,9 @@
 	<string name="new_wizard_linked_to">Linked to</string>
 	<string name="new_wizard_need_internet">A stable Internet connection is required to create your unique Threema ID. Please try again.</string>
 	<string name="new_wizard_more_information">More information</string>
+	<string name="contact_details_id_copied">ID copied to clipboard</string>
+	<string name="contact_details_nickname_copied">Nickname copied to clipboard</string>
+
 	<string name="new_wizard_use_id_as_nickname">Do you want to use your Threema ID as your nickname?</string>
 	<string name="new_wizard_phone_email_invalid">Either the phone number or the email address you entered are not valid.\nPlease correct before proceeding.</string>
 	<string name="new_wizard_phone_invalid">The phone number you entered is not valid.\nPlease correct before proceeding.</string>
@@ -750,7 +750,6 @@
 	<string name="grace_never">Never (manual)</string>
 	<string name="never">Never</string>
 	<string name="unhide_chats_confirm">If you remove access protection now, your private chats will become visible again.</string>
-	<string name="selection_counter_label" tools:ignore="PluralsCandidate">%d image(s) selected</string>
 	<string name="verification_started">Verification started</string>
 	<string name="cannot_open_file">Could not open file</string>
 	<string name="prefs_title_image_attach_previews">Media quick select</string>
@@ -1423,5 +1422,38 @@
 	<string name="tooltip_multiple_recipients_text">Long tap to select multiple recipients to send the same message to.</string>
 	<string name="synchronizing">Synchronizing…</string>
 	<string name="self_updater_installation_failed">The download of the update failed. Please download and install the update from <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manually.</string>
+	<string name="spam_first_contact">This chat is from an unknown contact</string>
+	<string name="spam_report">Report Spam</string>
+	<string name="spam_report_dialog_explain">If you continue, the ID and nickname of this contact will be forwarded to Threema along with your ID. No contents or personal data is being sent. The contact will not be notified about this.</string>
+	<string name="spam_report_dialog_block_checkbox">Also block this contact and delete chat</string>
+	<string name="spam_report_dialog_title">Report %s</string>
+	<string name="spam_successfully_reported">The ID has been reported as sending spam.</string>
+	<string name="spam_error_reporting">An error occurred while reporting spam: %s</string>
+	<string name="spam_report_short">Report</string>
 	<string name="wizard_incompatible_contact_sync_params">There are incompatible MDM parameters set. Threema MDM parameter th_contact_sync cannot be set to true if user restriction DISALLOW_MODIFY_ACCOUNTS is set. Please contact your device administrator.</string>
+	<string name="messages_cannot_be_recovered">You will not be able to recover the messages.</string>
+	<plurals name="contacts_counter_label">
+		<item quantity="one">%d contact</item>
+		<item quantity="few">%d contacts</item>
+		<item quantity="many">%d contacts</item>
+		<item quantity="other">%d contacts</item>
+	</plurals>
+	<plurals name="really_delete_thread_message">
+		<item quantity="one">Do you really want to delete this chat?</item>
+		<item quantity="few">Do you really want to delete %d chats?</item>
+		<item quantity="many">Do you really want to delete %d chats?</item>
+		<item quantity="other">Do you really want to delete %d chats?</item>
+	</plurals>
+	<plurals name="sending_message_failed">
+		<item quantity="one">One message could not be sent</item>
+		<item quantity="few">%1$d messages could not be sent</item>
+		<item quantity="many">%1$d messages could not be sent</item>
+		<item quantity="other">%1$d messages could not be sent</item>
+	</plurals>
+	<plurals name="selection_counter_label">
+		<item quantity="one">%d image selected</item>
+		<item quantity="few">%d images selected</item>
+		<item quantity="many">%d images selected</item>
+		<item quantity="other">%d images selected</item>
+	</plurals>
 </resources>

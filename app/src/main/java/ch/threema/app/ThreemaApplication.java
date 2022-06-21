@@ -1129,8 +1129,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				return true;
 			}
 		} catch (IllegalStateException e) {
-			logger.info("Unable to initialize WorkManager");
-			logger.error("Exception", e);
+			logger.error("Unable to initialize WorkManager", e);
 		}
 		return false;
 	}

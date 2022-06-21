@@ -127,7 +127,6 @@
     <string name="whoaaa">Oznámení</string>
     <string name="really_delete_message_title">Odstranit zprávu</string>
     <string name="really_delete_thread">Odstranit konverzaci</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Skutečně si přejete odstranit následující počet konverzací: %d? Zprávy z nich už poté nebudete moci obnovit.</string>
     <string name="really_delete_contact">Skutečně si přejete odstranit tento kontakt a všechny s ním související zprávy?</string>
     <string name="image_placeholder">Obrázek</string>
     <string name="invalid_threema_id">Neplatné Threema ID</string>
@@ -221,7 +220,7 @@
     <string name="saving_media">Média se ukládají</string>
     <string name="file_is_not_a_video">Vybraný soubor není videem</string>
     <string name="masterkey_is_unlocked">Hlavní klíč je odemčen</string>
-    <string name="file_too_large">Soubor je větší než maximální povolená velikost 50 MB</string>
+    <string name="file_too_large">Soubor je větší než maximální povolená velikost %1$d MB</string>
     <string name="deleting_thread">Konverzace se odstraňuje</string>
     <string name="enter_serial_body"><![CDATA[Zadejte prosím zakoupený licenční klíč. Můžete <a href="https://shop.threema.ch/">zakoupit</a> licenci nebo <a href="https://shop.threema.ch/retrieve_keys">obnovit</a> vaše klíče v případě, že jste licenci zakoupili již dříve.]]></string>
     <string name="enter_serial_title">Odemknutí aplikace Threema</string>
@@ -378,7 +377,6 @@
     <string name="file_saved">Počet úspěšně uložených souborů: %d</string>
     <string name="token_register_failed">Aktualizace push tokenu se nezdařila. Zkuste to prosím později.</string>
     <string name="internet_connection_required">Žádné připojení k Internetu.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">Nezdařilo se odeslat následující počet zpráv: %1$d</string>
     <string name="prefs_sum_save_media">Automaticky stahovat, dešifrovat a ukládat příchozí obrázky a videa, včetně snímků pořízených fotoaparátem, do Galerie v nezašifrované podobě</string>
     <string name="prefs_save_media">Automaticky ukládat do Galerie</string>
     <string name="title_add_distribution_list">Nový distribuční seznam</string>
@@ -477,7 +475,7 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="wearable_reply">Odpovědět</string>
     <string name="wearable_reply_label">Odpovědět %s</string>
     <string name="message_acknowledged">Souhlas odeslán</string>
-    <string name="push_disable_text">Pokud budete pokračovat, bude použita služba „Threema Push“ namísto systémové služby push. Toto pomáhá redukovat vaši digitální stopu, ale vyžaduje to také, aby vaše zařízení bylo nakonfigurováno takovým způsobem, aby aplikace mohla stále běžet na pozadí. V případě potřeby kontaktujte podporu výrobce vašeho zařízení, aby vám pomohla s konfigurací, jestliže odpovídající možnosti nejsou k dispozici v nastavení zařízení.</string>
+    <string name="push_disable_text">Jestliže budete pokračovat, bude použita služba „Threema Push“ namísto systémové služby push. Toto pomáhá redukovat vaši digitální stopu, ale vyžaduje to také, aby vaše zařízení bylo nakonfigurováno takovým způsobem, aby aplikace mohla stále běžet na pozadí. V případě potřeby kontaktujte podporu výrobce vašeho zařízení, aby vám pomohla s konfigurací, jestliže odpovídající možnosti nejsou k dispozici v nastavení zařízení.</string>
     <string name="ballot_intermediate_results_show">Zobrazovat průběžné výsledky</string>
     <string name="converting_video">Zpracování videa</string>
     <string name="video_size_small">Velká (náhledová kvalita)</string>
@@ -628,6 +626,8 @@ možné je obnovit.</string>
     <string name="new_wizard_linked_to">Propojeno s</string>
     <string name="new_wizard_need_internet">K vytvoření vašeho unikátního Threema ID je vyžadováno stabilní připojení k internetu. Zkuste to prosím znovu.</string>
     <string name="new_wizard_more_information">Více informací</string>
+    <string name="contact_details_id_copied">ID bylo zkopírováno do schránky</string>
+    <string name="contact_details_nickname_copied">Přezdívka byla zkopírována do schránky</string>
     <string name="new_wizard_use_id_as_nickname">Chcete své Threema ID použít i jako přezdívku?</string>
     <string name="new_wizard_phone_email_invalid">Telefonní číslo nebo e‑mailová adresa, kterou jste zadali, nejsou platné.\nOpravte prosím zadaná data a zkuste to znovu.</string>
     <string name="new_wizard_phone_invalid">Vámi zadané telefonní číslo není platné.\nOpravte jej prosím a zkuste to znovu.</string>
@@ -706,7 +706,6 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="grace_never">Nikdy (ručně)</string>
     <string name="never">Nikdy</string>
     <string name="unhide_chats_confirm">Pokud nyní odstraníte ochranu přístupu, vaše soukromé konverzace budou opět viditelné.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Počet vybraných obrázků: %d</string>
     <string name="verification_started">Ověřování bylo zahájeno</string>
     <string name="cannot_open_file">Soubor se nepodařilo otevřít</string>
     <string name="prefs_title_image_attach_previews">Rychlý výběr médií</string>
@@ -1017,7 +1016,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="delete">Odstranit</string>
     <string name="num_archived_chats">Archivovaných konverzací: %d</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
-    <string name="whatsnew_title">Vítejte v %1$s %2$s</string>
+    <string name="whatsnew_title">Vítejte v aplikaci %1$s %2$s</string>
     <string name="whatsnew_headline"><![CDATA[
 		<p><b>Nové funkce v této verzi aplikace %s pro Android:</b></p>
 		<p>
@@ -1375,5 +1374,36 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="tooltip_multiple_recipients_text">Dlouhým klepnutím vyberte více příjemců, kterým poté můžete odeslat stejnou zprávu.</string>
     <string name="synchronizing">Synchronizace...</string>
     <string name="self_updater_installation_failed">Stažení aktualizace selhalo. Stáhněte a nainstalujte aktualizaci z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ručně.</string>
+    <string name="spam_first_contact">Tato konverzace pochází od neznámého kontaktu</string>
+    <string name="spam_report">Nahlásit spam</string>
+    <string name="spam_report_dialog_explain">Jestliže budete pokračovat, ID a přezdívka tohoto kontaktu bude předána společnosti Threema společně s vaším ID. Nebude odeslán žádný obsah nebo osobní údaje. Dotyčný kontakt o této akci nebude obeznámen.</string>
+    <string name="spam_report_dialog_block_checkbox">Taktéž tento kontakt zablokovat a odstranit konverzaci</string>
+    <string name="spam_report_dialog_title">Nahlásit %s</string>
+    <string name="spam_successfully_reported">ID bylo nahlášeno jako rozesílatel spamu.</string>
+    <string name="spam_error_reporting">Během nahlašování spamu došlo k chybě: %s</string>
+    <string name="spam_report_short">Nahlásit</string>
     <string name="wizard_incompatible_contact_sync_params">Jsou nastaveny nekompatibilní MDM parametry. Threema MDM parametr th_contact_sync nemůže být nastaven na „true“, jestliže je nastaveno uživatelské omezení DISALLOW_MODIFY_ACCOUNTS. Kontaktujte prosím správce vašeho zařízení.</string>
+    <string name="messages_cannot_be_recovered">Zprávy z nich už poté nebudete moci obnovit.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="few">%d kontakty</item>
+        <item quantity="many">%d kontaktů</item>
+        <item quantity="one">%d kontakt</item>
+        <item quantity="other">%d kontaktů</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="few">Skutečně si přejete odstranit %d konverzace?</item>
+        <item quantity="many">Skutečně si přejete odstranit %d konverzací?</item>
+        <item quantity="one">Skutečně si přejete odstranit %d konverzaci?</item>
+        <item quantity="other">Skutečně si přejete odstranit %d konverzací?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">Nezdařilo se odeslat následující počet zpráv: %1$d</item>
+        <item quantity="few">Nezdařilo se odeslat následující počet zpráv: %1$d</item>
+        <item quantity="many">Nezdařilo se odeslat následující počet zpráv: %1$d</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">Počet vybraných obrázků: %d</item>
+        <item quantity="few">Počet vybraných obrázků: %d</item>
+        <item quantity="many">Počet vybraných obrázků: %d</item>
+    </plurals>
 </resources>

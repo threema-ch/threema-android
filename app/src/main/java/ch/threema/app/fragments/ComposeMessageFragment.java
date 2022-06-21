@@ -176,6 +176,7 @@ import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
+import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ContentCommitComposeEditText;
 import ch.threema.app.ui.ConversationListView;
@@ -185,6 +186,7 @@ import ch.threema.app.ui.LockableScrollView;
 import ch.threema.app.ui.MentionSelectorPopup;
 import ch.threema.app.ui.OpenBallotNoticeView;
 import ch.threema.app.ui.QRCodePopup;
+import ch.threema.app.ui.ReportSpamView;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SendButton;
 import ch.threema.app.ui.SingleToast;
@@ -222,6 +224,8 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -255,6 +259,7 @@ public class ComposeMessageFragment extends Fragment implements
 	EmojiPicker.EmojiPickerListener,
 	MentionSelectorPopup.MentionSelectorListener,
 	OpenBallotNoticeView.VisibilityListener,
+	ReportSpamView.OnReportButtonClickListener,
 	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
@@ -363,6 +368,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private TooltipPopup workTooltipPopup;
 	private OpenBallotNoticeView openBallotNoticeView;
 	private OpenGroupRequestNoticeView openGroupRequestNoticeView;
+	private ReportSpamView reportSpamView;
 	private ComposeMessageActivity activity;
 	private View fragmentView;
 	private CoordinatorLayout coordinatorLayout;
@@ -509,6 +515,10 @@ public class ComposeMessageFragment extends Fragment implements
 							if (addMessageToList(newMessage)) {
 								if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
 									playSentSound();
+
+									if (reportSpamView != null && reportSpamView.getVisibility() == View.VISIBLE) {
+										reportSpamView.hide();
+									}
 								}
 							}
 						} else {
@@ -949,6 +959,8 @@ public class ComposeMessageFragment extends Fragment implements
 			this.bottomPanel = this.fragmentView.findViewById(R.id.bottom_panel);
 			this.openBallotNoticeView = this.fragmentView.findViewById(R.id.open_ballots_layout);
 			this.openGroupRequestNoticeView = this.fragmentView.findViewById(R.id.open_group_requests_layout);
+			this.reportSpamView = this.fragmentView.findViewById(R.id.report_spam_layout);
+			this.reportSpamView.setListener(this);
 
 			this.getValuesFromBundle(savedInstanceState);
 			this.handleIntent(activity.getIntent());
@@ -1740,6 +1752,7 @@ public class ComposeMessageFragment extends Fragment implements
 		this.isGroupChat = false;
 		this.isDistributionListChat = false;
 		this.currentPageReferenceId = null;
+		this.reportSpamView.hide();
 
 		//remove old indicator every time!
 		//fix ANDR-432
@@ -1850,7 +1863,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 		}
 
-		this.initConversationList(intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY) ? (Runnable) () -> {
+		this.initConversationList(intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY) ? () -> {
 				String apiMessageId = intent.getStringExtra(EXTRA_API_MESSAGE_ID);
 				String searchQuery = intent.getStringExtra(EXTRA_SEARCH_QUERY);
 
@@ -1884,7 +1897,11 @@ public class ComposeMessageFragment extends Fragment implements
 				} else {
 					Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_not_found, Toast.LENGTH_SHORT).show();
 				}
-		} : null);
+		} : () -> {
+			if (isPossibleSpamContact(contactModel)) {
+				reportSpamView.show(contactModel);
+			}
+		});
 
 		// work around the problem that the same original intent may be sent
 		// each time a singleTop activity (like this one) is coming back to front
@@ -2008,6 +2025,85 @@ public class ComposeMessageFragment extends Fragment implements
 				actionMode.finish();
 			}
 		}
+	}
+
+	/**
+	 * Check if the clues indicate that the sender of this chat might be a spammer
+	 * @param contactModel Contact model of possible spammer
+	 * @return true if the contact could be a spammer, false otherwise
+	 */
+	private boolean isPossibleSpamContact(ContactModel contactModel) {
+		if (ConfigUtils.isOnPremBuild()) {
+			return false;
+		}
+
+		if (contactModel == null || contactModel.getVerificationLevel() != VerificationLevel.UNVERIFIED) {
+			return false;
+		}
+
+		if (!TestUtil.empty(contactModel.getFirstName()) || !TestUtil.empty(contactModel.getLastName())) {
+			return false;
+		}
+
+		if (blackListIdentityService.has(contactModel.getIdentity())) {
+			return false;
+		}
+
+		if (contactModel.isHidden()) {
+			return false;
+		}
+
+		if (composeMessageAdapter == null) {
+			return false;
+		}
+
+		int numMessages = composeMessageAdapter.getCount();
+
+		if (numMessages >= MESSAGE_PAGE_SIZE || numMessages < 2) {
+			return false;
+		}
+
+		AbstractMessageModel firstMessageModel;
+		int positionOfFirstIncomingMessage = 0;
+		for (int i = 0; i < numMessages; i++) {
+			firstMessageModel = composeMessageAdapter.getItem(i);
+			if (firstMessageModel == null) {
+				return false;
+			}
+			if (firstMessageModel.isOutbox()) {
+				return false;
+			}
+			if (contactModel.getIdentity().equals(firstMessageModel.getIdentity())) {
+				positionOfFirstIncomingMessage = i;
+				break;
+			}
+		}
+
+		AbstractMessageModel messageModel = composeMessageAdapter.getItem(positionOfFirstIncomingMessage);
+
+		if (messageModel == null) {
+			return false;
+		}
+
+		Date contactCreated = contactModel.getDateCreated();
+		Date firstMessageDate = messageModel.getCreatedAt();
+
+		if (contactCreated == null || firstMessageDate == null) {
+			return false;
+		}
+
+		if (firstMessageDate.getTime() - contactCreated.getTime() > DateUtils.DAY_IN_MILLIS) {
+			return false;
+		}
+
+		for (int i = positionOfFirstIncomingMessage; i < numMessages; i++) {
+			AbstractMessageModel abstractMessageModel = composeMessageAdapter.getItem(i);
+			if (abstractMessageModel == null || abstractMessageModel.isOutbox()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private void undoDeleteMessages() {
@@ -2538,10 +2634,21 @@ public class ComposeMessageFragment extends Fragment implements
 			Map<String, Integer> colors = new HashMap<>();
 			boolean darkTheme = ConfigUtils.getAppTheme(activity) == ConfigUtils.THEME_DARK;
 			for (Map.Entry<String, Integer> entry : colorIndices.entrySet()) {
-				colors.put(entry.getKey(),
+				String memberIdentity = entry.getKey();
+				int memberColorIndex = entry.getValue();
+				// If the ID color index is -1, the correct index is calculated and stored into the database
+				if (memberColorIndex < 0) {
+					ContactModel member = contactService.getByIdentity(memberIdentity);
+					if (member != null) {
+						member.initializeIdColor();
+						memberColorIndex = member.getIdColorIndex();
+						contactService.save(member);
+					}
+				}
+				colors.put(memberIdentity,
 					darkTheme ?
-						ColorUtil.getInstance().getIDColorDark(entry.getValue()) :
-						ColorUtil.getInstance().getIDColorLight(entry.getValue()));
+						ColorUtil.getInstance().getIDColorDark(memberColorIndex) :
+						ColorUtil.getInstance().getIDColorLight(memberColorIndex));
 			}
 
 			this.identityColors = colors;
@@ -3477,7 +3584,7 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void emptyChat() {
-		new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getFragmentManager(), false, () -> {
+		new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getParentFragmentManager(), false, () -> {
 			if (isAdded()) {
 					synchronized (messageValues) {
 						messageValues.clear();
@@ -3835,6 +3942,12 @@ public class ComposeMessageFragment extends Fragment implements
 			convListView.clearChoices();
 			convListView.requestLayout();
 			convListView.post(() -> convListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE));
+
+			// If the action mode has been left without clearing up the selected messages, we need
+			// to trigger a refresh so that linkified links work again (selectedMessages will be cleared lazily)
+			if (!selectedMessages.isEmpty() && composeMessageAdapter != null) {
+				composeMessageAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 
@@ -4329,6 +4442,43 @@ public class ComposeMessageFragment extends Fragment implements
 		if (isEmojiPickerShown()) {
 			emojiPicker.onKeyboardShown();
 		}
+	}
+
+	@Override
+	public void onReportSpamClicked(@NonNull final ContactModel spammerContactModel, boolean block) {
+		final APIConnector connector = ThreemaApplication.requireServiceManager().getAPIConnector();
+		final IdentityStore identityStore = ThreemaApplication.requireServiceManager().getIdentityStore();
+
+		new Thread(() -> {
+			try {
+				connector.reportJunk(identityStore, spammerContactModel.getIdentity(), spammerContactModel.getPublicNickName());
+				if (block) {
+					blackListIdentityService.add(spammerContactModel.getIdentity());
+				}
+				contactModel.setIsHidden(true);
+				contactService.save(contactModel);
+
+				RuntimeUtil.runOnUiThread(() -> {
+					Toast.makeText(ComposeMessageFragment.this.getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
+					if (block) {
+						new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getParentFragmentManager(), true, new Runnable() {
+							@Override
+							public void run() {
+								ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+								ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+								ComposeMessageFragment.this.finishActivity();
+							}
+						}).execute();
+					} else {
+						reportSpamView.hide();
+						ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+					}
+				});
+			} catch (Exception e) {
+				logger.error("Error reporting spam", e);
+				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ComposeMessageFragment.this.getContext(), getString(R.string.spam_error_reporting, e.getMessage()), Toast.LENGTH_LONG).show());
+			}
+		}).start();
 	}
 
 	private void finishActivity() {

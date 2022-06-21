@@ -102,23 +102,23 @@ public class SdpTest {
 		}
 
 		@Override
-		public void onIceChecking(long callId) {
-			Log.d(TAG,"onIceChecking");
+		public void onTransportConnecting(long callId) {
+			Log.d(TAG,"onTransportConnecting");
 		}
 
 		@Override
-		public void onIceConnected(long callId) {
-			Log.d(TAG,"onIceConnected");
+		public void onTransportConnected(long callId) {
+			Log.d(TAG,"onTransportConnected");
 		}
 
 		@Override
-		public void onIceDisconnected(long callId) {
-			Log.d(TAG,"onIceDisconnected");
+		public void onTransportDisconnected(long callId) {
+			Log.d(TAG,"onTransportDisconnected");
 		}
 
 		@Override
-		public void onIceFailed(long callId) {
-			Log.d(TAG,"onIceFailed");
+		public void onTransportFailed(long callId) {
+			Log.d(TAG,"onTransportFailed");
 		}
 
 		@Override

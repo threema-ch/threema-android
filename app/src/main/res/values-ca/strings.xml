@@ -126,8 +126,6 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="whoaaa">Notícia</string>
     <string name="really_delete_message_title">Eliminar missatge</string>
     <string name="really_delete_thread">Eliminar xat</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Realment voleu eliminar %d xat(s)? No podreu recuperar
-els missatges.</string>
     <string name="really_delete_contact">Realment voleu eliminar aquest contacte i tots els missatges associats?</string>
     <string name="image_placeholder">Imatge</string>
     <string name="invalid_threema_id">ID de Threema no vàlid</string>
@@ -227,7 +225,7 @@ de continuar.</string>
     <string name="saving_media">Desant multimèdia</string>
     <string name="file_is_not_a_video">El fitxer seleccionat no és un vídeo</string>
     <string name="masterkey_is_unlocked">La clau mestra està desbloquejada</string>
-    <string name="file_too_large">El fitxer és més gran que el màxim de 50 MB</string>
+    <string name="file_too_large">El fitxer és més gran que el màxim de %1$d MB</string>
     <string name="deleting_thread">Esborrant el xat</string>
     <string name="enter_serial_body">Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
 https://shop.threema.ch/retrieve_keys</string>
@@ -389,7 +387,6 @@ de contacte</string>
     <string name="file_saved">%d fitxer(s) desat(s) correctament.</string>
     <string name="token_register_failed">Error actualitzant el testimoni push, torneu a intentar-ho més tard.</string>
     <string name="internet_connection_required">No hi ha connexió a Internet</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d missatge(s) no s\'han pogut enviar</string>
     <string name="prefs_sum_save_media">Desar les imatges i vídeos rebuts, així com les fotos de la càmera enviats sense xifrar</string>
     <string name="prefs_save_media">Desar automàticament a la galeria</string>
     <string name="title_add_distribution_list">Nova llista de distribució</string>
@@ -720,7 +717,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="grace_never">Mai (manual)</string>
     <string name="never">Mai</string>
     <string name="unhide_chats_confirm">Si suprimiu la protecció d\'accés ara, els vostres xats privats esdevindran visibles altra vegada.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">%d imatge(s) seleccionada/es</string>
     <string name="verification_started">Verificació iniciada</string>
     <string name="cannot_open_file">No es pot obrir el fitxer</string>
     <string name="prefs_title_image_attach_previews">Selecció ràpida de multimèdia</string>
@@ -1332,7 +1328,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="phoneTypeWork">Feina</string>
     <string name="phoneTypePager">Cercapersones</string>
     <string name="phoneTypeOther">Altres</string>
-    <string name="phoneTypeCar">Cotxe"</string>
+    <string name="phoneTypeCar">Cotxe</string>
     <string name="phoneTypeIsdn">XDSI</string>
     <string name="phoneTypeOtherFax">Altres faxos</string>
     <string name="eventTypeCustom">Personalitza</string>
@@ -1354,4 +1350,21 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="contact_property_key">"Clau"</string>
     <string name="header_nickname_entry">"Àlies"</string>
 	<string name="organization_type">Organització</string>
+    <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="one">%d contacte</item>
+        <item quantity="other">%d contactes</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Realment voleu eliminar %d xat?</item>
+        <item quantity="other">Realment voleu eliminar %d xats?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">%1$d missatge no s\'han pogut enviar</item>
+        <item quantity="other">%1$d missatges no s\'han pogut enviar</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">%d imatge seleccionada</item>
+        <item quantity="other">%d imatges seleccionades</item>
+    </plurals>
 </resources>

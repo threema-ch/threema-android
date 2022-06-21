@@ -58,6 +58,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 import ch.threema.app.BuildConfig;
+import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -408,6 +409,13 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				}
 			}
 		}
+
+		if (BuildFlavor.forceThreemaPush()) {
+			PreferenceCategory preferenceCategory = findPreference("pref_key_workarounds");
+			if (preferenceCategory != null) {
+				preferenceScreen.removePreference(preferenceCategory);
+			}
+		}
 	}
 
 	private void updatePowerManagerPrefs() {
@@ -543,6 +551,10 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (BuildFlavor.forceThreemaPush()) {
+			return;
+		}
+
 		if (key.equals(getString(R.string.preferences__threema_push_switch))) {
 			boolean newValue = sharedPreferences.getBoolean(getString(R.string.preferences__threema_push_switch), false);
 
@@ -725,6 +737,11 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 	@Override
 	public void onCancel(String tag, Object object) {
+	}
+
+	@Override
+	protected int getPreferenceTitleResource() {
+		return R.string.prefs_troubleshooting;
 	}
 
 	@Override

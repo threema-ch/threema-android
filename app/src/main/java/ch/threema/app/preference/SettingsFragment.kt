@@ -33,26 +33,19 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.activities.WorkExplainActivity
 import ch.threema.app.utils.AppRestrictionUtil
-import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.ConfigUtils.THEME_DARK
+import ch.threema.app.utils.ConfigUtils.*
 
-class SettingsFragment(private val onResumeCallback: () -> Unit = {}) : ThreemaPreferenceFragment() {
+class SettingsFragment() : ThreemaPreferenceFragment() {
     private var preferencePairs: List<Pair<Preference, String>> = listOf()
     private var selectedPrefView: View? = null
     private val preferenceService = requirePreferenceService()
-
-    override fun onResume() {
-        super.onResume()
-
-        onResumeCallback()
-    }
 
     override fun initializePreferences() {
 
         val preferenceScreen = getPrefOrNull<PreferenceScreen>("pref_screen_header") ?: return
 
-        var voipDisabled = ConfigUtils.isBlackBerry()
-        if (!voipDisabled && ConfigUtils.isWorkRestricted()) {
+        var voipDisabled = isBlackBerry()
+        if (!voipDisabled && isWorkRestricted()) {
             val disableCalls = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_calls))
             voipDisabled = disableCalls != null && disableCalls
         }
@@ -68,7 +61,7 @@ class SettingsFragment(private val onResumeCallback: () -> Unit = {}) : ThreemaP
         }
 
         val workPref = getPref<Preference>("pref_key_work")
-        if (!ConfigUtils.isWorkBuild()) {
+        if (!isWorkBuild()) {
             workPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 startActivity(Intent(requireActivity(), WorkExplainActivity::class.java))
                 true
@@ -88,7 +81,7 @@ class SettingsFragment(private val onResumeCallback: () -> Unit = {}) : ThreemaP
             requireActivity().intent.extras?.get(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT) == true -> "pref_key_security"
             else -> "pref_key_privacy"
         }
-        if (ConfigUtils.isTabletLayout()) {
+        if (isTabletLayout()) {
             Handler(Looper.getMainLooper()).also {
                 it.post(object : Runnable {
                     override fun run() {
@@ -110,8 +103,8 @@ class SettingsFragment(private val onResumeCallback: () -> Unit = {}) : ThreemaP
      * @return true if the preference background could be successfully set (or if a single pane is used), false otherwise
      */
     fun onPrefClicked(prefKey: String): Boolean {
-        if (ConfigUtils.isTabletLayout()) {
-            val dark = ConfigUtils.getAppTheme(requireContext()) == THEME_DARK
+        if (isTabletLayout() && isAdded && context != null) {
+            val dark = getAppTheme(requireContext()) == THEME_DARK
 
             selectedPrefView?.setBackgroundColor(ContextCompat.getColor(requireContext(),
                     if (dark) R.color.dark_preference_background_color else R.color.preference_background_color))
@@ -131,6 +124,8 @@ class SettingsFragment(private val onResumeCallback: () -> Unit = {}) : ThreemaP
 
         return true
     }
+
+    override fun getPreferenceTitleResource(): Int = R.string.menu_settings
 
     override fun getPreferenceResource(): Int = R.xml.preference_headers
 

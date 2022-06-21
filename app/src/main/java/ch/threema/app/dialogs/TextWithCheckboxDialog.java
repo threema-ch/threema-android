@@ -40,17 +40,37 @@ public class TextWithCheckboxDialog extends ThreemaDialogFragment {
 	private TextWithCheckboxDialogClickListener callback;
 	private Activity activity;
 
+	private final static String TITLE_KEY = "title";
+	private final static String MESSAGE_KEY = "message";
+	private final static String MESSAGE_RES_KEY = "messageRes";
+	private final static String CHECKBOX_LABEL_KEY = "checkboxLabel";
+	private final static String POSITIVE_KEY = "positive";
+	private final static String NEGATIVE_KEY = "negative";
+
 	public interface TextWithCheckboxDialogClickListener {
 		void onYes(String tag, Object data, boolean checked);
+	}
+
+	public static TextWithCheckboxDialog newInstance(String title, @StringRes int messageRes, @StringRes int checkboxLabel, @StringRes int positive, @StringRes int negative) {
+		TextWithCheckboxDialog dialog = new TextWithCheckboxDialog();
+		Bundle args = new Bundle();
+		args.putString(TITLE_KEY, title);
+		args.putInt(MESSAGE_RES_KEY, messageRes);
+		args.putInt(CHECKBOX_LABEL_KEY, checkboxLabel);
+		args.putInt(POSITIVE_KEY, positive);
+		args.putInt(NEGATIVE_KEY, negative);
+
+		dialog.setArguments(args);
+		return dialog;
 	}
 
 	public static TextWithCheckboxDialog newInstance(String message, @StringRes int checkboxLabel, @StringRes int positive, @StringRes int negative) {
 		TextWithCheckboxDialog dialog = new TextWithCheckboxDialog();
 		Bundle args = new Bundle();
-		args.putString("message", message);
-		args.putInt("checkboxLabel", checkboxLabel);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
+		args.putString(MESSAGE_KEY, message);
+		args.putInt(CHECKBOX_LABEL_KEY, checkboxLabel);
+		args.putInt(POSITIVE_KEY, positive);
+		args.putInt(NEGATIVE_KEY, negative);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -83,25 +103,40 @@ public class TextWithCheckboxDialog extends ThreemaDialogFragment {
 		}
 	}
 
+	/**
+	 * Set the callback of this dialog.
+	 *
+	 * @param clickListener the listener
+	 */
+	public void setCallback(TextWithCheckboxDialogClickListener clickListener) {
+		callback = clickListener;
+	}
+
 	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String message = getArguments().getString("message");
-		@StringRes int checkboxLabel = getArguments().getInt("checkboxLabel");
-		@StringRes int positive = getArguments().getInt("positive");
-		@StringRes int negative = getArguments().getInt("negative");
+		String title = getArguments().getString(TITLE_KEY);
+		String message = getArguments().getString(MESSAGE_KEY);
+		int messageRes = getArguments().getInt(MESSAGE_RES_KEY, 0);
+		@StringRes int checkboxLabel = getArguments().getInt(CHECKBOX_LABEL_KEY);
+		@StringRes int positive = getArguments().getInt(POSITIVE_KEY);
+		@StringRes int negative = getArguments().getInt(NEGATIVE_KEY);
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_with_checkbox, null);
 		final AppCompatCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
-
 		final String tag = this.getTag();
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme())
-			.setTitle(message)
+			.setTitle(title != null ? title : message)
 			.setView(dialogView)
 			.setCancelable(false)
 			.setNegativeButton(negative, null)
 			.setPositiveButton(positive, (dialog, which) -> callback.onYes(tag, object, checkbox.isChecked()));
+
+		if (messageRes != 0) {
+			checkbox.setTextSize(14);
+			builder.setMessage(messageRes);
+		}
 
 		checkbox.setChecked(false);
 		if (checkboxLabel != 0) {

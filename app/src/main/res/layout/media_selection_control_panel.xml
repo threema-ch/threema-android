@@ -66,8 +66,7 @@
 			app:layout_constraintStart_toStartOf="@+id/control_buttons"
 			app:layout_constraintTop_toTopOf="parent"
 			android:background="@drawable/selector_media_send_counterbubble"
-			android:textAppearance="@style/MediaAttachButtonLabel"
-			android:contentDescription="@string/selection_counter_label" />
+			android:textAppearance="@style/MediaAttachButtonLabel" />
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 

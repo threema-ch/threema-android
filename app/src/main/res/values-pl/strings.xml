@@ -3,7 +3,7 @@
     <string name="title_section2">Kontakty</string>
     <string name="title_section1">Czaty</string>
     <string name="title_compose_message">Rozpocznij czat</string>
-    <string name="title_choose_recipient">Wybierz odbiorcę</string>
+    <string name="title_choose_recipient">Wybierz odbiorców</string>
     <string name="title_keyfingerprint">Klucz publiczny</string>
     <string name="title_mythreemaid">Mój identyfikator Threema</string>
     <string name="title_threemaid">Identyfikator Threema</string>
@@ -44,7 +44,7 @@
     <string name="prefs_title_typing_indicator">Wyślij wskaźnik pisania</string>
     <string name="prefs_media_title">Media</string>
     <string name="prefs_sum_media_title">Ustawienia mediów</string>
-    <string name="prefs_image_size">Rozmiar obrazu</string>
+    <string name="prefs_image_size">Wymiary obrazu</string>
     <string name="prefs_notification_sound">Dźwięk powiadomienia</string>
     <string name="prefs_sum_notification_sound">Domyślne dla systemu</string>
     <string name="prefs_vibrate">Wibruj</string>
@@ -127,7 +127,6 @@
     <string name="whoaaa">Powiadomienie Threema</string>
     <string name="really_delete_message_title">Usuń wiadomość</string>
     <string name="really_delete_thread">Usuń chat</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Czy na pewno chcesz usunąć %d chat(y)? Nie będzie mógł ich odzyskać.</string>
     <string name="really_delete_contact">Czy na pewno chcesz usunąć ten kontakt i wszystkie powiązane wiadomości?</string>
     <string name="image_placeholder">Obraz</string>
     <string name="invalid_threema_id">Niepoprawny identyfikator Threema</string>
@@ -221,7 +220,7 @@
     <string name="saving_media">Zapisywanie mediów</string>
     <string name="file_is_not_a_video">Wybrany plik nie jest filmem</string>
     <string name="masterkey_is_unlocked">Klucz generalny jest odlokowany</string>
-    <string name="file_too_large">Wielkość pliku przekracza limit wynoszący 50 MB</string>
+    <string name="file_too_large">Wielkość pliku przekracza limit wynoszący %1$d MB</string>
     <string name="deleting_thread">Usuwanie chatu</string>
     <string name="enter_serial_body"><![CDATA[Proszę wpisać sklepowy klucz autoryzacyjny albo kliknąć tutaj, aby go odzyskać: https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Odblokuj Threema</string>
@@ -347,7 +346,7 @@
     <string name="prefs_contact_format">Zobacz nazwy kontaktów</string>
     <string name="prefs_sum_contact_format">Ustaw format nazwy kontaktu</string>
     <string name="prefs_contact_list_title">Lista kontaktów</string>
-    <string name="prefs_default_contact_picture_colored">Awatar domyślnego kontaktu</string>
+    <string name="prefs_default_contact_picture_colored">Domyślne awatary kontaktów</string>
     <string name="prefs_show_inactive_contacts">Pokaż nieaktywne identyfikatory</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Wyświetlaj kolorowe zamienniki, jeśli brak obrazu kontaktu</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Użyj szarych zamienników, jeśli brak obrazu kontaktu.</string>
@@ -378,7 +377,6 @@
     <string name="file_saved">%d pliki zostały pomyślnie zapisane.</string>
     <string name="token_register_failed">Nie udało się zresetować Push Token, proszę spróbować ponownie.</string>
     <string name="internet_connection_required">Brak połączenia z Internetem.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">Wysyłanie wiadomości nie powiodło %1$d</string>
     <string name="prefs_sum_save_media">Automatycznie pobieraj i dekoduj przychodzące media i dodaj je do galerii</string>
     <string name="prefs_save_media">Zapisz media do galerii</string>
     <string name="title_add_distribution_list">Nowa lista dystrybucji</string>
@@ -629,6 +627,8 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="new_wizard_linked_to">Połączony z</string>
     <string name="new_wizard_need_internet">Do utworzenia niepowtarzalnego ID w Threema potrzebne jest stabilne połączenie z Internetem. Spróbuj ponownie.</string>
     <string name="new_wizard_more_information">Więcej informacji</string>
+    <string name="contact_details_id_copied">ID skopiowany do schowka</string>
+    <string name="contact_details_nickname_copied">Pseudonim skopiowany do schowka</string>
     <string name="new_wizard_use_id_as_nickname">Chcesz używać swojego ID w Threema jako publicznie dostępnego pseudonimu?</string>
     <string name="new_wizard_phone_email_invalid">Podany numer telefonu lub adres e-mail jest nieprawidłowy.\nPopraw, nim przejdziesz dalej.</string>
     <string name="new_wizard_phone_invalid">Podany numer telefonu jest nieprawidłowy.\nPopraw, zanim przejdziesz dalej.</string>
@@ -720,7 +720,6 @@ anonimowo?</string>
     <string name="grace_never">Nigdy (ręcznie)</string>
     <string name="never">Nigdy</string>
     <string name="unhide_chats_confirm">Jeśli usuniesz ochronę dostępu, twoje prywatne czaty staną się dostępne.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Wybrano %d obrazy(ów)</string>
     <string name="verification_started">Rozpoczęto weryfikację</string>
     <string name="cannot_open_file">Nie udało się otworzyć pliku</string>
     <string name="prefs_title_image_attach_previews">Szybki wybór obrazów</string>
@@ -1389,5 +1388,38 @@ anonimowo?</string>
     <string name="tooltip_multiple_recipients_text">Przytrzymaj dłużej, aby wybrać wielu odbiorców tej samej wiadomości.</string>
     <string name="synchronizing">Synchronizacja...</string>
     <string name="self_updater_installation_failed">Pobranie aktualizacji nie powiodło się. Pobierz ją ze strony <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> i zainstaluj ręcznie.</string>
+    <string name="spam_first_contact">Ten czat jest z nieznanym kontaktem</string>
+    <string name="spam_report">Zgłoś Spam</string>
+    <string name="spam_report_dialog_explain">Jeśli kontynuujesz, ID i pseudonim tego kontaktu zostaną przekazane Threemie włącznie z Twoim ID. Żadna zawartość ani dane personalne nie są wysyłane. Kontakt nie zostanie o tym powiadomiony.</string>
+    <string name="spam_report_dialog_block_checkbox">Również zablokuj ten kontakt i usuń czat</string>
+    <string name="spam_report_dialog_title">Zgłoś %s</string>
+    <string name="spam_successfully_reported">Ten ID został zgłoszony jako wysyłający spam</string>
+    <string name="spam_error_reporting">Wystąpił błąd podczas zgłaszania spamu: %s</string>
+    <string name="spam_report_short">Zgłoś</string>
     <string name="wizard_incompatible_contact_sync_params">Ustawione są niezgodne parametry MDM. Parametr MDM Threema th_contact_sync nie może być ustawiony na wartość prawda, jeśli ustawiono ograniczenie użytkownika DISALLOW_MODIFY_ACCOUNTS. Skontaktuj się z administratorem urządzenia.</string>
+    <string name="messages_cannot_be_recovered">Nie będzie mógł ich odzyskać.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="few">%d kontakty</item>
+        <item quantity="many">%d kontaktów</item>
+        <item quantity="one">%d kontakt</item>
+        <item quantity="other">%d kontaktów</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Czy na pewno chcesz usunąć %d chat?</item>
+        <item quantity="few">Czy na pewno chcesz usunąć %d chaty?</item>
+        <item quantity="many">Czy na pewno chcesz usunąć %d chaty?</item>
+        <item quantity="other">Czy na pewno chcesz usunąć %d chaty?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="few">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="many">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="other">Wysyłanie wiadomości nie powiodło %1$d</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">Wybrano %d obrazy</item>
+        <item quantity="few">Wybrano %d obrazyów</item>
+        <item quantity="many">Wybrano %d obrazyów</item>
+        <item quantity="other">Wybrano %d obrazyów</item>
+    </plurals>
 </resources>

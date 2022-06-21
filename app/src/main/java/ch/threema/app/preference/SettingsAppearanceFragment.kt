@@ -82,6 +82,8 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
         }
     }
 
+    override fun getPreferenceTitleResource(): Int = R.string.prefs_header_appearance
+
     override fun getPreferenceResource(): Int = R.xml.preference_appearance
 
     private fun initDefaultColoredAvatarPref() {

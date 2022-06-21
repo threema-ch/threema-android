@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="title_section2">контактів</string>
+    <string name="title_section2">Контакти</string>
     <string name="title_section1">Чати</string>
     <string name="title_compose_message">Почати чат</string>
     <string name="title_choose_recipient">Виберіть одержувача</string>
@@ -129,8 +129,6 @@
     <string name="whoaaa">Увага</string>
     <string name="really_delete_message_title">Видалити повідомлення</string>
     <string name="really_delete_thread">Видалити чат</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Справді видалити чати (%d)? Ви не зможете відновити
-		повідомлення.</string>
     <string name="really_delete_contact">Справді видалити контакт і всі пов\'язані з ним повідомлення?</string>
     <string name="image_placeholder">Зображення</string>
     <string name="invalid_threema_id">Недійсний ID Threema</string>
@@ -231,7 +229,7 @@
     <string name="saving_media">Збереження медіафайлів</string>
     <string name="file_is_not_a_video">Вибраний файл не є відео</string>
     <string name="masterkey_is_unlocked">Головний ключ розблоковано</string>
-    <string name="file_too_large">Розмір файлу перевищує максимально дозволений (50 МБ)</string>
+    <string name="file_too_large">Розмір файлу перевищує максимально дозволений (%1$d МБ)</string>
     <string name="deleting_thread">Видалення чату</string>
     <string name="enter_serial_body"><![CDATA[Введіть ліцензійний ключ. Ви можете <a href="https://shop.threema.ch/">придбати</a> ліцензію або <a href="https://shop.threema.ch/retrieve_keys">відновити</a> ключ, придбаний раніше.]]></string>
     <string name="enter_serial_title">Розблокувати Threema</string>
@@ -255,7 +253,8 @@
     <string name="emoji_emotions">Смайлики та люди</string>
     <string name="emoji_activities">Заняття</string>
     <string name="emoji_flags">Прапори</string>
-    <string name="emoji_search_no_result">Немає результатів пошуку</string>
+    <string name="emoji_search">Пошук емодзі</string>
+    <string name="emoji_search_no_result">Нічого не знайдено</string>
     <string name="title_lock">Заблокувати</string>
     <string name="new_messages_locked">Доступні нові повідомлення</string>
     <string name="new_messages_locked_description">Торкніться, щоб переглянути їх.</string>
@@ -393,7 +392,6 @@
     <string name="file_saved">Файли збережено (%d).</string>
     <string name="token_register_failed">Не вдалося оновити маркер сповіщень. Повторіть спробу пізніше.</string>
     <string name="internet_connection_required">Немає з\'єднання з Інтернетом.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">Не вдалося надіслати повідомлення (%1$d)</string>
     <string name="prefs_sum_save_media">Зберігати отримані зображення й відео та надіслані фото з камери в незашифрованому вигляді</string>
     <string name="prefs_save_media">Зберігати в галереї</string>
     <string name="title_add_distribution_list">Створити список розсилки</string>
@@ -653,6 +651,8 @@
     <string name="new_wizard_linked_to">Зв\'язані контактні дані</string>
     <string name="new_wizard_need_internet">Щоб створити унікальний ID Threema, потрібне стабільне з\'єднання з Інтернетом. Повторіть спробу.</string>
     <string name="new_wizard_more_information">Додаткова інформація</string>
+    <string name="contact_details_id_copied">ID скопійовано в буфер обміну</string>
+    <string name="contact_details_nickname_copied">Псевдонім скопійовано в буфер обміну</string>
     <string name="new_wizard_use_id_as_nickname">Використовувати ID Threema як псевдонім?</string>
     <string name="new_wizard_phone_email_invalid">Номер телефону або адреса ел. пошти, які ви ввели, недійсні.\nВиправте їх, перш ніж продовжити.</string>
     <string name="new_wizard_phone_invalid">Номер телефону, який ви ввели, недійсний.\nВиправте його, перш ніж продовжити.</string>
@@ -748,7 +748,6 @@
     <string name="grace_never">Ніколи (вручну)</string>
     <string name="never">Ніколи</string>
     <string name="unhide_chats_confirm">Якщо ви вимкнете обмеження доступу, ваші приватні чати знову стануть видимими.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Вибрано зображень: %d</string>
     <string name="verification_started">Підтвердження розпочато</string>
     <string name="cannot_open_file">Не вдалося відкрити файл</string>
     <string name="prefs_title_image_attach_previews">Швидкий вибір медіафайлів</string>
@@ -839,7 +838,7 @@
     <string name="prefs_sum_voice_call_sound">Виберіть звук дзвінка для вхідних викликів Threema</string>
     <string name="prefs_sum_voice_call_vibrate">Вібрувати, коли надходить вхідний виклик Threema</string>
     <string name="prefs_title_voip_enable">Увімкнути виклики Threema</string>
-    <string name="webclient_invalid_push_token_message">Потрібний запуск вручну</string>
+    <string name="webclient_invalid_push_token_message">Потрібен запуск вручну</string>
     <string name="threema_work_contact">Контакт Threema Work</string>
     <string name="permission_phone_required">Надайте доступ, щоб керувати телефонними викликами під час виклику Threema</string>
     <string name="strikethrough">Закреслення</string>
@@ -848,7 +847,7 @@
     <string name="shortcut_choice_title">Створити ярлик для…</string>
     <string name="prefs_title_device_info">Інформація про пристрій</string>
     <string name="notifications_disabled_title">Сповіщення вимкнено</string>
-    <string name="notifications_disabled_text">Сповіщення для Threema було вимкнено в налаштуваннях системи. Ви не будете отримувати сповіщення про нові повідомлення.</string>
+    <string name="notifications_disabled_text">Сповіщення для Threema було вимкнено в налаштуваннях системи. Ви не отримуватимете сповіщення про нові повідомлення.</string>
     <string name="notifications_disabled_settings">Змінити налаштування системи</string>
     <string name="error_attaching_files">Не вдалося додати вкладення.</string>
     <string name="prefs_fix_powermanager_problems">Вимкнути енергозбереження</string>
@@ -939,7 +938,7 @@
     <string name="safe_error_preparing">Не вдалося підготувати резервну копію Threema Safe</string>
     <string name="safe_configure_choose_password_force">Встановіть надійний пароль, щоб захистити свій ID в Threema Safe. Запам\'ятайте цей пароль!</string>
     <string name="safe_deactivate">Вимкнути Threema Safe</string>
-    <string name="safe_deactivate_explain">Якщо ви вимкнете Threema Safe, усі існуючі резервні копії буде видалено з сервера. Продовжити?</string>
+    <string name="safe_deactivate_explain">Якщо ви вимкнете Threema Safe, усі наявні резервні копії буде видалено з сервера. Продовжити?</string>
     <string name="add_group_members">Додати учасника</string>
     <string name="contact_add_confirm">Додати новий контакт \"%1$s\" до вашого списку контактів?</string>
     <string name="password_bad">Ненадійний пароль</string>
@@ -960,7 +959,7 @@
     <string name="safe_size">Розмір рез. копії</string>
     <string name="safe_version_mismatch">Версія цієї резервної копії новіша за підтримувану. Будь ласка, оновіть додаток до останньої версії.</string>
     <string name="safe_restore_failed">Помилка відновлення</string>
-    <string name="safe_failed_notification">Резервну копію Threema Safe не вдається створити вже %d дн. поспіль. Торкніться тут, щоб дізнатися більше.</string>
+    <string name="safe_failed_notification">Резервну копію Threema Safe не вдається створити %d дн. поспіль. Торкніться тут, щоб дізнатися більше.</string>
     <string name="safe_restore">Відновити Threema Safe</string>
     <string name="backup_restore_in_progress">Триває створення або відновлення резервної копії. Перевірте сповіщення, щоб дізнатися про перебіг виконання.</string>
     <string name="restore_error_body">Не вдалося завершити відновлення</string>
@@ -976,7 +975,7 @@
     <string name="emptying_chat">Очищення чату</string>
     <string name="set_private">Позначити як приватний чат</string>
     <string name="unset_private">Вимкнути приватний чат</string>
-    <string name="delete_group_message">Вийти з групи і повністю видалити її? Усі повідомлення буде вилучено.</string>
+    <string name="delete_group_message">Вийти з групи та повністю видалити її? Усі повідомлення буде вилучено.</string>
     <string name="delete_left_group_message">Справді видалити групу? Усі повідомлення буде вилучено.</string>
     <string name="chats">Чати</string>
     <string name="notification_setting_ignored">ВНЕСЕНІ ТУТ ЗМІНИ НІ НА ЩО НЕ ВПЛИВАЮТЬ!</string>
@@ -990,7 +989,7 @@
     <string name="restore_data_cancelled">Відновлення скасовано</string>
     <string name="safe_change_password">Змінити пароль</string>
     <string name="safe_configure_choose_password_title">Вибрати пароль</string>
-    <string name="password_bad_explain">Пароль, вибраний для Threema Safe, не є надійним і його можуть легко вгадати зловмисники. Оберіть інший пароль, який складається з кількох окремих слів.</string>
+    <string name="password_bad_explain">Пароль, вибраний для Threema Safe, є ненадійним і його можуть легко вгадати зловмисники. Оберіть інший пароль, який складається з кількох окремих слів.</string>
     <string name="safe_password_updated">Пароль Threema Safe змінено.</string>
     <string name="safe_activated">Threema Safe активовано.</string>
     <string name="restore_zip_invalid_file">Файл резервної копії недійсний.</string>
@@ -1049,7 +1048,7 @@
     <string name="archived_chats">Архівовані чати</string>
     <string name="unarchive">Розархівувати</string>
     <string name="no_archived_chats">Немає архівованих чатів.\n\nЩоб архівувати чат, проведіть по ньому вліво в списку чатів.</string>
-    <string name="add_contact_enter_id_hint">Введіть ID Threema контакта, який ви хочете додати</string>
+    <string name="add_contact_enter_id_hint">Введіть ID Threema контакта, якого потрібно додати</string>
     <string name="notification_channel_new_contact">Нові контакти</string>
     <string name="notification_channel_new_contact_desc">Сповіщення про нові контакти</string>
     <string name="notification_contact_has_joined">Контакт \"%1$s\" приєднався до %2$s. Торкніться тут, щоб написати йому.</string>
@@ -1059,7 +1058,26 @@
     <string name="delete">Видалити</string>
     <string name="num_archived_chats">Архівованих чатів: %d</string>
     <string name="continue_recording">Продовжити запис</string>
-	<string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
+    <string name="whatsnew_title">Вітаємо в %1$s %2$s!</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Нові функції в цій версії %s для Android:</b></p>
+		<p>
+		&bull; Додано багато нових емодзі згідно зі стандартом Юнікод 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Додано пошук емодзі за назвою або значенням (доступно для 17 мов).
+		</p><p>
+		&bull; Додано окремі кольори для контактів і груп, у яких немає фото. Ці нові кольори показуватимуться на всіх платформах і пристроях.
+		</p><p>
+		&bull; Покращено прокручування в багатьох списках.
+		</p><p>
+		&bull; Покращено інтерфейс редактора медіафайлів. Тепер перед надсиланням можна одночасно редагувати до 256 медіафайлів.
+		</p><p>
+		&bull; Багато невеликих покращень і виправлень помилок.
+		</p>
+		]]></string>
+    <string name="whatsnew2_title">(порожня фраза)</string>
+    <string name="whatsnew2_body">(порожня фраза)</string>
+    <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
     <string name="two_years">2 роки</string>
     <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
     <string name="backup_data_no_permission">Неможливо записувати у вказаний каталог. Виберіть інший.</string>
@@ -1078,7 +1096,7 @@
     <string name="edit_type_content_description">Переглянути або редагувати %1$s %2$s</string>
     <string name="group">Група</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Ми оновили нашу Політику конфіденційності з урахуванням наступної зміни:</p><p>%1$s більше не використовує Google Play і Карти Google, щоб надавати дані про карти та пам\'ятки.</p>Ознайомитися з повним текстом Політики конфіденційності можна <a href="%2$s">тут</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Сервіси не встановлено. Неможливо використовувати push-сповіщення.</string>
+    <string name="play_services_not_installed_unable_to_use_push">Сервіси не встановлено. Неможливо використовувати push-сповіщення Google FCM або HMS.</string>
     <string name="unable_to_get_current_location">Не вдалося визначити поточне розташування.</string>
     <string name="lp_search_place_min_chars">Введіть принаймні три символи, щоб почати пошук розташувань.</string>
     <string name="lp_search_place_no_matches">Місць не знайдено. Спробуйте змінити пошуковий запит.</string>
@@ -1089,9 +1107,9 @@
     <string name="message_id">ID повідомлення</string>
     <string name="mime_type">Тип MIME</string>
     <string name="password_does_not_comply">Пароль не відповідає вимогам, які встановив адміністратор.</string>
-    <string name="audio_mute_due_to_focus_loss">Звук тимчасово вимкнено через перемикання на інший додаток</string>
+    <string name="audio_mute_due_to_focus_loss">Звук Threema тимчасово вимкнено через відтворення звуку в іншому додатку</string>
     <string name="restore_data_backup_explain">Щоб відновити дані з резервної копії, спершу видаліть свій ID Threema на екрані \"Мій профіль\".\n\nКоли додаток перезапуститься, натисніть \"Відновити з рез. копії\" &gt; \"Інші варіанти відновлення\" &gt; \"Резервне копіювання\" і виберіть файл резервної копії, з якого потрібно відновити дані.</string>
-    <string name="audio_focus_loss_complete">Виклик завершено через втрату доступу до звуку.</string>
+    <string name="audio_focus_loss_complete">Виклик завершено через відтворення звуку в іншому додатку.</string>
     <string name="tap_for_picture_hold_for_video">Торкніться для фото, утримуйте для відео</string>
     <string name="sending_media">Надсилання медіафайлів</string>
     <string name="permission_record_video_audio_required">Щоб записати відео, надайте доступ до мікрофона.</string>
@@ -1201,7 +1219,7 @@
     <string name="smiley">Смайлики</string>
     <string name="blur">Розмивання</string>
     <string name="face_blur_tooltip_title">Новинка: розпізнавання облич</string>
-    <string name="face_blur_tooltip_text">Знайдіть обличчя на зображенні й розмийте їх або замініть на смайлики.</string>
+    <string name="face_blur_tooltip_text">Знайдіть обличчя на зображенні й розмийте їх або замініть смайликами.</string>
     <string name="listened_to">прослухано</string>
     <string name="transcoder_unsupported_audio_format">Система не підтримує перекодування цього аудіофайлу.</string>
     <string name="transcoder_unknown_audio_error">Невідома помилка під час перекодування аудіофайлу.</string>
@@ -1273,7 +1291,7 @@
     <string name="group_link_rename">Перейменувати</string>
     <string name="group_link_rename_tag">Нова назва</string>
     <string name="tap_here_for_more">Торкніться тут, щоб дізнатися більше</string>
-    <string name="another_connection_instructions">Сервер виявив кілька з\'єднань з різних пристроїв із однаковим ID Threema.\n\nВикористовувати один ID Threema на кількох пристроях одночасно неможливо. Нові повідомлення надходитимуть лише на той пристрій, який останнім підключився до сервера.\n\nЯкщо ви переходите на новий пристрій, видаліть або вимкніть %s на старому пристрої, а тоді перезавантажте новий.</string>
+    <string name="another_connection_instructions">Сервер виявив кілька з\'єднань із різних пристроїв з однаковим ID Threema.\n\nВикористовувати один ID Threema на кількох пристроях одночасно неможливо. Нові повідомлення надходитимуть лише на той пристрій, який останнім підключився до сервера.\n\nЯкщо ви переходите на новий пристрій, видаліть або вимкніть %s на старому пристрої, а тоді перезавантажте новий.</string>
     <string name="app_store_error_code">Код помилки магазину додатків: %d</string>
     <string name="backup_restore_type"><![CDATA[Виберіть тип резервної копії, з якої потрібно відновити дані. <br/><br/> <a href=%s>Докладніше про резервні копії в Threema</a>]]></string>
     <string name="data_backup_info">Відновити все, включно з чатами</string>
@@ -1396,7 +1414,42 @@
     <string name="organization_type">Організація</string>
     <string name="permission_bluetooth_connect_required">Щоб знаходити підключені Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\".</string>
     <string name="threema_push_start_webclient_sessions_manually">Увімкнено push-сповіщення Threema. Сеанси веб-клієнта та додатка для ПК потрібно запускати вручну.</string>
-    <string name="tooltip_multiple_recipients_title">Нове: Множинні отримувачі</string>
-    <string name="tooltip_multiple_recipients_text">Тривалим натисканням обирайте множинних отримувачів, яким надсилатиметься те саме повідомлення.</string>
-    <string name="synchronizing">Синхронізація...</string>
+    <string name="tooltip_multiple_recipients_title">Нове: кілька отримувачів</string>
+    <string name="tooltip_multiple_recipients_text">Натисніть і утримуйте екран, щоб вибрати кілька отримувачів повідомлення.</string>
+    <string name="synchronizing">Триває синхронізація…</string>
+    <string name="self_updater_installation_failed">Не вдалося завантажити оновлення. Завантажте та встановіть його зі сторінки <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> вручну.</string>
+    <string name="spam_first_contact">Це чат із невідомим контактом</string>
+    <string name="spam_report">Поскаржитися на спам</string>
+    <string name="spam_report_dialog_explain">Якщо ви продовжите, ID і псевдонім цього контакта та ваш ID буде надіслано Threema, проте вміст і персональні дані не надсилатимуться. Контакт не отримає сповіщення про вашу скаргу.</string>
+    <string name="spam_report_dialog_block_checkbox">Також заблокувати цей контакт і видалити чат</string>
+    <string name="spam_report_dialog_title">Поскаржитися на \"%s\"</string>
+    <string name="spam_successfully_reported">Ви поскаржилися на розсилання спаму з цього ID.</string>
+    <string name="spam_error_reporting">Під час оформлення скарги на спам сталася помилка: %s</string>
+    <string name="spam_report_short">Поскаржитися</string>
+    <string name="wizard_incompatible_contact_sync_params">Встановлено несумісні параметри MDM. Параметр Threema MDM th_contact_sync не може мати значення true, якщо для користувачів діє обмеження DISALLOW_MODIFY_ACCOUNTS. Зверніться до адміністратора пристрою.</string>
+    <string name="messages_cannot_be_recovered">Ви не зможете відновити повідомлення.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="few">%d контакти</item>
+        <item quantity="many">%d контактів</item>
+        <item quantity="one">%d контакт</item>
+        <item quantity="other">%d контакта</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="few">Справді видалити %d чати?</item>
+        <item quantity="many">Справді видалити %d чатів?</item>
+        <item quantity="one">Справді видалити %d чат?</item>
+        <item quantity="other">Справді видалити %d чата?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">Не вдалося надіслати повідомлення (%1$d)</item>
+        <item quantity="few">Не вдалося надіслати повідомлення (%1$d)</item>
+        <item quantity="many">Не вдалося надіслати повідомлення (%1$d)</item>
+        <item quantity="other">Не вдалося надіслати повідомлення (%1$d)</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">Вибрано зображень: %d</item>
+        <item quantity="few">Вибрано зображень: %d</item>
+        <item quantity="many">Вибрано зображень: %d</item>
+        <item quantity="other">Вибрано зображень: %d</item>
+    </plurals>
 </resources>

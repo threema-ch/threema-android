@@ -24,6 +24,7 @@ package ch.threema.app.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -1462,6 +1463,13 @@ public class ConfigUtils {
 		for (int i = 0; i < contentProviderOperations.size(); i += CONTENT_PROVIDER_BATCH_SIZE) {
 			List<ContentProviderOperation> contentProviderOperationsBatch = contentProviderOperations.subList(i, Math.min(contentProviderOperations.size(), i + CONTENT_PROVIDER_BATCH_SIZE));
 			contentResolver.applyBatch(authority, new ArrayList<>(contentProviderOperationsBatch));
+		}
+	}
+
+	public static void clearAppData(Context context) {
+		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		if (manager != null) {
+			manager.clearApplicationUserData();
 		}
 	}
 }

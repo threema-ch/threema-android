@@ -28,7 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -58,7 +57,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.BuildConfig;
@@ -90,7 +88,6 @@ import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.AppRestrictionUtil;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DialogUtil;
@@ -104,8 +101,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
-
-import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
 
 public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
 	GenericAlertDialog.DialogClickListener,
@@ -163,8 +158,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 			groupDetailViewModel.setGroupIdentities(groupService.getGroupIdentities(groupModel));
 			sortGroupMembers();
-
-			setScrimColor();
 		}
 	};
 
@@ -173,7 +166,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		public void onAvatarSet(File avatarFile1) {
 			groupDetailViewModel.setAvatarFile(avatarFile1);
 			groupDetailViewModel.setIsAvatarRemoved(false);
-			setScrimColor();
 		}
 
 		@Override
@@ -181,7 +173,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			groupDetailViewModel.setAvatarFile(null);
 			groupDetailViewModel.setIsAvatarRemoved(true);
 			avatarEditView.setDefaultAvatar(null, groupModel);
-			setScrimColor();
 		}
 	};
 
@@ -406,7 +397,10 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		groupDetailViewModel.getGroupMembers().observe(this, groupMemberObserver);
 		groupDetailViewModel.onDataChanged();
 
-		setScrimColor();
+		@ColorInt int color = groupService.getAvatarColor(groupModel);
+		collapsingToolbar.setContentScrimColor(color);
+		collapsingToolbar.setStatusBarScrimColor(color);
+
 		updateFloatingActionButton();
 
 		if (toolbar.getNavigationIcon() != null) {
@@ -416,39 +410,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		ListenerManager.contactSettingsListeners.add(this.contactSettingsListener);
 		ListenerManager.groupListeners.add(this.groupListener);
 		ListenerManager.contactListeners.add(this.contactListener);
-	}
-
-	private void setScrimColor() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				@ColorInt int color = getResources().getColor(R.color.material_grey_600);
-				if (groupModel != null) {
-					Bitmap bitmap;
-
-					if (groupDetailViewModel.getAvatarFile() != null) {
-						bitmap = BitmapUtil.safeGetBitmapFromUri(GroupDetailActivity.this,
-							Uri.fromFile(groupDetailViewModel.getAvatarFile()), CONTACT_AVATAR_HEIGHT_PX);
-					} else {
-						bitmap = groupService.getAvatar(groupModel, false);
-					}
-					if (bitmap != null) {
-						Palette palette = Palette.from(bitmap).generate();
-						color = palette.getDarkVibrantColor(getResources().getColor(R.color.material_grey_600));
-					}
-				}
-				@ColorInt final int scrimColor = color;
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (!isFinishing() && !isDestroyed()) {
-							collapsingToolbar.setContentScrimColor(scrimColor);
-							collapsingToolbar.setStatusBarScrimColor(scrimColor);
-						}
-					}
-				});
-			}
-		}).start();
 	}
 
 	private void setupAdapter() {

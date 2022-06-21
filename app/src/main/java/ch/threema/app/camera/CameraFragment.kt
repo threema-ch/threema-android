@@ -81,7 +81,7 @@ class CameraFragment : Fragment() {
     private val RECORDING_MODE_IMAGE = 0
     private val RECORDING_MODE_VIDEO = 1
 
-    private val viewModel: CameraFragmentViewModel by viewModels()
+    private lateinit var viewModel: CameraFragmentViewModel
 
     private var displayId: Int = -1
     private var preview: Preview? = null
@@ -261,16 +261,14 @@ class CameraFragment : Fragment() {
 
         // Wait for the views to be properly laid out
         previewView!!.post {
-            if (previewView != null) {
-                // Keep track of the display in which this view is attached
-                displayId = previewView!!.display.displayId
+            // Keep track of the display in which this view is attached
+            displayId = previewView?.display?.displayId ?: -1
 
-                // Build UI controls
-                updateCameraUi()
+            // Build UI controls
+            updateCameraUi()
 
-                // Set up the camera and its use cases
-                setUpCamera()
-            }
+            // Set up the camera and its use cases
+            setUpCamera()
         }
     }
 
@@ -285,6 +283,9 @@ class CameraFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        val viewModel: CameraFragmentViewModel by viewModels()
+        this.viewModel = viewModel
 
         check(activity is CameraCallback) { "Activity does not implement CameraCallback." }
         cameraCallback = activity as CameraCallback?
@@ -325,7 +326,6 @@ class CameraFragment : Fragment() {
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
-
             // CameraProvider
             cameraProvider = cameraProviderFuture.get()
 
@@ -769,12 +769,20 @@ class CameraFragment : Fragment() {
 
     /** Returns true if the device has an available back camera. False otherwise */
     private fun hasBackCamera(): Boolean {
-        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+        return try {
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /** Returns true if the device has an available front camera. False otherwise */
     private fun hasFrontCamera(): Boolean {
-        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
+        return try {
+            return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun switchFlash() {

@@ -1407,6 +1407,7 @@ public class NotificationServiceImpl implements NotificationService {
 						this.cancelAndDestroyConversationNotification(conversationNotification);
 					}
 				}
+				showIconBadge(conversationNotifications.size());
 			}
 		}
 		this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
@@ -1677,7 +1678,7 @@ public class NotificationServiceImpl implements NotificationService {
 			NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
 			wearableExtender.addAction(tryAgainAction);
 
-			String content = String.format(this.context.getString(R.string.sending_message_failed), num);
+			String content = this.context.getResources().getQuantityString(R.plurals.sending_message_failed, num, num);
 
 			NotificationCompat.Builder builder =
 				new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_ALERT, null)

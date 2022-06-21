@@ -3,7 +3,7 @@
     <string name="title_section2">Контакты</string>
     <string name="title_section1">Сообщения</string>
     <string name="title_compose_message">Новое сообщение</string>
-    <string name="title_choose_recipient">Выбрать получателя</string>
+    <string name="title_choose_recipient">Выбрать получателей</string>
     <string name="title_keyfingerprint">Отпечаток ключа</string>
     <string name="title_mythreemaid">Мой Threema ID</string>
     <string name="title_threemaid">Threema ID</string>
@@ -44,7 +44,7 @@
     <string name="prefs_title_typing_indicator">Индикатор набора текста</string>
     <string name="prefs_media_title">Мультимедиа</string>
     <string name="prefs_sum_media_title">Настройки мультимедиа</string>
-    <string name="prefs_image_size">Размер изображения</string>
+    <string name="prefs_image_size">Размеры изображения</string>
     <string name="prefs_notification_sound">Звук уведомления</string>
     <string name="prefs_sum_notification_sound">Системный по умолчанию</string>
     <string name="prefs_vibrate">Вибрация</string>
@@ -128,7 +128,6 @@
     <string name="whoaaa">Уведомление</string>
     <string name="really_delete_message_title">Удалить сообщение</string>
     <string name="really_delete_thread">Удалить чат</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Вы действительно хотите удалить %d чат? Вы не сможете восстановить сообщения.</string>
     <string name="really_delete_contact">Вы действительно хотите удалить этот контакт и все связанные сообщения?</string>
     <string name="image_placeholder">Изображение</string>
     <string name="invalid_threema_id">Неправильный Threema ID</string>
@@ -222,7 +221,7 @@
     <string name="saving_media">Сохранение мультимедиа</string>
     <string name="file_is_not_a_video">Выбранный файл не является видео</string>
     <string name="masterkey_is_unlocked">Главный ключ разблокирован</string>
-    <string name="file_too_large">Размер файла превышает допустимые 50 Мб</string>
+    <string name="file_too_large">Размер файла превышает допустимые %1$d Мб</string>
     <string name="deleting_thread">Удаление чата</string>
     <string name="enter_serial_body"><![CDATA[Пожалуйста, введите ваш лицензионный ключ или нажмите здесь, чтобы получить его: https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Разблокировать Threema</string>
@@ -378,7 +377,6 @@
     <string name="file_saved">%d Файл(ы) успешно сохранен(ы).</string>
     <string name="token_register_failed">Не удалось сбросить push-метку. Пожалуйста, попробуйте позже.</string>
     <string name="internet_connection_required">Нет подключения к интернету.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">" %1$d сообщений не могут быть отправлены"</string>
     <string name="prefs_sum_save_media">Автоматически загружать, расшифровывать, и сохранять в галерею входящие мультимедиа-файлы</string>
     <string name="prefs_save_media">Автосохранение в галерею</string>
     <string name="title_add_distribution_list">Новый список рассылки</string>
@@ -626,6 +624,8 @@
     <string name="new_wizard_linked_to">Привязано к</string>
     <string name="new_wizard_need_internet">Необходимо стабильное подключение к интернету, для создания вашего Threema ID. Пожалуйста, попробуйте еще раз.</string>
     <string name="new_wizard_more_information">Больше информации</string>
+    <string name="contact_details_id_copied">ID скопирован в буфер</string>
+    <string name="contact_details_nickname_copied">Ник скопирован в буфер</string>
     <string name="new_wizard_use_id_as_nickname">Хотите использовать свой Threema ID в качестве ника?</string>
     <string name="new_wizard_phone_email_invalid">Телефонный номер или email, который вы ввели -  недействителен.\nПожалуйста, исправьте, прежде чем продолжить.</string>
     <string name="new_wizard_phone_invalid">Телефонный номер, который вы ввели, недействителен.\nИсправьте номер, прежде чем продолжить.</string>
@@ -704,7 +704,6 @@
     <string name="grace_never">Никогда (вручную)</string>
     <string name="never">Никогда</string>
     <string name="unhide_chats_confirm">Если отключить защиту доступа, ваши приватные чаты снова станут видимыми.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Выбрано изображений %d</string>
     <string name="verification_started">Проверка началась</string>
     <string name="cannot_open_file">Невозможно открыть файл</string>
     <string name="prefs_title_image_attach_previews">Быстрый выбор изображения</string>
@@ -1373,5 +1372,38 @@
     <string name="tooltip_multiple_recipients_text">Зажмите кнопку, чтобы выбрать несколько получателей для отправки им одного и того же сообщения.</string>
     <string name="synchronizing">Идет синхронизация...</string>
     <string name="self_updater_installation_failed">Не удалось загрузить обновление. Загрузите и установите обновение с веб-страницы <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> вручную.</string>
+    <string name="spam_first_contact">Этот чат инициирован неизвестным контактом</string>
+    <string name="spam_report">Сообщить о спаме</string>
+    <string name="spam_report_dialog_explain">Если продолжить, ID и ник этого контакта будут переданы в Threema вместе с вашим ID. Никакое содержимое или персональные данные при этом не пересылаются. Данный контакт не будет уведомлен об этом действии.</string>
+    <string name="spam_report_dialog_block_checkbox">Также блокировать этот контакт и удалить чат</string>
+    <string name="spam_report_dialog_title">Жалоба на %s</string>
+    <string name="spam_successfully_reported">Жалоба на этот ID как на источник спама принята.</string>
+    <string name="spam_error_reporting">При попытке сообщить о спаме возникла ошибка: %s</string>
+    <string name="spam_report_short">Жалоба</string>
     <string name="wizard_incompatible_contact_sync_params">Установлены несовместимые параметры MDM. Для параметра Threema MDM th_contact_sync не может быть установлено значение «истина», если задано ограничение пользователя DISALLOW_MODIFY_ACCOUNTS. Обратитесь к администратору.</string>
+    <string name="messages_cannot_be_recovered">Вы не сможете восстановить сообщения.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="few">%d контакта</item>
+        <item quantity="many">%d контактов</item>
+        <item quantity="one">%d контакт</item>
+        <item quantity="other">%d контакт.</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Вы действительно хотите удалить %d чат?</item>
+        <item quantity="few">Вы действительно хотите удалить %d чат?</item>
+        <item quantity="many">Вы действительно хотите удалить %d чат?</item>
+        <item quantity="other">Вы действительно хотите удалить %d чат?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">%1$d сообщений не могут быть отправлены</item>
+        <item quantity="few">%1$d сообщений не могут быть отправлены</item>
+        <item quantity="many">%1$d сообщений не могут быть отправлены</item>
+        <item quantity="other">%1$d сообщений не могут быть отправлены</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">Выбрано изображений %d</item>
+        <item quantity="few">Выбрано изображений %d</item>
+        <item quantity="many">Выбрано изображений %d</item>
+        <item quantity="other">Выбрано изображений %d</item>
+    </plurals>
 </resources>

@@ -46,6 +46,8 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
         initEnableCallRejectPref()
     }
 
+    override fun getPreferenceTitleResource(): Int = R.string.prefs_title_voip
+
     override fun getPreferenceResource(): Int = R.xml.preference_calls
 
     private fun initWorkRestrictions() {

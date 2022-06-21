@@ -290,6 +290,11 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	}
 
 	@Override
+	public int getPreferenceTitleResource() {
+		return R.string.prefs_developers;
+	}
+
+	@Override
 	public int getPreferenceResource() {
 		return R.xml.preference_developers;
 	}

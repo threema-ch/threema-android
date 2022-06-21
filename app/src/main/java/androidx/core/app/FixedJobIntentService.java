@@ -32,8 +32,8 @@ public abstract class FixedJobIntentService extends JobIntentService {
 		// See https://medium.com/@mohamed.zak/workaround-to-solve-securityexception-caused-by-jobintentservice-1f4b0e688a26
 		try {
 			return super.dequeueWork();
-		} catch (SecurityException exception) {
-			logger.debug("Ignoring SecurityException", exception);
+		} catch (SecurityException|IllegalArgumentException exception) {
+			logger.info("Exception while dequeueing work", exception);
 		}
 		return null;
 	}

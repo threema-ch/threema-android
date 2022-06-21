@@ -31,6 +31,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
+import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
@@ -99,14 +100,13 @@ public class AcknowledgeRequestHandler extends MessageReceiver {
 			return;
 		}
 
-		// Mark as read first
-		messageService.markMessageAsRead(messageModel, notificationService);
-
 		if (isAcknowledged) {
-			this.messageService.sendUserAcknowledgement(messageModel);
+			this.messageService.sendUserAcknowledgement(messageModel, true);
 		} else {
-			this.messageService.sendUserDecline(messageModel);
+			this.messageService.sendUserDecline(messageModel, true);
 		}
+
+		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
 	}
 
 	@Override

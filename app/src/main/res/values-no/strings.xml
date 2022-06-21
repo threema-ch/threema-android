@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Hold dine %s-kontakter synkronisert med din enhets kontaktliste</string>
     <string name="prefs_sum_sync_contacts_off">Ikke hold dine %s-kontakter synkronisert med din enhets kontaktliste</string>
     <string name="prefs_title_sync_contacts">Synkroniser kontakter</string>
-    <string name="prefs_sum_block_unknown_off">Hvem som helst kan sende deg en melding. Nye kontakter blir automatisk lagt til 
+    <string name="prefs_sum_block_unknown_off">Hvem som helst kan sende deg en melding. Nye kontakter blir automatisk lagt til
 når den første meldingen mottas.</string>
     <string name="prefs_sum_block_unknown_on">Bare personer på kontaktlisten din kan sende deg en melding.</string>
     <string name="prefs_title_block_unknown">Blokker ukjente</string>
@@ -128,7 +128,6 @@ når den første meldingen mottas.</string>
     <string name="whoaaa">Varsel</string>
     <string name="really_delete_message_title">Slett melding</string>
     <string name="really_delete_thread">Slett samtale</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Er du sikker på at du vil slette %d samtale(r)? Du har ikke muligheten til å gjenopprette meldingene.</string>
     <string name="really_delete_contact">Er du sikker på at du vil slette denne kontakten og alle tilhørende meldinger?</string>
     <string name="image_placeholder">Bilde</string>
     <string name="invalid_threema_id">Ugyldig Threema ID</string>
@@ -222,7 +221,7 @@ når den første meldingen mottas.</string>
     <string name="saving_media">Lagre media</string>
     <string name="file_is_not_a_video">Valgt fil er ikke en video</string>
     <string name="masterkey_is_unlocked">Masternøkkel er låst opp</string>
-    <string name="file_too_large">Filen er større enn maksimal tillatt størrelse på 50 MB</string>
+    <string name="file_too_large">Filen er større enn maksimal tillatt størrelse på %1$d MB</string>
     <string name="deleting_thread">Sletter samtale</string>
     <string name="enter_serial_body"><![CDATA[Vennligst skriv inn din lisensnøkkel. Du kan <a href="https://shop.threema.ch/">kjøpe</a> en lisens eller <a href="https://shop.threema.ch/retrieve_keys">hente</a> nøklene dine i tilfelle du allerede har kjøpt en lisens.]]></string>
     <string name="enter_serial_title">Lås opp Threema</string>
@@ -378,7 +377,6 @@ når den første meldingen mottas.</string>
     <string name="file_saved">%d fil(er) vellykket lagret.</string>
     <string name="token_register_failed">Push token ble ikke oppdatert, vennligst prøv igjen.</string>
     <string name="internet_connection_required">Ingen tilgang til internett</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d melding(er) kunne ikke sendes</string>
     <string name="prefs_sum_save_media">Lagre innkommende bilder og videoer, samt utgående bilder i ukryptert format</string>
     <string name="prefs_save_media">Lagre automatisk til galleri</string>
     <string name="title_add_distribution_list">Ny distribusjonsliste</string>
@@ -432,7 +430,7 @@ når den første meldingen mottas.</string>
     <string name="not_enough_disk_space_title">Ikke nok lagringsplass</string>
     <string name="not_enough_disk_space_text">Frigjør minst %1$s for å motta meldingen</string>
     <string name="sending_images">Sender bilder</string>
-    <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel: 
+    <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel:
 http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Samtalen vil bli sendt som en kryptert .zip fil. Vennligst skriv et passord:</string>
     <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d nye meldinger i %2$d samtaler</string>
@@ -625,6 +623,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="new_wizard_linked_to">Koblet til</string>
     <string name="new_wizard_need_internet">En stabil internettilkobling er nødvendig for å lage din unike Threema ID. Vennligst prøv igjen.</string>
     <string name="new_wizard_more_information">Mer informasjon</string>
+    <string name="contact_details_id_copied">ID ble kopiert til utklippstavlen</string>
+    <string name="contact_details_nickname_copied">Kallenavn ble kopiert til utklippstavlen</string>
     <string name="new_wizard_use_id_as_nickname">Vil du bruke Threema ID-en din som kallenavn?</string>
     <string name="new_wizard_phone_email_invalid">Telefonnummeret eller e-postadressen du har skrevet er ikke gyldig. \nVennligst fiks før du fortsetter.</string>
     <string name="new_wizard_phone_invalid">Telefonnummeret du har skrevet er ikke gyldig. \nVennligst fiks før du fortsetter.</string>
@@ -701,7 +701,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="grace_never">Aldri (manuelt)</string>
     <string name="never">Aldri</string>
     <string name="unhide_chats_confirm">Om du fjerner adgangsbeskyttelse nå, så blir de private samtalene dine synlige igjen.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">%d bilde(r) valgt</string>
     <string name="verification_started">Verifisering startet</string>
     <string name="cannot_open_file">Kunne ikke åpne fil</string>
     <string name="prefs_title_image_attach_previews">Raskt filvalg</string>
@@ -1197,7 +1196,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_request_already_sent"><![CDATA[Du har allerede aktiv forespørsel for å bli med <b>%s</b> gjennom denne linken og du venter fortsatt på svar fra administratoren. Trykk på forespørselen i listen om du vil prøve å sende på nytt.]]></string>
     <string name="group_link_none">Det er ikke laget en link ennå</string>
     <string name="group_request_confirm_send"><![CDATA[Du er i ferd med å sende en forespørsel for <b>%1$s</b> til administrator <b>%2$s</b>. Om denne linken ikke er ugyldig, så vil du bli lagt til gruppen når administratorens enhet mottar din forespørsel.]]></string>
-    <string name="really_delete_outgoing_request">Vil du virkelig slette %d forespørselen(e)? Vær oppmerksom på at forespørselen(e) blir ikke tilbakekalt så du kan fortsatt bli akseptert/avvist om forepørselen(e) ikke har blitt svart av administratoren enda.</string>
+    <string name="really_delete_outgoing_request">Vil du virkelig slette %d gruppeforespørselen(e)? Vær oppmerksom på at forespørselen(e) blir ikke tilbakekalt, så du kan fortsatt bli akseptert/avvist om forepørselen(e) ikke har blitt svart av administratoren enda.</string>
     <string name="really_delete_group_request_title">Sikker på at du vil slette forespørsel?</string>
     <string name="sent_to">Sendt til: %s</string>
     <string name="sent_on">Sent på: %s</string>
@@ -1370,5 +1369,30 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
     <string name="synchronizing">Synkroniserer...</string>
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
+    <string name="spam_first_contact">Denne samtalen er fra en ukjent kontakt</string>
+    <string name="spam_report">Rapporter spam</string>
+    <string name="spam_report_dialog_explain">Om du fortsetter så vil IDen og kallenavnet til denne kontakten bli videresendt til Threema sammen med din ID. Ingen innhold eller personlig data blir sendt. Kontakten vil ikke bli varlet om dette.</string>
+    <string name="spam_report_dialog_block_checkbox">Blokker og slett samtalen også</string>
+    <string name="spam_report_dialog_title">Rapporter %s</string>
+    <string name="spam_successfully_reported">Denne IDen har blitt rapportert for å sende spam.</string>
+    <string name="spam_error_reporting">En feil skjedde under rapporteringen av spam: %s</string>
+    <string name="spam_report_short">Rapporter</string>
     <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. Threema MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
+    <string name="messages_cannot_be_recovered">Du har ikke muligheten til å gjenopprette meldingene.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="one">%d kontakt</item>
+        <item quantity="other">%d kontakter</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Er du sikker på at du vil slette %d samtale?</item>
+        <item quantity="other">Er du sikker på at du vil slette %d samtaler?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">%1$d melding kunne ikke sendes</item>
+        <item quantity="other">%1$d meldinger kunne ikke sendes</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">%d bilde valgt</item>
+        <item quantity="other">%d bilder valgt</item>
+    </plurals>
 </resources>

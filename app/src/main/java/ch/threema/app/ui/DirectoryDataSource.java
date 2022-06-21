@@ -37,7 +37,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkDirectory;
@@ -83,9 +82,7 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 	public void loadInitial(@NonNull LoadInitialParams<WorkDirectory> params, @NonNull LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
 		logger.debug("*** loadInitial");
 
-		if (!TestUtil.empty(queryText)) {
-			fetchInitialData(callback);
-		}
+		fetchInitialData(callback);
 	}
 
 	@Override

@@ -892,7 +892,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			return true;
 		}
 
-		logger.info("Call hangup message received from {}", msg.getFromIdentity());
+		logCallInfo(callId, "Call hangup message received from {}", msg.getFromIdentity());
 
 		final String identity = msg.getFromIdentity();
 
@@ -1044,7 +1044,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		final long callId,
 		byte reason
 	) throws ThreemaException, IllegalArgumentException {
-		logger.info("VoipStateService sendRejectCallAnswerMessage");
 		this.sendRejectCallAnswerMessage(receiver, callId, reason, true);
 	}
 
@@ -1058,11 +1057,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		byte reason,
 		boolean notifyListeners
 	) throws ThreemaException, IllegalArgumentException {
-		logger.info("VoipStateService sendRejectCallAnswerMessage listener true");
+		logCallInfo(callId, "Sending reject call answer message (reason={})", reason);
 		this.sendCallAnswerMessage(receiver, callId, null, VoipCallAnswerData.Action.REJECT, reason, null);
 
 		// Notify listeners
 		if (notifyListeners) {
+			logCallInfo(callId, "Notifying listeners about call rejection");
 			VoipListenerManager.callEventListener.handle(listener -> {
 				switch (reason) {
 					case VoipCallAnswerData.RejectReason.BUSY:
@@ -1095,7 +1095,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	    @Nullable Byte rejectReason,
 		@Nullable Boolean videoCall
 	) throws ThreemaException, IllegalArgumentException, IllegalStateException {
-		logger.info("VoipStateService sendCallAnswerMessage");
+		logCallInfo(callId, "Sending call answer message");
 		final VoipCallAnswerData callAnswerData = new VoipCallAnswerData()
 			.setCallId(callId)
 			.setAction(action);

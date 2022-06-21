@@ -118,6 +118,8 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
         updateView()
     }
 
+    override fun getPreferenceTitleResource(): Int = R.string.prefs_privacy
+
     override fun getPreferenceResource(): Int = R.xml.preference_privacy
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

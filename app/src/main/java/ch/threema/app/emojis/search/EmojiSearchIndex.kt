@@ -31,7 +31,7 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 
-val logger = LoggingUtil.getThreemaLogger("EmojiSearchIndex")
+private val logger = LoggingUtil.getThreemaLogger("EmojiSearchIndex")
 
 class EmojiSearchIndex(
 	private val context: Context,
@@ -43,7 +43,7 @@ class EmojiSearchIndex(
 	private var searchIndexVersion = preferenceService.emojiSearchIndexVersion
 
 	private companion object {
-		const val SEARCH_INDEX_VERSION = 3
+		const val SEARCH_INDEX_VERSION = 5
 		const val INDEX_FILE_EXTENSION = ".csv"
 		const val EMOJI_ORDERS_FILE = "orders.csv"
 		const val EMOJI_DIVERSITIES_FILE = "diversities.csv"

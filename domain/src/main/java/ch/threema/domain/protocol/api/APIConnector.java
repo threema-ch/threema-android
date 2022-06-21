@@ -61,6 +61,7 @@ import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.SSLSocketFactoryFactory;
 import ch.threema.domain.protocol.ServerAddressProvider;
@@ -1033,6 +1034,45 @@ public class APIConnector {
 		Date expirationDate = new Date(new Date().getTime() + expiration * 1000L);
 
 		return new TurnServerInfo(turnUrls, turnUrlsDualStack, turnUsername, turnPassword, expirationDate);
+	}
+
+	/**
+	 * Report a junk message received by the user.
+	 *
+	 * @param identityStore The identity store to use for authentication
+	 * @param senderIdentity Identity of sender of junk message
+	 * @param senderNickname Nickname of sender, if known
+	 * @throws Exception If junk report could not be sent
+	 */
+	public void reportJunk(IdentityStoreInterface identityStore, @NonNull String senderIdentity, @Nullable String senderNickname) throws Exception {
+		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
+			return;
+		}
+
+		String url = getServerUrl() + "identity/report_junk";
+
+		// Phase 1: send identity and type
+		JSONObject request = new JSONObject();
+		request.put("identity", identityStore.getIdentity());
+		request.put("senderIdentity", senderIdentity);
+		if (senderNickname != null) {
+			request.put("senderNickname", senderNickname);
+		}
+
+		logger.debug("Report junk phase 1: sending to server: {}", request);
+		JSONObject p1Result = new JSONObject(this.postJson(url, request));
+		logger.debug("Report junk phase 1: response from server: {}", p1Result);
+
+		makeTokenResponse(p1Result, request, identityStore);
+
+		// Phase 2: send token response
+		logger.debug("Report junk phase 2: sending to server: {}", request);
+		JSONObject p2Result = new JSONObject(this.postJson(url, request));
+		logger.debug("Report junk phase 2: response from server: {}", p2Result);
+
+		if (!p2Result.getBoolean("success")) {
+			throw new ThreemaException(p2Result.getString("error"));
+		}
 	}
 
 	private String[] jsonArrayToStringArray(JSONArray jsonArray) throws JSONException {

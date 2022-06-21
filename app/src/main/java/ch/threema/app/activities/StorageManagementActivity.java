@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.appcompat.app.ActionBar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -59,6 +60,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -463,6 +465,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			new DeleteIdentityAsyncTask(getSupportFragmentManager(), new Runnable() {
 				@Override
 				public void run() {
+					ConfigUtils.clearAppData(ThreemaApplication.getAppContext());
 					finishAffinity();
 					System.exit(0);
 				}

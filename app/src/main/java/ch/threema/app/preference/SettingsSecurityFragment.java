@@ -629,6 +629,11 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 	}
 
 	@Override
+	public int getPreferenceTitleResource() {
+		return R.string.prefs_security;
+	}
+
+	@Override
 	public int getPreferenceResource() {
 		return R.xml.preference_security;
 	}

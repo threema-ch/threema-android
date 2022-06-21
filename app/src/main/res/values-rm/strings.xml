@@ -127,7 +127,6 @@
     <string name="whoaaa">Avis</string>
     <string name="really_delete_message_title">Stizzar il(s) messadi(s)</string>
     <string name="really_delete_thread">Stizzar il chat</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Vuls ti propi stizzar %d chat(s)? Ils messadis na pon betg pli vegnir restaurads.</string>
     <string name="really_delete_contact">Vuls ti propi stizzar quest contact e tut ils chats cun quel?</string>
     <string name="image_placeholder">Maletg</string>
     <string name="invalid_threema_id">L\'ID da Threema è nunvalaivla</string>
@@ -221,7 +220,7 @@
     <string name="saving_media">Il medium vegn memorisà</string>
     <string name="file_is_not_a_video">La datoteca selectada n\'è betg in video</string>
     <string name="masterkey_is_unlocked">La clav principala è debloccada</string>
-    <string name="file_too_large">La datoteca è pli gronda ch\'ils 50 MB permess</string>
+    <string name="file_too_large">La datoteca è pli gronda ch\'ils %1$d MB permess</string>
     <string name="deleting_thread">Il chat vegn stizzà</string>
     <string name="enter_serial_body"><![CDATA[P.pl. endatar tia clav da licenza dal shop. Sche ti l\'has emblidà, clicca qua: https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Activar Threema</string>
@@ -376,7 +375,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="file_saved">Memorisà la(s) %d datoteca(s).</string>
     <string name="token_register_failed">Il simbol da push n\'ha betg pudì vegnir reinizialisà. P.pl. empruvar pli tard anc ina giada.</string>
     <string name="internet_connection_required">Nagina colliaziun d\'internet.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d messadi(s) n\'ha(n) betg pudì vegnir tramess</string>
     <string name="prefs_sum_save_media">Chargiar automaticamain medias e maletgs da la camera e memorisar senza codar</string>
     <string name="prefs_save_media">Memorisar en la gallaria</string>
     <string name="title_add_distribution_list">Nova glista da distribuziun</string>
@@ -698,7 +696,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="grace_never">Mai (manual)</string>
     <string name="never">Mai</string>
     <string name="unhide_chats_confirm">Sche ti allontaneschas la protecziun d\'access, vegnan tes chats privats puspè visibels.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Tschernì %d maletg(s)</string>
     <string name="verification_started">Cumenzà la verificaziun</string>
     <string name="cannot_open_file">La datoteca n\'ha betg pudì vegnir averta</string>
     <string name="prefs_title_image_attach_previews">Selecziun sperta dals maletgs</string>
@@ -1316,4 +1313,21 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="threema_push_start_webclient_sessions_manually">Activà Threema Push. Threema Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
     <string name="tooltip_multiple_recipients_title">Nov: plirs retschaviders</string>
     <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs retschaviders e trametter a tuts il medem messadi.</string>
+    <string name="messages_cannot_be_recovered">Ils messadis na pon betg pli vegnir restaurads.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="one">%d contact</item>
+        <item quantity="other">%d contacts</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Vuls ti propi stizzar %d chat?</item>
+        <item quantity="other">Vuls ti propi stizzar %d chats?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">%1$d messadi n\'ha betg pudì vegnir tramess</item>
+        <item quantity="other">%1$d messadis n\'han betg pudì vegnir tramess</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">Tschernì %d maletg</item>
+        <item quantity="other">Tschernì %d maletgs</item>
+    </plurals>
 </resources>

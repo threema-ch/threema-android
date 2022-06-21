@@ -33,7 +33,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
@@ -62,7 +61,6 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.DirectoryDataSourceFactory;
 import ch.threema.app.ui.DirectoryHeaderItemDecoration;
 import ch.threema.app.ui.EmptyRecyclerView;
-import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -80,6 +78,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	private static final long QUERY_TIMEOUT = 1000; // ms
 	private static final String DIALOG_TAG_CATEGORY_SELECTOR = "cs";
 	public static final String EXTRA_ANIMATE_OUT = "anim";
+	private static final String WILDCARD_SEARCH_ALL = "*";
 
 	private ContactService contactService;
 	private boolean sortByFirstName;
@@ -101,6 +100,10 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	private final Runnable queryTask = new Runnable() {
 		@Override
 		public void run() {
+			if (checkedCategories.size() > 0 && TestUtil.empty(queryText)) {
+				queryText = WILDCARD_SEARCH_ALL;
+			}
+
 			directoryDataSourceFactory.postLiveData.getValue().setQueryText(queryText);
 			directoryDataSourceFactory.postLiveData.getValue().invalidate();
 		}
@@ -183,12 +186,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		recyclerView.setHasFixedSize(true);
 		recyclerView.setLayoutManager(new LinearLayoutManager(this));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-		EmptyView emptyView = new EmptyView(this, getResources().getDimensionPixelSize(R.dimen.directory_search_bar_height)
-															+ ConfigUtils.getActionBarSize(this));
-		emptyView.setup(R.string.directory_empty_view_text);
-		((ViewGroup) recyclerView.getParent().getParent()).addView(emptyView);
-		recyclerView.setEmptyView(emptyView);
+		recyclerView.setEmptyView(findViewById(R.id.empty_text));
 
 		DirectoryHeaderItemDecoration headerItemDecoration = new DirectoryHeaderItemDecoration(getResources().getDimensionPixelSize(R.dimen.directory_header_height), true, getSectionCallback());
 		recyclerView.addItemDecoration(headerItemDecoration);
@@ -359,6 +357,13 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 								if (categoryId.equals(checkedCategory.getId())) {
 									checkedCategories.remove(checkedCategory);
 									chipGroup.removeView(v);
+
+									// check if last chip has been removed
+									if (chipGroup.getChildCount() == 0 && WILDCARD_SEARCH_ALL.equals(queryText)) {
+										queryText = "";
+										directoryDataSourceFactory.postLiveData.getValue().setQueryText(queryText);
+									}
+
 									updateDirectory();
 									break;
 								}
@@ -385,17 +390,26 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	public void onYes(String tag, boolean[] checkedItems) {
 		checkedCategories.clear();
 
+		int numCheckedCategories = 0;
 		for(int i = 0; i < checkedItems.length; i++) {
 			if (checkedItems[i]) {
 				checkedCategories.add(categoryList.get(i));
+				numCheckedCategories++;
 			}
 		}
 
-/* TODO only update if selected items have changed
-		if (!Arrays.equals(this.checkedCategories, checkedItems)) {
-			this.checkedCategories = checkedItems; */
-			updateSelectedCategories();
-//		}
+		if (numCheckedCategories > 0) {
+			if (TestUtil.empty(queryText)) {
+				queryText = WILDCARD_SEARCH_ALL;
+			}
+		} else {
+			if (WILDCARD_SEARCH_ALL.equals(queryText)) {
+				queryText = "";
+			}
+		}
+		directoryDataSourceFactory.postLiveData.getValue().setQueryText(queryText);
+
+		updateSelectedCategories();
 	}
 
 	@Override

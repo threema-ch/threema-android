@@ -51,6 +51,8 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
         initDownloadPref()
     }
 
+    override fun getPreferenceTitleResource(): Int = R.string.prefs_media_title
+
     override fun getPreferenceResource(): Int = R.xml.preference_media
 
     private fun initAutoDownloadPref() {

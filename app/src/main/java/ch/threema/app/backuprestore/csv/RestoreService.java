@@ -63,6 +63,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -1625,6 +1626,29 @@ public class RestoreService extends Service {
 			preferenceService.setWizardRunning(true);
 
 			showRestoreSuccessNotification();
+
+			//try to reopen connection
+			try {
+				if (!serviceManager.getConnection().isRunning()) {
+					serviceManager.startConnection();
+				}
+			} catch (Exception e) {
+				logger.error("Exception", e);
+			}
+
+			if (wakeLock != null && wakeLock.isHeld()) {
+				logger.debug("releasing wakelock");
+				wakeLock.release();
+			}
+
+			stopForeground(true);
+
+			isRunning = false;
+
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+				ConfigUtils.scheduleAppRestart(getApplicationContext(), 2 * (int) DateUtils.SECOND_IN_MILLIS, getApplicationContext().getResources().getString(R.string.ipv6_restart_now));
+			}
+			stopSelf();
 		} else {
 			try {
 				this.userService.removeIdentity();
@@ -1632,30 +1656,16 @@ public class RestoreService extends Service {
 				logger.error("Exception", e);
 			}
 			showRestoreErrorNotification(message);
+
+			new DeleteIdentityAsyncTask(null, new Runnable() {
+				@Override
+				public void run() {
+					isRunning = false;
+
+					System.exit(0);
+				}
+			}).execute();
 		}
-
-		//try to reopen connection
-		try {
-			if (!serviceManager.getConnection().isRunning()) {
-				serviceManager.startConnection();
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-
-		if (wakeLock != null && wakeLock.isHeld()) {
-			logger.debug("releasing wakelock");
-			wakeLock.release();
-		}
-
-		stopForeground(true);
-
-		isRunning = false;
-
-		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-			ConfigUtils.scheduleAppRestart(getApplicationContext(), 2 * (int) DateUtils.SECOND_IN_MILLIS, getApplicationContext().getResources().getString(R.string.ipv6_restart_now));
-		}
-		stopSelf();
 	}
 
 	private Notification getPersistentNotification() {

@@ -748,7 +748,11 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		Animation animation;
 
 		if (bottomSheetBehavior.getState() != state) {
-			bottomSheetBehavior.setState(state);
+			try {
+				bottomSheetBehavior.setState(state);
+			} catch (IllegalArgumentException e) {
+				// some states such as DRAGGING cannot be set externally
+			}
 		}
 
 		switch (state) {

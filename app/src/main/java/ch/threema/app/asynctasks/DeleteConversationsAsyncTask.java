@@ -39,7 +39,6 @@ import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
@@ -55,11 +54,10 @@ public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integ
 	private final FragmentManager fragmentManager;
 	private final Runnable runOnCompletion;
 	private final List<ConversationModel> conversationModels;
-	private ContactService contactService;
 	private GroupService groupService;
 	private DistributionListService distributionListService;
 	private ConversationService conversationService;
-	private View feedbackView;
+	private final View feedbackView;
 
 	private boolean cancelled = false;
 
@@ -76,7 +74,6 @@ public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integ
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		try {
-			this.contactService = serviceManager.getContactService();
 			this.groupService = serviceManager.getGroupService();
 			this.distributionListService = serviceManager.getDistributionListService();
 			this.conversationService = serviceManager.getConversationService();

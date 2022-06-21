@@ -999,19 +999,21 @@ public class CallActivity extends ThreemaActivity implements
 			}
 		}
 
-		// stop capturing
-		if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
-			// disable outgoing video
-			VoipUtil.sendVoipBroadcast(getApplicationContext(), VoipCallService.ACTION_STOP_CAPTURING);
+		if (this.voipStateService != null) {
+			// stop capturing
+			if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
+				// disable outgoing video
+				VoipUtil.sendVoipBroadcast(getApplicationContext(), VoipCallService.ACTION_STOP_CAPTURING);
 
-			// make sure outgoing flag is cleared
-			voipStateService.setVideoRenderMode(voipStateService.getVideoRenderMode() & ~VIDEO_RENDER_FLAG_OUTGOING);
-		}
+				// make sure outgoing flag is cleared
+				voipStateService.setVideoRenderMode(voipStateService.getVideoRenderMode() & ~VIDEO_RENDER_FLAG_OUTGOING);
+			}
 
-		// Unset video target
-		if (this.voipStateService.getVideoContext() != null) {
-			this.voipStateService.getVideoContext().setLocalVideoSinkTarget(null);
-			this.voipStateService.getVideoContext().setRemoteVideoSinkTarget(null);
+			// Unset video target
+			if (this.voipStateService.getVideoContext() != null) {
+				this.voipStateService.getVideoContext().setLocalVideoSinkTarget(null);
+				this.voipStateService.getVideoContext().setRemoteVideoSinkTarget(null);
+			}
 		}
 
 		// Release connection
@@ -1039,7 +1041,9 @@ public class CallActivity extends ThreemaActivity implements
 			this.videoViews = null;
 		}
 
-		this.preferenceService.setPipPosition(pipPosition);
+		if (this.preferenceService != null) {
+			this.preferenceService.setPipPosition(pipPosition);
+		}
 
 		// remove lockscreen keepalive
 		keepAliveHandler.removeCallbacksAndMessages(null);

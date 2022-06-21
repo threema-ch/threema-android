@@ -697,7 +697,7 @@ public class ContactsSectionFragment
 				}
 				if (numContacts > 1) {
 					final StringBuilder builder = new StringBuilder();
-					builder.append(numContacts).append(" ").append(getString(R.string.title_section2));
+					builder.append(getResources().getQuantityString(R.plurals.contacts_counter_label, numContacts, numContacts));
 					if (counts != null) {
 						builder.append(" (+").append(counts.last30d).append(" / ").append(getString(R.string.thirty_days_abbrev)).append(")");
 					}

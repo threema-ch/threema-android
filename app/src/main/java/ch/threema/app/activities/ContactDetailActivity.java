@@ -26,7 +26,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
@@ -56,7 +55,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
@@ -308,9 +306,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			return;
 		}
 
-		this.collapsingToolbar = findViewById(R.id.collapsing_toolbar);
-		this.collapsingToolbar.setTitle(" ");
-
 		if (this.contactService == null) {
 			logger.error("no contact service", this);
 			finish();
@@ -323,6 +318,12 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			this.finish();
 			return;
 		}
+
+		this.collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+		this.collapsingToolbar.setTitle(" ");
+		@ColorInt int scrimColor = contactService.getAvatarColor(contact);
+		this.collapsingToolbar.setContentScrimColor(scrimColor);
+		this.collapsingToolbar.setStatusBarScrimColor(scrimColor);
 
 		this.avatarEditView = findViewById(R.id.avatar_edit_view);
 		this.avatarEditView.setHires(true);
@@ -484,36 +485,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 	}
 
-	private void setScrimColor() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				@ColorInt int color = getResources().getColor(R.color.material_grey_600);
-				if (contact != null) {
-					final Bitmap bitmap = contactService.getAvatar(contact, false);
-					if (bitmap != null) {
-						Palette palette = Palette.from(bitmap).generate();
-						color = palette.getDarkVibrantColor(getResources().getColor(R.color.material_grey_600));
-					}
-				}
-
-				@ColorInt final int scrimColor = color;
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (!isFinishing() && !isDestroyed()) {
-							collapsingToolbar.setContentScrimColor(scrimColor);
-							collapsingToolbar.setStatusBarScrimColor(scrimColor);
-						}
-					}
-				});
-			}
-		}).start();
-	}
-
 	private void reload() {
 		this.contactTitle.setText(NameUtil.getDisplayNameOrNickname(contact, true));
-		setScrimColor();
 	}
 
 	@Override

@@ -126,8 +126,6 @@
     <string name="whoaaa">Threemaの通知</string>
     <string name="really_delete_message_title">メッセージを削除</string>
     <string name="really_delete_thread">トークを削除</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">本当に%d個のトークを削除しますか？
-削除後はメッセージを復元することはできません。</string>
     <string name="really_delete_contact">本当にこの連絡先と関連するすべてのメッセージを削除しますか？</string>
     <string name="image_placeholder">画像</string>
     <string name="invalid_threema_id">無効なThreema ID</string>
@@ -225,7 +223,7 @@
     <string name="saving_media">メディアを保存</string>
     <string name="file_is_not_a_video">選択されたファイルは動画ではありません</string>
     <string name="masterkey_is_unlocked">マスターキーが解除されました</string>
-    <string name="file_too_large">ファイルが最大容量の 50 MB を超えています</string>
+    <string name="file_too_large">ファイルが最大容量の %1$d MB を超えています</string>
     <string name="deleting_thread">トークを削除する</string>
     <string name="enter_serial_body"><![CDATA[ショップライセンスキーを入力するか、ここをクリックしてキーを取得してください。
 https://shop.threema.ch/retrieve_keys]]></string>
@@ -381,7 +379,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="file_saved">%d 個のファイルが正常に保存されました。</string>
     <string name="token_register_failed">プッシュトークンのアップデートに失敗しました。もう一度試してください。</string>
     <string name="internet_connection_required">インターネットに接続できません</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d件のメッセージの送信に失敗しました</string>
     <string name="prefs_sum_save_media">受信した写真やビデオ、送信したカメラ画像を保存する</string>
     <string name="prefs_save_media">ギャラリーに自動的に保存</string>
     <string name="title_add_distribution_list">新規配信リスト</string>
@@ -706,7 +703,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="grace_never">決して（手動）</string>
     <string name="never">決して</string>
     <string name="unhide_chats_confirm">アクセス保護を解除すると、プライベートなトークが再び表示されるようになります。</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">%d枚の画像が選択済み</string>
     <string name="verification_started">認証が開始しました</string>
     <string name="cannot_open_file">ファイルを開けませんでした</string>
     <string name="prefs_title_image_attach_previews">メディアを選択</string>
@@ -1017,7 +1013,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="delete">削除</string>
     <string name="num_archived_chats">%d 件のアーカイブされたトーク</string>
     <string name="continue_recording">録音を続ける</string>
-	<string name="tap_to_start">タップして %s を始めましょう</string>
+    <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">バックアップのパスが無効です</string>
     <string name="backup_data_no_permission">このディレクトリには書き込めません。別のディレクトリを選択してください。</string>
@@ -1228,4 +1224,17 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="contact_property_key">"鍵"</string>
     <string name="header_nickname_entry">"ニックネーム"</string>
     <string name="organization_type">組織</string>
+    <string name="messages_cannot_be_recovered">削除後はメッセージを復元することはできません。</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="other">%d 連絡先</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="other">本当に%d個のトークを削除しますか？</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="other">%1$d件のメッセージの送信に失敗しました</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="other">%d枚の画像が選択済み</item>
+    </plurals>
 </resources>

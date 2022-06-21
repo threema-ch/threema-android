@@ -7,39 +7,39 @@
 	android:orientation="vertical">
 
 	<LinearLayout
-			android:orientation="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:paddingRight="16dp"
-			android:paddingLeft="16dp">
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingRight="16dp"
+		android:paddingLeft="16dp">
 
 		<ch.threema.app.ui.SectionHeaderView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="10dp"
-				android:text="@string/title_threemaid"/>
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dp"
+			android:text="@string/title_threemaid"/>
 
 		<LinearLayout
-				android:id="@+id/threemaid_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_marginTop="10dp"
-				android:clickable="true">
+			android:id="@+id/threemaid_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginTop="10dp"
+			android:clickable="true">
 
 			<TextView
-					android:id="@+id/threema_id"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginRight="16dp"
-					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-					android:singleLine="true"/>
+				android:id="@+id/threema_id"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="16dp"
+				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+				android:singleLine="true"/>
 
 			<ch.threema.app.ui.VerificationLevelImageView
-					android:id="@+id/verification_level_image"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_vertical" />
+				android:id="@+id/verification_level_image"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical" />
 
 			<ImageButton
 				android:id="@+id/verification_information_icon"
@@ -51,27 +51,28 @@
 				app:srcCompat="@drawable/ic_info_outline"
 				app:tint="?attr/textColorSecondary" />
 
+
 		</LinearLayout>
 
 		<LinearLayout
-				android:id="@+id/nickname_container"
-				android:orientation="vertical"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent">
+			android:id="@+id/nickname_container"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
 
 			<ch.threema.app.ui.SectionHeaderView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:paddingTop="10dp"
-					android:text="@string/title_public_nickname"/>
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="10dp"
+				android:text="@string/title_public_nickname"/>
 
 			<ch.threema.app.emojis.EmojiTextView
-					android:id="@+id/public_nickname"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="10dp"
-					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-					android:singleLine="true"/>
+				android:id="@+id/public_nickname"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+				android:singleLine="true"/>
 		</LinearLayout>
 
 		<LinearLayout
@@ -168,18 +169,18 @@
 			android:text="@string/show_public_key" />
 
 		<LinearLayout
-				android:id="@+id/group_members_title_container"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="12dp"
-				android:layout_marginBottom="5dp"
-				android:orientation="vertical"
-				android:visibility="visible">
+			android:id="@+id/group_members_title_container"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="12dp"
+			android:layout_marginBottom="5dp"
+			android:orientation="vertical"
+			android:visibility="visible">
 
 			<ch.threema.app.ui.SectionHeaderView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/group_membership_title"/>
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/group_membership_title"/>
 
 		</LinearLayout>
 	</LinearLayout>

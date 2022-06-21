@@ -21,6 +21,7 @@
 
 package ch.threema.app.services;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -181,6 +182,7 @@ import ch.threema.storage.models.data.media.VideoDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE_MB;
 import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
 import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
 import static ch.threema.app.ui.MediaItem.TYPE_FILE;
@@ -859,11 +861,20 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public boolean sendUserAcknowledgement(AbstractMessageModel messageModel) {
+		return sendUserAcknowledgement(messageModel, false);
+	}
+
+	@Override
+	public boolean sendUserAcknowledgement(AbstractMessageModel messageModel, boolean markAsRead) {
 		if (MessageUtil.canSendUserAcknowledge(messageModel)) {
 			DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
 			receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK);
 
 			try {
+				if (markAsRead) {
+					markAsRead(messageModel, true);
+				}
+
 				receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())});
 				receipt.setFromIdentity(identityStore.getIdentity());
 				receipt.setToIdentity(messageModel.getIdentity());
@@ -885,11 +896,20 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public boolean sendUserDecline(AbstractMessageModel messageModel) {
+		return sendUserDecline(messageModel, false);
+	}
+
+	@Override
+	public boolean sendUserDecline(AbstractMessageModel messageModel, boolean markAsRead) {
 		if (MessageUtil.canSendUserDecline(messageModel)) {
 			DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
 			receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC);
 
 			try {
+				if (markAsRead) {
+					markAsRead(messageModel, true);
+				}
+
 				receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())});
 				receipt.setFromIdentity(identityStore.getIdentity());
 				receipt.setToIdentity(messageModel.getIdentity());
@@ -1605,7 +1625,12 @@ public class MessageServiceImpl implements MessageService {
 			fireOnCreatedMessage(messageModel);
 
 			if (canDownload(MessageType.VOICEMESSAGE)) {
-				downloadMediaMessage(messageModel, null);
+				try {
+					downloadMediaMessage(messageModel, null);
+				} catch (Exception e) {
+					// a failed blob auto-download should not be considered a failure as the user can try again manually
+					logger.error("Unable to auto-download blob", e);
+				}
 			}
 		}
 		else {
@@ -1696,7 +1721,12 @@ public class MessageServiceImpl implements MessageService {
 
 				if (canDownload(MessageType.VIDEO)) {
 					if (videoSize <= FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO) {
-						downloadMediaMessage(messageModel, null);
+						try {
+							downloadMediaMessage(messageModel, null);
+						} catch (Exception e) {
+							// a failed blob auto-download should not be considered a failure as the user can try again manually
+							logger.error("Unable to auto-download blob", e);
+						}
 					}
 				}
 			} else {
@@ -1772,7 +1802,12 @@ public class MessageServiceImpl implements MessageService {
 			fireOnCreatedMessage(messageModel);
 			// Auto download
 			if (canDownload(messageModel)) {
-				downloadMediaMessage(messageModel, null);
+				try {
+					downloadMediaMessage(messageModel, null);
+				} catch (Exception e) {
+					// a failed blob auto-download should not be considered a failure as the user can try again manually
+					logger.error("Unable to auto-download blob", e);
+				}
 			}
 		}
 		else {
@@ -4093,6 +4128,7 @@ public class MessageServiceImpl implements MessageService {
 		return true;
 	}
 
+	@SuppressLint("Range")
 	public @Nullable FileDataModel createFileDataModel(Context context, MediaItem mediaItem) {
 		ContentResolver contentResolver = context.getContentResolver();
 		String mimeType = mediaItem.getMimeType();
@@ -4411,8 +4447,9 @@ public class MessageServiceImpl implements MessageService {
  				int fileLength = inputStream.available();
 
 				if (fileLength > MAX_BLOB_SIZE) {
-					logger.info(context.getString(R.string.file_too_large));
-					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.file_too_large, Toast.LENGTH_LONG).show());
+					String errorMessage = context.getString(R.string.file_too_large, MAX_BLOB_SIZE_MB);
+					logger.info(errorMessage);
+					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), errorMessage, Toast.LENGTH_LONG).show());
 					return null;
 				}
 
@@ -4433,8 +4470,9 @@ public class MessageServiceImpl implements MessageService {
 						}
 
 						if (readCount > MAX_BLOB_SIZE) {
-							logger.info(context.getString(R.string.file_too_large));
-							RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.file_too_large, Toast.LENGTH_LONG).show());
+							String errorMessage = context.getString(R.string.file_too_large, MAX_BLOB_SIZE_MB);
+							logger.info(errorMessage);
+							RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), errorMessage, Toast.LENGTH_LONG).show());
 							return null;
 						}
 

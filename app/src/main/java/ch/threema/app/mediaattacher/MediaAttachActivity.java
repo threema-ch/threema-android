@@ -107,7 +107,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	private static final int CONTACT_PICKER_INTENT = 33002;
 	private static final int LOCATION_PICKER_INTENT = 33003;
 
-	private static final int PERMISSION_REQUEST_LOCATION = 1;
 	private static final int PERMISSION_REQUEST_ATTACH_CONTACT = 2;
 	private static final int PERMISSION_REQUEST_QR_READER = 3;
 	private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
@@ -316,6 +315,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				editButton.setLabelText(R.string.edit);
 			}
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
+			selectCounterButton.setContentDescription(getResources().getQuantityString(R.plurals.selection_counter_label, count, count));
 
 		} else if (BottomSheetBehavior.from(bottomSheetLayout).getState() == STATE_EXPANDED) {
 			controlPanel.animate().translationY(
@@ -721,7 +721,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 		Cursor cursor = this.getContentResolver().query(contactUri, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst() && cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY) >= 0) {
-			String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+			@SuppressLint("Range") String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 			cursor.close();
 
 			controlPanel.setVisibility(View.GONE);

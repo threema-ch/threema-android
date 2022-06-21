@@ -466,6 +466,11 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	}
 
 	@Override
+	public int getPreferenceTitleResource() {
+		return R.string.prefs_notifications;
+	}
+
+	@Override
 	public int getPreferenceResource() {
 		return R.xml.preference_notifications;
 	}
