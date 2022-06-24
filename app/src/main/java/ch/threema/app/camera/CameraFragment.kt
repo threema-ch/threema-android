@@ -363,7 +363,7 @@ class CameraFragment : Fragment() {
     /** Declare and bind preview, capture and analysis use cases */
     @SuppressLint("RestrictedApi")
     private fun bindCameraUseCases(): Boolean {
-        if (previewView == null) {
+        if (previewView == null || previewView!!.display == null) {
             return false
         }
 

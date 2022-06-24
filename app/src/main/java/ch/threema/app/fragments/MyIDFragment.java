@@ -295,18 +295,22 @@ public class MyIDFragment extends MainFragment
 	}
 
 	private void setupPicReleaseSpinner() {
-		MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
-		spinner.setText(adapter.getItem(preferenceService.getProfilePicRelease()), false);
-		spinner.setOnItemClickListener((parent, view, position, id) -> {
-			int oldPosition = preferenceService.getProfilePicRelease();
-			preferenceService.setProfilePicRelease(position);
-			fragmentView.findViewById(R.id.picrelease_config).setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
-			if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
-				launchProfilePictureRecipientsSelector(view);
+		if (fragmentView != null && preferenceService != null) {
+			MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+			if (spinner != null) {
+				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_dropdown_item);
+				spinner.setAdapter(adapter);
+				spinner.setText(adapter.getItem(preferenceService.getProfilePicRelease()), false);
+				spinner.setOnItemClickListener((parent, view, position, id) -> {
+					int oldPosition = preferenceService.getProfilePicRelease();
+					preferenceService.setProfilePicRelease(position);
+					fragmentView.findViewById(R.id.picrelease_config).setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
+					if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
+						launchProfilePictureRecipientsSelector(view);
+					}
+				});
 			}
-		});
+		}
 	}
 
 	@Override
