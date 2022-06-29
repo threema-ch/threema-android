@@ -1,3 +1,9 @@
+// # URL Payloads
+//
+// These payloads are part of universal URLs (e.g. group invite links). After
+// serializing the protobuf messages, they are encoded in URL safe Base64
+// (according to RFC 3548).
+
 syntax = "proto3";
 
 package url;
@@ -6,14 +12,6 @@ option java_package = "ch.threema.protobuf.url_payloads";
 option java_multiple_files = true;
 
 import "common.proto";
-
-// # URL Payloads
-//
-// These payloads are part of universal URLs (e.g. group invite links). After
-// serializing the protobuf messages, they are encoded in URL safe Base64
-// (according to RFC 3548).
-
-
 
 // Group invitation containing information to request joining a group.
 //
@@ -66,12 +64,12 @@ message DeviceFamilyJoinRequestOrOffer {
   message Variant {
     oneof type {
       // A device intends to join the (multi-)device family. `data` is to be
-      // handled according to the *Device Join Protocol* with `ND` being the
+      // handled according to the _Device Join Protocol_ with `ND` being the
       // initiator.
       common.Unit request_to_join = 1;
 
       // A device intends to let another device join the (multi-)device family.
-      // `data` is to be handled according to the *Device Join Protocol* with 
+      // `data` is to be handled according to the _Device Join Protocol_ with 
       // `ED` being the initiator.
       common.Unit offer_to_join = 2;
     }

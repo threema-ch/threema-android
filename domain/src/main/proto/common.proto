@@ -1,3 +1,5 @@
+// # Common Types
+
 syntax = "proto3";
 
 package common;
@@ -20,6 +22,9 @@ message Blob {
   // Secret (or public) key used for encrypting/decrypting the Blob.
   // Note: May be omitted if unambigously defined by the context.
   bytes key = 3;
+
+  // Unix-ish timestamp in milliseconds when the blob has been uploaded
+  uint64 uploaded_at = 4;
 }
 
 // Inline Blob data.
@@ -53,14 +58,15 @@ message GroupIdentity {
 }
 
 // Generic image allowing delta updates
+//
+// Note: Lack of presence generally means that the image should remain
+//       unchanged.
 message DeltaImage {
   oneof image {
-    // The image remains unchanged
-    Unit unchanged = 1;
     // The image is empty or was explicitly removed
-    Unit removed = 2;
+    Unit removed = 1;
     // The new updated image
-    Image updated = 3;
+    Image updated = 2;
   }
 }
 
@@ -72,4 +78,10 @@ message Timespan {
   uint64 from = 1;
   // End of the timespan (Unix-ish timestamp in miliseconds, inclusive)
   uint64 to = 2;
+}
+
+// Container for a list of identities.
+message Identities {
+  // List of identities
+  repeated string identifies = 1;
 }

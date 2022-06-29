@@ -116,6 +116,7 @@
 	<attr name="attach_button_background" format="reference|color"/>
 	<attr name="material_toolbar_color" format="reference|color" />
 	<attr name="circle_button_stroke_color" format="reference|color"/>
+	<attr name="recently_added_background" format="reference|color"/>
 
 	<!-- Confirm device credentials screen -->
 	<attr name="confirmDeviceCredentialsSideMargin" format="dimension"/>

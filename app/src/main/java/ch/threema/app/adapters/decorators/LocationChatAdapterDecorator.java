@@ -23,7 +23,6 @@ package ch.threema.app.adapters.decorators;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -31,19 +30,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
-
 import org.slf4j.Logger;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import ch.threema.app.R;
-import ch.threema.app.activities.MapActivity;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.BitmapUtil;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.GeoLocationUtil;
-import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -70,7 +64,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 			@Override
 			public void onClick(View v) {
 				if(!isInChoiceMode()) {
-					viewLocation(getMessageModel(), v);
+					viewLocation(getMessageModel());
 				}
 			}
 		}, holder.messageBlockView);
@@ -148,22 +142,12 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 		}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
 	}
 
-	private void viewLocation(AbstractMessageModel messageModel, final View v) {
-		if (!ConfigUtils.hasNoMapLibreSupport()) {
-			if (messageModel != null) {
-				LocationDataModel locationData = messageModel.getLocationData();
-				if (locationData != null) {
-					Intent intent = new Intent(getContext(), MapActivity.class);
-					IntentDataUtil.append(new LatLng(messageModel.getLocationData().getLatitude(),
-							messageModel.getLocationData().getLongitude()),
-						getContext().getString(R.string.app_name),
-						messageModel.getLocationData().getPoi(),
-						messageModel.getLocationData().getAddress(),
-						intent);
-					getContext().startActivity(intent);
-				}
-			}
-		} else {
+	private void viewLocation(AbstractMessageModel messageModel) {
+		if (messageModel == null) {
+			return;
+		}
+
+		if (!GeoLocationUtil.viewLocation(getContext(), messageModel.getLocationData())) {
 			RuntimeUtil.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {

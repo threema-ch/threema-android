@@ -28,11 +28,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.jetbrains.annotations.NotNull;
@@ -47,11 +50,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiTextView;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
@@ -68,7 +70,7 @@ import ch.threema.storage.models.ContactModel;
 
 public class ContactListAdapter extends FilterableListAdapter implements SectionIndexer {
 
-	private static final int MAX_RECENTLY_ADDED_CONTACTS = 3;
+	private static final int MAX_RECENTLY_ADDED_CONTACTS = 1;
 
 	private final ContactService contactService;
 	private final PreferenceService preferenceService;
@@ -97,6 +99,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 	public interface AvatarListener {
 		void onAvatarClick(View view, int position);
 		boolean onAvatarLongClick(View view, int position);
+		void onRecentlyAddedClick(ContactModel contactModel);
 	}
 
 	public ContactListAdapter(@NonNull Context context, @NonNull List<ContactModel> values, ContactService contactService, PreferenceService preferenceService, IdListService blackListIdentityService, AvatarListener avatarListener) {
@@ -126,7 +129,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			}
 		}
 
-		if (recents.size() > 0) {
+		if (recents.size() > 0 && recents.size() < 10) {
 			// filter latest
 			Collections.sort(recents, (o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()));
 			this.recentlyAdded = recents.subList(0, Math.min(recents.size() , MAX_RECENTLY_ADDED_CONTACTS));
@@ -266,6 +269,8 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		EmojiTextView initialView;
 		ImageView initialImageView;
 		int originalPosition;
+		int viewType;
+		ShapeableImageView shapeableAvatarView;
 	}
 
 	@NonNull
@@ -290,6 +295,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			holder.nickTextView = itemView.findViewById(R.id.nick);
 			holder.verificationLevelView = itemView.findViewById(R.id.verification_level);
 			holder.avatarView = itemView.findViewById(R.id.avatar_view);
+			holder.shapeableAvatarView = itemView.findViewById(R.id.shapeable_avatar_view);
 			holder.blockedContactView = itemView.findViewById(R.id.blocked_contact);
 			holder.initialView = itemView.findViewById(R.id.initial);
 			holder.initialImageView = itemView.findViewById(R.id.initial_image);
@@ -317,24 +323,13 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 				MaterialCardView cardView = itemView.findViewById(R.id.recently_added_background);
 				cardView.setShapeAppearanceModel(shapeAppearanceModel);
+				cardView.setOnClickListener(v -> {
+					avatarListener.onRecentlyAddedClick(values.get(position));
+				});
 			}
 		} else {
 			holder = (ContactListHolder) itemView.getTag();
 		}
-
-		holder.avatarView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				avatarListener.onAvatarClick(v, position);
-			}
-		});
-
-		holder.avatarView.setOnLongClickListener(new View.OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				return avatarListener.onAvatarLongClick(v, position);
-			}
-		});
 
 		final ContactModel contactModel = values.get(position);
 		holder.originalPosition = ovalues.indexOf(contactModel);
@@ -350,11 +345,6 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 				holder.nameTextView,
 				highlightMatches(displayName, filterString, true));
 
-		holder.avatarView.setContentDescription(
-				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
-						ThreemaApplication.getAppContext().getString(R.string.mime_contact),
-						displayName));
-
 		AdapterUtil.styleContact(holder.nameTextView, contactModel);
 
 		ViewUtil.showAndSet(
@@ -363,56 +353,72 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 		AdapterUtil.styleContact(holder.idTextView, contactModel);
 
-		holder.verificationLevelView.setContactModel(contactModel);
+		if (holder.verificationLevelView != null) {
+			holder.verificationLevelView.setContactModel(contactModel);
+		}
 
 		ViewUtil.show(
 				holder.blockedContactView,
 				blackListIdentityService != null && blackListIdentityService.has(contactModel.getIdentity()));
 
-		if (displayName.length() > 1 && displayName.startsWith("~") && displayName.substring(1).equals(contactModel.getPublicNickName())) {
-			holder.nickTextView.setText("");
-		} else {
-			NameUtil.showNicknameInView(holder.nickTextView, contactModel, filterString, this);
+		if (holder.nickTextView != null) {
+			if (displayName.length() > 1 && displayName.startsWith("~") && displayName.substring(1).equals(contactModel.getPublicNickName())) {
+				holder.nickTextView.setText("");
+			} else {
+				NameUtil.showNicknameInView(holder.nickTextView, contactModel, filterString, this);
+			}
 		}
 
-		AvatarListItemUtil.loadAvatar(
+		if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
+			contactService.loadAvatarIntoImage(contactModel, holder.shapeableAvatarView,
+				new AvatarOptions.Builder()
+					.setHighRes(true)
+					.toOptions()
+			);
+			holder.viewType = VIEW_TYPE_RECENTLY_ADDED;
+		} else {
+			AvatarListItemUtil.loadAvatar(
 				contactModel,
 				this.contactService,
 				holder);
+			holder.avatarView.setContentDescription(
+				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+					ThreemaApplication.getAppContext().getString(R.string.mime_contact),
+					displayName));
+			holder.avatarView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					avatarListener.onAvatarClick(v, position);
+				}
+			});
+			holder.avatarView.setOnLongClickListener(new View.OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					return avatarListener.onAvatarLongClick(v, position);
+				}
+			});
+			holder.viewType = VIEW_TYPE_NORMAL;
+		}
 
 		String previousInitial = PLACEHOLDER_CHANNELS;
 		String currentInitial = getInitial(contactModel, true, position);
 		if (position > 0) {
 			previousInitial = getInitial(values.get(position - 1), true, position - 1);
 		}
-		if (previousInitial != null && !previousInitial.equals(currentInitial)) {
-			if (RECENTLY_ADDED_SIGN.equals(currentInitial)) {
-				holder.initialView.setVisibility(View.GONE);
-				holder.initialImageView.setVisibility(View.VISIBLE);
-			} else {
-				holder.initialView.setText(currentInitial);
-				holder.initialView.setVisibility(View.VISIBLE);
-				holder.initialImageView.setVisibility(View.GONE);
-			}
-		} else {
-			holder.initialView.setVisibility(View.GONE);
-			holder.initialImageView.setVisibility(View.GONE);
-		}
 
-		holder.avatarView.setBadgeVisible(contactService.showBadge(contactModel));
-
-		//itemView.setEnabled(viewType == VIEW_TYPE_NORMAL);
-		if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
-			itemView.setOnLongClickListener(v -> true);
-			itemView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ListView listView = (ListView) parent;
-					if (listView.getCheckedItemCount() == 0) {
-						listView.getOnItemClickListener().onItemClick(null, v, position, 0L);
-					}
+		if (holder.initialView != null) {
+			if (previousInitial != null && !previousInitial.equals(currentInitial)) {
+				if (!RECENTLY_ADDED_SIGN.equals(currentInitial)) {
+					holder.initialView.setText(currentInitial);
+					holder.initialView.setVisibility(View.VISIBLE);
+					holder.initialImageView.setVisibility(View.GONE);
 				}
-			});
+			} else {
+				if (!RECENTLY_ADDED_SIGN.equals(currentInitial)) {
+					holder.initialView.setVisibility(View.GONE);
+					holder.initialImageView.setVisibility(View.GONE);
+				}
+			}
 		}
 
 		return itemView;
@@ -559,9 +565,16 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 	public int getClickedItemPosition(View v) {
 		if (v != null && v.getTag() != null) {
-			return ((ContactListAdapter.ContactListHolder) v.getTag()).originalPosition;
+			return ((ContactListHolder) v.getTag()).originalPosition;
 		}
 		return 0;
+	}
+
+	public int getViewTypeFromView(View v) {
+		if (v != null && v.getTag() != null) {
+			return ((ContactListHolder) v.getTag()).viewType;
+		}
+		return VIEW_TYPE_NORMAL;
 	}
 
 	public String getInitial(int position) {

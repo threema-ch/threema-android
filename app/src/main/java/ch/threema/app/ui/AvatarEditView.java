@@ -167,7 +167,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(ContactModel modifiedContactModel) {
-			RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(modifiedContactModel, null));
+			if (modifiedContactModel != null && handle(modifiedContactModel.getIdentity())) {
+				RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(modifiedContactModel, null));
+			}
 		}
 
 		@Override

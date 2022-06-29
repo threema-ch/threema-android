@@ -1432,6 +1432,8 @@
 	<string name="spam_report_short">Report</string>
 	<string name="wizard_incompatible_contact_sync_params">There are incompatible MDM parameters set. Threema MDM parameter th_contact_sync cannot be set to true if user restriction DISALLOW_MODIFY_ACCOUNTS is set. Please contact your device administrator.</string>
 	<string name="messages_cannot_be_recovered">You will not be able to recover the messages.</string>
+	<string name="contact_deleted">Contact deleted</string>
+	<string name="last_added_contact">Last added</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>

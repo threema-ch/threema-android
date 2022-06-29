@@ -43,6 +43,7 @@ import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
 import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
+import java8.util.function.Consumer;
 
 public interface ContactService extends AvatarService<ContactModel> {
 
@@ -215,4 +216,5 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	@WorkerThread
 	boolean resetReceiptsSettings();
+	void reportSpam(@NonNull ContactModel spammerContactModel, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
 }

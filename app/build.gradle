@@ -13,7 +13,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.811"
+def app_version = "4.82"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -93,7 +93,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 748
+        versionCode 751
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -676,18 +676,17 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
-    implementation 'com.github.CanHub:Android-Image-Cropper:4.1.0'
+    implementation 'com.github.CanHub:Android-Image-Cropper:4.3.0'
     implementation 'com.datatheorem.android.trustkit:trustkit:1.1.5'
     implementation 'me.zhanghai.android.fastscroll:library:1.1.7'
     implementation 'com.googlecode.ez-vcard:ez-vcard:0.11.3'
 
     // AndroidX / Jetpack support libraries
-    implementation "androidx.core:core-ktx:1.7.0"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation "androidx.work:work-runtime:2.7.1"
@@ -712,9 +711,9 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.4.2'
     kapt 'androidx.room:room-compiler:2.4.2'
 
-    implementation 'com.google.android.material:material:1.6.0'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.17.1'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.17.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.0'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.45' // make sure to update this in domain's build.gradle as well
 

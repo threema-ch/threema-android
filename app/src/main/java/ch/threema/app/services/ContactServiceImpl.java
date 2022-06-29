@@ -57,6 +57,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.BuildConfig;
@@ -84,6 +85,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
@@ -110,6 +112,7 @@ import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
+import java8.util.function.Consumer;
 
 public class ContactServiceImpl implements ContactService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactServiceImpl");
@@ -1456,5 +1459,27 @@ public class ContactServiceImpl implements ContactService {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	@UiThread
+	public void reportSpam(@NonNull final ContactModel spammerContactModel, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure) {
+		new Thread(() -> {
+			try {
+				apiConnector.reportJunk(identityStore, spammerContactModel.getIdentity(), spammerContactModel.getPublicNickName());
+
+				spammerContactModel.setIsHidden(true);
+				save(spammerContactModel);
+
+				if (onSuccess != null) {
+					RuntimeUtil.runOnUiThread(() -> onSuccess.accept(null));
+				}
+			} catch (Exception e) {
+				logger.error("Error reporting spam", e);
+				if (onFailure != null) {
+					RuntimeUtil.runOnUiThread(() -> onFailure.accept(e.getMessage()));
+				}
+			}
+		}).start();
 	}
 }

@@ -198,6 +198,10 @@ public class ConfigUtils {
 		return (Build.MANUFACTURER.equalsIgnoreCase("OnePlus"));
 	}
 
+	public static boolean isSamsungDevice() {
+		return (Build.MANUFACTURER.equalsIgnoreCase("Samsung"));
+	}
+
 	public static boolean isSonyDevice() {
 		return (Build.MANUFACTURER.equalsIgnoreCase("Sony"));
 	}
@@ -220,6 +224,10 @@ public class ConfigUtils {
 
 	public static boolean supportsPictureInPicture(Context context) {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
+	}
+
+	public static boolean hasAsyncMediaCodecBug() {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ConfigUtils.isSamsungDevice() && Build.MODEL.startsWith("SM-G97");
 	}
 
 	public static boolean hasScopedStorage() {

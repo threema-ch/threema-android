@@ -34,6 +34,9 @@ import android.text.format.DateUtils;
 import android.util.Pair;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.lambdaworks.crypto.SCrypt;
 import com.neilalexander.jnacl.NaCl;
 
@@ -67,7 +70,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -1395,7 +1397,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return linksArray;
 	}
 
-	private JSONObject getContact(ContactModel contactModel) throws JSONException {
+	private JSONObject getContact(@NonNull ContactModel contactModel) throws JSONException {
 		JSONObject contact = new JSONObject();
 
 		contact.put(TAG_SAFE_CONTACT_IDENTITY, contactModel.getIdentity());
@@ -1424,7 +1426,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONArray contactsArray = new JSONArray();
 
 		for (final ContactModel contactModel : contactService.find(null)) {
-			contactsArray.put(getContact(contactModel));
+			if (contactModel != null) {
+				contactsArray.put(getContact(contactModel));
+			}
 		}
 
 		return contactsArray;

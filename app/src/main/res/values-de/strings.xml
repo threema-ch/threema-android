@@ -1489,6 +1489,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="spam_report_short">Melden</string>
 	<string name="wizard_incompatible_contact_sync_params">Es sind inkompatible MDM Parameter gesetzt. Der Threema MDM Parameter th_contact_sync kann nicht auf true gesetzt werden, wenn die Restriction DISALLOW_MODIFY_ACCOUNTS aktiviert ist. Bitte kontaktieren Sie Ihren Systemadministator.</string>
 	<string name="messages_cannot_be_recovered">Die Nachrichten können nicht wiederhergestellt werden.</string>
+	<string name="contact_deleted">Kontakt wurde gelöscht</string>
+	<string name="last_added_contact">Zuletzt hinzugefügt</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>

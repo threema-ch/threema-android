@@ -30,7 +30,6 @@
 		android:id="@+id/initial_image"
 		android:layout_width="24dp"
 		android:layout_height="24dp"
-		app:srcCompat="@drawable/ic_new_badge_filled"
 		android:importantForAccessibility="no"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintLeft_toLeftOf="parent"
@@ -67,7 +66,7 @@
 
 	<ch.threema.app.emojis.EmojiTextView
 		android:id="@+id/name"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_marginLeft="90dp"
 		android:ellipsize="end"
@@ -80,7 +79,6 @@
 		app:layout_constraintBottom_toTopOf="@+id/subject"
 		app:layout_constraintVertical_chainStyle="packed"
 		app:layout_constraintHorizontal_chainStyle="packed"
-		app:layout_constraintHorizontal_bias="0"
 		app:layout_constrainedWidth="false"/>
 	<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
@@ -96,7 +94,10 @@
 		app:layout_constraintLeft_toRightOf="@id/name"
 		app:layout_constraintRight_toLeftOf="@+id/blocked_contact"
 		app:layout_constraintBaseline_toBaselineOf="@id/name"
-		app:layout_constrainedWidth="true" />
+		app:layout_constrainedWidth="true"
+		app:layout_constraintWidth_max="wrap"
+		app:layout_constraintWidth_percent="0.4"
+		/>
 	<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
 	<ImageView
@@ -136,7 +137,7 @@
 		android:layout_marginLeft="3dp"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"
+		android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine.Bold"
 		android:textColor="@null"
 		android:gravity="right"
 		app:layout_constraintBottom_toBottomOf="parent"

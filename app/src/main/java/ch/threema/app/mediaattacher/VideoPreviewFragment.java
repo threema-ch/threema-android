@@ -28,10 +28,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import org.slf4j.Logger;
 
@@ -42,13 +42,14 @@ import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ui.ZoomableExoPlayerView;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
 
 	private ZoomableExoPlayerView videoView;
-	private SimpleExoPlayer videoPlayer;
+	private ExoPlayer videoPlayer;
 
 	VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
 		super(mediaItem, mediaAttachViewModel);
@@ -128,7 +129,7 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
 	public void initializePlayer(boolean playWhenReady) {
 		try {
-			this.videoPlayer = new SimpleExoPlayer.Builder(getContext()).build();
+			this.videoPlayer = VideoUtil.getExoPlayer(getContext());
 			this.videoPlayer.addListener(this);
 
 			this.videoView.setPlayer(videoPlayer);

@@ -233,6 +233,7 @@
 	<color name="material_indigo_a200">#536dfe</color>
 	<color name="material_teal_secondary">#00ebd5</color>
 	<color name="material_grey_300_alpha">#44e0e0e0</color>
-	<color name="recently_added_background">#2241d68d</color>
+	<color name="recently_added_background_light">#fff3f3f3</color>
+	<color name="recently_added_background_dark">#ff1b392a</color>
 	<color name="qrscanner_masking_color">#50000000</color>
 </resources>

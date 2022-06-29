@@ -176,7 +176,6 @@ import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
-import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ContentCommitComposeEditText;
 import ch.threema.app.ui.ConversationListView;
@@ -225,7 +224,6 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -4446,39 +4444,35 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@Override
 	public void onReportSpamClicked(@NonNull final ContactModel spammerContactModel, boolean block) {
-		final APIConnector connector = ThreemaApplication.requireServiceManager().getAPIConnector();
-		final IdentityStore identityStore = ThreemaApplication.requireServiceManager().getIdentityStore();
+		contactService.reportSpam(
+			spammerContactModel,
+			unused -> {
+				if (isAdded()) {
+					Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
+				}
 
-		new Thread(() -> {
-			try {
-				connector.reportJunk(identityStore, spammerContactModel.getIdentity(), spammerContactModel.getPublicNickName());
 				if (block) {
 					blackListIdentityService.add(spammerContactModel.getIdentity());
-				}
-				contactModel.setIsHidden(true);
-				contactService.save(contactModel);
+					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerContactModel.getIdentity());
 
-				RuntimeUtil.runOnUiThread(() -> {
-					Toast.makeText(ComposeMessageFragment.this.getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
-					if (block) {
-						new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getParentFragmentManager(), true, new Runnable() {
-							@Override
-							public void run() {
-								ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
-								ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
-								ComposeMessageFragment.this.finishActivity();
-							}
-						}).execute();
-					} else {
-						reportSpamView.hide();
-						ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
-					}
-				});
-			} catch (Exception e) {
-				logger.error("Error reporting spam", e);
-				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ComposeMessageFragment.this.getContext(), getString(R.string.spam_error_reporting, e.getMessage()), Toast.LENGTH_LONG).show());
+					new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, null, true, () -> {
+						ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+						ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));
+						if (isAdded()) {
+							finishActivity();
+						}
+					}).execute();
+				} else {
+					reportSpamView.hide();
+					ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));
+				}
+			},
+			message -> {
+				if (isAdded()) {
+					Toast.makeText(getContext(), requireContext().getString(R.string.spam_error_reporting, message), Toast.LENGTH_LONG).show();
+				}
 			}
-		}).start();
+		);
 	}
 
 	private void finishActivity() {

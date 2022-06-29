@@ -249,7 +249,7 @@ public class Utils extends Converter {
 		private DistributionListModel getDistributionListModel(String stringId) throws ConversionException {
 			try {
 				// Convert id
-				int id = Integer.parseInt(stringId);
+				long id = Long.parseLong(stringId);
 
 				// Get service and convert model to receiver
 				DistributionListService distributionListService = getDistributionListService();

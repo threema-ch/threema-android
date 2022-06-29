@@ -264,11 +264,13 @@ class CameraFragment : Fragment() {
             // Keep track of the display in which this view is attached
             displayId = previewView?.display?.displayId ?: -1
 
-            // Build UI controls
-            updateCameraUi()
+            if (displayId != -1) {
+                // Build UI controls
+                updateCameraUi()
 
-            // Set up the camera and its use cases
-            setUpCamera()
+                // Set up the camera and its use cases
+                setUpCamera()
+            }
         }
     }
 
@@ -601,6 +603,10 @@ class CameraFragment : Fragment() {
 
     /** Method used to re-draw the camera UI controls, called every time configuration changes. */
     private fun updateCameraUi() {
+        if (previewView == null) {
+            return
+        }
+
         // Remove previous UI if any
         val constraintLayout: ConstraintLayout? = container?.findViewById(R.id.camera_ui_container)
         constraintLayout.let {
@@ -608,7 +614,7 @@ class CameraFragment : Fragment() {
         }
 
         // Inflate a new view containing all UI for controlling the camera
-        val curOrientation = previewView!!.display.rotation
+        val curOrientation = previewView!!.display?.rotation ?: Surface.ROTATION_0
 
         controlsContainer = if (curOrientation == Surface.ROTATION_180 || curOrientation == Surface.ROTATION_270) {
             View.inflate(requireContext(), R.layout.camerax_ui_container_reverse, container)

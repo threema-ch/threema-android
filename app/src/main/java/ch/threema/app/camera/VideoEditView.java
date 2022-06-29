@@ -43,8 +43,8 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ClippingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -72,6 +72,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -95,7 +96,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private int isMoving = MOVING_NONE;
 	private GridLayout timelineGridLayout;
 	private PlayerView videoView;
-	private SimpleExoPlayer videoPlayer;
+	private ExoPlayer videoPlayer;
 	private MediaSource videoSource;
 	private TextView startTimeTextView, endTimeTextView, sizeTextView;
 	private Thread thumbnailThread;
@@ -176,7 +177,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 
 	@SuppressLint("ClickableViewAccessibility")
 	private void initVideoView() {
-		this.videoPlayer = new SimpleExoPlayer.Builder(context).build();
+		this.videoPlayer = VideoUtil.getExoPlayer(context);
 		this.videoPlayer.setPlayWhenReady(false);
 		this.videoPlayer.addListener(new Player.Listener() {
 			@Override

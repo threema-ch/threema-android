@@ -573,11 +573,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 				} else if (action.equals(Intent.ACTION_VIEW)) {
 					// called from action URL
-					if (lockAppService != null && lockAppService.isLocked()) {
-						finish();
-						return;
-					}
-
 					Uri dataUri = intent.getData();
 
 					if (TestUtil.required(dataUri)) {
@@ -591,6 +586,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								("https".equals(scheme) && (BuildConfig.actionUrl.equals(host) || BuildConfig.contactActionUrl.equals(host)) && "/compose".equals(dataUri.getPath()))
 							)
 							{
+								if (lockAppService != null && lockAppService.isLocked()) {
+									finish();
+									return;
+								}
+
 								String text = dataUri.getQueryParameter("text");
 								if (!TestUtil.empty(text)) {
 									mediaItems.add(new MediaItem(dataUri, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, text));
