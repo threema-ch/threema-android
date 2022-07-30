@@ -11,7 +11,7 @@
 ☁️|wetter|wolke|wolkig
 ☂️|bekleidung|regenschirm|wetter
 ☃️|schneemann im schnee
-☄️|komet|weltall
+☄️|komet|weltall|universum
 ☑️|✓|abgehaktes kästchen|feld|kästchen mit häkchen
 ☔|regenschirm im regen
 ☕|dampfend|getränk|heißgetränk|kaffee|tee|trinken|heissgetränk
@@ -89,7 +89,7 @@
 🫢|erschrecken|erstaunen|furcht|gesicht mit offenen augen und hand über dem mund|überraschung|unglauben|verlegenheit
 🫣|gebannt|gesicht mit durch die finger linsendem auge|linsen|spähen|starren
 🫤|enttäuscht|gesicht mit schrägem mund|langweilig|na ja|skeptisch|unsicher
-🫥|depressiv|gesicht mit gestrichelter linie|introvertiert|unsichtbar|verschwinden|verstecken
+🫥|depressiv|gesicht mit gestrichelter linie|introvertiert|unsichtbar|verschwinden|verstecken|traurig
 🫦|angst|ängstlich|auf lippe beißen|besorgt|flirtend|nervös|unbehaglich|auf lippe beissen
 🫧|blasen|reinigen|seifenblasen|unter wasser|wasserblasen|sauber|schaum
 🫰|fingerherz|geld|hand mit gekreuztem zeigefinger und daumen|handgeste|teuer
@@ -165,7 +165,7 @@
 😵‍💫|gesicht mit spiralen als augen|gesicht mit spiralaugen
 🤯|entsetzt|explodierender kopf|geschockt
 🤠|cowboy|gesicht mit cowboyhut|hut
-🥳|feiern|partygesicht
+🥳|feiern|partygesicht|tröte
 🥸|brille mit nase|inkognito|verkleidetes gesicht|verkleidung|gesicht mit maske|incognito|maske|nase
 😎|cool|gesicht|lächelndes gesicht mit sonnenbrille|sonnenbrille
 🤓|gesicht|nerd|strebergesicht
@@ -220,7 +220,7 @@
 🙈|affe|nichts sehen|sich die augen zuhaltendes affengesicht|verboten
 🙉|affe|nichts hören|sich die ohren zuhaltendes affengesicht|verboten
 🙊|affe|nichts sagen|sich den mund zuhaltendes affengesicht|verboten
-💋|kussabdruck|lippen
+💋|kussabdruck|lippen|knutschfleck
 💌|brief|herz|liebesbrief
 💘|herz mit pfeil|liebe|pfeil
 💝|herz mit schleife|schleife|valentinstag
@@ -237,7 +237,7 @@
 💛|gelbes herz|herz
 💚|grünes herz|herz
 💙|blaues herz|herz
-💜|herz|lila
+💜|herz|lila|violett
 🤎|braunes herz|herz
 🖤|böse|herz|schwarzes herz
 🤍|herz|weißes herz|weisses herz
@@ -270,9 +270,9 @@
 🤙|anrufen|hand|ruf-mich-an-handzeichen
 👈|finger|handrückseite|links|nach links weisender zeigefinger
 👉|finger|handrückseite|nach rechts weisender zeigefinger|rechts
-👆|aufwärts|finger|handrückseite|nach oben weisender zeigefinger von hinten
+👆|aufwärts|finger|handrückseite|nach oben weisender zeigefinger von hinten|hoch
 🖕|finger|hand|mittelfinger
-👇|abwärts|finger|handrückseite|nach unten weisender zeigefinger
+👇|abwärts|finger|handrückseite|nach unten weisender zeigefinger|runter
 ☝️|finger|handvorderseite|nach oben weisender zeigefinger von vorne|zeigefinger
 👍|daumen hoch|gut|hand|nach oben
 👎|daumen runter|hand|nach unten|schlecht
@@ -1323,7 +1323,7 @@
 💊|arzt|kapsel|medizin|tabletten
 🩹|heftpflaster|pflaster
 🩺|arzt|herz|medizin|stethoskop
-🚪|eingang|geschlossen|tür
+🚪|eingang|geschlossen|tür|ausgang
 🛗|aufzug|fahrstuhl|lift
 🪞|reflexion|spiegelbild
 🪟|aussicht|durchsichtig|fenster|frische luft|öffnung|rahmen
@@ -1332,8 +1332,8 @@
 🪑|sitzen|stuhl
 🚽|toilette|wc
 🪠|saugglocken|toilette|verstopft|klempner|pümpel|sanitär|wc
-🚿|dusche
-🛁|badewanne|badezimmer
+🚿|dusche|duschen
+🛁|badewanne|badezimmer|baden
 🪤|falle|mausefalle|mäusefalle
 🪒|rasieren|rasierer|scharf
 🧴|creme|feuchtigkeitscreme|körpercreme|shampoo|sonnencreme
@@ -1366,10 +1366,10 @@
 🛃|zollkontrolle
 🛄|gepäckausgabe
 🛅|gepäckaufbewahrung|schließfach|schliessfach
-⚠️|dreieck|warnung
-🚸|kinder überqueren die straße|vorsicht|kinder-queren-die-strasse-schild
-⛔|keine durchfahrt|verboten|zutritt verboten
-🚫|verboten|verbotszeichen
+⚠️|dreieck|warnung|vorsicht|achtung
+🚸|kinder überqueren die straße|vorsicht|kinder-queren-die-strasse-schild|fußgänger|fussgänger|verkehr
+⛔|keine durchfahrt|verboten|zutritt verboten|stopp|verkehr|untersagt|halt
+🚫|verboten|verbotszeichen|untersagt
 🚳|fahrräder verboten|radfahren verboten
 🚭|rauchen verboten|rauchverbot
 🚯|abfall verboten|müll|verboten
@@ -1389,7 +1389,7 @@
 🔚|end-pfeil|links|pfeil
 🔛|on!-pfeil|pfeil|rechts und links
 🔜|pfeil|rechts|soon-pfeil
-🔝|pfeil nach oben|top-pfeil
+🔝|pfeil nach oben|top-pfeil|hoch
 🛐|religion|religiöse stätte
 ⚛️|atheist|atomzeichen
 🕉️|hinduismus|om|religion
@@ -1521,8 +1521,8 @@
 🎌|japanische flaggen|überkreuzte flaggen|flaggen
 🏴|fahne|schwarze fahne|schwarze flagge|wehen|flagge
 🏳️|fahne|weiße fahne|weiße flagge|wehende weisse fahne|weisse fahne|flagge
-🏳️‍🌈|bunt|fahne|regenbogenflagge|flagge
-🏳️‍⚧️|flagge|transgender-flagge|hellblau|pink|transgenderflagge|weiss
+🏳️‍🌈|bunt|fahne|regenbogenflagge|flagge|lgbtqia|pride
+🏳️‍⚧️|flagge|transgender-flagge|hellblau|pink|transgenderflagge|weiss|lgbtqia+
 🏴‍☠️|jolly roger|piratenfahne|piratenflagge|schatz|flagge
 🇦🇩|andorra
 🇦🇪|vereinigte arabische emirate
