@@ -13,7 +13,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.83"
+def app_version = "4.831"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -92,7 +92,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 755
+        versionCode 756
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -658,7 +658,6 @@ dependencies {
     implementation 'net.sf.opencsv:opencsv:2.3'
     implementation 'net.lingala.zip4j:zip4j:2.11.1'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
-    implementation 'org.maplibre.gl:android-sdk:9.5.2'
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
@@ -795,7 +794,6 @@ dependencies {
         store_googleImplementation(dependency) { excludes.each { exclude it } }
         store_google_workImplementation(dependency) { excludes.each { exclude it } }
         store_threemaImplementation(dependency) { excludes.each { exclude it } }
-        libreImplementation(dependency) { excludes.each { exclude it } }
         onpremImplementation(dependency) { excludes.each { exclude it } }
         sandboxImplementation(dependency) { excludes.each { exclude it } }
         sandbox_workImplementation(dependency) { excludes.each { exclude it } }
@@ -811,6 +809,18 @@ dependencies {
     sandboxImplementation(name: 'libgsaverification-client', ext: 'aar')
     sandbox_workImplementation(name: 'libgsaverification-client', ext: 'aar')
     redImplementation(name: 'libgsaverification-client', ext: 'aar')
+
+    // Maplibre (may have transitive dependencies on Google location services)
+    def maplibreDependency = 'org.maplibre.gl:android-sdk:9.5.2'
+    noneImplementation maplibreDependency
+    store_googleImplementation maplibreDependency
+    store_google_workImplementation maplibreDependency
+    store_threemaImplementation maplibreDependency
+    libreImplementation maplibreDependency, { exclude group: 'com.google.android.gms' }
+    onpremImplementation maplibreDependency
+    sandboxImplementation maplibreDependency
+    sandbox_workImplementation maplibreDependency
+    redImplementation maplibreDependency
 
     // Huawei related libraries (only for hms* build variants)
     def huaweiDependencies = [
