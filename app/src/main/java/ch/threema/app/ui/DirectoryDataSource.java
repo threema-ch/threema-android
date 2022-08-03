@@ -37,6 +37,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkDirectory;
@@ -46,11 +47,13 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
 
 public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, WorkDirectoryContact> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryDataSource");
+	public static final int MIN_SEARCH_STRING_LENGTH = 3;
+	public static final String WILDCARD_SEARCH_ALL = "*";
 
 	private PreferenceService preferenceService;
 	private APIConnector apiConnector;
 	private IdentityStore identityStore;
-	private boolean sortByFirstName;
+	private final boolean sortByFirstName;
 	private static String queryText;
 	private static List<WorkDirectoryCategory> queryCategories = new ArrayList<>();
 
@@ -80,7 +83,21 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 
 	@Override
 	public void loadInitial(@NonNull LoadInitialParams<WorkDirectory> params, @NonNull LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
-		logger.debug("*** loadInitial");
+		logger.debug("loadInitial");
+
+		if (queryCategories.size() > 0) {
+			if (TestUtil.empty(queryText)) {
+				queryText = WILDCARD_SEARCH_ALL;
+			}
+		} else {
+			if (queryText == null || queryText.length() < MIN_SEARCH_STRING_LENGTH) {
+				// return empty result
+				callback.onResult(new ArrayList<WorkDirectoryContact>(), null, null);
+				return;
+			}
+		}
+
+		logger.debug("Fetching query {} #categories {}", queryText, queryCategories.size());
 
 		fetchInitialData(callback);
 	}
@@ -177,6 +194,7 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 			@Override
 			protected void onPostExecute(WorkDirectory workDirectory) {
 				if (workDirectory != null) {
+					logger.debug("Fetch results {}", workDirectory.workContacts);
 					callback.onResult(workDirectory.workContacts, workDirectory, workDirectory);
 				}
 			}

@@ -18,7 +18,7 @@
 	<string name="audio_focus_loss" translatable="false">Audio focus loss</string>
 	<string name="threema_work" translatable="false">Threema Work</string>
 	<string name="work_explain_url" translatable="false">https://threema.ch/work_info/?lang=%1$s</string>
-	<string name="translators_list" translatable="false">Alperen Zekeri̇ya Çulha, Hakan Sönger, Vit Semenec, Lia Rumantscha (Marina Cajacob, Daniel Telli), よりどりグリーン, Ryota Hasegawa, Xavier Bach-Esteve, Andrej Tobola, Gábor Botzheim, Max Bakalov, Daryna Stremetska, Mathias Lungård, Alieś Cimaškoŭ</string>
+	<string name="translators_list" translatable="false">Alperen Zekeri̇ya Çulha, Hakan Sönger, Önder Nuray, Vit Semenec, Lia Rumantscha (Marina Cajacob, Daniel Telli), よりどりグリーン, Ryota Hasegawa, Xavier Bach-Esteve, Andrej Tobola, Gábor Botzheim, Max Bakalov, Daryna Stremetska, Mathias Lungård, Alieś Cimaškoŭ</string>
 	<string name="threema_safe_password_faq" translatable="false">https://threema.ch/%s/faq/safepw</string>
 	<string name="threema_passwords_faq" translatable="false">https://threema.ch/%s/faq/lost_pass</string>
 	<string name="backup_faq_url" translatable="false">https://threema.ch/%s/faq/data_backup</string>

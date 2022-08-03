@@ -343,7 +343,7 @@ class CameraFragment : Fragment() {
                 } else {
                     Toast.makeText(context, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
                     logger.info("Back and front camera are unavailable")
-                    requireActivity().finish()
+                    activity?.finish()
                 }
             }
 
@@ -357,7 +357,7 @@ class CameraFragment : Fragment() {
                 updateFlashButton()
             } else {
                 logger.info("Unable to bind camera use cases")
-                requireActivity().finish()
+                activity?.finish()
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }

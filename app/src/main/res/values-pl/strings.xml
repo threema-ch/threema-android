@@ -3,7 +3,7 @@
     <string name="title_section2">Kontakty</string>
     <string name="title_section1">Czaty</string>
     <string name="title_compose_message">Rozpocznij czat</string>
-    <string name="title_choose_recipient">Wybierz odbiorców</string>
+    <string name="title_choose_recipient">Wybierz odbiorcę</string>
     <string name="title_keyfingerprint">Klucz publiczny</string>
     <string name="title_mythreemaid">Mój identyfikator Threema</string>
     <string name="title_threemaid">Identyfikator Threema</string>
@@ -44,7 +44,7 @@
     <string name="prefs_title_typing_indicator">Wyślij wskaźnik pisania</string>
     <string name="prefs_media_title">Media</string>
     <string name="prefs_sum_media_title">Ustawienia mediów</string>
-    <string name="prefs_image_size">Wymiary obrazu</string>
+    <string name="prefs_image_size">Rozmiar obrazu</string>
     <string name="prefs_notification_sound">Dźwięk powiadomienia</string>
     <string name="prefs_sum_notification_sound">Domyślne dla systemu</string>
     <string name="prefs_vibrate">Wibruj</string>
@@ -90,7 +90,7 @@
     <string name="color_red">Czerwony</string>
     <string name="color_green">Zielony</string>
     <string name="color_blue">Niebieski</string>
-    <string name="color_cyan">Cyan</string>
+    <string name="color_cyan">Cyjan</string>
     <string name="color_magenta">Magenta</string>
     <string name="color_yellow">Żółty</string>
     <string name="color_white">Biały</string>
@@ -178,8 +178,8 @@
     <string name="attach_camera">Aparat</string>
     <string name="menu_restore">Przywróć z backup-u</string>
     <string name="restore_id_hint">Wprowadź lub wklej tekst eksportu identyfikatora, aby przywrócić</string>
-    <string name="location_placeholder">Location</string>
-    <string name="video_placeholder">Video</string>
+    <string name="location_placeholder">Lokalizacja</string>
+    <string name="video_placeholder">Film</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Przywracanie backup-u</string>
     <string name="server_message_title">Wiadomość z serwera Threema</string>
@@ -529,7 +529,7 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="mime_text">Plik tekstowy</string>
     <string name="mime_video">Plik wideo</string>
     <string name="mime_word">Dokument tekstowy</string>
-    <string name="no_filename"><![CDATA[<No filename>]]></string>
+    <string name="no_filename"><![CDATA[<Brak nazwy pliku>]]></string>
     <string name="send_as_files">Wyślij jako plik</string>
     <string name="send_as_files_warning">Przesyłanie nieskompresowanych plików i obrazów może doprowadzić do znacznego zużycia danych, a tym samym do naliczenia dodatkowych opłat przez operatora sieci komórkowej. Zalecamy wysyłanie i pobieranie plików wyłącznie za pośrednictwem sieci Wi-Fi.</string>
     <string name="prefs_theme">Motyw</string>
@@ -834,6 +834,7 @@ anonimowo?</string>
     <string name="unpin">Odznacz</string>
     <string name="location_services_disabled">Usługi lokalizacyjne są wyłączone. Czy chcesz włączyć je teraz?</string>
     <string name="send_location">Prześlij lokalizację</string>
+    <string name="forward_location">Przekaż lokalizację</string>
     <string name="unknown_address">Nieznany adres</string>
     <string name="your_location">Twoja lokalizacja</string>
     <string name="network_blocked_title">Obsługa danych w tle wyłączona</string>
@@ -1215,7 +1216,7 @@ anonimowo?</string>
     <string name="group_request_already_sent"><![CDATA[Prośba o dołączenie została już wysłana dla <b>%s</b> poprzez to łącze. Kliknij na prośbę, aby wysłać ją ponownie.]]></string>
     <string name="group_link_none">Nie wygenerowano jeszcze łącza</string>
     <string name="group_request_confirm_send"><![CDATA[Zamierzasz wysłać prośbę o dołączenie do grupy dla <b>%1$s</b> do administratora <b>%2$s</b>. Jeśli to łącze nie zostało unieważnione, zostaniesz automatycznie dodany/dodana do grupy, jak tylko urządzenie administratora otrzyma Twoją prośbę.]]></string>
-    <string name="really_delete_outgoing_request">Czy naprawdę chcesz usunąć prośbę o dołączenie do grupy %d? Pamiętaj, że prośba nie zostanie cofnięta i nadal możliwe będzie jej zaakceptowanie lub kontakt z Tobą, jeśli jeszcze nie odpowiedziano na prośbę.</string>
+    <string name="really_delete_outgoing_request">Czy naprawdę chcesz usunąć %d próśb o dołączenie do grupy ? Pamiętaj, że prośby nie zostanę cofnięte i nadal mogą zostać zaakceptowane albo odrzucone jeśli administrator grupy jeszcze nie odpowiedział na prośbę.</string>
     <string name="really_delete_group_request_title">Naprawdę usuń prośbę</string>
     <string name="sent_to">Wysłane do: %s</string>
     <string name="sent_on">Wysłano: %s</string>
@@ -1398,6 +1399,10 @@ anonimowo?</string>
     <string name="spam_report_short">Zgłoś</string>
     <string name="wizard_incompatible_contact_sync_params">Ustawione są niezgodne parametry MDM. Parametr MDM Threema th_contact_sync nie może być ustawiony na wartość prawda, jeśli ustawiono ograniczenie użytkownika DISALLOW_MODIFY_ACCOUNTS. Skontaktuj się z administratorem urządzenia.</string>
     <string name="messages_cannot_be_recovered">Nie będzie mógł ich odzyskać.</string>
+    <string name="contact_deleted">Kontakt usunięty</string>
+    <string name="last_added_contact">Ostatnio dodany</string>
+    <string name="directory_explain_text">Przeszukaj katalog firmowy, by znaleźć pracowników, których nie ma na liście kontaktów.</string>
+    <string name="cannot_display_location">Nie można pokazać lokalizacji.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>

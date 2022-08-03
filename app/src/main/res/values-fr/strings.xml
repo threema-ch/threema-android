@@ -818,6 +818,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="unpin">Démarquer</string>
     <string name="location_services_disabled">Les services de localisation sont désactivés. Souhaitez-vous les activer maintenant ?</string>
     <string name="send_location">Envoyer l\'emplacement</string>
+    <string name="forward_location">Transférer l\'emplacement</string>
     <string name="unknown_address">Adresse inconnue</string>
     <string name="your_location">Votre emplacement</string>
     <string name="network_blocked_title">Données en arrière-plan désactivées</string>
@@ -1382,6 +1383,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="spam_report_short">Signaler</string>
     <string name="wizard_incompatible_contact_sync_params">Il y a des paramètres MDM incompatibles définis. Le paramètre Threema MDM th_contact_sync ne peut pas être activé si la restriction d\'utilisateur DISALLOW_MODIFY_ACCOUNTS est définie. Veuillez contacter l\'administrateur de votre appareil.</string>
     <string name="messages_cannot_be_recovered">Vous ne pourrez pas annuler cette action.</string>
+    <string name="contact_deleted">Contact supprimé</string>
+    <string name="last_added_contact">Dernier ajout</string>
+    <string name="directory_explain_text">Recherchez dans le répertoire de l\'entreprise tout employé ne faisant pas encore partie de votre liste de contacts.</string>
+    <string name="cannot_display_location">Impossible d\'afficher cet emplacement.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="many">%d contacts</item>

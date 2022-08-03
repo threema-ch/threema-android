@@ -784,7 +784,15 @@
 		<activity
 			android:name=".activities.MapActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
-			android:theme="@style/Theme.LocationPicker" />
+			android:theme="@style/Theme.LocationPicker"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="geo" />
+			</intent-filter>
+		</activity>
 		<activity
 			android:name=".activities.WorkExplainActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"

@@ -27,14 +27,15 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.Date;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.MessageService;
@@ -158,7 +159,9 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 							readDate.setVisibility(View.VISIBLE);
 						}
 
-						if (modifiedAt != null && !(messageState == MessageState.READ && modifiedAt.equals(readAt))) {
+						if (modifiedAt != null &&
+							!(messageState == MessageState.READ && modifiedAt.equals(readAt)) &&
+							!(messageState == MessageState.DELIVERED && modifiedAt.equals(deliveredAt))) {
 							modifiedText.setText(TextUtil.capitalize(getString(stateResource)));
 							modifiedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), modifiedAt.getTime()));
 							modifiedText.setVisibility(View.VISIBLE);

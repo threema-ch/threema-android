@@ -25,8 +25,8 @@
     <string name="menu_about">Threema Workについて</string>
     <string name="list_theme_light">ライト</string>
     <string name="list_theme_dark">ダーク (デフォルト)</string>
-    <string name="private_threema_download"><![CDATA[個人ユーザーの方は、 <a href=%s>こちらをタップ</a>してThreemaをダウンロードしてください。]]></string>
+    <string name="private_threema_download"><![CDATA[個人ユーザーの方は、 <a href="https://play.google.com/store/apps/details?id=ch.threema.app">こちらをタップ</a>してThreemaをダウンロードしてください。]]></string>
     <string name="directory_search">ディレクトリ内検索</string>
     <string name="directory_title">会社のディレクトリ</string>
-    <string name="directory_empty_view_text">エントリーが見つかりません\n\nあなたの会社のThreemaユーザーのディレクトリで検索を開始するには、少なくとも3文字を入力してください。</string>
+    <string name="directory_empty_view_text">あなたの会社のThreema Workユーザーのディレクトリで検索を開始するには、少なくとも3文字を入力してください。</string>
 </resources>

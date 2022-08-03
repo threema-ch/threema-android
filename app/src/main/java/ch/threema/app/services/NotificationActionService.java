@@ -168,27 +168,28 @@ public class NotificationActionService extends IntentService {
 
 	private boolean reply(@NonNull MessageReceiver messageReceiver, @NonNull Intent intent) {
 		Bundle results = RemoteInput.getResultsFromIntent(intent);
-
-		String message = null;
-		CharSequence messageCs = results.getCharSequence(ThreemaApplication.EXTRA_VOICE_REPLY);
-		if (messageCs != null) {
-			message = messageCs.toString();
-		}
-
-		if (!TestUtil.empty(message)) {
-			lifetimeService.acquireConnection(TAG);
-
-			try {
-				messageService.sendText(message, messageReceiver);
-				messageService.markConversationAsRead(messageReceiver, notificationService);
-				notificationService.cancel(messageReceiver);
-
-				showToast(R.string.message_sent);
-				return true;
-			} catch (Exception e) {
-				logger.error("Failed to send message", e);
+		if (results != null) {
+			String message = null;
+			CharSequence messageCs = results.getCharSequence(ThreemaApplication.EXTRA_VOICE_REPLY);
+			if (messageCs != null) {
+				message = messageCs.toString();
 			}
-			lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+
+			if (!TestUtil.empty(message)) {
+				lifetimeService.acquireConnection(TAG);
+
+				try {
+					messageService.sendText(message, messageReceiver);
+					messageService.markConversationAsRead(messageReceiver, notificationService);
+					notificationService.cancel(messageReceiver);
+
+					showToast(R.string.message_sent);
+					return true;
+				} catch (Exception e) {
+					logger.error("Failed to send message", e);
+				}
+				lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+			}
 		}
 		logger.info("Reply message is empty");
 		return false;

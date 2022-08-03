@@ -21,5 +21,8 @@ in modo anonimo.</string>
     <string name="menu_about">Informazioni su Threema Work</string>
     <string name="list_theme_light">Chiaro</string>
     <string name="list_theme_dark">Scuro (default)</string>
-    <string name="private_threema_download"><![CDATA[<a href=%s>Per utenti privati</a>]]></string>
+    <string name="private_threema_download"><![CDATA[ <a href=%1$s>Scopri di più su Threema Work</a> <br/><br/> Se sei un utente privato, <a href=%2$s>tocca qui</a> per scaricare Threema.]]></string>
+    <string name="directory_search">Cerca nella directory</string>
+    <string name="directory_title">Directory azienda</string>
+    <string name="directory_empty_view_text">Inserisci almeno 3 caratteri di un nome per iniziare a cercare nella directory della tua azienda degli utenti di Threema Work o seleziona una categoria toccando sull\'icona del filtro.</string>
 </resources>

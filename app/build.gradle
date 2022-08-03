@@ -13,7 +13,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.82"
+def app_version = "4.83"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -75,7 +75,6 @@ def keystores = [
     hms_release: findKeystore("threema_hms"),
     onprem_release: findKeystore("onprem"),
     red_release: findKeystore("red"),
-    fdroid_release: findKeystore("threema_fdroid"),
 ]
 
 android {
@@ -93,7 +92,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 751
+        versionCode 755
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -348,10 +347,10 @@ android {
                 actionUrl: "work.threema.ch",
             ]
         }
-        fdroid {
-            versionName "${app_version}f${beta_suffix}"
-            applicationId "ch.threema.app.fdroid"
-            testApplicationId 'ch.threema.app.fdroid.test'
+        libre {
+            versionName "${app_version}l${beta_suffix}"
+            applicationId "ch.threema.app.libre"
+            testApplicationId 'ch.threema.app.libre.test'
             resValue "string", "app_name", "Threema Libre"
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaLibre\""
         }
@@ -415,17 +414,7 @@ android {
             logger.warn("No red keystore found. Falling back to locally generated keystore.")
         }
 
-        // F-Droid release config
-        if (keystores.fdroid_release != null) {
-            fdroid_release {
-                storeFile file(keystores.fdroid_release.storeFile)
-                storePassword keystores.fdroid_release.storePassword
-                keyAlias keystores.fdroid_release.keyAlias
-                keyPassword keystores.fdroid_release.keyPassword
-            }
-        } else {
-            logger.warn("No fdroid keystore found. Falling back to locally generated keystore.")
-        }
+        // Note: Libre release is signed with HSM, no config here
     }
 
     sourceSets {
@@ -447,7 +436,7 @@ android {
         store_threema {
             java.srcDir 'src/google_services_based/java'
         }
-        fdroid {
+        libre {
             assets.srcDirs = ['src/foss_based/assets']
             java.srcDir 'src/foss_based/java'
         }
@@ -478,7 +467,7 @@ android {
         }
 
         // FOSS, no proprietary services
-        fdroid {
+        libre {
             assets.srcDirs = ['src/foss_based/assets']
             java.srcDir 'src/foss_based/java'
         }
@@ -528,9 +517,7 @@ android {
                 productFlavors.red.signingConfig signingConfigs.red_release
             }
 
-            if (keystores['fdroid_release'] != null) {
-                productFlavors.fdroid.signingConfig signingConfigs.fdroid_release
-            }
+            // Note: Libre release is signed with HSM, no config here
         }
     }
 
@@ -669,7 +656,7 @@ dependencies {
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
-    implementation 'net.lingala.zip4j:zip4j:2.9.1'
+    implementation 'net.lingala.zip4j:zip4j:2.11.1'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
     implementation 'org.maplibre.gl:android-sdk:9.5.2'
     // commons-io >2.6 requires android 8
@@ -694,9 +681,9 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.sqlite:sqlite:2.1.0'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
-    implementation "androidx.camera:camera-camera2:1.1.0-rc02"
-    implementation "androidx.camera:camera-lifecycle:1.1.0-rc02"
-    implementation "androidx.camera:camera-view:1.1.0-rc02"
+    implementation "androidx.camera:camera-camera2:1.1.0"
+    implementation "androidx.camera:camera-lifecycle:1.1.0"
+    implementation "androidx.camera:camera-view:1.1.0"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
@@ -808,7 +795,7 @@ dependencies {
         store_googleImplementation(dependency) { excludes.each { exclude it } }
         store_google_workImplementation(dependency) { excludes.each { exclude it } }
         store_threemaImplementation(dependency) { excludes.each { exclude it } }
-        fdroidImplementation(dependency) { excludes.each { exclude it } }
+        libreImplementation(dependency) { excludes.each { exclude it } }
         onpremImplementation(dependency) { excludes.each { exclude it } }
         sandboxImplementation(dependency) { excludes.each { exclude it } }
         sandbox_workImplementation(dependency) { excludes.each { exclude it } }
@@ -821,7 +808,6 @@ dependencies {
     store_google_workImplementation(name: 'libgsaverification-client', ext: 'aar')
     onpremImplementation(name: 'libgsaverification-client', ext: 'aar')
     store_threemaImplementation(name: 'libgsaverification-client', ext: 'aar')
-    fdroidImplementation(name: 'libgsaverification-client', ext: 'aar')
     sandboxImplementation(name: 'libgsaverification-client', ext: 'aar')
     sandbox_workImplementation(name: 'libgsaverification-client', ext: 'aar')
     redImplementation(name: 'libgsaverification-client', ext: 'aar')

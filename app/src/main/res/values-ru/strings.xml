@@ -818,6 +818,7 @@
     <string name="unpin">Снять</string>
     <string name="location_services_disabled">Службы определения местоположения отключены. Хотите включить их сейчас?</string>
     <string name="send_location">Отправить местопол.</string>
+    <string name="forward_location">Переслать местоположение</string>
     <string name="unknown_address">Неизвестный адрес</string>
     <string name="your_location">Ваше местоположение</string>
     <string name="network_blocked_title">Фоновая передача данных отключена</string>
@@ -1382,6 +1383,10 @@
     <string name="spam_report_short">Жалоба</string>
     <string name="wizard_incompatible_contact_sync_params">Установлены несовместимые параметры MDM. Для параметра Threema MDM th_contact_sync не может быть установлено значение «истина», если задано ограничение пользователя DISALLOW_MODIFY_ACCOUNTS. Обратитесь к администратору.</string>
     <string name="messages_cannot_be_recovered">Вы не сможете восстановить сообщения.</string>
+    <string name="contact_deleted">Контакт удален</string>
+    <string name="last_added_contact">Добавлен последним</string>
+    <string name="directory_explain_text">Поиск в каталоге компании сотрудников, которых еще нет в вашем списке контактов.</string>
+    <string name="cannot_display_location">Это местоположение невозможно показать.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>

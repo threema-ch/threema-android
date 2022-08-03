@@ -55,7 +55,11 @@ public class ReConnectJobService extends JobService {
 					boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());
 
 					if (!isStopped) {
-						jobFinished(jobParameters, !success);
+						try {
+							jobFinished(jobParameters, !success);
+						} catch (Exception e) {
+							logger.error("Exception while finishing ReConnectJob", e);
+						}
 					}
 				}
 			}

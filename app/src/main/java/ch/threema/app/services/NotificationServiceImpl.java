@@ -410,7 +410,6 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void setVisibleReceiver(MessageReceiver receiver) {
-
 		if(receiver != null) {
 			//cancel
 			this.cancel(receiver);
@@ -422,6 +421,11 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void addConversationNotification(final ConversationNotification conversationNotification, boolean updateExisting) {
 		logger.debug("addConversationNotifications");
+
+		if (ConfigUtils.hasInvalidCredentials()) {
+			logger.debug("Credentials are not (or no longer) valid. Suppressing notification.");
+			return;
+		}
 
 		synchronized (this.conversationNotifications) {
 			//check if current receiver is the receiver of the group

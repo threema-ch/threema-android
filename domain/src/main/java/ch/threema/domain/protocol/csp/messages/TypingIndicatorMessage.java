@@ -48,12 +48,12 @@ public class TypingIndicatorMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean isImmediate() {
+	public boolean flagNoServerQueuing() {
 		return true;
 	}
 
 	@Override
-	public boolean isNoAck() {
+	public boolean flagNoServerAck() {
 		return true;
 	}
 

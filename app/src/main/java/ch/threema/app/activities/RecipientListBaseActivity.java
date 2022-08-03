@@ -112,6 +112,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactLookupUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
@@ -131,6 +132,7 @@ import java8.util.concurrent.CompletableFuture;
 
 import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_IMAGES;
 import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
+import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
@@ -290,7 +292,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			for (MediaItem mediaItem: mediaItems) {
 				String mimeType = mediaItem.getMimeType();
 				if (mimeType != null) {
-					if (!hasMedia && !mimeType.startsWith("text/")) {
+					if (!hasMedia && !mimeType.startsWith("text/") && mediaItem.getType() != TYPE_LOCATION) {
 						hasMedia = true;
 					}
 				}
@@ -461,7 +463,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 
 					if (type != null && (uri != null || MimeUtil.isText(type))) {
-						if (type.equals("message/rfc822")) {
+						if (type.equals(MimeUtil.MIME_TYPE_EMAIL)) {
 							// email attachments
 							//  extract file type from uri path
 							String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
@@ -480,9 +482,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								}
 							}
 						}
-						if (type.equals("text/plain")) {
+						if (type.equals(MimeUtil.MIME_TYPE_TEXT)) {
 							String textIntent = getTextFromIntent(intent);
-							if (uri != null) {
+							if (GeoLocationUtil.isValidGeoUri(uri)) {
+								mediaItems.add(new MediaItem(uri, MediaItem.TYPE_LOCATION, MimeUtil.MIME_TYPE_ANY, textIntent));
+							} else if (uri != null) {
 								// default to sending text as file
 								type = "x-text/plain";
 
@@ -496,19 +500,21 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									captionText = textIntent;
 								}
 							} else if (textIntent != null) {
-								mediaItems.add(new MediaItem(uri, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, textIntent));
+								mediaItems.add(new MediaItem(null, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, textIntent));
 							}
 						} else {
 							if (uri != null) {
 								// guess the correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*" which should be overridden
 								String guessedType = getMimeTypeFromContentUri(uri);
 								if (guessedType != null) {
-									type = guessedType;
+									if (!guessedType.equals(MimeUtil.MIME_TYPE_DEFAULT) || type.equals("*")) {
+										type = guessedType;
+									}
 								}
 
 								String textIntent = getTextFromIntent(intent);
 								// don't add fixed caption to media item because we want it to be editable when sending a zip file (share chat)
-								if (type.equals("application/zip") && textIntent != null) {
+								if (type.equals(MimeUtil.MIME_TYPE_ZIP) && textIntent != null) {
 									captionText = textIntent;
 									mediaItems.add(new MediaItem(uri, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_ZIP, textIntent));
 								} else { // if text was shared along with the media item, add that too
@@ -1042,10 +1048,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								} else {
 									// mixed media
 									ExpandableTextEntryDialog alertDialog;
+									boolean expandable = mediaItems.size() == 1 && mediaItems.get(0).getType() != TYPE_LOCATION;
 									if (hideUi) {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
 									} else {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
 									}
 									alertDialog.setData(recipients);
 									alertDialog.show(getSupportFragmentManager(), null);

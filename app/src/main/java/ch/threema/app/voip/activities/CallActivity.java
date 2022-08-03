@@ -2168,21 +2168,23 @@ public class CallActivity extends ThreemaActivity implements
 			aspectRatio = new Rational(videoContext.getFrameHeight(), videoContext.getFrameWidth());
 		}
 
-		launchBounds = new Rect(this.commonViews.backgroundView.getLeft(),
-			this.commonViews.backgroundView.getTop(),
-			this.commonViews.backgroundView.getRight(),
-			this.commonViews.backgroundView.getBottom());
+		if (this.commonViews != null) {
+			launchBounds = new Rect(this.commonViews.backgroundView.getLeft(),
+				this.commonViews.backgroundView.getTop(),
+				this.commonViews.backgroundView.getRight(),
+				this.commonViews.backgroundView.getBottom());
 
-		PictureInPictureParams pipParams = new PictureInPictureParams.Builder()
-			.setAspectRatio(aspectRatio)
-			.setSourceRectHint(launchBounds)
-			.build();
+			PictureInPictureParams pipParams = new PictureInPictureParams.Builder()
+				.setAspectRatio(aspectRatio)
+				.setSourceRectHint(launchBounds)
+				.build();
 
-		try {
-			enterPictureInPictureMode(pipParams);
-		} catch (IllegalArgumentException e) {
-			logger.error("Unable to enter PIP mode", e);
-			unhideNavigation(false);
+			try {
+				enterPictureInPictureMode(pipParams);
+			} catch (IllegalArgumentException e) {
+				logger.error("Unable to enter PIP mode", e);
+				unhideNavigation(false);
+			}
 		}
 	}
 

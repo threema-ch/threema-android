@@ -104,12 +104,12 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 			con.sendBoxedMessage(boxmsg);
 
 			/* Only add to queue if we want an ACK for this message */
-			if (!message.isNoAck()) {
+			if (!message.flagNoServerAck()) {
 				queue.add(boxmsg);
 			}
 		} else {
-			if (message.isImmediate()) {
-				logger.debug("Discarding immediate message because not connected");
+			if (message.flagNoServerQueuing()) {
+				logger.debug("Discarding non-queued message because not connected");
 			} else {
 				queue.add(boxmsg);
 			}

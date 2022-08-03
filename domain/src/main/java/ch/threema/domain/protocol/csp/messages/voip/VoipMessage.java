@@ -30,12 +30,12 @@ public abstract class VoipMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean shouldPush() {
+	public boolean flagSendPush() {
 		return true;
 	}
 
 	@Override
-	public boolean isVoip() {
+	public boolean flagShortLivedServerQueuing() {
 		return true;
 	}
 }

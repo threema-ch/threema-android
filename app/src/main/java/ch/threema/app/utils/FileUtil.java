@@ -761,6 +761,13 @@ public class FileUtil {
 				}
 			} catch (Exception e) {
 				logger.error("Unable to query Content Resolver", e);
+				// guess filename from last path segment of content URI. Accept only filenames that contain one "." character
+				String lastPathSegment = uri.getLastPathSegment();
+				if (lastPathSegment != null) {
+					if (lastPathSegment.indexOf(".") == lastPathSegment.lastIndexOf(".")) {
+						filename = lastPathSegment;
+					}
+				}
 			}
 		}
 		return filename;

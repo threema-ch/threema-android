@@ -656,7 +656,6 @@ public class ConfigUtils {
 			try {
 				LicenseService licenseService = serviceManager.getLicenseService();
 				if (licenseService != null) {
-
 					return isSerialLicensed() && licenseService.hasCredentials() && licenseService.isLicensed();
 				}
 			} catch (FileSystemNotPresentException e) {
@@ -671,6 +670,10 @@ public class ConfigUtils {
 			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.HMS_WORK)
 			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.SERIAL)
 			|| BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
+	}
+
+	public static boolean hasInvalidCredentials() {
+		return (ConfigUtils.isOnPremBuild() || ConfigUtils.isWorkBuild()) && ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid();
 	}
 
 	/**

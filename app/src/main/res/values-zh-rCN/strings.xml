@@ -856,6 +856,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="unpin">取消置顶</string>
     <string name="location_services_disabled">定位服务已禁用。您现在要启用吗？</string>
     <string name="send_location">发送位置</string>
+    <string name="forward_location">转发位置</string>
     <string name="unknown_address">未知地址</string>
     <string name="your_location">您的位置</string>
     <string name="network_blocked_title">后台数据已禁用</string>
@@ -1151,7 +1152,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="translators_thanks">非常感谢我们的翻译志愿者：\n%s</string>
     <string name="ballot_window_hide">隐藏公开的投票</string>
     <string name="ballot_window_show">显示公开的投票</string>
-    <string name="tooltip_voip_other_party_video_on">对方已发起视频通话，点击这里打开摄像头。</string>
+    <string name="tooltip_voip_other_party_video_on">对方已建立视频通话，点击这里打开摄像头。</string>
     <string name="tooltip_voip_other_party_video_disabled">对方使用的应用程序版本不支持或不允许进行视频通话。</string>
     <string name="biometrics_not_enrolled">系统未注册任何生物识别信息</string>
     <string name="biometrics_not_avilable">生物识别在此系统上不可用。</string>
@@ -1238,7 +1239,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_request_already_sent"><![CDATA[您已经通过这个链接发送了 <b>%s</b> 公开群组加入请求，正在等待群组管理员的回复。如果您想重新发送请求，请再次点击列表中的链接。]]></string>
     <string name="group_link_none">尚未生成链接</string>
     <string name="group_request_confirm_send"><![CDATA[您即将向管理员 <b>%2$s</b> 发送 <b>%1$s</b> 群组加入请求。如果此链接没有失效，管理员一收到您的请求，您就会自动添加到群组。]]></string>
-    <string name="really_delete_outgoing_request">您确定要删除 %d 群组加入的请求吗？请注意，删除请求井不会撤销请求，如果群组管理员尚未回复，您仍然可能被批准或拒绝加入群组。</string>
+    <string name="really_delete_outgoing_request">您确定要删除 %d 群组加入的请求吗？请注意，删除请求井不会撤销请求。如果群组管理员尚未回复，您仍然可能被批准或拒绝加入群组。</string>
     <string name="really_delete_group_request_title">您确定要删除群组加入请求吗？</string>
     <string name="sent_to">发送到：%s</string>
     <string name="sent_on">发送日期：%s</string>
@@ -1421,6 +1422,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="spam_report_short">举报</string>
     <string name="wizard_incompatible_contact_sync_params">您可能设置了不兼容的 MDM 参数。如果用户限制设置为 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 参数 th_contact_sync 则无法设置为 true。请联系您的设备管理员以获取帮助。</string>
     <string name="messages_cannot_be_recovered">您将无法恢复消息。</string>
+    <string name="contact_deleted">联系人已删除</string>
+    <string name="last_added_contact">最后添加</string>
+    <string name="directory_explain_text">在公司目录中搜索任何尚未列在您的联系人列表中的员工。</string>
+    <string name="cannot_display_location">无法显示此位置。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

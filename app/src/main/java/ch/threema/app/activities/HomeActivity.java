@@ -1776,7 +1776,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			connectionIndicator = findViewById(R.id.connection_indicator);
 			if (connectionIndicator != null) {
 				ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
-				invalidateOptionsMenu();
 			}
 		});
 	}

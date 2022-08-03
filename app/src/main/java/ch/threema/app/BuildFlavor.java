@@ -32,7 +32,7 @@ public class BuildFlavor {
 	private final static String FLAVOR_RED = "red";
 	private final static String FLAVOR_HMS = "hms";
 	private final static String FLAVOR_HMS_WORK = "hms_work";
-	private final static String FLAVOR_FDROID = "fdroid";
+	private final static String FLAVOR_LIBRE = "libre";
 
 	public enum LicenseType {
 		NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK, ONPREM
@@ -77,7 +77,7 @@ public class BuildFlavor {
 	@SuppressWarnings("ConstantConditions")
 	public static boolean forceThreemaPush() {
 		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_FDROID:
+			case FLAVOR_LIBRE:
 				return true;
 			default:
 				return false;
@@ -91,7 +91,7 @@ public class BuildFlavor {
 	@SuppressWarnings("ConstantConditions")
 	public static boolean isLibre() {
 		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_FDROID:
+			case FLAVOR_LIBRE:
 				return true;
 			default:
 				return false;
@@ -125,7 +125,7 @@ public class BuildFlavor {
 					licenseType = LicenseType.HMS_WORK;
 					break;
 				case FLAVOR_STORE_THREEMA:
-				case FLAVOR_FDROID:
+				case FLAVOR_LIBRE:
 					licenseType = LicenseType.SERIAL;
 					break;
 				default:
@@ -164,8 +164,8 @@ public class BuildFlavor {
 				case FLAVOR_HMS_WORK:
 					name = "HMS Work";
 					break;
-				case FLAVOR_FDROID:
-					name = "F-Droid";
+				case FLAVOR_LIBRE:
+					name = "Libre";
 					break;
 				default:
 					throw new IllegalStateException("Unhandled build flavor " + BuildConfig.FLAVOR);

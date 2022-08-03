@@ -2043,7 +2043,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					logger.error("Exception", e);
 				}
 			}
-		});
+		}, THREEMA_APPLICATION_LISTENER_TAG);
 
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M || ContextCompat.checkSelfPermission(serviceManager.getContext(), android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
 			serviceManager.getContext().getContentResolver()

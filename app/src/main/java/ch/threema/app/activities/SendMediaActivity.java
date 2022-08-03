@@ -353,7 +353,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			@Override
 			public void afterTextChanged(Editable s) {
 				if (s != null && bigImagePos < sendMediaAdapter.size()) {
-					sendMediaAdapter.getItem(bigImagePos).setCaption(s.toString());
+					MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+					if (mediaItem != null) {
+						mediaItem.setCaption(s.toString());
+					}
 				}
 			}
 		});
@@ -620,7 +623,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
 		updateMenu();
 
 		return super.onPrepareOptionsMenu(menu);
@@ -636,7 +639,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			new Handler().post(() -> {
 				final View v = findViewById(R.id.settings);
 				if (v != null) {
-					showSettingsDropDown(v, sendMediaAdapter.getItem(bigImagePos));
+					MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+					if (mediaItem != null) {
+						showSettingsDropDown(v, mediaItem);
+					}
 				}
 			});
 			return true;
@@ -665,16 +671,18 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		});
 
 		menu.findItem(R.id.crop).setOnMenuItemClickListener(item -> {
-			if (bigImagePos < sendMediaAdapter.size()) {
-				cropImage();
+			MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+			if (mediaItem != null) {
+				cropImage(mediaItem);
 				return true;
 			}
 			return false;
 		});
 
 		menu.findItem(R.id.edit).setOnMenuItemClickListener(item -> {
-			if (bigImagePos < sendMediaAdapter.size()) {
-				editImage();
+			MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+			if (mediaItem != null) {
+				editImage(mediaItem);
 				return true;
 			}
 			return false;
@@ -692,7 +700,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return;
 		}
 
-		int oldRotation = sendMediaAdapter.getItem(bigImagePos).getRotation();
+		MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+		if (mediaItem == null) {
+			return;
+		}
+
+		int oldRotation = mediaItem.getRotation();
 		int newRotation = ((oldRotation == 0 ? 360 : oldRotation) - 90) % 360;
 
 		int height = bigImageView.getDrawable().getBounds().width();
@@ -719,10 +732,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 				@Override
 				public void onAnimationEnd(Animator animation) {
-					sendMediaAdapter.getItem(bigImagePos).setRotation(newRotation);
-					showBigImage(bigImagePos, false);
-					sendMediaAdapter.update(bigImagePos);
-					hasChanges = true;
+					MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+					if (mediaItem != null) {
+						mediaItem.setRotation(newRotation);
+						showBigImage(bigImagePos, false);
+						sendMediaAdapter.update(bigImagePos);
+						hasChanges = true;
+					}
 				}
 
 				@Override
@@ -747,10 +763,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 				@Override
 				public void onAnimationEnd(Animator animation) {
-					flip(sendMediaAdapter.getItem(bigImagePos));
-					showBigImage(bigImagePos, false);
-					sendMediaAdapter.update(bigImagePos);
-					hasChanges = true;
+					MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+					if (mediaItem != null) {
+						flip(mediaItem);
+						showBigImage(bigImagePos, false);
+						sendMediaAdapter.update(bigImagePos);
+						hasChanges = true;
+					}
 				}
 
 				@Override
@@ -769,8 +788,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void flip(MediaItem item) {
-		int currentFlip = sendMediaAdapter.getItem(bigImagePos).getFlip();
+	private void flip(@NonNull MediaItem item) {
+		int currentFlip = item.getFlip();
 
 		if (item.getRotation() == 90 || item.getRotation() == 270) {
 			if ((currentFlip & FLIP_VERTICAL) == FLIP_VERTICAL) {
@@ -787,7 +806,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				currentFlip |= FLIP_HORIZONTAL;
 			}
 		}
-		sendMediaAdapter.getItem(bigImagePos).setFlip(currentFlip);
+		item.setFlip(currentFlip);
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -936,12 +955,16 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				case CropImageActivity.REQUEST_CROP:
 				case ThreemaActivity.ACTIVITY_ID_PAINT:
 					backgroundLayout.post(() -> {
-						sendMediaAdapter.getItem(bigImagePos).setUri(Uri.fromFile(cropFile));
-						sendMediaAdapter.getItem(bigImagePos).setRotation(0);
-						sendMediaAdapter.getItem(bigImagePos).setExifRotation(0);
-						sendMediaAdapter.getItem(bigImagePos).setFlip(BitmapUtil.FLIP_NONE);
-						sendMediaAdapter.getItem(bigImagePos).setExifFlip(BitmapUtil.FLIP_NONE);
-						sendMediaAdapter.update(bigImagePos);
+						MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+
+						if (mediaItem != null) {
+							mediaItem.setUri(Uri.fromFile(cropFile));
+							mediaItem.setRotation(0);
+							mediaItem.setExifRotation(0);
+							mediaItem.setFlip(BitmapUtil.FLIP_NONE);
+							mediaItem.setExifFlip(BitmapUtil.FLIP_NONE);
+							sendMediaAdapter.update(bigImagePos);
+						}
 					});
 					break;
 				case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL:
@@ -1066,8 +1089,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		return sendMediaAdapter.size() - 1;
 	}
 
-	private void cropImage() {
-		Uri imageUri = sendMediaAdapter.getItem(bigImagePos).getUri();
+	private void cropImage(@NonNull MediaItem mediaItem) {
+		Uri imageUri = mediaItem.getUri();
 
 		try {
 			cropFile = fileService.createTempFile(".crop", ".png");
@@ -1075,8 +1098,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			Intent intent = new Intent(this, CropImageActivity.class);
 			intent.setData(imageUri);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cropFile));
-			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, sendMediaAdapter.getItem(bigImagePos).getRotation());
-			intent.putExtra(ThreemaApplication.EXTRA_FLIP, sendMediaAdapter.getItem(bigImagePos).getFlip());
+			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, mediaItem.getRotation());
+			intent.putExtra(ThreemaApplication.EXTRA_FLIP, mediaItem.getFlip());
 			intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
 
 			startActivityForResult(intent, CropImageActivity.REQUEST_CROP);
@@ -1086,17 +1109,17 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 	}
 
-	private void editImage() {
+	private void editImage(@NonNull MediaItem mediaItem) {
 		try {
 			cropFile = fileService.createTempFile(".edit", ".png");
 
 			Intent intent = new Intent(this, ImagePaintActivity.class);
-			intent.putExtra(Intent.EXTRA_STREAM, sendMediaAdapter.getItem(bigImagePos));
+			intent.putExtra(Intent.EXTRA_STREAM, mediaItem);
 			intent.putExtra(ThreemaApplication.EXTRA_OUTPUT_FILE, Uri.fromFile(cropFile));
-			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, sendMediaAdapter.getItem(bigImagePos).getRotation());
-			intent.putExtra(ThreemaApplication.EXTRA_FLIP, sendMediaAdapter.getItem(bigImagePos).getFlip());
-			intent.putExtra(ThreemaApplication.EXTRA_EXIF_ORIENTATION, sendMediaAdapter.getItem(bigImagePos).getExifRotation());
-			intent.putExtra(ThreemaApplication.EXTRA_EXIF_FLIP, sendMediaAdapter.getItem(bigImagePos).getExifFlip());
+			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, mediaItem.getRotation());
+			intent.putExtra(ThreemaApplication.EXTRA_FLIP, mediaItem.getFlip());
+			intent.putExtra(ThreemaApplication.EXTRA_EXIF_ORIENTATION, mediaItem.getExifRotation());
+			intent.putExtra(ThreemaApplication.EXTRA_EXIF_FLIP,mediaItem.getExifFlip());
 
 			startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_PAINT);
 			overridePendingTransition(0, R.anim.slow_fade_out);
@@ -1122,9 +1145,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			this.cameraButton.setVisibility(sendMediaAdapter.size() < MAX_EDITABLE_IMAGES ? View.VISIBLE : View.GONE);
 		}
 
-		if (sendMediaAdapter.size() > 0) {
-			boolean canEdit = sendMediaAdapter.getItem(bigImagePos).getType() == TYPE_IMAGE || sendMediaAdapter.getItem(bigImagePos).getType() == TYPE_IMAGE_CAM;
-			boolean canSettings = sendMediaAdapter.getItem(bigImagePos).getType() == TYPE_IMAGE;
+		MediaItem mediaItem = sendMediaAdapter.getItem(bigImagePos);
+		if (sendMediaAdapter.size() > 0 && mediaItem != null) {
+			boolean canEdit = mediaItem.getType() == TYPE_IMAGE ||mediaItem.getType() == TYPE_IMAGE_CAM;
+			boolean canSettings = mediaItem.getType() == TYPE_IMAGE;
 
 			getToolbar().getMenu().setGroupVisible(R.id.group_tools, canEdit);
 
@@ -1155,8 +1179,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return;
 		}
 
-		MediaItem item = sendMediaAdapter.getItem(position);
-		if (item == null) {
+		MediaItem mediaItem = sendMediaAdapter.getItem(position);
+		if (mediaItem == null) {
 			logger.debug("Item is null");
 			return;
 		}
@@ -1165,17 +1189,17 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		updateMenu();
 
-		if (item.getType() == MediaItem.TYPE_VIDEO || item.getType() == MediaItem.TYPE_VIDEO_CAM) {
-			showBigVideo(item);
+		if (mediaItem.getType() == MediaItem.TYPE_VIDEO || mediaItem.getType() == MediaItem.TYPE_VIDEO_CAM) {
+			showBigVideo(mediaItem);
 		}
 		else {
 			this.videoEditView.setVisibility(View.GONE);
 
-			if (item.getType() == TYPE_GIF) {
+			if (mediaItem.getType() == TYPE_GIF) {
 				bigProgressBar.setVisibility(View.GONE);
 				bigImageView.setVisibility(View.GONE);
 				try {
-					bigGifImageView.setImageURI(item.getUri());
+					bigGifImageView.setImageURI(mediaItem.getUri());
 					bigGifImageView.setVisibility(View.VISIBLE);
 				} catch (Exception e) {
 					// may crash with a SecurityException on some exotic devices
@@ -1183,15 +1207,15 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				}
 			} else {
 				BitmapWorkerTaskParams bitmapParams = new BitmapWorkerTaskParams();
-				bitmapParams.imageUri = item.getUri();
+				bitmapParams.imageUri = mediaItem.getUri();
 				bitmapParams.width = parentWidth;
 				bitmapParams.height = parentHeight;
 				bitmapParams.contentResolver = getContentResolver();
 				bitmapParams.mutable = false;
-				bitmapParams.flip = item.getFlip();
-				bitmapParams.orientation = item.getRotation();
-				bitmapParams.exifFlip = item.getExifFlip();
-				bitmapParams.exifOrientation = item.getExifRotation();
+				bitmapParams.flip = mediaItem.getFlip();
+				bitmapParams.orientation = mediaItem.getRotation();
+				bitmapParams.exifFlip = mediaItem.getExifFlip();
+				bitmapParams.exifOrientation = mediaItem.getExifRotation();
 
 				logger.debug("showBigImage uri: " + bitmapParams.imageUri);
 
@@ -1219,7 +1243,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		selectImage(bigImagePos);
 		updateMenu();
 
-		String caption = item.getCaption();
+		String caption = mediaItem.getCaption();
 		captionEditText.setText(null);
 
 		if (!TestUtil.empty(caption)) {
@@ -1252,9 +1276,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private boolean isDuplicate(List<MediaItem> list, Uri uri) {
 		// do not allow the same image twice
 		for (int j = 0; j < list.size(); j++) {
+			Uri originalUri = list.get(j).getOriginalUri();
 			if (list.get(j).getUri().equals(uri) ||
-				(list.get(j).getOriginalUri() != null &&
-					list.get(j).getOriginalUri().equals(uri))) {
+				(originalUri != null &&
+					originalUri.equals(uri))) {
 				Snackbar.make((View) recyclerView.getParent(), getString(R.string.image_already_added), BaseTransientBottomBar.LENGTH_LONG).show();
 				return true;
 			}

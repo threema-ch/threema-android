@@ -836,6 +836,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="unpin">Deselez.</string>
     <string name="location_services_disabled">I servizi di localizzazione sono disabilitati. Vuoi abilitarli adesso?</string>
     <string name="send_location">Invia posizione</string>
+    <string name="forward_location">Inoltra luogo</string>
     <string name="unknown_address">Indirizzo sconosciuto</string>
     <string name="your_location">La tua posizione</string>
     <string name="network_blocked_title">Dati in background disabilitati</string>
@@ -1394,6 +1395,10 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="spam_report_short">Segnala</string>
     <string name="wizard_incompatible_contact_sync_params">Sono stati definiti dei parametri MDM incompatibili. Il parametro MDM Threema th_contact_sync non può essere attivato se la restrizione DISALLOW_MODIFY_ACCOUNTS è anche attiva. Contatta il tuo amministratore del sistema.</string>
     <string name="messages_cannot_be_recovered">I messaggi cancellati non possono più essere ripristinati.</string>
+    <string name="contact_deleted">Il contatto è stato cancellato</string>
+    <string name="last_added_contact">Ultimo contatto aggiunto</string>
+    <string name="directory_explain_text">Cerca nell\'indice dell\'impresa tutti i collaboratori che ancora non figurano nella tua rubrica.</string>
+    <string name="cannot_display_location">Questo luogo non può essere visualizzato.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>

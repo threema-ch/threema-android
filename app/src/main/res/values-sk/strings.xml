@@ -817,6 +817,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="unpin">Odopnúť</string>
     <string name="location_services_disabled">Služby určovania polohy (GPS) sú vypnuté. Chcete ich teraz zapnúť?</string>
     <string name="send_location">Poslať polohu</string>
+    <string name="forward_location">Preposlanie polohy</string>
     <string name="unknown_address">Neznáma adresa</string>
     <string name="your_location">Vaša poloha</string>
     <string name="network_blocked_title">Príjem dát na pozadí vypnutý</string>
@@ -1380,6 +1381,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="spam_report_short">Nahlásiť</string>
     <string name="wizard_incompatible_contact_sync_params">Sú nastavené nekompatibilné parametre MDM. Parameter Threema MDM th_contact_sync nemožno nastaviť na hodnotu true, ak je nastavené obmedzenie používateľa DISALLOW_MODIFY_ACCOUNTS. Kontaktujte správcu svojho zariadenia.</string>
     <string name="messages_cannot_be_recovered">Nebude možné obnoviť tieto správy.</string>
+    <string name="contact_deleted">Kontakt vymazaný</string>
+    <string name="last_added_contact">Najnovší kontakt</string>
+    <string name="directory_explain_text">V adresári spoločnosti vyhľadajte zamestnancov, ktorí ešte nie sú vo vašom zozname kontaktov.</string>
+    <string name="cannot_display_location">Toto miesto nie je možné zobraziť.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>
@@ -1393,9 +1398,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
         <item quantity="other">Naozaj chcete odstrániť %d konverzácií?</item>
     </plurals>
     <plurals name="sending_message_failed">
-        <item quantity="one">Nepodarilo sa odoslať správy: %1$d</item>
         <item quantity="few">Nepodarilo sa odoslať správy: %1$d</item>
         <item quantity="many">Nepodarilo sa odoslať správy: %1$d</item>
+        <item quantity="one">Nepodarilo sa odoslať správy: %1$d</item>
         <item quantity="other">Nepodarilo sa odoslať správy: %1$d</item>
     </plurals>
     <plurals name="selection_counter_label">

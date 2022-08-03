@@ -19,8 +19,8 @@
     <string name="menu_about">Over Threema Work</string>
     <string name="list_theme_light">Licht</string>
     <string name="list_theme_dark">Donker (standaard)</string>
-    <string name="private_threema_download"><![CDATA[<a href=%s>Voor privégebruikers</a>]]></string>
+    <string name="private_threema_download"><![CDATA[ <a href=%1$s>Meer informatie over Threema Work</a> <br/><br/> Als je een privégebruiker bent, kun je <a href=%2$s>hier tikken</a> om Threema te downloaden.]]></string>
     <string name="directory_search">Zoeken in de directory</string>
     <string name="directory_title">Bedrijfsdirectory</string>
-    <string name="directory_empty_view_text">Geen resultaten\n\nVoer ten minste 3 tekens van een naam in om in de bedrijfsdirectory naar Threema-gebruikers te zoeken</string>
+    <string name="directory_empty_view_text">Voer ten minste 3 tekens van een naam in om in de bedrijfsdirectory naar Threema Work-gebruikers te zoeken</string>
 </resources>

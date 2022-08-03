@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Android için Threema Work</string>
+    <string name="enter_serial_body">Threema Work, şirketler için bir mesajlaşma aracıdır. Lütfen şirketiniz tarafından sağlanan kimlik bilgilerini girin.</string>
+    <string name="serial_required_want_exit">Lisans geçersiz. Tekrar denemek veya Threema Work\'ten çıkmak ister misiniz?</string>
+    <string name="checking_serial">Kimlik bilgileri kontrol ediliyor</string>
+    <string name="username_hint">Kullanıcı adı</string>
+    <string name="new_wizard_works_like_phone_number">Threema ID kimliğiniz tıpkı bir telefon numarası gibi çalışır. Kişileriniz bu kimlik üzerinden size ulaşabilir.</string>
+    <string name="new_wizard_nickname_explain">Kişileriniz, bildirimlerinde takma adınızı görecek.</string>
+    <string name="new_wizard_help_your_friends_find_you">Kişilerinizin sizi bulmasına yardımcı olun!</string>
+    <string name="new_wizard_find_friends">Kişilerinizi Threema Work\'te bulun</string>
+    <string name="new_wizard_sync_contacts_explain">Kişilerinizden hangisinin Threema veya Threema Work kullandığını görmek için değiştirin.</string>
+    <string name="new_wizard_anonymous_confirm">Threema Kimliğinize bağlanmak için ne bir cep telefonu numarası ne de bir e-posta adresi girdiniz. Kişi listelerinde görünmeyeceksiniz. Threema Work\'ü gerçekten anonim olarak kullanmak istiyor musunuz?</string>
+    <string name="new_wizard_setup_threema">Şimdi kurulumu başlatın</string>
+    <string name="new_wizard_welcome">Threema Work\'e hoş geldiniz!</string>
+    <string name="new_wizard_info_fingerprint">Parmağınızı hareket ettirerek, yeni benzersiz Threema ID kimliğinizle ilişkili anahtar çiftini oluşturmak için kullanılan rastgele veriler (entropi adı verilir) oluşturursunuz. Anahtar çifti, kişilerinize dağıtılan bir <b>genel anahtar</b> ve telefonunuzda güvenle saklanan bir <b>özel anahtar</b>\'dan oluşur. Kişileriniz, genel anahtarınızla size gelen mesajları şifreleyecektir.  Yalnızca özel anahtarın sahibi ve başka hiç kimse bu mesajların şifresini çözemez.</string>
+    <string name="new_wizard_info_link">Threema Work, telefon numaranızı ve e-posta adresinizi sağlayarak, telefonlarının adres defterinde mevcutsanız, kişilerinizin sizi otomatik olarak bulmasına yardımcı olur. Veriler, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. Threema Work\'ü anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
+    <string name="threema_contact">Threema Work Kontağı</string>
+    <string name="menu_about">Threema Work Hakkında</string>
+    <string name="list_theme_light">Açık</string>
+    <string name="list_theme_dark">Koyu (varsayılan)</string>
+    <string name="private_threema_download"><![CDATA[<a href=%1$s>Threema Work hakkında daha fazla bilgi edinin</a> <br/><br/> Özel bir kullanıcıysanız, Threema\'yı indirmek için lütfen <a href=%2$s>buraya dokunun</a>.]]></string>
+    <string name="directory_search">Dizinde ara</string>
+    <string name="directory_title">Şirket dizini</string>
+    <string name="directory_empty_view_text">Threema Work kullanıcılarını şirket rehberinde aramaya başlamak için lütfen bir ismin en az 3 karakterini girin veya filtre simgesine dokunarak bir kategori seçin.</string>
+</resources>

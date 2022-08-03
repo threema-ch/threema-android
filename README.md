@@ -116,14 +116,14 @@ version of Threema:
 | `store_google`         | Google Play Store version (regular, paid app)  | Google Play    |
 | `hms`                  | Huawei AppGallery version (regular, paid app)  | Huawei HMS     |
 | `store_threema`¹       | Threema Shop version (with play services)      | Threema Shop   |
-| `fdroid`¹              | F-Droid version (no proprietary code)          | Threema Shop   |
+| `libre`¹               | Libre (F-Droid) version (no proprietary code)  | Threema Shop   |
 
 For local testing, we recommend building the `store_google` or `store_threema`
 build variants.
 
-¹ The main difference between `store_threema` and `fdroid` is that the former
+¹ The main difference between `store_threema` and `libre` is that the former
   contains proprietary push services and a self-updater while the latter does
-  not. Additionally, the `fdroid` version will use your system emoji, instead
+  not. Additionally, the `libre` version will use your system emoji, instead
   of bundling emoji graphics.
 
 

@@ -197,19 +197,23 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			return;
 		}
 
-		if (contactModel != null) {
-			Bitmap bitmap = contactService.getAvatar(contactModel, true);
-			if (isMyProfilePicture) {
-				// If it is "my" profile picture, then the AvatarEditView is round
-				avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getContext().getResources(), bitmap));
+		try {
+			if (contactModel != null) {
+				Bitmap bitmap = contactService.getAvatar(contactModel, true);
+				if (isMyProfilePicture) {
+					// If it is "my" profile picture, then the AvatarEditView is round
+					avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getContext().getResources(), bitmap));
+				} else {
+					avatarImage.setImageBitmap(bitmap);
+					adjustColorFilter(bitmap);
+				}
 			} else {
+				Bitmap bitmap = groupService.getAvatar(groupModel, true);
 				avatarImage.setImageBitmap(bitmap);
 				adjustColorFilter(bitmap);
 			}
-		} else {
-			Bitmap bitmap = groupService.getAvatar(groupModel, true);
-			avatarImage.setImageBitmap(bitmap);
-			adjustColorFilter(bitmap);
+		} catch (RuntimeException e) {
+			logger.debug("Unable to set avatar bitmap",e );
 		}
 
 		boolean editable = isAvatarEditable();

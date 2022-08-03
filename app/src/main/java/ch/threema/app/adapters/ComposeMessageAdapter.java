@@ -35,17 +35,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ListView;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.List;
-import java.util.Map;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Map;
+
 import ch.threema.app.R;
 import ch.threema.app.adapters.decorators.AnimGifChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.AudioChatAdapterDecorator;
@@ -671,7 +672,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			resultMapIndex = 0;
 			searchUpdate();
 
-			if (constraint == null || constraint.length() == 0) {
+			if (constraint == null || constraint.length() < 2) {
 				// no filtering
 				filterString = null;
 			} else {

@@ -83,6 +83,21 @@
 					app:chipCornerRadius="18dp"
 					app:chipStartPadding="8dp"/>
 
+				<com.google.android.material.chip.Chip
+					android:id="@+id/share_chip"
+					style="@style/Widget.MaterialComponents.Chip.Action"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:text="@string/forward_location"
+					android:textColor="@android:color/white"
+					app:chipBackgroundColor="?attr/colorAccent"
+					app:chipIcon="@drawable/ic_forward_outline"
+					app:chipIconTint="@android:color/white"
+					app:chipMinHeight="36dp"
+					app:chipCornerRadius="18dp"
+					app:chipStartPadding="8dp" />
+
 			</LinearLayout>
 
 		</com.google.android.material.card.MaterialCardView>

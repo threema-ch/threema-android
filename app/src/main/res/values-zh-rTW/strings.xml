@@ -850,6 +850,7 @@ Threema 支援的所有表情符號。</string>
     <string name="unpin">取消置頂</string>
     <string name="location_services_disabled">定位服務已關閉。您想要現在開啟此服務嗎？</string>
     <string name="send_location">傳送位置</string>
+    <string name="forward_location">轉寄位置</string>
     <string name="unknown_address">未知地址</string>
     <string name="your_location">您的位置</string>
     <string name="network_blocked_title">背景數據已停用</string>
@@ -1144,7 +1145,7 @@ Threema 支援的所有表情符號。</string>
     <string name="translators_thanks">非常感謝我們的翻譯志工：\n%s</string>
     <string name="ballot_window_hide">隱藏公開的投票</string>
     <string name="ballot_window_show">顯示公開的投票</string>
-    <string name="tooltip_voip_other_party_video_on">對方已發起視訊通話，點擊這裡開啟攝影機。</string>
+    <string name="tooltip_voip_other_party_video_on">對方已建立視訊通話，點擊這裡開啟攝影機。</string>
     <string name="tooltip_voip_other_party_video_disabled">對方使用的應用程式版本不支援或不允許進行視訊通話。</string>
     <string name="biometrics_not_enrolled">系統中没有錄入生物辨識資料。</string>
     <string name="biometrics_not_avilable">生物辨識資料在此系統上不可用。</string>
@@ -1231,7 +1232,7 @@ Threema 支援的所有表情符號。</string>
     <string name="group_request_already_sent"><![CDATA[您已經透過這個連結傳送了 <b>%s</b> 公開群組加入要求，正在等待群組管理員的回覆。如果您想重新傳送要求，請重按清單中的連結。]]></string>
     <string name="group_link_none">尚未生成連結</string>
     <string name="group_request_confirm_send"><![CDATA[您即將向管理員 <b>%2$s</b> 傳送 <b>%1$s</b> 群組加入要求。如果此連結沒有失效，管理員一收到您的要求，您就會自動新增至群組。]]></string>
-    <string name="really_delete_outgoing_request">您確定要刪除 %d 群組加入的要求嗎？請注意，刪除要求並不會撤銷要求，如果群組管理員尚未回覆，您仍然可能被批准或拒絕加入群組。</string>
+    <string name="really_delete_outgoing_request">您確定要刪除 %d 群組加入的要求嗎？請注意，刪除要求並不會撤銷要求。如果群組管理員尚未回覆，您仍然可能被批准或拒絕加入群組。</string>
     <string name="really_delete_group_request_title">您確定要刪除群組加入要求嗎？</string>
     <string name="sent_to">傳送至：%s</string>
     <string name="sent_on">傳送日期：%s</string>
@@ -1414,6 +1415,10 @@ Threema 支援的所有表情符號。</string>
     <string name="spam_report_short">檢舉</string>
     <string name="wizard_incompatible_contact_sync_params">您可能設定了不相容的 MDM 參數。如果使用者限制設定為 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 參數 th_contact_sync 則無法設定為 true。請聯絡您的裝置管理員以取得協助。</string>
     <string name="messages_cannot_be_recovered">您將無法還原訊息。</string>
+    <string name="contact_deleted">聯絡人已刪除</string>
+    <string name="last_added_contact">最後新增</string>
+    <string name="directory_explain_text">在公司目錄中搜尋任何尚未列在您的聯絡人清單中的員工。</string>
+    <string name="cannot_display_location">無法顯示此位置。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

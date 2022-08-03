@@ -189,6 +189,7 @@ import static ch.threema.app.ui.MediaItem.TYPE_FILE;
 import static ch.threema.app.ui.MediaItem.TYPE_GIF;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
+import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
@@ -1347,7 +1348,7 @@ public class MessageServiceImpl implements MessageService {
 			contactService.setIsArchived(message.getFromIdentity(), false);
 
 			//send msgreceived
-			if (!message.isNoDeliveryReceipts()) {
+			if (!message.flagNoDeliveryReceipts()) {
 				DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
 				receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED);
 				receipt.setReceiptMessageIds(new MessageId[]{message.getMessageId()});
@@ -3615,6 +3616,22 @@ public class MessageServiceImpl implements MessageService {
 					logger.info("Text is empty");
 				}
 				continue;
+			} else if (TYPE_LOCATION == mediaItem.getType()) {
+				Location location = GeoLocationUtil.getLocationFromUri(mediaItem.getUri());
+				if (location != null) {
+					for (MessageReceiver messageReceiver : resolvedReceivers) {
+						try {
+							successfulMessageModel = sendLocation(location, "", messageReceiver, null);
+						} catch (Exception e) {
+							failedCounter++;
+							logger.error("Could not send location message");
+						}
+					}
+				} else {
+					failedCounter++;
+					logger.info("Sending location failed: invalid location");
+				}
+				continue;
 			}
 
 			final Map<MessageReceiver, AbstractMessageModel> messageModels = new HashMap<>();
@@ -4256,6 +4273,7 @@ public class MessageServiceImpl implements MessageService {
 		if (targetBitrate == -1) {
 			// will not fit
 			logger.info("Video file ist too large");
+			RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, context.getString(R.string.file_too_large, MAX_BLOB_SIZE_MB), Toast.LENGTH_SHORT).show());
 			// skip this MediaItem
 			markAsTerminallyFailed(resolvedReceivers, messageModels);
 			return VideoTranscoder.FAILURE;
@@ -4523,7 +4541,6 @@ public class MessageServiceImpl implements MessageService {
 	 * @return true if trimming is required, false otherwise
 	 */
 	private boolean videoNeedsTrimming(MediaItem item) {
-		return (item.getStartTimeMs() != 0 && item.getStartTimeMs() != TIME_UNDEFINED) ||
-			(item.getEndTimeMs() != TIME_UNDEFINED && item.getEndTimeMs() != item.getDurationMs());
+		return item.getDurationMs() != item.getTrimmedDurationMs();
 	}
 }

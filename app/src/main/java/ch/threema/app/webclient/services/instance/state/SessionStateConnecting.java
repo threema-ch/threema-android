@@ -21,16 +21,15 @@
 
 package ch.threema.app.webclient.services.instance.state;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-
 import org.saltyrtc.client.SaltyRTCBuilder;
 import org.saltyrtc.client.exceptions.ConnectionException;
 import org.saltyrtc.client.exceptions.InvalidKeyException;
 
 import java.security.NoSuchAlgorithmException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
 
@@ -60,7 +59,7 @@ final class SessionStateConnecting extends SessionState {
 		// Create session connection context
 		try {
 			this.cctx = new SessionConnectionContext(ctx, builder);
-		} catch (NoSuchAlgorithmException | InvalidKeyException error) {
+		} catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException error) {
 			logger.error("Cannot create session connection context:", error);
 			throw new InvalidStateTransition(error.getMessage());
 		}

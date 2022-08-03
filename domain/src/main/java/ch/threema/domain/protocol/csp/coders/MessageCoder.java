@@ -857,8 +857,8 @@ public class MessageCoder {
 				throw new ThreemaException("Missing public key for ID " + message.getToIdentity());
 			}
 
-			/* make random nonce; only save if the message is not an immediate message */
-			byte[] nonce = nonceFactory.next(!message.isImmediate());
+			/* make random nonce; only save if the message is not a non-queued message */
+			byte[] nonce = nonceFactory.next(!message.flagNoServerQueuing());
 
 			/* sign/encrypt with our private key */
 			byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
@@ -890,16 +890,16 @@ public class MessageCoder {
 			boxmsg.setDate(message.getDate());
 
 			int flags = 0;
-			if (message.shouldPush())
-				flags |= ProtocolDefines.MESSAGE_FLAG_PUSH;
-			if (message.isImmediate())
-				flags |= ProtocolDefines.MESSAGE_FLAG_IMMEDIATE;
-			if (message.isNoAck())
-				flags |= ProtocolDefines.MESSAGE_FLAG_NOACK;
-			if (message.isGroup())
+			if (message.flagSendPush())
+				flags |= ProtocolDefines.MESSAGE_FLAG_SEND_PUSH;
+			if (message.flagNoServerQueuing())
+				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING;
+			if (message.flagNoServerAck())
+				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK;
+			if (message.flagGroupMessage())
 				flags |= ProtocolDefines.MESSAGE_FLAG_GROUP;
-			if (message.isVoip())
-				flags |= ProtocolDefines.MESSAGE_FLAG_VOIP;
+			if (message.flagShortLivedServerQueuing())
+				flags |= ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED;
 			boxmsg.setFlags(flags);
 
 			if (message.allowSendingProfile()) {

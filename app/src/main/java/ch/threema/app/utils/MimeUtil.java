@@ -37,13 +37,12 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
-import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
 import static ch.threema.app.ui.MediaItem.TYPE_FILE;
 import static ch.threema.app.ui.MediaItem.TYPE_GIF;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
-
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class MimeUtil {
@@ -73,6 +72,7 @@ public class MimeUtil {
 	public static final String MIME_TYPE_TEXT = "text/plain";
 	public static final String MIME_TYPE_HTML = "text/html";
 	public static final String MIME_TYPE_DEFAULT = "application/octet-stream";
+	public static final String MIME_TYPE_EMAIL= "message/rfc822";
 
 	public static final String MIME_VIDEO = "video/";
 	public static final String MIME_AUDIO = "audio/";

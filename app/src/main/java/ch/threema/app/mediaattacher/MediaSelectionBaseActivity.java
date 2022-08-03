@@ -49,20 +49,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.button.MaterialButton;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -79,6 +65,21 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.button.MaterialButton;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
@@ -666,27 +667,22 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 				logger.debug("*** setStatusBarColor");
 
-				toolbar.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						savedStatusBarColor = getWindow().getStatusBarColor();
-						getWindow().setStatusBarColor(getResources().getColor(R.color.gallery_background));
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-							getWindow().setNavigationBarColor(getResources().getColor(R.color.gallery_background));
-						}
-						if (ConfigUtils.getAppTheme(MediaSelectionBaseActivity.this) != ConfigUtils.THEME_DARK) {
-							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-								getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-							}
+				toolbar.postDelayed(() -> {
+					savedStatusBarColor = getWindow().getStatusBarColor();
+					getWindow().setStatusBarColor(getResources().getColor(R.color.gallery_background));
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+						getWindow().setNavigationBarColor(getResources().getColor(R.color.gallery_background));
+					}
+					if (ConfigUtils.getAppTheme(MediaSelectionBaseActivity.this) != ConfigUtils.THEME_DARK) {
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+							getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 						}
 					}
 				}, delay);
 
-				previewPager.post(new Runnable() {
-					@Override
-					public void run() {
-						previewPager.setCurrentItem(position, false);
-					}
+				previewPager.post(() -> {
+					previewPager.setCurrentItem(position, false);
+					updatePreviewInfo(position);
 				});
 				isPreviewMode = true;
 			}

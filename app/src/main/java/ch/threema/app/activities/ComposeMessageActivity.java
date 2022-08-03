@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -42,7 +41,6 @@ import ch.threema.app.listeners.MessagePlayerListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.preference.SettingsSecurityFragment;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
@@ -102,8 +100,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 		logger.debug("initActivity");
 
-		checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE);
-
 		this.getFragments();
 
 		if (findViewById(R.id.messages) != null) {
@@ -117,10 +113,12 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		if (composeMessageFragment == null) {
 			// fragment no longer around
 			composeMessageFragment = new ComposeMessageFragment();
-			getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).hide(composeMessageFragment).commit();
 		}
 
-
+		if (!checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE)) {
+			getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+		}
 		return true;
 	}
 
@@ -147,6 +145,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 		if (composeMessageFragment != null) {
 			if (!checkHiddenChatLock(intent, ID_HIDDEN_CHECK_ON_NEW_INTENT)) {
+				getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
 				composeMessageFragment.onNewIntent(intent);
 			}
 		}
@@ -215,6 +214,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 				if (resultCode == RESULT_OK) {
 					serviceManager.getScreenLockService().setAuthenticated(true);
 					if (composeMessageFragment != null) {
+						getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
 						// mark conversation as read as soon as it's unhidden
 						composeMessageFragment.markAsRead();
 					}
@@ -228,6 +228,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 				if (resultCode == RESULT_OK) {
 					serviceManager.getScreenLockService().setAuthenticated(true);
 					if (composeMessageFragment != null) {
+						getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
 						composeMessageFragment.onNewIntent(this.currentIntent);
 					}
 				}

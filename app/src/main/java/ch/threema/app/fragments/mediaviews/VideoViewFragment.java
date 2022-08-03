@@ -32,6 +32,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.UiThread;
+import androidx.core.view.ViewCompat;
+
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
@@ -48,8 +51,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import androidx.annotation.UiThread;
-import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.ui.ZoomableExoPlayerView;
@@ -245,8 +246,8 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-		logger.debug("onPlayerStateChanged = " + playbackState);
+	public void onPlaybackStateChanged(int playbackState) {
+		logger.debug("onPlaybackStateChanged = " + playbackState);
 
 		if (isPreparing && playbackState == Player.STATE_READY) {
 			isPreparing = false;

@@ -864,6 +864,7 @@
 	<string name="unpin">Unpin</string>
 	<string name="location_services_disabled">Location services are disabled. Would you like to enable them now?</string>
 	<string name="send_location">Send location</string>
+	<string name="forward_location">Forward location</string>
 	<string name="unknown_address">Unknown address</string>
 	<string name="your_location">Your location</string>
 	<string name="network_blocked_title">Background data disabled</string>
@@ -1434,6 +1435,8 @@
 	<string name="messages_cannot_be_recovered">You will not be able to recover the messages.</string>
 	<string name="contact_deleted">Contact deleted</string>
 	<string name="last_added_contact">Last added</string>
+	<string name="directory_explain_text">Search the company directory for any employees who are not yet in your contact list.</string>
+	<string name="cannot_display_location">This location cannot be shown.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>

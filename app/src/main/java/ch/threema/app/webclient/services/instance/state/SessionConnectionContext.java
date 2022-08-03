@@ -115,7 +115,7 @@ class SessionConnectionContext {
 	SessionConnectionContext(
 		@NonNull final SessionContext ctx,
 		@NonNull final SaltyRTCBuilder builder
-	) throws NoSuchAlgorithmException, InvalidKeyException {
+	) throws NoSuchAlgorithmException, InvalidKeyException, IllegalArgumentException {
 		// Create SSL socket factory
 		final SSLSocketFactory sslSocketFactory = ConfigUtils.getSSLSocketFactory(ctx.model.getSaltyRtcHost());
 

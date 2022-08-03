@@ -28,10 +28,7 @@
 	<string name="list_theme_light">Light</string>
 	<string name="list_theme_dark">Dark (default)</string>
 	<string name="private_threema_download"><![CDATA[ <a href=%1$s>Learn more about Threema Work</a> <br/><br/> If you are a private user, please <a href=%2$s>tap here</a> to download Threema.]]></string>
-	<string name="private_download_url" translatable="false">https://play.google.com/store/apps/details?id=ch.threema.app</string>
-	<string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>
-	<string name="directory_empty_view_text">No entries found\n\nPlease enter at least 3 characters of a name to begin searching in your company\'s directory or select a category by tapping on the filter icon.</string>
-	<string name="threema_work_url" translatable="false">https://threema.ch/%s/work</string>
+	<string name="directory_empty_view_text">Please enter at least 3 characters of a name to begin searching in your company\'s directory of Threema Work users or select a category by tapping on the filter icon.</string>
 </resources>

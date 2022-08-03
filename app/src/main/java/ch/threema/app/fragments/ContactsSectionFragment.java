@@ -49,16 +49,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.util.Pair;
-import androidx.core.view.MenuItemCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -71,6 +61,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.util.Pair;
+import androidx.core.view.MenuItemCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -155,6 +154,12 @@ public class ContactsSectionFragment
 
 	private static final int TAB_ALL_CONTACTS = 0;
 	private static final int TAB_WORK_ONLY = 1;
+
+	private static final int SELECTOR_TAG_CHAT = 0;
+	private static final int SELECTOR_TAG_SHOW_CONTACT = 1;
+	private static final int SELECTOR_TAG_REPORT_SPAM = 2;
+	private static final int SELECTOR_TAG_BLOCK = 3;
+	private static final int SELECTOR_TAG_DELETE = 4;
 
 	private ResumePauseHandler resumePauseHandler;
 	private ListView listView;
@@ -1151,18 +1156,30 @@ public class ContactsSectionFragment
 		String contactName = NameUtil.getDisplayNameOrNickname(contactModel, true);
 
 		ArrayList<SelectorDialogItem> items = new ArrayList<>();
+		ArrayList<Integer> tags = new ArrayList<>();
 
 			items.add(new SelectorDialogItem(getString(R.string.chat_with, contactName), R.drawable.ic_chat_bubble));
+			tags.add(SELECTOR_TAG_CHAT);
+
 			items.add(new SelectorDialogItem(getString(R.string.show_contact), R.drawable.ic_person_outline));
-			items.add(new SelectorDialogItem(getString(R.string.spam_report), R.drawable.ic_outline_report_24));
+			tags.add(SELECTOR_TAG_SHOW_CONTACT);
+
+			if (!ConfigUtils.isOnPremBuild()) {
+				items.add(new SelectorDialogItem(getString(R.string.spam_report), R.drawable.ic_outline_report_24));
+				tags.add(SELECTOR_TAG_REPORT_SPAM);
+			}
+
 			if (serviceManager.getBlackListService().has(contactModel.getIdentity())) {
 				items.add(new SelectorDialogItem(getString(R.string.unblock_contact), R.drawable.ic_block));
 			} else {
 				items.add(new SelectorDialogItem(getString(R.string.block_contact), R.drawable.ic_block));
 			}
-			items.add(new SelectorDialogItem(getString(R.string.delete_contact_action), R.drawable.ic_delete_outline));
+			tags.add(SELECTOR_TAG_BLOCK);
 
-			SelectorDialog selectorDialog = SelectorDialog.newInstance(getString(R.string.last_added_contact), items, getString(R.string.cancel));
+			items.add(new SelectorDialogItem(getString(R.string.delete_contact_action), R.drawable.ic_delete_outline));
+			tags.add(SELECTOR_TAG_DELETE);
+
+			SelectorDialog selectorDialog = SelectorDialog.newInstance(getString(R.string.last_added_contact), items, tags, getString(R.string.cancel));
 			selectorDialog.setData(contactModel);
 			selectorDialog.setTargetFragment(this, 0);
 			selectorDialog.show(getParentFragmentManager(), DIALOG_TAG_RECENTLY_ADDED_SELECTOR);
@@ -1343,24 +1360,23 @@ public class ContactsSectionFragment
 		ContactModel contactModel = (ContactModel) data;
 
 		switch (which) {
-			case 0:
+			case SELECTOR_TAG_CHAT:
 				openConversationForIdentity(null, contactModel.getIdentity());
 				break;
-			case 1:
+			case SELECTOR_TAG_SHOW_CONTACT:
 				openContact(null, contactModel.getIdentity());
 				break;
-			case 2:
+			case SELECTOR_TAG_REPORT_SPAM:
 				TextWithCheckboxDialog sdialog = TextWithCheckboxDialog.newInstance(requireContext().getString(R.string.spam_report_dialog_title, NameUtil.getDisplayNameOrNickname(contactModel, true)), R.string.spam_report_dialog_explain,
 					R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel);
 				sdialog.setData(contactModel);
 				sdialog.setTargetFragment(this, 0);
 				sdialog.show(getParentFragmentManager(), "");
-
 				break;
-			case 3:
+			case SELECTOR_TAG_BLOCK:
 				serviceManager.getBlackListService().toggle(getActivity(), contactModel);
 				break;
-			case 4:
+			case SELECTOR_TAG_DELETE:
 				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.delete_contact_action, R.string.really_delete_contact, R.string.delete, R.string.cancel);
 				dialog.setData(contactModel);
 				dialog.setTargetFragment(this, 0);

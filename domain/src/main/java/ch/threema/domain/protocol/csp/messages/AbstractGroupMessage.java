@@ -44,7 +44,7 @@ public abstract class AbstractGroupMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean isGroup() {
+	public boolean flagGroupMessage() {
 		return true;
 	}
 }

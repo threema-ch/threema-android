@@ -567,7 +567,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			// Called outside working hours
 			logCallInfo(callId, "Rejecting call from {} (called outside of working hours)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.OFF_HOURS;
+		} else if (ConfigUtils.hasInvalidCredentials()) {
+			logCallInfo(callId, "Rejecting call from {} (credentials have been revoked)", contact.getIdentity());
+			rejectReason = VoipCallAnswerData.RejectReason.UNKNOWN;
 		}
+
 		if (rejectReason != null) {
 			try {
 				this.sendRejectCallAnswerMessage(contact, callId, rejectReason, !silentReject);

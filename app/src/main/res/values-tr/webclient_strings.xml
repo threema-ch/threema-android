@@ -5,15 +5,15 @@
     <string name="webclient_sessions_really_delete">Bu masaüstü/web oturumunu gerçekten silmek istiyor musunuz?</string>
     <string name="webclient_last_usage">Son kullanım: %s</string>
     <string name="webclient_created_at">Oluşturulduğu yer: %1$s ( %2$s )</string>
-    <string name="webclient_active_since">Etkin olduğu tarihten beri: %s</string>
+    <string name="webclient_active_since">Şu zamandan beri aktif: %s</string>
     <string name="webclient_enable">Etkinleştir Masaüstü uygulamasını / web istemcisini etkinleştir</string>
     <string name="webclient_no_sessions_found">Bağlanmak için masaüstü uygulamasını indirin ( <b> https :// Threema.ch/download </b> ) veya bilgisayarınızda web istemcisini açın ( <b> %s </b> ) ve Bilgisayar ekranınızda görüntülenen QR kodunu taramak için düğmeye dokunun.</string>
     <string name="webclient_session_rename">Oturumu yeniden adlandır</string>
     <string name="webclient_session_label">Yeni isim</string>
     <string name="webclient_session_start">Oturumu başlat</string>
     <string name="webclient_session_stop">Oturumu durdur</string>
-    <string name="webclient_persistent">Kalıcı</string>
-    <string name="webclient_disposable">Tek kullanımlık</string>
+    <string name="webclient_persistent">kalıcı</string>
+    <string name="webclient_disposable">tek kullanımlık</string>
     <string name="webclient_unnamed_session">Adsız Oturum</string>
     <string name="webclient_session_remove">Oturumu kaldır</string>
     <string name="webclient_welcome_title">PC\'nizden sohbet edin!</string>
@@ -37,6 +37,6 @@
     <string name="webclient_prefs_debug_tool_summary">Masaüstü uygulaması veya web istemcisi ile bağlantı kurma ile ilgili sorunları ayıklamak için bu aracı kullanın</string>
     <string name="webclient_diagnostics">Masaüstü/Web Tanılama</string>
     <string name="webclient_diagnostics_start">Başlat</string>
-    <string name="webclient_diagnostics_intro">Testi başlatmak için «Başlat» üzerine dokunun.</string>
+    <string name="webclient_diagnostics_intro">Testi başlatmak için «Başlat» tıklayın.</string>
     <string name="webclient_diagnostics_done">Tamamlandı. Masaüstü uygulamasına veya web istemcisine bağlantı kurmayla ilgili sorunlar yaşıyorsanız, lütfen bu günlüğü Threema desteğine gönderin.</string>
 </resources>

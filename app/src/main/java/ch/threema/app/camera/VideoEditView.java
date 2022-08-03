@@ -185,6 +185,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				Player.Listener.super.onPlaybackStateChanged(playbackState);
 				updateProgressBar();
 			}
+
+			@Override
+			public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+				Player.Listener.super.onPositionDiscontinuity(oldPosition, newPosition, reason);
+				// tapping on the play button after moving end time should start playback from beginning
+				if (oldPosition.positionMs == 0 && newPosition.positionMs == videoItem.getEndTimeMs()) {
+					videoPlayer.seekTo(videoItem.getStartTimeMs());
+					videoPlayer.play();
+				}
+			}
 		});
 
 		this.videoView.setPlayer(videoPlayer);
@@ -358,13 +368,15 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
 				if (isMoving == MOVING_LEFT || isMoving == MOVING_RIGHT) {
+					boolean previewLastFrame = isMoving == MOVING_RIGHT;
+
 					videoItem.setStartTimeMs(getVideoPositionFromTimelinePosition(offsetLeft));
 					videoItem.setEndTimeMs(getVideoPositionFromTimelinePosition(this.timelineGridLayout.getWidth() - offsetRight));
 
 					isMoving = MOVING_NONE;
 
 					updateStartAndEnd();
-					preparePlayer();
+					preparePlayer(previewLastFrame);
 
 					return true;
 				}
@@ -532,13 +544,12 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
 				.createMediaSource(com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri()));
 
-			preparePlayer();
+			preparePlayer(false);
 		}
 	}
 
-	private void preparePlayer() {
+	private void preparePlayer(boolean seekToEnd) {
 		if (videoPlayer != null && videoSource != null) {
-
 			long endPosition = (videoItem.getEndTimeMs() == videoItem.getDurationMs() || videoItem.getEndTimeMs() == 0 || videoItem.getEndTimeMs() == MediaItem.TIME_UNDEFINED) ?
 							TIME_END_OF_SOURCE :
 							videoItem.getEndTimeMs() * 1000;
@@ -554,6 +565,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			}
 			videoPlayer.setPlayWhenReady(false);
 			videoPlayer.prepare(clippingSource);
+			if (seekToEnd) {
+				videoPlayer.seekTo(videoItem.getEndTimeMs());
+			}
 		}
 	}
 

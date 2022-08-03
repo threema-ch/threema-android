@@ -236,8 +236,8 @@ public class MessageProcessor implements MessageProcessorInterface {
 				return ProcessIncomingResult.ignore();
 			}
 
-			/* send delivery receipt (but not for immediate messages or delivery receipts) */
-			if (!msg.isImmediate()) {
+			/* send delivery receipt (but not for non-queued messages or delivery receipts) */
+			if (!msg.flagNoServerQueuing()) {
 				/* throw away messages from hidden contacts if block unknown is enabled - except for group messages */
 				if (
 					this.preferenceService.isBlockUnknown()

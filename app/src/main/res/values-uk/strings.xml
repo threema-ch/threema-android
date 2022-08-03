@@ -408,7 +408,7 @@
     <string name="push_not_available_text1">Нам не вдалося знайти сервіс push-сповіщень на вашому пристрої, оскільки сервіси Google Play не встановлено або не оновлено.</string>
     <string name="push_not_available_text2">%s спробує встановити постійне фонове з\'єднання з сервером. Ця функція може працювати нестабільно, якщо на вашому пристрої ввімкнена оптимізація використання акумулятора.</string>
     <string name="backup_in_progress">Триває резервне копіювання</string>
-    <string name="backup_or_restore_success_body">Резервне копіювання даних завершено</string>
+    <string name="backup_or_restore_success_body">Резервне копіювання даних завершено.</string>
     <string name="backup_or_restore_error">Рез. копіювання Threema</string>
     <string name="backup_or_restore_error_body">Не вдалося завершити резервне копіювання</string>
     <string name="could_not_download_message">Не вдалося завантажити повідомлення</string>
@@ -862,6 +862,7 @@
     <string name="unpin">Відкріпити</string>
     <string name="location_services_disabled">Сервіси розташування вимкнено. Увімкнути їх?</string>
     <string name="send_location">Надіслати розташування</string>
+    <string name="forward_location">Переслати розташування</string>
     <string name="unknown_address">Невідома адреса</string>
     <string name="your_location">Ваше розташування</string>
     <string name="network_blocked_title">Фонові дані вимкнено</string>
@@ -1428,6 +1429,10 @@
     <string name="spam_report_short">Поскаржитися</string>
     <string name="wizard_incompatible_contact_sync_params">Встановлено несумісні параметри MDM. Параметр Threema MDM th_contact_sync не може мати значення true, якщо для користувачів діє обмеження DISALLOW_MODIFY_ACCOUNTS. Зверніться до адміністратора пристрою.</string>
     <string name="messages_cannot_be_recovered">Ви не зможете відновити повідомлення.</string>
+    <string name="contact_deleted">Контакт видалено</string>
+    <string name="last_added_contact">Останній доданий</string>
+    <string name="directory_explain_text">Шукайте в каталозі компанії співробітників, яких ще немає у вашому списку контактів.</string>
+    <string name="cannot_display_location">Це розташування неможливо показати.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>

@@ -827,6 +827,7 @@ almacenado.</string>
     <string name="unpin">Desmarcar</string>
     <string name="location_services_disabled">Servicios de ubicación desactivados. ¿Quiere activarlos ahora?</string>
     <string name="send_location">Enviar ubicación</string>
+    <string name="forward_location">Reenviar ubicación</string>
     <string name="unknown_address">Dirección desconocida</string>
     <string name="your_location">Su ubicación</string>
     <string name="network_blocked_title">Datos en segundo plano desactivados</string>
@@ -1392,6 +1393,10 @@ almacenado.</string>
     <string name="spam_report_short">Reportar</string>
     <string name="wizard_incompatible_contact_sync_params">Se han establecido parámetros MDM incompatibles. El parámetro MDM th_contact_sync de Threema no se puede establecer en verdadero si se ha establecido la restricción de usuario DISALLOW_MODIFY_ACCOUNTS. Contacte con el administrador de su dispositivo.</string>
     <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
+    <string name="contact_deleted">Contacto eliminado</string>
+    <string name="last_added_contact">Último añadido</string>
+    <string name="directory_explain_text">Buscar en el directorio de la compañía empleados que todavía no estén en su lista de contactos.</string>
+    <string name="cannot_display_location">No se puede mostrar la ubicación.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

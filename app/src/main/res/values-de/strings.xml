@@ -936,6 +936,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="unpin">Entpinnen</string>
 	<string name="location_services_disabled">Die Standortdienste sind ausgeschaltet. Möchten Sie sie jetzt aktivieren?</string>
 	<string name="send_location">Standort senden</string>
+	<string name="forward_location">Ort weiterleiten</string>
 	<string name="unknown_address">Unbekannte Adresse</string>
 	<string name="your_location">Ihr Standort</string>
 	<string name="network_blocked_title">Hintergrunddaten deaktiviert</string>
@@ -1491,6 +1492,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="messages_cannot_be_recovered">Die Nachrichten können nicht wiederhergestellt werden.</string>
 	<string name="contact_deleted">Kontakt wurde gelöscht</string>
 	<string name="last_added_contact">Zuletzt hinzugefügt</string>
+	<string name="directory_explain_text">Suchen Sie im Firmenverzeichnis nach beliebigen Mitarbeitern, die sich noch nicht in Ihrer Kontaktliste befinden.</string>
+	<string name="cannot_display_location">Dieser Ort kann nicht angezeigt werden.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>

@@ -24,6 +24,7 @@ package ch.threema.app.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -41,6 +42,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
@@ -81,6 +83,7 @@ import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.storage.models.data.LocationDataModel;
 
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
@@ -115,6 +118,8 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	private PreferenceService preferenceService;
 
 	private int insetTop = 0;
+
+	private boolean isShowingExternalLocation = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -177,11 +182,24 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
 		Intent intent = getIntent();
 
-		markerPosition = new LatLng(
+		if (intent.hasExtra(INTENT_DATA_LOCATION_LAT) || intent.hasExtra(INTENT_DATA_LOCATION_LNG)) {
+			markerPosition = new LatLng(
 				intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0),
 				intent.getDoubleExtra(INTENT_DATA_LOCATION_LNG, 0));
-		markerName = intent.getStringExtra(INTENT_DATA_LOCATION_NAME);
-		markerProvider = intent.getStringExtra(INTENT_DATA_LOCATION_PROVIDER);
+			markerName = intent.getStringExtra(INTENT_DATA_LOCATION_NAME);
+			markerProvider = intent.getStringExtra(INTENT_DATA_LOCATION_PROVIDER);
+			isShowingExternalLocation = false;
+		} else if (intent.getData() != null) {
+			LocationDataModel locationData = GeoLocationUtil.getLocationDataFromGeoUri(intent.getData());
+			if (locationData != null) {
+				markerPosition = new LatLng(locationData.getLatitude(), locationData.getLongitude());
+				isShowingExternalLocation = true;
+			} else {
+				Toast.makeText(this, R.string.cannot_display_location, Toast.LENGTH_LONG).show();
+				finish();
+				return;
+			}
+		}
 
 		if (preferenceService.getPrivacyPolicyAcceptedVersion() < 4.0f) {
 			GenericAlertDialog alertDialog = GenericAlertDialog.newInstanceHtml(
@@ -200,7 +218,15 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	private void initUi() {
 		findViewById(R.id.coordinator).setVisibility(View.VISIBLE);
 		findViewById(R.id.center_map).setOnClickListener((it -> zoomToCenter()));
-		findViewById(R.id.open_chip).setOnClickListener((it -> openExternal()));
+		Chip openChip = findViewById(R.id.open_chip);
+		Chip shareChip = findViewById(R.id.share_chip);
+		if (isShowingExternalLocation) {
+			shareChip.setOnClickListener((it -> shareLocation()));
+			openChip.setVisibility(View.GONE);
+		} else {
+			openChip.setOnClickListener((it -> openExternal()));
+			shareChip.setVisibility(View.GONE);
+		}
 		TextView locationName = findViewById(R.id.location_name);
 		TextView locationCoordinates = findViewById(R.id.location_coordinates);
 
@@ -209,13 +235,33 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	}
 
 	private void openExternal() {
-		Intent intent = new Intent(Intent.ACTION_VIEW, GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), markerName, markerProvider)); // todo: address
+		Intent intent = Intent.createChooser(new Intent(
+			Intent.ACTION_VIEW,
+			GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), markerName, markerProvider)
+		), getString(R.string.open_in_maps_app));
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			// Don't allow opening location recursively
+			intent.putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, new ComponentName[]{getComponentName()});
+		}
 
 		try {
 			startActivity(intent);
 		} catch (ActivityNotFoundException e) {
 			SingleToast.getInstance().showShortText(getString(R.string.no_app_for_location));
 		}
+	}
+
+	/**
+	 * Share the currently displayed location within threema.
+	 */
+	private void shareLocation() {
+		Intent intent = new Intent(this, RecipientListBaseActivity.class);
+
+		intent.setAction(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_STREAM, GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), "", ""));
+		startActivity(intent);
 	}
 
 	private void initMap() {
@@ -284,6 +330,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 		}.execute(markerPosition);
 	}
 
+	@SuppressLint("MissingPermission")
 	private void setupLocationComponent(Style style) {
 		logger.debug("setupLocationComponent");
 
@@ -448,6 +495,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
 	                                       @NonNull String permissions[], @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			if (requestCode == PERMISSION_REQUEST_LOCATION) {
 				requestLocationEnabled(locationManager);

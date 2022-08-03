@@ -22,4 +22,7 @@ in modo anonimo.</string>
     <string name="list_theme_light">Chiaro</string>
     <string name="list_theme_dark">Scuro (default)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Per utenti privati</a>]]></string>
+	<string name="directory_search">Cerca nella directory</string>
+    <string name="directory_title">Directory azienda</string>
+    <string name="directory_empty_view_text">Inserisci almeno 3 caratteri di un nome per iniziare a cercare nella directory della tua azienda degli utenti di Threema OnPrem o seleziona una categoria toccando sull\'icona del filtro.</string>
 </resources>

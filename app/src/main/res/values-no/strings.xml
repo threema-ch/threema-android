@@ -815,6 +815,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="unpin">Ikke fest</string>
     <string name="location_services_disabled">Posisjonstjenester er deaktivert. Vil du aktivere dem nå?</string>
     <string name="send_location">Send posisjon</string>
+    <string name="forward_location">Videresend posisjon</string>
     <string name="unknown_address">Ukjent adresse</string>
     <string name="your_location">Din posisjon</string>
     <string name="network_blocked_title">Bakgrunnsdata er deaktivert</string>
@@ -1379,6 +1380,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="spam_report_short">Rapporter</string>
     <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. Threema MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
     <string name="messages_cannot_be_recovered">Du har ikke muligheten til å gjenopprette meldingene.</string>
+    <string name="contact_deleted">Kontakt slettet</string>
+    <string name="last_added_contact">Sist lagt til</string>
+    <string name="directory_explain_text">Søk i firmaets oppføringsliste etter ansatte som ikke er lagt til i din kontaktliste.</string>
+    <string name="cannot_display_location">Denne posisjonen kan ikke vises.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>

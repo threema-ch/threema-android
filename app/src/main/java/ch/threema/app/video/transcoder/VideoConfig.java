@@ -195,7 +195,7 @@ public class VideoConfig {
 
 		int srcVideoTrack = findTrack(extractor, MIME_VIDEO);
 		if (srcVideoTrack >= 0) {
-			float durationS = (float) mediaItem.getDurationMs() / (float) DateUtils.SECOND_IN_MILLIS;
+			float durationS = (float) mediaItem.getTrimmedDurationMs() / (float) DateUtils.SECOND_IN_MILLIS;
 			int calculatedFileSize = ((int) (durationS * originalBitrate / 8)) + calculatedAudioSize + FILE_OVERHEAD;
 			if (calculatedFileSize > MAX_BLOB_SIZE) {
 				calculatedFileSize = ((int) (durationS * BITRATE_MEDIUM / 8)) + calculatedAudioSize + FILE_OVERHEAD;

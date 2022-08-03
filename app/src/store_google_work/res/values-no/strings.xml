@@ -22,5 +22,5 @@
     <string name="private_threema_download"><![CDATA[Om du er en privat bruker, vennligst <a href="https://play.google.com/store/apps/details?id=ch.threema.app">trykk her</a> for å laste ned Threema.]]></string>
     <string name="directory_search">Søk i katalogen</string>
     <string name="directory_title">Bedriftskatalog</string>
-    <string name="directory_empty_view_text">Ingen oppføringer funnet\n\nVennligst skriv inn minst 3 tegn av et navn for å kunne søke i bedriftskatalogen etter Threema brukere</string>
+    <string name="directory_empty_view_text">Vennligst skriv inn minst 3 tegn av et navn for å kunne søke i bedriftskatalogen etter Threema Work brukere</string>
 </resources>

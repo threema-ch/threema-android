@@ -253,6 +253,11 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 					return true;
 				case R.id.menu_select_all:
 					archiveAdapter.selectAll();
+					if (archiveAdapter.getCheckedItemsCount() > 0) {
+						actionMode.invalidate();
+					} else {
+						actionMode.finish();
+					}
 					return true;
 				default:
 					return false;

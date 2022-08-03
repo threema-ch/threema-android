@@ -4,7 +4,10 @@
           android:installLocation="internalOnly"
           android:testOnly="false">
 
-	<application tools:ignore="GoogleAppIndexingWarning">
+	<application
+			tools:ignore="GoogleAppIndexingWarning"
+			tools:replace="android:hasFragileUserData"
+			android:hasFragileUserData="false">
 
 		<meta-data
 			android:name="com.google.android.gms.version"

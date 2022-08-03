@@ -143,4 +143,23 @@ class LinkifyUtilTest {
         assertSpans("geo:1,2\nthreema.ch", setOf(0 to 7, 8 to 18))
     }
 
+    @Test
+    fun testAndroidGeoUris() {
+        assertSingleSpan("geo:37.786971,-122.399677?q=37.786971,-122.399677(This+is+the+geo-label)")
+        assertSingleSpan("geo:37.786971,-122.399677?q=37.786971,-122.399677")
+        assertSingleSpan("geo:0,0?q=37.786971,-122.399677")
+        assertSingleSpan("geo:0,0?q=37.786971,-122.399677(With+label)")
+
+        assertSingleSpan("geo:0,0?z=21")
+        assertSingleSpan("geo:0,0?z=1")
+
+        // label should not count to the geo uri (because there is a query needed for labels)
+        assertSpans("geo:37.786971,-122.399677(This+is+the+label+without+query)", setOf(0 to 25))
+        // label should not count to the geo uri (because it is incomplete)
+        assertSpans("geo:0,0?q=37.786971,-122.399677(With+non-closing-label", setOf(0 to 31))
+
+        assertSpans("geo:0,0?z=3.1", setOf(0 to 11))
+        assertSpans("geo:0,0?z=12(Label+not+allowed+here)", setOf(0 to 12))
+    }
+
 }

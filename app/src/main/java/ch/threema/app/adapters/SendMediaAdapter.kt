@@ -183,7 +183,11 @@ class SendMediaAdapter(
     }
 
     fun getItem(index: Int): MediaItem? {
-        return items[index]
+        if (items.size > 0 && index < items.size) {
+            return items[index]
+        }
+        logger.info("Index out of range {} of {}", index, items.size)
+        return null
     }
 
     fun size(): Int {

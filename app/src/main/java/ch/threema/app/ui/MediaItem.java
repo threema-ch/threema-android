@@ -61,7 +61,7 @@ public class MediaItem implements Parcelable {
 	private boolean deleteAfterUse;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT})
+	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION})
 	public @interface MediaType {}
 	public static final int TYPE_FILE = 0;
 	public static final int TYPE_IMAGE = 1;
@@ -71,6 +71,7 @@ public class MediaItem implements Parcelable {
 	public static final int TYPE_GIF = 5;
 	public static final int TYPE_VOICEMESSAGE = 6;
 	public static final int TYPE_TEXT = 7;
+	public static final int TYPE_LOCATION = 8;
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
 
@@ -214,6 +215,18 @@ public class MediaItem implements Parcelable {
 
 	public long getDurationMs() {
 		return durationMs;
+	}
+
+	/**
+	 * Return duration of media object after a possible trimming has been applied
+	 * @return duration in ms
+	 */
+	public long getTrimmedDurationMs() {
+		return
+			(startTimeMs != 0L && startTimeMs != TIME_UNDEFINED) ||
+			(endTimeMs != TIME_UNDEFINED && endTimeMs != durationMs) ?
+			endTimeMs - startTimeMs :
+			durationMs;
 	}
 
 	public void setDurationMs(long durationMs) {
