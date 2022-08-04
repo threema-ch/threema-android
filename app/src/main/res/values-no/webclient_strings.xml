@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Ugyldig QR-kode data</string>
+    <string name="webclient_init_session">Start ny økt</string>
+    <string name="webclient_sessions_really_delete">Vil du virkelig slette denne skrivebord/web økten?</string>
+    <string name="webclient_last_usage">Siste bruk: %s</string>
+    <string name="webclient_created_at">Opprettet den: %1$s (%2$s)</string>
+    <string name="webclient_active_since">Aktiv siden: %s</string>
+    <string name="webclient_enable">Aktiver Skrivebordsapp / Webklient</string>
+    <string name="webclient_no_sessions_found">For å koble til, last ned Skrivebordsappen (<b>https://threema.ch/download</b>) eller åpne Webklienten (<b>%s</b>) på datamaskinen din og trykk på knappen under for å skanne QR-koden som vises på skjermen til datamaskinen.</string>
+    <string name="webclient_session_rename">Gi nytt navn til økt</string>
+    <string name="webclient_session_label">Nytt navn</string>
+    <string name="webclient_session_start">Start økt</string>
+    <string name="webclient_session_stop">Stopp økt</string>
+    <string name="webclient_persistent">Vedvarende</string>
+    <string name="webclient_disposable">Engangs</string>
+    <string name="webclient_unnamed_session">Økt uten navn</string>
+    <string name="webclient_session_remove">Fjern økt</string>
+    <string name="webclient_welcome_title">Chat fra din PC!</string>
+    <string name="webclient_welcome_explain">Skrivebordsprogrammet og webklienten gjør at du kan chatte fra din datamaskin, mens du har full tilgang til alle dine kontakter, media og samtaler, selv tidligere samtaler.\n\n<b>All kommunikasjon mellom telefonen og datamaskinen er ende-til-ende kryptert</b> og bruker en direkte tilkobling, om både telefon og datamaskin er tilkoblet det samme nettverket.\n\nVennligst merk: Skriverbordsappen/webklienten kan føre til noe større strømforbruk mens det er aktivt. Du kan aktivere/deaktivere dette når som helst.</string>
+    <string name="webclient_launch">Start skrivebordsapp/webklient nå</string>
+    <string name="webclient_qr_scan_message">Skann QR-koden som vises på datamaskinen.</string>
+    <string name="webclient_invalid_qr_code">Ugyldig QR-kode</string>
+    <string name="webclient_new_connection_toast">Skrivebord-/Webøkt startet</string>
+    <string name="webclient_protocol_error">Protokollfeil</string>
+    <string name="webclient_protocol_version_to_old">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst oppdater Threema til den nyeste versjonen.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst last ned den siste versjonen av skrivebordsappen eller spør administrator av webklienten til å oppgradere til den nyeste versjonen.</string>
+    <string name="webclient_protocol_version_too_new_threema">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst bruk den siste versjonen av skrivebordsappen / webklienten.</string>
+    <string name="webclient_session_already_exists">Økten til QR-koden du skannet eksisterer allerede. Start skrivebordsappen / webklienten på nytt og prøv igjen.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Vil du starte denne økten nå?</string>
+    <string name="webclient_cannot_restore">Kan ikke gjenopprette økten</string>
+    <string name="webclient_disabled">Skrivebord/web er ikke aktivert</string>
+    <string name="webclient_cannot_start">Kan ikke starte økt</string>
+    <string name="webclient_constrained_by_mdm">Server er ikke godkjent av administrator.</string>
+    <string name="webclient_clear_all_sessions">Fjern alle økter</string>
+    <string name="webclient_prefs_debug_tool_summary">Start dette verktøyet for feilsøking av problem med å etablere en tilkobling til skrivebordsapp eller webklient</string>
+    <string name="webclient_diagnostics">Skrivebord/Web feilsøking</string>
+    <string name="webclient_diagnostics_start">Start</string>
+    <string name="webclient_diagnostics_intro">Trykk på «Start» for å starte test.</string>
+    <string name="webclient_diagnostics_done">Ferdig. Om du opplever problemer med tilkoblingen til skrivebordsapp eller webklient, vennligst send denne loggen til Threema brukerstøtte.</string>
+</resources>

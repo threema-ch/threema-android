@@ -34,6 +34,7 @@ import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -297,7 +298,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 				);
 
 		alertDialog = builder.create();
-
+		alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		return alertDialog;
 	}
 

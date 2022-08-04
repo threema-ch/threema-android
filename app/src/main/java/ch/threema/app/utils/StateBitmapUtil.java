@@ -50,8 +50,8 @@ public class StateBitmapUtil {
 	}
 
 	private final Context context;
-	private Map<MessageState, Integer> messageStateBitmapResourceIds = new EnumMap<>(MessageState.class);
-	private Map<MessageState, Integer> messageStateDescriptionMap = new EnumMap<MessageState, Integer>(MessageState.class);
+	private final Map<MessageState, Integer> messageStateBitmapResourceIds = new EnumMap<>(MessageState.class);
+	private final Map<MessageState, Integer> messageStateDescriptionMap = new EnumMap<MessageState, Integer>(MessageState.class);
 	private int regularColor;
 	private int warningColor;
 	private int ackColor;

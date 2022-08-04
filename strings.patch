@@ -1,0 +1,677 @@
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index f4a69dc..948ad43 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -11,13 +11,13 @@
+ 	<string name="title_enter_id">Enter ID</string>
+ 	<string name="title_invite_friend">Invite a Friend</string>
+ 	<string name="invite_via">Invite a friend via…</string>
+-	<string name="invite_email_body">Hello,\n\nI use %1$s, the secure instant messenger that protects users’ privacy.\n\nMy Threema ID: https://threema.id/%2$s\n\nLet’s communicate via %1$s!\n\nCheers,\n</string>
+-	<string name="invite_sms_body">Hi! Let’s use %1$s to communicate in a safe and privacy-compliant way! My Threema ID: https://threema.id/%2$s</string>
+-	<string name="invite_email_subject">Threema. The secure messenger that protects our privacy</string>
++	<string name="invite_email_body">Hello,\n\nI use LeOS-Messenger, the secure instant messenger that protects users’ privacy.\n\nMy Threema ID: https://threema.id/%2$s\n\nLet’s communicate via LeOS-Messengers!\n\nCheers,\n</string>
++	<string name="invite_sms_body">Hi! Let’s use LeOS-Messengers to communicate in a safe and privacy-compliant way! My Threema ID: https://threema.id/%2$s</string>
++	<string name="invite_email_subject">LeOS-Messenger. The secure messenger that protects our privacy</string>
+ 	<string name="enter_id_hint">Enter Threema ID</string>
+ 	<string name="account_links">Linked accounts</string>
+ 	<string name="menu_settings">Settings</string>
+-	<string name="menu_about">About Threema</string>
++	<string name="menu_about">About LeOS-Messenger</string>
+ 	<string name="menu_add_contact">New contact</string>
+ 	<string name="menu_done">Done</string>
+ 	<string name="compose_message_and_enter">Tap here to type</string>
+@@ -34,8 +34,8 @@
+ 	<string name="prefs_header_chat">Chat</string>
+ 	<string name="prefs_header_reset">Reset</string>
+ 	<string name="prefs_header_keyboard">Keyboard</string>
+-	<string name="prefs_sum_sync_contacts_on">Keep %s users in sync with your device’s address book</string>
+-	<string name="prefs_sum_sync_contacts_off">Do not sync %s users with your device’s address book</string>
++	<string name="prefs_sum_sync_contacts_on">Keep LeOS-Messenger users in sync with your device’s address book</string>
++	<string name="prefs_sum_sync_contacts_off">Do not sync LeOS-Messenger users with your device’s address book</string>
+ 	<string name="prefs_title_sync_contacts">Sync contacts</string>
+ 	<string name="prefs_sum_block_unknown_off">Anybody can send you a message. New contacts will be added automatically
+ 		when the first message arrives.</string>
+@@ -122,7 +122,7 @@
+ 	<string name="linked_mobile">Mobile Number</string>
+ 	<string name="public_nickname">Nickname</string>
+ 	<string name="share_via">Share via…</string>
+-	<string name="share_subject">%s conversation</string>
++	<string name="share_subject">LeOS-Messenger conversation</string>
+ 	<string name="message_delete_undo">Undo</string>
+ 	<string name="message_deleted">Message(s) deleted</string>
+ 	<string name="mobile_already_linked">Your Threema ID is already linked to this mobile number</string>
+@@ -140,7 +140,7 @@
+ 	<string name="creating_contact">Adding new contact</string>
+ 	<string name="creating_contact_successful">Contact successfully added</string>
+ 	<string name="invalid_threema_qr_code">Invalid QR Code</string>
+-	<string name="threema_contact">Threema Contact</string>
++	<string name="threema_contact">LeOS-Messenger Contact</string>
+ 	<string name="first_name">First Name</string>
+ 	<string name="last_name">Last Name</string>
+ 	<string name="os_licenses">Licenses</string>
+@@ -235,8 +235,8 @@
+ 	<string name="file_too_large">File is larger than the maximum of 50 MB</string>
+ 	<string name="deleting_thread">Deleting chat</string>
+ 	<string name="enter_serial_body"><![CDATA[Please enter your shop license key. You can <a href="https://shop.threema.ch/">purchase</a> a license or <a href="https://shop.threema.ch/retrieve_keys">retrieve</a> your keys in case you already purchased a license previously.]]></string>
+-	<string name="enter_serial_title">Unlock Threema</string>
+-	<string name="serial_required_want_exit">The license key is invalid. Would you like to try again or quit Threema?</string>
++	<string name="enter_serial_title">Unlock LeOS-Messenger</string>
++	<string name="serial_required_want_exit">The license key is invalid. Would you like to try again or quit LeOS-Messenger?</string>
+ 	<string name="checking_serial">Checking license</string>
+ 	<string name="update_available">Update available</string>
+ 	<string name="no_update_available">No update available</string>
+@@ -275,7 +275,7 @@
+ 	<string name="restore_data_password_msg">Enter the password that you used to create this backup.</string>
+ 	<string name="backup_data_media">Include large media files (video, documents, original pictures)</string>
+ 	<string name="backup_data_new">Create data backup</string>
+-	<string name="pinentry_enter_pin">Enter your %s PIN to continue</string>
++	<string name="pinentry_enter_pin">Enter your LeOS-Messenger PIN to continue</string>
+ 	<string name="pinentry_wrong_pin">PIN incorrect</string>
+ 	<string name="prefs_sum_security_pin">Lock access to the UI</string>
+ 	<string name="prefs_title_pin_switch">App lock</string>
+@@ -352,7 +352,7 @@
+ 	<string name="prefs_sum_black_list">Messages from IDs listed here will be ignored.</string>
+ 	<string name="verified">Verified</string>
+ 	<string name="want_to_add_to_exclude_list">This contact is linked to a record in your phone’s addressbook. If you
+-		delete it in Threema it will reappear after a contact sync.\nWould you like to exclude it from synchronization?</string>
++		delete it in LeOS-Messenger it will reappear after a contact sync.\nWould you like to exclude it from synchronization?</string>
+ 	<string name="no">No</string>
+ 	<string name="yes">Yes</string>
+ 	<string name="deleting_contact">Deleting contact</string>
+@@ -386,7 +386,7 @@
+ 	<string name="prefs_title_fullscreen_ime">Fullscreen keyboard</string>
+ 	<string name="prefs_sum_fullscreen_ime_on">The keyboard covers the application if your device is in landscape mode</string>
+ 	<string name="prefs_sum_fullscreen_ime_off">Display a preview of the chat above the keyboard if there’s room</string>
+-	<string name="add_acount_from_within_threema">Manage your Threema ID from within Threema.</string>
++	<string name="add_acount_from_within_threema">Manage your Threema ID from within LeOS-Messenger.</string>
+ 	<string name="save_image">Save Image</string>
+ 	<string name="share_image">Share Image</string>
+ 	<string name="view_in_gallery">View in Gallery</string>
+@@ -407,11 +407,11 @@
+ 	<string name="no_matching_distribution_lists">No matching distribution lists</string>
+ 	<string name="is_typing">is typing…</string>
+ 	<string name="push_not_available_title">No push service found</string>
+-	<string name="push_not_available_text1">We could not find a push service on your device because Google Play Services are not installed or outdated.</string>
+-	<string name="push_not_available_text2">%s will try to open a persistent background connection to the server. This may not work reliably if your device\'s battery optimization mechanisms interfere with the background connection.</string>
++	<string name="push_not_available_text1">We could not find a push service on your device because G**gle Play Services are not installed or outdated.</string>
++	<string name="push_not_available_text2">LeOS-Messenger will try to open a persistent background connection to the server. This may not work reliably if your device\'s battery optimization mechanisms interfere with the background connection.</string>
+ 	<string name="backup_in_progress">Backup in progress</string>
+ 	<string name="backup_or_restore_success_body">Data backup successfully completed</string>
+-	<string name="backup_or_restore_error">Threema Backup</string>
++	<string name="backup_or_restore_error">LeOS-Messenger Backup</string>
+ 	<string name="backup_or_restore_error_body">Backup did not complete successfully</string>
+ 	<string name="could_not_download_message">Could not download message</string>
+ 	<string name="info">Info</string>
+@@ -430,16 +430,16 @@
+ 		select screens</string>
+ 	<string name="media_gallery">Media gallery</string>
+ 	<string name="media_file_not_found">Could not open media file. It was deleted or not downloaded from the server.</string>
+-	<string name="no_media_found">No %s were found in this chat.</string>
++	<string name="no_media_found">No LeOS-Messenger were found in this chat.</string>
+ 	<string name="media_gallery_all">Everything</string>
+ 	<string name="media_gallery_pictures">Pictures</string>
+ 	<string name="media_gallery_videos">Videos</string>
+ 	<string name="group_membership_title">Member of these groups</string>
+-	<string name="num_items_sected">%s selected</string>
++	<string name="num_items_sected">LeOS-Messenger selected</string>
+ 	<string name="really_delete_media" tools:ignore="PluralsCandidate">Do you really want to delete %d media messages?</string>
+ 	<string name="check_updates">Check for updates</string>
+-	<string name="masterkey_lock_explain">Threema keeps the passphrase in memory. If you need to re-enter the passphrase
+-		often, make sure that task killer and battery saver apps that may terminate Threema prematurely, are disabled.</string>
++	<string name="masterkey_lock_explain">LeOS-Messenger keeps the passphrase in memory. If you need to re-enter the passphrase
++		often, make sure that task killer and battery saver apps that may terminate LeOS-Messenger prematurely, are disabled.</string>
+ 	<string name="identity_already_exists">This ID is already in your contact list</string>
+ 	<string name="share_contact">Share contact</string>
+ 	<string name="add_shortcut">Add shortcut</string>
+@@ -480,7 +480,7 @@
+ 	<string name="ballot_subject_hint">Enter title of this poll</string>
+ 	<string name="ballot_no_ballots_yet">No polls yet.</string>
+ 	<string name="print">Print</string>
+-	<string name="ballot_wizard0_explain">Quickly create an online poll directly with Threema. Schedule an event, create
++	<string name="ballot_wizard0_explain">Quickly create an online poll directly with LeOS-Messenger. Schedule an event, create
+ 		a survey or ask your friends anything you want.</string>
+ 	<string name="ballot_add_choices">Add answers</string>
+ 	<string name="blocked_cannot_send">You cannot send messages to a blocked contact</string>
+@@ -494,7 +494,7 @@
+ 	<string name="contact_state_invalid">Invalid</string>
+ 	<string name="back">Back</string>
+ 	<string name="wearable_reply">Reply</string>
+-	<string name="wearable_reply_label">Reply to %s</string>
++	<string name="wearable_reply_label">Reply to LeOS-Messenger</string>
+ 	<string name="message_acknowledged">“Agree” sent</string>
+ 	<string name="push_disable_text">If you continue, “Threema Push” will be used instead of the system’s push service. This helps reducing your digital footprint but requires that your phone is configured in a way to allow the app to run in the background. You may want to contact your device manufacturer’s support for assistance with the configuration if the corresponding options cannot be found in the device settings.</string>
+ 	<string name="ballot_intermediate_results_show">Show intermediate results</string>
+@@ -562,7 +562,7 @@
+ 	<string name="prefs_sum_passphrase">Require a passphrase to unlock local encryption</string>
+ 	<string name="prefs_title_masterkey_change_passphrase">Change passphrase</string>
+ 	<string name="storage_total">Space on internal storage</string>
+-	<string name="storage_threema">Used by Threema</string>
++	<string name="storage_threema">Used by LeOS-Messenger</string>
+ 	<string name="storage_total_free">Total free space</string>
+ 	<string name="storage_total_in_use">In use</string>
+ 	<string name="one_year">1 year</string>
+@@ -591,9 +591,9 @@
+ 	<string name="invalid_data">Invalid data. Cannot send.</string>
+ 	<string name="prefs_emoji_style">Emoji style</string>
+ 	<string name="prefs_android_emojis">System Emojis</string>
+-	<string name="prefs_default_emojis">Threema Emojis (default)</string>
++	<string name="prefs_default_emojis">LeOS-Messenger Emojis (default)</string>
+ 	<string name="android_emojis_warning">Note: The system’s character set may not be able to display all emojis
+-		supported by Threema.</string>
++		supported by LeOS-Messenger.</string>
+ 	<string name="crop">Crop</string>
+ 	<string name="scan_id_mismatch_title">ID mismatch</string>
+ 	<string name="scan_id_mismatch_message">The ID that you have scanned does not match the contact that you have
+@@ -613,19 +613,19 @@
+ 	<string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) deleted</string>
+ 	<string name="prefs_sendlog">Send Log</string>
+ 	<string name="prefs_sendlog_summary">Send Logfile to Threema for further analysis in case of problems</string>
+-	<string name="permission_storage_required">To save or send media, allow Threema permission to access storage.</string>
+-	<string name="permission_location_required">To send a location, allow Threema permission to access your position.</string>
+-	<string name="permission_contacts_required">To send contacts, allow Threema permission to read contacts.</string>
++	<string name="permission_storage_required">To save or send media, allow LeOS-Messenger permission to access storage.</string>
++	<string name="permission_location_required">To send a location, allow LeOS-Messenger permission to access your position.</string>
++	<string name="permission_contacts_required">To send contacts, allow LeOS-Messenger permission to read contacts.</string>
+ 	<string name="message_declined">“Disagree” sent</string>
+ 	<string name="notifications_settings">Notification settings</string>
+ 	<string name="notifications_default">Default settings</string>
+ 	<string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">For %d hour(s)</string>
+-	<string name="notifications_until">Until %s</string>
++	<string name="notifications_until">Until LeOS-Messenger</string>
+ 	<string name="notifications_mute">Muted</string>
+ 	<string name="notifications_choose_sound">Choose sound</string>
+ 	<string name="error_video_conversion">Error converting video.</string>
+ 	<string name="confirm_your_pin">Confirm your PIN</string>
+-	<string name="too_many_incorrect_attempts">Too many incorrect attempts. Try again in %s seconds.</string>
++	<string name="too_many_incorrect_attempts">Too many incorrect attempts. Try again in LeOS-Messenger seconds.</string>
+ 	<string name="no_lockscreen_set">No system screen lock set.</string>
+ 	<string name="on">on</string>
+ 	<string name="off">off</string>
+@@ -633,7 +633,7 @@
+ 	<string name="new_wizard_lets_get_started">Let’s get started!</string>
+ 	<string name="new_wizard_setup_threema">Set up now</string>
+ 	<string name="new_wizard_restore_id_backup">Restore exported ID</string>
+-	<string name="new_wizard_welcome">Welcome to Threema!</string>
++	<string name="new_wizard_welcome">Welcome to LeOS-Messenger!</string>
+ 	<string name="new_wizard_move_finger">Move your finger on the screen to generate a new Threema ID.</string>
+ 	<string name="new_wizard_this_is_your_id">This is your Threema ID:</string>
+ 	<string name="new_wizard_works_like_phone_number">Your Threema ID works just like a phone number.\nYour friends can reach you through this ID.</string>
+@@ -660,16 +660,16 @@
+ 		your public key. Only the owner of the private key and nobody else is able to decrypt these messages.</string>
+ 	<string name="new_wizard_info_id">You also created a key pair. The public key has been securely transmitted to our
+ 		servers. The private key never leaves your device. This ensures that nobody else can read your messages.</string>
+-	<string name="new_wizard_info_sync_contacts">If you enable this option, Threema one-way encrypts (hashes) email addresses and phone numbers
++	<string name="new_wizard_info_sync_contacts">If you enable this option, LeOS-Messenger one-way encrypts (hashes) email addresses and phone numbers
+ 		before sending them to the server to look for matching contacts. We do not store any
+ 		addressbook data.</string>
+-	<string name="new_wizard_info_link">By providing your phone number and email address, Threema can help your friends
++	<string name="new_wizard_info_link">By providing your phone number and email address, LeOS-Messenger can help your friends
+ 		find you automatically if they have you in their phone’s address book. The data will be stored in a
+-		one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use Threema
++		one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use LeOS-Messenger
+ 		completely anonymously.</string>
+-	<string name="new_wizard_info_link_phone_only">By providing your phone number, Threema can help your friends
++	<string name="new_wizard_info_link_phone_only">By providing your phone number, LeOS-Messenger can help your friends
+ 		find you automatically if they have you in their phone’s address book. The number will be stored in a
+-		one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use Threema
++		one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use LeOS-Messenger
+ 		completely anonymously.</string>
+ 	<string name="new_wizard_info_nickname">The nickname is used in push notifications on some devices or as an
+ 		additional means of identifying you to users who do not yet have you in their address book. We recommend
+@@ -679,17 +679,17 @@
+ 	<string name="pending_sms_verification_notice">Your mobile number is not yet verified.</string>
+ 	<string name="no_sms_received">Didn’t receive an SMS?</string>
+ 	<string name="really_cancel_verify">Do you really want to abort the mobile number verification?</string>
+-	<string name="verification_of">Verification of %s</string>
++	<string name="verification_of">Verification of LeOS-Messenger</string>
+ 	<string name="status_ballot_voting_changed">Poll “%1$s” has received a new vote</string>
+ 	<string name="status_ballot_user_first_vote">“%1$s” has cast a vote for “%2$s”</string>
+ 	<string name="status_ballot_user_modified_vote">“%1$s” has changed the vote for “%2$s”</string>
+ 	<string name="status_ballot_all_votes">Votes for “%1$s” complete</string>
+ 	<string name="restore">Restore</string>
+ 	<string name="new_wizard_anonymous_confirm">You have entered neither a mobile number nor an email address to link to
+-		your Threema ID. You will not appear on your friends\’ contact lists. Do you really want to use Threema
++		your Threema ID. You will not appear on your friends\’ contact lists. Do you really want to use Leos-Messenger
+ 		anonymously?</string>
+ 	<string name="new_wizard_anonymous_confirm_phone_only">You did not enter a mobile number to link to
+-		your Threema ID. You will not appear on your friends\’ contact lists. Do you really want to use Threema
++		your Threema ID. You will not appear on your friends\’ contact lists. Do you really want to use LeOS-Messenger
+ 		anonymously?</string>
+ 	<string name="new_wizard_scan_id_backup">Or scan the QR code of your ID export</string>
+ 	<string name="error_saving_file">Error saving file. Check permissions.</string>
+@@ -733,7 +733,7 @@
+ 	<string name="lock_option_none">None</string>
+ 	<string name="lock_option_pin">PIN</string>
+ 	<string name="lock_option_screenlock">System Screen Lock</string>
+-	<string name="hide_chat_message_explain">Threema allows you to protect certain chats with a PIN and temporarily hide them from your message list. To enable private chats, please set a PIN or enable System Screen Lock (Android 6.0+) in settings.</string>
++	<string name="hide_chat_message_explain">LeOS-Messenger allows you to protect certain chats with a PIN and temporarily hide them from your message list. To enable private chats, please set a PIN or enable System Screen Lock (Android 6.0+) in settings.</string>
+ 	<string name="set_lock">Setup now</string>
+ 	<string name="prefs_title_access_protection">Access protection</string>
+ 	<string name="private_chat_subject">Private</string>
+@@ -779,7 +779,7 @@
+ 	<string name="battery_optimizations_title">Disable Battery Optimizations</string>
+ 	<string name="battery_optimizations_explain">Battery optimization prevents %1$s from working correctly when your phone falls into sleep mode. Please disable battery optimization for %2$s.</string>
+ 	<string name="battery_optimizations_disable_guide">Select “All Apps” in the drop down menu</string>
+-	<string name="battery_optimizations_disable_guide_ctd">Search for %s in the list and deactivate the optimization</string>
++	<string name="battery_optimizations_disable_guide_ctd">Search for LeOS-Messenger in the list and deactivate the optimization</string>
+ 	<string name="battery_optimizations_disable_confirm">Do you really want to keep battery optimization switched on for %1$s? %2$s will not work correctly.</string>
+ 	<string name="enter_text_hint">Enter text</string>
+ 	<string name="backup_explain_text">If you switch or lose your device, nobody can restore your Threema ID or your chats if you don’t have a backup. Please save your data using the appropriate backup options.</string>
+@@ -792,8 +792,8 @@
+ 	<string name="prefs_ipv6_preferred_off">Use IPv4 connections only</string>
+ 	<string name="prefs_ipv6_preferred_on">Prefer IPv6 connections over IPv4</string>
+ 	<string name="prefs_title_ipv6_webrtc_allowed">IPv6 for calls and web</string>
+-	<string name="prefs_ipv6_webrtc_allowed_on">Allow IPv6 for Threema Calls and Threema Web</string>
+-	<string name="prefs_ipv6_webrtc_allowed_off">Disallow IPv6 for Threema Calls and Threema Web</string>
++	<string name="prefs_ipv6_webrtc_allowed_on">Allow IPv6 for LeOS-Messenger Calls and Threema Web</string>
++	<string name="prefs_ipv6_webrtc_allowed_off">Disallow IPv6 for LeOS-Messenger Calls and Threema Web</string>
+ 	<string name="ipv6_requires_restart">To apply this setting, the app needs to restart.</string>
+ 	<string name="ipv6_restart_now">Restart now</string>
+ 	<string name="on_cap">On</string>
+@@ -820,39 +820,39 @@
+ 	<string name="menu_send_profilpic_now">Send profile picture now</string>
+ 	<string name="profile_picture_sent">Profile picture sent</string>
+ 	<string name="sending_messages">Sending…</string>
+-	<string name="backup_data_media_confirm">Saving large media files to a local ZIP backup may exceed the CPU and memory capacity of your device and can take a very long time. Threema will not send or receive messages while the backup is running. Continue anyway?</string>
++	<string name="backup_data_media_confirm">Saving large media files to a local ZIP backup may exceed the CPU and memory capacity of your device and can take a very long time. LeOS-Messenger will not send or receive messages while the backup is running. Continue anyway?</string>
+ 	<string name="backup_data_cancelled">Backup canceled</string>
+-	<string name="service_manager_not_available">Unable to launch Threema. Please turn your device off, then on again.</string>
++	<string name="service_manager_not_available">Unable to launch LeOS-Messenger. Please turn your device off, then on again.</string>
+ 	<string name="message_sent">Message sent</string>
+-	<string name="threema_call">Threema call</string>
+-	<string name="threema_message_to">Message to %s</string>
+-	<string name="threema_call_with">Call %s</string>
+-	<string name="prefs_title_voip">Threema Calls</string>
++	<string name="threema_call">LeOS-Messenger call</string>
++	<string name="threema_message_to">Message to LeOS-Messenger</string>
++	<string name="threema_call_with">Call LeOS-Messenger</string>
++	<string name="prefs_title_voip">LeOS-Messenger Calls</string>
+ 	<string name="prefs_title_force_turn">Always relay calls</string>
+ 	<string name="prefs_summary_force_turn_off">Establish a direct connection, if possible, and only relay calls to unverified contacts through Threema servers. May expose your IP address.</string>
+ 	<string name="prefs_summary_force_turn_on">Force relaying all calls through Threema servers, protecting your IP address. May affect call quality.</string>
+ 	<string name="permission_record_audio_required">To make encrypted calls and send voice messages, please allow access to the microphone.</string>
+-	<string name="prefs_voice_call_notifications">Threema Calls</string>
++	<string name="prefs_voice_call_notifications">LeOS-Messenger Calls</string>
+ 	<string name="prefs_voice_call_sound">Ringtone</string>
+-	<string name="prefs_sum_voice_call_sound">Select ringtone for incoming Threema Calls</string>
+-	<string name="prefs_sum_voice_call_vibrate">Vibrate on incoming Threema Calls</string>
+-	<string name="prefs_title_voip_enable">Enable Threema Calls</string>
++	<string name="prefs_sum_voice_call_sound">Select ringtone for incoming LeOS-Messenger Calls</string>
++	<string name="prefs_sum_voice_call_vibrate">Vibrate on incoming LeOS-Messenger Calls</string>
++	<string name="prefs_title_voip_enable">Enable LeOS-Messenger Calls</string>
+ 	<string name="webclient_invalid_push_token_message">Manual start required</string>
+ 	<string name="threema_work_contact">Threema Work contact</string>
+-	<string name="permission_phone_required">Allow permission to manage phone calls while using Threema Call</string>
++	<string name="permission_phone_required">Allow permission to manage phone calls while using LeOS-Messenger Call</string>
+ 	<string name="strikethrough">Strikethru</string>
+ 	<string name="italic">Italic</string>
+ 	<string name="bold">Bold</string>
+ 	<string name="shortcut_choice_title">Create a shortcut for a…</string>
+ 	<string name="prefs_title_device_info">Device Information</string>
+ 	<string name="notifications_disabled_title">Notifications disabled</string>
+-	<string name="notifications_disabled_text">Notifications for Threema have been disabled in the system settings. You will not be notified about new messages.</string>
++	<string name="notifications_disabled_text">Notifications for LeOS-Messenger have been disabled in the system settings. You will not be notified about new messages.</string>
+ 	<string name="notifications_disabled_settings">Edit system settings</string>
+ 	<string name="error_attaching_files">Error adding attachments.</string>
+ 	<string name="prefs_fix_powermanager_problems">Disable power restrictions</string>
+-	<string name="prefs_fix_powermanager_problems_desc">Allow Threema to run in the background so it can receive messages even when it’s not active.</string>
+-	<string name="disable_powermanager_explain">In the following screen, make sure, “%s” is protected or excluded from any power management restrictions of your phone. Tap the “back” button when you’re done.</string>
+-	<string name="disable_autostart_explain">In the following screen, make sure “%s” is included in the list of apps that can autostart. Tap the “back” button when you’re done.</string>
++	<string name="prefs_fix_powermanager_problems_desc">Allow LeOS-Messenger to run in the background so it can receive messages even when it’s not active.</string>
++	<string name="disable_powermanager_explain">In the following screen, make sure, “LeOS-Messenger” is protected or excluded from any power management restrictions of your phone. Tap the “back” button when you’re done.</string>
++	<string name="disable_autostart_explain">In the following screen, make sure “LeOS-Messenger” is included in the list of apps that can autostart. Tap the “back” button when you’re done.</string>
+ 	<string name="notification_priority_default">Low</string>
+ 	<string name="notification_priority_high">High</string>
+ 	<string name="notification_priority_max">Max</string>
+@@ -864,7 +864,7 @@
+ 	<string name="unknown_address">Unknown address</string>
+ 	<string name="your_location">Your location</string>
+ 	<string name="network_blocked_title">Background data disabled</string>
+-	<string name="network_blocked_body">%s is unable to receive messages in the background. Tap here to enable background data in settings.</string>
++	<string name="network_blocked_body">LeOS-Messenger is unable to receive messages in the background. Tap here to enable background data in settings.</string>
+ 	<string name="reply_later">Talk to you later</string>
+ 	<string name="reply_on_my_way">I’m on my way</string>
+ 	<string name="reply_thank_you">Thank you</string>
+@@ -872,13 +872,13 @@
+ 	<string name="prefs_auto_download_title">Automatically download media</string>
+ 	<string name="prefs_auto_download_wifi">On WiFi</string>
+ 	<string name="prefs_auto_download_mobile">On mobile data</string>
+-	<string name="rate_intro">How do you rate Threema?</string>
++	<string name="rate_intro">How do you rate LeOS-Messenger?</string>
+ 	<string name="rate_feedback_intro">Please let us know what we can do to improve (optional).</string>
+ 	<string name="rate_positive">Send review</string>
+-	<string name="rate_title">Rate Threema</string>
++	<string name="rate_title">Rate LeOS-Messenger</string>
+ 	<string name="rate_thank_you">Thank you for your review!</string>
+ 	<string name="disabled_by_policy_short">Feature disabled by administrator</string>
+-	<string name="rate_forward_to_play_store">Would you like to rate us on Google Play as well?</string>
++	<string name="rate_forward_to_play_store">Would you like to rate us on G**gle Play as well?</string>
+ 	<string name="rate_error">Could not send your review to the server. Please make sure you’re connected to the internet before trying again.</string>
+ 	<string name="off_unless_i_was_mentioned">On, unless I was mentioned</string>
+ 	<string name="dnd">Do Not Disturb</string>
+@@ -896,7 +896,7 @@
+ 	<string name="webclient_service_description">Notification when Web/Desktop session is active</string>
+ 	<string name="prefs_title_accept_privacy_policy">Accept Privacy Policy</string>
+ 	<string name="privacy_policy_explain">%1$s protects your privacy more rigorously than any other messenger. Find out more in our %2$s.</string>
+-	<string name="privacy_policy_check_confirm">To use %s, please accept the Privacy Policy.\n\n(Requirement as per EU regulation 2016/679)</string>
++	<string name="privacy_policy_check_confirm">To use LeOS-Messenger, please accept the Privacy Policy.\n\n(Requirement as per EU regulation 2016/679)</string>
+ 	<string name="prefs_title_incognito_keyboard">Request incognito keyboard</string>
+ 	<string name="prefs_sum_incognito_keyboard">Disable data collection for personalized suggestions (if supported by keyboard)</string>
+ 	<string name="tooltip_mentions">Type the @ character on the keyboard to directly address or mention a member of this group.</string>
+@@ -932,7 +932,7 @@
+ 	<string name="safe_backup_now">Backup Now</string>
+ 	<string name="safe_enable_explain_short">Enable Threema Safe to create automatic secure and anonymous backups of all your important data.</string>
+ 	<string name="safe_deleting">Deleting Threema Safe backup</string>
+-	<string name="safe_delete_error">Error deleting backup: %s</string>
++	<string name="safe_delete_error">Error deleting backup: LeOS-Messenger</string>
+ 	<string name="safe_delete_success">Backup successfully deleted on server</string>
+ 	<string name="safe_error_preparing">Error preparing Threema Safe backup</string>
+ 	<string name="safe_configure_choose_password_force">Please set a strong password to secure your Threema ID with Threema Safe. Don’t forget what you enter here!</string>
+@@ -942,7 +942,7 @@
+ 	<string name="contact_add_confirm">Would you like to add the new contact “%1$s” to your contact list?</string>
+ 	<string name="password_bad">Weak password</string>
+ 	<string name="prefs_fix_background_data">Enable Background Data</string>
+-	<string name="prefs_fix_background_data_desc">To receive messages when Threema is in the background please enable both Background data and Unrestricted data usage</string>
++	<string name="prefs_fix_background_data_desc">To receive messages when LeOS-Messenger is in the background please enable both Background data and Unrestricted data usage</string>
+ 	<string name="prefs_fix_device">Fix device configuration problems</string>
+ 	<string name="safe_successful">Successful</string>
+ 	<string name="safe_unsuccessful">Failed</string>
+@@ -966,9 +966,9 @@
+ 	<string name="restore_success_body">Restore successfully completed</string>
+ 	<string name="work_data_sync">Data sync</string>
+ 	<string name="private_contact">Private Contact</string>
+-	<string name="ringtone_selection_default">Default (%s)</string>
++	<string name="ringtone_selection_default">Default (LeOS-Messenger)</string>
+ 	<string name="work_data_sync_desc">Threema Work synchronisation</string>
+-	<string name="ballot_not_connected">Please make sure Threema is online before closing a poll.</string>
++	<string name="ballot_not_connected">Please make sure LeOS-Messenger is online before closing a poll.</string>
+ 	<string name="empty_chat_title">Empty chat</string>
+ 	<string name="empty_chat_confirm">All messages in this chat will be deleted. Continue?</string>
+ 	<string name="emptying_chat">Emptying chat</string>
+@@ -996,7 +996,7 @@
+ 	<string name="insert_date">Insert date</string>
+ 	<string name="add_answer">Add answer</string>
+ 	<string name="title_cannot_be_empty">The poll title cannot be empty</string>
+-	<string name="voip_disabled">Threema calls are disabled</string>
++	<string name="voip_disabled">LeOS-Messenger calls are disabled</string>
+ 	<string name="hide_chat_enter_message_explain">This chat is marked as a private chat. To enter it, please set up access protection first.</string>
+ 	<string name="unknown">Unknown</string>
+ 	<string name="miui_notification_title">Important notice about notifications on MIUI</string>
+@@ -1005,7 +1005,7 @@
+ 	<string name="dont_show_again">Don’t show again</string>
+ 	<string name="miui_notification_prefs">MIUI settings</string>
+ 	<string name="threema_safe_upload_successful">Threema Safe backup successfully uploaded</string>
+-	<string name="time_remaining">%s remaining</string>
++	<string name="time_remaining">LeOS-Messenger remaining</string>
+ 	<string name="safe_configure_server_credentials_title">Authentication (optional)</string>
+ 	<string name="username_hint">Username</string>
+ 	<string name="server_hint">Server</string>
+@@ -1021,9 +1021,9 @@
+ 	<string name="message_too_long">Message too long. Cannot send.</string>
+ 	<string name="database_migration_no_space">Database migration failed: Not enough space left on device.</string>
+ 	<string name="advanced_options">Advanced options</string>
+-	<string name="url_warning_body">The hostname of the link you’re about to open is suspicious:\n\nDisplayed Hostname: <b>%s</b>\nReal hostname: <b>%s</b>\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
++	<string name="url_warning_body">The hostname of the link you’re about to open is suspicious:\n\nDisplayed Hostname: <b>LeOS-Messenger</b>\nReal hostname: <b>LeOS-Messenger</b>\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
+ 	<string name="url_warning_title">Phishing warning</string>
+-	<string name="permission_camera_qr_required">To scan QR codes, Threema needs access to the camera</string>
++	<string name="permission_camera_qr_required">To scan QR codes, LeOS-Messenger needs access to the camera</string>
+ 	<string name="voice_action_title">Voice Actions</string>
+ 	<string name="voice_action_body">Voice action is being processed</string>
+ 	<string name="permission_camera_photo_required">To take a picture, please allow access to the camera</string>
+@@ -1062,14 +1062,14 @@
+ 	<string name="whatsnew2_title"></string>
+ 	<string name="whatsnew2_body"></string>
+ 	<string name="tooltip_identity_popup">Tap here to quickly display your Threema ID or to scan other people’s IDs</string>
+-	<string name="tap_to_start">Tap here to start %s now.</string>
++	<string name="tap_to_start">Tap here to start LeOS-Messenger now.</string>
+ 	<string name="two_years">2 years</string>
+ 	<string name="invalid_backup_path">Invalid backup path</string>
+ 	<string name="backup_data_no_permission">Cannot write to this directory. Please choose another one.</string>
+ 	<string name="prefs_sum_show_unread_badge">Show badges in bottom navigation tabs</string>
+ 	<string name="prefs_title_show_unread_badge">Badges</string>
+ 	<string name="pinning_not_trusted">Certificate Pinning Failure. Please check if \"Entrust Root Certification Authority - G2\" is installed and activated in the credentials storage of your device.</string>
+-	<string name="pinning_failed">Certificate Pinning Failure. Possible Man-in-the-middle attack. If you have an ad blocker, content filter, or firewall app installed such as “AdGuard”, please disable it for Threema.</string>
++	<string name="pinning_failed">Certificate Pinning Failure. Possible Man-in-the-middle attack. If you have an ad blocker, content filter, or firewall app installed such as “AdGuard”, please disable it for LeOS-Messenger.</string>
+ 	<string name="open_myid_popup">Open quick access popup window</string>
+ 	<string name="logo">Logo / Scroll to top</string>
+ 	<string name="quote_subj_end">End quote</string>
+@@ -1080,7 +1080,7 @@
+ 	<string name="and">and</string>
+ 	<string name="edit_type_content_description">View or edit %1$s %2$s</string>
+ 	<string name="group">Group</string>
+-	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Our Privacy Policy has been updated to reflect the following change:</p><p>%1$s no longer depends on Google Play and Google Maps to provide map and POI data.</p>Please review the full Privacy Policy <a href="%2$s">here</a>.]]></string>
++	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Our Privacy Policy has been updated to reflect the following change:</p><p>%1$s no longer depends on G**gle Play and G**gle Maps to provide map and POI data.</p>Please review the full Privacy Policy <a href="%2$s">here</a>.]]></string>
+ 	<string name="play_services_not_installed_unable_to_use_push">Services not installed. Cannot switch to “push”.</string>
+ 	<string name="unable_to_get_current_location">Unable to determine current location.</string>
+ 	<string name="lp_search_place_min_chars">Please enter at least three characters to search for a place.</string>
+@@ -1088,7 +1088,7 @@
+ 	<string name="wallpaper_default">Default wallpaper</string>
+ 	<string name="wallpaper_gallery">Select from gallery</string>
+ 	<string name="wallpaper_none">Empty background</string>
+-	<string name="wallpaper_threema">%s wallpaper</string>
++	<string name="wallpaper_threema">LeOS-Messenger wallpaper</string>
+ 	<string name="message_id">Message ID</string>
+ 	<string name="mime_type">MIME type</string>
+ 	<string name="password_does_not_comply">The password does not comply with the guidelines set by the administrator.</string>
+@@ -1099,7 +1099,7 @@
+ 	<string name="sending_media">Sending media</string>
+ 	<string name="permission_record_video_audio_required">To record a video, please allow access to the microphone</string>
+ 	<string name="media_files">Files</string>
+-	<string name="auto_download_limit_explain">Videos and files larger than %s will always be downloaded on demand</string>
++	<string name="auto_download_limit_explain">Videos and files larger than LeOS-Messenger will always be downloaded on demand</string>
+ 	<string name="quoted_message_deleted">Quoted message is no longer available</string>
+ 	<string name="searching">Searching…</string>
+ 	<string name="prefs_work_life_balance">Do not disturb</string>
+@@ -1114,7 +1114,7 @@
+ 	<string name="work_life_dnd_active">Off-hours active</string>
+ 	<string name="pencil">Pencil</string>
+ 	<string name="warning">Warning</string>
+-	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on severs, we cannot help you out, if you forget your PIN or password.</string>
++	<string name="password_remember_warning">Remember what you enter here! Since LeOS-Messenger does not save any passwords on severs, we cannot help you out, if you forget your PIN or password.</string>
+ 	<string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone’s notification bar.</string>
+ 	<string name="send_to_support">Send to Threema Support</string>
+ 	<string name="menu_legal">Legal</string>
+@@ -1122,8 +1122,8 @@
+ 	<string name="video_camera_on">Video camera enabled</string>
+ 	<string name="video_camera_off">Video camera disabled</string>
+ 	<string name="enable_picture_in_picture">Start picture-in-picture mode</string>
+-	<string name="call_with">Call %s</string>
+-	<string name="picture_in_picture_disabled_in_setting">Picture in Picture mode is disabled for %s. Please enable it in system settings.</string>
++	<string name="call_with">Call LeOS-Messenger</string>
++	<string name="picture_in_picture_disabled_in_setting">Picture in Picture mode is disabled for LeOS-Messenger. Please enable it in system settings.</string>
+ 	<string name="delete_everything">Delete everything</string>
+ 	<string name="prefs_title_voip_video_enable">Allow video calls</string>
+ 	<string name="video_calls">Video calls</string>
+@@ -1140,7 +1140,7 @@
+ 	<string name="ballot_open">Open polls</string>
+ 	<string name="translators">Translators</string>
+ 	<string name="credits">Credits</string>
+-	<string name="translators_thanks">Many thanks to our volunteer translators:\n%s</string>
++	<string name="translators_thanks">Many thanks to our volunteer translators:\nLeOS-Messenger</string>
+ 	<string name="ballot_window_hide">Hide open polls</string>
+ 	<string name="ballot_window_show">Show open polls</string>
+ 	<string name="tooltip_voip_other_party_video_on">The other party started a video call. Tap here to turn on your camera as well.</string>
+@@ -1170,9 +1170,9 @@
+ 	<string name="attach_video">Video</string>
+ 	<string name="attach_location">Location</string>
+ 	<string name="filter_by_album">Filter by album</string>
+-	<string name="media_date_taken">Date taken: %s</string>
+-	<string name="media_date_added">Date added: %s</string>
+-	<string name="media_date_modified">Date modified: %s</string>
++	<string name="media_date_taken">Date taken: LeOS-Messenger</string>
++	<string name="media_date_added">Date added: LeOS-Messenger</string>
++	<string name="media_date_modified">Date modified: LeOS-Messenger</string>
+ 	<string name="media_date_unknown">Date unknown</string>
+ 	<string name="max_selectable_media_exceeded">No more than %d objects can be sent at once.</string>
+ 	<string name="error_unable_loading_media_thumb">Error. Media thumbnail could not be loaded</string>
+@@ -1180,7 +1180,7 @@
+ 	<string name="filter_list">Filter list</string>
+ 	<string name="hint_filter_list">Enter filter text</string>
+ 	<string name="add">Add</string>
+-	<string name="threema_message_from">Message from %s</string>
++	<string name="threema_message_from">Message from LeOS-Messenger</string>
+ 	<string name="show_text">Show text</string>
+ 	<string name="only_images_or_videos">Only images or videos can be selected</string>
+ 	<string name="media_gallery_gifs">GIFs</string>
+@@ -1215,29 +1215,29 @@
+ 	<string name="mark_unread">Mark as unread</string>
+ 	<string name="mark_read_short">Mark read</string>
+ 	<string name="unread">Unread</string>
+-	<string name="missing_app_licence">The app store was unable to validate your purchase. If you use Google Play, please clear the data of the Google Play Store App and reboot your device.</string>
++	<string name="missing_app_licence">The app store was unable to validate your purchase. If you use G**gle Play, please clear the data of the G**gle Play Store App and reboot your device.</string>
+ 	<string name="set_backup_path">Set backup path</string>
+ 	<string name="set_backup_path_intro">In the following screen please select the folder where data backups should be saved.</string>
+ 	<string name="discard_changes_title">Discard changes</string>
+ 	<string name="group_join_request_message_info"><![CDATA[Write a short message to the group admin <b>%1$s</b> why you want to join <b>%2$s</b>.]]></string>
+ 	<string name="group_join_request">Group join request</string>
+-	<string name="group_join_request_for">Group join request for %s</string>
++	<string name="group_join_request_for">Group join request for LeOS-Messenger</string>
+ 	<string name="group_link_default_name">Unnamed link</string>
+ 	<string name="group_link_share">Share group link </string>
+-	<string name="group_request_incoming_dialog_title">Request from %s</string>
++	<string name="group_request_incoming_dialog_title">Request from LeOS-Messenger</string>
+ 	<string name="accept">Accept</string>
+ 	<string name="reject">Reject</string>
+-	<string name="group_request_already_sent"><![CDATA[You already have an open group request for <b>%s</b> through this link and an answer from the group admin is pending. Click on the request in the list if you want to try to resend.]]></string>
++	<string name="group_request_already_sent"><![CDATA[You already have an open group request for <b>LeOS-Messenger</b> through this link and an answer from the group admin is pending. Click on the request in the list if you want to try to resend.]]></string>
+ 	<string name="group_link_none">No link generated yet</string>
+ 	<string name="group_request_confirm_send"><![CDATA[You are about to send a group request for <b>%1$s</b> to admin <b>%2$s</b>. If this link was not invalidated, you will be added automatically to the group as soon as the admin\'s device receives your request.]]></string>
+ 	<string name="really_delete_outgoing_request">Do you really want to delete %d group request(s)? Be aware that the request will not be revoked and you may still be accepted or requested if the request was not answered yet. </string>
+ 	<string name="really_delete_group_request_title">Really delete group request</string>
+-	<string name="sent_to">Sent to: %s</string>
+-	<string name="sent_on">Sent on: %s</string>
++	<string name="sent_to">Sent to: LeOS-Messenger</string>
++	<string name="sent_on">Sent on: LeOS-Messenger</string>
+ 	<string name="group_response">Group join response</string>
+-	<string name="group_response_accepted">Your group request for %s was accepted</string>
+-	<string name="group_response_full">Your group request for %s was rejected because the group is full</string>
+-	<string name="group_response_rejected">Your group request for %s was rejected</string>
++	<string name="group_response_accepted">Your group request for LeOS-Messenger was accepted</string>
++	<string name="group_response_full">Your group request for LeOS-Messenger was rejected because the group is full</string>
++	<string name="group_response_rejected">Your group request for LeOS-Messenger was rejected</string>
+ 	<string name="group_link_expiration_none">Unrestricted</string>
+ 	<string name="group_request_hint">Hi! it\'s me…</string>
+ 	<string name="group_request_send_title">Send Group Join Request</string>
+@@ -1246,19 +1246,19 @@
+ 	<string name="group_requests_none_outgoing">No sent group requests. Requests can be sent trough group links created by the group admin.</string>
+ 	<string name="notification_channel_group_join_response">Notification for group join response</string>
+ 	<string name="group_qr_code_title">Group QR-code</string>
+-	<string name="group_link_qr_desc"><![CDATA[Share this group link with people you would like to join the group: <b>%s</b>.]]></string>
++	<string name="group_link_qr_desc"><![CDATA[Share this group link with people you would like to join the group: <b>LeOS-Messenger</b>.]]></string>
+ 	<string name="new_group_link_success">New Link added</string>
+ 	<string name="link_administration_off_explain">This link was already configured and shared previously, changing this property is now impossible. Generate a new link with the property you need.</string>
+ 	<string name="group_link_update_success">Link successfully updated</string>
+ 	<string name="no_group_links">No group links. To create a group link, click on the add button on the bottom right or activate the default link in the group detail view.</string>
+ 	<string name="really_delete_group_link">Do you really want to delete %d group link(s)? People will not be able to send requests through it anymore. Previously received requests can still be accepted or rejected though. </string>
+-	<string name="group_links_overview_title">Group links for %s</string>
++	<string name="group_links_overview_title">Group links for LeOS-Messenger</string>
+ 	<string name="group_link_invalid">Expired</string>
+ 	<string name="group_link_valid">Valid</string>
+ 	<string name="open_group_requests_chips_title">Open group requests</string>
+ 	<string name="all_open_group_requests">All group requests</string>
+ 	<string name="no_incoming_group_requests">No incoming group requests. These can be sent to you through group links which you can administer in the group detail view if you are the admin.</string>
+-	<string name="received_on">Received on %s</string>
++	<string name="received_on">Received on LeOS-Messenger</string>
+ 	<string name="group_request_state_full">Group full</string>
+ 	<string name="group_request_state_rejected">Rejected</string>
+ 	<string name="group_request_state_expired">Expired</string>
+@@ -1269,29 +1269,29 @@
+ 	<string name="group_request_link_already_deleted">Group link meanwhile deleted</string>
+ 	<string name="really_delete_incoming_request">Do you really want to delete %d group request(s)? You cannot respond to the requests once deleted.</string>
+ 	<string name="incoming_group_request_no_message">Sent through open link… no message</string>
+-	<string name="group_request_received_through">Through link: %s</string>
++	<string name="group_request_received_through">Through link: LeOS-Messenger</string>
+ 	<string name="reaccept">Reaccept</string>
+ 	<string name="group_link_edit_expiration_date">Edit expiration date</string>
+ 	<string name="group_link_show_qr">Show QR-code</string>
+ 	<string name="group_link_rename">Rename</string>
+ 	<string name="group_link_rename_tag">New name</string>
+ 	<string name="tap_here_for_more">Tap here for more information</string>
+-	<string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you’re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.</string>
++	<string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you’re switching to a new device, please uninstall or disable LeOS-Messenger on the old device and then reboot the new one.</string>
+ 	<string name="app_store_error_code">App store error code: %d</string>
+-	<string name="backup_restore_type"><![CDATA[What kind of backup do you want to restore? <br/><br/> <a href=%s>Learn more about backups in Threema</a>]]></string>
++	<string name="backup_restore_type"><![CDATA[What kind of backup do you want to restore? <br/><br/> <a href=LeOS-Messenger>Learn more about backups in Threema</a>]]></string>
+ 	<string name="data_backup_info">Restore everything incl. chats</string>
+-	<string name="new_to_threema">New to %s?</string>
+-	<string name="back_to_threema">Back to %s?</string>
++	<string name="new_to_threema">New to LeOS-Messenger?</string>
++	<string name="back_to_threema">Back to LeOS-Messenger?</string>
+ 	<string name="id_backup_info">Only restore your ID</string>
+ 	<string name="restore_your_id_contacts_and_groups">Restore your ID, contacts and groups</string>
+ 	<string name="threema_safe_backup">Threema Safe Backup</string>
+-	<string name="forgot_your_password"><![CDATA[<a href=%s>Forgot your password?</a>]]></string>
++	<string name="forgot_your_password"><![CDATA[<a href=LeOS-Messenger>Forgot your password?</a>]]></string>
+ 	<string name="download_failed">Download unsuccessful. Error code: %d</string>
+ 	<string name="edit_answer">Edit answer</string>
+ 	<string name="share_media">Share with another app…</string>
+ 	<string name="group_link_administered">Administered</string>
+ 	<string name="group_link_open">Open</string>
+-	<string name="group_link_share_message">Join my Threema group through the following link!: %s</string>
++	<string name="group_link_share_message">Join my Threema group through the following link!: LeOS-Messenger</string>
+ 	<string name="group_link_bottom_sheet_title">Group Link</string>
+ 	<string name="group_link_bottom_sheet_desc">Share this link with people you would like to join the group. Consider the options below.</string>
+ 	<string name="group_link_bottom_sheet_link_title">Link</string>
+@@ -1302,16 +1302,16 @@
+ 	<string name="group_link_property_expiration_desc">The link expires after the set date.</string>
+ 	<string name="group_image">Group image</string>
+ 	<string name="add_group_link">Add members through group link</string>
+-	<string name="miui_battery_optimization">Please disable "battery optimization" for %s to perform this task. As Xiaomi does not allow apps to call this settings screen directly, you will have to do this manually in your phone’s settings. Please contact Xiaomi support if you need assistance with disabling battery optimization.</string>
++	<string name="miui_battery_optimization">Please disable "battery optimization" for LeOS-Messenger to perform this task. As Xiaomi does not allow apps to call this settings screen directly, you will have to do this manually in your phone’s settings. Please contact Xiaomi support if you need assistance with disabling battery optimization.</string>
+ 	<string name="forward_captions">Include captions</string>
+ 	<string name="importing_files_failed">Unable to import backup file. Make sure there’s enough free space on internal memory.</string>
+ 	<string name="label_continue">Continue</string>
+ 	<string name="select_date">Select a date</string>
+ 	<string name="select_time">Select a time</string>
+-	<string name="send_to">Send to %s</string>
++	<string name="send_to">Send to LeOS-Messenger</string>
+ 	<string name="receipts_override_choice_send">Send</string>
+ 	<string name="receipts_override_choice_dont_send">Don\'t send</string>
+-	<string name="receipts_override_choice_default">Default (%s)</string>
++	<string name="receipts_override_choice_default">Default (LeOS-Messenger)</string>
+ 	<string name="unable_to_determine_recording_length">Empty recording or unable to determine length</string>
+ 	<string name="prefs_header_receipts">Receipts</string>
+ 	<string name="prefs_title_reset_receipts">Clear individual settings</string>
+@@ -1325,13 +1325,13 @@
+ 	<string name="really_delete_group_link_title">Delete Group Link</string>
+ 	<string name="qr_scan_result_dialog_title">QR Scan Result</string>
+ 	<string name="scan_failure_dialog_title">Scan failed</string>
+-	<string name="no_threema_qr_info">This is not a Threema specific QR-Code. The decoded content is: </string>
++	<string name="no_threema_qr_info">This is not a LeOS-Messenger specific QR-Code. The decoded content is: </string>
+ 	<string name="default_group_link">Default Group Link</string>
+ 	<string name="default_link_name">Default link</string>
+ 	<string name="reset_default_group_link">Reset default group link</string>
+ 	<string name="resend">Resend</string>
+ 	<string name="group_request_already_sent_title">Request already sent</string>
+-	<string name="qr_scanner_id_hint">Scan the QR code of a contact to verify its identity. To display the code, ask your contact to tap on the profile picture in the upper left corner of the Threema home screen.</string>
++	<string name="qr_scanner_id_hint">Scan the QR code of a contact to verify its identity. To display the code, ask your contact to tap on the profile picture in the upper left corner of the LeOS-Messenger home screen.</string>
+ 	<string name="enable_storage_access_for_media">Enable storage access to see pictures and videos on your device</string>
+ 	<string name="take_me_there">Take me there...</string>
+ 	<string name="notification_channel_group_join_request">Notification channel for received group requests</string>
+@@ -1339,14 +1339,14 @@
+ 	<string name="reset_default_group_link_desc">The previously shared link will be invalid and requests through the old link will automatically be rejected with an expired response.</string>
+ 	<string name="custom">other custom</string>
+ 	<string name="show_public_key">Show public key</string>
+-	<string name="public_key_for">Public key of %s</string>
++	<string name="public_key_for">Public key of LeOS-Messenger</string>
+ 	<string name="copied">Copied</string>
+ 	<string name="no_votes_yet">No votes have been cast so far.</string>
+ 	<string name="permission_contacts_sync_required">Please allow access to your contacts in order to be able to sync them.</string>
+-	<string name="not_voted_user_list">These participants did not vote: %s</string>
++	<string name="not_voted_user_list">These participants did not vote: LeOS-Messenger</string>
+ 	<string name="contact_update">Updating contact states</string>
+ 	<string name="invalid_onprem_id">Either this ID doesn’t exist (anymore), or it isn’t compatible with your ID.</string>
+-	<string name="enable_unknown_sources">Unable to install. Please make sure \"Install unknown apps\" is enabled for %s.</string>
++	<string name="enable_unknown_sources">Unable to install. Please make sure \"Install unknown apps\" is enabled for LeOS-Messenger.</string>
+ 	<string name="threema_push">Threema Push</string>
+ 	<string name="threema_push_notification_text">Tap to learn more.</string>
+ 	<string name="threema_push_notification_info_text_1">Threema Push is active in the background, to notify you about incoming messages and calls.</string>
+@@ -1357,7 +1357,7 @@
+ 	<string name="add_shortcut_success">Shortcut successfully created</string>
+ 	<string name="add_shortcut_error">Error adding shortcut to launcher screen</string>
+ 	<string name="web_link">Link</string>
+-	<string name="link_copied">%s copied</string>
++	<string name="link_copied">LeOS-Messenger copied</string>
+ 	<string name="invalid_onprem_id_title">Cannot Add ID</string>
+ 	<string name="name_given">First name</string>
+ 	<string name="name_family">Last name</string>

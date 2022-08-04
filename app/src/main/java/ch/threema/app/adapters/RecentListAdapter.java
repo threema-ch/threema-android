@@ -22,8 +22,6 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,8 +54,6 @@ public class RecentListAdapter extends FilterableListAdapter {
 	private List<ConversationModel> values;
 	private List<ConversationModel> ovalues;
 	private RecentListFilter recentListFilter;
-	private final Bitmap defaultContactImage, defaultGroupImage;
-	private final Bitmap defaultDistributionListImage;
 	private final ContactService contactService;
 	private final GroupService groupService;
 	private final DistributionListService distributionListService;
@@ -76,9 +72,6 @@ public class RecentListAdapter extends FilterableListAdapter {
 		this.contactService = contactService;
 		this.groupService = groupService;
 		this.distributionListService = distributionListService;
-		this.defaultContactImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_contact);
-		this.defaultGroupImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_group);
-		this.defaultDistributionListImage = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_distribution_list);
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
 			this.checkedItems.addAll(checkedItems);
@@ -162,11 +155,7 @@ public class RecentListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				position,
 				conversationModel,
-				this.defaultContactImage,
-				this.defaultGroupImage,
-				this.defaultDistributionListImage,
 				this.contactService,
 				this.groupService,
 				this.distributionListService,

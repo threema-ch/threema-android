@@ -187,8 +187,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	private static boolean isRunning = false;
 
 	private boolean foregroundStarted = false;
-	private boolean iceConnected = false;
-	private boolean iceWasConnected = false;
+	private boolean transportConnected = false;
+	private boolean transportWasConnected = false;
 	private boolean isError = false;
 	private boolean micEnabled = true;
 	private boolean uiDebugStatsEnabled = false;
@@ -233,8 +233,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	private static final long FRAME_DETECTOR_QUERY_INTERVAL_MS = 750;
 
 	// Timeouts
-	private final Timer iceDisconnectedSoundTimer = new Timer();
-	private TimerTask iceDisconnectedSoundTimeout;
+	private final Timer transportDisconnectedSoundTimer = new Timer();
+	private TimerTask transportDisconnectedSoundTimeout;
 	private static final int ICE_DISCONNECTED_SOUND_TIMEOUT_MS = 1000;
 
 	// Camera handling
@@ -841,7 +841,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		// Initialize state variables
-		this.iceConnected = false;
+		this.transportConnected = false;
 		this.isError = false;
 		this.voipStateService.setStateInitializing(callId);
 
@@ -1362,11 +1362,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		logger.info("Cleaning up resources");
 
 		// Stop timers
-		synchronized (this.iceDisconnectedSoundTimer) {
+		synchronized (this.transportDisconnectedSoundTimer) {
 			logger.info("Cancel iceDisconnectedSoundTimeout");
-			if (this.iceDisconnectedSoundTimeout != null) {
-				this.iceDisconnectedSoundTimeout.cancel();
-				this.iceDisconnectedSoundTimeout = null;
+			if (this.transportDisconnectedSoundTimeout != null) {
+				this.transportDisconnectedSoundTimeout.cancel();
+				this.transportDisconnectedSoundTimeout = null;
 			}
 		}
 
@@ -1380,7 +1380,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		if (this.peerConnectionClient != null) {
 			// Note: This needs to be here to ensure that the stats-after-closing contains all
 			//       candidate pairs.
-			this.iceConnected = false;
+			this.transportConnected = false;
 
 			synchronized (this) {
 				logger.info("Unregister debug stats collector");
@@ -1455,7 +1455,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		logCallInfo(
 			callId,
 			"disconnect (isConnected? {} | isError? {} | message: {})",
-			this.iceConnected, this.isError, message
+			this.transportConnected, this.isError, message
 		);
 
 		// If the call is still connected, notify listeners about the finishing
@@ -1483,7 +1483,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		stopForeground(true);
 
-		if (this.iceConnected && !this.isError) {
+		if (this.transportConnected && !this.isError) {
 			VoipUtil.sendVoipBroadcast(this, CallActivity.ACTION_DISCONNECTED);
 		} else {
 			VoipUtil.sendVoipBroadcast(this, CallActivity.ACTION_CANCELLED);
@@ -1799,8 +1799,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	@Override
 	@AnyThread
-	public void onIceChecking(long callId) {
-		logCallInfo(callId, "ICE checking");
+	public void onTransportConnecting(long callId) {
+		logCallInfo(callId, "Transport connecting");
 		synchronized (this) {
 			if (this.peerConnectionClient != null) {
 				// Register debug stats collector (fast interval until connected)
@@ -1824,16 +1824,16 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	@Override
 	@AnyThread
-	public void onIceConnected(long callId) {
-		logCallInfo(callId, "ICE connected");
-		this.iceConnected = true;
-		if (this.iceWasConnected) {
+	public void onTransportConnected(long callId) {
+		logCallInfo(callId, "Transport connected (wasConnected={})", this.transportWasConnected);
+		this.transportConnected = true;
+		if (this.transportWasConnected) {
 			// If we were previously connected, then the connection problem sound
 			// is scheduled or playing right now. Cancel and stop it.
-			synchronized (this.iceDisconnectedSoundTimer) {
-				if (this.iceDisconnectedSoundTimeout != null) {
-					this.iceDisconnectedSoundTimeout.cancel();
-					this.iceDisconnectedSoundTimeout = null;
+			synchronized (this.transportDisconnectedSoundTimer) {
+				if (this.transportDisconnectedSoundTimeout != null) {
+					this.transportDisconnectedSoundTimeout.cancel();
+					this.transportDisconnectedSoundTimeout = null;
 				}
 			}
 			boolean wasPlaying = this.mediaPlayer != null;
@@ -1851,7 +1851,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			}
 		} else {
 			// This is the initial "connected" event
-			this.iceWasConnected = true;
+			this.transportWasConnected = true;
 			this.callConnected(callId);
 			synchronized (this) {
 				// Register debug stats collector (slow interval since we're connected)
@@ -1881,34 +1881,34 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	@Override
 	@AnyThread
-	public void onIceDisconnected(final long callId) {
-		// ICE was disconnected. This can be a real closing of the connection,
+	public void onTransportDisconnected(final long callId) {
+		// Transport was disconnected. This can be a real closing of the connection,
 		// or just a temporary connectivity issue that can be recovered.
-		logCallInfo(callId, "ICE disconnected");
-		this.iceConnected = false;
+		logCallInfo(callId, "Transport disconnected");
+		this.transportConnected = false;
 
 		// Notify activity about connectivity problems
 		VoipUtil.sendVoipBroadcast(getApplicationContext(), CallActivity.ACTION_RECONNECTING);
 
 		// Start problem sound with some delay
-		synchronized (this.iceDisconnectedSoundTimer) {
-			this.iceDisconnectedSoundTimeout = new TimerTask() {
+		synchronized (this.transportDisconnectedSoundTimer) {
+			this.transportDisconnectedSoundTimeout = new TimerTask() {
 				@Override
 				public void run() {
 					VoipCallService.this.startLoopingSound(callId, R.raw.threema_problem, "problem");
-					VoipCallService.this.iceDisconnectedSoundTimeout = null;
+					VoipCallService.this.transportDisconnectedSoundTimeout = null;
 				}
 			};
-			this.iceDisconnectedSoundTimer.schedule(this.iceDisconnectedSoundTimeout, ICE_DISCONNECTED_SOUND_TIMEOUT_MS);
+			this.transportDisconnectedSoundTimer.schedule(this.transportDisconnectedSoundTimeout, ICE_DISCONNECTED_SOUND_TIMEOUT_MS);
 		}
 	}
 
 	@Override
-	public void onIceFailed(long callId) {
-		logCallWarning(callId, "ICE failed");
-		this.iceConnected = false;
+	public void onTransportFailed(long callId) {
+		logCallWarning(callId, "Transport failed");
+		this.transportConnected = false;
 
-		if (this.iceWasConnected) {
+		if (this.transportWasConnected) {
 			// If we were previously connected, this means that the connection was closed.
 			RuntimeUtil.runOnUiThread(() -> VoipCallService.this.disconnect(getString(R.string.voip_connection_lost)));
 		} else {
@@ -2066,8 +2066,10 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			logCallInfo(callId, "Stopping looping sound...");
 			this.mediaPlayer.stop();
 			this.mediaPlayer.release();
+			this.mediaPlayer = null;
+		} else {
+			logCallWarning(callId, "stopLoopingSound: mediaPlayer is null");
 		}
-		this.mediaPlayer = null;
 	}
 
 	/**

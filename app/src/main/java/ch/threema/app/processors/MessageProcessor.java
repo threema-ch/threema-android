@@ -47,6 +47,7 @@ import ch.threema.app.utils.MessageDiskSizeUtil;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
@@ -171,7 +172,8 @@ public class MessageProcessor implements MessageProcessorInterface {
 					validationLogger.info("< Nonce: {}", Utils.byteArrayToHexString(boxmsg.getNonce()));
 					validationLogger.info("< Data: {}", Utils.byteArrayToHexString(boxmsg.getBox()));
 
-					byte[] publicKey = contactStore.getPublicKeyForIdentity(boxmsg.getFromIdentity(), true);
+					Contact contact = contactStore.getContactForIdentity(boxmsg.getFromIdentity(), true, true);
+					byte[] publicKey = contact != null ? contact.getPublicKey() : null;
 					if (publicKey != null) {
 						validationLogger.info("< Public key ({}): {}",
 							boxmsg.getFromIdentity(), Utils.byteArrayToHexString(publicKey));
@@ -234,8 +236,8 @@ public class MessageProcessor implements MessageProcessorInterface {
 				return ProcessIncomingResult.ignore();
 			}
 
-			/* send delivery receipt (but not for immediate messages or delivery receipts) */
-			if (!msg.isImmediate()) {
+			/* send delivery receipt (but not for non-queued messages or delivery receipts) */
+			if (!msg.flagNoServerQueuing()) {
 				/* throw away messages from hidden contacts if block unknown is enabled - except for group messages */
 				if (
 					this.preferenceService.isBlockUnknown()
@@ -485,6 +487,6 @@ public class MessageProcessor implements MessageProcessorInterface {
 		/**
 		 * Message has been ignored due to being blocked or invalid.
 		 */
-		IGNORED;
+		IGNORED
 	}
 }

@@ -983,7 +983,10 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 		switch (requestCode) {
 			case PERMISSION_REQUEST_READ_CONTACTS:
 				if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-					this.serviceManager.getPreferenceService().setSyncContacts(false);
+					Boolean contactSyncRestriction = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync));
+					if (contactSyncRestriction == null || !contactSyncRestriction) {
+						this.serviceManager.getPreferenceService().setSyncContacts(false);
+					}
 				}
 				reallySyncContactsAndFinish();
 		}

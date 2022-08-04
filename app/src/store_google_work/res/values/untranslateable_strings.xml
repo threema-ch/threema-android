@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="threema_work_url" translatable="false">https://threema.ch/%s/work</string>
+    <string name="private_download_url" translatable="false">https://play.google.com/store/apps/details?id=ch.threema.app</string>
+    <string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
+</resources>

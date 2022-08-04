@@ -21,8 +21,8 @@
     <string name="menu_about">关于 Threema Work</string>
     <string name="list_theme_light">浅色</string>
     <string name="list_theme_dark">深色（默认）</string>
-    <string name="private_threema_download"><![CDATA[如果您是私人用户，请<a href=%s>点击这里</a>下载 Threema。]]></string>
+    <string name="private_threema_download"><![CDATA[<a href=%1$s>了解更多关于 Threema Work 的信息</a> <br/><br/>如果您是私人用户，请<a href=%2$s>点击这里</a> 下载 Threema。]]></string>
     <string name="directory_search">在目录中搜索</string>
     <string name="directory_title">公司目录</string>
-    <string name="directory_empty_view_text">找不到结果\n\n请输入至少3个字符，以开始在贵公司的 Threema 用户目录中进行搜索</string>
+    <string name="directory_empty_view_text">请输入至少3个字符，以开始在贵公司的 Threema 用户目录中进行搜索</string>
 </resources>

@@ -35,7 +35,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -55,7 +54,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -103,8 +101,8 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.preference.SettingsSecurityFragment;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
+import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
@@ -193,6 +191,7 @@ public class MessageSectionFragment extends MainFragment
 
 	private ServiceManager serviceManager;
 	private ConversationService conversationService;
+	private AvatarCacheService avatarCacheService;
 	private ContactService contactService;
 	private GroupService groupService;
 	private MessageService messageService;
@@ -383,6 +382,7 @@ public class MessageSectionFragment extends MainFragment
 	protected boolean checkInstances() {
 		return TestUtil.required(
 				this.serviceManager,
+				this.avatarCacheService,
 				this.contactListener,
 				this.groupService,
 				this.conversationService,
@@ -401,6 +401,7 @@ public class MessageSectionFragment extends MainFragment
 
 		if (this.serviceManager != null) {
 			try {
+				this.avatarCacheService = this.serviceManager.getAvatarCacheService();
 				this.contactService = this.serviceManager.getContactService();
 				this.groupService = this.serviceManager.getGroupService();
 				this.messageService = this.serviceManager.getMessageService();
@@ -1034,6 +1035,7 @@ public class MessageSectionFragment extends MainFragment
 		Intent intent = new Intent(getContext(), RecipientListBaseActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, true);
 		intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT, false);
+		intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT_FOR_COMPOSE, true);
 		AnimationUtil.startActivityForResult(this.getActivity(), v, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 	}
 
@@ -1528,15 +1530,13 @@ public class MessageSectionFragment extends MainFragment
 								recyclerView.setAdapter(messageListAdapter);
 							}
 
-							if (messageListAdapter != null) {
-								try {
-									messageListAdapter.setData(conversationModels, changedPositions);
-								} catch (IndexOutOfBoundsException e) {
-									logger.debug("Failed to set adapter data", e);
-								}
-								// make sure footer is refreshed
-								messageListAdapter.refreshFooter();
+							try {
+								messageListAdapter.setData(conversationModels, changedPositions);
+							} catch (IndexOutOfBoundsException e) {
+								logger.debug("Failed to set adapter data", e);
 							}
+							// make sure footer is refreshed
+							messageListAdapter.refreshFooter();
 
 							if (recyclerView != null) {
 								if (scrollToPosition != null) {

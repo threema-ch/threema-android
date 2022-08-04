@@ -24,13 +24,14 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.UiThread;
 import ch.threema.app.R;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 
 public class ConnectionIndicatorUtil {
 	private static ConnectionIndicatorUtil ourInstance;
-	private final int red, green, orange, transparent;
+	private final @ColorInt	int red, orange, transparent;
 
 	public static ConnectionIndicatorUtil getInstance() {
 		return ourInstance;
@@ -43,7 +44,6 @@ public class ConnectionIndicatorUtil {
 	private ConnectionIndicatorUtil(Context context) {
 		this.red = context.getResources().getColor(R.color.material_red);
 		this.orange = context.getResources().getColor(R.color.material_orange);
-		this.green = context.getResources().getColor(R.color.material_green);
 		this.transparent = context.getResources().getColor(android.R.color.transparent);
 	}
 

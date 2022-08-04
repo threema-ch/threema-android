@@ -54,6 +54,7 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
+@SuppressWarnings("unused")
 public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsDeveloperFragment");
 
@@ -123,8 +124,8 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 
 		// Pojo for holding test data.
 		class VoipMessage {
-			VoipStatusDataModel dataModel;
-			String description;
+			final VoipStatusDataModel dataModel;
+			final String description;
 			VoipMessage(VoipStatusDataModel dataModel, String description) {
 				this.dataModel = dataModel;
 				this.description = description;
@@ -286,6 +287,11 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 				logger.error("Exception", e);
 			}
 		}
+	}
+
+	@Override
+	public int getPreferenceTitleResource() {
+		return R.string.prefs_developers;
 	}
 
 	@Override

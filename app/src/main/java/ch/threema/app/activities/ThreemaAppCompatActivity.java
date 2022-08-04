@@ -24,14 +24,22 @@ package ch.threema.app.activities;
 import android.content.res.Configuration;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.utils.LoggingUtil;
 
 public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaAppCompatActivity");
 
 	@Override
 	protected void onResume() {
@@ -41,6 +49,16 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
 		} else {
 			if (ConfigUtils.refreshDeviceTheme(this)) {
 				ConfigUtils.recreateActivity(this);
+
+				// Reset avatar cache on theme change so that the default avatars are loaded with the correct (themed) color
+				ServiceManager sm = ThreemaApplication.getServiceManager();
+				if (sm != null) {
+					try {
+						sm.getAvatarCacheService().clear();
+					} catch (FileSystemNotPresentException e) {
+						logger.error("Couldn't get avatar cache service to reset cached avatars", e);
+					}
+				}
 			}
 		}
 		try {

@@ -53,63 +53,64 @@ public abstract class AbstractMessage {
 	public abstract int getType();
 
 	/**
-	 * Return whether this message should be pushed to the recipient. Do not use for
-	 * internal messages (like delivery reports etc.).
+	 * Flag 0x01: Send push notification
 	 *
-	 * @return should push true/false
+	 * The server will send a push message to the receiver of the message.
+	 * Only use this for messages that require a notification. For example, do not
+	 * set this for delivery receipts.
 	 */
-	public boolean shouldPush() {
+	public boolean flagSendPush() {
 		return false;
 	}
 
 	/**
-	 * Return whether this is in an immediate message, i.e. whether it should be discarded
-	 * if the recipient is not currently online.
+	 * Flag 0x02: No server queuing
 	 *
-	 * @return immediate message true/false
+	 * Use this for messages that can be discarded by the chat server in case the receiver
+	 * is not connected to the chat server, e.g. the typing indicator.
 	 */
-	public boolean isImmediate() {
+	public boolean flagNoServerQueuing() {
 		return false;
 	}
 
 	/**
-	 * Return whether the sender should expect an ACK from the other party after transmitting
-	 * this message via the server connection. This flag affects both client and server.
+	 * Flag 0x04: No server acknowledgement
 	 *
-	 * @return if true, no ACK is expected
+	 * Use this for messages where reliable delivery and acknowledgement is not essential,
+	 * e.g. the typing indicator. Will not be acknowledged by the chat server when sending.
+	 * No acknowledgement should be sent by the receiver to the chat server.
 	 */
-	public boolean isNoAck() {
+	public boolean flagNoServerAck() {
 		return false;
 	}
 
 	/**
-	 * Return whether this is a group message. The server uses this to decide which push
-	 * text to use.
+	 * Flag 0x10: Group message marker (DEPRECATED)
 	 *
-	 * @return if true, this is a group message
+	 * Use this for all group messages. In iOS clients, this will be used for notifications
+	 * to reflect that a group message has been received in case no connection to the server
+	 * could be established.
 	 */
-	public boolean isGroup() {
+	public boolean flagGroupMessage() {
 		return false;
 	}
 
 	/**
-	 * Return whether this is a VoIP signaling message.
+	 * Flag 0x20: Short-lived server queuing
 	 *
-	 * If the VoIP flag is set, then the VoIP push token will be used instead of the regular
-	 * push token. Furthermore, messages that have the VoIP flag set will only remain queued
-	 * for 60 seconds, rather than the normal two weeks.
-	 *
-	 * @return if true, this is a VoIP signaling message
+	 * Messages with this flag will only be queued for 60 seconds.
 	 */
-	public boolean isVoip() {
+	public boolean flagShortLivedServerQueuing() {
 		return false;
 	}
 
 	/**
-	 * Return whether the no delivery receipts flag is set in this message
-	 * @return true if no delivery receipts are to be sent to the sender of the message
+	 * Flag 0x80: Don't send delivery receipts
+	 *
+	 * This may not be used by the apps but can be used by Threema Gateway IDs
+	 * which do not necessarily want a delivery receipt for a message.
 	 */
-	public boolean isNoDeliveryReceipts() {
+	public boolean flagNoDeliveryReceipts() {
 		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS;
 	}
 

@@ -41,12 +41,13 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.FileService;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
-import ch.threema.logging.LogLevel;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.logging.LogLevel;
 import java8.util.concurrent.CompletableFuture;
 
 /**
@@ -60,7 +61,7 @@ import java8.util.concurrent.CompletableFuture;
  */
 public class DebugLogFileBackend implements LogBackend {
 	// Constants
-	private static final String TAG = "3ma";
+	private static final String TAG = BuildConfig.LOG_TAG;
 	private static final String LOGFILE_NAME = "debug_log.txt";
 
 	// Static variables

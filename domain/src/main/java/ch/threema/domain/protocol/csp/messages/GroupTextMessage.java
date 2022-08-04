@@ -48,7 +48,7 @@ public class GroupTextMessage extends AbstractGroupMessage {
 	}
 
 	@Override
-	public boolean shouldPush() {
+	public boolean flagSendPush() {
 		return true;
 	}
 

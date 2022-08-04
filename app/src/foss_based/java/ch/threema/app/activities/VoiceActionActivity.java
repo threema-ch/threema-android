@@ -21,9 +21,11 @@
 
 package ch.threema.app.activities;
 
-public class VoiceActionActivity {
+import android.app.Activity;
 
-	private VoiceActionActivity() {
-		// stub, no voice assistant api in foss build
+public class VoiceActionActivity extends Activity {
+
+	public VoiceActionActivity() {
+		// stub, no voice assistant api in hms build
 	}
 }

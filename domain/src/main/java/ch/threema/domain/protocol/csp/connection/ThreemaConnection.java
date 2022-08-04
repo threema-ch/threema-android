@@ -780,7 +780,7 @@ public class ThreemaConnection implements Runnable {
 					ackMessage = true;
 				}
 
-				if (ackMessage && (boxmsg.getFlags() & ProtocolDefines.MESSAGE_FLAG_NOACK) == 0) {
+				if (ackMessage && (boxmsg.getFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK) == 0) {
 					sendAck(boxmsg.getMessageId(), boxmsg.getFromIdentity());
 				}
 			}

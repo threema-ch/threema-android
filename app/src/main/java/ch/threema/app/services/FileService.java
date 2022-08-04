@@ -286,6 +286,14 @@ public interface FileService {
 	void removeAllAvatars();
 
 	/**
+	 * Save the thumbnail bytes to disk using the file name specified in the supplied AbstractMessageModel
+	 * @param messageModel Message Model used as the source for the file name
+	 * @param thumbnailBytes Byte Array of the thumbnail bitmap
+	 * @throws Exception
+	 */
+	void saveThumbnail(AbstractMessageModel messageModel, byte[] thumbnailBytes) throws Exception;
+
+	/**
 	 * write a thumbnail to disk
 	 */
 	void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] thumbnail) throws Exception;

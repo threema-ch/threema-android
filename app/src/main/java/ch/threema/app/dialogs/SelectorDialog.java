@@ -49,7 +49,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
 
 	private static final String BUNDLE_TITLE_EXTRA = "title";
 	private static final String BUNDLE_ITEMS_EXTRA = "items";
-	private static final String BUNDLE_VALUES_EXTRA = "values";
+	private static final String BUNDLE_TAGS_EXTRA = "tags";
 	private static final String BUNDLE_NEGATIVE_EXTRA = "negative";
 	private static final String BUNDLE_LISTENER_EXTRA = "listener";
 
@@ -64,11 +64,11 @@ public class SelectorDialog extends ThreemaDialogFragment {
 		return dialog;
 	}
 
-	public static SelectorDialog newInstance(String title, ArrayList<SelectorDialogItem> items, ArrayList<Integer> values, String negative) {
+	public static SelectorDialog newInstance(String title, ArrayList<SelectorDialogItem> items, ArrayList<Integer> tags, String negative) {
 		SelectorDialog dialog = new SelectorDialog();
 		Bundle args = new Bundle();
 		args.putString(BUNDLE_TITLE_EXTRA, title);
-		args.putIntegerArrayList(BUNDLE_VALUES_EXTRA, values);
+		args.putIntegerArrayList(BUNDLE_TAGS_EXTRA, tags);
 		args.putSerializable(BUNDLE_ITEMS_EXTRA, items);
 		args.putString(BUNDLE_NEGATIVE_EXTRA, negative);
 
@@ -122,17 +122,17 @@ public class SelectorDialog extends ThreemaDialogFragment {
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		Bundle arguments = getArguments();
-		String title = arguments.getString("title");
-		final ArrayList<SelectorDialogItem> items = (ArrayList<SelectorDialogItem>) arguments.getSerializable("items");
-		final ArrayList<Integer> values = arguments.getIntegerArrayList("values");
-		String negative = arguments.getString("negative");
-		SelectorDialogInlineClickListener listener = arguments.getParcelable("listener");
+		String title = arguments.getString(BUNDLE_TITLE_EXTRA);
+		final ArrayList<SelectorDialogItem> items = (ArrayList<SelectorDialogItem>) arguments.getSerializable(BUNDLE_ITEMS_EXTRA);
+		final ArrayList<Integer> tags = arguments.getIntegerArrayList(BUNDLE_TAGS_EXTRA);
+		String negative = arguments.getString(BUNDLE_NEGATIVE_EXTRA);
+		SelectorDialogInlineClickListener listener = arguments.getParcelable(BUNDLE_LISTENER_EXTRA);
 
 		if (listener != null) {
 			inlineCallback = listener;
 		}
 
-		final String tag = this.getTag();
+		final String fragmentTag = this.getTag();
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 		if (title != null) {
@@ -164,17 +164,17 @@ public class SelectorDialog extends ThreemaDialogFragment {
 		builder.setAdapter(adapter, (dialog, which) -> {
 			dialog.dismiss();
 
-			if (values != null && values.size() > 0) {
+			if (tags != null && tags.size() > 0) {
 				if (inlineCallback != null) {
-					inlineCallback.onClick(tag, values.get(which), object);
+					inlineCallback.onClick(fragmentTag, tags.get(which), object);
 				} else {
-					callback.onClick(tag, values.get(which), object);
+					callback.onClick(fragmentTag, tags.get(which), object);
 				}
 			} else {
 				if (inlineCallback != null) {
-					inlineCallback.onClick(tag, which, object);
+					inlineCallback.onClick(fragmentTag, which, object);
 				} else {
-					callback.onClick(tag, which, object);
+					callback.onClick(fragmentTag, which, object);
 				}
 			}
 		});
@@ -183,9 +183,9 @@ public class SelectorDialog extends ThreemaDialogFragment {
 			builder.setNegativeButton(negative, (dialog, which) -> {
 				dialog.dismiss();
 				if (inlineCallback != null) {
-					inlineCallback.onNo(tag);
+					inlineCallback.onNo(fragmentTag);
 				} else {
-					callback.onNo(tag);
+					callback.onNo(fragmentTag);
 				}
 			});
 		}

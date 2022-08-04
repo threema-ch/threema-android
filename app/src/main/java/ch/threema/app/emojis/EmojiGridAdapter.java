@@ -23,39 +23,40 @@ package ch.threema.app.emojis;
 
 import android.content.Context;
 import androidx.annotation.ColorInt;
+
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import androidx.core.content.res.ResourcesCompat;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
 import static ch.threema.app.emojis.EmojiSpritemap.emojiCategories;
 
 public class EmojiGridAdapter extends BaseAdapter {
-	private int pageNumber, emojiItemSize, emojiItemPaddingSize;
-	@ColorInt private int diverseHintColor;
-	private EmojiRecent emojiRecent;
-	private HashMap<String, String> diverseEmojiPrefs;
-	private ArrayList<EmojiInfo> emojis;
+	private final int pageNumber;
+	private final int emojiItemSize;
+	private final int emojiItemPaddingSize;
+	@ColorInt private final int diverseHintColor;
+	private final EmojiService emojiService;
+	private final ArrayList<EmojiInfo> emojis;
 	Context context;
 
-	private KeyClickListener keyClickListener;
+	private final KeyClickListener keyClickListener;
 
 	public EmojiGridAdapter(Context context,
 	                        int pageNumber,
-	                        EmojiRecent emojiRecent,
-	                        HashMap<String, String> diverseEmojiPrefs,
+	                        EmojiService emojiService,
 	                        KeyClickListener listener) {
 		this.context = context;
 		this.pageNumber = pageNumber;
 		this.keyClickListener = listener;
-		this.emojiRecent = emojiRecent;
-		this.diverseEmojiPrefs = diverseEmojiPrefs;
+		this.emojiService = emojiService;
 		this.diverseHintColor = ConfigUtils.getColorFromAttribute(context, R.attr.emoji_picker_hint);
 		if (EmojiManager.getInstance(context).getSpritemapInSampleSize() == 1) {
 			this.emojiItemSize = context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_item_size);
@@ -80,7 +81,7 @@ public class EmojiGridAdapter extends BaseAdapter {
 				this.emojis.add(entry);
 			}
 		} else {
-			emojiRecent.syncRecents();
+			emojiService.syncRecentEmojis();
 			getRecents();
 		}
 	}
@@ -97,29 +98,28 @@ public class EmojiGridAdapter extends BaseAdapter {
 	}
 
 	private void getRecents() {
-		for (final String emojiSequence : emojiRecent.getRecentList()) {
-			this.emojis.add(new EmojiInfo(emojiSequence, EmojiSpritemap.DIVERSITY_NONE, null, EmojiSpritemap.GENDER_NONE, null, EmojiSpritemap.DISPLAY_NO));
-		}
+		this.emojis.addAll(emojiService.getRecentEmojis());
 	}
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final EmojiInfo item = getItem(position);
-		final String emojiKey = getKey(item.emojiSequence);
+		final String emojiSequence = getKey(item.emojiSequence);
 
 		final EmojiItemView view;
-		if (convertView != null && convertView instanceof EmojiItemView) {
+		if (convertView instanceof EmojiItemView) {
 			view = (EmojiItemView)convertView;
 		} else {
 			final EmojiItemView emojiItemView = new EmojiItemView(context);
-			emojiItemView.setBackground(context.getResources().getDrawable(R.drawable.listitem_background_selector_noripple));
+			Drawable background = ResourcesCompat.getDrawable(context.getResources(), R.drawable.listitem_background_selector_noripple, null);
+			emojiItemView.setBackground(background);
 			emojiItemView.setPadding(emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize);
 			emojiItemView.setLayoutParams(new AbsListView.LayoutParams(emojiItemSize, emojiItemSize));
 			view = emojiItemView;
 		}
 
-		view.setEmoji(emojiKey, pageNumber != 0 && item.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT, diverseHintColor);
-		view.setContentDescription(emojiKey);
+		view.setEmoji(emojiSequence, pageNumber != 0 && item.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT, diverseHintColor);
+		view.setContentDescription(emojiSequence);
 		view.setOnClickListener(v -> keyClickListener.onEmojiKeyClicked(getKey(item.emojiSequence)));
 		view.setOnLongClickListener(v -> {
 			if (pageNumber != 0) {
@@ -134,10 +134,9 @@ public class EmojiGridAdapter extends BaseAdapter {
 	}
 
 	private String getKey(String parentKey) {
-		if (pageNumber != 0 && diverseEmojiPrefs.containsKey(parentKey)) {
-			return diverseEmojiPrefs.get(parentKey);
-		}
-		return parentKey;
+		return pageNumber != 0
+			? emojiService.getPreferredDiversity(parentKey)
+			: parentKey;
 	}
 
 	@Override

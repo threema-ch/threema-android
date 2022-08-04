@@ -1,3 +1,9 @@
+// ## End-to-End Encrypted Messages (Supplementary)
+//
+// This is a supplementary section to the corresponding structbuf section
+// with newer messages that use protobuf instead of structbuf. All defined
+// messages here follow the same logic.
+
 syntax = "proto3";
 
 package csp_e2e;
@@ -7,16 +13,11 @@ option java_multiple_files = true;
 
 import "common.proto";
 
-// ## End-to-End Encrypted Messages (Supplementary)
-//
-// This is a supplementary section to the corresponding structbuf section
-// with newer messages that use protobuf instead of structbuf. All defined
-// messages here follow the same logic.
-
 // Metadata sent within a CSP payload `message-with-meta` struct.
 message MessageMetadata {
-  // Random amount of padding ignored by the receiver. Recommended to be
-  // between 0 and 32 bytes.
+  // Padding that is ignored by the receiver.
+  // Recommended to be chosen such that the total length of padding + nickname
+  // is at least 16 bytes. May be empty if the nickname is long enough.
   bytes padding = 1;
 
   // The nickname associated to the sender's Threema ID. Recommended to not

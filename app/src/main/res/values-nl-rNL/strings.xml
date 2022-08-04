@@ -3,7 +3,7 @@
     <string name="title_section2">Contactpersonen</string>
     <string name="title_section1">Berichten</string>
     <string name="title_compose_message">Nieuw bericht</string>
-    <string name="title_choose_recipient">Ontvanger selecteren</string>
+    <string name="title_choose_recipient">Ontvangers selecteren</string>
     <string name="title_keyfingerprint">Vingerafdruksleutel</string>
     <string name="title_mythreemaid">Mijn Threema ID</string>
     <string name="title_threemaid">Threema ID</string>
@@ -44,7 +44,7 @@
     <string name="prefs_title_typing_indicator">Invoerindicator versturen</string>
     <string name="prefs_media_title">Media &amp; Opslag</string>
     <string name="prefs_sum_media_title">Instellingen voor media en opslag</string>
-    <string name="prefs_image_size">Afbeeldingsgrootte</string>
+    <string name="prefs_image_size">Beeldafmetingen</string>
     <string name="prefs_notification_sound">Geluid melding</string>
     <string name="prefs_sum_notification_sound">Systeemstandaard</string>
     <string name="prefs_vibrate">Trillen</string>
@@ -127,7 +127,6 @@
     <string name="whoaaa">Threema melding</string>
     <string name="really_delete_message_title">Bericht verwijderen</string>
     <string name="really_delete_thread">Chat verwijderen</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Weet u zeker dat u %d chat(s) wilt verwijderen? De berichten gaan dan verloren.</string>
     <string name="really_delete_contact">Weet u zeker dat u deze contactpersoon en alle gekoppelde berichten wil verwijderen?</string>
     <string name="image_placeholder">Afbeelding</string>
     <string name="invalid_threema_id">Ongeldige Threema ID</string>
@@ -221,7 +220,7 @@
     <string name="saving_media">Media opslaan</string>
     <string name="file_is_not_a_video">Geselecteerd bestand is geen video</string>
     <string name="masterkey_is_unlocked">Hoofdsleutel is vrijgegeven</string>
-    <string name="file_too_large">Bestand is groter dan het maximum van 50 MB</string>
+    <string name="file_too_large">Bestand is groter dan het maximum van %1$d MB</string>
     <string name="deleting_thread">Chat verwijderen</string>
     <string name="enter_serial_body"><![CDATA[Voer uw winkellicentiesleutel in of klik hier om uw sleutel op te halen:
 		https://shop.threema.ch/retrieve_keys]]></string>
@@ -246,6 +245,8 @@
     <string name="emoji_emotions">Smileys &amp; Mensen</string>
     <string name="emoji_activities">Activiteiten</string>
     <string name="emoji_flags">Vlaggen</string>
+    <string name="emoji_search">Emoji\'s zoeken</string>
+    <string name="emoji_search_no_result">Geen zoekresultaten</string>
     <string name="title_lock">Vergrendelen</string>
     <string name="new_messages_locked">Nieuwe berichten beschikbaar</string>
     <string name="new_messages_locked_description">Aanraken om nieuwe berichten te bekijken.</string>
@@ -377,7 +378,6 @@
     <string name="file_saved">%d bestand(en) opgeslagen</string>
     <string name="token_register_failed">Pushtoken niet hersteld, probeer het later opnieuw.</string>
     <string name="internet_connection_required">Geen internetverbinding.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">%1$d bericht(en) kon(den) niet worden verstuurd</string>
     <string name="prefs_sum_save_media">Inkomende media en camera-foto\'s naar filmrol automatisch downloaden, ontcijferen en opslaan</string>
     <string name="prefs_save_media">Automatisch opslaan naar filmrol</string>
     <string name="title_add_distribution_list">Nieuwe distributielijst</string>
@@ -576,7 +576,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="blocked">geblokkeerd</string>
     <string name="name">Naam</string>
     <string name="privacy_policy">Privacybeleid</string>
-    <string name="terms_of_service">Algemene voorwaarden</string>
+    <string name="terms_of_service">Gebruiksvoorwaarden</string>
+    <string name="eula">Licentieovereenkomst voor Eindgebruiker</string>
     <string name="save_group_changes">Wilt u de wijzigingen aan de groep opslaan?</string>
     <string name="prefs_title_fontsize">Tekstgrootte</string>
     <string name="fontsize_normal">Normaal</string>
@@ -586,6 +587,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) verwijderd</string>
     <string name="prefs_sendlog">Log versturen</string>
     <string name="prefs_sendlog_summary">Logbestand naar Threema sturen voor verdere analyse</string>
+    <string name="prefs_exportlog">Exportbestand</string>
+    <string name="prefs_exportlog_summary">Logbestand met andere app delen</string>
     <string name="permission_storage_required">Geeft Threema toegang tot uw opslag om media te kunnen versturen.</string>
     <string name="permission_location_required">Geef Threema toegang tot uw locatie om een locatie te kunnen versturen.</string>
     <string name="permission_contacts_required">Geef Threema leestoegang tot uw contactpersonen om contactpersonen te kunnen versturen.</string>
@@ -624,6 +627,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="new_wizard_linked_to">Gekoppeld aan</string>
     <string name="new_wizard_need_internet">Een stabiele internetverbinding is vereist om uw unieke Threema ID aan te maken. probeer het opnieuw.</string>
     <string name="new_wizard_more_information">Meer informatie</string>
+    <string name="contact_details_id_copied">ID gekopieerd naar klembord</string>
+    <string name="contact_details_nickname_copied">Bijnaam gekopieerd naar klembord</string>
     <string name="new_wizard_use_id_as_nickname">Wilt u uw Threema ID als nickname gebruiken?</string>
     <string name="new_wizard_phone_email_invalid">Het ingevulde mobiele nummer of e-mailadres is niet geldig. Corrigeer dit voordat u verder gaat.</string>
     <string name="new_wizard_phone_invalid">Het ingevulde mobiele nummer is niet geldig.\nCorrigeer dit voordat u verder gaat.</string>
@@ -701,7 +706,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="grace_never">Nooit (handmatig)</string>
     <string name="never">Nooit</string>
     <string name="unhide_chats_confirm">Als u de toegangsbescherming verwijderd, worden uw privé-chats weer zichtbaar.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">%d afbeelding(en) geselecteerd</string>
     <string name="verification_started">Verificatie gestart</string>
     <string name="cannot_open_file">Kon bestand niet openen</string>
     <string name="prefs_title_image_attach_previews">Afbeelding snel selecteren</string>
@@ -816,6 +820,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="unpin">Wissen</string>
     <string name="location_services_disabled">Locatiediensten zijn uitgeschakeld. Wil je ze inschakelen?</string>
     <string name="send_location">Locatie verzenden</string>
+    <string name="forward_location">Locatie doorsturen</string>
     <string name="unknown_address">Onbekend adres</string>
     <string name="your_location">Je locatie</string>
     <string name="network_blocked_title">Achtergronddata uitgeschakeld</string>
@@ -1012,7 +1017,23 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="delete">Verwijderen</string>
     <string name="num_archived_chats">%d gearchiveerde chats</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
-    <string name="tooltip_identity_popup">Tik hier om uw Threema-ID snel weer te geven of om de ID\'s van anderen te scannen</string>
+    <string name="whatsnew_title">Welkom bij %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nieuwe fuincties in deze versie van %s voor Android:</b></p>
+		<p>
+		&bull; Veel nieuwe emoji\'s volgens de Unicode 13.1-standaard. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Emoji\'s zoeken op naam of betekenis (beschikbaar in 17 talen).
+		</p><p>
+		&bull; Deterministische kleuren voor contactpersonen en -groepen die geen eigen profielafbeelding hebben. Deze nieuwe kleuren werken op verschillende platforms en apparaten.
+		</p><p>
+		&bull; Verbeterde scrolprestraties in veel lijsten.
+		</p><p>
+		&bull; Geoptimaliseerde lay-out voor de Media Editor. Het aantal media-items dat kan worden bewerkt voor verzending is verhoogd tot 256.
+		</p><p>
+		&bull; Talloze kleine verbeteringen doorgevoerd en bugs verholpen
+		</p>
+		]]></string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
     <string name="invalid_backup_path">Ongeldige back-uplocatie</string>
@@ -1032,7 +1053,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_type_content_description">%1$s %2$s bekijken of bewerken</string>
     <string name="group">Groep</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Onze Privacybeleid is bijgewerkt om de volgende verandering weer te geven:</p><p>%1$s is niet langer afhankelijk van Google Play en Google Maps om kaart- en POI-gegevens te verstrekken.</p>Kijk het volledige Privacybeleid <a href="%2$s">hier</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Services niet geinstalleer. Kan niet overschakelen naar «push».</string>
+    <string name="play_services_not_installed_unable_to_use_push">Services zijn niet geïnstalleerd. Kan niet overschakelen naar «Google FCM of HMS push».</string>
     <string name="unable_to_get_current_location">Kan huidige locatie niet bepalen.</string>
     <string name="lp_search_place_min_chars">Voer ten minste drie tekens in om een plaats te zoeken.</string>
     <string name="lp_search_place_no_matches">Geen overeenkomende plaatsen gevonden. Pas uw zoekopdracht aan.</string>
@@ -1350,4 +1371,38 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="organization_type">Organisatie</string>
     <string name="permission_bluetooth_connect_required">Toestemming voor \"Apparaten in de buurt\" inschakelen om verbonden Bluetooth-headsets te vinden</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push is actief. Threema Web en Desktop sessies moeten handmatig worden gestart.</string>
+    <string name="tooltip_multiple_recipients_title">Nieuw: meerdere ontvangers</string>
+    <string name="tooltip_multiple_recipients_text">Tik en houd vast om meerdere ontvangers voor hetzelfde bericht te selecteren.</string>
+    <string name="synchronizing">Synchroniseren…</string>
+    <string name="self_updater_installation_failed">De update is niet gedownload. Download en installeer de update handmatig <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
+    <string name="spam_first_contact">Deze chat is van een onbekend contactpersoon</string>
+    <string name="spam_report">Spam melden</string>
+    <string name="spam_report_dialog_explain">Als u doorgaat, worden de ID en de bijnaam van dit contactpersoon, inclusief uw ID, doorgestuurd naar Threema. Inhoud of persoonlijke gegevens worden niet verzonden. Het contactpersoon wordt hiervan niet op de hoogte gebracht.</string>
+    <string name="spam_report_dialog_block_checkbox">Blokkeer eveneens dit contactpersoon en verwijder de chat</string>
+    <string name="spam_report_dialog_title">Meld %s</string>
+    <string name="spam_successfully_reported">De ID is gemeld voor het verzenden van spam.</string>
+    <string name="spam_error_reporting">Er is een fout opgetreden bij het melden van spam: %s</string>
+    <string name="spam_report_short">Melden</string>
+    <string name="wizard_incompatible_contact_sync_params">Er zijn incompatibele MDM-parameters ingesteld. De Threema MDM-parameter th_contact_sync kan niet zijn ingesteld op \'True\' als gebruikersbeperking DISALLOW_MODIFY_ACCOUNTS is ingesteld. Neem contact op met de beheerder van het apparaat.</string>
+    <string name="messages_cannot_be_recovered">De berichten gaan dan verloren.</string>
+    <string name="contact_deleted">Contact verwijderd</string>
+    <string name="last_added_contact">Laatst toegevoegd</string>
+    <string name="directory_explain_text">Zoek in de bedrijfsgids naar werknemers die nog niet aan je contact lijst zijn toegevoegd.</string>
+    <string name="cannot_display_location">Deze locatie kan niet worden getoond.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="one">%d contactpersoon</item>
+        <item quantity="other">%d contactpersonen</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Weet u zeker dat u %d chat wilt verwijderen?</item>
+        <item quantity="other">Weet u zeker dat u %d chats wilt verwijderen?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">Een bericht kon niet worden verstuurd</item>
+        <item quantity="other">%1$d berichten konden niet worden verstuurd</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">%d afbeelding geselecteerd</item>
+        <item quantity="other">%d afbeeldingen geselecteerd</item>
+    </plurals>
 </resources>

@@ -46,9 +46,9 @@ import ch.threema.base.utils.LoggingUtil;
 public class MediaPlayerStateWrapper {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerStateWrapper");
 
-	private MediaPlayer mediaPlayer;
+	private final MediaPlayer mediaPlayer;
 	private State currentState;
-	private MediaPlayerStateWrapper stateWrapper;
+	private final MediaPlayerStateWrapper stateWrapper;
 	private StateListener stateListener;
 
 	public MediaPlayerStateWrapper() {
@@ -250,7 +250,7 @@ public class MediaPlayerStateWrapper {
 
 	/* OTHER STUFF */
 	public int getCurrentPosition() {
-		if (currentState != State.ERROR) {
+		if (currentState != State.ERROR && currentState != State.IDLE) {
 			return mediaPlayer.getCurrentPosition();
 		} else {
 			return 0;

@@ -22,8 +22,6 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +50,6 @@ public class DistributionListAdapter extends FilterableListAdapter {
 	private List<DistributionListModel> values;
 	private List<DistributionListModel> ovalues;
 	private DistributionListFilter groupListFilter;
-	private final Bitmap defaultAvatar;
 	private final DistributionListService distributionListService;
 
 	public DistributionListAdapter(Context context, List<DistributionListModel> values, List<Integer> checkedItems, DistributionListService distributionListService) {
@@ -62,7 +59,6 @@ public class DistributionListAdapter extends FilterableListAdapter {
 		this.values = values;
 		this.ovalues = values;
 		this.distributionListService = distributionListService;
-		this.defaultAvatar = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_distribution_list);
 
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
@@ -117,9 +113,7 @@ public class DistributionListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				position,
 				distributionListModel,
-				this.defaultAvatar,
 				this.distributionListService,
 				holder
 		);

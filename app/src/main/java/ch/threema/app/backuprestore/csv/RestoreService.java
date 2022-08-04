@@ -63,6 +63,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -77,7 +78,6 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BackupUtils;
 import ch.threema.app.utils.CSVReader;
 import ch.threema.app.utils.CSVRow;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -121,6 +121,7 @@ public class RestoreService extends Service {
 
 	public static final String EXTRA_RESTORE_BACKUP_FILE = "file";
 	public static final String EXTRA_RESTORE_BACKUP_PASSWORD = "pwd";
+	private static final int MAX_THUMBNAIL_SIZE_BYTES = 5 * 1024 * 1024; // do not restore thumbnails that are bigger than 5 MB
 
 	private ServiceManager serviceManager;
 	private ContactService contactService;
@@ -136,7 +137,7 @@ public class RestoreService extends Service {
 	private NotificationCompat.Builder notificationBuilder;
 
 	private static final int RESTORE_NOTIFICATION_ID = 981772;
-	private static final int RESTORE_COMPLETION_NOTIFICATION_ID = 981773;
+	public static final int RESTORE_COMPLETION_NOTIFICATION_ID = 981773;
 	private static final String EXTRA_ID_CANCEL = "cnc";
 
 	private final RestoreResultImpl restoreResult = new RestoreResultImpl();
@@ -246,7 +247,7 @@ public class RestoreService extends Service {
 		} else {
 			logger.debug("onStartCommand intent == null");
 
-			onFinished(null);
+			onFinished("Empty intent");
 		}
 		isRunning = false;
 
@@ -360,11 +361,11 @@ public class RestoreService extends Service {
 	}
 
 	private RestoreSettings restoreSettings;
-	private final HashMap<String, Integer> groupIdMap = new HashMap<String, Integer>();
-	private final HashMap<String, Integer> ballotIdMap = new HashMap<String, Integer>();
-	private final HashMap<Integer, Integer> ballotOldIdMap = new HashMap<Integer, Integer>();
-	private final HashMap<String, Integer> ballotChoiceIdMap = new HashMap<String, Integer>();
-	private final HashMap<String, Integer> distributionListIdMap = new HashMap<String, Integer>();
+	private final HashMap<String, Integer> groupIdMap = new HashMap<>();
+	private final HashMap<String, Integer> ballotIdMap = new HashMap<>();
+	private final HashMap<Integer, Integer> ballotOldIdMap = new HashMap<>();
+	private final HashMap<String, Integer> ballotChoiceIdMap = new HashMap<>();
+	private final HashMap<String, Long> distributionListIdMap = new HashMap<>();
 
 	private boolean writeToDb = false;
 
@@ -753,8 +754,8 @@ public class RestoreService extends Service {
 							if (thumbnailFileHeader != null) {
 								try (ZipInputStream inputStream = zipFile.getInputStream(thumbnailFileHeader)) {
 									byte[] thumbnailBytes = IOUtils.toByteArray(inputStream);
-									if (thumbnailBytes != null) {
-										this.fileService.writeConversationMediaThumbnail(model, thumbnailBytes);
+									if (thumbnailBytes != null && thumbnailBytes.length < MAX_THUMBNAIL_SIZE_BYTES) {
+										this.fileService.saveThumbnail(model, thumbnailBytes);
 									}
 								}
 								//
@@ -804,7 +805,6 @@ public class RestoreService extends Service {
 					if (writeToDb) {
 						//set the default color
 						ContactModelFactory contactModelFactory = databaseServiceNew.getContactModelFactory();
-						contactModel.setColor(ColorUtil.getInstance().getRecordColor((int)contactModelFactory.count()));
 						contactModelFactory.createOrUpdate(contactModel);
 						restoreResult.incContactSuccess();
 					}
@@ -1307,7 +1307,7 @@ public class RestoreService extends Service {
 				if (writeToDb) {
 					updateProgress(STEP_SIZE_MESSAGES);
 
-					Integer distributionListId = null;
+					Long distributionListId = null;
 
 					if (distributionListIdMap.containsKey(apiId)) {
 						distributionListId = distributionListIdMap.get(apiId);
@@ -1358,7 +1358,7 @@ public class RestoreService extends Service {
 		return res;
 	}
 
-	private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, int distributionListId) throws ThreemaException {
+	private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, long distributionListId) throws ThreemaException {
 		List<DistributionListMemberModel> res = new ArrayList<DistributionListMemberModel>();
 		for(String identity: row.getStrings(Tags.TAG_DISTRIBUTION_MEMBERS)) {
 			if(!TestUtil.empty(identity)) {
@@ -1626,6 +1626,29 @@ public class RestoreService extends Service {
 			preferenceService.setWizardRunning(true);
 
 			showRestoreSuccessNotification();
+
+			//try to reopen connection
+			try {
+				if (!serviceManager.getConnection().isRunning()) {
+					serviceManager.startConnection();
+				}
+			} catch (Exception e) {
+				logger.error("Exception", e);
+			}
+
+			if (wakeLock != null && wakeLock.isHeld()) {
+				logger.debug("releasing wakelock");
+				wakeLock.release();
+			}
+
+			stopForeground(true);
+
+			isRunning = false;
+
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+				ConfigUtils.scheduleAppRestart(getApplicationContext(), 2 * (int) DateUtils.SECOND_IN_MILLIS, getApplicationContext().getResources().getString(R.string.ipv6_restart_now));
+			}
+			stopSelf();
 		} else {
 			try {
 				this.userService.removeIdentity();
@@ -1633,30 +1656,16 @@ public class RestoreService extends Service {
 				logger.error("Exception", e);
 			}
 			showRestoreErrorNotification(message);
+
+			new DeleteIdentityAsyncTask(null, new Runnable() {
+				@Override
+				public void run() {
+					isRunning = false;
+
+					System.exit(0);
+				}
+			}).execute();
 		}
-
-		//try to reopen connection
-		try {
-			if (!serviceManager.getConnection().isRunning()) {
-				serviceManager.startConnection();
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-
-		if (wakeLock != null && wakeLock.isHeld()) {
-			logger.debug("releasing wakelock");
-			wakeLock.release();
-		}
-
-		stopForeground(true);
-
-		isRunning = false;
-
-		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-			ConfigUtils.scheduleAppRestart(getApplicationContext(), 2 * (int) DateUtils.SECOND_IN_MILLIS, getApplicationContext().getResources().getString(R.string.ipv6_restart_now));
-		}
-		stopSelf();
 	}
 
 	private Notification getPersistentNotification() {

@@ -107,7 +107,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	private static final int CONTACT_PICKER_INTENT = 33002;
 	private static final int LOCATION_PICKER_INTENT = 33003;
 
-	private static final int PERMISSION_REQUEST_LOCATION = 1;
 	private static final int PERMISSION_REQUEST_ATTACH_CONTACT = 2;
 	private static final int PERMISSION_REQUEST_QR_READER = 3;
 	private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
@@ -316,6 +315,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				editButton.setLabelText(R.string.edit);
 			}
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
+			selectCounterButton.setContentDescription(getResources().getQuantityString(R.plurals.selection_counter_label, count, count));
 
 		} else if (BottomSheetBehavior.from(bottomSheetLayout).getState() == STATE_EXPANDED) {
 			controlPanel.animate().translationY(
@@ -362,12 +362,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		int id = v.getId();
 		switch (id) {
 			case R.id.attach_location:
-				if (ConfigUtils.requestLocationPermissions(this, null, PERMISSION_REQUEST_LOCATION)) {
-					if (!ConfigUtils.hasNoMapboxSupport()) {
-						launchPlacePicker();
-					} else {
-						Toast.makeText(this, "Feature not available due to firmware error", Toast.LENGTH_LONG).show();
-					}
+				if (!ConfigUtils.hasNoMapLibreSupport()) {
+					launchPlacePicker();
+				} else {
+					Toast.makeText(this, "Feature not available due to firmware error", Toast.LENGTH_LONG).show();
 				}
 				break;
 			case R.id.attach_file:
@@ -427,9 +425,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
-				case PERMISSION_REQUEST_LOCATION:
-					launchPlacePicker();
-					break;
 				case PERMISSION_REQUEST_ATTACH_CONTACT:
 					attachContact();
 					break;
@@ -457,11 +452,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			}
 		} else {
 			switch (requestCode) {
-				case PERMISSION_REQUEST_LOCATION:
-					if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-						super.showPermissionRationale(R.string.permission_location_required);
-					}
-					break;
 				case PERMISSION_REQUEST_ATTACH_CONTACT:
 					if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
 						super.showPermissionRationale(R.string.permission_contacts_required);
@@ -578,6 +568,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		for (Uri uri: uriList) {
 			String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
 			if (MimeUtil.isVideoFile(mimeType) || MimeUtil.isImageFile(mimeType)) {
+				Uri originalUri = uri;
 				try {
 					logger.info("Number of taken persistable uri permissions {}", getContentResolver().getPersistedUriPermissions().size());
 					getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -587,6 +578,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				}
 
 				MediaItem mediaItem = new MediaItem(uri, mimeType, null);
+				mediaItem.setOriginalUri(originalUri);
 				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 				mediaItems.add(mediaItem);
 			}
@@ -615,6 +607,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 
 		for (Uri uri : list) {
+			Uri originalUri = uri;
 			try {
 				// log the number of permissions due to limit https://commonsware.com/blog/2020/06/13/count-your-saf-uri-permission-grants.html
 				logger.info("Number of taken persistable uri permissions {}", getContentResolver().getPersistedUriPermissions().size());
@@ -625,6 +618,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			}
 
 			MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(this, uri), null);
+			mediaItem.setOriginalUri(originalUri);
 			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
 			mediaItems.add(mediaItem);
 		}
@@ -727,7 +721,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 		Cursor cursor = this.getContentResolver().query(contactUri, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst() && cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY) >= 0) {
-			String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+			@SuppressLint("Range") String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 			cursor.close();
 
 			controlPanel.setVisibility(View.GONE);
@@ -762,6 +756,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			if (captions != null) {
 				mediaItem.setCaption(captions.get(i));
 			}
+			mediaItem.setOriginalUri(mediaItem.getUri());
 			mediaItems.add(mediaItem);
 		}
 		messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));

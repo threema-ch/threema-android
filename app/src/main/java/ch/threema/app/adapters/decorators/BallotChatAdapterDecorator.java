@@ -60,9 +60,6 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 			String explain = "";
 
 			BallotDataModel ballotData = messageModel.getBallotData();
-			if (ballotData == null) {
-				throw new NotAllowedException("invalid ballot message");
-			}
 
 			final BallotModel ballotModel = this.helper.getBallotService().get(ballotData.getBallotId());
 
@@ -72,10 +69,6 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 			} else {
 				switch (ballotData.getType()) {
 					case BALLOT_CREATED:
-						if (ballotModel.getState() != BallotModel.State.CLOSED) {
-							explain = getContext().getString(R.string.ballot_tap_to_vote);
-						}
-						break;
 					case BALLOT_MODIFIED:
 						if (ballotModel.getState() != BallotModel.State.CLOSED) {
 							explain = getContext().getString(R.string.ballot_tap_to_vote);
@@ -105,9 +98,8 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 			if (holder.controller != null) {
 				holder.controller.setImageResource(R.drawable.ic_outline_rule);
 			}
-
-		} catch (NotAllowedException x) {
-			logger.error("Exception", x);
+		} catch (Exception e) {
+			logger.error("Exception", e);
 		}
 	}
 

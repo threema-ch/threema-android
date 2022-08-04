@@ -112,6 +112,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactLookupUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
@@ -131,6 +132,7 @@ import java8.util.concurrent.CompletableFuture;
 
 import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_IMAGES;
 import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
+import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
@@ -152,6 +154,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private static final String DIALOG_TAG_FILECOPY = "filecopy";
 
 	public static final String INTENT_DATA_MULTISELECT = "ms";
+	public static final String INTENT_DATA_MULTISELECT_FOR_COMPOSE = "msi"; // allow multi select for composing a new message (automatically creates a distribution list)
 
 	private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
 
@@ -160,7 +163,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private MenuItem searchMenuItem;
 	private ThreemaSearchView searchView;
 
-	private boolean hideUi, hideRecents, multiSelect;
+	private boolean hideUi, hideRecents, multiSelect, multiSelectIdentities;
 	private String captionText;
 	private final List<MediaItem> mediaItems = new ArrayList<>();
 	private final List<MessageReceiver> recipientMessageReceivers = new ArrayList<>();
@@ -289,7 +292,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			for (MediaItem mediaItem: mediaItems) {
 				String mimeType = mediaItem.getMimeType();
 				if (mimeType != null) {
-					if (!hasMedia && !mimeType.startsWith("text/")) {
+					if (!hasMedia && !mimeType.startsWith("text/") && mediaItem.getType() != TYPE_LOCATION) {
 						hasMedia = true;
 					}
 				}
@@ -414,13 +417,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			try {
 				this.hideRecents = intent.getBooleanExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, false);
 				this.multiSelect = intent.getBooleanExtra(INTENT_DATA_MULTISELECT, true);
+				this.multiSelectIdentities = intent.getBooleanExtra(INTENT_DATA_MULTISELECT_FOR_COMPOSE, false);
 			} catch (BadParcelableException e) {
 				logger.error("Exception", e);
 			}
 
 			String identity = IntentDataUtil.getIdentity(intent);
 			int groupId = IntentDataUtil.getGroupId(intent);
-			int distributionListID = IntentDataUtil.getDistributionListId(intent);
+			long distributionListID = IntentDataUtil.getDistributionListId(intent);
 
 			if (TestUtil.empty(identity) && groupId == -1 && distributionListID == -1) {
 				// maybe a shortcut?
@@ -433,7 +437,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						} else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_GROUP)) {
 							groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP);
 						} else if (bundle.containsKey(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
-							distributionListID = bundle.getInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
+							distributionListID = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST);
 						}
 					}
 				}
@@ -459,7 +463,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 
 					if (type != null && (uri != null || MimeUtil.isText(type))) {
-						if (type.equals("message/rfc822")) {
+						if (type.equals(MimeUtil.MIME_TYPE_EMAIL)) {
 							// email attachments
 							//  extract file type from uri path
 							String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
@@ -478,9 +482,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								}
 							}
 						}
-						if (type.equals("text/plain")) {
+						if (type.equals(MimeUtil.MIME_TYPE_TEXT)) {
 							String textIntent = getTextFromIntent(intent);
-							if (uri != null) {
+							if (GeoLocationUtil.isValidGeoUri(uri)) {
+								mediaItems.add(new MediaItem(uri, MediaItem.TYPE_LOCATION, MimeUtil.MIME_TYPE_ANY, textIntent));
+							} else if (uri != null) {
 								// default to sending text as file
 								type = "x-text/plain";
 
@@ -494,19 +500,21 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 									captionText = textIntent;
 								}
 							} else if (textIntent != null) {
-								mediaItems.add(new MediaItem(uri, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, textIntent));
+								mediaItems.add(new MediaItem(null, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, textIntent));
 							}
 						} else {
 							if (uri != null) {
 								// guess the correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*" which should be overridden
 								String guessedType = getMimeTypeFromContentUri(uri);
 								if (guessedType != null) {
-									type = guessedType;
+									if (!guessedType.equals(MimeUtil.MIME_TYPE_DEFAULT) || type.equals("*")) {
+										type = guessedType;
+									}
 								}
 
 								String textIntent = getTextFromIntent(intent);
 								// don't add fixed caption to media item because we want it to be editable when sending a zip file (share chat)
-								if (type.equals("application/zip") && textIntent != null) {
+								if (type.equals(MimeUtil.MIME_TYPE_ZIP) && textIntent != null) {
 									captionText = textIntent;
 									mediaItems.add(new MediaItem(uri, MediaItem.TYPE_FILE, MimeUtil.MIME_TYPE_ZIP, textIntent));
 								} else { // if text was shared along with the media item, add that too
@@ -571,11 +579,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					}
 				} else if (action.equals(Intent.ACTION_VIEW)) {
 					// called from action URL
-					if (lockAppService != null && lockAppService.isLocked()) {
-						finish();
-						return;
-					}
-
 					Uri dataUri = intent.getData();
 
 					if (TestUtil.required(dataUri)) {
@@ -589,6 +592,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								("https".equals(scheme) && (BuildConfig.actionUrl.equals(host) || BuildConfig.contactActionUrl.equals(host)) && "/compose".equals(dataUri.getPath()))
 							)
 							{
+								if (lockAppService != null && lockAppService.isLocked()) {
+									finish();
+									return;
+								}
+
 								String text = dataUri.getQueryParameter("text");
 								if (!TestUtil.empty(text)) {
 									mediaItems.add(new MediaItem(dataUri, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, text));
@@ -1040,10 +1048,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								} else {
 									// mixed media
 									ExpandableTextEntryDialog alertDialog;
+									boolean expandable = mediaItems.size() == 1 && mediaItems.get(0).getType() != TYPE_LOCATION;
 									if (hideUi) {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
 									} else {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, mediaItems.size() == 1);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
 									}
 									alertDialog.setData(recipients);
 									alertDialog.show(getSupportFragmentManager(), null);
@@ -1124,9 +1133,12 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 			Fragment fragment = null;
 
+			boolean allowMultiSelectForCompose = false;
+
 			switch (tabs.get(position)) {
 				case FRAGMENT_USERS:
 					fragment = new UserListFragment();
+					allowMultiSelectForCompose = multiSelectIdentities;
 					break;
 				case FRAGMENT_GROUPS:
 					fragment = new GroupListFragment();
@@ -1139,12 +1151,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					break;
 				case FRAGMENT_WORK_USERS:
 					fragment = new WorkUserListFragment();
+					allowMultiSelectForCompose = multiSelectIdentities;
 					break;
 			}
 
 			if (fragment != null) {
 				Bundle args = new Bundle();
 				args.putBoolean(RecipientListFragment.ARGUMENT_MULTI_SELECT, multiSelect);
+				args.putBoolean(RecipientListFragment.ARGUMENT_MULTI_SELECT_FOR_COMPOSE, allowMultiSelectForCompose);
 				fragment.setArguments(args);
 			}
 

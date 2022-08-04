@@ -33,7 +33,6 @@ import android.widget.ProgressBar;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerControlView;
@@ -54,6 +53,7 @@ import androidx.core.view.WindowInsetsCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
+import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener, PreviewFragmentInterface {
@@ -61,7 +61,7 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 
 	private WeakReference<ProgressBar> progressBarRef;
 	private WeakReference<PlayerView> audioView;
-	private SimpleExoPlayer audioPlayer;
+	private ExoPlayer audioPlayer;
 	private boolean isImmediatePlay, isPreparing;
 
 	public AudioViewFragment() {
@@ -73,7 +73,7 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
 
 		try {
-			this.audioPlayer = new SimpleExoPlayer.Builder(getContext()).build();
+			this.audioPlayer = VideoUtil.getExoPlayer(getContext());
 			this.audioPlayer.addListener(this);
 		} catch (OutOfMemoryError e) {
 			logger.error("Exception", e);

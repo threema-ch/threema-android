@@ -22,7 +22,6 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
@@ -75,7 +74,6 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 	private boolean isResumed;
 	private String myIdentity = null;
 
-
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -123,11 +121,6 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 		return true;
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
-
 	/**
 	 * Return true if master key is unlocked or not protected
 	 *
@@ -153,8 +146,7 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 		return true;
 	}
 
-	protected void instantiate() {
-	}
+	protected void instantiate() { }
 
 	protected String getMyIdentity() {
 		if(this.myIdentity == null) {
@@ -164,11 +156,6 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 			}
 		}
 		return this.myIdentity;
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override

@@ -21,21 +21,28 @@
 
 package ch.threema.app.voip.services;
 
-import android.content.Context;
+import android.annotation.TargetApi;
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.FixedJobIntentService;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.NotificationService;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -44,23 +51,29 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTIT
 /**
  * A small intent service that rejects an incoming call.
  */
-public class CallRejectService extends FixedJobIntentService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CallRejectService");
+public class CallRejectService extends IntentService {
+	private static final String name = "CallRejectService";
+	private static final Logger logger = LoggingUtil.getThreemaLogger(name);
+	private static final int CALL_REJECT_NOTIFICATION_ID = 27349;
+
 	public static final String EXTRA_REJECT_REASON = "REJECT_REASON";
 
 	private VoipStateService voipStateService = null;
 	private ContactService contactService = null;
 
-	public static final int JOB_ID = 344339;
-
-	public static void enqueueWork(Context context, Intent work) {
-		logger.info("enqueueWork");
-		enqueueWork(context, CallRejectService.class, JOB_ID, work);
+	public CallRejectService() {
+		super(name);
 	}
 
 	@Override
-	protected void onHandleWork(@NonNull Intent intent) {
-		logger.info("onHandleWork");
+	protected void onHandleIntent(@Nullable Intent intent) {
+		logger.info("onHandleIntent");
+
+		// Ignore null intents
+		if (intent == null) {
+			logger.debug("Empty Intent");
+			return;
+		}
 
 		// Intent parameters
 		final String contactIdentity = intent.getStringExtra(EXTRA_CONTACT_IDENTITY);
@@ -107,5 +120,53 @@ public class CallRejectService extends FixedJobIntentService {
 
 		// Clear the candidates cache
 		voipStateService.clearCandidatesCache(contactIdentity);
+	}
+
+	@Override
+	public void onCreate() {
+		logger.info("onCreate");
+
+		super.onCreate();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			startForeground(CALL_REJECT_NOTIFICATION_ID, getForegroundNotification());
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		logger.info("onDestroy");
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			stopForeground(true);
+		}
+
+		super.onDestroy();
+	}
+
+	@TargetApi(Build.VERSION_CODES.O)
+	private Notification getForegroundNotification() {
+		createChannel();
+		NotificationCompat.Builder builder =
+			(new NotificationCompat.Builder(this.getApplicationContext(), NotificationService.NOTIFICATION_CHANNEL_REJECT_SERVICE))
+				.setGroup(NotificationService.NOTIFICATION_CHANNEL_REJECT_SERVICE)
+				.setContentTitle(getString(R.string.voip_reject_channel_name))
+				.setSmallIcon(R.drawable.ic_call_grey600_24dp)
+				.setPriority(NotificationCompat.PRIORITY_MIN)
+				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        return builder.build();
+	}
+
+	@TargetApi(Build.VERSION_CODES.O)
+	private void createChannel() {
+		NotificationChannel channel = new NotificationChannel(
+			NotificationService.NOTIFICATION_CHANNEL_REJECT_SERVICE,
+			getResources().getString(R.string.voip_reject_channel_name),
+			NotificationManager.IMPORTANCE_LOW);
+		channel.enableVibration(false);
+		channel.enableLights(false);
+		channel.setShowBadge(false);
+		getSystemService(NotificationManager.class).createNotificationChannel(channel);
 	}
 }

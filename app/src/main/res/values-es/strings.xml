@@ -3,7 +3,7 @@
     <string name="title_section2">Contactos</string>
     <string name="title_section1">Chats</string>
     <string name="title_compose_message">Nuevo mensaje</string>
-    <string name="title_choose_recipient">Elegir contacto</string>
+    <string name="title_choose_recipient">Seleccionar destinatario</string>
     <string name="title_keyfingerprint">Clave-huella digital</string>
     <string name="title_mythreemaid">Mi ID de Threema</string>
     <string name="title_threemaid">ID de Threema</string>
@@ -23,7 +23,6 @@
     <string name="compose_message_and_enter">Introducir mensaje</string>
     <string name="send">Enviar</string>
     <string name="prefs_privacy">Privacidad</string>
-    <string name="terms_of_service">Términos y condiciones</string>
     <string name="prefs_notifications">Notificaciones</string>
     <string name="prefs_chatdisplay">Pantalla de chat</string>
     <string name="prefs_security">Seguridad</string>
@@ -45,7 +44,7 @@
     <string name="prefs_title_typing_indicator">Informar durante la escritura</string>
     <string name="prefs_media_title">Elementos multimedia</string>
     <string name="prefs_sum_media_title">Configuración multimedia</string>
-    <string name="prefs_image_size">Tamaño de la imagen</string>
+    <string name="prefs_image_size">Dimensiones de la imagen</string>
     <string name="prefs_notification_sound">Tono de las notificaciones</string>
     <string name="prefs_sum_notification_sound">Estándar del sistema</string>
     <string name="prefs_vibrate">Vibrar</string>
@@ -128,7 +127,6 @@
     <string name="whoaaa">Aviso</string>
     <string name="really_delete_message_title">Eliminar mensaje</string>
     <string name="really_delete_thread">Eliminar chat</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">¿Está seguro de que quiere eliminar todos los mensajes de este chat? Los mensajes no se podrán recuperar.</string>
     <string name="really_delete_contact">¿Está seguro de que desea eliminar este contacto y todos los chats correspondientes?</string>
     <string name="image_placeholder">Imagen</string>
     <string name="invalid_threema_id">ID de Threema no válido</string>
@@ -223,7 +221,7 @@
     <string name="saving_media">El elemento multimedia se está guardando</string>
     <string name="file_is_not_a_video">El archivo seleccionado no es un vídeo</string>
     <string name="masterkey_is_unlocked">La clave maestra está desbloqueada</string>
-    <string name="file_too_large">El archivo ocupa más espacio del permitido (50 MB)</string>
+    <string name="file_too_large">El archivo ocupa más espacio del permitido (%1$d MB)</string>
     <string name="deleting_thread">El chat se está eliminando</string>
     <string name="enter_serial_body"><![CDATA[Introduzca una clave de licencia válida para activar Threema.]]></string>
     <string name="enter_serial_title">Validación de licencia</string>
@@ -247,6 +245,8 @@
     <string name="emoji_emotions">Caras sonrientes y personas</string>
     <string name="emoji_activities">Actividades</string>
     <string name="emoji_flags">Banderas</string>
+    <string name="emoji_search">Buscar emojis</string>
+    <string name="emoji_search_no_result">Sin resultados de búsqueda</string>
     <string name="title_lock">Bloquear</string>
     <string name="new_messages_locked">Nuevo mensaje disponible</string>
     <string name="new_messages_locked_description">Tocar para mostrar</string>
@@ -378,7 +378,6 @@
     <string name="file_saved">%d archivo(s) guardado(s) correctamente.</string>
     <string name="token_register_failed">No se ha podido restablecer el símbolo push. Vuelva a intentarlo.</string>
     <string name="internet_connection_required">No hay conexión a Internet.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">No se ha podido enviar %1$d mensaje(s)</string>
     <string name="prefs_sum_save_media">Cargar los elementos multimedia de forma automática al recibirlos y guardarlos sin cifrar en la galería.</string>
     <string name="prefs_save_media">Guardar los elementos multimedia en la galería</string>
     <string name="title_add_distribution_list">Nueva lista de distribución</string>
@@ -579,6 +578,8 @@ almacenado.</string>
     <string name="blocked">bloqueado</string>
     <string name="name">Nombre</string>
     <string name="privacy_policy">Política de privacidad</string>
+    <string name="terms_of_service">Términos del servicio</string>
+    <string name="eula">Contrato de licencia de usuario final</string>
     <string name="save_group_changes">¿Quiere guardar los cambios del grupo?</string>
     <string name="prefs_title_fontsize">Tamaño de texto</string>
     <string name="fontsize_normal">Normal</string>
@@ -588,6 +589,8 @@ almacenado.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) eliminado(s)</string>
     <string name="prefs_sendlog">Enviar registro</string>
     <string name="prefs_sendlog_summary">Envíe un archivo de registro a Threema para su posterior análisis en caso de problemas</string>
+    <string name="prefs_exportlog">Exportar registro</string>
+    <string name="prefs_exportlog_summary">Compartir archivo de registro con otra app</string>
     <string name="permission_storage_required">Para enviar archivos multimedia, permita a Threema acceder a su almacenamiento.</string>
     <string name="permission_location_required">Para enviar una ubicación, permita a Threema acceder a su posición.</string>
     <string name="permission_contacts_required">Para enviar contactos, permita a Threema acceder a su agenda de contactos.</string>
@@ -626,6 +629,8 @@ almacenado.</string>
     <string name="new_wizard_linked_to">Vinculado a</string>
     <string name="new_wizard_need_internet">Se requiere una conexión estable a Internet para crear su ID único de Threema. Por favor, vuelva a intentarlo.</string>
     <string name="new_wizard_more_information">Más información</string>
+    <string name="contact_details_id_copied">ID copiado en el portapapeles</string>
+    <string name="contact_details_nickname_copied">Apodo copiado en el portapapeles</string>
     <string name="new_wizard_use_id_as_nickname">¿Desea utilizar su ID de Threema como alias?</string>
     <string name="new_wizard_phone_email_invalid">El número de teléfono o la dirección de correo electrónico que ha introducido no son válidos.\nPor favor, corríjalos antes de continuar.</string>
     <string name="new_wizard_phone_invalid">El número de teléfono que ha introducido no es válido.\nCorríjalo para poder continuar.</string>
@@ -708,7 +713,6 @@ almacenado.</string>
     <string name="grace_never">Nunca (manual)</string>
     <string name="never">Nunca</string>
     <string name="unhide_chats_confirm">Si quita ahora la protección de acceso, sus chats privados volverán a ser visibles.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Imágenes seleccionadas: %d</string>
     <string name="verification_started">Verificación iniciada</string>
     <string name="cannot_open_file">No se ha podido abrir el archivo</string>
     <string name="prefs_title_image_attach_previews">Selección rápida de imágenes</string>
@@ -823,6 +827,7 @@ almacenado.</string>
     <string name="unpin">Desmarcar</string>
     <string name="location_services_disabled">Servicios de ubicación desactivados. ¿Quiere activarlos ahora?</string>
     <string name="send_location">Enviar ubicación</string>
+    <string name="forward_location">Reenviar ubicación</string>
     <string name="unknown_address">Dirección desconocida</string>
     <string name="your_location">Su ubicación</string>
     <string name="network_blocked_title">Datos en segundo plano desactivados</string>
@@ -1019,7 +1024,23 @@ almacenado.</string>
     <string name="delete">Borrar</string>
     <string name="num_archived_chats">%d chats archivados</string>
     <string name="continue_recording">Continuar grabando</string>
-    <string name="tooltip_identity_popup">Toque aquí para visualizar rápidamente su ID de Threema o para escanear el ID de otras personas.</string>
+    <string name="whatsnew_title">Bienvenido a %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nuevas funciones en esta versión de %s para Android:</b></p>
+		<p>
+		&bull; Muchos emojis nuevos de acuerdo con el estándar Unicode 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Búsqueda de emojis por nombre o significado (disponible en 17 idiomas).
+		</p><p>
+		&bull; Colores deterministas para contactos y grupos que no tienen su propia foto de perfil. Estos nuevos colores funcionarán en todas las plataformas y dispositivos.
+		</p><p>
+		&bull; Rendimiento de desplazamiento mejorado en muchas listas.
+		</p><p>
+		&bull; Diseño optimizado para el Editor de archivos multimedia. Se ha aumentado la cantidad de elementos multimedia que se pueden editar antes de enviar a 256.
+		</p><p>
+		&bull; Muchas pequeñas mejoras y correcciones de errores.
+		</p>
+		]]></string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
     <string name="invalid_backup_path">Ruta de backup no válida</string>
@@ -1039,7 +1060,7 @@ almacenado.</string>
     <string name="edit_type_content_description">Ver o editar %1$s %2$s</string>
     <string name="group">Grupo</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Nuestra política de privacidad se ha actualizado para reflejar el siguiente cambio:</p><p>%1$s ya no depende de Google Play y Google Maps para proporcionar datos de mapas y puntos de interés.</p>Por favor, revise la política de privacidad completa <a href="%2$s">aquí </a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Los servicios no están instalados. No se puede cambiar a «push».</string>
+    <string name="play_services_not_installed_unable_to_use_push">Servicios no instalados. No se puede cambiar a Google FCM ni HMS push.</string>
     <string name="unable_to_get_current_location">No se puede determinar la ubicación actual.</string>
     <string name="lp_search_place_min_chars">Introduce tres caracteres como mínimo para buscar un lugar.</string>
     <string name="lp_search_place_no_matches">No se encuentran lugares coincidentes. Modifica tu consulta.</string>
@@ -1358,4 +1379,38 @@ almacenado.</string>
     <string name="organization_type">Organización</string>
     <string name="permission_bluetooth_connect_required">Active el permiso \"Dispositivos cercanos\" para localizar auriculares bluetooth conectados</string>
     <string name="threema_push_start_webclient_sessions_manually">Se ha activado Threema Push. Por lo tanto, las sesiones de Threema Web y Desktop deben iniciarse manualmente.</string>
+    <string name="tooltip_multiple_recipients_title">Nuevo: varios destinatarios</string>
+    <string name="tooltip_multiple_recipients_text">Mantén pulsado para seleccionar varios destinatarios a los que enviar el mismo mensaje.</string>
+    <string name="synchronizing">Sincronizando...</string>
+    <string name="self_updater_installation_failed">Error al descargar la actualización. Descargue e instale la actualización desde <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manualmente.</string>
+    <string name="spam_first_contact">Este chat es de un contacto desconocido</string>
+    <string name="spam_report">Reportar spam</string>
+    <string name="spam_report_dialog_explain">Al continuar, el ID y el apodo de este contacto se reenviarán a Threema junto con tu ID. No se enviarán contenidos ni datos personales. No se notificará al contacto sobre esto.</string>
+    <string name="spam_report_dialog_block_checkbox">Bloquear también el contacto y eliminar chat</string>
+    <string name="spam_report_dialog_title">Reportar a %s</string>
+    <string name="spam_successfully_reported">El ID se ha reportado como envío de spam.</string>
+    <string name="spam_error_reporting">Se ha producido un error al reportar spam: %s</string>
+    <string name="spam_report_short">Reportar</string>
+    <string name="wizard_incompatible_contact_sync_params">Se han establecido parámetros MDM incompatibles. El parámetro MDM th_contact_sync de Threema no se puede establecer en verdadero si se ha establecido la restricción de usuario DISALLOW_MODIFY_ACCOUNTS. Contacte con el administrador de su dispositivo.</string>
+    <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
+    <string name="contact_deleted">Contacto eliminado</string>
+    <string name="last_added_contact">Último añadido</string>
+    <string name="directory_explain_text">Buscar en el directorio de la compañía empleados que todavía no estén en su lista de contactos.</string>
+    <string name="cannot_display_location">No se puede mostrar la ubicación.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="one">%d contacto</item>
+        <item quantity="other">%d contactos</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Realment voleu eliminar %d xat?</item>
+        <item quantity="other">Realment voleu eliminar %d xats?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">No se ha podido enviar %1$d mensaje</item>
+        <item quantity="other">No se ha podido enviar %1$d mensajes</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">%d imagen seleccionada</item>
+        <item quantity="other">%d imágenes seleccionadas</item>
+    </plurals>
 </resources>

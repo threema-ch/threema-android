@@ -167,6 +167,10 @@ public interface PreferenceService {
 
 	void setRecentEmojis2(LinkedList<String> list);
 
+	int getEmojiSearchIndexVersion();
+
+	void setEmojiSearchIndexVersion(int version);
+
 	/**
 	 * Whether to use Threema Push instead of another push service.
 	 */
@@ -191,7 +195,9 @@ public interface PreferenceService {
 
 	void setTransmittedFeatureLevel(int featureLevel);
 
-	String[] getList(String listName);
+	@NonNull String[] getList(String listName);
+
+	@NonNull String[] getList(String listName, boolean encrypted);
 
 	void setList(String listName, String[] elements);
 
@@ -316,6 +322,10 @@ public interface PreferenceService {
 
 	HashMap<String,String> getMessageDrafts();
 
+	void setQuoteDrafts(HashMap<String, String> quoteDrafts);
+
+	HashMap<String,String> getQuoteDrafts();
+
 	void setAppLogo(@NonNull String url, @AppTheme int theme);
 	void clearAppLogo(@AppTheme int theme);
 	void clearAppLogos();
@@ -326,9 +336,9 @@ public interface PreferenceService {
 
 	String getLocaleOverride();
 
-	HashMap<String, String> getDiverseEmojiPrefs2();
+	HashMap<String, String> getDiverseEmojiPrefs();
 
-	void setDiverseEmojiPrefs2(HashMap<String, String> diverseEmojis);
+	void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis);
 
 	boolean isWebClientEnabled();
 	void setWebClientEnabled(boolean enabled);
@@ -483,9 +493,6 @@ public interface PreferenceService {
 	void setCameraFlashMode(int flashMode);
 	int getCameraFlashMode();
 
-	void setCameraLensFacing(int lensFacing);
-	int getCameraLensFacing();
-
 	void setPipPosition(int pipPosition);
 	int getPipPosition();
 
@@ -513,4 +520,7 @@ public interface PreferenceService {
 
 	void setAudioPlaybackSpeed(float newSpeed);
 	float getAudioPlaybackSpeed();
+
+	int getMultipleRecipientsTooltipCount();
+	void incrementMultipleRecipientsTooltipCount();
 }

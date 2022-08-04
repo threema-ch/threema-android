@@ -109,11 +109,11 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
 
 	/* message flags */
-	public static final int MESSAGE_FLAG_PUSH = 0x01;
-	public static final int MESSAGE_FLAG_IMMEDIATE = 0x02;
-	public static final int MESSAGE_FLAG_NOACK = 0x04;
+	public static final int MESSAGE_FLAG_SEND_PUSH = 0x01;
+	public static final int MESSAGE_FLAG_NO_SERVER_QUEUING = 0x02;
+	public static final int MESSAGE_FLAG_NO_SERVER_ACK = 0x04;
 	public static final int MESSAGE_FLAG_GROUP = 0x10;
-	public static final int MESSAGE_FLAG_VOIP = 0x20;
+	public static final int MESSAGE_FLAG_SHORT_LIVED = 0x20;
 	public static final int MESSAGE_FLAG_NO_DELIVERY_RECEIPTS = 0x80;
 
 	/* delivery receipt statuses */

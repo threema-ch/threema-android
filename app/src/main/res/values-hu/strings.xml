@@ -125,9 +125,6 @@
 	<string name="whoaaa">Megjegyzés</string>
 	<string name="really_delete_message_title">Üzenet(ek) törlése</string>
 	<string name="really_delete_thread">Csevegés törlése</string>
-	<string name="really_delete_thread_message">Tényleg törölni szeretné a(z) %d csevegés(eke)t? Az üzeneteket nem lehet
-		visszaállítani.
-	</string>
 	<string name="really_delete_contact">Tényleg törölni szeretné ezt a névjegyet és az összes kapcsolódó csevegést?</string>
 	<string name="image_placeholder">Kép</string>
 	<string name="invalid_threema_id">Érvénytelen Threema-ID</string>
@@ -243,7 +240,7 @@
 	<string name="saving_media">A média mentése folyamatban van</string>
 	<string name="file_is_not_a_video">A kiválasztott fájl nem videó</string>
 	<string name="masterkey_is_unlocked">A főkulcs nyitva van</string>
-	<string name="file_too_large">A fájl nagyobb, mint a megengedett 50 MB</string>
+	<string name="file_too_large">A fájl nagyobb, mint a megengedett %1$d MB</string>
 	<string name="deleting_thread">A csevegés törlődik</string>
 	<string name="enter_serial_body">Kérjük, adja meg a boltban kapott licenckulcsát. Ha elfelejtette, kattintson ide:
 		https://shop.threema.ch/retrieve_keys
@@ -404,7 +401,6 @@
 	<string name="file_saved">%d fájl(ok) mentve.</string>
 	<string name="token_register_failed">A push tokent nem sikerült frissíteni. Kérjük, próbálja meg később újra.</string>
 	<string name="internet_connection_required">Nincs internetkapcsolat.</string>
-	<string name="sending_message_failed">%1$d üzenet nem küldhető</string>
 	<string name="prefs_sum_save_media">A bejövő képek és videók, valamint a kimenő kameraképek titkosítás nélküli mentése</string>
 	<string name="prefs_save_media">Mentés a galériába</string>
 	<string name="title_add_distribution_list">Új elosztási lista</string>
@@ -765,7 +761,6 @@
 	<string name="grace_never">Soha (kézi)</string>
 	<string name="never">Soha</string>
 	<string name="unhide_chats_confirm">Ha eltávolítja a hozzáférés-védelmet, a privát beszélgetések ismét láthatóvá válnak.</string>
-	<string name="selection_counter_label">%d kép kiválasztva</string>
 	<string name="verification_started">Ellenőrzés elkezdve</string>
 	<string name="cannot_open_file">A fájlt nem lehetett megnyitni </string>
 	<string name="prefs_title_image_attach_previews">Média gyorsválasztó</string>
@@ -1080,7 +1075,6 @@
 	<string name="delete">Törlés</string>
 	<string name="num_archived_chats">%d archivált csevegés</string>
 	<string name="continue_recording">Felvétel folytatása</string>
-	<string name="tooltip_identity_popup">Kattintson ide, ha meg szeretné tekinteni Threema ID-ját, vagy beolvasni mások ID-it</string>
 	<string name="tap_to_start">Kattintson ide a %s indításához.</string>
 	<string name="two_years">2 év</string>
 	<string name="invalid_backup_path">Érvénytelen mentési útvonal</string>
@@ -1394,4 +1388,21 @@
 	<string name="contact_property_key">"Kulcs"</string>
 	<string name="header_nickname_entry">"Becenév"</string>
 	<string name="organization_type">Szervezet</string>
+	<string name="messages_cannot_be_recovered">Az üzeneteket nem lehet visszaállítani.</string>
+	<plurals name="contacts_counter_label">
+		<item quantity="one">%d névjegyek</item>
+		<item quantity="other">%d névjegyek</item>
+	</plurals>
+	<plurals name="really_delete_thread_message">
+		<item quantity="one">Tényleg törölni szeretné a %d csevegést?</item>
+		<item quantity="other">Tényleg törölni szeretné az %d csevegéseket?</item>
+	</plurals>
+	<plurals name="sending_message_failed">
+		<item quantity="one">%1$d üzenet nem küldhető</item>
+		<item quantity="other">%1$d üzenet nem küldhető</item>
+	</plurals>
+	<plurals name="selection_counter_label">
+		<item quantity="one">%d kép kiválasztva</item>
+		<item quantity="other">%d kép kiválasztva</item>
+	</plurals>
 </resources>

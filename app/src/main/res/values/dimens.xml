@@ -24,7 +24,8 @@
 	<dimen name="chat_bubble_minheight">48dip</dimen>
     <dimen name="chat_bubble_minwidth">80dip</dimen>
 	<dimen name="chat_bubble_container_padding_left_right">8dip</dimen>
-	<dimen name="chat_bubble_container_padding_bottom">6dip</dimen>
+	<dimen name="chat_bubble_container_padding_bottom">8dip</dimen>
+	<dimen name="chat_bubble_container_padding_bottom_grouped">1dip</dimen>
 	<!-- chat bubble contents margins -->
 	<dimen name="chat_bubble_margin_start">8dip</dimen>
 	<dimen name="chat_bubble_margin_end">8dip</dimen>
@@ -132,6 +133,10 @@
 	<dimen name="emoji_picker_tab_width">42dp</dimen>
 	<dimen name="min_emoji_keyboard_height">110dp</dimen>
 	<dimen name="min_emoji_keyboard_top_margin">170dp</dimen>
+	<dimen name="emoji_search_corner_radius">15dp</dimen>
+	<dimen name="emoji_search_padding">8dp</dimen>
+	<dimen name="emoji_search_input_padding">5dp</dimen>
+	<dimen name="emoji_search_margin">6dp</dimen>
 
 	<dimen name="contacts_scrollbar_tolerance">25dp</dimen>
 
@@ -323,4 +328,5 @@
 
 	<!-- override touch target size for me.zhanghai.android.fastscroll -->
 	<dimen name="afs_min_touch_target_size">24dp</dimen>
+	<dimen name="send_media_item_width">72dp</dimen>
 </resources>

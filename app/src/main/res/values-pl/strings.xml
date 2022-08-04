@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakty</string>
-    <string name="title_section1">Wiadomości</string>
-    <string name="title_compose_message">Nowa wiadomość</string>
+    <string name="title_section1">Czaty</string>
+    <string name="title_compose_message">Rozpocznij czat</string>
     <string name="title_choose_recipient">Wybierz odbiorcę</string>
-    <string name="title_keyfingerprint">Kod klucza</string>
+    <string name="title_keyfingerprint">Klucz publiczny</string>
     <string name="title_mythreemaid">Mój identyfikator Threema</string>
     <string name="title_threemaid">Identyfikator Threema</string>
     <string name="title_adduser">Dodaj nowy kontakt</string>
@@ -15,45 +15,45 @@
     <string name="invite_sms_body">Hej! Korzystajmy z %1$s do komunikacji w sposób bezpieczny i respektujący prywatność! Mój identyfikator w Threema: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema, bezpieczny komunikator, który chroni Twoją prywatność.</string>
     <string name="enter_id_hint">Wprowadź identyfikator Threema</string>
-    <string name="account_links">Linki do kont</string>
+    <string name="account_links">Połączone konta</string>
     <string name="menu_settings">Ustawienia</string>
     <string name="menu_about">O Threema</string>
-    <string name="menu_add_contact">Dodaj kontakt</string>
+    <string name="menu_add_contact">Nowy kontakt</string>
     <string name="menu_done">Zrobione</string>
     <string name="compose_message_and_enter">Kliknij tu, aby wpisać</string>
     <string name="send">Wyślij</string>
     <string name="prefs_privacy">Prywatność</string>
     <string name="prefs_notifications">Powiadomienia</string>
-    <string name="prefs_chatdisplay">Okno chatu</string>
+    <string name="prefs_chatdisplay">Czat</string>
     <string name="prefs_security">Bezpieczeństwo</string>
-    <string name="prefs_sum_privacy">Zmień ustawienia kontaktów i chatu</string>
+    <string name="prefs_sum_privacy">Ustawienia dotyczące prywatności</string>
     <string name="prefs_sum_notifications">Zmień ustawienia dźwięku i wibracji</string>
-    <string name="prefs_sum_chatdisplay">Wygląd okienka chatu</string>
-    <string name="prefs_masterkey">Klucz generalny</string>
+    <string name="prefs_sum_chatdisplay">Ustawienia czatu</string>
+    <string name="prefs_masterkey">Szyfrowanie lokalnych danych</string>
     <string name="prefs_header_contacts">Kontakty</string>
-    <string name="prefs_header_chat">Chat</string>
-    <string name="prefs_header_reset">Obraz tła</string>
+    <string name="prefs_header_chat">Czat</string>
+    <string name="prefs_header_reset">Zresetuj</string>
     <string name="prefs_header_keyboard">Klawiatura</string>
     <string name="prefs_sum_sync_contacts_on">Utrzymuj synchronizację użytkowników %s z książką adresową Twojego urządzenia</string>
     <string name="prefs_sum_sync_contacts_off">Nie synchronizuj użytkowników %s z książką adresową Twojego urządzenia</string>
     <string name="prefs_title_sync_contacts">Synchronizuj kontakty</string>
     <string name="prefs_sum_block_unknown_off">Każdy może wysłać do Ciebie wiadomość. Nowe kontakty zostaną dodane automatycznie po odebraniu wiadomości.</string>
     <string name="prefs_sum_block_unknown_on">Tylko osoby z Twojej listy kontaktów mogą wysłać do Ciebie wiadomość.</string>
-    <string name="prefs_title_block_unknown">Zablokuj Nieznajomego</string>
-    <string name="prefs_title_read_receipts">Wyślij potwierdzenie przeczytania</string>
+    <string name="prefs_title_block_unknown">Blokuj nieznajomych</string>
+    <string name="prefs_title_read_receipts">Potwierdzaj przeczytane</string>
     <string name="prefs_title_typing_indicator">Wyślij wskaźnik pisania</string>
     <string name="prefs_media_title">Media</string>
     <string name="prefs_sum_media_title">Ustawienia mediów</string>
     <string name="prefs_image_size">Rozmiar obrazu</string>
     <string name="prefs_notification_sound">Dźwięk powiadomienia</string>
-    <string name="prefs_sum_notification_sound">System domyślny</string>
+    <string name="prefs_sum_notification_sound">Domyślne dla systemu</string>
     <string name="prefs_vibrate">Wibruj</string>
     <string name="prefs_sum_vibrate">Wibruj podczas przyjścia nowej wiadomości</string>
     <string name="prefs_light">Światło powiadomień</string>
     <string name="prefs_sum_light">Biały</string>
     <string name="prefs_title_wallpaper">Ustaw tapetę</string>
     <string name="prefs_sum_wallpaper">Ustaw obraz na tło</string>
-    <string name="prefs_title_wallpaper_switch">Tapetę</string>
+    <string name="prefs_title_wallpaper_switch">Tapeta</string>
     <string name="prefs_title_enter">Wciśnij Enter, żeby wysłać</string>
     <string name="prefs_sum_enter_on">Przycisk Enter automatycznie wysyłaj wiadomość</string>
     <string name="prefs_sum_enter_off">Przycisk Enter dodaje nową linijkę</string>
@@ -90,7 +90,7 @@
     <string name="color_red">Czerwony</string>
     <string name="color_green">Zielony</string>
     <string name="color_blue">Niebieski</string>
-    <string name="color_cyan">Cyan</string>
+    <string name="color_cyan">Cyjan</string>
     <string name="color_magenta">Magenta</string>
     <string name="color_yellow">Żółty</string>
     <string name="color_white">Biały</string>
@@ -105,8 +105,8 @@
     <string name="wizard2_phone_number_confirm_title">Potwierdź numer</string>
     <string name="wizard2_phone_number_confirm">Zamierzamy wysłać SMS-a na numer:\n\n%1$s\n\nCzy jest on poprawny?</string>
     <string name="wizard2_phone_linking">Podłączenie Twojego numeru telefonu do identyfikatora</string>
-    <string name="wizard3_nickname_hint">Wprowadź swój nick</string>
-    <string name="set_nickname_title">Ustaw nick</string>
+    <string name="wizard3_nickname_hint">Wprowadź swój pseudonim</string>
+    <string name="set_nickname_title">Ustaw pseudonim</string>
     <string name="ok">OK</string>
     <string name="cancel">Anuluj</string>
     <string name="copy_message_action">Kopiuj</string>
@@ -117,7 +117,7 @@
     <string name="scan_duplicate">Identyfikator został już zeskanowany i zweryfikowany wcześniej.</string>
     <string name="linked_email">E-mail</string>
     <string name="linked_mobile">Numer telefonu</string>
-    <string name="public_nickname">Nick</string>
+    <string name="public_nickname">Pseudonim</string>
     <string name="share_via">Udostępnij przez...</string>
     <string name="share_subject">Rozmawiaj w %s</string>
     <string name="message_delete_undo">Cofnij</string>
@@ -127,7 +127,6 @@
     <string name="whoaaa">Powiadomienie Threema</string>
     <string name="really_delete_message_title">Usuń wiadomość</string>
     <string name="really_delete_thread">Usuń chat</string>
-    <string name="really_delete_thread_message" tools:ignore="PluralsCandidate">Czy na pewno chcesz usunąć %d chat(y)? Nie będzie mógł ich odzyskać.</string>
     <string name="really_delete_contact">Czy na pewno chcesz usunąć ten kontakt i wszystkie powiązane wiadomości?</string>
     <string name="image_placeholder">Obraz</string>
     <string name="invalid_threema_id">Niepoprawny identyfikator Threema</string>
@@ -179,8 +178,8 @@
     <string name="attach_camera">Aparat</string>
     <string name="menu_restore">Przywróć z backup-u</string>
     <string name="restore_id_hint">Wprowadź lub wklej tekst eksportu identyfikatora, aby przywrócić</string>
-    <string name="location_placeholder">Location</string>
-    <string name="video_placeholder">Video</string>
+    <string name="location_placeholder">Lokalizacja</string>
+    <string name="video_placeholder">Film</string>
     <string name="audio_placeholder">Audio</string>
     <string name="restoring_backup">Przywracanie backup-u</string>
     <string name="server_message_title">Wiadomość z serwera Threema</string>
@@ -221,7 +220,7 @@
     <string name="saving_media">Zapisywanie mediów</string>
     <string name="file_is_not_a_video">Wybrany plik nie jest filmem</string>
     <string name="masterkey_is_unlocked">Klucz generalny jest odlokowany</string>
-    <string name="file_too_large">Wielkość pliku przekracza limit wynoszący 50 MB</string>
+    <string name="file_too_large">Wielkość pliku przekracza limit wynoszący %1$d MB</string>
     <string name="deleting_thread">Usuwanie chatu</string>
     <string name="enter_serial_body"><![CDATA[Proszę wpisać sklepowy klucz autoryzacyjny albo kliknąć tutaj, aby go odzyskać: https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Odblokuj Threema</string>
@@ -245,6 +244,8 @@
     <string name="emoji_emotions">Buźki i osoby</string>
     <string name="emoji_activities">Aktywności</string>
     <string name="emoji_flags">Flagi</string>
+    <string name="emoji_search">Wyszukuj emoji</string>
+    <string name="emoji_search_no_result">Brak wyników wyszukiwania</string>
     <string name="title_lock">Zablokuj</string>
     <string name="new_messages_locked">Nowe wiadomości oczekują</string>
     <string name="new_messages_locked_description">Dotknij, aby zobaczyć nowe wiadomości.</string>
@@ -345,7 +346,7 @@
     <string name="prefs_contact_format">Zobacz nazwy kontaktów</string>
     <string name="prefs_sum_contact_format">Ustaw format nazwy kontaktu</string>
     <string name="prefs_contact_list_title">Lista kontaktów</string>
-    <string name="prefs_default_contact_picture_colored">Domyślny kontakt ObrazyAvatary</string>
+    <string name="prefs_default_contact_picture_colored">Domyślne awatary kontaktów</string>
     <string name="prefs_show_inactive_contacts">Pokaż nieaktywne identyfikatory</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Wyświetlaj kolorowe zamienniki, jeśli brak obrazu kontaktu</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Użyj szarych zamienników, jeśli brak obrazu kontaktu.</string>
@@ -376,7 +377,6 @@
     <string name="file_saved">%d pliki zostały pomyślnie zapisane.</string>
     <string name="token_register_failed">Nie udało się zresetować Push Token, proszę spróbować ponownie.</string>
     <string name="internet_connection_required">Brak połączenia z Internetem.</string>
-    <string name="sending_message_failed" tools:ignore="PluralsCandidate">Wysyłanie wiadomości nie powiodło %1$d</string>
     <string name="prefs_sum_save_media">Automatycznie pobieraj i dekoduj przychodzące media i dodaj je do galerii</string>
     <string name="prefs_save_media">Zapisz media do galerii</string>
     <string name="title_add_distribution_list">Nowa lista dystrybucji</string>
@@ -529,7 +529,7 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="mime_text">Plik tekstowy</string>
     <string name="mime_video">Plik wideo</string>
     <string name="mime_word">Dokument tekstowy</string>
-    <string name="no_filename"><![CDATA[<No filename>]]></string>
+    <string name="no_filename"><![CDATA[<Brak nazwy pliku>]]></string>
     <string name="send_as_files">Wyślij jako plik</string>
     <string name="send_as_files_warning">Przesyłanie nieskompresowanych plików i obrazów może doprowadzić do znacznego zużycia danych, a tym samym do naliczenia dodatkowych opłat przez operatora sieci komórkowej. Zalecamy wysyłanie i pobieranie plików wyłącznie za pośrednictwem sieci Wi-Fi.</string>
     <string name="prefs_theme">Motyw</string>
@@ -576,7 +576,8 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="blocked">zablokowano</string>
     <string name="name">Imię</string>
     <string name="privacy_policy">Polityka prywatności</string>
-    <string name="terms_of_service">Warunki korzystania z usługi</string>
+    <string name="terms_of_service">Warunki umowy</string>
+    <string name="eula">Umowa licencyjna użytkownika końcowego</string>
     <string name="save_group_changes">Czy chcesz zapisać zmiany w grupie?</string>
     <string name="prefs_title_fontsize">Rozmiar czcionki</string>
     <string name="fontsize_normal">Normalny</string>
@@ -586,6 +587,8 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="chat_deleted" tools:ignore="PluralsCandidate">usunięto %d czat(y/ów)</string>
     <string name="prefs_sendlog">Wyślij dziennik</string>
     <string name="prefs_sendlog_summary">Wyślij plik dziennika do Threema do dalszej analizy w razie problemów</string>
+    <string name="prefs_exportlog">Eksportuj zapis</string>
+    <string name="prefs_exportlog_summary">Udostępnij plik zapisu innej aplikacji</string>
     <string name="permission_storage_required">Aby wysłać media, zezwól Threema na dostęp do pamięci.</string>
     <string name="permission_location_required">Aby wysłać swoją lokalizację, zezwól Threema na dostęp do swojego położenia.</string>
     <string name="permission_contacts_required">Aby wysłać kontakty, zezwól Threema na odczytywanie danych kontaktowych.</string>
@@ -624,6 +627,8 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="new_wizard_linked_to">Połączony z</string>
     <string name="new_wizard_need_internet">Do utworzenia niepowtarzalnego ID w Threema potrzebne jest stabilne połączenie z Internetem. Spróbuj ponownie.</string>
     <string name="new_wizard_more_information">Więcej informacji</string>
+    <string name="contact_details_id_copied">ID skopiowany do schowka</string>
+    <string name="contact_details_nickname_copied">Pseudonim skopiowany do schowka</string>
     <string name="new_wizard_use_id_as_nickname">Chcesz używać swojego ID w Threema jako publicznie dostępnego pseudonimu?</string>
     <string name="new_wizard_phone_email_invalid">Podany numer telefonu lub adres e-mail jest nieprawidłowy.\nPopraw, nim przejdziesz dalej.</string>
     <string name="new_wizard_phone_invalid">Podany numer telefonu jest nieprawidłowy.\nPopraw, zanim przejdziesz dalej.</string>
@@ -715,7 +720,6 @@ anonimowo?</string>
     <string name="grace_never">Nigdy (ręcznie)</string>
     <string name="never">Nigdy</string>
     <string name="unhide_chats_confirm">Jeśli usuniesz ochronę dostępu, twoje prywatne czaty staną się dostępne.</string>
-    <string name="selection_counter_label" tools:ignore="PluralsCandidate">Wybrano %d obrazy(ów)</string>
     <string name="verification_started">Rozpoczęto weryfikację</string>
     <string name="cannot_open_file">Nie udało się otworzyć pliku</string>
     <string name="prefs_title_image_attach_previews">Szybki wybór obrazów</string>
@@ -830,6 +834,7 @@ anonimowo?</string>
     <string name="unpin">Odznacz</string>
     <string name="location_services_disabled">Usługi lokalizacyjne są wyłączone. Czy chcesz włączyć je teraz?</string>
     <string name="send_location">Prześlij lokalizację</string>
+    <string name="forward_location">Przekaż lokalizację</string>
     <string name="unknown_address">Nieznany adres</string>
     <string name="your_location">Twoja lokalizacja</string>
     <string name="network_blocked_title">Obsługa danych w tle wyłączona</string>
@@ -999,7 +1004,7 @@ anonimowo?</string>
     <string name="global_search">Przeszukaj czaty</string>
     <string name="global_search_empty_view_text">Wprowadź co najmniej dwa znaki, aby przeszukać wiadomości</string>
     <string name="my_id">Mój identyfikator</string>
-    <string name="profile_picture_and_nickname">Zdjęcie profilowe i nick</string>
+    <string name="profile_picture_and_nickname">Zdjęcie profilowe i pseudonim</string>
     <string name="lp_select_this_place">Wybierz to miejsce</string>
     <string name="lp_or_select_nearby">Lub wybierz miejsce w okolicy</string>
     <string name="lp_use_this_location">Przesłać tę lokalizację?</string>
@@ -1026,7 +1031,23 @@ anonimowo?</string>
     <string name="delete">Usuń</string>
     <string name="num_archived_chats">Zarchiwizowane czaty: %d</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
-    <string name="tooltip_identity_popup">Dotknij tutaj, aby szybko wyświetlić swój identyfikator Threema albo zeskanować identyfikatory innych osób</string>
+    <string name="whatsnew_title">Witamy w %1$s %2$s</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p><b>Nowe funkcje w tej wersji %s na Androida:</b></p>
+		<p>
+		&bull; Wiele nowych emotek zgodnych ze standardem Unicode 13.1. 😵‍💫❤️‍🔥
+		</p><p>
+		&bull; Wyszukiwanie emotek według nazwy lub znaczenia (dostępne w 17 językach).
+		</p><p>
+		&bull; Określone kolory dla kontaktów i grup, które nie mają swojego zdjęcia profilowego. Nowe kolory będą takie same na różnych platformach i urządzeniach.
+		</p><p>
+		&bull; Ulepszone działanie przewijania na wielu listach.
+		</p><p>
+		&bull; Zoptymalizowany układ edytora mediów. Liczba pozycji mediów, które można edytować przed przesłaniem, zwiększona do 256.
+		</p><p>
+		&bull; Wiele drobnych usprawnień i usuniętych błędów
+		</p>
+		]]></string>
     <string name="tap_to_start">Dotknij tutaj, aby włączyć %s teraz.</string>
     <string name="two_years">2 lata</string>
     <string name="invalid_backup_path">Nieprawidłowa ścieżka kopii zapasowej</string>
@@ -1046,7 +1067,7 @@ anonimowo?</string>
     <string name="edit_type_content_description">Pokaż lub edytuj %1$s %2$s</string>
     <string name="group">Grupa</string>
     <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Nasza polityka prywatności została zaktualizowana, aby odzwierciedlić następującą zmianę:</p><p>%1$s nie zależy już od Google Play i Google Maps w celu dostarczenia map i danych POI.</p>Proszę zapoznać się z polityką prywatności <a href="%2$s">tutaj</a>.]]></string>
-    <string name="play_services_not_installed_unable_to_use_push">Aplikacja Services nie jest zainstalowana. Nie można przełączyć na „push”.</string>
+    <string name="play_services_not_installed_unable_to_use_push">Aplikacja Services nie jest zainstalowana. Nie można przełączyć na push Google FCM lub HMS.</string>
     <string name="unable_to_get_current_location">Nie można określić obecnej lokalizacji.</string>
     <string name="lp_search_place_min_chars">Wprowadź co najmniej trzy znaki, aby wyszukać miejsce.</string>
     <string name="lp_search_place_no_matches">Nie znaleziono pasujących miejsc. Zmień wyszukiwaną frazę.</string>
@@ -1121,7 +1142,7 @@ anonimowo?</string>
     <string name="message_not_found">Nie znaleziono wiadomości</string>
     <string name="insert_datetime">Wstaw datę i godzinę</string>
     <string name="prefs_sum_disable_smart_replies">Zakaż inteligentnych odpowiedzi w powiadomieniach w systemie Android</string>
-    <string name="prefs_title_disable_smart_replies">Wyłącz inteligentne odpowiedz</string>
+    <string name="prefs_title_disable_smart_replies">Wyłącz inteligentne odpowiedzi</string>
     <string name="url_warning_body_alt">Nazwa hosta łącza, które zamierzasz otworzyć, jest podejrzana:\n\nTo może być próba oszustwa i nakłonienia Cię do otwarcia witryny udającej coś innego.\n\nCzy mimo to chcesz kontynuować?</string>
     <string name="read_on">Czytaj dalej</string>
     <string name="forward_text">Prześlij tekst</string>
@@ -1195,7 +1216,7 @@ anonimowo?</string>
     <string name="group_request_already_sent"><![CDATA[Prośba o dołączenie została już wysłana dla <b>%s</b> poprzez to łącze. Kliknij na prośbę, aby wysłać ją ponownie.]]></string>
     <string name="group_link_none">Nie wygenerowano jeszcze łącza</string>
     <string name="group_request_confirm_send"><![CDATA[Zamierzasz wysłać prośbę o dołączenie do grupy dla <b>%1$s</b> do administratora <b>%2$s</b>. Jeśli to łącze nie zostało unieważnione, zostaniesz automatycznie dodany/dodana do grupy, jak tylko urządzenie administratora otrzyma Twoją prośbę.]]></string>
-    <string name="really_delete_outgoing_request">Czy naprawdę chcesz usunąć prośbę o dołączenie do grupy %d? Pamiętaj, że prośba nie zostanie cofnięta i nadal możliwe będzie jej zaakceptowanie lub kontakt z Tobą, jeśli jeszcze nie odpowiedziano na prośbę.</string>
+    <string name="really_delete_outgoing_request">Czy naprawdę chcesz usunąć %d próśb o dołączenie do grupy ? Pamiętaj, że prośby nie zostanę cofnięte i nadal mogą zostać zaakceptowane albo odrzucone jeśli administrator grupy jeszcze nie odpowiedział na prośbę.</string>
     <string name="really_delete_group_request_title">Naprawdę usuń prośbę</string>
     <string name="sent_to">Wysłane do: %s</string>
     <string name="sent_on">Wysłano: %s</string>
@@ -1364,4 +1385,46 @@ anonimowo?</string>
     <string name="organization_type">Organizacja</string>
     <string name="permission_bluetooth_connect_required">Włącz uprawnienie „Urządzenia w pobliżu”, aby zlokalizować połączone zestawy słuchawkowe Bluetooth</string>
     <string name="threema_push_start_webclient_sessions_manually">Usługa Threema Push jest aktywna. Sesje Threema Web oraz Desktop należy uruchomić ręcznie.</string>
+    <string name="tooltip_multiple_recipients_title">Nowość: wielu odbiorców</string>
+    <string name="tooltip_multiple_recipients_text">Przytrzymaj dłużej, aby wybrać wielu odbiorców tej samej wiadomości.</string>
+    <string name="synchronizing">Synchronizacja...</string>
+    <string name="self_updater_installation_failed">Pobranie aktualizacji nie powiodło się. Pobierz ją ze strony <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> i zainstaluj ręcznie.</string>
+    <string name="spam_first_contact">Ten czat jest z nieznanym kontaktem</string>
+    <string name="spam_report">Zgłoś Spam</string>
+    <string name="spam_report_dialog_explain">Jeśli kontynuujesz, ID i pseudonim tego kontaktu zostaną przekazane Threemie włącznie z Twoim ID. Żadna zawartość ani dane personalne nie są wysyłane. Kontakt nie zostanie o tym powiadomiony.</string>
+    <string name="spam_report_dialog_block_checkbox">Również zablokuj ten kontakt i usuń czat</string>
+    <string name="spam_report_dialog_title">Zgłoś %s</string>
+    <string name="spam_successfully_reported">Ten ID został zgłoszony jako wysyłający spam</string>
+    <string name="spam_error_reporting">Wystąpił błąd podczas zgłaszania spamu: %s</string>
+    <string name="spam_report_short">Zgłoś</string>
+    <string name="wizard_incompatible_contact_sync_params">Ustawione są niezgodne parametry MDM. Parametr MDM Threema th_contact_sync nie może być ustawiony na wartość prawda, jeśli ustawiono ograniczenie użytkownika DISALLOW_MODIFY_ACCOUNTS. Skontaktuj się z administratorem urządzenia.</string>
+    <string name="messages_cannot_be_recovered">Nie będzie mógł ich odzyskać.</string>
+    <string name="contact_deleted">Kontakt usunięty</string>
+    <string name="last_added_contact">Ostatnio dodany</string>
+    <string name="directory_explain_text">Przeszukaj katalog firmowy, by znaleźć pracowników, których nie ma na liście kontaktów.</string>
+    <string name="cannot_display_location">Nie można pokazać lokalizacji.</string>
+    <plurals name="contacts_counter_label">
+        <item quantity="few">%d kontakty</item>
+        <item quantity="many">%d kontaktów</item>
+        <item quantity="one">%d kontakt</item>
+        <item quantity="other">%d kontaktów</item>
+    </plurals>
+    <plurals name="really_delete_thread_message">
+        <item quantity="one">Czy na pewno chcesz usunąć %d chat?</item>
+        <item quantity="few">Czy na pewno chcesz usunąć %d chaty?</item>
+        <item quantity="many">Czy na pewno chcesz usunąć %d chaty?</item>
+        <item quantity="other">Czy na pewno chcesz usunąć %d chaty?</item>
+    </plurals>
+    <plurals name="sending_message_failed">
+        <item quantity="one">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="few">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="many">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="other">Wysyłanie wiadomości nie powiodło %1$d</item>
+    </plurals>
+    <plurals name="selection_counter_label">
+        <item quantity="one">Wybrano %d obrazy</item>
+        <item quantity="few">Wybrano %d obrazyów</item>
+        <item quantity="many">Wybrano %d obrazyów</item>
+        <item quantity="other">Wybrano %d obrazyów</item>
+    </plurals>
 </resources>

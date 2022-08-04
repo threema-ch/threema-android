@@ -322,30 +322,30 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	}
 
 	@Override
-	public void onIceChecking(long callId) {
-		logger.info("onIceChecking");
-		this.addToLog("ICE Checking");
+	public void onTransportConnecting(long callId) {
+		logger.info("onTransportConnecting");
+		this.addToLog("Transport connecting");
 	}
 
 	@Override
 	@AnyThread
-	public void onIceConnected(long callId) {
-		logger.info("onIceConnected");
-		this.addToLog("ICE Connected");
+	public void onTransportConnected(long callId) {
+		logger.info("onTransportConnected");
+		this.addToLog("Transport connected");
 	}
 
 	@Override
 	@AnyThread
-	public void onIceDisconnected(long callId) {
-		logger.info("onIceDisconnected");
-		this.addToLog("ICE Disconnected");
+	public void onTransportDisconnected(long callId) {
+		logger.info("onTransportDisconnected");
+		this.addToLog("Transport disconnected");
 	}
 
 	@Override
 	@AnyThread
-	public void onIceFailed(long callId) {
-		logger.info("onIceFailed");
-		this.addToLog("ICE Failed");
+	public void onTransportFailed(long callId) {
+		logger.info("onTransportFailed");
+		this.addToLog("Transport failed");
 	}
 
 	@Override

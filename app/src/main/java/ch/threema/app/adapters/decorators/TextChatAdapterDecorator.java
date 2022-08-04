@@ -137,7 +137,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 							barColor = this.identityColors.get(content.identity);
 						}
 					} else {
-						barColor = contactModel.getColor();
+						barColor = contactModel.getThemedColor(getContext());
 					}
 				}
 				if (holder.quoteBar != null) {

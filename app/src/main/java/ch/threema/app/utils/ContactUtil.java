@@ -30,9 +30,12 @@ import android.text.TextUtils;
 
 import org.slf4j.Logger;
 
+import java.text.Collator;
+import java.util.Comparator;
 import java.util.Date;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Pair;
 import ch.threema.app.R;
@@ -190,6 +193,23 @@ public class ContactUtil {
 			if (!TextUtils.isEmpty(lastName)) {
 				key = lastName + key;
 			}
+		}
+		return key;
+	}
+
+	public static @NonNull Comparator<ContactModel> getContactComparator(boolean sortOrderFirstName) {
+		final Collator collator = Collator.getInstance();
+		collator.setStrength(Collator.PRIMARY);
+		return (contact1, contact2) -> collator.compare(
+			getSortKey(contact1, sortOrderFirstName), getSortKey(contact2, sortOrderFirstName)
+		);
+	}
+
+	private static @NonNull String getSortKey(ContactModel contactModel, boolean sortOrderFirstName) {
+		String key = ContactUtil.getSafeNameString(contactModel, sortOrderFirstName);
+
+		if (contactModel.getIdentity().startsWith("*")) {
+			key = "\uFFFF" + key;
 		}
 		return key;
 	}

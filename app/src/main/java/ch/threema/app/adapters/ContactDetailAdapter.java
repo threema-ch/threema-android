@@ -22,8 +22,9 @@
 package ch.threema.app.adapters;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,19 +34,21 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
-
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -113,14 +116,26 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			this.readReceiptsSpinner = itemView.findViewById(R.id.read_receipts_spinner);
 			this.typingIndicatorsSpinner = itemView.findViewById(R.id.typing_indicators_spinner);
 
-			verificationLevelIconView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (onClickListener != null) {
-						onClickListener.onVerificationInfoClick(v);
-					}
+			verificationLevelIconView.setOnClickListener(v -> {
+				if (onClickListener != null) {
+					onClickListener.onVerificationInfoClick(v);
 				}
 			});
+
+
+			itemView.findViewById(R.id.threema_id).setOnLongClickListener(ignored -> {
+				String identity = contactModel.getIdentity();
+				copyTextToClipboard(identity, R.string.contact_details_id_copied);
+				return true;
+			});
+
+
+			itemView.findViewById(R.id.public_nickname).setOnLongClickListener(ignored -> {
+				String nickname = contactModel.getPublicNickName();
+				copyTextToClipboard(nickname, R.string.contact_details_nickname_copied);
+				return true;
+			});
+
 
 			itemView.findViewById(R.id.public_key_button).setOnClickListener(v -> {
 				if (context instanceof AppCompatActivity) {
@@ -128,6 +143,13 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 						.show(((AppCompatActivity) context).getSupportFragmentManager(), "pk");
 				}
 			});
+		}
+
+		private void copyTextToClipboard(String data, @StringRes int toastResId) {
+			ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+			ClipData clip = ClipData.newPlainText(null, data);
+			clipboard.setPrimaryClip(clip);
+			Toast.makeText(context, toastResId, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -153,12 +175,12 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		if (viewType == TYPE_ITEM) {
 			View v = LayoutInflater.from(parent.getContext())
-					.inflate(R.layout.item_contact_detail, parent, false);
+				.inflate(R.layout.item_contact_detail, parent, false);
 
 			return new ItemHolder(v);
 		} else if (viewType == TYPE_HEADER) {
 			View v = LayoutInflater.from(parent.getContext())
-					.inflate(R.layout.header_contact_detail, parent, false);
+				.inflate(R.layout.header_contact_detail, parent, false);
 
 			return new HeaderHolder(v);
 		}
@@ -170,10 +192,11 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		if (holder instanceof ItemHolder) {
 			ItemHolder itemHolder = (ItemHolder) holder;
 			final GroupModel groupModel = getItem(position);
-			Bitmap avatar = this.groupService.getAvatar(groupModel, false);
+
+			this.groupService.loadAvatarIntoImage(groupModel, itemHolder.avatarView, AvatarOptions.DEFAULT);
 
 			itemHolder.nameView.setText(groupModel.getName());
-			itemHolder.avatarView.setImageBitmap(avatar);
+
 			if (groupService.isGroupOwner(groupModel)) {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_outline);
 			} else {
@@ -184,7 +207,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			HeaderHolder headerHolder = (HeaderHolder) holder;
 
 			String identityAdditional = null;
-			if(this.contactModel.getState() != null) {
+			if (this.contactModel.getState() != null) {
 				switch (this.contactModel.getState()) {
 					case ACTIVE:
 						if (blackListIdentityService.has(contactModel.getIdentity())) {
@@ -242,7 +265,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 			final String[] choices = context.getResources().getStringArray(R.array.receipts_override_choices);
 			choices[0] = context.getString(R.string.receipts_override_choice_default,
-					choices[preferenceService.isReadReceipts() ? 1 : 2]);
+				choices[preferenceService.isReadReceipts() ? 1 : 2]);
 
 			ArrayAdapter<String> readReceiptsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, choices);
 			headerHolder.readReceiptsSpinner.setAdapter(readReceiptsAdapter);
@@ -293,6 +316,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	public interface OnClickListener {
 		void onItemClick(View v, GroupModel groupModel);
+
 		void onVerificationInfoClick(View v);
 	}
 

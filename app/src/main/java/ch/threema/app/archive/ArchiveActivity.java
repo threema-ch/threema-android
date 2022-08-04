@@ -253,6 +253,11 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 					return true;
 				case R.id.menu_select_all:
 					archiveAdapter.selectAll();
+					if (archiveAdapter.getCheckedItemsCount() > 0) {
+						actionMode.invalidate();
+					} else {
+						actionMode.finish();
+					}
 					return true;
 				default:
 					return false;
@@ -294,9 +299,10 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 
 	@SuppressLint("StringFormatInvalid")
 	private void delete(List<ConversationModel> checkedItems) {
-		String confirmText = String.format(getString(R.string.really_delete_thread_message), checkedItems.size());
+		int num = checkedItems.size();
+		String confirmText = getResources().getQuantityString(R.plurals.really_delete_thread_message, num, num) + " " + getString(R.string.messages_cannot_be_recovered);
 
-		if (checkedItems.size() == 1 && checkedItems.get(0).isGroupConversation()) {
+		if (num == 1 && checkedItems.get(0).isGroupConversation()) {
 			if (groupService.isGroupMember(checkedItems.get(0).getGroup())) {
 				if (groupService.isGroupOwner(checkedItems.get(0).getGroup())) {
 					confirmText = getString(R.string.delete_my_group_message);

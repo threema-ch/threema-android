@@ -72,6 +72,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -121,7 +122,6 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.IdentityPopup;
-import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -181,12 +181,11 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private static final String BUNDLE_CURRENT_FRAGMENT_TAG = "currentFragmentTag";
 	private static final int REQUEST_CODE_WHATSNEW = 41912;
-	private static final String TOOLTIP_TAG = "tooltip_home_pref";
 
 	public static final String EXTRA_SHOW_CONTACTS = "show_contacts";
 
 	private ActionBar actionBar;
-	private boolean isLicenseCheckStarted = false, isInitialized = false, isWhatsNewShown = false;
+	private boolean isLicenseCheckStarted = false, isInitialized = false, isWhatsNewShown = false, isUpdating = false;
 	private Toolbar toolbar;
 	private View connectionIndicator;
 	private LinearLayout noticeLayout, ongoingCallNoticeLayout;
@@ -235,7 +234,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private BottomNavigationView bottomNavigationView;
 	private View mainContent;
-	private TooltipPopup tooltipPopup = null;
 
 	private String currentFragmentTag;
 
@@ -604,13 +602,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 								newConfig.saveConfig(preferenceService);
 							}
 						}
-						showWhatsNew();
 					}
 				}
 			}
 		}
 	}
 
+	@UiThread
 	private void showMainContent() {
 		if (mainContent != null) {
 			if (mainContent.getVisibility() != View.VISIBLE) {
@@ -637,13 +635,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						isWhatsNewShown = true; // make sure this is set to false if whatsnew is skipped - otherwise pin unlock will not be shown once
 
 						// Do not show whatsnew for users of the previous 4.5x version
-/*						int previous = preferenceService.getLatestVersion() % 1000;
+						int previous = preferenceService.getLatestVersion() % 1000;
 
-						if (previous < 650) {
-*/							Intent intent = new Intent(this, WhatsNewActivity.class);
+						if (previous < BuildConfig.VERSION_CODE) {
+							Intent intent = new Intent(this, WhatsNewActivity.class);
 							startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 							overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-//						}
+						}
 					}
 					preferenceService.setLatestVersion(this);
 				}
@@ -821,10 +819,17 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			.show(getSupportFragmentManager(), DIALOG_TAG_FINISH_UP);
 	}
 
+	@SuppressLint("StaticFieldLeak")
 	private void runUpdates(final UpdateSystemService updateSystemService) {
+		if (isUpdating) {
+			return;
+		}
+
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected void onPreExecute() {
+				isUpdating = true;
+
 				GenericProgressDialog.newInstance(R.string.updating_system, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_UPDATING);
 			}
 
@@ -855,8 +860,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			@Override
 			protected void onPostExecute(Void aVoid) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_UPDATING, true);
-				HomeActivity.this.initMainActivity(null);
-				showMainContent();
+				initMainActivity(null);
+
+				isUpdating = false;
 			}
 		}.execute();
 	}
@@ -893,14 +899,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			// remove restart notification
 			notificationService.cancelRestartNotification();
 
-			UpdateSystemService updateSystemService = serviceManager.getUpdateSystemService();
-			if (updateSystemService.hasUpdates()) {
-				//runASync updates FIRST!!
-				this.runUpdates(updateSystemService);
-			} else {
-				this.initMainActivity(savedInstanceState);
-			}
-
 			ListenerManager.smsVerificationListeners.add(this.smsVerificationListener);
 			ListenerManager.messageListeners.add(this.messageListener);
 			ListenerManager.appIconListeners.add(this.appIconListener);
@@ -908,6 +906,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			ListenerManager.voipCallListeners.add(this.voipCallListener);
 			ListenerManager.conversationListeners.add(this.conversationListener);
 			ListenerManager.contactCountListener.add(this.contactCountListener);
+
+			UpdateSystemService updateSystemService = serviceManager.getUpdateSystemService();
+			if (updateSystemService.hasUpdates()) {
+					//runASync updates FIRST!!
+					this.runUpdates(updateSystemService);
+				} else {
+					this.initMainActivity(savedInstanceState);
+				}
 		} else {
 		 	RuntimeUtil.runOnUiThread(() -> showErrorTextAndExit(getString(R.string.service_manager_not_available)));
 		}
@@ -997,11 +1003,15 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			}
 
 			// For libre builds of Threema, always ask user to disable battery permissions
-			if (BuildFlavor.forceThreemaPush() && !DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(this)) {
-				final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
-				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
-				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
-				startActivityForResult(intent, 12345);
+			if (BuildFlavor.forceThreemaPush()) {
+				preferenceService.setUseThreemaPush(true);
+
+				if (!DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(this)) {
+					final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
+					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
+					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
+					startActivityForResult(intent, 12345);
+				}
 			}
 		}
 
@@ -1013,7 +1023,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		this.noticeLayout.setVisibility(
 				userService.getMobileLinkingState() == UserService.LinkingState_PENDING ?
 						View.VISIBLE : View.GONE);
-
 
 		this.ongoingCallNoticeLayout = findViewById(R.id.ongoing_call_layout);
 		findViewById(R.id.call_container).setOnClickListener(v -> {
@@ -1109,9 +1118,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			}
 
 			try {
-				messagesTransaction.commit();
-				contactsTransaction.commit();
-				profileTransaction.commit();
+				messagesTransaction.commitAllowingStateLoss();
+				contactsTransaction.commitAllowingStateLoss();
+				profileTransaction.commitAllowingStateLoss();
 			} catch (IllegalStateException e) {
 				logger.error("Exception", e);
 			}
@@ -1119,9 +1128,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		this.bottomNavigationView = findViewById(R.id.bottom_navigation);
 		this.bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-			if (tooltipPopup != null) {
-				tooltipPopup.dismiss();
-			}
+			showMainContent();
 
 			Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
 			if (currentFragment != null) {
@@ -1164,6 +1171,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 
 		isInitialized = true;
+
+		showWhatsNew();
+
+		notificationService.cancelRestoreNotification();
 	}
 
 	private void initOngoingCallNotice() {
@@ -1248,9 +1259,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				if (tooltipPopup != null) {
-					tooltipPopup.dismiss();
-				}
 				showQRPopup();
 				return true;
 			case R.id.menu_lock:
@@ -1582,10 +1590,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		super.onPause();
 
-		if (tooltipPopup != null) {
-			tooltipPopup.dismiss();
-		}
-
 		ThreemaApplication.activityPaused(this);
 	}
 
@@ -1605,7 +1609,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			case ThreemaActivity.ACTIVITY_ID_WIZARDFIRST:
 				UserService userService = serviceManager.getUserService();
 				if (userService != null && userService.hasIdentity()) {
-					this.startMainActivity(null);
+					showMainContent();
+					startMainActivity(null);
 				} else {
 					finish();
 				}
@@ -1662,22 +1667,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			case ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE:
 				break;
 			case REQUEST_CODE_WHATSNEW:
-				if (!TooltipPopup.isDismissed(this, TOOLTIP_TAG)) {
-					toolbar.postDelayed(() -> {
-						if (isFinishing() || isDestroyed()) {
-							return;
-						}
-						if (tooltipPopup != null) {
-							tooltipPopup.dismiss();
-						}
-
-						int[] location = getMiniAvatarLocation();
-						location[1] += toolbar.getHeight() / 2;
-
-						tooltipPopup = new TooltipPopup(HomeActivity.this, TOOLTIP_TAG, R.layout.popup_tooltip_top_left);
-						tooltipPopup.show(this, toolbar, getString(R.string.tooltip_identity_popup), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_LEFT, location, 0);
-					}, 1000);
-				}
+				showMainContent();
 				break;
 			default:
 				break;
@@ -1708,8 +1698,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
+	@SuppressLint("StaticFieldLeak")
 	public void addThreemaChannel() {
-
 		final MessageService messageService;
 
 		try {
@@ -1786,7 +1776,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			connectionIndicator = findViewById(R.id.connection_indicator);
 			if (connectionIndicator != null) {
 				ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
-				invalidateOptionsMenu();
 			}
 		});
 	}

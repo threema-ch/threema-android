@@ -132,10 +132,19 @@ class QRScannerActivity : ThreemaActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "WrongConstant")
     private fun bindCameraUseCases() {
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+        val lensFacing = if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true) CameraSelector.LENS_FACING_BACK else
+                    (if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true) CameraSelector.LENS_FACING_FRONT else -1)
 
+        if (lensFacing == -1) {
+            Toast.makeText(this, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
+            logger.info("Back and front camera are unavailable")
+            finish()
+            return
+        }
+
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
         val rotation = cameraPreview.display.rotation
         val resolution = Size(720, 1280)
 

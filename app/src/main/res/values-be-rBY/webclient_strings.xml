@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">Несапраўдныя дадзеныя QR кода</string>
+    <string name="webclient_init_session">Пачаць новую сесію</string>
+    <string name="webclient_sessions_really_delete">Вы сапраўды жадаеце выдаліць гэтую сесію версіі для ПК/вэб-версіі?</string>
+    <string name="webclient_last_usage">Апошн. выкарыст.: %s</string>
+    <string name="webclient_created_at">Час стварэння: %1$s (%2$s)</string>
+    <string name="webclient_active_since">Актыўна з: %s</string>
+    <string name="webclient_enable">Уключыць праграму для ПК / вэб-кліент</string>
+    <string name="webclient_no_sessions_found">Для падлучэння загрузіце праграму для ПК (<b>https://threema.ch/download</b>) або адкрыйце вэб-кліент (<b>%s</b>) на кампутары і націсніце кнопку ніжэй, каб сканаваць QR-код на экране кампутара.</string>
+    <string name="webclient_session_rename">Перайменаваць сесію</string>
+    <string name="webclient_session_label">Новае імя</string>
+    <string name="webclient_session_start">Пачаць сесію</string>
+    <string name="webclient_session_stop">Спыніць сесію</string>
+    <string name="webclient_persistent">Пастаянны</string>
+    <string name="webclient_disposable">Даступна</string>
+    <string name="webclient_unnamed_session">Безназоўная сесія</string>
+    <string name="webclient_session_remove">Выдаліць сесію</string>
+    <string name="webclient_welcome_title">Майце знос. з вашага камп-а</string>
+    <string name="webclient_welcome_explain">Праграма для ПК і вэб-кліент дазваляюць мець зносіны з вашага кампутара ці наўтбука, даючы вам поўны доступ да ўсіх кантактаў, мультымедыя і чатам.\n\n<b>Усе камунікацыі паміж тэлефонам і кампутарам абаронены скразным шыфраваннем</b> і выкарыстоўваюць прамое падлучэнне, калі тэлефон і кампутар знаходзяцца ў адной сетцы.\n\nЗвярніце ўвагу: праграма для ПК / вэб-кліент можа выклікаць дадатковы разрад батарэі, пакуль сесія актыўная. Вы можаце ўключыць або адключыць праграму у любы час.</string>
+    <string name="webclient_launch">Запусціць праграму для ПК / вэб-кліента</string>
+    <string name="webclient_qr_scan_message">Калі ласка, адскануйце QR-код, які адлюстроўваецца на кампутары.</string>
+    <string name="webclient_invalid_qr_code">Няправільны QR-код</string>
+    <string name="webclient_new_connection_toast">Сесія праграмы для ПК/вэб-кліента запушч.</string>
+    <string name="webclient_protocol_error">Памылка пратакола</string>
+    <string name="webclient_protocol_version_to_old">Ваша праграма не падтрымлівае дадзеную версію праграмы для ПК / вэб-кліента. Абнавіце Threema для Android да апошняй версіі.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Ваша праграма не падтрымлівае дадзеную версію праграмы для ПК / вэб-кліента. Загрузіце апошнюю версію праграмы для ПК ці папытаеце адміністратара вэб-кліента перайсці на апошнюю версію.</string>
+    <string name="webclient_protocol_version_too_new_threema">Ваша праграма не падтрымлівае дадзеную версію праграмы для ПК / вэб-кліента. Выкарыстоўвайце навейшую версію праграмы для ПК / вэб-кліента.</string>
+    <string name="webclient_session_already_exists">Сесія, якая адпавядае сканаванаму вамі QR-коду, ужо існуе.  Перазапусціце праграму для ПК / перазапусціце вэб-кліент і паспрабуйце яшчэ раз.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Жадаеце запусціць гэтую сесію?</string>
+    <string name="webclient_cannot_restore">Не ўдаецца аднавіць сесію</string>
+    <string name="webclient_disabled">Праграма для ПК/вэб-в. не актываваная</string>
+    <string name="webclient_cannot_start">Не ўдаецца запусціць сесію</string>
+    <string name="webclient_constrained_by_mdm">Сэрвер не зацверджаны адміністратарам.</string>
+    <string name="webclient_clear_all_sessions">Ачысціць усе сесіі</string>
+    <string name="webclient_prefs_debug_tool_summary">Запусціце гэты сродак для адладкі непаладак з настройкай злучэння з праграмай для ПК або вэб-кліентам</string>
+    <string name="webclient_diagnostics">Дыягностыка праграмы для ПК/вэб-кл.</string>
+    <string name="webclient_diagnostics_start">Пуск</string>
+    <string name="webclient_diagnostics_intro">Націсніце кнопку \"Пуск\" для запуску тэсту</string>
+    <string name="webclient_diagnostics_done">Гатова! Калі ў вас узнікаюць непаладкі з наладжваннем злучэння з праграмай для ПК або вэб-кліентам, адпраўце дадзеныя ў службу падтрымкі Threema.</string>
+</resources>

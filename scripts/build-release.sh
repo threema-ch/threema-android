@@ -30,11 +30,10 @@ RED="\033[0;31m"
 RESET="\033[0m"
 
 function print_usage() {
-    echo "Usage: $0 -v <variants> -n <version-name> [-b] [-k <dir>] [-o <dir>] [--no-image-export] --i-accept-the-android-sdk-license"
+    echo "Usage: $0 -v <variants> [-b] [-k <dir>] [-o <dir>] [--no-image-export] --i-accept-the-android-sdk-license"
     echo ""
     echo "Options:"
-    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, work, hms, hmswork, onprem"
-    echo "  -n <version-name>    The version name. Example: '4.53'"
+    echo "  -v <variants>        Comma-separated variants to build: googleplay, threemashop, libre, work, hms, hmswork, onprem"
     echo "  -b,--build           (Re)build the Docker image"
     echo "  --no-cache           Clear Docker build cache"
     echo "  -k,--keystore <dir>  Path to the keystore directory"
@@ -81,7 +80,6 @@ if [ "$#" -lt 1 ]; then print_usage; exit 1; fi
 # Parse arguments
 license=""
 variants=""
-name=""
 build=0
 no_cache=""
 keystore=""
@@ -90,7 +88,7 @@ releasedir="$DIR/../release"
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -v) variants="$2"; shift ;;
-        -n) name="$2"; shift ;;
+        -n) echo "Note: The -n parameter is deprecated and not needed anymore"; shift ;;
         -b|--build) build=1 ;;
         --no-cache) no_cache="--no-cache" ;;
         -k|--keystore) keystore="$2"; shift ;;
@@ -102,13 +100,13 @@ while [[ "$#" -gt 0 ]]; do
     esac
     shift
 done
-releasedir=$(realpath $releasedir)
+releasedir=$(realpath "$releasedir")
 
 # Process arguments
 IFS=', ' read -r -a variant_array <<< "$variants"
 for variant in "${variant_array[@]}"; do
     case $variant in
-        googleplay | threemashop | work | hms | hmswork | onprem)
+        googleplay | threemashop | libre | work | hms | hmswork | onprem)
             # Valid
             ;;
         *)
@@ -119,19 +117,21 @@ done
 if [ "$license" != "accepted" ]; then
     fail 'Please accept the license with "--i-accept-the-android-sdk-license"'
 fi
-name=${name//[^0-9\.a-zA-Z\-]/}
-if [[ "$name" == "" || "$name" == .* ]]; then
-    log_error 'Please set a valid version name with "-n <name>".'
-    fail 'Example: "-n 4.43"'
-fi
 
 # Determine build version
-app_version=$(grep "^\s*versionCode \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
+app_version_code=$(grep "^\s*versionCode \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
+app_version_name_main=$(grep '^def app_version = "' "$DIR/../app/build.gradle" | sed 's/^def app_version = "\([^"]*\)".*/\1/')
+app_version_name_suffix=$(grep '^def beta_suffix = "' "$DIR/../app/build.gradle" | sed 's/^def beta_suffix = "\([^"]*\)".*/\1/')
+app_version_name="${app_version_name_main}${app_version_name_suffix}"
 sdk_version=$(grep "^\s*compileSdkVersion \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
 build_tools_version=$(grep "^\s*buildToolsVersion \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9\.]*//g')
 
 # Validate target directory
 mkdir -p "$releasedir"
+name=${app_version_name//[^0-9\.a-zA-Z\-_]/}
+if [[ "$name" == "" || "$name" == .* ]]; then
+    fail "Could not process app version name ($app_version_name)"
+fi
 targetdir="$releasedir/$name"
 log_major "Creating target directory $targetdir"
 if [[ -d "$targetdir" ]]; then
@@ -142,14 +142,15 @@ mkdir "$targetdir"
 # Build Docker image
 if [ $build -eq 1 ]; then
     log_major "Building Docker image with args:"
-    log_minor "app_version=$app_version"
+    log_minor "app_version_code=$app_version_code"
+    log_minor "app_version_name=$app_version_name"
     log_minor "sdk_version=$sdk_version"
     log_minor "build_tools_version=$build_tools_version"
     docker build $no_cache "$DIR/../scripts/" \
         --build-arg SDK_VERSION="$sdk_version" \
         --build-arg BUILD_TOOLS_VERSION="$build_tools_version" \
         -t "$DOCKERIMAGE:latest" \
-        -t "$DOCKERIMAGE:$app_version"
+        -t "$DOCKERIMAGE:$app_version_code"
 fi
 
 # Build app variant(s)
@@ -163,6 +164,10 @@ for variant in "${variant_array[@]}"; do
         threemashop)
             target=assembleStore_threemaRelease
             variant_dir="store_threema"
+            ;;
+        libre)
+            target=assembleLibreRelease
+            variant_dir="libre"
             ;;
         work)
             target=assembleStore_google_workRelease
@@ -198,7 +203,7 @@ for variant in "${variant_array[@]}"; do
         keystore_realpath=$(realpath "$keystore")
         run_command+=" -v \"$keystore_realpath:/keystore\""
     fi
-    run_command+=" \"$DOCKERIMAGE:$app_version\""
+    run_command+=" \"$DOCKERIMAGE:$app_version_code\""
     run_command+=" /bin/bash -c \"cd /code && ./gradlew clean $target\""
     eval "$run_command"
 
@@ -226,7 +231,7 @@ done
 # Export image
 if [ $export_image -eq 1 ]; then
     log_major "Exporting docker image"
-    docker image save -o "$targetdir/docker-image.tar" "$DOCKERIMAGE:$app_version"
+    docker image save -o "$targetdir/docker-image.tar" "$DOCKERIMAGE:$app_version_code"
     log_minor "Compressing docker image"
     gzip "$targetdir/docker-image.tar"
 fi

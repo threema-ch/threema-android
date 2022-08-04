@@ -52,7 +52,7 @@ public class GroupAudioMessage extends AbstractGroupMessage {
 	}
 
 	@Override
-	public boolean shouldPush() {
+	public boolean flagSendPush() {
 		return true;
 	}
 

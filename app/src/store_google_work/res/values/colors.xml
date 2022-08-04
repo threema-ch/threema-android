@@ -32,4 +32,8 @@
 	<color name="dark_bubble_selected_overlay">#4463b2eb</color>
 	<color name="dark_unread_messages_text_color">#FF000000</color>
 	<color name="dark_unread_messages_bg_color">#FFBADEFF</color>
+
+	<!-- recently added contact background -->
+	<color name="recently_added_background_light">#fff3f3f3</color>
+	<color name="recently_added_background_dark">#ff042c54</color>
 </resources>

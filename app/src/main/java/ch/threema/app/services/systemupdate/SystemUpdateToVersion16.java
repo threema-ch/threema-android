@@ -21,26 +21,16 @@
 
 package ch.threema.app.services.systemupdate;
 
-import androidx.annotation.NonNull;
-
 import net.sqlcipher.database.SQLiteDatabase;
-
-import org.slf4j.Logger;
 
 import java.util.Arrays;
 
-import ch.threema.app.ThreemaApplication;
+import androidx.annotation.NonNull;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion16 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion16");
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -70,19 +60,7 @@ public class SystemUpdateToVersion16 implements UpdateSystemService.SystemUpdate
 
 	@Override
 	public boolean runASync() {
-
-		ServiceManager s = ThreemaApplication.getServiceManager();
-		if(s != null) {
-			try {
-				ContactService c = s.getContactService();
-				if(c != null) {
-					return c.rebuildColors();
-				}
-			} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-				logger.error("Exception", e);
-			}
-		}
-		return false;
+		return true;
 	}
 
 	@Override

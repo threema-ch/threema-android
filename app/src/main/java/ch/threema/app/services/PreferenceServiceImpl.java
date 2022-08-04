@@ -346,6 +346,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public int getEmojiSearchIndexVersion() {
+		Integer version = this.preferenceStore.getInt(this.getKeyName(R.string.preferences__emoji_search_index_version));
+		return version != null ? version : -1;
+	}
+
+	@Override
+	public void setEmojiSearchIndexVersion(int version){
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__emoji_search_index_version), version);
+	}
+
+	@Override
 	public boolean useThreemaPush() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__threema_push_switch));
 	}
@@ -530,15 +541,24 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	@NonNull
 	public String[] getList(String listName) {
-		String[] res = this.preferenceStore.getStringArray(listName, true);
-		if (res == null) {
-			res = this.preferenceStore.getStringArray(listName);
-			if (res == null) {
-				return new String[0];
+		return  getList(listName, true);
+	}
+
+	@Override
+	@NonNull
+	public String[] getList(String listName, boolean encrypted) {
+		String[] res = this.preferenceStore.getStringArray(listName, encrypted);
+		if (res == null && encrypted) {
+			// check if we have an old unencrypted identity list - migrate if necessary and return its values
+			if (this.preferenceStore.has(listName)) {
+				res = this.preferenceStore.getStringArray(listName, false);
+				this.preferenceStore.remove(listName, false);
+				if (res != null) {
+					this.preferenceStore.save(listName, res, true);
+				}
 			}
 		}
-
-		return res;
+		return res != null ? res : new String[0];
 	}
 
 	@Override
@@ -853,6 +873,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__message_drafts), true);
 	}
 
+	@Override
+	public void setQuoteDrafts(HashMap<String, String> quoteDrafts) {
+		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__quote_drafts), quoteDrafts, true);
+	}
+
+	@Override
+	public HashMap<String, String> getQuoteDrafts() {
+		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__quote_drafts), true);
+	}
+
 	private @NonNull
 	String getAppLogoKey(@AppTheme int theme) {
 		if (theme == ConfigUtils.THEME_DARK) {
@@ -899,13 +929,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public HashMap<String, String> getDiverseEmojiPrefs2() {
-		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis2), false);
+	public HashMap<String, String> getDiverseEmojiPrefs() {
+		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), false);
 	}
 
 	@Override
-	public void setDiverseEmojiPrefs2(HashMap<String, String> diverseEmojis) {
-		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis2), diverseEmojis, false);
+	public void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis) {
+		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), diverseEmojis, false);
 	}
 
 	public boolean isWebClientEnabled() {
@@ -1444,16 +1474,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setCameraLensFacing(int lensFacing) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__camera_lens_facing), lensFacing);
-	}
-
-	@Override
-	public int getCameraLensFacing() {
-		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__camera_lens_facing));
-	}
-
-	@Override
 	public void setPipPosition(int pipPosition) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__pip_position), pipPosition);
 	}
@@ -1549,5 +1569,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public float getAudioPlaybackSpeed() {
 		return this.preferenceStore.getFloat(this.getKeyName(R.string.preferences__audio_playback_speed), 1f);
+	}
+
+	@Override
+	public int getMultipleRecipientsTooltipCount() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__tooltip_multi_recipients));
+	}
+
+	@Override
+	public void incrementMultipleRecipientsTooltipCount() {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_multi_recipients), getMultipleRecipientsTooltipCount() + 1);
 	}
 }

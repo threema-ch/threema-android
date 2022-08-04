@@ -71,7 +71,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 	public static long[] VIBRATE_PATTERN_INCOMING_CALL = new long[]{0, 1000, 1000, 0};
 	public static long[] VIBRATE_PATTERN_SILENT = new long[]{0};
 
-	private NotificationService.NotificationSchema notificationSchema;
+	private final NotificationService.NotificationSchema notificationSchema;
 
 	private static String newChannelId;
 

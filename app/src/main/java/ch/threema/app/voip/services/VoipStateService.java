@@ -60,6 +60,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -82,7 +83,6 @@ import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.Config;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.managers.VoipListenerManager;
-import ch.threema.app.voip.receivers.CallRejectReceiver;
 import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
@@ -477,7 +477,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 * Create a new reject intent for the specified call ID / identity.
 	 */
 	public static Intent createRejectIntent(long callId, @NonNull String identity, byte rejectReason) {
-		final Intent intent = new Intent(getAppContext(), CallRejectReceiver.class);
+		final Intent intent = new Intent(getAppContext(), CallRejectService.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
@@ -567,7 +567,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			// Called outside working hours
 			logCallInfo(callId, "Rejecting call from {} (called outside of working hours)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.OFF_HOURS;
+		} else if (ConfigUtils.hasInvalidCredentials()) {
+			logCallInfo(callId, "Rejecting call from {} (credentials have been revoked)", contact.getIdentity());
+			rejectReason = VoipCallAnswerData.RejectReason.UNKNOWN;
 		}
+
 		if (rejectReason != null) {
 			try {
 				this.sendRejectCallAnswerMessage(contact, callId, rejectReason, !silentReject);
@@ -612,17 +616,15 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.acceptIntent = accept;
 
 		// If the call is rejected, start the CallRejectService
-		final Intent rejectIntent = this.createRejectIntent(
+		final Intent rejectIntent = createRejectIntent(
 			callId,
 			msg.getFromIdentity(),
 			VoipCallAnswerData.RejectReason.REJECTED
 		);
-		final PendingIntent reject = PendingIntent.getBroadcast(
-				this.appContext,
-				-IdUtil.getTempId(contact),
-				rejectIntent,
-				PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-		);
+
+		final PendingIntent reject = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
+			PendingIntent.getForegroundService(this.appContext, -IdUtil.getTempId(contact), rejectIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT) :
+			PendingIntent.getService(this.appContext, -IdUtil.getTempId(contact), rejectIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
 		final ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contact);
 
@@ -631,11 +633,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Set state to RINGING
 		this.setStateRinging(callId);
 
-		// Play ringtone
-		this.playRingtone(messageReceiver, isMuted);
-
 		// Show call notification
-		this.showNotification(contact, callId, accept, reject, msg, callOfferData, isMuted);
+		final Notification notification = this.showNotification(contact, accept, reject, msg, isMuted);
+
+		// Play ringtone
+		this.playRingtone(notification, messageReceiver, isMuted);
 
 		// Send "ringing" message to caller
 		try {
@@ -678,7 +680,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					msg.getFromIdentity(),
 					VoipCallAnswerData.RejectReason.TIMEOUT
 				);
-				CallRejectService.enqueueWork(appContext, rejectIntent1);
+				ContextCompat.startForegroundService(appContext, rejectIntent1);
 			}
 		};
 		(new Handler(Looper.getMainLooper()))
@@ -894,7 +896,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			return true;
 		}
 
-		logger.info("Call hangup message received from {}", msg.getFromIdentity());
+		logCallInfo(callId, "Call hangup message received from {}", msg.getFromIdentity());
 
 		final String identity = msg.getFromIdentity();
 
@@ -1046,7 +1048,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		final long callId,
 		byte reason
 	) throws ThreemaException, IllegalArgumentException {
-		logger.info("VoipStateService sendRejectCallAnswerMessage");
 		this.sendRejectCallAnswerMessage(receiver, callId, reason, true);
 	}
 
@@ -1060,11 +1061,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		byte reason,
 		boolean notifyListeners
 	) throws ThreemaException, IllegalArgumentException {
-		logger.info("VoipStateService sendRejectCallAnswerMessage listener true");
+		logCallInfo(callId, "Sending reject call answer message (reason={})", reason);
 		this.sendCallAnswerMessage(receiver, callId, null, VoipCallAnswerData.Action.REJECT, reason, null);
 
 		// Notify listeners
 		if (notifyListeners) {
+			logCallInfo(callId, "Notifying listeners about call rejection");
 			VoipListenerManager.callEventListener.handle(listener -> {
 				switch (reason) {
 					case VoipCallAnswerData.RejectReason.BUSY:
@@ -1097,7 +1099,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	    @Nullable Byte rejectReason,
 		@Nullable Boolean videoCall
 	) throws ThreemaException, IllegalArgumentException, IllegalStateException {
-		logger.info("VoipStateService sendCallAnswerMessage");
+		logCallInfo(callId, "Sending call answer message");
 		final VoipCallAnswerData callAnswerData = new VoipCallAnswerData()
 			.setCallId(callId)
 			.setAction(action);
@@ -1336,6 +1338,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 * Cancel all pending call notifications.
 	 */
 	void cancelCallNotificationsForNewCall() {
+		this.stopRingtone();
+
 		synchronized (this.callNotificationTags) {
 			logger.info("Cancelling all {} call notifications", this.callNotificationTags.size());
 			for (String tag : this.callNotificationTags) {
@@ -1383,19 +1387,19 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	/**
 	 * Show a call notification.
 	 */
+	@Nullable
 	@WorkerThread
-	private void showNotification(
+	private Notification showNotification(
 		@NonNull ContactModel contact,
-		long callId,
 		@Nullable PendingIntent accept,
 		@NonNull PendingIntent reject,
 		final VoipCallOfferMessage msg,
-		final VoipCallOfferData offerData,
 		boolean isMuted
 	) {
 		final long timestamp = System.currentTimeMillis();
 		final Bitmap avatar = this.contactService.getAvatar(contact, false);
 		final PendingIntent inCallPendingIntent = createLaunchPendingIntent(contact.getIdentity(), msg);
+		Notification notification = null;
 
 		if (notificationManagerCompat.areNotificationsEnabled()) {
 			final NotificationCompat.Builder nbuilder = new NotificationBuilderWrapper(this.appContext, NOTIFICATION_CHANNEL_CALL, isMuted);
@@ -1455,7 +1459,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					.addAction(R.drawable.ic_call_grey600_24dp, acceptString, accept != null ? accept : inCallPendingIntent);
 
 			// Build notification
-			final Notification notification = nbuilder.build();
+			notification = nbuilder.build();
 
 			// Set flags
 			notification.flags |= NotificationCompat.FLAG_INSISTENT | NotificationCompat.FLAG_NO_CLEAR | NotificationCompat.FLAG_ONGOING_EVENT;
@@ -1464,7 +1468,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				this.notificationManagerCompat.notify(contact.getIdentity(), INCOMING_CALL_NOTIFICATION_ID, notification);
 				this.callNotificationTags.add(contact.getIdentity());
 			}
-
 		} else {
 			// notifications disabled in system settings - fire inCall pending intent to show CallActivity
 			try {
@@ -1476,9 +1479,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// register screen off receiver
 		registerScreenOffReceiver();
+
+		return notification;
 	}
 
-	private void playRingtone(MessageReceiver messageReceiver, boolean isMuted) {
+	private void playRingtone(@Nullable Notification notification, MessageReceiver messageReceiver, boolean isMuted) {
 		final Uri ringtoneUri = this.ringtoneService.getVoiceCallRingtone(messageReceiver.getUniqueIdString());
 
 		if (ringtoneUri != null) {
@@ -1486,9 +1491,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				stopRingtone();
 			}
 
-			boolean isSystemMuted = DNDUtil.getInstance().isSystemMuted(messageReceiver, notificationManager, notificationManagerCompat);
+			boolean isSystemMuted = DNDUtil.getInstance().isSystemMuted(messageReceiver, notification, notificationManager, notificationManagerCompat);
 
-			if (!isMuted && !isSystemMuted) {
+			if (!isMuted && !isSystemMuted ) {
 				audioManager.requestAudioFocus(this, AudioManager.STREAM_RING, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 				ringtonePlayer = new MediaPlayerStateWrapper();
 				ringtonePlayer.setStateListener(new MediaPlayerStateWrapper.StateListener() {

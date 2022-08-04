@@ -34,6 +34,9 @@ import android.text.format.DateUtils;
 import android.util.Pair;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.lambdaworks.crypto.SCrypt;
 import com.neilalexander.jnacl.NaCl;
 
@@ -67,7 +70,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -86,7 +88,6 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
@@ -95,6 +96,7 @@ import ch.threema.base.Result;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
@@ -223,6 +225,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_OUTGOING_REQUEST_STATUS = "status";
 
 	private static final String TAG_SAFE_DISTRIBUTIONLISTS = "distributionlists";
+	private static final String TAG_SAFE_DISTRIBUTIONLIST_ID = "id";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_NAME = "name";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT = "createdAt";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_MEMBERS = "members";
@@ -235,7 +238,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_SETTINGS_SEND_TYPING = "sendTyping";
 	private static final String TAG_SAFE_SETTINGS_BLOCKED_CONTACTS = "blockedContacts";
 	private static final String TAG_SAFE_SETTINGS_THREEMA_CALLS = "threemaCalls";
-	private static final String TAG_SAFE_SETTINGS_LOCATION_PREVIEWS = "locationPreviews";
 	private static final String TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS = "relayThreemaCalls";
 	private static final String TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS = "disableScreenshots";
 	private static final String TAG_SAFE_SETTINGS_INCOGNITO_KEAYBOARD = "incognitoKeyboard";
@@ -945,7 +947,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						contactModel.setPublicNickName(contact.optString(TAG_SAFE_CONTACT_NICKNAME));
 						contactModel.setIsHidden(contact.optBoolean(TAG_SAFE_CONTACT_HIDDEN, false));
 						contactModel.setDateCreated(new Date(contact.optLong(TAG_SAFE_CONTACT_CREATED_AT, System.currentTimeMillis())));
-						contactModel.setColor(ColorUtil.getInstance().getRecordColor((int) contactModelFactory.count()));
 						contactModel.setIsRestored(true);
 						contactModel.setTypingIndicators(contact.optInt(TAG_SAFE_CONTACT_TYPING_INDICATORS, ContactModel.DEFAULT));
 						contactModel.setReadReceipts(contact.optInt(TAG_SAFE_CONTACT_READ_RECEIPTS, ContactModel.DEFAULT));
@@ -1158,6 +1159,10 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 				long createdAt = distributionlist.optLong(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, 0L);
 
+				String id = distributionlist.optString(TAG_SAFE_DISTRIBUTIONLIST_ID);
+				if (id.length() > 0) {
+					distributionListModel.setId(Long.valueOf(id, 16));
+				}
 				distributionListModel.setName(distributionlist.getString(TAG_SAFE_DISTRIBUTIONLIST_NAME));
 				distributionListModel.setCreatedAt(new Date(createdAt));
 
@@ -1392,7 +1397,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return linksArray;
 	}
 
-	private JSONObject getContact(ContactModel contactModel) throws JSONException {
+	private JSONObject getContact(@NonNull ContactModel contactModel) throws JSONException {
 		JSONObject contact = new JSONObject();
 
 		contact.put(TAG_SAFE_CONTACT_IDENTITY, contactModel.getIdentity());
@@ -1421,7 +1426,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONArray contactsArray = new JSONArray();
 
 		for (final ContactModel contactModel : contactService.find(null)) {
-			contactsArray.put(getContact(contactModel));
+			if (contactModel != null) {
+				contactsArray.put(getContact(contactModel));
+			}
 		}
 
 		return contactsArray;
@@ -1613,6 +1620,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private JSONObject getDistributionlist(DistributionListService distributionListService, DistributionListModel distributionListModel) throws JSONException {
 		JSONObject distributionlist = new JSONObject();
 
+		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(Utils.longToByteArray(distributionListModel.getId())));
 		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_NAME, distributionListModel.getName());
 		if (distributionListModel.getCreatedAt() != null) {
 			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, distributionListModel.getCreatedAt().getTime());
@@ -1644,6 +1652,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 			@Override
 			public boolean sortingAscending() {
+				return false;
+			}
+
+			@Override
+			public boolean showHidden() {
 				return false;
 			}
 		})) {
@@ -1813,7 +1826,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		settings.put(TAG_SAFE_SETTINGS_SEND_TYPING, preferenceService.isTypingIndicator());
 		settings.put(TAG_SAFE_SETTINGS_READ_RECEIPTS, preferenceService.isReadReceipts());
 		settings.put(TAG_SAFE_SETTINGS_THREEMA_CALLS, preferenceService.isVoipEnabled());
-		settings.put(TAG_SAFE_SETTINGS_LOCATION_PREVIEWS, false);
 		settings.put(TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS, preferenceService.getForceTURN());
 		settings.put(TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS, preferenceService.isDisableScreenshots());
 		settings.put(TAG_SAFE_SETTINGS_INCOGNITO_KEAYBOARD, preferenceService.getIncognitoKeyboard());

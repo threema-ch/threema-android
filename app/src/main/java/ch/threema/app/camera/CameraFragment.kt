@@ -52,6 +52,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.R
@@ -80,8 +81,9 @@ class CameraFragment : Fragment() {
     private val RECORDING_MODE_IMAGE = 0
     private val RECORDING_MODE_VIDEO = 1
 
+    private lateinit var viewModel: CameraFragmentViewModel
+
     private var displayId: Int = -1
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var videoCapture: VideoCapture? = null
@@ -217,7 +219,6 @@ class CameraFragment : Fragment() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         broadcastManager = LocalBroadcastManager.getInstance(view.context)
-        broadcastManager = LocalBroadcastManager.getInstance(view.context)
 
         // Set up the intent filter that will receive events from our main activity
         val filter = IntentFilter().apply { addAction(KEY_EVENT_ACTION) }
@@ -234,6 +235,11 @@ class CameraFragment : Fragment() {
         }
 
         previewView = container!!.findViewById(R.id.camera_view) as PreviewView
+        if (previewView == null) {
+            activity?.finish()
+            return
+        }
+
         previewView!!.setOnTouchListener { v, event ->
             v.performClick()
             scaleGestureDetector.onTouchEvent(event)
@@ -255,15 +261,16 @@ class CameraFragment : Fragment() {
 
         // Wait for the views to be properly laid out
         previewView!!.post {
-
             // Keep track of the display in which this view is attached
-            displayId = previewView!!.display.displayId
+            displayId = previewView?.display?.displayId ?: -1
 
-            // Build UI controls
-            updateCameraUi()
+            if (displayId != -1) {
+                // Build UI controls
+                updateCameraUi()
 
-            // Set up the camera and its use cases
-            setUpCamera()
+                // Set up the camera and its use cases
+                setUpCamera()
+            }
         }
     }
 
@@ -278,6 +285,9 @@ class CameraFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        val viewModel: CameraFragmentViewModel by viewModels()
+        this.viewModel = viewModel
 
         check(activity is CameraCallback) { "Activity does not implement CameraCallback." }
         cameraCallback = activity as CameraCallback?
@@ -303,25 +313,38 @@ class CameraFragment : Fragment() {
         super.onConfigurationChanged(newConfig)
 
         // Rebind the camera with the updated display metrics
-        bindCameraUseCases()
+        try {
+            bindCameraUseCases()
 
-        // Enable or disable switching between cameras
-        updateCameraSwitchButton()
+            // Enable or disable switching between cameras
+            updateCameraSwitchButton()
+        } catch (exc: Exception) {
+            logger.error("Use case binding failed", exc)
+            activity?.finish()
+        }
     }
 
     /** Initialize CameraX, and prepare to bind the camera use cases  */
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
-
             // CameraProvider
             cameraProvider = cameraProviderFuture.get()
 
             // Select lensFacing depending on the available cameras
-            lensFacing = when {
-                hasBackCamera() -> CameraSelector.LENS_FACING_BACK
-                hasFrontCamera() -> CameraSelector.LENS_FACING_FRONT
-                else -> throw IllegalStateException("Back and front camera are unavailable")
+            if (viewModel.lensFacing == CameraSelector.LENS_FACING_BACK && !hasBackCamera()) {
+                // try front camera
+                viewModel.lensFacing = CameraSelector.LENS_FACING_FRONT;
+            }
+
+            if (viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT && !hasFrontCamera()) {
+                if (hasBackCamera()) {
+                    viewModel.lensFacing = CameraSelector.LENS_FACING_BACK;
+                } else {
+                    Toast.makeText(context, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
+                    logger.info("Back and front camera are unavailable")
+                    activity?.finish()
+                }
             }
 
             // Build and bind the camera use cases
@@ -334,7 +357,7 @@ class CameraFragment : Fragment() {
                 updateFlashButton()
             } else {
                 logger.info("Unable to bind camera use cases")
-                requireActivity().finish()
+                activity?.finish()
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
@@ -342,6 +365,10 @@ class CameraFragment : Fragment() {
     /** Declare and bind preview, capture and analysis use cases */
     @SuppressLint("RestrictedApi")
     private fun bindCameraUseCases(): Boolean {
+        if (previewView == null || previewView!!.display == null) {
+            return false
+        }
+
         // Set the preferred aspect ratio as 4:3 if it is IMAGE only mode. Set the preferred aspect
         // ratio as 16:9 if it is VIDEO or MIXED mode. Then, it will be WYSIWYG when the view finder
         // is in CENTER_INSIDE mode.
@@ -351,7 +378,7 @@ class CameraFragment : Fragment() {
 
         val cameraProvider = cameraProvider
                 ?: throw IllegalStateException("Camera initialization failed.")
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(viewModel.lensFacing).build()
 
         val previewHeight = (previewView!!.measuredWidth / targetAspectRatio.toFloat()).toInt()
 
@@ -362,7 +389,6 @@ class CameraFragment : Fragment() {
                 .setTargetRotation(rotation)
                 .build()
         logger.debug("Preview size: {} * {} isDisplayPortrait {}", previewView!!.measuredWidth, previewHeight, isDisplayPortrait)
-
 
         val width: Int
         val height: Int
@@ -577,6 +603,10 @@ class CameraFragment : Fragment() {
 
     /** Method used to re-draw the camera UI controls, called every time configuration changes. */
     private fun updateCameraUi() {
+        if (previewView == null) {
+            return
+        }
+
         // Remove previous UI if any
         val constraintLayout: ConstraintLayout? = container?.findViewById(R.id.camera_ui_container)
         constraintLayout.let {
@@ -584,7 +614,7 @@ class CameraFragment : Fragment() {
         }
 
         // Inflate a new view containing all UI for controlling the camera
-        val curOrientation = previewView!!.display.rotation
+        val curOrientation = previewView!!.display?.rotation ?: Surface.ROTATION_0
 
         controlsContainer = if (curOrientation == Surface.ROTATION_180 || curOrientation == Surface.ROTATION_270) {
             View.inflate(requireContext(), R.layout.camerax_ui_container_reverse, container)
@@ -633,8 +663,15 @@ class CameraFragment : Fragment() {
                         return
                     }
 
+                    val metadata = ImageCapture.Metadata().apply {
+                        // Mirror image when using the front camera
+                        isReversedHorizontal = viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT
+                    }
+
                     // Create output options object which contains file + metadata
-                    val outputOptions = ImageCapture.OutputFileOptions.Builder(File(cameraCallback?.cameraFilePath!!)).build()
+                    val outputOptions = ImageCapture.OutputFileOptions.Builder(File(cameraCallback?.cameraFilePath!!))
+                            .setMetadata(metadata)
+                            .build()
 
                     // Setup image capture listener which is triggered after photo has been taken
                     imageCapture.takePicture(outputOptions, cameraExecutor, object : ImageCapture.OnImageSavedCallback {
@@ -692,7 +729,7 @@ class CameraFragment : Fragment() {
 
             // Listener for button used to switch cameras. Only called if the button is enabled
             it.setOnClickListener {
-                lensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT
+                viewModel.lensFacing = if (viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT) CameraSelector.LENS_FACING_BACK else CameraSelector.LENS_FACING_FRONT
 
                 // Re-bind use cases to update selected camera
                 bindCameraUseCases()
@@ -738,12 +775,20 @@ class CameraFragment : Fragment() {
 
     /** Returns true if the device has an available back camera. False otherwise */
     private fun hasBackCamera(): Boolean {
-        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+        return try {
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /** Returns true if the device has an available front camera. False otherwise */
     private fun hasFrontCamera(): Boolean {
-        return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
+        return try {
+            return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun switchFlash() {
@@ -760,8 +805,7 @@ class CameraFragment : Fragment() {
         updateFlashButton()
     }
 
-
-    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi")
+    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi", "MissingPermission")
     private fun startVideoRecording() {
         if (cameraCallback?.videoFilePath == null) {
             return

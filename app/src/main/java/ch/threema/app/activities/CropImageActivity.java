@@ -183,7 +183,7 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 		isSaving = true;
 
 		if (maxX != 0 && maxY != 0) {
-			imageView.croppedImageAsync(Bitmap.CompressFormat.PNG, 100, maxX, maxY, CropImageView.RequestSizeOptions.NONE, saveUri);
+			imageView.croppedImageAsync(Bitmap.CompressFormat.PNG, 100, maxX, maxY, CropImageView.RequestSizeOptions.RESIZE_INSIDE, saveUri);
 		} else {
 			imageView.croppedImageAsync(Bitmap.CompressFormat.PNG, 100, 0, 0, CropImageView.RequestSizeOptions.NONE, saveUri);
 		}

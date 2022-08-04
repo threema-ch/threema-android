@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.DangerousTest;
 
 /**
@@ -63,7 +64,7 @@ public class DebugLogFileBackendTest {
 
 		// Log with the debug log file disabled
 		final DebugLogFileBackend backend = new DebugLogFileBackend(Log.INFO);
-		backend.print(Log.WARN, "3ma", null, "hi");
+		backend.print(Log.WARN, BuildConfig.LOG_TAG, null, "hi");
 
 		// Enabling the debug log file won't create the log file just yet
 		Assert.assertFalse(logFilePath.exists());
@@ -71,11 +72,11 @@ public class DebugLogFileBackendTest {
 		Assert.assertFalse(logFilePath.exists());
 
 		// Logs below the min log level are filtered
-		backend.printAsync(Log.DEBUG, "3ma", null, "hey").get(500, TimeUnit.MILLISECONDS);
+		backend.printAsync(Log.DEBUG, BuildConfig.LOG_TAG, null, "hey").get(500, TimeUnit.MILLISECONDS);
 		Assert.assertFalse(logFilePath.exists());
 
 		// Log with the debug log file enabled
-		backend.printAsync(Log.WARN, "3ma", null, "hi").get(500, TimeUnit.MILLISECONDS);
+		backend.printAsync(Log.WARN, BuildConfig.LOG_TAG, null, "hi").get(500, TimeUnit.MILLISECONDS);
 		Assert.assertTrue(logFilePath.exists());
 	}
 

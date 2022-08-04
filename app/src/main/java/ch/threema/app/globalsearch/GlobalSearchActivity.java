@@ -56,6 +56,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -78,6 +79,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 	private GlobalSearchAdapter chatsAdapter;
 	private GlobalSearchViewModel chatsViewModel;
 	private TextView emptyTextView;
+	private ThreemaSearchView searchView;
 	private ProgressBar progressBar;
 	private DeadlineListService hiddenChatsListService;
 	private ContactService contactService;
@@ -182,7 +184,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 
 		getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
 
-		ThreemaSearchView searchView = findViewById(R.id.search);
+		searchView = findViewById(R.id.search);
 		searchView.setOnQueryTextListener(this);
 
 		emptyTextView = findViewById(R.id.empty_text);
@@ -255,6 +257,10 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 	private void showMessage(AbstractMessageModel messageModel, View view) {
 		if (messageModel == null) {
 			return;
+		}
+
+		if (searchView != null) {
+			EditTextUtil.hideSoftKeyboard(searchView);
 		}
 
 		Intent intent = new Intent(this, ComposeMessageActivity.class);

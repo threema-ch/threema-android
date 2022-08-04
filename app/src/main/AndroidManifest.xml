@@ -155,16 +155,14 @@
 		</intent>
 	</queries>
 
-	<uses-sdk tools:overrideLibrary="androidx.camera.core, androidx.camera.camera2,
-		androidx.camera.lifecycle, androidx.camera.view, me.zhanghai.android.fastscroll" />
 
 	<application
 		android:name=".ThreemaApplication"
-		android:allowBackup="false"
+		android:allowBackup="true"
 		android:extractNativeLibs="true"
 		android:hardwareAccelerated="true"
-		android:icon="@mipmap/ic_launcher"
-		android:roundIcon="@mipmap/ic_launcher"
+		android:icon="@mipmap/ic_launcher_leos"
+		android:roundIcon="@mipmap/ic_launcher_leos"
 		android:label="LeOS-Messenger"
 		android:largeHeap="true"
 		android:resizeableActivity="true"
@@ -188,7 +186,7 @@
 
 		<activity
 			android:name=".activities.MainActivity"
-			android:label="LeOS-Messenger"
+			android:label="@string/app_name"
 			android:launchMode="singleTop"
 			android:theme="@style/SplashTheme"
 			android:configChanges="uiMode"
@@ -228,14 +226,14 @@
 		</activity>
 		<activity
 			android:name=".activities.RecipientListActivity"
-			android:label="LeOS-Messenger"
+			android:label="@string/app_name"
 			android:excludeFromRecents="true"
 			android:taskAffinity=""
 			android:launchMode="singleTask"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode"
 			android:exported="true">
-			<intent-filter android:label="LeOS-Messenger">
+			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.SEND"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<data android:mimeType="text/plain"/>
@@ -245,12 +243,12 @@
 				<data android:mimeType="application/*"/>
 				<data android:mimeType="*/*"/>
 			</intent-filter>
-			<intent-filter android:label="LeOS-Messenger">
+			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.SEND_MULTIPLE"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<data android:mimeType="*/*"/>
 			</intent-filter>
-			<intent-filter android:label="LeOS-Messenger">
+			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.VIEW"/>
 				<action android:name="android.intent.action.SENDTO"/>
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -261,7 +259,7 @@
 					android:host="compose"
 					android:scheme="${uriScheme}"/>
 			</intent-filter>
-			<intent-filter android:label="LeOS-Messenger">
+			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.VIEW"/>
 				<action android:name="android.intent.action.SENDTO"/>
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -289,7 +287,7 @@
 		</activity>
 		<activity
 			android:name=".preference.SettingsNotificationsDummyActivity"
-			android:label="LeOS-Messenger">
+			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.NOTIFICATION_PREFERENCES"/>
@@ -315,7 +313,7 @@
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:launchMode="singleTask"
 			android:theme="@style/Theme.Threema.Translucent">
-			<intent-filter android:label="LeOS-Messenger">
+			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -325,7 +323,7 @@
 					android:host="add"
 					android:scheme="${uriScheme}"/>
 			</intent-filter>
-			<intent-filter android:label="LeOS-Messenger">
+			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -786,7 +784,15 @@
 		<activity
 			android:name=".activities.MapActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
-			android:theme="@style/Theme.LocationPicker" />
+			android:theme="@style/Theme.LocationPicker"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="geo" />
+			</intent-filter>
+		</activity>
 		<activity
 			android:name=".activities.WorkExplainActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
@@ -878,7 +884,6 @@
 			android:exported="false"/>
 		<service
 			android:name=".voip.services.CallRejectService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
 			android:exported="false"/>
 		<service
 			android:name=".webclient.services.SessionAndroidService"
@@ -950,9 +955,6 @@
 			android:exported="false">
 		</receiver>
 		<receiver android:name=".receivers.FetchMessagesBroadcastReceiver"/>
-		<receiver
-			android:name=".voip.receivers.CallRejectReceiver"
-			android:exported="false"/>
 		<receiver android:name=".voip.receivers.VoipMediaButtonReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.MEDIA_BUTTON"/>

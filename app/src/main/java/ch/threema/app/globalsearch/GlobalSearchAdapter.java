@@ -116,7 +116,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 			if (current instanceof GroupMessageModel) {
 				final ContactModel contactModel = current.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(current.getIdentity());
 				final GroupModel groupModel = groupService.getById(((GroupMessageModel) current).getGroupId());
-				AvatarListItemUtil.loadAvatar(position, groupModel, null, groupService, itemHolder.avatarListItemHolder);
+				AvatarListItemUtil.loadAvatar(groupModel, groupService, itemHolder.avatarListItemHolder);
 
 				String groupName = NameUtil.getDisplayName(groupModel, groupService);
 				itemHolder.titleView.setText(
@@ -124,7 +124,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 				);
 			} else {
 				final ContactModel contactModel = this.contactService.getByIdentity(current.getIdentity());
-				AvatarListItemUtil.loadAvatar(position, current.isOutbox() ? contactService.getMe() : contactModel, null, contactService, itemHolder.avatarListItemHolder);
+				AvatarListItemUtil.loadAvatar( current.isOutbox() ? contactService.getMe() : contactModel, contactService, itemHolder.avatarListItemHolder);
 
 				String name = NameUtil.getDisplayNameOrNickname(context, current, contactService);
 				itemHolder.titleView.setText(

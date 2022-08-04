@@ -21,6 +21,8 @@
 
 package ch.threema.app.activities.wizard;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -41,6 +43,7 @@ import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 
 public class WizardIntroActivity extends WizardBackgroundActivity {
@@ -111,9 +114,15 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 
 		findViewById(R.id.restore_backup).setOnClickListener(this::restoreBackup);
 		findViewById(R.id.setup_threema).setOnClickListener(this::setupThreema);
+
+		isContactSyncSettingConflict();
 	}
 
 	public void setupThreema(View view) {
+		if (isContactSyncSettingConflict()) {
+			return;
+		}
+
 		if (!userService.hasIdentity()) {
 			startActivity(new Intent(this, WizardFingerPrintActivity.class));
 		} else {
@@ -127,6 +136,10 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 	 * @param view
 	 */
 	public void restoreBackup(View view) {
+		if (isContactSyncSettingConflict()) {
+			return;
+		}
+
 		startActivity(new Intent(this, WizardBackupRestoreActivity.class));
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
@@ -147,5 +160,32 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		ConfigUtils.resetAppTheme();
+	}
+
+	/**
+	 * Checks whether th_contact_sync conflicts with user restriction DISALLOW_MODIFY_ACCOUNTS.
+	 * If it conflicts, it shows an information dialog.
+	 *
+	 * @return false if there is no conflict, true if it is incompatible
+	 */
+	private boolean isContactSyncSettingConflict() {
+		if (ConfigUtils.isWorkBuild()) {
+			Boolean contactSync = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync));
+			if (contactSync != null && contactSync && SynchronizeContactsUtil.isRestrictedProfile(this)) {
+				showMDMContactsSyncDialog();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void showMDMContactsSyncDialog() {
+		AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+		alertDialog.setTitle(R.string.error);
+		alertDialog.setMessage(getString(R.string.wizard_incompatible_contact_sync_params));
+		alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.ok), (dialog, which) -> dialog.dismiss());
+		alertDialog.setOnDismissListener(dialog -> finish());
+		alertDialog.setOnCancelListener(dialog -> finish());
+		alertDialog.show();
 	}
 }

@@ -22,6 +22,7 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -31,6 +32,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.TextView;
 
+import com.mapbox.mapboxsdk.constants.GeometryConstants;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -39,9 +43,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
+import ch.threema.app.activities.MapActivity;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -49,6 +57,18 @@ import ch.threema.storage.models.data.LocationDataModel;
 
 public class GeoLocationUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GeoLocationUtil");
+
+	private static final String GEO_NUM = "-?\\d+(\\.\\d+)?";
+	private static final String GEO_PARAMS = "(;[\\w\\-]+(=[\\[\\]:&+$\\w\\-.!~*'()%]+)?)*";
+	private static final String GEO_LABEL = "(\\([\\w+%\\-&]*\\))?";
+	private static final String GEO_QUERY = "\\?q=" + GEO_NUM + "," + GEO_NUM;
+	private static final String GEO_ZOOM = "\\?z=\\d+";
+	private static final String GEO_ANDROID = "(" + GEO_QUERY + GEO_LABEL + "|" + GEO_ZOOM + ")?";
+	private static final Pattern GEO_PATTERN = Pattern.compile(
+		"\\bgeo:-?" + GEO_NUM + "," + GEO_NUM + "(," + GEO_NUM + ")?("      // the geo keyword followed by 2 or 3 coordinates
+			+ GEO_PARAMS + "|"                                              // additional parameters, e.g., ';u=12;crs=Moon-2011', or
+			+ GEO_ANDROID + ")?(?![\\?;])(\\b|(?<=\\)))"                    // support Android query geo extension (only for coordinates)
+	);
 
 	private TextView targetView;
 
@@ -185,4 +205,162 @@ public class GeoLocationUtil {
 		}
 		return Uri.parse(geoString);
 	}
+
+	/**
+	 * Get the geo URI pattern to detect geo URIs. This geo URI regex also matches invalid numbers
+	 * or parameters, e.g.:
+	 * <ul>
+	 *     <li>invalid hexadecimal numbers as parameter values,</li>
+	 *     <li>negative uncertainty values,</li>
+	 *     <li>too large latitudes,</li>
+	 *     <li>invalid altitudes, and</li>
+	 *     <li>invalid additional parameters</li>
+	 * </ul>
+	 *
+	 * To do checks on latitude and longitude use {@link #isValidGeoUri(Uri) isValidGeoUri}
+	 *
+	 * @return the geo URI pattern
+	 */
+	public static Pattern getGeoUriPattern() {
+		return GEO_PATTERN;
+	}
+
+	/**
+	 * Returns true if the given geo uri string is a valid geo uri. It checks that it is syntactically
+	 * correct and also performs some checks on the latitude and longitude.
+	 */
+	public static boolean isValidGeoUri(@NonNull String geo) {
+		return isValidGeoUri(Uri.parse(geo));
+	}
+
+	/**
+	 * Returns true if the given geo uri is a valid geo uri. It checks that it is syntactically
+	 * correct and also performs some checks on the latitude and longitude. Parameters like the
+	 * uncertainty or altitude are ignored.
+	 */
+	public static boolean isValidGeoUri(@Nullable Uri uri) {
+		return uri != null && getLocationDataFromGeoUri(uri) != null;
+	}
+
+	/**
+	 * Show the location data on a map.
+	 *
+	 * @return true if the device supports map libre and the location can be shown, false otherwise
+	 */
+	public static boolean viewLocation(@NonNull Context context, @NonNull LocationDataModel locationData) {
+		if (ConfigUtils.hasNoMapLibreSupport()) {
+			return false;
+		}
+		Intent intent = new Intent(context, MapActivity.class);
+		IntentDataUtil.append(new LatLng(locationData.getLatitude(),
+				locationData.getLongitude()),
+			context.getString(R.string.app_name),
+			locationData.getPoi(),
+			locationData.getAddress(),
+			intent);
+		context.startActivity(intent);
+
+		return true;
+	}
+
+	/**
+	 * Show the location data on a map.
+	 *
+	 * @return true if the device supports map libre and the location can be shown, false otherwise
+	 */
+	public static boolean viewLocation(@NonNull Context context, @NonNull Uri uri) {
+		LocationDataModel locationData = getLocationDataFromGeoUri(uri);
+		if (locationData == null) {
+			return false;
+		}
+		return viewLocation(context, locationData);
+	}
+
+	/**
+	 * Get the location data from a geo uri.
+	 *
+	 * @param uri the uri where the necessary geo information is extracted
+	 * @return the location data or null if the uri could not be parsed or contained invalid values
+	 */
+	@Nullable
+	public static LocationDataModel getLocationDataFromGeoUri(@NonNull Uri uri) {
+		String geoUri = uri.toString();
+		if (!GEO_PATTERN.matcher(geoUri).matches()) {
+			return null;
+		}
+
+		int latitudeStart;
+		int longitudeEnd;
+		int separator;
+
+		latitudeStart = geoUri.indexOf("?q=");
+		if (latitudeStart == -1) {
+			// There is no query attribute therefore we take the lat/long data at the beginning
+			latitudeStart = 4;
+		} else {
+			// There is a query attribute so that latitude value starts 3 characters later than '?q='
+			latitudeStart += 3;
+		}
+		// Find position of separator
+		separator = latitudeStart + 1;
+		while (geoUri.charAt(separator) != ',') {
+			separator++;
+		}
+		// Find position where longitude ends (either '(' because a label follows, ',' because an
+		// altitude follows, ';' because an RFC5870 parameter follows or '?' because an android geo
+		// uri can contain a zoom level starting with "?z=")
+		longitudeEnd = separator + 1;
+		while (longitudeEnd < geoUri.length() &&
+			geoUri.charAt(longitudeEnd) != '(' &&
+			geoUri.charAt(longitudeEnd) != ',' &&
+			geoUri.charAt(longitudeEnd) != ';' &&
+			geoUri.charAt(longitudeEnd) != '?'
+		) {
+			longitudeEnd++;
+		}
+
+		double latitude;
+		double longitude;
+
+		try {
+			latitude = Double.parseDouble(geoUri.substring(latitudeStart, separator));
+			longitude = Double.parseDouble(geoUri.substring(separator + 1, longitudeEnd));
+		} catch (NumberFormatException nfe) {
+			// Illegal number as latitude or longitude
+			return null;
+		}
+
+		if (Math.abs(latitude) > GeometryConstants.MAX_LATITUDE) {
+			// Too large absolute value of latitude
+			return null;
+		}
+
+		if (longitude < GeometryConstants.MIN_LONGITUDE || longitude > GeometryConstants.MAX_LONGITUDE) {
+			// Longitude is invalid (infinity)
+			return null;
+		}
+
+		return new LocationDataModel(latitude, longitude, 0, "", "");
+	}
+
+	/**
+	 * Get the location from a geo uri.
+	 *
+	 * @param uri the uri where the necessary geo information is extracted
+	 * @return the location data or null if the uri could not be parsed or contained invalid values
+	 */
+	@Nullable
+	public static Location getLocationFromUri(@NonNull Uri uri) {
+		LocationDataModel locationData = getLocationDataFromGeoUri(uri);
+		if (locationData == null) {
+			return null;
+		}
+
+		Location location = new Location("");
+		location.setLatitude(locationData.getLatitude());
+		location.setLongitude(locationData.getLongitude());
+		location.setAccuracy(locationData.getAccuracy());
+		return location;
+	}
+
 }

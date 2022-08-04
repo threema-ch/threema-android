@@ -167,12 +167,14 @@
 		<item>Italiano</item>
 		<item>Magyar</item>
 		<item>Nederlands</item>
+		<item>Norsk bokmål</item>
 		<item>Polski</item>
 		<item>Português (BR)</item>
 		<item>Rumantsch</item>
-		<item>Pусский</item>
 		<item>Slovenčina</item>
 		<item>Türkçe</item>
+		<item>Беларуская</item>
+		<item>Pусский</item>
 		<item>Українська</item>
 		<item>简体中文</item> <!-- Chinese simplified -->
 		<item>繁體中文</item> <!-- Chinese traditional -->
@@ -190,12 +192,14 @@
 		<item>it</item>
 		<item>hu</item>
 		<item>nl</item>
+		<item>no</item>
 		<item>pl</item>
 		<item>pt</item>
 		<item>rm</item>
-		<item>ru</item>
 		<item>sk</item> <!-- Slovak -->
 		<item>tr</item>
+		<item>be-rBY</item>
+		<item>ru</item>
 		<item>uk</item>
 		<item>zh-rCN</item> <!-- Chinese simplified -->
 		<item>zh-rTW</item> <!-- Chinese traditional -->

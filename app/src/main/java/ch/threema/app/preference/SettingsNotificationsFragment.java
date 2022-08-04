@@ -130,6 +130,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		MultiSelectListPreference multiSelectListPreference = getPref(getString(R.string.preferences__working_days));
 		multiSelectListPreference.setEntries(weekdays);
 		multiSelectListPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+			//noinspection unchecked
 			updateWorkingDaysSummary(preference, (Set<String>) newValue);
 			return true;
 		});
@@ -243,7 +244,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		int miuiVersion = ConfigUtils.getMIUIVersion();
 		if (miuiVersion < 10) {
 			PreferenceScreen preferenceScreen = getPref("pref_key_notifications");
-			preferenceScreen.removePreference(findPreference("pref_key_miui"));
+			preferenceScreen.removePreference(getPref("pref_key_miui"));
 		}
 
 		notificationManagerCompat = NotificationManagerCompat.from(requireActivity());
@@ -276,7 +277,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		});
 		voiceRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(@NonNull Preference preference) {
 				chooseRingtone(RingtoneManager.TYPE_RINGTONE,
 					getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone),
 					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
@@ -289,7 +290,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		TwoStatePreference systemRingtonePreference = getPref(getString(R.string.preferences__use_system_ringtone));
 		systemRingtonePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
 				boolean newCheckedValue = newValue.equals(true);
 
 				if (newCheckedValue) {
@@ -316,7 +317,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				R.string.miui_notification_title,
 				miuiVersion >= 12 ?
 					R.string.miui12_notification_body :
-					R.string.miui_notification_body).show(getFragmentManager(), DIALOG_TAG_MIUI_NOTICE);
+					R.string.miui_notification_body).show(getParentFragmentManager(), DIALOG_TAG_MIUI_NOTICE);
 
 			Preference miuiPreference = getPref("pref_key_miui");
 			miuiPreference.setOnPreferenceClickListener(preference -> {
@@ -350,7 +351,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				true,
 				true);
 			dialog.setTargetFragment(SettingsNotificationsFragment.this, 0);
-			dialog.show(getFragmentManager(), tag);
+			dialog.show(getParentFragmentManager(), tag);
 		}
 
 	}
@@ -367,7 +368,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	private void showNotificationsDisabledDialog() {
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.notifications_disabled_title, R.string.notifications_disabled_text, R.string.notifications_disabled_settings, R.string.cancel);
 		dialog.setTargetFragment(this, 0);
-		dialog.show(getFragmentManager(), DIALOG_TAG_NOTIFICATIONS_DISABLED);
+		dialog.show(getParentFragmentManager(), DIALOG_TAG_NOTIFICATIONS_DISABLED);
 	}
 
 	private Uri getRingtoneFromRingtonePref(@StringRes int preference) {
@@ -380,7 +381,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	}
 
 	private void updateRingtoneSummary(Preference preference, String value) {
-		String summary = null;
+		String summary;
 		if (value == null || value.length() == 0) {
 			summary = getString(R.string.ringtone_none);
 		} else {
@@ -462,6 +463,11 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	@Override
 	public void onCancel(String tag) {
 		// Don't do anything on cancel
+	}
+
+	@Override
+	public int getPreferenceTitleResource() {
+		return R.string.prefs_notifications;
 	}
 
 	@Override

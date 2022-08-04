@@ -43,6 +43,7 @@ import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
  */
 public class MediaItem implements Parcelable {
 	@MediaType private int type;
+	private Uri originalUri; // Uri of original media item before creating a local copy
 	private Uri uri;
 	private int rotation;
 	private int exifRotation;
@@ -60,7 +61,7 @@ public class MediaItem implements Parcelable {
 	private boolean deleteAfterUse;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT})
+	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION})
 	public @interface MediaType {}
 	public static final int TYPE_FILE = 0;
 	public static final int TYPE_IMAGE = 1;
@@ -70,6 +71,7 @@ public class MediaItem implements Parcelable {
 	public static final int TYPE_GIF = 5;
 	public static final int TYPE_VOICEMESSAGE = 6;
 	public static final int TYPE_TEXT = 7;
+	public static final int TYPE_LOCATION = 8;
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
 
@@ -137,6 +139,7 @@ public class MediaItem implements Parcelable {
 		videoSize = in.readInt();
 		filename = in.readString();
 		deleteAfterUse = in.readInt() != 0;
+		originalUri = in.readParcelable(Uri.class.getClassLoader());
 	}
 
 	@Override
@@ -157,6 +160,7 @@ public class MediaItem implements Parcelable {
 		dest.writeInt(videoSize);
 		dest.writeString(filename);
 		dest.writeInt(deleteAfterUse ? 1 : 0);
+		dest.writeParcelable(originalUri, flags);
 	}
 
 	@Override
@@ -211,6 +215,18 @@ public class MediaItem implements Parcelable {
 
 	public long getDurationMs() {
 		return durationMs;
+	}
+
+	/**
+	 * Return duration of media object after a possible trimming has been applied
+	 * @return duration in ms
+	 */
+	public long getTrimmedDurationMs() {
+		return
+			(startTimeMs != 0L && startTimeMs != TIME_UNDEFINED) ||
+			(endTimeMs != TIME_UNDEFINED && endTimeMs != durationMs) ?
+			endTimeMs - startTimeMs :
+			durationMs;
 	}
 
 	public void setDurationMs(long durationMs) {
@@ -316,5 +332,20 @@ public class MediaItem implements Parcelable {
 	 */
 	public void setDeleteAfterUse(boolean deleteAfterUse) {
 		this.deleteAfterUse = deleteAfterUse;
+	}
+
+	public @Nullable Uri getOriginalUri() {
+		if (originalUri == null) {
+			return uri;
+		}
+		return originalUri;
+	}
+
+	/**
+	 * Set this to the original location of the file before creating a copy for persistence across activities
+	 * @param originalUri Uri of the original media file
+	 */
+	public void setOriginalUri(Uri originalUri) {
+		this.originalUri = originalUri;
 	}
 }

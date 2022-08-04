@@ -155,7 +155,7 @@ public class AnimationUtil {
 		v.startAnimation(a);
 	}
 
-	public static void startActivityForResult(Activity activity, View v, Intent intent, int requestCode) {
+	public static void startActivityForResult(Activity activity, @Nullable View v, Intent intent, int requestCode) {
 		logger.debug("start activity for result " + activity + " " + intent + " " + requestCode);
 		if (activity != null) {
 			ActivityOptionsCompat options = null;

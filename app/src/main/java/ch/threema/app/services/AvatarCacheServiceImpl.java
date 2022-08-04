@@ -23,407 +23,427 @@ package ch.threema.app.services;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.net.Uri;
-import android.util.LruCache;
+import android.graphics.drawable.Drawable;
+import android.os.Looper;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.bumptech.glide.signature.ObjectKey;
 
 import org.slf4j.Logger;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-import androidx.annotation.ColorInt;
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
-import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.utils.AndroidContactUtil;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.utils.AvatarConverterUtil;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
-import ch.threema.app.utils.ContactUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.ReceiverModel;
+import java8.util.function.Supplier;
 
+/**
+ * The AvatarCacheService manages the cached loading of avatars. If an avatar is modified or deleted, it must be reset in this class.
+ */
 final public class AvatarCacheServiceImpl implements AvatarCacheService {
+
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarCacheServiceImpl");
 
-	private static final String KEY_GROUP = "g";
-	private static final String KEY_DISTRIBUTION_LIST = "d";
-	private final LruCache<String, Bitmap> cache;
+	/**
+	 * The mapping of identities to "states". If the number is changed, the next time the avatar of this identity is accessed, it will be loaded
+	 * from the database.To invalidate all contact caches clear this map.
+	 */
+	private final Map<String, Long> contactAvatarStates = new HashMap<>();
+
+	/**
+	 * The mapping of group IDs to "states". If the number is changed, the next time the group avatar is accessed, it will be loaded
+	 * from the database. To invalidate all group caches clear this map.
+	 */
+	private final Map<Integer, Long> groupAvatarStates = new HashMap<>();
 
 	private final Context context;
-	private final IdentityStore identityStore;
-	private final PreferenceService preferenceService;
-	private final FileService fileService;
 
-	private final VectorDrawableCompat contactDefaultAvatar;
-	private final VectorDrawableCompat groupDefaultAvatar;
-	private final VectorDrawableCompat distributionListDefaultAvatar;
-	private final VectorDrawableCompat businessDefaultAvatar;
+	private final VectorDrawableCompat contactPlaceholder;
+	private final VectorDrawableCompat groupPlaceholder;
+	private final VectorDrawableCompat distributionListPlaceholder;
 
-	private final int avatarSizeSmall, avatarSizeHires;
+	private final DrawableCrossFadeFactory factory = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
-	private Boolean isDefaultAvatarColored = null;
-
-	private interface GenerateBitmap {
-		Bitmap gen();
-	}
-
-	public AvatarCacheServiceImpl(Context context,
-								  IdentityStore identityStore,
-								  PreferenceService preferenceService,
-								  FileService fileService) {
+	public AvatarCacheServiceImpl(Context context) {
 		this.context = context;
-		this.identityStore = identityStore;
-		this.preferenceService = preferenceService;
-		this.fileService = fileService;
 
-		this.contactDefaultAvatar = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_contact, null);
-		this.groupDefaultAvatar = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_group, null);
-		this.distributionListDefaultAvatar = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_distribution_list, null);
-		this.businessDefaultAvatar = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_business, null);
+		this.contactPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_contact, null);
+		this.groupPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_group, null);
+		this.distributionListPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_distribution_list, null);
 
-		this.avatarSizeSmall = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
-		this.avatarSizeHires = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_hires);
-
-		// Get max available VM memory, exceeding this amount will throw an
-		// OutOfMemory exception. Stored in kilobytes as LruCache takes an
-		// int in its constructor.
-		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-
-		// Use 1/32th of the available memory for this memory cache.
-		final int cacheSize = Math.min(maxMemory / 32, 1024 * 16); // 16 MB max
-
-		cache = new LruCache<String, Bitmap>(cacheSize) {
-			@Override
-			protected int sizeOf(String key, Bitmap bitmap) {
-				// The cache size will be measured in kilobytes rather than
-				// number of items.
-				return bitmap.getByteCount() / 1024;
-			}
-		};
-		logger.debug("cache created, size (kB): " + cacheSize);
-	}
-
-	private String getCacheKey(ContactModel contactModel) {
-		if(contactModel == null) {
-			return null;
+		// Use dark theme default gray for placeholder
+		int color = ColorUtil.COLOR_GRAY_DARK;
+		int avatarSizeSmall = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+		if (contactPlaceholder != null) {
+			AvatarConverterUtil.getAvatarBitmap(contactPlaceholder, color, avatarSizeSmall);
 		}
-		return contactModel.getIdentity();
-	}
-
-	private String getCacheKey(GroupModel groupModel) {
-		if(groupModel == null) {
-			return null;
+		if (groupPlaceholder != null) {
+			AvatarConverterUtil.getAvatarBitmap(groupPlaceholder, color, avatarSizeSmall);
 		}
-		return KEY_GROUP + groupModel.getId();
-	}
-	private String getCacheKey(DistributionListModel distributionListModel) {
-		if(distributionListModel == null) {
-			return null;
-		}
-		return KEY_DISTRIBUTION_LIST + distributionListModel.getId();
-	}
-
-
-	private Bitmap getCached(ContactModel contactModel, GenerateBitmap generateBitmap) {
-		return this.getCached(
-				contactModel.getIdentity(),
-				generateBitmap);
-	}
-
-
-	private Bitmap getCached(GroupModel groupModel, GenerateBitmap generateBitmap) {
-		return this.getCached(
-				this.getCacheKey(groupModel),
-				generateBitmap);
-	}
-
-
-	private Bitmap getCached(DistributionListModel distributionListModel, GenerateBitmap generateBitmap) {
-		return this.getCached(
-				this.getCacheKey(distributionListModel),
-				generateBitmap);
-	}
-
-
-	private Bitmap getCached(String key, GenerateBitmap generateBitmap) {
-		Bitmap res;
-
-		if(key == null) {
-			return null;
-		}
-
-		synchronized (this.cache) {
-			res = this.cache.get(key);
-
-			if(generateBitmap != null && (res == null || res.isRecycled())) {
-				logger.debug("generateBitmap " + key + ", " + (res == null ? "null" : "object ok"));
-				res = generateBitmap.gen();
-				if(res != null) {
-					this.cache.put(key, res);
-				}
-			}
-			return res;
+		if (distributionListPlaceholder != null) {
+			AvatarConverterUtil.getAvatarBitmap(distributionListPlaceholder, color, avatarSizeSmall);
 		}
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getContactAvatarHigh(ContactModel contactModel) {
-		if(contactModel == null) {
-			return null;
-		}
-		return this.getAvatar(contactModel, true);
+	public @Nullable Bitmap getContactAvatarHigh(@Nullable final ContactModel contactModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
+		return getBitmapInWorkerThread(
+			() -> this.getAvatar(contactModel, new AvatarOptions.Builder().setHighRes(true).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
+		);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getContactAvatarLow(final ContactModel contactModel) {
-		return this.getCached(contactModel, new GenerateBitmap() {
-			@Override
-			public Bitmap gen() {
-				return getAvatar(contactModel, false);
-			}
-		});
+	public @Nullable Bitmap getContactAvatarLow(@Nullable final ContactModel contactModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
+		return getBitmapInWorkerThread(
+			() -> this.getAvatar(contactModel, new AvatarOptions.Builder().setHighRes(false).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
+		);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getContactAvatarLowFromCache(final ContactModel contactModel) {
-		return this.getCached(contactModel, null);
+	public void loadContactAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, AvatarOptions options) {
+		loadBitmap(new ContactAvatarConfig(model, options), contactPlaceholder, imageView);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getGroupAvatarHigh(@NonNull GroupModel groupModel, Collection<Integer> contactColors, boolean defaultOnly) {
-		return this.getAvatar(groupModel, contactColors, true, defaultOnly);
+	public @Nullable Bitmap getGroupAvatarHigh(@Nullable GroupModel groupModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
+		return getBitmapInWorkerThread(
+			() -> getAvatar(groupModel, new AvatarOptions.Builder().setHighRes(true).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
+		);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getGroupAvatarLow(@NonNull final GroupModel groupModel, final Collection<Integer> contactColors, boolean defaultOnly) {
-		if (defaultOnly) {
-			return getAvatar(groupModel, contactColors, false, true);
-		} else {
-			return this.getCached(groupModel, new GenerateBitmap() {
-				@Override
-				public Bitmap gen() {
-					return getAvatar(groupModel, contactColors, false, false);
-				}
-			});
-		}
+	public @Nullable Bitmap getGroupAvatarLow(@Nullable final GroupModel groupModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
+		return getBitmapInWorkerThread(
+			() -> getAvatar(groupModel, new AvatarOptions.Builder().setHighRes(false).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
+		);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getGroupAvatarLowFromCache(final GroupModel groupModel) {
-		return this.getCached(groupModel, null);
+	public void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, AvatarOptions options) {
+		loadBitmap(new GroupAvatarConfig(groupModel, options), groupPlaceholder, imageView);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getDistributionListAvatarLow(final DistributionListModel distributionListModel, final int[] contactColors) {
-		return this.getCached(distributionListModel, new GenerateBitmap() {
-			@Override
-			public Bitmap gen() {
-				return getAvatar(distributionListModel, contactColors);
-			}
-		});
+	public @Nullable Bitmap getDistributionListAvatarLow(@Nullable final DistributionListModel distributionListModel) {
+		return getBitmapInWorkerThread(
+			() -> getAvatar(distributionListModel)
+		);
 	}
 
+	@AnyThread
 	@Override
-	public Bitmap getDistributionListAvatarLowFromCache(DistributionListModel distributionListModel) {
-		return this.getCached(distributionListModel, null);
+	public void loadDistributionListAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, AvatarOptions options) {
+		loadBitmap(new DistributionListAvatarConfig(model, options), distributionListPlaceholder, imageView);
 	}
 
+	@AnyThread
 	@Override
-	public void reset(GroupModel groupModel) {
-		synchronized (this.cache) {
-			this.cache.remove(this.getCacheKey(groupModel));
+	public void reset(@NonNull ContactModel contactModel) {
+		synchronized (this.contactAvatarStates) {
+			this.contactAvatarStates.put(contactModel.getIdentity(), System.currentTimeMillis());
 		}
 	}
 
+	@AnyThread
 	@Override
-	public void reset(ContactModel contactModel) {
-		synchronized (this.cache) {
-			this.cache.remove(this.getCacheKey(contactModel));
+	public void reset(@NonNull GroupModel groupModel) {
+		synchronized (this.groupAvatarStates) {
+			this.groupAvatarStates.put(groupModel.getApiGroupId().hashCode(), System.currentTimeMillis());
 		}
 	}
 
+	@AnyThread
 	@Override
 	public void clear() {
-		synchronized (this.cache) {
-			cache.evictAll();
+		synchronized (this.contactAvatarStates) {
+			contactAvatarStates.clear();
 		}
-		this.isDefaultAvatarColored = null;
-	}
-
-	private Bitmap getAvatar(ContactModel contactModel, final boolean highResolution) {
-		Bitmap result = null;
-		@ColorInt int color = ColorUtil.getInstance().getCurrentThemeGray(this.context);
-
-		if (contactModel != null) {
-			if (this.getDefaultAvatarColored() && (contactModel.getIdentity() != null && !contactModel.getIdentity().equals(identityStore.getIdentity()))) {
-				color = contactModel.getColor();
-			}
-
-			// try profile picture
-			try {
-				result = fileService.getContactPhoto(contactModel);
-				if (result != null && !highResolution) {
-					result = AvatarConverterUtil.convert(this.context.getResources(), result);
-				}
-			} catch (Exception e) {
-				// whatever...
-			}
-
-			if (result == null) {
-				// try local saved avatar
-				try {
-					result = fileService.getContactAvatar(contactModel);
-					if (result != null && !highResolution) {
-						result = AvatarConverterUtil.convert(this.context.getResources(), result);
-					}
-				} catch (Exception e) {
-					// whatever...
-				}
-			}
-
-			if (result == null) {
-				if (!ContactUtil.isChannelContact(contactModel)) {
-					// regular contacts
-
-					Uri contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel);
-					if (contactUri != null) {
-						// address book contact
-						try {
-							result = fileService.getAndroidContactAvatar(contactModel);
-							if (result != null && !highResolution) {
-								result = AvatarConverterUtil.convert(this.context.getResources(), result);
-							}
-						} catch (Exception e) {
-							// whatever...
-						}
-					}
-
-					if (result == null) {
-						//return default avatar
-						if (!highResolution) {
-							result = AvatarConverterUtil.getAvatarBitmap(contactDefaultAvatar, color, this.avatarSizeSmall);
-						}
-					}
-				} else {
-					// business (gateway) contacts
-					if (highResolution) {
-						result = buildHiresDefaultAvatar(color, AVATAR_BUSINESS);
-					} else {
-						result = AvatarConverterUtil.getAvatarBitmap(businessDefaultAvatar, color, this.avatarSizeSmall);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	@Nullable
-	private Bitmap getAvatar(DistributionListModel distributionListModel, int[] contactColors) {
-		synchronized (this.distributionListDefaultAvatar) {
-			if(distributionListModel == null) {
-				return null;
-			}
-
-			int color = ColorUtil.getInstance().getCurrentThemeGray(this.context);
-
-			if(this.getDefaultAvatarColored()
-					&& contactColors != null
-					&& contactColors.length > 0) {
-				//default color
-				color = contactColors[0];
-			}
-			return AvatarConverterUtil.getAvatarBitmap(distributionListDefaultAvatar, color, this.avatarSizeSmall);
+		synchronized (this.groupAvatarStates) {
+			groupAvatarStates.clear();
 		}
 	}
 
-	@Override
-	public Bitmap buildHiresDefaultAvatar(int color, int avatarType) {
-		VectorDrawableCompat drawable = contactDefaultAvatar;
-
-		switch (avatarType) {
-			case AVATAR_GROUP:
-				drawable = groupDefaultAvatar;
-				break;
-			case AVATAR_BUSINESS:
-				drawable = businessDefaultAvatar;
-				break;
-		}
-
-		int borderWidth = this.avatarSizeHires * 3 / 2;
-		Bitmap def = AvatarConverterUtil.getAvatarBitmap(drawable, Color.WHITE, avatarSizeHires);
-		def.setDensity(Bitmap.DENSITY_NONE);
-
-		Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-		Bitmap newBitmap = Bitmap.createBitmap(def.getWidth() + borderWidth, def.getHeight() + borderWidth, conf);
-		Canvas canvas = new Canvas(newBitmap);
-		Paint p = new Paint();
-		p.setColor(color);
-		canvas.drawRect(0, 0, newBitmap.getWidth(), newBitmap.getHeight(), p);
-		canvas.drawBitmap(def, borderWidth / 2f, borderWidth / 2f, null);
-		BitmapUtil.recycle(def);
-
-		return newBitmap;
+	@WorkerThread
+	private @Nullable Bitmap getAvatar(@Nullable ContactModel contactModel, AvatarOptions options) {
+		return getBitmap(new ContactAvatarConfig(contactModel, options));
 	}
 
+	@WorkerThread
+	private @Nullable Bitmap getAvatar(@Nullable GroupModel groupModel, AvatarOptions options) {
+		return getBitmap(new GroupAvatarConfig(groupModel, options));
+	}
+
+	@WorkerThread
+	private @Nullable Bitmap getAvatar(@Nullable DistributionListModel distributionListModel) {
+		return getBitmap(new DistributionListAvatarConfig(distributionListModel, AvatarOptions.DEFAULT_NO_CACHE));
+	}
+
+	@AnyThread
 	@Override
 	public Bitmap getGroupAvatarNeutral(boolean highResolution) {
-		return getAvatar(null, null, highResolution, true);
+		return getBitmapInWorkerThread(
+			() -> getAvatar((GroupModel) null, new AvatarOptions.Builder().setHighRes(highResolution).setReturnDefaultAvatarIfNone(true).setDefaultOnly(true).toOptions())
+		);
 	}
 
-	private @Nullable Bitmap getAvatar(GroupModel groupModel, Collection<Integer> contactColors, boolean highResolution, boolean defaultOnly) {
+	@WorkerThread
+	private @Nullable <M extends ReceiverModel> Bitmap getBitmap(@NonNull AvatarConfig<M> config) {
 		try {
-			Bitmap groupImage = null;
-			if (!defaultOnly) {
-				groupImage = this.fileService.getGroupAvatar(groupModel);
+			RequestBuilder<Bitmap> requestBuilder = Glide.with(context).asBitmap().load(config).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
+			if (config.model == null || config.options.disableCache) {
+				requestBuilder = requestBuilder.skipMemoryCache(true);
 			}
-
-			if (groupImage == null) {
-				int color = ColorUtil.getInstance().getCurrentThemeGray(this.context);
-				if (this.getDefaultAvatarColored()
-					&& contactColors != null
-					&& contactColors.size() > 0) {
-					//default color
-					color = contactColors.iterator().next();
-				}
-
-				if (highResolution) {
-					groupImage = buildHiresDefaultAvatar(color, AVATAR_GROUP);
-				} else {
-					synchronized (this.groupDefaultAvatar) {
-						groupImage = AvatarConverterUtil.getAvatarBitmap(groupDefaultAvatar, color, this.avatarSizeSmall);
-					}
-				}
-			} else if (!highResolution) {
-				//resize image!
-				Bitmap converted = AvatarConverterUtil.convert(this.context.getResources(), groupImage);
-				if (groupImage != converted) {
-					BitmapUtil.recycle(groupImage);
-				}
-				return converted;
-			}
-
-			return groupImage;
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			//DO NOTHING
+			return requestBuilder.submit().get();
+		} catch (ExecutionException | InterruptedException e) {
+			Thread.currentThread().interrupt();
 			return null;
 		}
 	}
 
-	@Override
-	public boolean getDefaultAvatarColored() {
-		if(this.isDefaultAvatarColored == null) {
-			this.isDefaultAvatarColored = (this.preferenceService == null || this.preferenceService.isDefaultContactPictureColored());
+	@AnyThread
+	private <M extends ReceiverModel> void loadBitmap(@NonNull AvatarConfig<M> config, @Nullable Drawable placeholder, @NonNull ImageView view) {
+		RequestBuilder<Bitmap> requestBuilder = Glide.with(context).asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
+		if (config.options.disableCache) {
+			requestBuilder = requestBuilder.skipMemoryCache(true);
+		}
+		requestBuilder.into(view);
+	}
+
+	/**
+	 * This class is used as a identifier for glide. Based on its hashcode, the objects can be cached in different resolutions.
+	 */
+	public static abstract class AvatarConfig<M extends ReceiverModel> {
+
+		@Nullable
+		final M model;
+		@NonNull
+		private final AvatarOptions options;
+		private final long state;
+
+		private AvatarConfig(@Nullable M model, @NonNull AvatarOptions options) {
+			this.model = model;
+			this.options = options;
+			this.state = getAvatarState();
 		}
 
-		return this.isDefaultAvatarColored;
+		/**
+		 * Get the model of this identifier.
+		 *
+		 * @return the contact model
+		 */
+		public @Nullable M getModel() {
+			return model;
+		}
+
+		/**
+		 * Get the avatar loading options.
+		 *
+		 * @return the options
+		 */
+		public @NonNull AvatarOptions getOptions() {
+			return this.options;
+		}
+
+		abstract int getHashCode();
+
+		abstract long getAvatarState();
+
+		/**
+		 * The hash code of this class is based only on the parameters that change the actual result, e.g., the resolution,
+		 * the default options and of course the contact, group, or distribution list. The state does not affect the hashcode
+		 * and must be used as signature.
+		 *
+		 * @return the hash code of the object
+		 */
+		@Override
+		public int hashCode() {
+			int hash = getHashCode();
+			return hash * 31 + options.hashCode();
+		}
+
+		@Override
+		public boolean equals(@Nullable Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj instanceof AvatarConfig) {
+				@SuppressWarnings("rawtypes") AvatarConfig other = (AvatarConfig) obj;
+
+				boolean equalModels = this.model == other.model;
+				if (!equalModels && this.model != null) {
+					equalModels = this.model.equals(other.model);
+				}
+
+				return equalModels && this.options.equals(other.options);
+			}
+			return false;
+		}
+
+		@NonNull
+		@Override
+		public String toString() {
+			return (model != null ? model.toString() : "null") + " " + options;
+		}
+	}
+
+	/**
+	 * This class stores information about the access of a contact avatar. Every object of this class
+	 * with the same hashcode references the same image and can therefore be cached by glide.
+	 */
+	public class ContactAvatarConfig extends AvatarConfig<ContactModel> {
+
+		private ContactAvatarConfig(@Nullable ContactModel model, AvatarOptions options) {
+			super(model, options);
+		}
+
+		@Override
+		int getHashCode() {
+			if (model != null && model.getIdentity() != null) {
+				return model.getIdentity().hashCode();
+			}
+			return -1;
+		}
+
+		@Override
+		long getAvatarState() {
+			if (this.model == null) {
+				// we don't use the cache for default avatars
+				return System.currentTimeMillis();
+			}
+
+			Long state = contactAvatarStates.get(this.model.getIdentity());
+			if (state != null) {
+				return state;
+			}
+			long newState = System.currentTimeMillis();
+			synchronized (contactAvatarStates) {
+				contactAvatarStates.put(this.model.getIdentity(), newState);
+			}
+			return newState;
+		}
+	}
+
+	/**
+	 * This class stores information about the access of a group avatar. Every object of this class
+	 * with the same hashcode references the same image and can therefore be cached by glide.
+	 */
+	public class GroupAvatarConfig extends AvatarConfig<GroupModel> {
+		private GroupAvatarConfig(@Nullable GroupModel model, AvatarOptions options) {
+			super(model, options);
+		}
+
+		@Override
+		int getHashCode() {
+			if (model != null) {
+				return model.getApiGroupId().hashCode();
+			}
+			return -2;
+		}
+
+		@Override
+		long getAvatarState() {
+			if (this.model == null) {
+				// if the group model is null, then a default avatar is wanted and therefore it does not make a big difference if it is loaded from cache or not
+				return 0;
+			}
+
+			Long state = groupAvatarStates.get(this.model.getApiGroupId().hashCode());
+			if (state != null) {
+				return state;
+			}
+			long newState = System.currentTimeMillis();
+			synchronized (groupAvatarStates) {
+				groupAvatarStates.put(this.model.getApiGroupId().hashCode(), newState);
+			}
+			return newState;
+		}
+	}
+
+	/**
+	 * This class stores information about the access of a distribution list avatar. Every object of
+	 * this class with the same hashcode references the same image and can therefore be cached by glide.
+	 */
+	public static class DistributionListAvatarConfig extends AvatarConfig<DistributionListModel> {
+		private DistributionListAvatarConfig(@Nullable DistributionListModel model, AvatarOptions options) {
+			super(model, options);
+		}
+
+		@Override
+		int getHashCode() {
+			if (model != null) {
+				return (int) model.getId();
+			}
+			return -3;
+		}
+
+		@Override
+		long getAvatarState() {
+			return 1;
+		}
+	}
+
+	/**
+	 * Run the given code in a separate thread if this is called from the UI thread.
+	 *
+	 * @param function the function that is executed
+	 * @return the bitmap that the function returns and null if an error occurs
+	 */
+	@AnyThread
+	private static Bitmap getBitmapInWorkerThread(Supplier<Bitmap> function) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			BitmapLoadThread t = new BitmapLoadThread(function);
+			t.start();
+
+			try {
+				t.join();
+				return t.bitmap;
+			} catch (InterruptedException e) {
+				logger.error("Error while loading bitmap", e);
+				Thread.currentThread().interrupt();
+				return null;
+			}
+		} else {
+			return function.get();
+		}
+	}
+
+	private static class BitmapLoadThread extends Thread {
+		private final Supplier<Bitmap> function;
+		private Bitmap bitmap;
+
+		private BitmapLoadThread(Supplier<Bitmap> function) {
+			this.function = function;
+		}
+
+		@Override
+		public void run() {
+			bitmap = function.get();
+		}
 	}
 }

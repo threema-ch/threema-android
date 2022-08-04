@@ -30,6 +30,6 @@
 	<string name="private_threema_download"><![CDATA[ <a href=%1$s>Erfahren Sie mehr über Threema Work</a> <br/><br/> Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href=%2$s>hier</a> herunter.]]></string>
 	<string name="directory_search">Im Verzeichnis suchen</string>
 	<string name="directory_title">Firmenverzeichnis</string>
-	<string name="directory_empty_view_text">Keine Einträge gefunden\n\nBitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Verzeichnis der Threema-Nutzer Ihres Unternehmens zu suchen.</string>
+	<string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Firmenverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
 </resources>
 

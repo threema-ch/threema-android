@@ -41,6 +41,7 @@ import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsAboutFragment")
 
+@Suppress("unused")
 class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private var updateUrl: String? = null
@@ -48,8 +49,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private var aboutCounter = 0
 
-    private var preferenceService: PreferenceService = getInitialPreferenceService()
-    private var licenseService: LicenseService<*> = getInitialLicenceService()
+    private var preferenceService: PreferenceService = requirePreferenceService()
+    private var licenseService: LicenseService<*> = requireLicenceService()
 
     override fun initializePreferences() {
         super.initializePreferences()
@@ -72,6 +73,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
         initTranslatorPref()
     }
+
+    override fun getPreferenceTitleResource(): Int = R.string.menu_about
 
     override fun getPreferenceResource(): Int = R.xml.preference_about
 
@@ -189,11 +192,11 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private fun getVersionString(): String {
         val version = StringBuilder()
-        version.append(ConfigUtils.getFullAppVersion(requireContext()))
+        version.append(ConfigUtils.getAppVersion(requireContext()))
         version.append(" Build ").append(ConfigUtils.getBuildNumber(context))
         version.append(" ").append(BuildFlavor.getName())
         if (BuildConfig.DEBUG) {
-            version.append("").append("")
+            version.append(" Commit ").append(BuildConfig.GIT_HASH)
         }
         return version.toString()
     }
@@ -205,10 +208,12 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             return
         }
         object : AsyncTask<Void?, Void?, String?>() {
+            @Deprecated("Deprecated in Java")
             override fun onPreExecute() {
                 GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait).show(activity!!.supportFragmentManager, DIALOG_TAG_CHECK_UPDATE)
             }
 
+            @Deprecated("Deprecated in Java")
             override fun doInBackground(vararg voids: Void?): String? {
                 return try {
                     // Validate license and check for updates
@@ -229,6 +234,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
                 }
             }
 
+            @Deprecated("Deprecated in Java")
             override fun onPostExecute(error: String?) {
                 DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_CHECK_UPDATE, true)
                 if (error != null) {

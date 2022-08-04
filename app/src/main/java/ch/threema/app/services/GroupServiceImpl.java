@@ -22,11 +22,13 @@
 package ch.threema.app.services;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseArray;
+import android.widget.ImageView;
 
 import com.neilalexander.jnacl.NaCl;
 
@@ -47,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
@@ -60,12 +64,14 @@ import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
@@ -105,6 +111,7 @@ public class GroupServiceImpl implements GroupService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupServiceImpl");
 	private static final String GROUP_UID_PREFIX = "g-";
 
+	private final Context context;
 	private final ApiService apiService;
 	private final GroupMessagingService groupMessagingService;
 	private final UserService userService;
@@ -130,6 +137,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	public GroupServiceImpl(
+			Context context,
 			CacheService cacheService,
 			ApiService apiService,
 			GroupMessagingService groupMessagingService,
@@ -144,6 +152,7 @@ public class GroupServiceImpl implements GroupService {
 			DeadlineListService hiddenChatsListService,
 			RingtoneService ringtoneService,
 			IdListService blackListService) {
+		this.context = context;
 		this.apiService = apiService;
 		this.groupMessagingService = groupMessagingService;
 
@@ -171,14 +180,13 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public List<GroupModel> getAll(GroupFilter filter) {
-		List<GroupModel> res = new ArrayList<>();
 
-		res.addAll(this.databaseServiceNew.getGroupModelFactory().filter(filter));
+		List<GroupModel> res = new ArrayList<>(this.databaseServiceNew.getGroupModelFactory().filter(filter));
 
 		if (filter != null && !filter.withDeserted()) {
-			Iterator iterator = res.iterator();
+			Iterator<GroupModel> iterator = res.iterator();
 			while (iterator.hasNext()) {
-				GroupModel groupModel = (GroupModel) iterator.next();
+				GroupModel groupModel = iterator.next();
 				if (!isGroupMember(groupModel)) {
 					iterator.remove();
 				}
@@ -726,8 +734,6 @@ public class GroupServiceImpl implements GroupService {
 		//success!
 		result.success = true;
 
-		this.rebuildColors(result.groupModel);
-
 		if(isNewGroup) {
 			//only fire on new group event
 			final GroupModel gm = result.groupModel;
@@ -809,8 +815,6 @@ public class GroupServiceImpl implements GroupService {
 			this.renameGroup(groupModel, groupModel.getName());
 		}
 
-		this.rebuildColors(groupModel);
-
 		return groupModel;
 	}
 
@@ -874,7 +878,7 @@ public class GroupServiceImpl implements GroupService {
 	 * @return true if members have been added, false if no members have been specified, null if new identities could not be fetched
 	 */
 	@Override
-	public Boolean addMembersToGroup(final GroupModel groupModel, @Nullable final String[] identities) {
+	public Boolean addMembersToGroup(@NonNull final GroupModel groupModel, @Nullable final String[] identities) {
 		if (identities != null && identities.length > 0) {
 			@GroupState int groupState = getGroupState(groupModel);
 
@@ -1352,23 +1356,22 @@ public class GroupServiceImpl implements GroupService {
 		);
 	}
 
-	@Override
-	@Nullable
-	public Bitmap getCachedAvatar(GroupModel groupModel) {
-		if(groupModel == null) {
-			return null;
-		}
-		return this.avatarCacheService.getGroupAvatarLowFromCache(groupModel);
-	}
-
+	@AnyThread
 	@Override
 	public Bitmap getAvatar(GroupModel groupModel, boolean highResolution) {
-		return getAvatar(groupModel, highResolution, false);
+		return getAvatar(groupModel, highResolution, false, true);
 	}
 
+	@AnyThread
+	@Override
+	public Bitmap getAvatar(GroupModel groupModel, boolean highResolution, boolean returnDefaultAvatarIfNone) {
+		return getAvatar(groupModel, highResolution, false, returnDefaultAvatarIfNone);
+	}
+
+	@AnyThread
 	@Override
 	public Bitmap getDefaultAvatar(GroupModel groupModel, boolean highResolution) {
-		return getAvatar(groupModel, highResolution, true);
+		return getAvatar(groupModel, highResolution, true, true);
 	}
 
 	@Override
@@ -1376,22 +1379,36 @@ public class GroupServiceImpl implements GroupService {
 		return avatarCacheService.getGroupAvatarNeutral(highResolution);
 	}
 
-	private @Nullable Bitmap getAvatar(GroupModel groupModel, boolean highResolution, boolean defaultOnly) {
+	@AnyThread
+	private @Nullable Bitmap getAvatar(GroupModel groupModel, boolean highResolution, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
 		if(groupModel == null) {
 			return null;
 		}
 
-		Map<String, Integer> colorMap = this.getGroupMemberColors(groupModel);
-		Collection<Integer> colors = null;
-		if(colorMap != null) {
-			colors = colorMap.values();
-		}
 		if(highResolution) {
-			return this.avatarCacheService.getGroupAvatarHigh(groupModel, colors, defaultOnly);
+			return this.avatarCacheService.getGroupAvatarHigh(groupModel, defaultOnly, returnDefaultAvatarIfNone);
+		} else {
+			return this.avatarCacheService.getGroupAvatarLow(groupModel, defaultOnly, returnDefaultAvatarIfNone);
 		}
-		else {
-			return this.avatarCacheService.getGroupAvatarLow(groupModel, colors, defaultOnly);
+	}
+
+	@AnyThread
+	@Override
+	public void loadAvatarIntoImage(@NonNull GroupModel groupModel, @NonNull ImageView imageView, AvatarOptions options) {
+		avatarCacheService.loadGroupAvatarIntoImage(groupModel, imageView, options);
+	}
+
+	@Override
+	public @ColorInt int getAvatarColor(GroupModel group) {
+		if (group != null) {
+			return group.getThemedColor(context);
 		}
+		return ColorUtil.getInstance().getCurrentThemeGray(this.context);
+	}
+
+	@Override
+	public void clearAvatarCache(@NonNull GroupModel model) {
+		avatarCacheService.reset(model);
 	}
 
 	public boolean isGroupOwner(GroupModel groupModel) {
@@ -1441,43 +1458,10 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public int getPrimaryColor(GroupModel groupModel) {
-		if(groupModel != null) {
-			//get members
-			Map<String, Integer> colors = this.getGroupMemberColors(groupModel);
-			if(colors != null && colors.size() > 0) {
-				Collection<Integer> v = colors.values();
-
-				if(v.size() > 0) {
-					return v.iterator().next();
-				}
-			}
-		}
-		return 0;
-	}
-
-	@Override
-	public boolean rebuildColors(GroupModel model) {
-//		List<GroupMemberModel> members = this.getGroupMembers(model);
-//		RuntimeExceptionDao<GroupMemberModel, Integer> groupMemberDao = this.databaseService.getGroupMemberDao();
-//		if(TestUtil.required(members, groupMemberDao)) {
-//			int colors[] = ColorUtil.generateColorPalette(members.size());
-//			for(int n = 0; n < members.size(); n++) {
-//				GroupMemberModel member = members.get(n);
-//				if(member != null) {
-//					members.get(n).setColor(colors[n]);
-//					groupMemberDao.update(members.get(n));
-//				}
-//			}
-//		}
-		return false;
-	}
-
-	@Override
-	public Map<String, Integer> getGroupMemberColors(GroupModel model) {
+	public Map<String, Integer> getGroupMemberIDColorIndices(GroupModel model) {
 		Map<String, Integer> colors = this.groupMemberColorCache.get(model.getId());
 		if(colors == null || colors.size() == 0) {
-			colors = this.databaseServiceNew.getGroupMemberModelFactory().getColors(
+			colors = this.databaseServiceNew.getGroupMemberModelFactory().getIDColorIndices(
 					model.getId()
 			);
 

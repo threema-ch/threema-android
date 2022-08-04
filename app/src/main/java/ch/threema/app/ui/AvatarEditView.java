@@ -61,6 +61,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -166,7 +167,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
 		public void onModified(ContactModel modifiedContactModel) {
-			RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(modifiedContactModel, null));
+			if (modifiedContactModel != null && handle(modifiedContactModel.getIdentity())) {
+				RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(modifiedContactModel, null));
+			}
 		}
 
 		@Override
@@ -190,35 +193,33 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	@SuppressLint("StaticFieldLeak")
 	@UiThread
 	public synchronized void loadAvatarForModel(ContactModel contactModel, GroupModel groupModel) {
-		new AsyncTask<Void, Void, Bitmap>() {
-			@Override
-			protected Bitmap doInBackground(Void... params) {
-				if (contactModel != null) {
-					return contactService.getAvatar(avatarData.getContactModel(), hires);
-				} else if (groupModel != null) {
-					Bitmap groupAvatar = groupService.getAvatar(groupModel, hires);
-					if (groupAvatar == null) {
-						groupAvatar = groupService.getDefaultAvatar(groupModel, hires);
-					}
-					return groupAvatar;
+		if (avatarImage == null) {
+			return;
+		}
+
+		try {
+			if (contactModel != null) {
+				Bitmap bitmap = contactService.getAvatar(contactModel, true);
+				if (isMyProfilePicture) {
+					// If it is "my" profile picture, then the AvatarEditView is round
+					avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getContext().getResources(), bitmap));
 				} else {
-					return groupService.getDefaultAvatar(groupModel, hires);
+					avatarImage.setImageBitmap(bitmap);
+					adjustColorFilter(bitmap);
 				}
-				//				return null;
+			} else {
+				Bitmap bitmap = groupService.getAvatar(groupModel, true);
+				avatarImage.setImageBitmap(bitmap);
+				adjustColorFilter(bitmap);
 			}
+		} catch (RuntimeException e) {
+			logger.debug("Unable to set avatar bitmap",e );
+		}
 
-			@Override
-			protected void onPostExecute(Bitmap bitmap) {
-				if (avatarImage != null) {
-					setAvatarBitmap(bitmap);
-				}
-
-				boolean editable = isAvatarEditable();
-				avatarImage.setClickable(editable);
-				avatarImage.setFocusable(editable);
-				avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
-			}
-		}.execute();
+		boolean editable = isAvatarEditable();
+		avatarImage.setClickable(editable);
+		avatarImage.setFocusable(editable);
+		avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
 	}
 
 	@Nullable
@@ -336,9 +337,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	private void loadDefaultAvatar(ContactModel contactModel, GroupModel groupModel) {
 		if (contactModel != null) {
-			setAvatarBitmap(contactService.getDefaultAvatar(avatarData.getContactModel(), hires));
+			setAvatarBitmap(contactService.getDefaultAvatar(avatarData.getContactModel(), true));
 		} else if (groupModel != null) {
-			setAvatarBitmap(groupService.getDefaultAvatar(avatarData.getGroupModel(), hires));
+			setAvatarBitmap(groupService.getDefaultAvatar(avatarData.getGroupModel(), true));
 		}
 	}
 
@@ -491,9 +492,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	@WorkerThread
 	private @Nullable Bitmap getCurrentAvatarBitmap(boolean hires) {
 		if (this.avatarData.getContactModel() != null) {
-			return contactService.getAvatar(this.avatarData.getContactModel(), hires);
+			return contactService.getAvatar(this.avatarData.getContactModel(), true);
 		} else if (this.avatarData.getGroupModel() != null) {
-			return groupService.getAvatar(this.avatarData.getGroupModel(), hires);
+			return groupService.getAvatar(this.avatarData.getGroupModel(), true);
 		}
 		return null;
 	}
@@ -553,6 +554,14 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		}
 
 		return false;
+	}
+
+	private void adjustColorFilter(@Nullable Bitmap bitmap) {
+		if (bitmap != null && ColorUtil.getInstance().calculateBrightness(bitmap, 2) > 100) {
+			AvatarEditView.this.avatarImage.setColorFilter(ContextCompat.getColor(getContext(), R.color.material_grey_300), PorterDuff.Mode.DARKEN);
+		} else {
+			AvatarEditView.this.avatarImage.clearColorFilter();
+		}
 	}
 
 	/**** Getters and Setters *****/
@@ -638,11 +647,13 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 * @param avatarType Type of avatar
 	 */
 	public void setUndefinedAvatar(@AvatarTypeDef int avatarType) {
+		Bitmap avatar;
 		if (avatarType == AVATAR_TYPE_CONTACT) {
-			setAvatarBitmap(contactService.getNeutralAvatar(hires));
+			avatar = contactService.getNeutralAvatar(hires);
 		} else {
-			setAvatarBitmap(groupService.getNeutralAvatar(hires));
+			avatar = groupService.getNeutralAvatar(hires);
 		}
+		setAvatarBitmap(avatar);
 	}
 
 	@Override

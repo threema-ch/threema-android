@@ -169,6 +169,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		this.cancelButton = selectPanel.findViewById(R.id.cancel);
 		this.selectButton = selectPanel.findViewById(R.id.select);
 		this.selectCounterButton = selectPanel.findViewById(R.id.select_counter_button);
+		this.selectCounterButton.setContentDescription(getResources().getQuantityString(R.plurals.selection_counter_label, 0, 0));
 	}
 
 	public void setupControlPanelListeners(){

@@ -36,7 +36,8 @@ import static org.junit.Assert.fail;
 public class CloseableReadWriteLockTest {
 	static class WriteLocker extends Thread {
 		private final @NonNull CloseableReadWriteLock lock;
-		private boolean shutdown = false;
+		private volatile boolean shutdown = false;
+		private volatile boolean running = false;
 
 		public WriteLocker(@NonNull CloseableReadWriteLock writeLock) {
 			this.lock = writeLock;
@@ -45,11 +46,21 @@ public class CloseableReadWriteLockTest {
 		@Override
 		public void run() {
 			try (CloseableLock writeLock = this.lock.write()) {
+				running = true;
 				while (!shutdown) {
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException ignored) { }
 				}
+			}
+			running = false;
+		}
+
+		public void awaitRunning() {
+			while (!this.running) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException ignored) { }
 			}
 		}
 
@@ -92,7 +103,7 @@ public class CloseableReadWriteLockTest {
 
 		// Start thread, now the lock should be locked
 		t.start();
-		Thread.sleep(100);
+		t.awaitRunning();
 		assertTrue(innerLock.isWriteLocked());
 		assertFalse(readLock.tryLock(50, TimeUnit.MILLISECONDS));
 		assertFalse(writeLock.tryLock(50, TimeUnit.MILLISECONDS));
@@ -128,7 +139,7 @@ public class CloseableReadWriteLockTest {
 		// Lock lock
 		final WriteLocker t = new WriteLocker(lock);
 		t.start();
-		Thread.sleep(100);
+		t.awaitRunning();
 
 		// Ensure it's locked
 		assertTrue(innerLock.isWriteLocked());

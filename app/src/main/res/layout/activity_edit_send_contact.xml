@@ -97,7 +97,7 @@
 							app:hintAnimationEnabled="true"
 							app:hintEnabled="true">
 
-							<ch.threema.app.ui.ComposeEditText
+							<ch.threema.app.emojis.EmojiEditText
 								android:id="@+id/first_name_edit_text"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
 							app:hintAnimationEnabled="true"
 							app:hintEnabled="true">
 
-							<ch.threema.app.ui.ComposeEditText
+							<ch.threema.app.emojis.EmojiEditText
 								android:id="@+id/middle_name_edit_text"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
 							app:hintAnimationEnabled="true"
 							app:hintEnabled="true">
 
-							<ch.threema.app.ui.ComposeEditText
+							<ch.threema.app.emojis.EmojiEditText
 								android:id="@+id/last_name_edit_text"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
 							app:hintAnimationEnabled="true"
 							app:hintEnabled="true">
 
-							<ch.threema.app.ui.ComposeEditText
+							<ch.threema.app.emojis.EmojiEditText
 								android:id="@+id/name_suffix_edit_text"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
@@ -177,7 +177,7 @@
 							app:hintAnimationEnabled="true"
 							app:hintEnabled="true">
 
-							<ch.threema.app.ui.ComposeEditText
+							<ch.threema.app.emojis.EmojiEditText
 								android:id="@+id/name_full_edit_text"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"

@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+
 public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInterface {
 	@Override
 	public void remove(String key) {
@@ -83,7 +85,7 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 	}
 
 	@Override
-	public void save(String key, String[] things, boolean crypt) {
+	public void save(String key, @NonNull String[] things, boolean crypt) {
 
 	}
 
@@ -295,5 +297,10 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 	@Override
 	public Set<String> getStringSet(String key, int defaultRes) {
 		return new HashSet<String>();
+	}
+
+	@Override
+	public boolean has(String listName) {
+		return false;
 	}
 }

@@ -36,13 +36,14 @@ import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
 import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
 import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
-import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
+import java8.util.function.Consumer;
 
 public interface ContactService extends AvatarService<ContactModel> {
 
@@ -154,18 +155,6 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	int updateContactVerification(String identity, byte[] publicKey);
 
-	Bitmap getAvatar(ContactModel model, boolean highResolution, boolean returnDefaultAvatarIfNone);
-
-	Bitmap getDefaultAvatar(ContactModel contact, boolean highResolution);
-
-	Bitmap getNeutralAvatar(boolean highResolution);
-
-	/**
-	 * remove the cached avatar
-	 * @param contactModel
-	 */
-	void clearAvatarCache(ContactModel contactModel);
-
 	/**
 	 * Create a contact with the specified identity.
 	 *
@@ -201,8 +190,6 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	void removeAllSystemContactLinks();
 
-	boolean rebuildColors();
-
 	@Deprecated
 	int getUniqueId(ContactModel contactModel);
 	String getUniqueIdString(ContactModel contactModel);
@@ -229,4 +216,5 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	@WorkerThread
 	boolean resetReceiptsSettings();
+	void reportSpam(@NonNull ContactModel spammerContactModel, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
 }

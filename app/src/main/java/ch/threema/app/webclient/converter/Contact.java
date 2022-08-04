@@ -232,7 +232,7 @@ public class Contact extends Converter {
 	@NonNull
 	public static String getColor(ContactModel contact) throws ConversionException {
 		try {
-			return String.format("#%06X", (0xFFFFFF & contact.getColor()));
+			return String.format("#%06X", (0xFFFFFF & contact.getColorLight()));
 		} catch (NullPointerException e) {
 			throw new ConversionException(e.toString());
 		}

@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -56,7 +55,7 @@ import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BAT
  * If the app has the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission, then the
  * ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS intent is used instead.
  */
-public class DisableBatteryOptimizationsActivity extends AppCompatActivity implements GenericAlertDialog.DialogClickListener {
+public class DisableBatteryOptimizationsActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DisableBatteryOptimizationsActivity");
 
 	private static final int REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS = 778;
@@ -123,7 +122,7 @@ public class DisableBatteryOptimizationsActivity extends AppCompatActivity imple
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
 

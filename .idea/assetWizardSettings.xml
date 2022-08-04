@@ -8,6 +8,17 @@
             <PersistentState>
               <option name="children">
                 <map>
+                  <entry key="confirmationStep">
+                    <value>
+                      <PersistentState>
+                        <option name="values">
+                          <map>
+                            <entry key="resourceDirectory" value="main" />
+                          </map>
+                        </option>
+                      </PersistentState>
+                    </value>
+                  </entry>
                   <entry key="imageAssetPanel">
                     <value>
                       <PersistentState>
@@ -62,18 +73,6 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
-                                      <entry key="backgroundImage">
-                                        <value>
-                                          <PersistentState>
-                                            <option name="values">
-                                              <map>
-                                                <entry key="imagePath" value="$PROJECT_DIR$/../../icons/leos.png" />
-                                                <entry key="scalingPercent" value="62" />
-                                              </map>
-                                            </option>
-                                          </PersistentState>
-                                        </value>
-                                      </entry>
                                       <entry key="foregroundClipArt">
                                         <value>
                                           <PersistentState>
@@ -91,8 +90,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="$PROJECT_DIR$/../../icons/leos.png" />
-                                                <entry key="trimmed" value="true" />
+                                                <entry key="imagePath" value="$PROJECT_DIR$/app/src/main/ic_launcher-web.png" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -120,12 +118,6 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
-                                    </map>
-                                  </option>
-                                  <option name="values">
-                                    <map>
-                                      <entry key="backgroundLayerName" value="logo_main_background" />
-                                      <entry key="foregroundLayerName" value="logo_main" />
                                     </map>
                                   </option>
                                 </PersistentState>

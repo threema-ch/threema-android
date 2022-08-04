@@ -49,7 +49,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -208,7 +207,7 @@ public class AvatarConverterUtil {
 	}
 
 	@NonNull
-	public static Bitmap getAvatarBitmap(VectorDrawableCompat drawable, @ColorInt int color, int size) {
+	public static Bitmap getAvatarBitmap(Drawable drawable, @ColorInt int color, int size) {
 		drawable.mutate();
 
 		Bitmap result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);

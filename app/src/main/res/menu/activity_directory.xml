@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/menu_search_directory"
+		android:icon="@drawable/ic_search_outline"
+		app:iconTint="?android:textColorSecondary"
+		android:title="@string/directory_search"
+		android:visible="false"
+		app:showAsAction="never|collapseActionView"
+		app:actionViewClass="ch.threema.app.ui.ThreemaSearchView"/>
+
+	<item
+		android:id="@+id/menu_category"
+		android:icon="@drawable/ic_filter_list_black_24dp"
+		app:iconTint="?android:textColorSecondary"
+		android:orderInCategory="99"
+		android:title="@string/filter_list"
+		app:showAsAction="always"/>
+</menu>

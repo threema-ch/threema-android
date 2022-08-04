@@ -61,7 +61,7 @@ public class RateDialog extends ThreemaDialogFragment {
 	private String tag = null;
 	private PreferenceService preferenceService;
 
-	private Integer starMap[] = {
+	private final Integer[] starMap = {
 			R.id.star_one,
 			R.id.star_two,
 			R.id.star_three,

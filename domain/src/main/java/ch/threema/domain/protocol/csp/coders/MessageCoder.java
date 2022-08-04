@@ -117,7 +117,7 @@ public class MessageCoder {
 	/**
 	 * Attempt to decrypt a boxed (encrypted) message using the given contact and identity store
 	 * and return the decrypted result. The result will be a subclass of AbstractMessage according
-	 * to the message type.
+	 * to the message type. Note that the contact is not added, if it does not exist.
 	 *
 	 * @param boxmsg boxed message to be decrypted
 	 * @param fetch if true, attempt to fetch missing public keys from network (may cause delays)
@@ -133,16 +133,17 @@ public class MessageCoder {
 
 		// check if contact already exists
 		Contact contact = contactStore.getContactForIdentity(boxmsg.getFromIdentity());
+		boolean addContact = contact == null;
 
-		/* obtain public key of sender. note that this creates a new contact if one doesn't already exist for this identity */
-		byte[] senderPublicKey = contactStore.getPublicKeyForIdentity(boxmsg.getFromIdentity(), fetch);
+		/* obtain public key of sender */
+		Contact fetchedContact = contactStore.getContactForIdentity(boxmsg.getFromIdentity(), fetch, false);
 
-		if (senderPublicKey == null) {
+		if (fetchedContact == null) {
 			throw new MissingPublicKeyException("Missing public key for ID " + boxmsg.getFromIdentity());
 		}
 
 		/* decrypt with our secret key */
-		byte[] data = identityStore.decryptData(boxmsg.getBox(), boxmsg.getNonce(), senderPublicKey);
+		byte[] data = identityStore.decryptData(boxmsg.getBox(), boxmsg.getNonce(), fetchedContact.getPublicKey());
 		if (data == null) {
 			throw new BadMessageException("Decryption of message from " + boxmsg.getFromIdentity() + " failed");
 		}
@@ -165,6 +166,9 @@ public class MessageCoder {
 		/* first byte of data is type */
 		int type = data[0] & 0xFF;
 		AbstractMessage msg = null;
+
+		// Set this flag to true for message types that should add the contact as hidden contact
+		boolean addHidden = false;
 
 		switch (type) {
 			case ProtocolDefines.MSGTYPE_TEXT: {
@@ -368,16 +372,6 @@ public class MessageCoder {
 				groupleavemsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				groupleavemsg.setGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
 				msg = groupleavemsg;
-
-				if (contact == null) {
-					// ignore leave from previously unknown contact
-					Contact newContact = contactStore.getContactForIdentity(boxmsg.getFromIdentity());
-					if (newContact != null) {
-						contactStore.removeContact(newContact);
-						logger.info("Received group leave from unknown identity {}", boxmsg.getFromIdentity());
-						throw new BadMessageException("Received group leave from unknown identity. dropping", true);
-					}
-				}
 				break;
 			}
 
@@ -664,6 +658,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT: {
+				addContact = false;
 				if (realDataLength < ProtocolDefines.MESSAGE_ID_LEN + 2 || ((realDataLength - 2) % ProtocolDefines.MESSAGE_ID_LEN) != 0) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for delivery receipt");
 				}
@@ -684,6 +679,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_TYPING_INDICATOR: {
+				addHidden = true;
 				if (realDataLength != 2) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for typing indicator");
 				}
@@ -780,6 +776,10 @@ public class MessageCoder {
 				break;
 		}
 
+		if (addContact) {
+			contactStore.addContact(fetchedContact, addHidden);
+		}
+
 		if (msg != null) {
 			/* copy header attributes from boxed message */
 			msg.setFromIdentity(boxmsg.getFromIdentity());
@@ -793,7 +793,7 @@ public class MessageCoder {
 			if (boxmsg.getMetadataBox() != null) {
 				MetadataCoder coder = new MetadataCoder(identityStore);
 				try {
-					MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), senderPublicKey);
+					MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), fetchedContact.getPublicKey());
 
 					// Ensure message ID matches envelope message ID (so the server cannot swap it and
 					// cause messages to be misquoted or delivery receipts to be swapped)
@@ -850,14 +850,15 @@ public class MessageCoder {
 			byte[] boxData = bos.toByteArray();
 
 			/* obtain receiver's public key */
-			byte[] receiverPublicKey = contactStore.getPublicKeyForIdentity(message.getToIdentity(), false);
+			Contact receiver = contactStore.getContactForIdentity(message.getToIdentity(), false, true);
+			byte[] receiverPublicKey = receiver != null ? receiver.getPublicKey() : null;
 
 			if (receiverPublicKey == null) {
 				throw new ThreemaException("Missing public key for ID " + message.getToIdentity());
 			}
 
-			/* make random nonce; only save if the message is not an immediate message */
-			byte[] nonce = nonceFactory.next(!message.isImmediate());
+			/* make random nonce; only save if the message is not a non-queued message */
+			byte[] nonce = nonceFactory.next(!message.flagNoServerQueuing());
 
 			/* sign/encrypt with our private key */
 			byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
@@ -889,16 +890,16 @@ public class MessageCoder {
 			boxmsg.setDate(message.getDate());
 
 			int flags = 0;
-			if (message.shouldPush())
-				flags |= ProtocolDefines.MESSAGE_FLAG_PUSH;
-			if (message.isImmediate())
-				flags |= ProtocolDefines.MESSAGE_FLAG_IMMEDIATE;
-			if (message.isNoAck())
-				flags |= ProtocolDefines.MESSAGE_FLAG_NOACK;
-			if (message.isGroup())
+			if (message.flagSendPush())
+				flags |= ProtocolDefines.MESSAGE_FLAG_SEND_PUSH;
+			if (message.flagNoServerQueuing())
+				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING;
+			if (message.flagNoServerAck())
+				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK;
+			if (message.flagGroupMessage())
 				flags |= ProtocolDefines.MESSAGE_FLAG_GROUP;
-			if (message.isVoip())
-				flags |= ProtocolDefines.MESSAGE_FLAG_VOIP;
+			if (message.flagShortLivedServerQueuing())
+				flags |= ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED;
 			boxmsg.setFlags(flags);
 
 			if (message.allowSendingProfile()) {

@@ -27,14 +27,15 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.Date;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.MessageService;
@@ -94,6 +95,8 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 			final TextView deliveredDate = dialogView.findViewById(R.id.delivered_date);
 			final TextView readText = dialogView.findViewById(R.id.read_text);
 			final TextView readDate = dialogView.findViewById(R.id.read_date);
+			final TextView modifiedText = dialogView.findViewById(R.id.modified_text);
+			final TextView modifiedDate = dialogView.findViewById(R.id.modified_date);
 			final TextView messageIdText = dialogView.findViewById(R.id.messageid_text);
 			final TextView messageIdDate = dialogView.findViewById(R.id.messageid_date);
 			final TextView mimeTypeText = dialogView.findViewById(R.id.filetype_text);
@@ -142,23 +145,27 @@ public class MessageDetailDialog extends ThreemaDialogFragment {
 						Date readAt = messageModel.getReadAt();
 						Date modifiedAt = messageModel.getModifiedAt();
 
-						if (readAt != null && deliveredAt != null) {
+						if (deliveredAt != null) {
 							deliveredText.setText(TextUtil.capitalize(getString(R.string.state_delivered)));
 							deliveredDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), deliveredAt.getTime()));
 							deliveredText.setVisibility(View.VISIBLE);
 							deliveredDate.setVisibility(View.VISIBLE);
+						}
 
+						if (readAt != null) {
 							readText.setText(TextUtil.capitalize(getString(R.string.state_read)));
 							readDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), readAt.getTime()));
 							readText.setVisibility(View.VISIBLE);
 							readDate.setVisibility(View.VISIBLE);
-						} else {
-							deliveredText.setText(TextUtil.capitalize(getString(stateResource)));
-							deliveredDate.setText(modifiedAt != null ?
-								LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()) :
-								(messageModel.getPostedAt(true) != null ? LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getPostedAt(true).getTime()) : ""));
-							deliveredText.setVisibility(View.VISIBLE);
-							deliveredDate.setVisibility(View.VISIBLE);
+						}
+
+						if (modifiedAt != null &&
+							!(messageState == MessageState.READ && modifiedAt.equals(readAt)) &&
+							!(messageState == MessageState.DELIVERED && modifiedAt.equals(deliveredAt))) {
+							modifiedText.setText(TextUtil.capitalize(getString(stateResource)));
+							modifiedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), modifiedAt.getTime()));
+							modifiedText.setVisibility(View.VISIBLE);
+							modifiedDate.setVisibility(View.VISIBLE);
 						}
 					}
 				} else {

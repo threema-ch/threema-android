@@ -173,11 +173,11 @@ public class Utils extends Converter {
 			try {
 				switch (this.receiverType) {
 					case MessageReceiver.Type_CONTACT:
-						return ((ContactModel) this.model).getColor();
+						return ((ContactModel) this.model).getColorLight();
 					case MessageReceiver.Type_GROUP:
-						return getGroupService().getPrimaryColor((GroupModel) this.model);
+						return ((GroupModel) this.model).getColorLight();
 					case MessageReceiver.Type_DISTRIBUTION_LIST:
-						 return getDistributionListService().getPrimaryColor((DistributionListModel) this.model);
+						 return ((DistributionListModel) this.model).getColorLight();
 					default:
 						throw typeException();
 				}
@@ -249,7 +249,7 @@ public class Utils extends Converter {
 		private DistributionListModel getDistributionListModel(String stringId) throws ConversionException {
 			try {
 				// Convert id
-				int id = Integer.parseInt(stringId);
+				long id = Long.parseLong(stringId);
 
 				// Get service and convert model to receiver
 				DistributionListService distributionListService = getDistributionListService();

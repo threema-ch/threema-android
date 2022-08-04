@@ -31,6 +31,7 @@
 
 package ch.threema.app.voip;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
@@ -328,7 +329,7 @@ public class VoipBluetoothManager {
 	public void start() {
 		ThreadUtils.checkIsOnMainThread();
 		logger.debug("start");
-		if (!hasPermission(apprtcContext, android.Manifest.permission.BLUETOOTH)) {
+		if (!hasPermission(apprtcContext, android.Manifest.permission.BLUETOOTH) && !hasPermission(apprtcContext, Manifest.permission.BLUETOOTH_CONNECT)) {
 			logger.warn("Process (pid=" + Process.myPid() + ") lacks BLUETOOTH permission");
 			return;
 		}
@@ -381,7 +382,11 @@ public class VoipBluetoothManager {
 	 */
 	public void stop() {
 		ThreadUtils.checkIsOnMainThread();
-		unregisterReceiver(bluetoothHeadsetReceiver);
+		try {
+			unregisterReceiver(bluetoothHeadsetReceiver);
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to unregister bluetooth headset receiver", e);
+		}
 		logger.debug("stop: BT state=" + bluetoothState);
 		if (bluetoothAdapter != null) {
 			// Stop BT SCO connection with remote device if needed.
@@ -487,13 +492,17 @@ public class VoipBluetoothManager {
 			// hack / bold assumption - fallback to list of bonded devices
 			if (bluetoothHeadset != null) {
 				if (bluetoothAdapter != null && BluetoothProfile.STATE_CONNECTED == bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)) {
-					Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
-					for (BluetoothDevice bondedDevice : bondedDevices) {
-						if (bondedDevice.getType() == DEVICE_TYPE_CLASSIC &&
-							bondedDevice.getBluetoothClass().hasService(BluetoothClass.Service.AUDIO) &&
-							bondedDevice.getBondState() == BOND_BONDED) {
-							devices.add(bondedDevice);
+					try {
+						Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
+						for (BluetoothDevice bondedDevice : bondedDevices) {
+							if (bondedDevice.getType() == DEVICE_TYPE_CLASSIC &&
+								bondedDevice.getBluetoothClass().hasService(BluetoothClass.Service.AUDIO) &&
+								bondedDevice.getBondState() == BOND_BONDED) {
+								devices.add(bondedDevice);
+							}
 						}
+					} catch (SecurityException ex) {
+						logger.error("Unable to get bonded devices", ex);
 					}
 				}
 			}
@@ -575,8 +584,7 @@ public class VoipBluetoothManager {
 				}
 			}
 		} catch (SecurityException e) {
-			// some calls on localAdapter may cause SecurityExceptions on some devices
-			logger.error("BT logging failed", e);
+			logger.info("Bluetooth adapter info logging failed: " + e.getMessage());
 		}
 	}
 

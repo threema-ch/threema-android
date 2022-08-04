@@ -26,6 +26,7 @@
     <string name="preferences__reset_push" translatable="false">pref_key_resetpush</string>
     <string name="preferences__recent_emojis" translatable="false">pref_key_recent_emojis</string>
 	<string name="preferences__recent_emojis2" translatable="false">pref_key_recent_emojis2</string>
+	<string name="preferences__emoji_search_index_version" translatable="false">pref_key_emoji_search_index_version</string>
 	<string name="preferences__notification_preview" translatable="false">pref_key_notification_preview</string>
 	<string name="preferences__pin_lock_code" translatable="false">pref_key_pin_lock_code</string>
 	<string name="preferences__pin_lock_grace_time" translatable="false">pref_key_pin_lock_grace_time</string>
@@ -50,6 +51,7 @@
 	<string name="preferences__emoji_style" translatable="false">pref_key_emoji_style</string>
 	<string name="preferences__fontstyle" translatable="false">pref_key_font_style</string>
 	<string name="preferences__sendlog" translatable="false">pref_key_sendlog</string>
+	<string name="preferences__exportlog" translatable="false">pref_key_exportlog</string>
 	<string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
 	<string name="preferences__lockout_timeout" translatable="false">pref_key_lock_timeout</string>
 	<string name="preferences__wizard_running" translatable="false">pref_wizard_running</string>
@@ -82,8 +84,8 @@
 	<string name="preferences__eula" translatable="false">pref_eula</string>
 	<string name="preferences__check_updates" translatable="false">pref_check_updates</string>
 	<string name="preferences__plugins" translatable="false">pref_plugins</string>
-	<string name="preferences__diverse_emojis" translatable="false">pref_diverse_emojis</string>
-	<string name="preferences__diverse_emojis2" translatable="false">pref_diverse_emojis2</string>
+	<!-- "...emojis2" because it was once migrated from another version -->
+	<string name="preferences__diverse_emojis" translatable="false">pref_diverse_emojis2</string>
 	<string name="preferences__last_data_backup_date" translatable="false">pref_last_data_backup_date</string>
 	<string name="preferences__web_client_welcome_shown" translatable="false">pref_web_client_welcome_shown</string>
 	<string name="preferences__ipv6_preferred" translatable="false">pref_ipv6_preferred</string>
@@ -180,4 +182,6 @@
 	<string name="preferences__voicerecorder_bluetooth_disabled" translatable="false">pref_voicerecorder_bluetooth_disabled</string>
 	<string name="preferences__audio_playback_speed" translatable="false">pref_audio_playback_speed</string>
 	<string name="preferences__use_system_ringtone" translatable="false">pref_use_system_ringtone</string>
+	<string name="preferences__tooltip_multi_recipients" translatable="false">pref_tooltip_multi_recipients</string>
+	<string name="preferences__quote_drafts" translatable="false">pref_quote_drafts</string>
 </resources>

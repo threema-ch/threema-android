@@ -25,56 +25,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import java.util.Random;
-
 public class ColorUtil {
 
-	@Deprecated
-	private static int[] paletteMixes = new int[] {
-		Color.GREEN,
-		Color.BLUE,
-		Color.RED,
-		Color.CYAN
-	};
+	/* This is the default gray for the light theme. Note that it is darker than COLOR_GRAY_DARK to increase the contrasts. */
+	public final static int COLOR_GRAY_LIGHT = 0xFF777777;
 
-	private static int[] googlePalette = new int[] {
-		//red #607d8b
-		-10453621,
-		//Pink #e91e63
-		//-1499549,
-		//Purple #9c27b0
-		-6543440,
-		//Deep Purple #673ab7
-		-10011977,
-		//Indigo #3f51b5
-		-12627531,
-		//Blue #2196f3
-		//-14575885,
-		//Light Blue #03a9f4
-		-16537100,
-		//Cyan #00bcd4
-		-16728876,
-		//Teal #009688
-		-16738680,
-		//Green #4caf50
-		-11751600,
-		//Light Green #8bc34a
-		-7617718,
-		//Amber #ffc107
-		-16121,
-		//Orange #ff9800
-		-26624,
-		//Deep Orange #ff5722
-		-43230,
-		//Brown #795548
-		-8825528,
-		//Grey #9e9e9e
-		//-6381922,
-		//Blue Grey #607d8b
-		-10453621
-	};
+	/* This is the default gray for the dark theme. Note that it is lighter than COLOR_GRAY_LIGHT to increase the contrasts. */
+	public final static int COLOR_GRAY_DARK = 0xFFAAAAAA;
 
-	private Random random;
+	/* The light id colors */
+	private final static String[] ID_COLOR_LIGHT = new String[]{"#d84315", "#ef6c00", "#ff8f00", "#eb9c00", "#9e9d24", "#7cb342", "#2e7d32", "#00796b", "#0097a7", "#0288d1", "#1565c0", "#283593", "#7b3ab7", "#ac24aa", "#ad1457", "#c62828"};
+
+	/* The dark id colors */
+	private final static String[] ID_COLOR_DARK = new String[]{"#ff7043", "#ffa726", "#ffca28", "#fff176", "#a6a626", "#8bc34a", "#66bb6a", "#2ab7a9", "#26c6da", "#4fc3f7", "#42a5f5", "#8a93ff", "#a88ce3", "#c680d1", "#f16f9a", "#f2706e"};
 
 	// Singleton stuff
 	private static ColorUtil sInstance = null;
@@ -86,78 +49,55 @@ public class ColorUtil {
 		return sInstance;
 	}
 
-	public ColorUtil() {
-		this.random = new Random();
-	}
-
-	public int getGoogleColor(int index) {
-		if(index >= 0 && index < googlePalette.length) {
-			return googlePalette[index];
+	/**
+	 * Get the light ID color at the given index. If the index is out of range, the default gray color is returned.
+	 *
+	 * @param index the index based on the hash
+	 * @return the ID color at the given index
+	 */
+	public int getIDColorLight(int index) {
+		if (index < 0 || index >= ID_COLOR_LIGHT.length) {
+			return COLOR_GRAY_LIGHT;
 		}
-		else {
-			//return first google color
-			return googlePalette[0];
-		}
+		return Color.parseColor(ID_COLOR_LIGHT[index]);
 	}
 
 	/**
+	 * Get the dark ID color at the given index. If the index is out of range, the default gray color is returned.
 	 *
-	 * @param context
-	 * @return
+	 * @param index the index based on the hash
+	 * @return the ID color at the given index
+	 */
+	public int getIDColorDark(int index) {
+		if (index < 0 || index >= ID_COLOR_DARK.length) {
+			return COLOR_GRAY_DARK;
+		}
+		return Color.parseColor(ID_COLOR_DARK[index]);
+	}
+
+	/**
+	 * Get the color index for the given first byte of the ID color hash.
+	 *
+	 * @param firstByte the first byte of the hash
+	 * @return the color for the first byte
+	 */
+	public int getIDColorIndex(byte firstByte) {
+		return (((int) firstByte) & 0xff) / ID_COLOR_LIGHT.length;
+	}
+
+	/**
+	 * Get the default gray based on the current theme. In light theme a darker gray is returned to
+	 * increase the contrasts.
+	 *
+	 * @param context the context is needed to determine the current app theme
+	 * @return the gray based on the theme
 	 */
 	public int getCurrentThemeGray(Context context) {
-		switch (ConfigUtils.getAppTheme(context)) {
-			case ConfigUtils.THEME_DARK:
-				return 0xFFAAAAAA;
-			default:
-				return 0xFF777777;
+		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+			return COLOR_GRAY_DARK;
+		} else {
+			return COLOR_GRAY_LIGHT;
 		}
-	}
-
-	@Deprecated
-	public int generateRandomColor(int colorMix) {
-		int red = random.nextInt(256);
-		int green = random.nextInt(256);
-		int blue = random.nextInt(256);
-
-		int r = (colorMix >> 16) & 0xFF;
-		int g = (colorMix >> 8) & 0xFF;
-		int b = (colorMix) & 0xFF;
-
-		// mix the color
-		red = (red + r) / 2;
-		green = (green + g) / 2;
-		blue = (blue + b) / 2;
-
-
-		return Color.rgb(red, green, blue);
-	}
-
-	@Deprecated
-	public int[] generateColorPalette(int size) {
-		int palette = 0;
-		int[] res = new int[size];
-		for(int n = 0; n < size; n++) {
-			res[n] = generateRandomColor(paletteMixes[palette]);
-			palette = palette+1 >= paletteMixes.length ? 0 : palette + 1;
-		}
-		return res;
-	}
-
-	public int[] generateGoogleColorPalette(int size) {
-		int gPos = 0;
-		int[] res = new int[size];
-		for(int n = 0; n < size; n++) {
-			if(googlePalette.length <= gPos) {
-				gPos = 0;
-			}
-			res[n] = googlePalette[gPos++];
-		}
-		return res;
-	}
-
-	public int getRecordColor(int recordPosition) {
-		return getGoogleColor((recordPosition-1) % googlePalette.length);
 	}
 
 	/*

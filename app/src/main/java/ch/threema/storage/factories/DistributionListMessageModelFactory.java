@@ -170,17 +170,17 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 		return true;
 	}
 
-	public long countMessages(int groupId) {
+	public long countMessages(long distributionListId) {
 		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
 			"SELECT COUNT(*) FROM " + this.getTableName()
 				+ " WHERE " + DistributionListMessageModel.COLUMN_ID + "=?",
 			new String[]{
-				String.valueOf(groupId)
+				String.valueOf(distributionListId)
 			}
 		));
 	}
 
-	public List<DistributionListMessageModel> find(int distributionListId, MessageService.MessageFilter filter) {
+	public List<DistributionListMessageModel> find(long distributionListId, MessageService.MessageFilter filter) {
 		QueryBuilder queryBuilder = new QueryBuilder();
 
 		//sort by id!
@@ -209,7 +209,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 		return messageModels;
 	}
 
-	public List<DistributionListMessageModel> getByDistributionListIdUnsorted(int distributionListId) {
+	public List<DistributionListMessageModel> getByDistributionListIdUnsorted(long distributionListId) {
 		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
 				null,
 				DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",

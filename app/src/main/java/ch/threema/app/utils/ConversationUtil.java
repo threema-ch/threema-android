@@ -31,7 +31,7 @@ public class ConversationUtil {
 		return "g-" + groupId;
 	}
 
-	public static String getDistributionListConversationUid(int distributionListId) {
+	public static String getDistributionListConversationUid(long distributionListId) {
 		return "d-" + distributionListId;
 	}
 }

@@ -37,12 +37,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
-import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
-import ch.threema.base.ProgressListener;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -139,6 +139,9 @@ public interface MessageService {
 	AbstractMessageModel sendMedia(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers, @Nullable MessageServiceImpl.SendResultListener sendResultListener);
 
 	boolean sendUserAcknowledgement(AbstractMessageModel messageModel);
+
+	boolean sendUserAcknowledgement(AbstractMessageModel messageModel, boolean markAsRead);
+
 	boolean sendUserDecline(AbstractMessageModel messageModel);
 
 	boolean sendProfilePicture(MessageReceiver[] messageReceivers);
@@ -146,6 +149,9 @@ public interface MessageService {
 	void resendMessage(AbstractMessageModel messageModel, MessageReceiver receiver, CompletionHandler completionHandler) throws Exception;
 
 	AbstractMessageModel sendBallotMessage(BallotModel ballotModel) throws MessageTooLongException;
+
+	boolean sendUserDecline(AbstractMessageModel messageModel, boolean markAsRead);
+
 	void updateMessageState(final MessageId apiMessageId, final String identity, MessageState state, Date stateDate);
 	void updateMessageStateAtOutboxed(final MessageId apiMessageId, MessageState state, Date stateDate);
 	boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;

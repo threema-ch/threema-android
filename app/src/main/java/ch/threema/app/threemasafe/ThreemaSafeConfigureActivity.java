@@ -68,6 +68,8 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
 	public static final String EXTRA_CHANGE_PASSWORD = "cp";
 	public static final String EXTRA_WORK_FORCE_PASSWORD = "fp";
+	private static final String DIALOG_TAG_UNSAFE_PASSWORD = "unsafe";
+	private static final String DIALOG_TAG_UNSAFE_PASSWORD_WORK = "unsafework";
 
 	private ThreemaSafeService threemaSafeService;
 	private UserService userService;
@@ -201,11 +203,11 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 							Context context = ThreemaSafeConfigureActivity.this;
 
 							if (AppRestrictionUtil.isSafePasswordPatternSet(context)) {
-								GenericAlertDialog.newInstance(R.string.password_bad, AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again, 0, false).show(getSupportFragmentManager(), "");
+								GenericAlertDialog.newInstance(R.string.password_bad, AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again, 0, false).show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD_WORK);
 							} else {
 								GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.password_bad, R.string.password_bad_explain, R.string.continue_anyway, R.string.try_again, false);
 								dialog.setData(masterkey);
-								dialog.show(getSupportFragmentManager(), "");
+								dialog.show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD);
 							}
 						} else {
 							storeKeyAndFinish(masterkey);
@@ -302,20 +304,22 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 	@SuppressLint("StaticFieldLeak")
 	@Override
 	public void onYes(String tag, Object data) {
-		if (updatePasswordOnly) {
-			new AsyncTask<Void, Void, Boolean>() {
-				@Override
-				protected Boolean doInBackground(Void... voids) {
-					return deleteExistingBackup();
-				}
+		if (!DIALOG_TAG_UNSAFE_PASSWORD_WORK.equals(tag)) {
+			if (updatePasswordOnly) {
+				new AsyncTask<Void, Void, Boolean>() {
+					@Override
+					protected Boolean doInBackground(Void... voids) {
+						return deleteExistingBackup();
+					}
 
-				@Override
-				protected void onPostExecute(Boolean success) {
-					storeKeyAndFinish((byte[]) data);
-				}
-			}.execute();
-		} else {
-			storeKeyAndFinish((byte[]) data);
+					@Override
+					protected void onPostExecute(Boolean success) {
+						storeKeyAndFinish((byte[]) data);
+					}
+				}.execute();
+			} else {
+				storeKeyAndFinish((byte[]) data);
+			}
 		}
 	}
 

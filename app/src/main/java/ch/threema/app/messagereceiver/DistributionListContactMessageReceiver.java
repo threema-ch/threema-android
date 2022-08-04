@@ -47,7 +47,7 @@ public class DistributionListContactMessageReceiver extends ContactMessageReceiv
 		SymmetricEncryptionResult encryptionResultIgnored,
 		MessageModel messageModel
 	) throws ThreemaException {
-		if (thumbnailBlobId == null || fileBlobId == null || fileEncryptionResult == null) {
+		if (fileBlobId == null || fileEncryptionResult == null) {
 			throw new ThreemaException("Required values have not been set by responsible DistributionListMessageReceiver");
 		}
 		return super.createBoxedFileMessage(thumbnailBlobId, fileBlobId, fileEncryptionResult, messageModel);

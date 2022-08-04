@@ -40,7 +40,7 @@ import ch.threema.storage.models.ContactModel;
 public class UserListFragment extends RecipientListFragment {
 	@Override
 	protected boolean isMultiSelectAllowed() {
-		return multiSelect;
+		return multiSelect || multiSelectIdentity;
 	}
 
 	@Override
@@ -98,7 +98,8 @@ public class UserListFragment extends RecipientListFragment {
 					checkedItemPositions,
 					contactService,
 					blacklistService,
-					hiddenChatsListService
+					hiddenChatsListService,
+					preferenceService
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

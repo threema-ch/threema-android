@@ -21,12 +21,13 @@
 
 package ch.threema.domain.helpers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.stores.ContactStore;
-
-import java.util.*;
 
 /**
  * An in-memory contact store, used for testing.
@@ -35,12 +36,8 @@ public class InMemoryContactStore implements ContactStore {
 	private final Map<String, Contact> contacts = new HashMap<>();
 
 	@Override
-	public @Nullable byte[] getPublicKeyForIdentity(@NonNull String identity, boolean fetch) {
-		final Contact contact = this.contacts.get(identity);
-		if (contact != null) {
-			return contact.getPublicKey();
-		}
-		return null;
+	public @Nullable Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean save) {
+		return this.contacts.get(identity);
 	}
 
 	@Override
@@ -51,6 +48,14 @@ public class InMemoryContactStore implements ContactStore {
 	@Override
 	public void addContact(@NonNull Contact contact) {
 		this.contacts.put(contact.getIdentity(), contact);
+	}
+
+	/**
+	 * Ignore hide parameter as it is not needed here.
+	 */
+	@Override
+	public void addContact(@NonNull Contact contact, boolean hide) {
+		addContact(contact);
 	}
 
 	@Override

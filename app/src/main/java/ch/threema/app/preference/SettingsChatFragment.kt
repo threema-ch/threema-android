@@ -23,6 +23,9 @@ package ch.threema.app.preference
 
 import ch.threema.app.R
 
+@Suppress("unused")
 class SettingsChatFragment : ThreemaPreferenceFragment() {
+    override fun getPreferenceTitleResource(): Int = R.string.prefs_chatdisplay
+
     override fun getPreferenceResource() = R.xml.preference_chat
 }

@@ -35,7 +35,7 @@
 	<string name="voip_call_status_aborted">Call aborted</string>
 	<string name="voip_return_call">Return call</string>
 	<string name="voip_accept">Accept</string>
-	<string name="voip_reject">Reject</string>
+	<string name="voip_reject">Decline</string>
 	<string name="voip_speakerphone">Speakerphone</string>
 	<string name="voip_wired_headset">Headset</string>
 	<string name="voip_earpiece">Phone</string>
@@ -53,12 +53,13 @@
 	<string name="voip_prefs_video_codec_sw">Software codecs</string>
 	<string name="voip_connection_failed">Connection could not be established</string>
 	<string name="voip_connection_lost">Connection lost</string>
-	<string name="prefs_voip_reject_incoming_calls_title">Reject mobile calls</string>
-	<string name="prefs_voip_reject_incoming_calls_summary">Reject incoming mobile calls while a Threema Call is active.</string>
+	<string name="prefs_voip_reject_incoming_calls_title">Decline mobile calls</string>
+	<string name="prefs_voip_reject_incoming_calls_summary">Decline incoming mobile calls while a Threema Call is active.</string>
 	<string name="voip_contact_not_found">No Threema contact found for this number.</string>
 	<string name="voip_another_pstn_call">Unable to initate call. A regular phone call is still active.</string>
 	<string name="voip_call_status_off_hours">Off-hours call</string>
 	<string name="voip_peer_video_disabled">Video calls have been disabled by the other party.</string>
+	<string name="voip_reject_channel_name">Call state change</string>
 
 	<!-- WebRTC debugger -->
 	<string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>

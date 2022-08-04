@@ -40,7 +40,7 @@ public class FileMessage extends AbstractMessage
 	}
 
 	@Override
-	public boolean shouldPush() {
+	public boolean flagSendPush() {
 		return true;
 	}
 

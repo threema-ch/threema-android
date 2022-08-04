@@ -66,7 +66,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,17 +79,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -102,11 +98,8 @@ import androidx.appcompat.widget.SearchView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.view.MenuItemCompat;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -146,6 +139,7 @@ import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.emojis.EmojiPicker;
 import ch.threema.app.emojis.EmojiTextView;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.grouplinks.IncomingGroupRequestActivity;
 import ch.threema.app.grouplinks.OpenGroupRequestNoticeView;
 import ch.threema.app.listeners.BallotListener;
@@ -187,9 +181,11 @@ import ch.threema.app.ui.ContentCommitComposeEditText;
 import ch.threema.app.ui.ConversationListView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.ListViewSwipeListener;
+import ch.threema.app.ui.LockableScrollView;
 import ch.threema.app.ui.MentionSelectorPopup;
 import ch.threema.app.ui.OpenBallotNoticeView;
 import ch.threema.app.ui.QRCodePopup;
+import ch.threema.app.ui.ReportSpamView;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SendButton;
 import ch.threema.app.ui.SingleToast;
@@ -200,6 +196,7 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BallotUtil;
+import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.ConversationUtil;
@@ -226,6 +223,7 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -259,6 +257,7 @@ public class ComposeMessageFragment extends Fragment implements
 	EmojiPicker.EmojiPickerListener,
 	MentionSelectorPopup.MentionSelectorListener,
 	OpenBallotNoticeView.VisibilityListener,
+	ReportSpamView.OnReportButtonClickListener,
 	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
@@ -291,10 +290,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private static final int SMOOTHSCROLL_THRESHOLD = 10;
 	private static final int MAX_SELECTED_ITEMS = 100; // may not be larger than MESSAGE_PAGE_SIZE
 	public static final int MAX_FORWARDABLE_ITEMS = 50;
-	private static final int CONTEXT_MENU_BOLD = 700;
-	private static final int CONTEXT_MENU_ITALIC = 701;
-	private static final int CONTEXT_MENU_STRIKETHRU = 702;
-	private static final int CONTEXT_MENU_GROUP = 22100;
 
 	private static final String CAMERA_URI = "camera_uri";
 
@@ -321,7 +316,8 @@ public class ComposeMessageFragment extends Fragment implements
 	private FrameLayout dateView = null;
 	private FrameLayout bottomPanel = null;
 	private String identity;
-	private Integer groupId = 0, distributionListId = 0;
+	private Integer groupId = 0;
+	private Long distributionListId = 0L;
 	private Uri cameraUri;
 	private long intentTimestamp = 0L;
 	private int longClickItem = AbsListView.INVALID_POSITION;
@@ -370,6 +366,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private TooltipPopup workTooltipPopup;
 	private OpenBallotNoticeView openBallotNoticeView;
 	private OpenGroupRequestNoticeView openGroupRequestNoticeView;
+	private ReportSpamView reportSpamView;
 	private ComposeMessageActivity activity;
 	private View fragmentView;
 	private CoordinatorLayout coordinatorLayout;
@@ -516,6 +513,10 @@ public class ComposeMessageFragment extends Fragment implements
 							if (addMessageToList(newMessage)) {
 								if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
 									playSentSound();
+
+									if (reportSpamView != null && reportSpamView.getVisibility() == View.VISIBLE) {
+										reportSpamView.hide();
+									}
 								}
 							}
 						} else {
@@ -574,9 +575,7 @@ public class ComposeMessageFragment extends Fragment implements
 					for (AbstractMessageModel removedMessageModel : removedMessageModels) {
 						composeMessageAdapter.remove(removedMessageModel);
 					}
-					RuntimeUtil.runOnUiThread(() -> {
-						composeMessageAdapter.notifyDataSetChanged();
-					});
+					RuntimeUtil.runOnUiThread(() -> composeMessageAdapter.notifyDataSetChanged());
 				}
 			});
 		}
@@ -611,14 +610,7 @@ public class ComposeMessageFragment extends Fragment implements
 		@Override
 		public void onRemove(GroupModel groupModel) {
 			if (isGroupChat && groupId != null && groupId == groupModel.getId()) {
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (activity != null) {
-							activity.finish();
-						}
-					}
-				});
+				RuntimeUtil.runOnUiThread(() -> finishActivity());
 			}
 		}
 
@@ -646,14 +638,7 @@ public class ComposeMessageFragment extends Fragment implements
 		@Override
 		public void onLeave(GroupModel groupModel) {
 			if (isGroupChat && groupId != null && groupId == groupModel.getId()) {
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (activity != null) {
-							activity.finish();
-						}
-					}
-				});
+				RuntimeUtil.runOnUiThread(() -> finishActivity());
 			}
 		}
 	};
@@ -673,11 +658,7 @@ public class ComposeMessageFragment extends Fragment implements
 		public void onRemoved(ContactModel removedContactModel) {
 			if (contactModel != null && contactModel.equals(removedContactModel)) {
 				// our contact has been removed. finish activity.
-				RuntimeUtil.runOnUiThread(() -> {
-					if (activity != null) {
-						activity.finish();
-					}
-				});
+				RuntimeUtil.runOnUiThread(() -> finishActivity());
 			}
 		}
 
@@ -765,13 +746,10 @@ public class ComposeMessageFragment extends Fragment implements
 		@Override
 		public void onScanCompleted(String scanResult) {
 			if (scanResult != null && scanResult.length() > 0) {
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (messageText != null) {
-							messageText.setText(scanResult);
-							messageText.setSelection(messageText.length());
-						}
+				RuntimeUtil.runOnUiThread(() -> {
+					if (messageText != null) {
+						messageText.setText(scanResult);
+						messageText.setSelection(messageText.length());
 					}
 				});
 			}
@@ -834,18 +812,21 @@ public class ComposeMessageFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Boolean hasMoreRecords) {
-				if (messageModels != null) {
-					int numberOfInsertedRecords = insertToList(messageModels, false, true, true);
-					if (numberOfInsertedRecords > 0) {
-						convListView.setSelection(convListView.getSelectedItemPosition() + numberOfInsertedRecords + 1);
+				if (composeMessageAdapter != null) {
+					if (messageModels != null) {
+						int numberOfInsertedRecords = insertToList(messageModels, false, true, true);
+						if (numberOfInsertedRecords > 0) {
+							convListView.setSelection(convListView.getSelectedItemPosition() + numberOfInsertedRecords + 1);
+						}
+					} else {
+						composeMessageAdapter.notifyDataSetChanged();
 					}
-				} else {
-					composeMessageAdapter.notifyDataSetChanged();
 				}
 
-				// Notify PullToRefreshAttacher that the refresh has activity.finished
-				swipeRefreshLayout.setRefreshing(false);
-				swipeRefreshLayout.setEnabled(hasMoreRecords);
+				if (swipeRefreshLayout != null) {
+					swipeRefreshLayout.setRefreshing(false);
+					swipeRefreshLayout.setEnabled(hasMoreRecords);
+				}
 			}
 		}.execute();
 	}
@@ -867,7 +848,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		if (this.emojiPicker != null) {
-			this.emojiPicker.init(activity);
+			this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
 		}
 
 		// resolution and layout may have changed after being attached to a new activity
@@ -902,7 +883,7 @@ public class ComposeMessageFragment extends Fragment implements
 		logger.debug("onCreateView");
 
 		if (!requiredInstances()) {
-			activity.finish();
+			finishActivity();
 			return this.fragmentView;
 		}
 
@@ -913,8 +894,9 @@ public class ComposeMessageFragment extends Fragment implements
 			activity.getTheme().applyStyle(preferenceService.getFontStyle(), true);
 			this.fragmentView = inflater.inflate(R.layout.fragment_compose_message, container, false);
 
-			ScrollView sv = fragmentView.findViewById(R.id.wallpaper_scroll);
+			LockableScrollView sv = fragmentView.findViewById(R.id.wallpaper_scroll);
 			sv.setEnabled(false);
+			sv.setScrollingEnabled(false);
 			sv.setOnTouchListener(null);
 			sv.setOnClickListener(null);
 
@@ -935,11 +917,6 @@ public class ComposeMessageFragment extends Fragment implements
 			this.coordinatorLayout = fragmentView.findViewById(R.id.coordinator);
 			this.messageText = fragmentView.findViewById(R.id.embedded_text_editor);
 
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
-				this.messageText.setCustomSelectionActionModeCallback(textSelectionCallback);
-			}
-
 			this.sendButton = this.fragmentView.findViewById(R.id.send_button);
 			this.attachButton = this.fragmentView.findViewById(R.id.attach_button);
 			this.cameraButton = this.fragmentView.findViewById(R.id.camera_button);
@@ -958,49 +935,7 @@ public class ComposeMessageFragment extends Fragment implements
 			updateCameraButton();
 
 			this.emojiButton = this.fragmentView.findViewById(R.id.emoji_button);
-			this.emojiButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					logger.info("Emoji button clicked");
-					if (activity.isSoftKeyboardOpen()) {
-						logger.info("Show emoji picker after keyboard close");
-						activity.runOnSoftKeyboardClose(new Runnable() {
-							@Override
-							public void run() {
-								if (emojiPicker != null) {
-									emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
-								}
-							}
-						});
-
-						messageText.post(new Runnable() {
-							@Override
-							public void run() {
-								EditTextUtil.hideSoftKeyboard(messageText);
-							}
-						});
-					} else {
-						if (emojiPicker != null) {
-							if (emojiPicker.isShown()) {
-								logger.info("EmojPicker currently shown. Closing.");
-								if (ConfigUtils.isLandscape(activity) &&
-									!ConfigUtils.isTabletLayout() &&
-									preferenceService.isFullscreenIme()) {
-									emojiPicker.hide();
-								} else {
-									activity.openSoftKeyboard(emojiPicker, messageText);
-									if (activity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-										emojiPicker.hide();
-									}
-								}
-							} else {
-								logger.info("Show emoji picker immediately");
-								emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
-							}
-						}
-					}
-				}
-			});
+			this.emojiButton.setOnClickListener(v -> showEmojiPicker());
 
 			this.emojiMarkupUtil = EmojiMarkupUtil.getInstance();
 			this.wallpaperView = this.fragmentView.findViewById(R.id.wallpaper_view);
@@ -1022,6 +957,8 @@ public class ComposeMessageFragment extends Fragment implements
 			this.bottomPanel = this.fragmentView.findViewById(R.id.bottom_panel);
 			this.openBallotNoticeView = this.fragmentView.findViewById(R.id.open_ballots_layout);
 			this.openGroupRequestNoticeView = this.fragmentView.findViewById(R.id.open_group_requests_layout);
+			this.reportSpamView = this.fragmentView.findViewById(R.id.report_spam_layout);
+			this.reportSpamView.setListener(this);
 
 			this.getValuesFromBundle(savedInstanceState);
 			this.handleIntent(activity.getIntent());
@@ -1034,10 +971,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.messageText.setPadding(getResources().getDimensionPixelSize(R.dimen.no_emoji_button_padding_left), this.messageText.getPaddingTop(), this.messageText.getPaddingRight(), this.messageText.getPaddingBottom());
 		} else {
 			try {
-				this.emojiPicker = (EmojiPicker) ((ViewStub) this.activity.findViewById(R.id.emoji_stub)).inflate();
-				this.emojiPicker.init(activity);
-				this.emojiButton.attach(this.emojiPicker, preferenceService.isFullscreenIme());
-				this.emojiPicker.setEmojiKeyListener(new EmojiPicker.EmojiKeyListener() {
+				final EmojiPicker.EmojiKeyListener emojiKeyListener = new EmojiPicker.EmojiKeyListener() {
 					@Override
 					public void onBackspaceClick() {
 						messageText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
@@ -1047,86 +981,68 @@ public class ComposeMessageFragment extends Fragment implements
 					public void onEmojiClick(String emojiCodeString) {
 						RuntimeUtil.runOnUiThread(() -> messageText.addEmoji(emojiCodeString));
 					}
-				});
+
+					@Override
+					public void onShowPicker() {
+						showEmojiPicker();
+					}
+				};
+				this.emojiPicker = (EmojiPicker) ((ViewStub) this.activity.findViewById(R.id.emoji_stub)).inflate();
+				this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
+				this.emojiButton.attach(this.emojiPicker, preferenceService.isFullscreenIme());
+				this.emojiPicker.setEmojiKeyListener(emojiKeyListener);
 
 				this.emojiPicker.addEmojiPickerListener(this);
 			} catch (Exception e) {
 				logger.error("Exception", e);
-				activity.finish();
+				finishActivity();
 			}
 		}
 
 		return this.fragmentView;
 	}
 
-	private final android.view.ActionMode.Callback textSelectionCallback = new android.view.ActionMode.Callback() {
-		private final Pattern pattern = Pattern.compile("\\B");
+	private boolean isEmojiPickerShown() {
+		return emojiPicker != null && emojiPicker.isShown();
+	}
 
-		@Override
-		public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
-			return true;
+	private void hideEmojiPickerIfShown() {
+		if (isEmojiPickerShown()) {
+			emojiPicker.hide();
 		}
+	}
 
-		@Override
-		public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
-			menu.removeGroup(CONTEXT_MENU_GROUP);
+	private void showEmojiPicker() {
+		logger.info("Emoji button clicked");
+		if (activity.isSoftKeyboardOpen() && !isEmojiPickerShown()) {
+			logger.info("Show emoji picker after keyboard close");
+			activity.runOnSoftKeyboardClose(() -> {
+				if (emojiPicker != null) {
+					emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
+				}
+			});
 
-			if (messageText != null && messageText.getText() != null) {
-				String text = messageText.getText().toString();
-				if (text.length() > 1) {
-					int start = messageText.getSelectionStart();
-					int end = messageText.getSelectionEnd();
-
-					try {
-						if ((start <= 0 || pattern.matcher(text.substring(start - 1, start)).find()) &&
-							(end >= text.length() || pattern.matcher(text.substring(end, end + 1)).find()) &&
-							!text.substring(start, end).contains("\n")) {
-							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_BOLD, 200, R.string.bold);
-							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_ITALIC, 201, R.string.italic);
-							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_STRIKETHRU, 203, R.string.strikethrough);
+			messageText.post(() -> EditTextUtil.hideSoftKeyboard(messageText));
+		} else {
+			if (emojiPicker != null) {
+				if (emojiPicker.isShown()) {
+					logger.info("EmojPicker currently shown. Closing.");
+					if (ConfigUtils.isLandscape(activity) &&
+						!ConfigUtils.isTabletLayout() &&
+						preferenceService.isFullscreenIme()) {
+						emojiPicker.hide();
+					} else {
+						activity.openSoftKeyboard(emojiPicker, messageText);
+						if (activity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+							emojiPicker.hide();
 						}
-					} catch (Exception e) {
-						// do not add menus if an error occurs
 					}
+				} else {
+					logger.info("Show emoji picker immediately");
+					emojiPicker.show(activity.loadStoredSoftKeyboardHeight());
 				}
 			}
-			return true;
 		}
-
-		@Override
-		public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-				case CONTEXT_MENU_BOLD:
-					addMarkup("*");
-					break;
-				case CONTEXT_MENU_ITALIC:
-					addMarkup("_");
-					break;
-				case CONTEXT_MENU_STRIKETHRU:
-					addMarkup("~");
-					break;
-				default:
-					return false;
-			}
-			return true;
-		}
-
-		@Override
-		public void onDestroyActionMode(android.view.ActionMode mode) {
-		}
-	};
-
-	private void addMarkup(String string) {
-		Editable editable = messageText.getText();
-
-		if (editable.length() > 0) {
-			int start = messageText.getSelectionStart();
-			int end = messageText.getSelectionEnd();
-
-			editable.insert(end, string);
-			editable.insert(start, string);
-		}
-		messageText.invalidate();
 	}
 
 	@Override
@@ -1155,20 +1071,16 @@ public class ComposeMessageFragment extends Fragment implements
 					}
 				}
 
-				ViewCompat.setOnApplyWindowInsetsListener(rootView, new OnApplyWindowInsetsListener() {
-					@Override
-					public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+				ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+					logger.debug("system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
+					logger.debug("stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
 
-						logger.debug("system window top " + insets.getSystemWindowInsetTop() + " bottom " + insets.getSystemWindowInsetBottom());
-						logger.debug("stable insets top " + insets.getStableInsetTop() + " bottom " + insets.getStableInsetBottom());
-
-						if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
-							activity.onSoftKeyboardClosed();
-						} else {
-							activity.onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
-						}
-						return insets;
+					if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
+						activity.onSoftKeyboardClosed();
+					} else {
+						activity.onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
 					}
+					return insets;
 				});
 			} catch (NullPointerException e) {
 				logger.error("Exception", e);
@@ -1178,7 +1090,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		// restore action mode after rotate if the activity was detached
 		if (convListView != null && convListView.getCheckedItemCount() > 0 && actionMode != null) {
-			actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(new ComposeMessageAction(this.longClickItem));
+			actionMode = ((AppCompatActivity) requireActivity()).startSupportActionMode(new ComposeMessageAction(this.longClickItem));
 		}
 	}
 
@@ -1204,12 +1116,9 @@ public class ComposeMessageFragment extends Fragment implements
 					this.messageService,
 					this.notificationService);
 
-				r.addOnFinished(new ReadMessagesRoutine.OnFinished() {
-					@Override
-					public void finished(boolean success) {
-						if (success) {
-							unreadMessages.clear();
-						}
+				r.addOnFinished(success -> {
+					if (success) {
+						unreadMessages.clear();
 					}
 				});
 
@@ -1231,21 +1140,18 @@ public class ComposeMessageFragment extends Fragment implements
 			if (getActivity() != null) {
 				Intent intent = getActivity().getIntent();
 				if (intent != null && !intent.hasExtra(EXTRA_API_MESSAGE_ID) && !intent.hasExtra(EXTRA_SEARCH_QUERY)) {
-					convListView.post(new Runnable() {
-						@Override
-						public void run() {
-							if (listInstancePosition != AbsListView.INVALID_POSITION &&
-								messageReceiver != null &&
-								messageReceiver.getUniqueIdString().equals(listInstanceReceiverId)) {
-								logger.debug("restoring position " + listInstancePosition);
-								convListView.setSelectionFromTop(listInstancePosition, listInstanceTop);
-							} else {
-								jumpToFirstUnreadMessage();
-							}
-							// make sure it's not restored twice
-							listInstancePosition = AbsListView.INVALID_POSITION;
-							listInstanceReceiverId = null;
+					convListView.post(() -> {
+						if (listInstancePosition != AbsListView.INVALID_POSITION &&
+							messageReceiver != null &&
+							messageReceiver.getUniqueIdString().equals(listInstanceReceiverId)) {
+							logger.debug("restoring position " + listInstancePosition);
+							convListView.setSelectionFromTop(listInstancePosition, listInstanceTop);
+						} else {
+							jumpToFirstUnreadMessage();
 						}
+						// make sure it's not restored twice
+						listInstancePosition = AbsListView.INVALID_POSITION;
+						listInstanceReceiverId = null;
 					});
 				}
 			}
@@ -1304,9 +1210,7 @@ public class ComposeMessageFragment extends Fragment implements
 	public void onDetach() {
 		logger.debug("onDetach");
 
-		if (this.emojiPicker != null && this.emojiPicker.isShown()) {
-			this.emojiPicker.hide();
-		}
+		hideEmojiPickerIfShown();
 		dismissMentionPopup();
 
 		this.activity = null;
@@ -1407,6 +1311,15 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void setupListeners() {
+		setupConversationListScrollListener();
+		setupConversationListSwipeListener();
+		setupQuickscrollClickListeners();
+		setupSendButtonClickListener();
+		setupAttachButtonClickListener();
+		setupMessageTextListeners();
+	}
+
+	private void setupConversationListScrollListener() {
 		// Setting this scroll listener is required to ensure that during ListView scrolling,
 		// we don't look for swipes or pulldowns
 		this.convListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -1464,9 +1377,7 @@ public class ComposeMessageFragment extends Fragment implements
 								if (createdAt != null) {
 									final String text = LocaleUtil.formatDateRelative(createdAt.getTime());
 									dateTextView.setText(text);
-									dateView.post(() -> {
-										dateTextView.setText(text);
-									});
+									dateView.post(() -> dateTextView.setText(text));
 								}
 							}
 						}
@@ -1477,7 +1388,9 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			}
 		});
+	}
 
+	private void setupConversationListSwipeListener() {
 		listViewSwipeListener = new ListViewSwipeListener(
 			this.convListView,
 			new ListViewSwipeListener.DismissCallbacks() {
@@ -1527,39 +1440,26 @@ public class ComposeMessageFragment extends Fragment implements
 						if (isQuotePanelShown() && abstractMessageModel.equals(quoteInfo.messageModel)) {
 							closeQuoteMode();
 						} else {
-							startQuoteMode(abstractMessageModel, new Runnable() {
-								@Override
-								public void run() {
-									RuntimeUtil.runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											EditTextUtil.showSoftKeyboard(messageText);
-										}
-									});
-								}
-							});
+							startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.showSoftKeyboard(messageText)));
 						}
 					}
 				}
 			}
 		);
+	}
 
-		this.quickscrollDownView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				removeScrollButtons();
-				scrollList(Integer.MAX_VALUE);
-			}
+	private void setupQuickscrollClickListeners() {
+		this.quickscrollDownView.setOnClickListener(v -> {
+			removeScrollButtons();
+			scrollList(Integer.MAX_VALUE);
 		});
-
-		this.quickscrollUpView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				removeScrollButtons();
-				scrollList(0);
-			}
+		this.quickscrollUpView.setOnClickListener(v -> {
+			removeScrollButtons();
+			scrollList(0);
 		});
+	}
 
+	private void setupSendButtonClickListener() {
 		if (sendButton != null) {
 			sendButton.setOnClickListener(new DebouncedOnClickListener(500) {
 				@Override
@@ -1568,6 +1468,9 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			});
 		}
+	}
+
+	private void setupAttachButtonClickListener() {
 		if (attachButton != null) {
 			attachButton.setOnClickListener(new DebouncedOnClickListener(1000) {
 				@Override
@@ -1590,32 +1493,26 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			});
 		}
+	}
 
-		this.messageText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if ((actionId == EditorInfo.IME_ACTION_SEND) ||
-						(event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && preferenceService.isEnterToSend())) {
-					sendMessage();
-					return true;
-				}
-				return false;
+	private void setupMessageTextListeners() {
+		this.messageText.setOnEditorActionListener((v, actionId, event) -> {
+			if ((actionId == EditorInfo.IME_ACTION_SEND) ||
+					(event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && preferenceService.isEnterToSend())) {
+				sendMessage();
+				return true;
 			}
+			return false;
 		});
 		if (ConfigUtils.isDefaultEmojiStyle()) {
-			this.messageText.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (emojiPicker != null) {
-						if (emojiPicker.isShown()) {
-							if (ConfigUtils.isLandscape(activity) &&
-									!ConfigUtils.isTabletLayout() &&
-									preferenceService.isFullscreenIme()) {
-								emojiPicker.hide();
-							} else {
-								activity.openSoftKeyboard(emojiPicker, messageText);
-							}
-						}
+			this.messageText.setOnClickListener(v -> {
+				if (isEmojiPickerShown()) {
+					if (ConfigUtils.isLandscape(activity) &&
+							!ConfigUtils.isTabletLayout() &&
+							preferenceService.isFullscreenIme()) {
+						emojiPicker.hide();
+					} else {
+						activity.openSoftKeyboard(emojiPicker, messageText);
 					}
 				}
 			});
@@ -1725,7 +1622,7 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void resetDefaultValues() {
-		this.distributionListId = 0;
+		this.distributionListId = 0L;
 		this.groupId = 0;
 		this.identity = null;
 
@@ -1752,7 +1649,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private void getValuesFromBundle(Bundle bundle) {
 		if (bundle != null) {
 			this.groupId = bundle.getInt(ThreemaApplication.INTENT_DATA_GROUP, 0);
-			this.distributionListId = bundle.getInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
+			this.distributionListId = bundle.getLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
 			this.identity = bundle.getString(ThreemaApplication.INTENT_DATA_CONTACT);
 			this.intentTimestamp = bundle.getLong(ThreemaApplication.INTENT_DATA_TIMESTAMP, 0L);
 			this.cameraUri = bundle.getParcelable(CAMERA_URI);
@@ -1767,6 +1664,9 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		resetDefaultValues();
+
+		this.closeQuoteMode();
+
 		handleIntent(intent);
 
 		// initialize various toolbar items
@@ -1776,7 +1676,6 @@ public class ComposeMessageFragment extends Fragment implements
 		if (searchActionMode != null) {
 			searchActionMode.finish();
 		}
-		this.closeQuoteMode();
 		this.updateToolbarTitle();
 		this.updateMenus();
 	}
@@ -1790,25 +1689,22 @@ public class ComposeMessageFragment extends Fragment implements
 			this.actionBarSubtitleTextView = actionBarTitleView.findViewById(R.id.subtitle_text);
 			this.actionBarAvatarView = actionBarTitleView.findViewById(R.id.avatar_view);
 			final RelativeLayout actionBarTitleContainer = actionBarTitleView.findViewById(R.id.title_container);
-			actionBarTitleContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent intent = null;
-					if (isGroupChat) {
-						if (groupService.isGroupMember(groupModel)) {
-							intent = groupService.getGroupEditIntent(groupModel, activity);
-						}
-					} else if (isDistributionListChat) {
-						intent = new Intent(activity, DistributionListAddActivity.class);
-					} else {
-						intent = new Intent(activity, ContactDetailActivity.class);
-						intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT_READONLY, true);
+			actionBarTitleContainer.setOnClickListener(v -> {
+				Intent intent = null;
+				if (isGroupChat) {
+					if (groupService.isGroupMember(groupModel)) {
+						intent = groupService.getGroupEditIntent(groupModel, activity);
 					}
-					if (intent != null) {
-						intent = addExtrasToIntent(intent, messageReceiver);
+				} else if (isDistributionListChat) {
+					intent = new Intent(activity, DistributionListAddActivity.class);
+				} else {
+					intent = new Intent(activity, ContactDetailActivity.class);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT_READONLY, true);
+				}
+				if (intent != null) {
+					intent = addExtrasToIntent(intent, messageReceiver);
 
-						activity.startActivityForResult(intent, 0);
-					}
+					activity.startActivityForResult(intent, 0);
 				}
 			});
 
@@ -1854,6 +1750,7 @@ public class ComposeMessageFragment extends Fragment implements
 		this.isGroupChat = false;
 		this.isDistributionListChat = false;
 		this.currentPageReferenceId = null;
+		this.reportSpamView.hide();
 
 		//remove old indicator every time!
 		//fix ANDR-432
@@ -1871,12 +1768,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.groupModel = this.groupService.getById(this.groupId);
 
 			if (this.groupModel == null || this.groupModel.isDeleted()) {
-				logger.error(activity.getString(R.string.group_not_found), activity, new Runnable() {
-					@Override
-					public void run() {
-						activity.finish();
-					}
-				});
+				logger.error(activity.getString(R.string.group_not_found), activity, (Runnable) this::finishActivity);
 				return;
 			}
 
@@ -1892,17 +1784,12 @@ public class ComposeMessageFragment extends Fragment implements
 
 			try {
 				if (this.distributionListId == 0) {
-					this.distributionListId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
+					this.distributionListId = intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0);
 				}
 				this.distributionListModel = distributionListService.getById(this.distributionListId);
 
 				if (this.distributionListModel == null) {
-					logger.error("Invalid distribution list", activity, new Runnable() {
-						@Override
-						public void run() {
-							activity.finish();
-						}
-					});
+					logger.error("Invalid distribution list", activity, (Runnable) this::finishActivity);
 					return;
 				}
 
@@ -1931,7 +1818,7 @@ public class ComposeMessageFragment extends Fragment implements
 			intent.removeExtra(ThreemaApplication.INTENT_DATA_CONTACT);
 			if (this.identity == null || this.identity.length() == 0 || this.identity.equals(this.userService.getIdentity())) {
 				logger.error("no identity found");
-				activity.finish();
+				finishActivity();
 				return;
 			}
 
@@ -1942,7 +1829,7 @@ public class ComposeMessageFragment extends Fragment implements
 				homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(homeIntent);
 				activity.overridePendingTransition(0, 0);
-				activity.finish();
+				finishActivity();
 				return;
 			}
 			this.messageReceiver = this.contactService.createReceiver(this.contactModel);
@@ -1951,12 +1838,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		if (this.messageReceiver == null) {
-			logger.error("invalid receiver", activity, new Runnable() {
-				@Override
-				public void run() {
-					activity.finish();
-				}
-			});
+			logger.error("invalid receiver", activity, (Runnable) this::finishActivity);
 			return;
 		}
 
@@ -1979,7 +1861,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 		}
 
-		this.initConversationList(intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY) ? (Runnable) () -> {
+		this.initConversationList(intent.hasExtra(EXTRA_API_MESSAGE_ID) && intent.hasExtra(EXTRA_SEARCH_QUERY) ? () -> {
 				String apiMessageId = intent.getStringExtra(EXTRA_API_MESSAGE_ID);
 				String searchQuery = intent.getStringExtra(EXTRA_SEARCH_QUERY);
 
@@ -2013,7 +1895,11 @@ public class ComposeMessageFragment extends Fragment implements
 				} else {
 					Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_not_found, Toast.LENGTH_SHORT).show();
 				}
-		} : null);
+		} : () -> {
+			if (isPossibleSpamContact(contactModel)) {
+				reportSpamView.show(contactModel);
+			}
+		});
 
 		// work around the problem that the same original intent may be sent
 		// each time a singleTop activity (like this one) is coming back to front
@@ -2064,12 +1950,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private boolean validateSendingPermission() {
 		return this.messageReceiver != null
-				&& this.messageReceiver.validateSendingPermission(new MessageReceiver.OnSendingPermissionDenied() {
-					@Override
-					public void denied(final int errorResId) {
-						RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(errorResId)));
-					}
-				});
+				&& this.messageReceiver.validateSendingPermission(errorResId -> RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(errorResId))));
 	}
 
 	private void deleteSelectedMessages() {
@@ -2077,12 +1958,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		if (selectedMessages != null && selectedMessages.size() > 0) {
 			// sort highest first for removal
-			Collections.sort(selectedMessages, new Comparator<AbstractMessageModel>() {
-				@Override
-				public int compare(AbstractMessageModel lhs, AbstractMessageModel rhs) {
-					return rhs.getId() - lhs.getId();
-				}
-			});
+			Collections.sort(selectedMessages, (lhs, rhs) -> rhs.getId() - lhs.getId());
 
 			synchronized (deleteableMessages) {
 				for (AbstractMessageModel messageModel : selectedMessages) {
@@ -2115,12 +1991,7 @@ public class ComposeMessageFragment extends Fragment implements
 				composeMessageAdapter.notifyDataSetChanged();
 
 				// sort lowest first for insertion
-				Collections.sort(deleteableMessages, new Comparator<Pair<AbstractMessageModel, Integer>>() {
-					@Override
-					public int compare(Pair<AbstractMessageModel, Integer> lhs, Pair<AbstractMessageModel, Integer> rhs) {
-						return lhs.second - rhs.second;
-					}
-				});
+				Collections.sort(deleteableMessages, (lhs, rhs) -> lhs.second - rhs.second);
 			}
 			selectedMessages.clear();
 
@@ -2152,6 +2023,85 @@ public class ComposeMessageFragment extends Fragment implements
 				actionMode.finish();
 			}
 		}
+	}
+
+	/**
+	 * Check if the clues indicate that the sender of this chat might be a spammer
+	 * @param contactModel Contact model of possible spammer
+	 * @return true if the contact could be a spammer, false otherwise
+	 */
+	private boolean isPossibleSpamContact(ContactModel contactModel) {
+		if (ConfigUtils.isOnPremBuild()) {
+			return false;
+		}
+
+		if (contactModel == null || contactModel.getVerificationLevel() != VerificationLevel.UNVERIFIED) {
+			return false;
+		}
+
+		if (!TestUtil.empty(contactModel.getFirstName()) || !TestUtil.empty(contactModel.getLastName())) {
+			return false;
+		}
+
+		if (blackListIdentityService.has(contactModel.getIdentity())) {
+			return false;
+		}
+
+		if (contactModel.isHidden()) {
+			return false;
+		}
+
+		if (composeMessageAdapter == null) {
+			return false;
+		}
+
+		int numMessages = composeMessageAdapter.getCount();
+
+		if (numMessages >= MESSAGE_PAGE_SIZE || numMessages < 2) {
+			return false;
+		}
+
+		AbstractMessageModel firstMessageModel;
+		int positionOfFirstIncomingMessage = 0;
+		for (int i = 0; i < numMessages; i++) {
+			firstMessageModel = composeMessageAdapter.getItem(i);
+			if (firstMessageModel == null) {
+				return false;
+			}
+			if (firstMessageModel.isOutbox()) {
+				return false;
+			}
+			if (contactModel.getIdentity().equals(firstMessageModel.getIdentity())) {
+				positionOfFirstIncomingMessage = i;
+				break;
+			}
+		}
+
+		AbstractMessageModel messageModel = composeMessageAdapter.getItem(positionOfFirstIncomingMessage);
+
+		if (messageModel == null) {
+			return false;
+		}
+
+		Date contactCreated = contactModel.getDateCreated();
+		Date firstMessageDate = messageModel.getCreatedAt();
+
+		if (contactCreated == null || firstMessageDate == null) {
+			return false;
+		}
+
+		if (firstMessageDate.getTime() - contactCreated.getTime() > DateUtils.DAY_IN_MILLIS) {
+			return false;
+		}
+
+		for (int i = positionOfFirstIncomingMessage; i < numMessages; i++) {
+			AbstractMessageModel abstractMessageModel = composeMessageAdapter.getItem(i);
+			if (abstractMessageModel == null || abstractMessageModel.isOutbox()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private void undoDeleteMessages() {
@@ -2187,20 +2137,17 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@UiThread
 	private void contactTypingStateChanged(boolean isTyping) {
-		RuntimeUtil.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if(isTypingView != null) {
-					logger.debug("is typing " + isTyping + " footer view count " + convListView.getFooterViewsCount());
-					if (isTyping) {
-						//remove if the the another footer element added
-						if(convListView.getFooterViewsCount() == 0) {
-							isTypingView.setVisibility(View.VISIBLE);
-							convListView.addFooterView(isTypingView, null, false);
-						}
-					} else {
-						removeIsTypingFooter();
+		RuntimeUtil.runOnUiThread(() -> {
+			if(isTypingView != null) {
+				logger.debug("is typing " + isTyping + " footer view count " + convListView.getFooterViewsCount());
+				if (isTyping) {
+					//remove if the the another footer element added
+					if(convListView.getFooterViewsCount() == 0) {
+						isTypingView.setVisibility(View.VISIBLE);
+						convListView.addFooterView(isTypingView, null, false);
 					}
+				} else {
+					removeIsTypingFooter();
 				}
 			}
 		});
@@ -2283,38 +2230,35 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		this.composeMessageAdapter.notifyDataSetChanged();
-		this.convListView.post(new Runnable() {
-			@Override
-			public void run() {
-				int topEntry = convListView.getFirstVisiblePosition();
+		this.convListView.post(() -> {
+			int topEntry = convListView.getFirstVisiblePosition();
 
-				// update only if really necessary
-				if (targetPosition != topEntry) {
-					listUpdateInProgress = true;
+			// update only if really necessary
+			if (targetPosition != topEntry) {
+				listUpdateInProgress = true;
 
-					int listEntryCount = convListView.getCount();
+				int listEntryCount = convListView.getCount();
 
-					if (topEntry > targetPosition) {
-						// scroll up
-						int startPosition = targetPosition + SMOOTHSCROLL_THRESHOLD;
+				if (topEntry > targetPosition) {
+					// scroll up
+					int startPosition = targetPosition + SMOOTHSCROLL_THRESHOLD;
 
-						if (startPosition < listEntryCount) {
-							convListView.setSelection(targetPosition);
-						} else {
-							convListView.smoothScrollToPosition(targetPosition);
-						}
+					if (startPosition < listEntryCount) {
+						convListView.setSelection(targetPosition);
 					} else {
-						// scroll down
-						int startPosition = listEntryCount - SMOOTHSCROLL_THRESHOLD;
-
-						if (listEntryCount - convListView.getLastVisiblePosition() > SMOOTHSCROLL_THRESHOLD && startPosition > 0) {
-							convListView.setSelection(targetPosition);
-						} else {
-							convListView.smoothScrollToPosition(targetPosition);
-						}
+						convListView.smoothScrollToPosition(targetPosition);
 					}
-					listUpdateInProgress = false;
+				} else {
+					// scroll down
+					int startPosition = listEntryCount - SMOOTHSCROLL_THRESHOLD;
+
+					if (listEntryCount - convListView.getLastVisiblePosition() > SMOOTHSCROLL_THRESHOLD && startPosition > 0) {
+						convListView.setSelection(targetPosition);
+					} else {
+						convListView.smoothScrollToPosition(targetPosition);
+					}
 				}
+				listUpdateInProgress = false;
 			}
 		});
 	}
@@ -2430,7 +2374,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 	/**
 	 * initialize conversation list and set the unread message count
-	 * @return number of unread messages
 	 */
 	@SuppressLint({"StaticFieldLeak", "WrongThread"})
 	@UiThread
@@ -2508,7 +2451,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 	/**
 	 * Populate ListView with provided message models
-	 * @param values
 	 */
 	@UiThread
 	private void populateList(List<AbstractMessageModel> values) {
@@ -2559,12 +2501,7 @@ public class ComposeMessageFragment extends Fragment implements
 						try {
 							messageService.resendMessage(messageModel, messageReceiver, null);
 						} catch (Exception e) {
-							RuntimeUtil.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									Toast.makeText(getContext(), R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show();
-								}
-							});
+							RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show());
 						}
 					}
 				}
@@ -2602,7 +2539,7 @@ public class ComposeMessageFragment extends Fragment implements
 								intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 								intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 								IntentDataUtil.append(contactModel, intent);
-								getActivity().finish();
+								requireActivity().finish();
 
 							} else {
 								intent = new Intent(getActivity(), ContactDetailActivity.class);
@@ -2678,9 +2615,7 @@ public class ComposeMessageFragment extends Fragment implements
 					logger.debug("jump to initial position " + finalPosition);
 
 					convListView.setSelection(finalPosition);
-					convListView.postDelayed(() -> {
-						convListView.setSelection(finalPosition);
-					}, 750);
+					convListView.postDelayed(() -> convListView.setSelection(finalPosition), 750);
 
 					return;
 				}
@@ -2693,39 +2628,28 @@ public class ComposeMessageFragment extends Fragment implements
 		logger.debug("setIdentityColors");
 
 		if (this.isGroupChat) {
-			Map<String, Integer> colors = this.groupService.getGroupMemberColors(this.groupModel);
-
-			if (ConfigUtils.getAppTheme(activity) == ConfigUtils.THEME_DARK) {
-				Map<String, Integer> darkColors = new HashMap<>();
-				@ColorInt final int bubbleColorRecv = activity.getResources().getColor(R.color.dark_bubble_receive);
-
-				// lighten up some colors to ensure better visibility if dark theme is enabled
-				for (Map.Entry<String, Integer> entry : colors.entrySet()) {
-					@ColorInt int newColor;
-
-					try {
-						newColor = entry.getValue();
-
-						if (ColorUtils.calculateContrast(newColor, bubbleColorRecv) <= 1.7) {
-							float[] hsl = new float[3];
-							ColorUtils.colorToHSL(entry.getValue(), hsl);
-							if (hsl[2] < 0.7f) {
-								hsl[2] = 0.7f; // pull up luminance
-							}
-							if (hsl[1] > 0.6f) {
-								hsl[1] = 0.6f; // tone down saturation
-							}
-							newColor = ColorUtils.HSLToColor(hsl);
-						}
-						darkColors.put(entry.getKey(), newColor);
-					} catch (Exception e) {
-						//
+			Map<String, Integer> colorIndices = this.groupService.getGroupMemberIDColorIndices(this.groupModel);
+			Map<String, Integer> colors = new HashMap<>();
+			boolean darkTheme = ConfigUtils.getAppTheme(activity) == ConfigUtils.THEME_DARK;
+			for (Map.Entry<String, Integer> entry : colorIndices.entrySet()) {
+				String memberIdentity = entry.getKey();
+				int memberColorIndex = entry.getValue();
+				// If the ID color index is -1, the correct index is calculated and stored into the database
+				if (memberColorIndex < 0) {
+					ContactModel member = contactService.getByIdentity(memberIdentity);
+					if (member != null) {
+						member.initializeIdColor();
+						memberColorIndex = member.getIdColorIndex();
+						contactService.save(member);
 					}
 				}
-				this.identityColors = darkColors;
-			} else {
-				this.identityColors = colors;
+				colors.put(memberIdentity,
+					darkTheme ?
+						ColorUtil.getInstance().getIDColorDark(memberColorIndex) :
+						ColorUtil.getInstance().getIDColorLight(memberColorIndex));
 			}
+
+			this.identityColors = colors;
 		} else {
 			if (this.identityColors != null) {
 				this.identityColors.clear();
@@ -2932,26 +2856,23 @@ public class ComposeMessageFragment extends Fragment implements
 			return;
 		}
 
-		RuntimeUtil.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				int ringerMode = audioManager.getRingerMode();
+		RuntimeUtil.runOnUiThread(() -> {
+			int ringerMode = audioManager.getRingerMode();
 
-				if (preferenceService.isInAppSounds()) {
-					SoundUtil.play(resId);
-				}
+			if (preferenceService.isInAppSounds()) {
+				SoundUtil.play(resId);
+			}
 
-				if (preferenceService.isInAppVibrate() && isVibrate) {
-					Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-					if (vibrator != null) {
-						switch (ringerMode) {
-							case AudioManager.RINGER_MODE_VIBRATE:
-							case AudioManager.RINGER_MODE_NORMAL:
-								vibrator.vibrate(VIBRATION_MSEC);
-								break;
-							default:
-								break;
-						}
+			if (preferenceService.isInAppVibrate() && isVibrate) {
+				Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+				if (vibrator != null) {
+					switch (ringerMode) {
+						case AudioManager.RINGER_MODE_VIBRATE:
+						case AudioManager.RINGER_MODE_NORMAL:
+							vibrator.vibrate(VIBRATION_MSEC);
+							break;
+						default:
+							break;
 					}
 				}
 			}
@@ -2966,88 +2887,84 @@ public class ComposeMessageFragment extends Fragment implements
 		playInAppSound(R.raw.received_message, true);
 	}
 
-	private void sendTextMessage() {
+	private void onSendButtonClick() {
 		if (!this.validateSendingPermission()) {
 			return;
 		}
 
 		if (!TestUtil.empty(this.messageText.getText())) {
-			final CharSequence message;
-
-			if (isQuotePanelShown()) {
-				message = QuoteUtil.quote(
-						this.messageText.getText().toString(),
-						quoteInfo.quoteIdentity,
-						quoteInfo.quoteText,
-						quoteInfo.messageModel
-						);
-				closeQuoteMode();
-			} else {
-				message = this.messageText.getText();
-			}
-
-			if (!TestUtil.empty(message)) {
-				// block send button to avoid double posting
-				this.messageText.setText("");
-
-				if (typingIndicatorTextWatcher != null) {
-					messageText.removeTextChangedListener(typingIndicatorTextWatcher);
-				}
-
-				if (typingIndicatorTextWatcher != null) {
-					messageText.addTextChangedListener(typingIndicatorTextWatcher);
-				}
-
-				//send stopped typing message
-				if (typingIndicatorTextWatcher != null) {
-					typingIndicatorTextWatcher.stopTyping();
-				}
-
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						TextMessageSendAction.getInstance()
-								.sendTextMessage(new MessageReceiver[]{messageReceiver}, message.toString(), new SendAction.ActionHandler() {
-									@Override
-									public void onError(final String errorMessage) {
-											RuntimeUtil.runOnUiThread(() -> {
-												Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-												if (!TestUtil.empty(message)) {
-													messageText.setText(message);
-													messageText.setSelection(messageText.length());
-												}
-											});
-									}
-
-									@Override
-									public void onWarning(String warning, boolean continueAction) {
-									}
-
-									@Override
-									public void onProgress(final int progress, final int total) {
-									}
-
-									@Override
-									public void onCompleted() {
-										RuntimeUtil.runOnUiThread(new Runnable() {
-											@Override
-											public void run() {
-												scrollList(Integer.MAX_VALUE);
-												if (ConfigUtils.isTabletLayout()) {
-													// remove draft right now to make sure conversations pane is updated
-													ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "");
-												}
-											}
-										});
-									}
-								});
-					}
-				}).start();
-			}
+			sendTextMessage();
 		} else {
-			if (ConfigUtils.requestAudioPermissions(getActivity(), this, PERMISSION_REQUEST_ATTACH_VOICE_MESSAGE)) {
+			if (ConfigUtils.requestAudioPermissions(requireActivity(), this, PERMISSION_REQUEST_ATTACH_VOICE_MESSAGE)) {
 				attachVoiceMessage();
 			}
+		}
+	}
+
+	private void sendTextMessage() {
+		final CharSequence message;
+
+		if (isQuotePanelShown()) {
+			message = QuoteUtil.quote(
+				this.messageText.getText().toString(),
+				quoteInfo.quoteIdentity,
+				quoteInfo.quoteText,
+				quoteInfo.messageModel
+			);
+			closeQuoteMode();
+		} else {
+			message = this.messageText.getText();
+		}
+
+		if (!TestUtil.empty(message)) {
+			// block send button to avoid double posting
+			this.messageText.setText("");
+
+			if (typingIndicatorTextWatcher != null) {
+				messageText.removeTextChangedListener(typingIndicatorTextWatcher);
+			}
+
+			if (typingIndicatorTextWatcher != null) {
+				messageText.addTextChangedListener(typingIndicatorTextWatcher);
+			}
+
+			//send stopped typing message
+			if (typingIndicatorTextWatcher != null) {
+				typingIndicatorTextWatcher.stopTyping();
+			}
+
+			new Thread(() -> TextMessageSendAction.getInstance()
+				.sendTextMessage(new MessageReceiver[]{messageReceiver}, message.toString(), new SendAction.ActionHandler() {
+					@Override
+					public void onError(final String errorMessage) {
+						RuntimeUtil.runOnUiThread(() -> {
+							Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+							if (!TestUtil.empty(message)) {
+								messageText.setText(message);
+								messageText.setSelection(messageText.length());
+							}
+						});
+					}
+
+					@Override
+					public void onWarning(String warning, boolean continueAction) {
+					}
+
+					@Override
+					public void onProgress(final int progress, final int total) {
+					}
+
+					@Override
+					public void onCompleted() {
+						RuntimeUtil.runOnUiThread(() -> {
+							scrollList(Integer.MAX_VALUE);
+							if (ConfigUtils.isTabletLayout()) {
+								// remove draft right now to make sure conversations pane is updated
+								ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+							}
+						});
+					}
+				})).start();
 		}
 	}
 
@@ -3200,52 +3117,48 @@ public class ComposeMessageFragment extends Fragment implements
 
 		String body = QuoteUtil.getMessageBody(messageModel, true);
 
-		if (!TestUtil.empty(body) || ConfigUtils.canCreateV2Quotes()) {
-			sendButton.setEnabled(messageText != null && !TestUtil.empty(messageText.getText()));
+		sendButton.setEnabled(messageText != null && !TestUtil.empty(messageText.getText()));
 
-			quoteInfo.quoteIdentity = messageModel.isOutbox() ? userService.getIdentity() : messageModel.getIdentity();
-			quoteInfo.quoteIdentityView.setText(
-				NameUtil.getQuoteName(quoteInfo.quoteIdentity, this.contactService, this.userService)
-			);
+		quoteInfo.quoteIdentity = messageModel.isOutbox() ? userService.getIdentity() : messageModel.getIdentity();
+		quoteInfo.quoteIdentityView.setText(
+			NameUtil.getQuoteName(quoteInfo.quoteIdentity, this.contactService, this.userService)
+		);
 
-			int color = ConfigUtils.getAccentColor(activity);
-			if (!messageModel.isOutbox()) {
-				if (isGroupChat) {
-					if (identityColors != null && identityColors.containsKey(quoteInfo.quoteIdentity)) {
-						color = identityColors.get(quoteInfo.quoteIdentity);
-					}
-				} else {
-					if (contactModel != null) {
-						color = contactModel.getColor();
-					}
+		int color = ConfigUtils.getAccentColor(activity);
+		if (!messageModel.isOutbox()) {
+			if (isGroupChat) {
+				if (identityColors != null && identityColors.containsKey(quoteInfo.quoteIdentity)) {
+					color = identityColors.get(quoteInfo.quoteIdentity);
+				}
+			} else {
+				if (contactModel != null) {
+					color = contactModel.getThemedColor(requireContext());
 				}
 			}
-			quoteInfo.quoteBar.setBackgroundColor(color);
-
-			quoteInfo.quoteTextView.setText(emojiMarkupUtil.addTextSpans(activity, body, quoteInfo.quoteTextView, false, false));
-			quoteInfo.quoteText = body;
-			quoteInfo.messageModel = messageModel;
-			quoteInfo.quoteThumbnail.setVisibility(View.GONE);
-			quoteInfo.quoteTypeImage.setVisibility(View.GONE);
-			if (ConfigUtils.canCreateV2Quotes()) {
-				try {
-					Bitmap thumbnail = fileService.getMessageThumbnailBitmap(messageModel, thumbnailCache);
-					if (thumbnail != null) {
-						quoteInfo.quoteThumbnail.setImageBitmap(thumbnail);
-						quoteInfo.quoteThumbnail.setVisibility(View.VISIBLE);
-					}
-				} catch (Exception ignore) {
-				}
-
-				MessageUtil.MessageViewElement messageViewElement = MessageUtil.getViewElement(getContext(), messageModel);
-				if (messageViewElement.icon != null) {
-					quoteInfo.quoteTypeImage.setImageResource(messageViewElement.icon);
-					quoteInfo.quoteTypeImage.setVisibility(View.VISIBLE);
-				}
-			}
-
-			AnimationUtil.expand(quoteInfo.quotePanel, onFinishRunnable);
 		}
+		quoteInfo.quoteBar.setBackgroundColor(color);
+
+		quoteInfo.quoteTextView.setText(emojiMarkupUtil.addTextSpans(activity, body, quoteInfo.quoteTextView, false, false));
+		quoteInfo.quoteText = body;
+		quoteInfo.messageModel = messageModel;
+		quoteInfo.quoteThumbnail.setVisibility(View.GONE);
+		quoteInfo.quoteTypeImage.setVisibility(View.GONE);
+		try {
+			Bitmap thumbnail = fileService.getMessageThumbnailBitmap(messageModel, thumbnailCache);
+			if (thumbnail != null) {
+				quoteInfo.quoteThumbnail.setImageBitmap(thumbnail);
+				quoteInfo.quoteThumbnail.setVisibility(View.VISIBLE);
+			}
+		} catch (Exception ignore) {
+		}
+
+		MessageUtil.MessageViewElement messageViewElement = MessageUtil.getViewElement(getContext(), messageModel);
+		if (messageViewElement.icon != null) {
+			quoteInfo.quoteTypeImage.setImageResource(messageViewElement.icon);
+			quoteInfo.quoteTypeImage.setVisibility(View.VISIBLE);
+		}
+
+		AnimationUtil.expand(quoteInfo.quotePanel, onFinishRunnable);
 	}
 
 	private void closeQuoteMode() {
@@ -3305,6 +3218,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		this.actionBarSubtitleTextView.setVisibility(View.GONE);
 		this.actionBarSubtitleImageView.setVisibility(View.GONE);
+		this.actionBarAvatarView.setVisibility(View.VISIBLE);
 
 		this.actionBarTitleTextView.setText(this.messageReceiver.getDisplayName());
 		this.actionBarTitleTextView.setPaintFlags(this.actionBarTitleTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
@@ -3315,18 +3229,23 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 			actionBarSubtitleTextView.setText(groupService.getMembersString(groupModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-			actionBarAvatarView.setImageBitmap(groupService.getAvatar(groupModel, false));
+			groupService.loadAvatarIntoImage(groupModel, actionBarAvatarView.getAvatarView(), AvatarOptions.DEFAULT);
 			actionBarAvatarView.setBadgeVisible(false);
 		} else if (this.isDistributionListChat) {
 			actionBarSubtitleTextView.setText(this.distributionListService.getMembersString(this.distributionListModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-			actionBarAvatarView.setImageBitmap(distributionListService.getAvatar(distributionListModel, false));
+			if (this.distributionListModel.isHidden()) {
+				actionBarAvatarView.setVisibility(View.GONE);
+				actionBarTitleTextView.setText(getString(R.string.threema_message_to, ""));
+			} else {
+				distributionListService.loadAvatarIntoImage(distributionListModel, actionBarAvatarView.getAvatarView(), AvatarOptions.DEFAULT_NO_CACHE);
+			}
 			actionBarAvatarView.setBadgeVisible(false);
 		} else {
 			if (contactModel != null) {
 				this.actionBarSubtitleImageView.setContactModel(contactModel);
 				this.actionBarSubtitleImageView.setVisibility(View.VISIBLE);
-				this.actionBarAvatarView.setImageBitmap(contactService.getAvatar(contactModel, false, true));
+				contactService.loadAvatarIntoImage(contactModel, this.actionBarAvatarView.getAvatarView(), AvatarOptions.DEFAULT);
 				this.actionBarAvatarView.setBadgeVisible(contactService.showBadge(contactModel));
 			}
 		}
@@ -3522,18 +3441,15 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@AnyThread
 	private void updateVoipCallMenuItem(final Boolean newState) {
-		RuntimeUtil.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (callItem != null) {
-					if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
-							&& ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
-						logger.debug("updateVoipMenu newState " + newState);
+		RuntimeUtil.runOnUiThread(() -> {
+			if (callItem != null) {
+				if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
+						&& ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
+					logger.debug("updateVoipMenu newState " + newState);
 
-						callItem.setVisible(newState != null ? newState : voipStateService.getCallState().isIdle());
-					} else {
-						callItem.setVisible(false);
-					}
+					callItem.setVisible(newState != null ? newState : voipStateService.getCallState().isIdle());
+				} else {
+					callItem.setVisible(false);
 				}
 			}
 		});
@@ -3584,17 +3500,7 @@ public class ComposeMessageFragment extends Fragment implements
 				VoipUtil.initiateCall(activity, contactModel, false, null);
 				break;
 			case R.id.menu_wallpaper:
-				wallpaperService.selectWallpaper(this, this.wallpaperLauncher, this.messageReceiver, new Runnable() {
-					@Override
-					public void run() {
-						RuntimeUtil.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								setBackgroundWallpaper();
-							}
-						});
-					}
-				});
+				wallpaperService.selectWallpaper(this, this.wallpaperLauncher, this.messageReceiver, () -> RuntimeUtil.runOnUiThread(this::setBackgroundWallpaper));
 				activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 				break;
 			case R.id.menu_muted:
@@ -3676,37 +3582,30 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void emptyChat() {
-		new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getFragmentManager(), false, new Runnable() {
-			@Override
-			public void run() {
-				if (isAdded()) {
-						synchronized (messageValues) {
-							messageValues.clear();
-							composeMessageAdapter.notifyDataSetChanged();
-						}
-
-						// empty draft
-						ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "");
-						messageText.setText(null);
-
-						currentPageReferenceId = 0;
-						onRefresh();
-
-						ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-							@Override
-							public void handle(ConversationListener listener) {
-								if (!isGroupChat) {
-									conversationService.reset();
-								}
-								listener.onModifiedAll();
-							}
-						});
-
-						if (getActivity() != null) {
-							getActivity().finish();
-						}
+		new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getParentFragmentManager(), false, () -> {
+			if (isAdded()) {
+					synchronized (messageValues) {
+						messageValues.clear();
+						composeMessageAdapter.notifyDataSetChanged();
 					}
-			}
+
+					// empty draft
+					ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+					messageText.setText(null);
+
+					currentPageReferenceId = 0;
+					onRefresh();
+
+					ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
+						@Override
+						public void handle(ConversationListener listener) {
+							if (!isGroupChat) {
+								conversationService.reset();
+							}
+							listener.onModifiedAll();
+						}
+					});
+				}
 		}).execute();
 	}
 
@@ -3731,7 +3630,7 @@ public class ComposeMessageFragment extends Fragment implements
 			typingIndicatorTextWatcher.killEvents();
 		}
 
-		this.sendTextMessage();
+		this.onSendButtonClick();
 	}
 
 	@Override
@@ -4040,12 +3939,13 @@ public class ComposeMessageFragment extends Fragment implements
 			// handle done button
 			convListView.clearChoices();
 			convListView.requestLayout();
-			convListView.post(new Runnable() {
-				@Override
-				public void run() {
-					convListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-				}
-			});
+			convListView.post(() -> convListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE));
+
+			// If the action mode has been left without clearing up the selected messages, we need
+			// to trigger a refresh so that linkified links work again (selectedMessages will be cleared lazily)
+			if (!selectedMessages.isEmpty() && composeMessageAdapter != null) {
+				composeMessageAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 
@@ -4081,8 +3981,8 @@ public class ComposeMessageFragment extends Fragment implements
 
 	public boolean onBackPressed() {
 		logger.debug("onBackPressed");
-		// dismiss emoji keyboard if it's showing instead of leaving activity
-		if (emojiPicker != null && emojiPicker.isShown()) {
+		if (isEmojiPickerShown()) {
+			// dismiss emoji keyboard if it's showing instead of leaving activity
 			emojiPicker.hide();
 			return true;
 		} else {
@@ -4133,7 +4033,7 @@ public class ComposeMessageFragment extends Fragment implements
 		// some phones destroy the retained fragment upon going in background so we have to persist some data
 		outState.putParcelable(CAMERA_URI, cameraUri);
 		outState.putInt(ThreemaApplication.INTENT_DATA_GROUP, this.groupId);
-		outState.putInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, this.distributionListId);
+		outState.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, this.distributionListId);
 		outState.putString(ThreemaApplication.INTENT_DATA_CONTACT, this.identity);
 
 		super.onSaveInstanceState(outState);
@@ -4169,24 +4069,14 @@ public class ComposeMessageFragment extends Fragment implements
 				searchPreviousButton = searchPreviousLayout.findViewById(R.id.search_button);
 				searchPreviousButton.setImageDrawable(ConfigUtils.getThemedDrawable(activity, R.drawable.ic_keyboard_arrow_down_outline));
 				searchPreviousButton.setScaleY(-1);
-				searchPreviousButton.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						composeMessageAdapter.previousMatchPosition();
-					}
-				});
+				searchPreviousButton.setOnClickListener(v -> composeMessageAdapter.previousMatchPosition());
 				linearLayoutOfSearchView.addView(searchPreviousLayout);
 
 				FrameLayout searchNextLayout = (FrameLayout) layoutInflater.inflate(R.layout.button_search_action, null);
 				searchNextButton = searchNextLayout.findViewById(R.id.search_button);
 				searchProgress = searchNextLayout.findViewById(R.id.next_progress);
 				searchNextButton.setImageDrawable(ConfigUtils.getThemedDrawable(activity, R.drawable.ic_keyboard_arrow_down_outline));
-				searchNextButton.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						composeMessageAdapter.nextMatchPosition();
-					}
-				});
+				searchNextButton.setOnClickListener(v -> composeMessageAdapter.nextMatchPosition());
 				linearLayoutOfSearchView.addView(searchNextLayout);
 			}
 		}
@@ -4211,9 +4101,7 @@ public class ComposeMessageFragment extends Fragment implements
 				bottomPanel.setVisibility(View.GONE);
 			}
 
-			if (emojiPicker != null && emojiPicker.isShown()) {
-				emojiPicker.hide();
-			}
+			hideEmojiPickerIfShown();
 
 			dismissMentionPopup();
 
@@ -4354,20 +4242,17 @@ public class ComposeMessageFragment extends Fragment implements
 			case CONFIRM_TAG_DELETE_DISTRIBUTION_LIST:
 				final DistributionListModel dmodel = (DistributionListModel) data;
 				if (dmodel != null) {
-					new Thread(new Runnable() {
-						@Override
-						public void run() {
-							distributionListService.remove(dmodel);
-							RuntimeUtil.runOnUiThread(() -> activity.finish());
-						}
+					new Thread(() -> {
+						distributionListService.remove(dmodel);
+						RuntimeUtil.runOnUiThread(this::finishActivity);
 					}).start();
 				}
 				break;
 			case ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT:
-				BallotUtil.closeBallot((AppCompatActivity) getActivity(), (BallotModel) data, ballotService);
+				BallotUtil.closeBallot((AppCompatActivity) requireActivity(), (BallotModel) data, ballotService);
 				break;
 			case DIALOG_TAG_CONFIRM_CALL:
-				VoipUtil.initiateCall((AppCompatActivity) getActivity(), contactModel, false, null);
+				VoipUtil.initiateCall((AppCompatActivity) requireActivity(), contactModel, false, null);
 				break;
 			case DIALOG_TAG_EMPTY_CHAT:
 				emptyChat();
@@ -4479,9 +4364,8 @@ public class ComposeMessageFragment extends Fragment implements
 	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		if (this.emojiPicker != null && this.emojiPicker.isShown()) {
-			this.emojiPicker.hide();
-		}
+		hideEmojiPickerIfShown();
+
 		EditTextUtil.hideSoftKeyboard(this.messageText);
 		dismissMentionPopup();
 		dismissTooltipPopup(workTooltipPopup, true);
@@ -4506,6 +4390,13 @@ public class ComposeMessageFragment extends Fragment implements
 			if (!TextUtils.isEmpty(messageDraft)) {
 				this.messageText.setText("");
 				this.messageText.append(messageDraft);
+				String apiMessageId = ThreemaApplication.getQuoteDraft(this.messageReceiver.getUniqueIdString());
+				if (apiMessageId != null) {
+					AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageId(apiMessageId, messageReceiver.getType());
+					if (quotedMessageModel != null && QuoteUtil.isQuoteable(quotedMessageModel)) {
+						startQuoteMode(quotedMessageModel, null);
+					}
+				}
 			} else {
 				this.messageText.setText("");
 			}
@@ -4516,15 +4407,12 @@ public class ComposeMessageFragment extends Fragment implements
 		if (this.messageReceiver != null) {
 			String draft = ThreemaApplication.getMessageDraft(this.messageReceiver.getUniqueIdString());
 			if (this.messageText.getText() != null) {
-				ThreemaApplication.putMessageDraft(this.messageReceiver.getUniqueIdString(), this.messageText.getText().toString());
+				ThreemaApplication.putMessageDraft(this.messageReceiver.getUniqueIdString(),
+					this.messageText.getText().toString(),
+					isQuotePanelShown() ? quoteInfo.messageModel : null);
 			}
 			if (!TestUtil.empty(this.messageText.getText()) || !TestUtil.empty(draft)) {
-				ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-					@Override
-					public void handle(ConversationListener listener) {
-						listener.onModifiedAll();
-					}
-				});
+				ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
 			}
 		}
 	}
@@ -4540,13 +4428,56 @@ public class ComposeMessageFragment extends Fragment implements
 			dismissMentionPopup();
 			dismissTooltipPopup(workTooltipPopup, false);
 			workTooltipPopup = null;
+
+			if (emojiPicker != null) {
+				emojiPicker.onKeyboardHidden();
+			}
 		}
 	}
 
 	@Override
 	public void onKeyboardShown() {
-		if (emojiPicker != null && emojiPicker.isShown()) {
-			emojiPicker.hide();
+		if (isEmojiPickerShown()) {
+			emojiPicker.onKeyboardShown();
+		}
+	}
+
+	@Override
+	public void onReportSpamClicked(@NonNull final ContactModel spammerContactModel, boolean block) {
+		contactService.reportSpam(
+			spammerContactModel,
+			unused -> {
+				if (isAdded()) {
+					Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
+				}
+
+				if (block) {
+					blackListIdentityService.add(spammerContactModel.getIdentity());
+					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerContactModel.getIdentity());
+
+					new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, null, true, () -> {
+						ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+						ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));
+						if (isAdded()) {
+							finishActivity();
+						}
+					}).execute();
+				} else {
+					reportSpamView.hide();
+					ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));
+				}
+			},
+			message -> {
+				if (isAdded()) {
+					Toast.makeText(getContext(), requireContext().getString(R.string.spam_error_reporting, message), Toast.LENGTH_LONG).show();
+				}
+			}
+		);
+	}
+
+	private void finishActivity() {
+		if (activity != null) {
+			activity.finish();
 		}
 	}
 }

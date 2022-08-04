@@ -192,6 +192,13 @@ public class MyIDFragment extends MainFragment
 		setRetainInstance(true);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		setupPicReleaseSpinner();
+	}
+
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -271,18 +278,7 @@ public class MyIDFragment extends MainFragment
 				this.fragmentView.findViewById(R.id.profile_edit).setOnClickListener(this);
 			}
 
-			MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
-			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_dropdown_item);
-			spinner.setAdapter(adapter);
-			spinner.setText(adapter.getItem(preferenceService.getProfilePicRelease()), false);
-			spinner.setOnItemClickListener((parent, view, position, id) -> {
-				int oldPosition = preferenceService.getProfilePicRelease();
-				preferenceService.setProfilePicRelease(position);
-				picReleaseConfImageView.setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
-				if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
-					launchProfilePictureRecipientsSelector(view);
-				}
-			});
+			setupPicReleaseSpinner();
 
 			if (isDisabledProfilePicReleaseSettings) {
 				fragmentView.findViewById(R.id.picrelease_spinner).setVisibility(View.GONE);
@@ -296,6 +292,25 @@ public class MyIDFragment extends MainFragment
 		ListenerManager.profileListeners.add(this.profileListener);
 
 		return fragmentView;
+	}
+
+	private void setupPicReleaseSpinner() {
+		if (fragmentView != null && preferenceService != null) {
+			MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+			if (spinner != null) {
+				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_dropdown_item);
+				spinner.setAdapter(adapter);
+				spinner.setText(adapter.getItem(preferenceService.getProfilePicRelease()), false);
+				spinner.setOnItemClickListener((parent, view, position, id) -> {
+					int oldPosition = preferenceService.getProfilePicRelease();
+					preferenceService.setProfilePicRelease(position);
+					fragmentView.findViewById(R.id.picrelease_config).setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
+					if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
+						launchProfilePictureRecipientsSelector(view);
+					}
+				});
+			}
+		}
 	}
 
 	@Override
@@ -500,6 +515,7 @@ public class MyIDFragment extends MainFragment
 		new DeleteIdentityAsyncTask(getFragmentManager(), new Runnable() {
 			@Override
 			public void run() {
+				ConfigUtils.clearAppData(ThreemaApplication.getAppContext());
 				System.exit(0);
 			}
 		}).execute();

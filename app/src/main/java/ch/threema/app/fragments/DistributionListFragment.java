@@ -80,6 +80,11 @@ public class DistributionListFragment extends RecipientListFragment {
 					public boolean sortingAscending() {
 						return false;
 					}
+
+					@Override
+					public boolean showHidden() {
+						return false;
+					}
 				});
 			}
 

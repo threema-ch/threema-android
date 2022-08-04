@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
@@ -68,8 +69,8 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 public class LinkifyUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("LinkifyUtil");
 	public static final String DIALOG_TAG_CONFIRM_LINK = "cnfl";
-	private final Pattern compose, add, license;
-	private GestureDetectorCompat gestureDetector;
+	private final Pattern compose, add, license, geo;
+	private final GestureDetectorCompat gestureDetector;
 	private boolean isLongClick;
 	private Uri uri;
 
@@ -87,6 +88,7 @@ public class LinkifyUtil {
 		this.add = Pattern.compile("\\b" + BuildConfig.uriScheme + "://add\\?id=\\S{8}\\b");
 		this.compose = Pattern.compile("\\b" + BuildConfig.uriScheme + "://compose\\?\\S+\\b");
 		this.license = Pattern.compile("\\b" + BuildConfig.uriScheme + "://license\\?key=\\S{11}\\b");
+		this.geo = GeoLocationUtil.getGeoUriPattern();
 		this.gestureDetector = new GestureDetectorCompat(null, new GestureDetector.OnGestureListener() {
 			@Override
 			public boolean onDown(MotionEvent e) {
@@ -144,6 +146,21 @@ public class LinkifyUtil {
 		} else {
 			LinkifyCompatUtil.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 		}
+
+		// Add geo uris based on regex. Remove spans later when they contain invalid coordinates
+		LinkifyCompat.addLinks(bodyTextView, this.geo, null);
+
+		// Check that geo uris contain valid values
+		CharSequence text = bodyTextView.getText();
+		SpannableString spanString = SpannableString.valueOf(text);
+		URLSpan[] allSpans = spanString.getSpans(0, text != null ? text.length() : 0, URLSpan.class);
+		for (URLSpan span : allSpans) {
+			String url = span.getURL();
+			if (url != null && url.startsWith("geo:") && !GeoLocationUtil.isValidGeoUri(url)) {
+				spanString.removeSpan(span);
+			}
+		}
+
 		LinkifyCompat.addLinks(bodyTextView, this.add, null);
 		LinkifyCompat.addLinks(bodyTextView, this.compose, null);
 		LinkifyCompat.addLinks(bodyTextView, this.license, null);
@@ -319,6 +336,12 @@ public class LinkifyUtil {
 	}
 
 	public void openLink(@NonNull Context context, Uri uri) {
+		// Open geo uris with internal map activity
+		if (uri.toString().startsWith("geo:")) {
+			GeoLocationUtil.viewLocation(context, uri);
+			return;
+		}
+
 		Bundle bundle = new Bundle();
 		bundle.putBoolean("new_window", true);
 		Intent intent = new Intent(Intent.ACTION_VIEW, uri);

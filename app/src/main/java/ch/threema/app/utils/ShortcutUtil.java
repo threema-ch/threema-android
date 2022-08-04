@@ -55,6 +55,8 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.MainActivity;
 import ch.threema.app.activities.RecipientListActivity;
+import ch.threema.app.backuprestore.csv.BackupService;
+import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -295,6 +297,11 @@ public final class ShortcutUtil {
 			return;
 		}
 
+		if (BackupService.isRunning() || RestoreService.isRunning()) {
+			logger.info("Backup / Restore is running. Exiting");
+			return;
+		}
+
 		final ConversationService.Filter filter = new ConversationService.Filter() {
 			@Override
 			public boolean onlyUnread() {
@@ -474,7 +481,7 @@ public final class ShortcutUtil {
 				persistableBundle.putInt(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
 				break;
 			case MessageReceiver.Type_DISTRIBUTION_LIST:
-				persistableBundle.putInt(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
+				persistableBundle.putLong(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
 				break;
 			default:
 				break;

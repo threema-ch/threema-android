@@ -15,7 +15,7 @@
 		<!-- colors -->
 		<item name="colorPrimary">@color/accent_light</item> <!--   your app branding color for the app bar -->
 		<item name="colorPrimaryDark">@color/material_primary_dark</item> <!--   darker variant for the status bar and contextual app bars -->
-		<item name="colorAccent">@color/accent_light</item> <!--   theme UI controls like checkboxs and text fields -->
+		<item name="colorAccent">@color/accent_light</item> <!--   theme UI controls like checkboxes and text fields -->
 		<item name="android:colorBackground">@color/activity_background_secondary</item> <!-- background of spinner popup -->
 		<item name="android:windowBackground">@color/activity_background_secondary</item> <!-- action mode appears on top of tool bar -->
 		<item name="android:textColorPrimary">@color/text_color_primary</item>
@@ -57,6 +57,7 @@
 		<item name="circle_button_stroke_color">@color/circle_button_stroke</item>
 		<item name="multipane_divider_start_color">#00000000</item>
 		<item name="multipane_divider_end_color">#44000000</item>
+		<item name="recently_added_background">@color/recently_added_background_light</item>
 
 		<!-- text styles -->
 		<item name="android:textAppearanceLarge">@style/TextAppearanceLarge</item>
@@ -143,6 +144,8 @@
 		<item name="emoji_picker_divider">@color/emoji_picker_divider</item>
 		<item name="emoji_picker_top_divider">@color/emoji_picker_top_divider</item>
 		<item name="emoji_picker_hint">@color/emoji_picker_hint</item>
+		<item name="emoji_search_background">@android:color/white</item>
+		<item name="emoji_search_stroke">@color/compose_stroke</item>
 		<item name="mention_background">@color/mention_background</item>
 		<item name="mention_background_inverted">@color/mention_background_inverted</item>
 		<item name="mention_text_color">@color/text_color_primary</item>
@@ -181,6 +184,7 @@
 	<style name="Theme.Threema.TransparentStatusbar" parent="Theme.Threema.WithToolbar">
 		<item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar</item>
 		<item name="popup_menu_background">@color/activity_background_secondary</item>
+		<item name="background_secondary">@color/activity_background_secondary</item>
 	</style>
 
 	<style name="Theme.Threema.WithToolbarAndCheck" parent="Theme.Threema.WithToolbar">
@@ -330,6 +334,7 @@
 		<item name="circle_button_stroke_color">@color/dark_circle_button_stroke</item>
 		<item name="multipane_divider_start_color">#00FFFFFF</item>
 		<item name="multipane_divider_end_color">#44FFFFFF</item>
+		<item name="recently_added_background">@color/recently_added_background_dark</item>
 
 		<!-- text styles -->
 		<item name="android:textAppearanceLarge">@style/TextAppearanceLarge</item>
@@ -382,6 +387,8 @@
 		<item name="emoji_picker_divider">@color/dark_emoji_picker_divider</item>
 		<item name="emoji_picker_top_divider">@color/dark_emoji_picker_top_divider</item>
 		<item name="emoji_picker_hint">@color/dark_emoji_picker_hint</item>
+		<item name="emoji_search_background">@color/dark_emoji_picker_search_background</item>
+		<item name="emoji_search_stroke">@color/dark_compose_bubble</item>
 		<item name="mention_background">@color/dark_mention_background</item>
 		<item name="mention_background_inverted">@color/dark_mention_background_inverted</item>
 		<item name="mention_text_color">@color/dark_text_color_primary</item>
@@ -496,6 +503,7 @@
 	<style name="Theme.Threema.TransparentStatusbar.Dark" parent="Theme.Threema.WithToolbar.Dark">
 		<item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar</item>
 		<item name="popup_menu_background">@color/dark_material_level3</item>
+		<item name="background_secondary">@color/dark_material_level0</item>
 	</style>
 
 	<style name="Theme.Threema.Translucent.Dark" parent="Theme.Threema.WithToolbar.Dark">

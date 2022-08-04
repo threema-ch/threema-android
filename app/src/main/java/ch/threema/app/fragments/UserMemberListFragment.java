@@ -82,6 +82,7 @@ public class UserMemberListFragment extends MemberListFragment {
 							return ThreemaFeature.GROUP_CHAT;
 						}
 
+						@Override
 						public Boolean fetchMissingFeatureLevel() {
 							return true;
 						}
@@ -137,7 +138,8 @@ public class UserMemberListFragment extends MemberListFragment {
 					checkedItemPositions,
 					contactService,
 					blacklistService,
-					hiddenChatsListService
+					hiddenChatsListService,
+					preferenceService
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

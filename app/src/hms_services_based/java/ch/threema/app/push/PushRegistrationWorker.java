@@ -33,6 +33,7 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import ch.threema.app.utils.PushUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushRegistrationWorker extends Worker {

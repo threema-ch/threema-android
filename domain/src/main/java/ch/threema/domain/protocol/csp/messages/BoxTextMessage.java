@@ -42,7 +42,7 @@ public class BoxTextMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean shouldPush() {
+	public boolean flagSendPush() {
 		return true;
 	}
 

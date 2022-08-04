@@ -28,8 +28,12 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayer;
+
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoUtil {
@@ -78,5 +82,16 @@ public class VideoUtil {
 			}
 		}
 		return duration;
+	}
+
+	public static ExoPlayer getExoPlayer(@NonNull Context context) {
+		if (ConfigUtils.hasAsyncMediaCodecBug()) {
+			// Workaround for https://github.com/google/ExoPlayer/issues/10021
+			DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
+			renderersFactory.forceDisableMediaCodecAsynchronousQueueing();
+			return new ExoPlayer.Builder(context, renderersFactory).build();
+		} else {
+			return new ExoPlayer.Builder(context).build();
+		}
 	}
 }

@@ -43,8 +43,8 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ClippingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -72,6 +72,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -95,7 +96,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private int isMoving = MOVING_NONE;
 	private GridLayout timelineGridLayout;
 	private PlayerView videoView;
-	private SimpleExoPlayer videoPlayer;
+	private ExoPlayer videoPlayer;
 	private MediaSource videoSource;
 	private TextView startTimeTextView, endTimeTextView, sizeTextView;
 	private Thread thumbnailThread;
@@ -176,13 +177,23 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 
 	@SuppressLint("ClickableViewAccessibility")
 	private void initVideoView() {
-		this.videoPlayer = new SimpleExoPlayer.Builder(context).build();
+		this.videoPlayer = VideoUtil.getExoPlayer(context);
 		this.videoPlayer.setPlayWhenReady(false);
 		this.videoPlayer.addListener(new Player.Listener() {
 			@Override
 			public void onPlaybackStateChanged(int playbackState) {
 				Player.Listener.super.onPlaybackStateChanged(playbackState);
 				updateProgressBar();
+			}
+
+			@Override
+			public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+				Player.Listener.super.onPositionDiscontinuity(oldPosition, newPosition, reason);
+				// tapping on the play button after moving end time should start playback from beginning
+				if (oldPosition.positionMs == 0 && newPosition.positionMs == videoItem.getEndTimeMs()) {
+					videoPlayer.seekTo(videoItem.getStartTimeMs());
+					videoPlayer.play();
+				}
 			}
 		});
 
@@ -357,13 +368,15 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
 				if (isMoving == MOVING_LEFT || isMoving == MOVING_RIGHT) {
+					boolean previewLastFrame = isMoving == MOVING_RIGHT;
+
 					videoItem.setStartTimeMs(getVideoPositionFromTimelinePosition(offsetLeft));
 					videoItem.setEndTimeMs(getVideoPositionFromTimelinePosition(this.timelineGridLayout.getWidth() - offsetRight));
 
 					isMoving = MOVING_NONE;
 
 					updateStartAndEnd();
-					preparePlayer();
+					preparePlayer(previewLastFrame);
 
 					return true;
 				}
@@ -531,13 +544,12 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
 				.createMediaSource(com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri()));
 
-			preparePlayer();
+			preparePlayer(false);
 		}
 	}
 
-	private void preparePlayer() {
+	private void preparePlayer(boolean seekToEnd) {
 		if (videoPlayer != null && videoSource != null) {
-
 			long endPosition = (videoItem.getEndTimeMs() == videoItem.getDurationMs() || videoItem.getEndTimeMs() == 0 || videoItem.getEndTimeMs() == MediaItem.TIME_UNDEFINED) ?
 							TIME_END_OF_SOURCE :
 							videoItem.getEndTimeMs() * 1000;
@@ -553,6 +565,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			}
 			videoPlayer.setPlayWhenReady(false);
 			videoPlayer.prepare(clippingSource);
+			if (seekToEnd) {
+				videoPlayer.seekTo(videoItem.getEndTimeMs());
+			}
 		}
 	}
 

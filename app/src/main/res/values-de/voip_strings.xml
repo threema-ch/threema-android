@@ -55,6 +55,7 @@
 	<string name="voip_another_pstn_call">Anruf nicht möglich. Ein gewöhnlicher Telefonanruf läuft bereits.</string>
 	<string name="voip_call_status_off_hours">Anruf ausserhalb der Arbeitszeit</string>
 	<string name="voip_peer_video_disabled">Video-Anrufe wurden durch den Gesprächspartner deaktiviert.</string>
+	<string name="voip_reject_channel_name">Anruf-Statusänderung</string>
 
 	<!-- WebRTC debugger -->
 	<string name="voip_prefs_webrtc_debug">WebRTC Diagnose</string>

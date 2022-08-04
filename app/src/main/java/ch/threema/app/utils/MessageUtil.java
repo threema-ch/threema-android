@@ -422,8 +422,6 @@ public class MessageUtil {
 							". " + context.getString(R.string.duration) + " " + StringConversionUtil.getDurationStringHuman(context, messageModel.getAudioData().getDuration()) + ". ",
 							null);
 				case FILE:
-					String durationString = messageModel.getFileData().getDurationString();
-
 					if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
 						return new MessageViewElement(R.drawable.ic_photo_filled,
 								context.getString(R.string.image_placeholder),
@@ -435,6 +433,8 @@ public class MessageUtil {
 					}
 
 					if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType())) {
+						String durationString = messageModel.getFileData().getDurationString();
+
 						return new MessageViewElement(R.drawable.ic_movie_filled,
 								context.getString(R.string.video_placeholder),
 								TestUtil.empty(messageModel.getFileData().getCaption()) ?
@@ -445,17 +445,19 @@ public class MessageUtil {
 					}
 
 					if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())) {
+						String durationString = messageModel.getFileData().getDurationString();
+
 						if (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 							return new MessageViewElement(R.drawable.ic_mic_filled,
 								context.getString(R.string.audio_placeholder),
-								StringConversionUtil.secondsToString(messageModel.getFileData().getDurationSeconds(), false),
+								durationString,
 								". " + context.getString(R.string.duration) + " " + StringConversionUtil.getDurationStringHuman(context, messageModel.getFileData().getDurationSeconds()) + ". ",
 								null);
 						} else {
 							return new MessageViewElement(R.drawable.ic_doc_audio,
 								context.getString(R.string.audio_placeholder),
 								TestUtil.empty(messageModel.getFileData().getCaption()) ?
-									durationString :
+									("00:00".equals(durationString) ? null : durationString) :
 									messageModel.getFileData().getCaption(),
 								null,
 								null);

@@ -32,11 +32,16 @@ import ch.threema.base.utils.LoggingUtil;
 
 public class ReConnectJobService extends JobService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
+	private static boolean isStopped;
 
 	private PollingHelper pollingHelper = null;
 
 	@Override
 	public boolean onStartJob(final JobParameters jobParameters) {
+		logger.info("Reconnect job started");
+
+		isStopped = false;
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -46,8 +51,17 @@ public class ReConnectJobService extends JobService {
 					pollingHelper = new PollingHelper(ReConnectJobService.this, "reconnectJobService");
 				}
 
-				boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());
-				jobFinished(jobParameters, !success);
+				if (!isStopped) {
+					boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());
+
+					if (!isStopped) {
+						try {
+							jobFinished(jobParameters, !success);
+						} catch (Exception e) {
+							logger.error("Exception while finishing ReConnectJob", e);
+						}
+					}
+				}
 			}
 		}, "ReConnectJobService").start();
 
@@ -56,6 +70,9 @@ public class ReConnectJobService extends JobService {
 
 	@Override
 	public boolean onStopJob(JobParameters jobParameters) {
+		isStopped = true;
+		logger.info("Reconnect job stopped");
+
 		return false;
 	}
 }

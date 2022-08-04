@@ -27,6 +27,7 @@ import net.sqlcipher.Cursor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import ch.threema.app.services.DistributionListService;
 import ch.threema.storage.CursorHelper;
@@ -49,7 +50,7 @@ public class DistributionListModelFactory extends ModelFactory {
 				null));
 	}
 
-	public DistributionListModel getById(int id) {
+	public DistributionListModel getById(long id) {
 		return getFirst(
 				DistributionListModel.COLUMN_ID + "=?",
 				new String[]{
@@ -96,10 +97,11 @@ public class DistributionListModelFactory extends ModelFactory {
 				@Override
 				public boolean next(CursorHelper cursorHelper) {
 					c
-							.setId(cursorHelper.getInt(DistributionListModel.COLUMN_ID))
+							.setId(cursorHelper.getLong(DistributionListModel.COLUMN_ID))
 							.setName(cursorHelper.getString(DistributionListModel.COLUMN_NAME))
 							.setCreatedAt(cursorHelper.getDateByString(DistributionListModel.COLUMN_CREATED_AT))
-							.setArchived(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ARCHIVED));
+							.setArchived(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ARCHIVED))
+							.setHidden(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_HIDDEN));
 
 					return false;
 				}
@@ -147,18 +149,32 @@ public class DistributionListModelFactory extends ModelFactory {
 		contentValues.put(DistributionListModel.COLUMN_NAME, distributionListModel.getName());
 		contentValues.put(DistributionListModel.COLUMN_CREATED_AT, distributionListModel.getCreatedAt() != null ? CursorHelper.dateAsStringFormat.get().format(distributionListModel.getCreatedAt()) : null);
 		contentValues.put(DistributionListModel.COLUMN_IS_ARCHIVED, distributionListModel.isArchived());
+		contentValues.put(DistributionListModel.COLUMN_IS_HIDDEN, distributionListModel.isHidden());
 
 		return contentValues;
 	}
 
+	/**
+	 * Create a new distribution list model. If the ID of the given model is <= 0 or already used in
+	 * the database, a random ID is chosen and the model is updated accordingly.
+	 *
+	 * @param distributionListModel the distribution list model that is inserted into the database
+	 * @return true on success, false otherwise
+	 */
 	public boolean create(DistributionListModel distributionListModel) {
 		ContentValues contentValues = buildContentValues(distributionListModel);
-		long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
-		if (newId > 0) {
-			distributionListModel.setId((int) newId);
-			return true;
+
+		long distributionListId = distributionListModel.getId();
+
+		if (distributionListId <= 0 || doesIdExist(distributionListId)) {
+			distributionListId = getUniqueId();
 		}
-		return false;
+
+		contentValues.put(DistributionListModel.COLUMN_ID, distributionListId);
+
+		long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+		distributionListModel.setId(newId);
+		return newId > 0;
 	}
 
 	public boolean update(DistributionListModel distributionListModel) {
@@ -210,23 +226,52 @@ public class DistributionListModelFactory extends ModelFactory {
 
 		//sort by id!
 		String orderBy = null;
+		// do not show hidden distribution lists by default
+		String where = DistributionListModel.COLUMN_IS_HIDDEN + " !=1";
 
-		if(filter != null) {
-			if(!filter.sortingByDate()) {
+		if (filter != null) {
+			if (!filter.sortingByDate()) {
 				orderBy = DistributionListModel.COLUMN_CREATED_AT + " " + (filter.sortingAscending() ? "ASC" : "DESC");
 			}
+			if (filter.showHidden()) {
+				where = null;
+			}
+		}
+
+		if (where != null) {
+			queryBuilder.appendWhere(where);
 		}
 
 		return convert(
 				queryBuilder,
 				orderBy);
+	}
 
+	private long getUniqueId() {
+		int attemptsLeft = 100;
+		long distributionListId;
+		do {
+			distributionListId = ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
+		} while (doesIdExist(distributionListId) && attemptsLeft-- > 0);
+		return distributionListId;
+	}
+
+	private boolean doesIdExist(long id) {
+		return this.databaseService.getReadableDatabase().query(
+			getTableName(),
+			null,
+			DistributionListModel.COLUMN_ID + "=?",
+			new String[] {String.valueOf(id)},
+			null,
+			null,
+			null,
+			null).getCount() > 0;
 	}
 
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `distribution_list` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `name` VARCHAR , `createdAt` VARCHAR, `isArchived` TINYINT DEFAULT 0 );"
+				"CREATE TABLE `distribution_list` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `name` VARCHAR , `createdAt` VARCHAR, `isArchived` TINYINT DEFAULT 0 , `isHidden` TINYINT DEFAULT 0 );"
 		};
 	}
 }

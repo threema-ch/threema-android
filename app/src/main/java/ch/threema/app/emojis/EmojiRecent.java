@@ -23,23 +23,22 @@ package ch.threema.app.emojis;
 
 import java.util.LinkedList;
 
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PreferenceService;
 
 public class EmojiRecent {
 
 	private final PreferenceService preferenceService;
 	private static final int RECENT_SIZE_LIMIT = 100;
-	private static LinkedList<String> recentList = new LinkedList<String>(), recentListNew = new LinkedList<String>();
+	private static LinkedList<String> recentList = new LinkedList<>(), recentListNew = new LinkedList<>();
 	private static boolean modified = false;
 
-	public EmojiRecent() {
-		this.preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
+	public EmojiRecent(PreferenceService preferenceService) {
+		this.preferenceService = preferenceService;
 		readFromPrefs();
 	}
 
 	public boolean add(String emojiSequence) {
-		synchronized (this.recentListNew) {
+		synchronized (recentListNew) {
 			if (recentListNew.contains(emojiSequence)) {
 				recentListNew.removeLastOccurrence(emojiSequence);
 			}
@@ -57,7 +56,7 @@ public class EmojiRecent {
 	}
 
 	public boolean remove(String emojiSequence) {
-		synchronized (this.recentListNew) {
+		synchronized (recentListNew) {
 			if (recentListNew.contains(emojiSequence)) {
 				recentListNew.remove(emojiSequence);
 				modified = true;

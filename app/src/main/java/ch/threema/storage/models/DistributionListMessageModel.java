@@ -25,7 +25,7 @@ public class DistributionListMessageModel extends AbstractMessageModel {
 	public static final String TABLE = "distribution_list_message";
 	public static final String COLUMN_DISTRIBUTION_LIST_ID = "distributionListId";
 
-	private int distributionListId;
+	private long distributionListId;
 
 	public DistributionListMessageModel() {
 		super();
@@ -35,11 +35,11 @@ public class DistributionListMessageModel extends AbstractMessageModel {
 		super(isStatusMessage);
 	}
 
-	public int getDistributionListId() {
+	public long getDistributionListId() {
 		return this.distributionListId;
 	}
 
-	public DistributionListMessageModel setDistributionListId(int distributionListId) {
+	public DistributionListMessageModel setDistributionListId(long distributionListId) {
 		this.distributionListId = distributionListId;
 		return this;
 	}

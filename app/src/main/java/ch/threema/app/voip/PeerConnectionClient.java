@@ -51,12 +51,10 @@ import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.MediaStreamTrack;
 import org.webrtc.PeerConnection;
-import org.webrtc.PeerConnection.IceConnectionState;
 import org.webrtc.PeerConnection.IceGatheringState;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.RTCStatsCollectorCallback;
 import org.webrtc.RtpParameters;
-import org.webrtc.RtpReceiver;
 import org.webrtc.RtpSender;
 import org.webrtc.RtpTransceiver;
 import org.webrtc.SdpObserver;
@@ -90,7 +88,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -114,8 +111,8 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.CallSignaling;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.stream.StreamSupport;
@@ -213,8 +210,8 @@ public class PeerConnectionClient {
 	private SessionDescription localSdp = null; // either offer or answer SDP
 
 	// Workaround for ANDR-1079 / CRBUG 935905
-	private @Nullable Long setRemoteDescriptionNanotime = null;
-	private @Nullable ScheduledFuture<?> iceFailedFuture = null;
+	private @Nullable CompletableFuture<?> transportExpectedStableFuture = null;
+	private @Nullable CompletableFuture<?> transportFailedFuture = null;
 
 	// Workaround for ANDR-1119
 	private @Nullable List<RtpTransceiver> cachedRtpTransceivers = null;
@@ -331,31 +328,27 @@ public class PeerConnectionClient {
 
 		/**
 		 * Callback fired once connection is starting to check candidate pairs
-		 * (IceConnectionState is CHECKING).
+		 * and attempting the DTLS handshake.
 		 */
-		void onIceChecking(long callId);
+		void onTransportConnecting(long callId);
 
 		/**
-		 * Callback fired once connection is established (IceConnectionState is
-		 * CONNECTED).
+		 * Callback fired once connection is established.
 		 */
-		void onIceConnected(long callId);
+		void onTransportConnected(long callId);
 
 		/**
-		 * Callback fired once connection is closed (IceConnectionState is
-		 * DISCONNECTED).
-		 */
-		void onIceDisconnected(long callId);
-
-		/**
-		 * Callback fired if connection fails (IceConnectionState is
-		 * FAILED).
+		 * Callback fired once connection is temporarily disconnected.
 		 *
-		 * NOTE: Due to ANDR-1079 (CRBUG 935905), this will not be called
-		 *       earlier than 15 seconds after the connection attempt was started.
+		 * Note: This state is recoverable.
+		 */
+		void onTransportDisconnected(long callId);
+
+		/**
+		 * Callback fired once the connection failed.
 		 */
 		@AnyThread
-		void onIceFailed(long callId);
+		void onTransportFailed(long callId);
 
 		/**
 		 * Callback fired if the ICE gathering state changes.
@@ -852,13 +845,16 @@ public class PeerConnectionClient {
 
 	@WorkerThread
 	private void closeInternal() {
-		// Cancel ICE failed future and reset time variables
-		if (this.iceFailedFuture != null) {
-			this.iceFailedFuture.cancel(true);
-			this.iceFailedFuture = null;
-			logger.info("iceFailedFuture: Cancelled (closeInternal)");
+		// Cancel transport futures
+		if (this.transportFailedFuture != null) {
+			this.transportFailedFuture.cancel(true);
+			this.transportFailedFuture = null;
+			logger.info("transportFailedFuture: Cancelled (closeInternal)");
 		}
-		this.setRemoteDescriptionNanotime = null;
+		if (transportExpectedStableFuture != null) {
+			transportExpectedStableFuture.cancel(true);
+			transportExpectedStableFuture = null;
+		}
 
 		// Stop creating further stats requests
 		logger.debug("Clearing periodic stats timers");
@@ -1406,6 +1402,77 @@ public class PeerConnectionClient {
 		@NonNull private Set<String> relatedAddresses = new HashSet<>();
 
 		@Override
+		public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
+			executor.execute(() -> {
+				logger.info("Transport connection state change to {}", newState);
+				if (newState == PeerConnection.PeerConnectionState.CONNECTING) {
+					events.onTransportConnecting(callId);
+				} else if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
+					// Cancel any pending "fail transport after x seconds" future
+					if (transportFailedFuture != null) {
+						// Note: Because the transportFailedFuture is also scheduled on the same executor
+						// as this code, it should not be possible that the scheduled task is
+						// already running.
+						transportFailedFuture.cancel(false);
+						logger.info("transportFailedFuture: Cancelled (because transport reconnected)");
+						transportFailedFuture = null;
+					}
+					events.onTransportConnected(callId);
+				} else if (newState == PeerConnection.PeerConnectionState.DISCONNECTED) {
+					// Schedule to fail the transport after 10s
+					if (transportFailedFuture == null) {
+						logger.info("Scheduling to fail transport in 10s if not reconnected in the meantime");
+						//noinspection Convert2Lambda
+						transportFailedFuture = CompletableFuture.runAsync(new Runnable() {
+							@Override
+							@AnyThread
+							public void run() {
+								logger.info("transportFailedFuture: Time's up, calling onTransportFailed");
+								events.onTransportFailed(callId);
+							}
+						}, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, executor));
+					}
+					events.onTransportDisconnected(callId);
+				} else if (newState == PeerConnection.PeerConnectionState.FAILED) {
+					// Cancel any pending "fail transport after x seconds" future
+					if (transportFailedFuture != null) {
+						// Note: Because the transportFailedFuture is also scheduled on the same executor
+						// as this code, it should not be possible that the scheduled task is
+						// already running.
+						transportFailedFuture.cancel(false);
+						logger.info("transportFailedFuture: Cancelled (because transport failed explicitly)");
+						transportFailedFuture = null;
+					}
+
+					// libwebrtc has a bug where intermittent FAILED states may occur. See
+					// ANDR-1079 and CRBUG 935905 for more details.
+					//
+					// As a workaround, we only forward the FAILED state after the transport is
+					// expected to be stable.
+					if (transportExpectedStableFuture == null) {
+						// The FAILED state should not trigger before we have set a remote description
+						logger.error("transportExpectedStableFuture is null as transport connection state moved into FAILED");
+						events.onTransportFailed(callId);
+					} else {
+						// We use the same future to delay the FAILED state so an intermittent
+						// FAILED state will be cancelled by any other state.
+						if (!transportExpectedStableFuture.isDone()) {
+							logger.info("transportFailedFuture: Delaying onTransportFailed call until the transport is expected to be 'stable'");
+						}
+						//noinspection Convert2Lambda
+						transportFailedFuture = transportExpectedStableFuture.thenRun(new Runnable() {
+							@Override
+							@AnyThread
+							public void run() {
+								events.onTransportFailed(callId);
+							}
+						});
+					}
+				}
+			});
+		}
+
+		@Override
 		public void onIceCandidate(final IceCandidate candidate) {
 			logger.info("New local ICE candidate: {}", candidate.sdp);
 
@@ -1440,11 +1507,7 @@ public class PeerConnectionClient {
 		}
 
 		@Override
-		public void onIceCandidatesRemoved(final IceCandidate[] candidates) {
-			if (logger.isInfoEnabled()) {
-				logger.info("Ignoring removed candidates: {}", Arrays.toString(candidates));
-			}
-		}
+		public void onIceCandidatesRemoved(final IceCandidate[] candidates) {}
 
 		@Override
 		public void onSignalingChange(PeerConnection.SignalingState newState) {
@@ -1453,64 +1516,7 @@ public class PeerConnectionClient {
 
 		@Override
 		public void onIceConnectionChange(final PeerConnection.IceConnectionState newState) {
-			executor.execute(() -> {
-				logger.info("ICE connection state change to {}", newState);
-				if (newState == IceConnectionState.CHECKING) {
-					events.onIceChecking(callId);
-				} else if (newState == IceConnectionState.CONNECTED) {
-					if (iceFailedFuture != null) {
-						// Note: Because the iceFailedFuture is also scheduled on the same executor
-						// as this code, it should not be possible that the scheduled task is
-						// already running.
-						iceFailedFuture.cancel(false);
-						logger.info("iceFailedFuture: Cancelled (connected)");
-						iceFailedFuture = null;
-					}
-					events.onIceConnected(callId);
-				} else if (newState == IceConnectionState.DISCONNECTED) {
-					events.onIceDisconnected(callId);
-				} else if (newState == IceConnectionState.FAILED) {
-					logger.warn("IceConnectionState changed to FAILED");
-					// Note: LibWebRTC has a bug where FAILED is not a terminal state. Sometimes
-					// the IceConnectionState changes to FAILED before all candidates have been
-					// received, and then changes to CONNECTED once the connection has been
-					// established a few ms later. See ANDR-1079 and CRBUG 935905 for more details.
-					// As a workaround, we only fire `onIceFailed` if the state does not switch
-					// to CONNECTED within 15s after setting the remote description.
-					long minimalWaitingTimeSeconds = 15;
-					if (setRemoteDescriptionNanotime == null) {
-						// This should not happen
-						logger.error("createOfferAnswerNanotime is null in onIceConnectionState");
-						events.onIceFailed(callId);
-					} else {
-						// Elapsed nanoseconds since the remote description was set
-						final long elapsedNs = System.nanoTime() - setRemoteDescriptionNanotime;
-						// Max waiting time in nanoseconds
-						final long waitingTimeNs = minimalWaitingTimeSeconds * 1000000000L;
-
-						if (elapsedNs > waitingTimeNs) {
-							// Minimal waiting time already exceeded, trigger event immediately
-							events.onIceFailed(callId);
-						} else {
-							// Less than 15s since remote description was set. Schedule the call to
-							// events.onIceFailed unless it's already scheduled.
-							if (iceFailedFuture == null) {
-								final long remainingNs = waitingTimeNs - elapsedNs;
-								logger.info("iceFailedFuture: Delaying onIceFailed call, {} ms remaining", remainingNs / 1000000);
-								//noinspection Convert2Lambda
-								iceFailedFuture = executor.schedule(new Runnable() {
-									@Override
-									@AnyThread
-									public void run() {
-										logger.info("iceFailedFuture: Time's up, calling onIceFailed");
-										events.onIceFailed(callId);
-									}
-								}, remainingNs, TimeUnit.NANOSECONDS);
-							}
-						}
-					}
-				}
-			});
+			logger.info("ICE connection state change to {}", newState);
 		}
 
 		@Override
@@ -1520,19 +1526,13 @@ public class PeerConnectionClient {
 		}
 
 		@Override
-		public void onIceConnectionReceivingChange(boolean receiving) {
-			logger.info("ICe connection receiving state change to {}", receiving);
-		}
+		public void onIceConnectionReceivingChange(boolean receiving) {}
 
 		@Override
-		public void onAddStream(final MediaStream stream) {
-			logger.warn("Warning: onAddStream (even though we use unified plan)");
-		}
+		public void onAddStream(final MediaStream stream) {}
 
 		@Override
-		public void onRemoveStream(final MediaStream stream) {
-			logger.warn("Warning: onRemoveStream (even though we use unified plan)");
-		}
+		public void onRemoveStream(final MediaStream stream) {}
 
 		@Override
 		public void onDataChannel(final DataChannel dc) {
@@ -1546,16 +1546,6 @@ public class PeerConnectionClient {
 		@Override
 		public void onRenegotiationNeeded() {
 			logger.info("Renegotiation needed");
-		}
-
-		@Override
-		public void onAddTrack(final RtpReceiver receiver, final MediaStream[] mediaStreams) {
-			logger.debug("onAddTrack");
-		}
-
-		@Override
-		public void onTrack(RtpTransceiver transceiver) {
-			logger.debug("onTrack");
 		}
 	}
 
@@ -1609,17 +1599,12 @@ public class PeerConnectionClient {
 					if (peerConnection.getRemoteDescription() == null) {
 						// We've just set our local SDP so time to send it.
 						logger.info("Local SDP set succesfully");
-						if (events != null) {
-							events.onLocalDescription(callId, localSdp);
-						}
+						onLocalDescriptionSet();
 					} else {
 						// We've just set remote description, so drain remote
 						// and send local ICE candidates.
 						logger.info("Remote SDP set succesfully");
-						setRemoteDescriptionNanotime = System.nanoTime();
-						if (events != null) {
-							events.onRemoteDescriptionSet(callId);
-						}
+						onRemoteDescriptionSet();
 						drainCandidates();
 					}
 				} else {
@@ -1629,21 +1614,43 @@ public class PeerConnectionClient {
 						// We've just set our local SDP so time to send it, drain
 						// remote and send local ICE candidates.
 						logger.info("Local SDP set succesfully");
-						if (events != null) {
-							events.onLocalDescription(callId, localSdp);
-						}
+						onLocalDescriptionSet();
 						drainCandidates();
 					} else {
 						// We've just set remote SDP - do nothing for now -
 						// answer will be created soon.
 						logger.info("Remote SDP set succesfully");
-						setRemoteDescriptionNanotime = System.nanoTime();
-						if (events != null) {
-							events.onRemoteDescriptionSet(callId);
-						}
+						onRemoteDescriptionSet();
 					}
 				}
 			});
+		}
+
+		private void onLocalDescriptionSet() {
+			if (events != null) {
+				events.onLocalDescription(callId, localSdp);
+			}
+		}
+
+		private void onRemoteDescriptionSet() {
+			if (events != null) {
+				events.onRemoteDescriptionSet(callId);
+			}
+
+			// Schedule to expect the transport to be 'stable' after 10s. This is a workaround
+			// for intermittent FAILED states.
+			if (transportExpectedStableFuture != null) {
+				logger.error("transportExpectedStableFuture was already running!");
+				transportExpectedStableFuture.cancel(true);
+			}
+			//noinspection Convert2Lambda
+			transportExpectedStableFuture = CompletableFuture.runAsync(new Runnable() {
+				@Override
+				@AnyThread
+				public void run() {
+					logger.info("transportExpectedStableFuture: Transport is expected to be 'stable' now");
+				}
+			}, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, executor));
 		}
 
 		@Override

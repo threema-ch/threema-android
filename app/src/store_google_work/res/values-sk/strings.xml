@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work pre Android</string>
-    <string name="enter_serial_body">Zadajte prihlasovacie údaje poskytnuté vašou spoločnosťou, alebo organizáciou</string>
-    <string name="serial_required_want_exit">Licencia je neplatná. Chcete to skúsiť znovu alebo ukončiť Threemu?</string>
+    <string name="enter_serial_body">Threema Work je komunikátor určený pre spoločnosti. Zadajte prihlasovacie údaje poskytnuté vašou spoločnosťou.</string>
+    <string name="serial_required_want_exit">Licencia je neplatná. Chcete to skúsiť znovu alebo ukončiť Threemu Work?</string>
     <string name="checking_serial">Kontrola prihlasovacích údajov</string>
     <string name="username_hint">Užívateľské meno</string>
     <string name="new_wizard_works_like_phone_number">Vaše Threema ID funguje ako vaše telefónne číslo.\nVaše kontakty vás môžu prostredníctvom tohoto ID kontaktovať.</string>
@@ -22,5 +22,5 @@
     <string name="private_threema_download"><![CDATA[Ak ste súkromný používateľ, prosím <a href="https://play.google.com/store/apps/details?id=ch.threema.app">kliknite sem</a> na stiahnutie aplikácie Threema.]]></string>
     <string name="directory_search">Hľadať v adresári</string>
     <string name="directory_title">Adresár spoločnosti</string>
-    <string name="directory_empty_view_text">Neboli nájdené žiadne záznamy\n\nAk chcete vyhľadávať v adresári užívateľov Threema vašej spoločnosti, zadajte aspoň 3 znaky</string>
+    <string name="directory_empty_view_text">Zadajte aspoň 3 znaky mena, aby ste mohli začať hľadať v adresári vašej spoločnosti používateľov Threema Work alebo vyberte kategóriu klepnutím na ikonu filtra.</string>
 </resources>

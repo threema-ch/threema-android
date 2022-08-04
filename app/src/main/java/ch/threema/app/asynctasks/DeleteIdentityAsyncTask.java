@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -54,8 +55,8 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 	private final FragmentManager fragmentManager;
 	private final Runnable runOnCompletion;
 
-	public DeleteIdentityAsyncTask(FragmentManager fragmentManager,
-	                               Runnable runOnCompletion) {
+	public DeleteIdentityAsyncTask(@Nullable FragmentManager fragmentManager,
+	                               @Nullable Runnable runOnCompletion) {
 
 		this.serviceManager = ThreemaApplication.getServiceManager();
 		this.fragmentManager = fragmentManager;
@@ -64,7 +65,9 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 
 	@Override
 	protected void onPreExecute() {
-		GenericProgressDialog.newInstance(R.string.delete_id_title, R.string.please_wait).show(fragmentManager, DIALOG_TAG_DELETING_ID);
+		if (fragmentManager != null) {
+			GenericProgressDialog.newInstance(R.string.delete_id_title, R.string.please_wait).show(fragmentManager, DIALOG_TAG_DELETING_ID);
+		}
 	}
 
 	@Override
@@ -78,7 +81,9 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			serviceManager.getConversationService().reset();
 			serviceManager.getGroupService().removeAll();
 			serviceManager.getContactService().removeAll();
-			serviceManager.getUserService().removeIdentity();
+			try {
+				serviceManager.getUserService().removeIdentity();
+			} catch (Exception ignored) {}
 			serviceManager.getDistributionListService().removeAll();
 			serviceManager.getBallotService().removeAll();
 			serviceManager.getPreferenceService().clear();
@@ -140,7 +145,9 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 
 	@Override
 	protected void onPostExecute(Exception exception) {
-		DialogUtil.dismissDialog(fragmentManager, DIALOG_TAG_DELETING_ID, true);
+		if (fragmentManager != null) {
+			DialogUtil.dismissDialog(fragmentManager, DIALOG_TAG_DELETING_ID, true);
+		}
 		if (exception != null) {
 			Toast.makeText(ThreemaApplication.getAppContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
 		} else {

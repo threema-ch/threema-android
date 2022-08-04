@@ -212,6 +212,14 @@
 		<item name="cornerSize">@dimen/media_attach_button_radius</item>
 	</style>
 
+	<style name="Threema.ShapeAppearance.RecentlyAdded" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSizeBottomLeft">@dimen/recently_added_background_corner_size</item>
+		<item name="cornerSizeTopLeft">@dimen/recently_added_background_corner_size</item>
+		<item name="cornerSizeBottomRight">0dp</item>
+		<item name="cornerSizeTopRight">0dp</item>
+	</style>
+
 	<style name="Threema.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
 		<item name="android:background">?attr/material_toolbar_color</item>
 		<item name="titleTextAppearance">@style/TextAppearance.Toolbar.Title</item>
@@ -290,8 +298,13 @@
 		<item name="android:textColor">?attr/text_color_third_line</item>
 	</style>
 
-	<style name="Threema.TextAppearance.List.ThirdLine.Bold" parent="Threema.TextAppearance.List.ThirdLine">
+	<style name="Threema.TextAppearance.List.ThirdLine.Red" parent="Threema.TextAppearance.List.ThirdLine">
 		<item name="android:textColor">@color/material_red</item>
+		<item name="android:textAllCaps">true</item>
+	</style>
+
+	<style name="Threema.TextAppearance.List.ThirdLine.Bold" parent="Threema.TextAppearance.List.ThirdLine">
+		<item name="android:textColor">?attr/textColorPrimary</item>
 		<item name="android:textAllCaps">true</item>
 	</style>
 

@@ -32,6 +32,7 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 
@@ -184,6 +185,8 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 					if (file != null) {
 						restoreBackupFile(file);
 						file.deleteOnExit();
+					} else {
+						Toast.makeText(this, "Unable to access/copy selected file to temporary directory", Toast.LENGTH_LONG).show();
 					}
 				});
 			}).start();

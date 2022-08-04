@@ -999,19 +999,21 @@ public class CallActivity extends ThreemaActivity implements
 			}
 		}
 
-		// stop capturing
-		if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
-			// disable outgoing video
-			VoipUtil.sendVoipBroadcast(getApplicationContext(), VoipCallService.ACTION_STOP_CAPTURING);
+		if (this.voipStateService != null) {
+			// stop capturing
+			if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
+				// disable outgoing video
+				VoipUtil.sendVoipBroadcast(getApplicationContext(), VoipCallService.ACTION_STOP_CAPTURING);
 
-			// make sure outgoing flag is cleared
-			voipStateService.setVideoRenderMode(voipStateService.getVideoRenderMode() & ~VIDEO_RENDER_FLAG_OUTGOING);
-		}
+				// make sure outgoing flag is cleared
+				voipStateService.setVideoRenderMode(voipStateService.getVideoRenderMode() & ~VIDEO_RENDER_FLAG_OUTGOING);
+			}
 
-		// Unset video target
-		if (this.voipStateService.getVideoContext() != null) {
-			this.voipStateService.getVideoContext().setLocalVideoSinkTarget(null);
-			this.voipStateService.getVideoContext().setRemoteVideoSinkTarget(null);
+			// Unset video target
+			if (this.voipStateService.getVideoContext() != null) {
+				this.voipStateService.getVideoContext().setLocalVideoSinkTarget(null);
+				this.voipStateService.getVideoContext().setRemoteVideoSinkTarget(null);
+			}
 		}
 
 		// Release connection
@@ -1039,7 +1041,9 @@ public class CallActivity extends ThreemaActivity implements
 			this.videoViews = null;
 		}
 
-		this.preferenceService.setPipPosition(pipPosition);
+		if (this.preferenceService != null) {
+			this.preferenceService.setPipPosition(pipPosition);
+		}
 
 		// remove lockscreen keepalive
 		keepAliveHandler.removeCallbacksAndMessages(null);
@@ -1813,7 +1817,7 @@ public class CallActivity extends ThreemaActivity implements
 			rejectIntent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, contact.getIdentity());
 			rejectIntent.putExtra(VoipCallService.EXTRA_CALL_ID, callId);
 			rejectIntent.putExtra(CallRejectService.EXTRA_REJECT_REASON, reason);
-			CallRejectService.enqueueWork(this, rejectIntent);
+			ContextCompat.startForegroundService(this, rejectIntent);
 		} else if (this.activityMode == MODE_ACTIVE_CALL) {
 			VoipUtil.sendVoipCommand(CallActivity.this, VoipCallService.class, VoipCallService.ACTION_HANGUP);
 			setResult(RESULT_CANCELED);
@@ -2164,21 +2168,23 @@ public class CallActivity extends ThreemaActivity implements
 			aspectRatio = new Rational(videoContext.getFrameHeight(), videoContext.getFrameWidth());
 		}
 
-		launchBounds = new Rect(this.commonViews.backgroundView.getLeft(),
-			this.commonViews.backgroundView.getTop(),
-			this.commonViews.backgroundView.getRight(),
-			this.commonViews.backgroundView.getBottom());
+		if (this.commonViews != null) {
+			launchBounds = new Rect(this.commonViews.backgroundView.getLeft(),
+				this.commonViews.backgroundView.getTop(),
+				this.commonViews.backgroundView.getRight(),
+				this.commonViews.backgroundView.getBottom());
 
-		PictureInPictureParams pipParams = new PictureInPictureParams.Builder()
-			.setAspectRatio(aspectRatio)
-			.setSourceRectHint(launchBounds)
-			.build();
+			PictureInPictureParams pipParams = new PictureInPictureParams.Builder()
+				.setAspectRatio(aspectRatio)
+				.setSourceRectHint(launchBounds)
+				.build();
 
-		try {
-			enterPictureInPictureMode(pipParams);
-		} catch (IllegalArgumentException e) {
-			logger.error("Unable to enter PIP mode", e);
-			unhideNavigation(false);
+			try {
+				enterPictureInPictureMode(pipParams);
+			} catch (IllegalArgumentException e) {
+				logger.error("Unable to enter PIP mode", e);
+				unhideNavigation(false);
+			}
 		}
 	}
 

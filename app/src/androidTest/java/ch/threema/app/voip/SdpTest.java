@@ -102,23 +102,23 @@ public class SdpTest {
 		}
 
 		@Override
-		public void onIceChecking(long callId) {
-			Log.d(TAG,"onIceChecking");
+		public void onTransportConnecting(long callId) {
+			Log.d(TAG,"onTransportConnecting");
 		}
 
 		@Override
-		public void onIceConnected(long callId) {
-			Log.d(TAG,"onIceConnected");
+		public void onTransportConnected(long callId) {
+			Log.d(TAG,"onTransportConnected");
 		}
 
 		@Override
-		public void onIceDisconnected(long callId) {
-			Log.d(TAG,"onIceDisconnected");
+		public void onTransportDisconnected(long callId) {
+			Log.d(TAG,"onTransportDisconnected");
 		}
 
 		@Override
-		public void onIceFailed(long callId) {
-			Log.d(TAG,"onIceFailed");
+		public void onTransportFailed(long callId) {
+			Log.d(TAG,"onTransportFailed");
 		}
 
 		@Override
@@ -359,14 +359,10 @@ public class SdpTest {
 				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
 				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
 				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
 			} else {
 				expectedMatchesPart1.add("^a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
 				expectedMatchesPart1.add("^a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
 				expectedMatchesPart1.add("^a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-				expectedMatchesPart1.add("^a=extmap:18 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
-				expectedMatchesPart1.add("^a=extmap:19 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
 			}
 		}
 		expectedMatchesPart1.add("^a=sendrecv$");

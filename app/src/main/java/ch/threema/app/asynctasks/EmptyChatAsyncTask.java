@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
@@ -58,7 +59,7 @@ public class EmptyChatAsyncTask extends AsyncTask<Void, Integer, Integer> {
 	public EmptyChatAsyncTask(MessageReceiver messageReceiver,
 	                          MessageService messageService,
 	                          ConversationService conversationService,
-	                          FragmentManager fragmentManager,
+	                          @Nullable FragmentManager fragmentManager,
 	                          boolean quiet,
 	                          Runnable runOnCompletion) {
 

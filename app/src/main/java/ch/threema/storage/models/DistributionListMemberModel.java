@@ -31,14 +31,14 @@ public class DistributionListMemberModel {
 
 	private int id;
 	private String identity;
-	private int distributionListId;
+	private long distributionListId;
 	private boolean isActive = true;
 
-	public int getDistributionListId() {
+	public long getDistributionListId() {
 		return distributionListId;
 	}
 
-	public DistributionListMemberModel setDistributionListId(int distributionListId) {
+	public DistributionListMemberModel setDistributionListId(long distributionListId) {
 		this.distributionListId = distributionListId;
 		return this;
 	}

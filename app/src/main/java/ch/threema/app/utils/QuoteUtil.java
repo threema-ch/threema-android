@@ -315,31 +315,17 @@ public class QuoteUtil {
 	 * @return true if the message can be quoted, false otherwise
 	 */
 	public static boolean isQuoteable(AbstractMessageModel messageModel) {
-
-		if (ConfigUtils.canCreateV2Quotes()) {
-			switch (messageModel.getType()) {
-				case IMAGE:
-				case FILE:
-				case VIDEO:
-				case VOICEMESSAGE:
-				case TEXT:
-				case BALLOT:
-				case LOCATION:
-					return messageModel.getApiMessageId() != null;
-				default:
-					return false;
-			}
-		} else {
-			switch (messageModel.getType()) {
-				case TEXT:
-					return true;
-				case IMAGE:
-				case LOCATION:
-				case FILE:
-					return !TestUtil.empty(messageModel.getCaption());
-				default:
-					return false;
-			}
+		switch (messageModel.getType()) {
+			case IMAGE:
+			case FILE:
+			case VIDEO:
+			case VOICEMESSAGE:
+			case TEXT:
+			case BALLOT:
+			case LOCATION:
+				return messageModel.getApiMessageId() != null;
+			default:
+				return false;
 		}
 	}
 
@@ -353,21 +339,13 @@ public class QuoteUtil {
 	 * @param quoteText
 	 * @return
 	 */
-	public static String quote(String text, @Nullable String quoteIdentity, @Nullable String quoteText, AbstractMessageModel messageModel) {
+	public static String quote(String text, @Nullable String quoteIdentity, @Nullable String quoteText, @NonNull AbstractMessageModel messageModel) {
 		//do not quote if identity or quoting text is empty or null
 		if(TestUtil.empty(quoteIdentity, quoteText)) {
 			return text;
 		}
 
-		if (ConfigUtils.canCreateV2Quotes() && messageModel != null) {
-			return "> quote #" + messageModel.getApiMessageId() + "\n\n" + text;
-		} else {
-			String quote = quoteIdentity + ": " + quoteText;
-			quote = quote.replaceAll(".*(\\r\\n|\\n)|.+\\z",
-					Matcher.quoteReplacement(QuoteUtil.QUOTE_PREFIX) +
-							"$0");
-			return quote + "\n\n" + text;
-		}
+		return "> quote #" + messageModel.getApiMessageId() + "\n\n" + text;
 	}
 
 	public static class QuoteContent {
