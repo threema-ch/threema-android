@@ -344,16 +344,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					logStackTrace(v.getStackTrace());
 				})
 				.build());
-/*
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-				.detectAll()   // or .detectAll() for all detectable problems
-//				.penaltyFlashScreen()
-				.penaltyListener(Executors.newSingleThreadExecutor(), v -> {
-					logger.info("STRICTMODE ThreadPolicy: " + v.getCause());
-					logStackTrace(v.getStackTrace());
-				})
-				.build());
-*/		}
+		}
 
 		super.onCreate();
 
