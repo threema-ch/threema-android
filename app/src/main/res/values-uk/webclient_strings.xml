@@ -7,7 +7,7 @@
     <string name="webclient_created_at">Створено: %1$s (%2$s)</string>
     <string name="webclient_active_since">Активний з: %s</string>
     <string name="webclient_enable">Увімкнути веб-клієнт або додаток для ПК</string>
-    <string name="webclient_no_sessions_found">Щоб підключитися, завантажте додаток для ПК (<b>https://threema.ch/download</b>) або відкрийте веб-клієнт (<b>%s</b>), а тоді натисніть кнопку нижче й відскануйте QR-код, наведений на екрані комп\'ютера,</string>
+    <string name="webclient_no_sessions_found">Щоб підключитися, завантажте додаток для ПК (<b>https://threema.ch/download</b>) або відкрийте веб-клієнт (<b>%s</b>), а тоді натисніть кнопку нижче й відскануйте QR-код з екрана комп\'ютера.</string>
     <string name="webclient_session_rename">Перейменувати сеанс</string>
     <string name="webclient_session_label">Нова назва</string>
     <string name="webclient_session_start">Почати сеанс</string>
@@ -19,7 +19,7 @@
     <string name="webclient_welcome_title">Спілкуйтеся на комп\'ютері!</string>
     <string name="webclient_welcome_explain">За допомогою веб-клієнта та додатка для ПК можна спілкуватися на комп\'ютері або ноутбуці, зберігаючи повний доступ до всіх контактів, медіафайлів і чатів, включно з минулими розмовами.\n\n<b>Передавання будь-яких даних між телефоном і комп\'ютером захищено наскрізним шифруванням</b>. Крім того, якщо телефон і комп\'ютер знаходяться в одній мережі, використовується пряме підключення.\n\nПід час використання веб-клієнта або додатка для ПК акумулятор телефону може розряджатися швидше. Цю функцію можна ввімкнути або вимкнути коли завгодно.</string>
     <string name="webclient_launch">Запустити веб-клієнт або додаток для ПК</string>
-    <string name="webclient_qr_scan_message">Відскануйте QR-код, наведений на вашому комп\'ютері.</string>
+    <string name="webclient_qr_scan_message">Відскануйте QR-код з екрана комп\'ютера.</string>
     <string name="webclient_invalid_qr_code">Недійсний QR-код</string>
     <string name="webclient_new_connection_toast">Почато сеанс у веб-клієнті або додатку для ПК</string>
     <string name="webclient_protocol_error">Помилка протоколу</string>

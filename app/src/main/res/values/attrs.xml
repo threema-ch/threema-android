@@ -189,4 +189,14 @@
 		<attr name="fillColorAlpha" format="integer" />
 	</declare-styleable>
 
+	<!-- Audio Progress Bar -->
+	<declare-styleable name="AudioProgressBarView">
+		<attr name="barHeight" format="dimension" />
+		<attr name="barMinHeight" format="dimension" />
+		<attr name="barWidth" format="dimension" />
+		<attr name="spaceWidth" format="dimension" />
+		<attr name="barColor" format="color"/>
+		<attr name="barColorActivated" format="color"/>
+	</declare-styleable>
+
 </resources>

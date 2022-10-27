@@ -69,6 +69,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
@@ -480,25 +481,25 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		@Override
-		public void onFinished(@NonNull String peerIdentity, boolean outgoing, int duration) {
+		public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
 			logger.debug("VoipCallEventListener onFinished");
 			updateVoipCallMenuItem(true);
 		}
 
 		@Override
-		public void onRejected(String peerIdentity, boolean outgoing, byte reason) {
+		public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
 			logger.debug("VoipCallEventListener onRejected");
 			updateVoipCallMenuItem(true);
 		}
 
 		@Override
-		public void onMissed(String peerIdentity, boolean accepted) {
+		public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
 			logger.debug("VoipCallEventListener onMissed");
 			updateVoipCallMenuItem(true);
 		}
 
 		@Override
-		public void onAborted(String peerIdentity) {
+		public void onAborted(long callId, String peerIdentity) {
 			logger.debug("VoipCallEventListener onAborted");
 			updateVoipCallMenuItem(true); }
 	};
@@ -1440,7 +1441,10 @@ public class ComposeMessageFragment extends Fragment implements
 						if (isQuotePanelShown() && abstractMessageModel.equals(quoteInfo.messageModel)) {
 							closeQuoteMode();
 						} else {
-							startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.showSoftKeyboard(messageText)));
+							startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> {
+								messageText.requestFocus();
+								EditTextUtil.showSoftKeyboard(messageText);
+							}));
 						}
 					}
 				}
@@ -2983,31 +2987,33 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void copySelectedMessagesToClipboard() {
-		AbstractMessageModel messageModel = selectedMessages.get(0);
-
-		if (messageModel == null) {
-			logger.error("no message model", activity);
+		if (selectedMessages.isEmpty()) {
+			logger.error("no selected messages");
 			return;
 		}
 
-		String body = "";
+		StringBuilder body = new StringBuilder();
 		for (AbstractMessageModel message : selectedMessages) {
 			if (body.length() > 0) {
-				body += "\n";
+				body.append("\n");
 			}
 
-			body += message.getType() == MessageType.TEXT ?
+			body.append(message.getType() == MessageType.TEXT ?
 				QuoteUtil.getMessageBody(message, false) :
-				message.getCaption();
+				message.getCaption());
 		}
 
 		try {
 			ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
 			if (clipboard != null) {
-				ClipData clipData = ClipData.newPlainText(null, body);
+				ClipData clipData = ClipData.newPlainText(null, body.toString());
 				if (clipData != null) {
 					clipboard.setPrimaryClip(clipData);
-					Snackbar.make(coordinatorLayout, R.string.message_copied, Snackbar.LENGTH_SHORT).show();
+					Snackbar.make(
+						coordinatorLayout,
+						getResources().getQuantityString(R.plurals.message_copied, selectedMessages.size()),
+						BaseTransientBottomBar.LENGTH_SHORT
+					).show();
 				}
 			}
 		} catch (Exception e) {
@@ -3918,7 +3924,10 @@ public class ComposeMessageFragment extends Fragment implements
 					mode.finish();
 					break;
 				case R.id.menu_message_quote:
-					startQuoteMode(null, null);
+					startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> {
+						messageText.requestFocus();
+						EditTextUtil.showSoftKeyboard(messageText);
+					}));
 					mode.finish();
 					break;
 				case R.id.menu_show_text:

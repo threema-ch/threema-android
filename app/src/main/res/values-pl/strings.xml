@@ -112,6 +112,7 @@
     <string name="copy_message_action">Kopiuj</string>
     <string name="delete_contact_action">Usuń kontakt</string>
     <string name="scan_id">Zeskanuj identyfikator</string>
+    <string name="id_scanned">ID zeskanowany</string>
     <string name="id_mismatch">Klucz publiczny, który zeskanowałeś nie odpowiada kluczowi, który serwer przetrzymuje dla tego identyfikatora. Oznacza to, że ktoś zmanipulował zeskanowany kod i nie powinieneś mu ufać.</string>
     <string name="scan_successful">Identyfikator został pomyślnie zeskanowany i kontakt jest zweryfikowany.</string>
     <string name="scan_duplicate">Identyfikator został już zeskanowany i zweryfikowany wcześniej.</string>
@@ -510,7 +511,6 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="file_placeholder">Plik</string>
     <string name="internal_storage">Pamięć wewnętrzna</string>
     <string name="no_activity_for_mime_type">Nie znaleziono aplikacji umożliwiającej otwarcie tego pliku.</string>
-    <string name="message_copied">Wiadomość skopiowana</string>
     <string name="open_from">Otwórz z</string>
     <string name="file_one_contact_not_supported">%1$s nie może odbierać plików.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Ostrzeżenie: Niektóre z Twoich kontaktów (%1$d) nie mogą odbierać plików.</string>
@@ -641,6 +641,7 @@ serwery. Klucz prywatny nigdy nie opuszcza twojego urządzenia. To gwarantuje ni
     <string name="new_wizard_info_sync_contacts">Po włączeniu tej opcji Threema jednokierunkowo szyfruje (haszuje) adresy e-mail i numery telefonów
 przed wysłaniem ich do serwera w celu wyszukania pasujących kontaktów. Nie przechowujemy żadnych
 danych z książki adresowej.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Synchronizacja kontaktów może pomóc w automatycznym znalezieniu znajomych. Jeśli wyrazisz zgode, numery telefonów i adresy e-mail z Twojej książki telefonicznej zostaną zaszyfrowane przed wysłaniem na nasz serwer w celu wyszukania pasujących kontaktów. Absolutnie żadne dane nie będą przechowywane lub udostępnione.\n\nCzy chcesz włączyć synchronizację kontaktów?</string>
     <string name="new_wizard_info_link">Dzięki podaniu numeru telefonu i adresu e-mail, Threema jest w stanie pomóc twoim znajomym
 znaleźć cię automatycznie, jeśli występujesz w książce adresowej ich telefonu. Adresy e-mail są przechowywane w postaci
 zaszyfrowanej jednokierunkowo (haszowanej) na naszym serwerze. Możesz po prostu pominąć ten krok, jeśli chcesz używać Threema
@@ -888,7 +889,7 @@ anonimowo?</string>
     <string name="unchanged">bez zmian</string>
     <string name="safe_learn_more_button">Więcej informacji</string>
     <string name="safe_enable_explain">Wszystko, czego potrzebujesz do rozmowy, przechowywane jest wyłącznie na Twoim urządzeniu. Nie musisz tworzyć u nas żadnego konta i nie możemy Ci pomóc, jeśli zgubisz swój telefon lub przypadkowo usuniesz dane.\n\nThreema Safe tworzy automatyczne kopie zapasowe wszystkich istotnych danych – w tym kluczy, listy kontaktów i członkostwa w grupach (lecz bez treści wiadomości),  anonimowo na bezpiecznym, wybranym przez Ciebie serwerze.</string>
-    <string name="safe_disable_confirm">Czy na pewno chcesz włączyć Threema Safe?</string>
+    <string name="safe_disable_confirm">Czy na pewno chcesz wyłączyć usługę Threema Safe? Korzystając z Threema Safe możesz odzyskać dostęp do swojego Threema ID, kontaktów i grup, nawet w przypadku utracenia dostępu do urządzenia.</string>
     <string name="safe_configure_choose_password">Wybierz hasło. Będzie ci ono potrzebne do przywrócenia kopii zapasowej Threema Safe.</string>
     <string name="safe_configure_choose_server">Wybierz serwer Threema Safe</string>
     <string name="safe_configure_server_explain">Możesz skorzystać z serwera Threema lub wybrać serwer zewnętrzny.</string>
@@ -1270,7 +1271,7 @@ anonimowo?</string>
     <string name="back_to_threema">Wracasz do %s?</string>
     <string name="id_backup_info">Przywróć tylko swoje ID</string>
     <string name="restore_your_id_contacts_and_groups">Przywróć swój identyfikator, kontakty i grupy</string>
-    <string name="threema_safe_backup">Bezp. kopia zapasowa Threema</string>
+    <string name="threema_safe_backup">Threema Safe</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Nie pamiętasz hasła?</a>]]></string>
     <string name="download_failed">Pobieranie nie powiodło się. Kod błędu: %d</string>
     <string name="edit_answer">Edytuj odpowiedź</string>
@@ -1403,6 +1404,8 @@ anonimowo?</string>
     <string name="last_added_contact">Ostatnio dodany</string>
     <string name="directory_explain_text">Przeszukaj katalog firmowy, by znaleźć pracowników, których nie ma na liście kontaktów.</string>
     <string name="cannot_display_location">Nie można pokazać lokalizacji.</string>
+    <string name="unable_to_restore_identity_because">Nie można przywrócić identyfikatora. Powód: %s</string>
+    <string name="share_with_app">Udostępnij z Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>
@@ -1410,21 +1413,27 @@ anonimowo?</string>
         <item quantity="other">%d kontaktów</item>
     </plurals>
     <plurals name="really_delete_thread_message">
-        <item quantity="one">Czy na pewno chcesz usunąć %d chat?</item>
         <item quantity="few">Czy na pewno chcesz usunąć %d chaty?</item>
         <item quantity="many">Czy na pewno chcesz usunąć %d chaty?</item>
+        <item quantity="one">Czy na pewno chcesz usunąć %d chat?</item>
         <item quantity="other">Czy na pewno chcesz usunąć %d chaty?</item>
     </plurals>
     <plurals name="sending_message_failed">
-        <item quantity="one">Wysyłanie wiadomości nie powiodło %1$d</item>
         <item quantity="few">Wysyłanie wiadomości nie powiodło %1$d</item>
         <item quantity="many">Wysyłanie wiadomości nie powiodło %1$d</item>
+        <item quantity="one">Wysyłanie wiadomości nie powiodło %1$d</item>
         <item quantity="other">Wysyłanie wiadomości nie powiodło %1$d</item>
     </plurals>
     <plurals name="selection_counter_label">
-        <item quantity="one">Wybrano %d obrazy</item>
         <item quantity="few">Wybrano %d obrazyów</item>
         <item quantity="many">Wybrano %d obrazyów</item>
+        <item quantity="one">Wybrano %d obrazy</item>
         <item quantity="other">Wybrano %d obrazyów</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Wiadomość skopiowana</item>
+        <item quantity="other">Wiadomości skopiowane</item>
+        <item quantity="few">Wiadomości skopiowane</item>
+        <item quantity="many">Wiadomości skopiowane</item>
     </plurals>
 </resources>

@@ -815,4 +815,10 @@
 		<item name="android:textAppearance">@style/Threema.Text.Overline</item>
 		<item name="autoSizeTextType">none</item>
 	</style>
+
+	<style name="SeekBar.Audio" parent="@style/Widget.AppCompat.SeekBar">
+		<item name="android:progressBackgroundTint">@android:color/transparent</item>
+		<item name="android:progressTint">@android:color/transparent</item>
+		<item name="android:thumb">@drawable/seekbar_thumb_audio</item>
+	</style>
 </resources>

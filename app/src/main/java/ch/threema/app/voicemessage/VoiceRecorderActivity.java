@@ -44,6 +44,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -51,11 +57,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -87,6 +88,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	public static final int BLUETOOTH_SAMPLING_RATE_HZ = 8000;
 
 	public static final String VOICEMESSAGE_FILE_EXTENSION = ".aac";
+	private static final int DISCARD_CONFIRMATION_THRESHOLD_SECONDS = 10;
 
 	private enum MediaState {
 		STATE_NONE,
@@ -652,7 +654,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 		switch (v.getId()) {
 			case R.id.discard_button:
 				stopAndReleaseMediaPlayer(mediaPlayer);
-				if (status == MediaState.STATE_RECORDING && getRecordingDuration() >= 5) {
+				if (status == MediaState.STATE_RECORDING && getRecordingDuration() >= DISCARD_CONFIRMATION_THRESHOLD_SECONDS) {
 					stopRecording();
 					cancelRecording();
 				} else {

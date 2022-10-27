@@ -68,18 +68,15 @@
 	<uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 	<uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 
-	<!-- licence stuff -->
-	<uses-permission android:name="com.android.vending.CHECK_LICENSE"/>
-
-	<!-- launcher shortcuts -->
+	<!-- Launcher shortcuts -->
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
 
-	<!-- for huawei launcher badges -->
+	<!-- Huawei launcher badges -->
 	<uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE"/>
 	<uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS"/>
 	<uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS"/>
 
-	<!-- sony launcher badges -->
+	<!-- Sony launcher badges -->
 	<uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"/>
 
 	<!-- only for fastlane test -->
@@ -233,7 +230,7 @@
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode"
 			android:exported="true">
-			<intent-filter android:label="@string/app_name">
+			<intent-filter android:label="@string/share_with_app">
 				<action android:name="android.intent.action.SEND"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<data android:mimeType="text/plain"/>
@@ -243,7 +240,7 @@
 				<data android:mimeType="application/*"/>
 				<data android:mimeType="*/*"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
+			<intent-filter android:label="@string/share_with_app">
 				<action android:name="android.intent.action.SEND_MULTIPLE"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<data android:mimeType="*/*"/>

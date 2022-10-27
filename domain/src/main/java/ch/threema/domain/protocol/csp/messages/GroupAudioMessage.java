@@ -34,7 +34,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * The contents are referenced by the {@code audioBlobId}, the {@code audioSize} in bytes, and the
  * {@code encryptionKey} to be used when decrypting the audio blob.
+ *
+ *  @Deprecated Use GroupFileMessage instead
  */
+@Deprecated
 public class GroupAudioMessage extends AbstractGroupMessage {
 
 	private int duration;

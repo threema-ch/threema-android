@@ -29,11 +29,12 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.PreferenceService;
@@ -160,7 +161,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 			.addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
 				@Override
 				public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
-					RuntimeUtil.runOnUiThread(() -> invalidate(holder, position));
+					invalidate(holder, position);
 				}
 
 				@Override

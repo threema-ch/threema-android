@@ -502,14 +502,18 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	@UiThread
 	private void setAvatarBitmap(@Nullable Bitmap bitmap) {
 		if (bitmap != null) {
-			if (hires) {
-				if (isMyProfilePicture) {
-					this.avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getResources(), bitmap));
+			try {
+				if (hires) {
+					if (isMyProfilePicture) {
+						this.avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getResources(), bitmap));
+					} else {
+						this.avatarImage.setImageBitmap(bitmap);
+					}
 				} else {
-					this.avatarImage.setImageBitmap(bitmap);
+					this.avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getResources(), bitmap));
 				}
-			} else {
-				this.avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getResources(), bitmap));
+			} catch (RuntimeException e) {
+				logger.error("Unable to set avatar bitmap", e);
 			}
 			if (ColorUtil.getInstance().calculateBrightness(bitmap, 2) > 100) {
 				this.avatarImage.setColorFilter(getResources().getColor(R.color.material_grey_300), PorterDuff.Mode.DARKEN);

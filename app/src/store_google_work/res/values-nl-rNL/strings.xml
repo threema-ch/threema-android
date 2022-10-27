@@ -23,4 +23,5 @@
     <string name="directory_search">Zoeken in de directory</string>
     <string name="directory_title">Bedrijfsdirectory</string>
     <string name="directory_empty_view_text">Voer ten minste 3 tekens van een naam in om in de bedrijfsdirectory naar Threema Work-gebruikers te zoeken</string>
+    <string name="share_with_app">Met Threema Work delen</string>
 </resources>

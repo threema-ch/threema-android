@@ -806,7 +806,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 						default:
 							txt = R.string.id_mismatch;
 					}
-					SimpleStringAlertDialog.newInstance(R.string.scan_id, getString(txt)).show(getSupportFragmentManager(), "scanId");
+					SimpleStringAlertDialog.newInstance(R.string.id_scanned, getString(txt)).show(getSupportFragmentManager(), "scanId");
 				}
 				break;
 			case REQUEST_CODE_CONTACT_EDITOR:

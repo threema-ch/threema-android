@@ -42,6 +42,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
+import org.slf4j.Logger;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -82,6 +84,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -90,6 +93,7 @@ import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageAdapter");
 
 	private final List<AbstractMessageModel> values;
 	private final ChatAdapterDecorator.Helper decoratorHelper;

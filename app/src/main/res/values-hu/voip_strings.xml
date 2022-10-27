@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <resources>
 	<string name="voip_title">Threema hívás</string>
 	<string name="voip_hangup">Letevés</string>
@@ -6,13 +7,19 @@
 	<string name="voip_switch_cam">Kamera átkapcsolása</string>
 	<string name="voip_switch_cam_front">Szelfi kamerára váltott</string>
 	<string name="voip_switch_cam_rear">Fő kamerára váltott</string>
+	<string name="voip_toggle_video">Videó üzemmód váltása</string>
 	<string name="voip_call_confirm">Szeretné felhívni %1$s-t?</string>
+	<string name="voip_error_call">Hiba a Threema hívás során</string>
 	<string name="voip_error_init_call">Híváshiba</string>
 	<string name="voip_notification_title">Threema hívás</string>
 	<string name="voip_notification_text">%1$s hívja</string>
+	<!-- Shown when starting a call, before the peer device is ringing -->
 	<string name="voip_status_initializing">Hívás indítása</string>
+	<!-- Shown when the callee has accepted the call and the connection is being established -->
 	<string name="voip_status_connecting">Csatlakoztatás</string>
+	<!-- Shown when a call is being disconnected -->
 	<string name="voip_status_disconnecting">Kapcsolat bontása</string>
+	<!-- Shown when the device of the callee is ringing -->
 	<string name="voip_status_ringing">Csöng</string>
 	<string name="voip_mic_enable">Mikrofon bekapcsolása</string>
 	<string name="voip_mic_disable">Némítás</string>
@@ -50,12 +57,9 @@
 	<string name="prefs_voip_reject_incoming_calls_title">Mobiltelefon-hívások elutasítása</string>
 	<string name="prefs_voip_reject_incoming_calls_summary">Bejövő mobiltelefon-hívások elutasítása Threema-hívás közben.</string>
 	<string name="voip_contact_not_found">A Threema nem talált elérhetőséget ehhez a számhoz.</string>
-	<string name="voip_toggle_video">Videó üzemmód váltása</string>
-	<string name="voip_error_call">Hiba a Threema hívás során</string>
 	<string name="voip_another_pstn_call">Hívás nem lehetséges. Egy telefonbeszélgetés már folyamatban van.</string>
 	<string name="voip_call_status_off_hours">Hívás munkaidőn kívül</string>
 	<string name="voip_peer_video_disabled">A másik fél letiltotta a videohívásokat.</string>
-
 	<!-- WebRTC debugger -->
 	<string name="voip_prefs_webrtc_debug">WebRTC diagnosztika</string>
 	<string name="voip_prefs_webrtc_debug_summary">Indítsa el ezt az eszközt a híváskapcsolati problémák diagnosztizálásához.</string>

@@ -113,6 +113,7 @@
     <string name="copy_message_action">复制</string>
     <string name="delete_contact_action">删除联系人</string>
     <string name="scan_id">扫描ID</string>
+    <string name="id_scanned">ID已扫描</string>
     <string name="id_mismatch">您扫描的公钥与服务器为该ID存储的密钥不匹配。这意味着有人操纵了扫描后的代码，并且该密钥不应受到信任。</string>
     <string name="scan_successful">该ID已成功扫描，现在已验证联系人。</string>
     <string name="scan_duplicate">此ID已被扫描和验证。</string>
@@ -477,8 +478,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_subject_hint">输入这次投票的标题</string>
     <string name="ballot_no_ballots_yet">还没有人投票。</string>
     <string name="print">打印</string>
-    <string name="ballot_wizard0_explain">直接用 Threema 快速创建在线投票。安排活动，
-创建调查问卷或问你的朋友任何你想要的。</string>
+    <string name="ballot_wizard0_explain">您可以直接用 Threema 快速创建在线投票，例如安排活动、创建调查问卷或向您的朋友问任何问题。</string>
     <string name="ballot_add_choices">添加答案</string>
     <string name="blocked_cannot_send">您无法向被屏蔽的联系人发送信息</string>
     <string name="really_block_contact">来自此联系人今后的消息将被丢弃。是否继续？</string>
@@ -527,7 +527,6 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="file_placeholder">文件</string>
     <string name="internal_storage">内部存储</string>
     <string name="no_activity_for_mime_type">找不到打开此文件的应用。</string>
-    <string name="message_copied">消息已复制</string>
     <string name="open_from">从...打开</string>
     <string name="file_one_contact_not_supported">%1$s 无法接收文件。</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人无法收到您的文件。</string>
@@ -592,8 +591,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
 Threema 支持的所有表情符号。</string>
     <string name="crop">裁剪</string>
     <string name="scan_id_mismatch_title">ID不匹配</string>
-    <string name="scan_id_mismatch_message">您扫描的ID与您
-存储的联系人不匹配。</string>
+    <string name="scan_id_mismatch_message">您扫描的ID与您存储的联系人不匹配。</string>
     <string name="title_remove_picture">删除图片</string>
     <string name="blocked">被屏蔽</string>
     <string name="name">名称</string>
@@ -659,6 +657,7 @@ Threema 支持的所有表情符号。</string>
 服务器。私钥永远不会离开您的设备。这样可以确保没有其他人可以阅读您的消息。</string>
     <string name="new_wizard_info_sync_contacts">如果启用此选项，Threema 会将电子邮件地址和电话号码单向加密（散列），
 然后再将其发送到服务器以查找匹配的联系人。我们不会存储任何地址簿数据。</string>
+    <string name="new_wizard_info_sync_contacts_dialog">联系人同步可以帮助您找到您的朋友。如果选择同意，电话簿中的电话号码和电邮地址将先以加密的形式发送到我们的服务器，来查找匹配的联系人。我们绝对不会存储或分享任何数据。\n\n是否要启用联系人同步？</string>
     <string name="new_wizard_info_link">通过提供您的电话号码和电子邮件地址，Threema 可以帮助您的朋友
 自动在您的电话通讯录中找到您。数据将以
 单向加密（散列）形式存储在我们的服务器上。如果您想
@@ -1248,7 +1247,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_response_full">您的 %s 群组加入请求被拒绝，因为群组已满。</string>
     <string name="group_response_rejected">您的 %s 群组加入请求被拒绝</string>
     <string name="group_link_expiration_none">无限制</string>
-    <string name="group_request_hint">嗨！大家好。</string>
+    <string name="group_request_hint">嗨，大家好！</string>
     <string name="group_request_send_title">发送群组加入请求</string>
     <string name="group_request_message_empty">群组加入请求不能为空</string>
     <string name="group_requests_all_title">所有群组加入请求</string>
@@ -1426,6 +1425,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="last_added_contact">最后添加</string>
     <string name="directory_explain_text">在公司目录中搜索任何尚未列在您的联系人列表中的员工。</string>
     <string name="cannot_display_location">无法显示此位置。</string>
+    <string name="unable_to_restore_identity_because">无法恢复ID。原因：%s</string>
+    <string name="share_with_app">分享到 Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1437,5 +1438,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     </plurals>
     <plurals name="selection_counter_label">
         <item quantity="other">已选择%d张图片</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="other">消息已复制</item>
     </plurals>
 </resources>

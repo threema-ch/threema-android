@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="webclient_qr_scan_error">無效的QR碼資料</string>
-    <string name="webclient_init_session">發起新工作階段</string>
+    <string name="webclient_init_session">建立新工作階段</string>
     <string name="webclient_sessions_really_delete">您確定要刪除桌面版/網頁版工作階段嗎？</string>
     <string name="webclient_last_usage">上次使用：%s</string>
     <string name="webclient_created_at">建立於：%1$s（%2$s）</string>
@@ -19,7 +19,7 @@
     <string name="webclient_welcome_title">在您的電腦上聊天！</string>
     <string name="webclient_welcome_explain">桌面版應用程式/網頁版可讓您在桌上型電腦或筆記型電腦上聊天，同時擁有對所有聯絡人，多媒體和聊天甚至過去對話記錄的完全取用權限。\n\n<b>電話和電腦之間的所有通訊都是完全端到端加密的</b>，如果電話和電腦都在同一網路上，則使用直接連線。\n\n請注意：當桌面版應用程式/網頁版執行時，可能會消耗更多電量。您可以隨時開啟或停用。</string>
     <string name="webclient_launch">立即啟動桌面版應用程式/網頁版</string>
-    <string name="webclient_qr_scan_message">請掃描螢幕上顯示的QR碼。</string>
+    <string name="webclient_qr_scan_message">請掃描電腦螢幕上顯示的QR碼。</string>
     <string name="webclient_invalid_qr_code">QR碼無效</string>
     <string name="webclient_new_connection_toast">桌面版/網頁版工作階段已開始</string>
     <string name="webclient_protocol_error">協定錯誤</string>

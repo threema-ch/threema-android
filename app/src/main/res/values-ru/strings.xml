@@ -112,6 +112,7 @@
     <string name="copy_message_action">Копировать</string>
     <string name="delete_contact_action">Удалить контакт</string>
     <string name="scan_id">Сканировать ID</string>
+    <string name="id_scanned">ID считано</string>
     <string name="id_mismatch">Открытый ключ, который вы отсканировали, не соответствует ключу, который хранится на сервере
 для этого ID. Это означает, что кто-то изменил отсканированный код, и ключу нельзя доверять.</string>
     <string name="scan_successful">ID успешно отсканирован, а контакт проверен.</string>
@@ -509,7 +510,6 @@
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Внутренняя память</string>
     <string name="no_activity_for_mime_type">Не удалось найти приложение для открытия этого файла.</string>
-    <string name="message_copied">Сообщение скопировано</string>
     <string name="open_from">Открыть из</string>
     <string name="file_one_contact_not_supported">%1$s не может принимать файлы.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Внимание: %1$d контакта(-ов) не могут принять ваш файл.</string>
@@ -632,6 +632,7 @@
     <string name="new_wizard_info_fingerprint">Двигая пальцем по экрану, вы создаете случайные данные (называемые энтропией), используемые для создания пары ключей, связанных с вашим новым уникальным Threema ID. Пара ключей состоит из  <b>открытого ключа</b>, который рассылается вашим друзьям, и <b>закрытого ключа</b>, который безопасно хранится в вашем телефоне. Ваши друзья будут шифровать сообщения при помощи открытого ключа. Только владелец закрытого ключа, и никто другой, может расшифровать эти сообщения.</string>
     <string name="new_wizard_info_id">Вы создали пару ключей. Открытый ключ по защищенному каналу передан на наши серверы. Закрытый ключ всегда остается на вашем устройстве. Это гарантирует, что никто другой не сможет прочитать ваши сообщения.</string>
     <string name="new_wizard_info_sync_contacts">Если включить эту опцию, Threema шифрует (хэширует) адреса электронной почты и номера мобильных телефонов перед отправкой их на сервер, для поиска соответствующих контактов. Мы не храним данные адресной книги.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Синхронизация контактов поможет вам автоматически найти своих друзей. Если вы согласитесь, номера телефонов и адреса эл. почты из вашей телефонной книги будут зашифрованы перед отправкой на наш сервер для поиска соответствующих контактов. При этом никакие данные не сохраняются и не передаются.</string>
     <string name="new_wizard_info_link">Если вы укажете свой номер телефона и адрес электронной почты, Threema поможет вашим друзьям автоматически найти вас, если вы записаны в их телефонной книге.
 Адреса электронной почты будут храниться в зашифрованном (хэшированном) виде на нашем сервере. Вы можете пропустить этот шаг, если хотите использовать Threema анонимно.</string>
     <string name="new_wizard_info_link_phone_only">Если вы укажете свой номер телефона, Threema поможет вашим друзьям автоматически найти вас, если вы записаны в их телефонной книге.
@@ -1387,6 +1388,8 @@
     <string name="last_added_contact">Добавлен последним</string>
     <string name="directory_explain_text">Поиск в каталоге компании сотрудников, которых еще нет в вашем списке контактов.</string>
     <string name="cannot_display_location">Это местоположение невозможно показать.</string>
+    <string name="unable_to_restore_identity_because">Не удается восстановить ID. Причина: %s</string>
+    <string name="share_with_app">Поделиться через Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>
@@ -1394,21 +1397,27 @@
         <item quantity="other">%d контакт.</item>
     </plurals>
     <plurals name="really_delete_thread_message">
-        <item quantity="one">Вы действительно хотите удалить %d чат?</item>
         <item quantity="few">Вы действительно хотите удалить %d чат?</item>
         <item quantity="many">Вы действительно хотите удалить %d чат?</item>
+        <item quantity="one">Вы действительно хотите удалить %d чат?</item>
         <item quantity="other">Вы действительно хотите удалить %d чат?</item>
     </plurals>
     <plurals name="sending_message_failed">
-        <item quantity="one">%1$d сообщений не могут быть отправлены</item>
         <item quantity="few">%1$d сообщений не могут быть отправлены</item>
         <item quantity="many">%1$d сообщений не могут быть отправлены</item>
+        <item quantity="one">%1$d сообщений не могут быть отправлены</item>
         <item quantity="other">%1$d сообщений не могут быть отправлены</item>
     </plurals>
     <plurals name="selection_counter_label">
-        <item quantity="one">Выбрано изображений %d</item>
         <item quantity="few">Выбрано изображений %d</item>
         <item quantity="many">Выбрано изображений %d</item>
+        <item quantity="one">Выбрано изображений %d</item>
         <item quantity="other">Выбрано изображений %d</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Сообщение скопировано</item>
+        <item quantity="other">Сообщения скопированы</item>
+        <item quantity="few">Сообщения скопировано</item>
+        <item quantity="many">Сообщений скопировано</item>
     </plurals>
 </resources>

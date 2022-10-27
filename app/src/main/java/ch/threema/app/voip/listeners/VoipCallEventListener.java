@@ -21,8 +21,11 @@
 
 package ch.threema.app.voip.listeners;
 
+import java.util.Date;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Events that happen before, during and after a call
@@ -47,34 +50,39 @@ public interface VoipCallEventListener {
 	/**
 	 * A call was finished.
 	 *
+	 * @param callId The call id of the finished call (might be 0).
 	 * @param peerIdentity The identity of the peer.
 	 * @param outgoing Whether this is an outgoing call (initiated by us).
 	 * @param duration The duration of the call in seconds.
 	 */
-	@AnyThread void onFinished(@NonNull String peerIdentity, boolean outgoing, int duration);
+	@AnyThread void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration);
 
 	/**
 	 * A call was rejected.
 	 *
+	 * @param callId The call id of the rejected call (might be 0).
 	 * @param peerIdentity The identity of the peer.
 	 * @param outgoing Whether the rejected call was an outgoing call (initiated by us).
 	 * @param reason The reject reason. The meaning can be determined using the
 	 *     `VoipCallAnswerData.RejectReason` class.
 	 */
-	@AnyThread void onRejected(String peerIdentity, boolean outgoing, byte reason);
+	@AnyThread void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason);
 
 	/**
 	 * An incoming call was missed or failed to be established.
 	 *
+	 * @param callId The call id of the missed call (might be 0).
 	 * @param peerIdentity The identity of the peer.
 	 * @param accepted Whether the call was accepted by the user or not.
+	 * @param date The created-at date of the hangup message, or {@code null} if the current date should be used
 	 */
-	@AnyThread void onMissed(String peerIdentity, boolean accepted);
+	@AnyThread void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date);
 
 	/**
 	 * An outgoing call was aborted or failed to be established.
 	 *
+	 * @param callId The call id of the aborted call (might be 0).
 	 * @param peerIdentity The identity of the peer.
 	 */
-	@AnyThread void onAborted(String peerIdentity);
+	@AnyThread void onAborted(long callId, String peerIdentity);
 }

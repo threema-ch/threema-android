@@ -36,6 +36,7 @@ public abstract class VoipMessage extends AbstractMessage {
 
 	@Override
 	public boolean flagShortLivedServerQueuing() {
+		// Should be set for all VoIP messages except for the hangup message
 		return true;
 	}
 }

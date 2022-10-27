@@ -28,10 +28,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import ch.threema.app.R;
 
 public class WizardDialog extends ThreemaDialogFragment {

@@ -91,8 +91,6 @@ public class ThreemaConnection implements Runnable {
 
 	/* Temporary data for each individual TCP connection */
 	private volatile Socket socket;
-	private byte[] clientTempKeyPub;
-	private byte[] clientTempKeySec;
 	private SenderThread senderThread;
 	private int lastSentEchoSeq;
 	private int lastRcvdEchoSeq;
@@ -109,7 +107,6 @@ public class ThreemaConnection implements Runnable {
 	/* Helper objects */
 	private final SecureRandom random;
 	private final Timer timer;
-	private Date clientTempKeyGenTime;
 	private int pushTokenType;
 	private String pushToken;
 	private final Set<String> lastAlertMessages;
@@ -333,18 +330,15 @@ public class ThreemaConnection implements Runnable {
 
 	@Override
 	public void run() {
-		/* generate a new temporary key pair for the server connection, if necessary */
-		if (clientTempKeyPub == null || clientTempKeySec == null || ((new Date().getTime() - clientTempKeyGenTime.getTime()) / 1000) > ProtocolDefines.CLIENT_TEMPKEY_MAXAGE) {
-			clientTempKeyPub = new byte[NaCl.PUBLICKEYBYTES];
-			clientTempKeySec = new byte[NaCl.SECRETKEYBYTES];
-			NaCl.genkeypair(clientTempKeyPub, clientTempKeySec);
-			clientTempKeyGenTime = new Date();
-		}
-
 		anotherConnectionCount = 0;
 
 		while (running) {
 			TimerTask echoSendTask = null;
+
+			/* generate a new temporary key pair for the server connection */
+			byte[] clientTempKeyPub = new byte[NaCl.PUBLICKEYBYTES];
+			byte[] clientTempKeySec = new byte[NaCl.SECRETKEYBYTES];
+			NaCl.genkeypair(clientTempKeyPub, clientTempKeySec);
 
 			try {
 				getInetAdresses();

@@ -55,6 +55,7 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
             val callEnable: CheckBoxPreference = getPref(R.string.preferences__voip_enable)
             val disableCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_calls))
             var disableVideoCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_video_calls))
+
             if (disableCalls != null) {
                 // admin does not want user to tamper with call setting
                 callEnable.isEnabled = false
@@ -63,6 +64,13 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                 if (disableCalls) {
                     // disabled calls also disable video calls
                     disableVideoCalls = true
+                } else {
+                    // remove dependency to allow user to manipulate advanced call settings if admin enabled calls
+                    val forceTurn: CheckBoxPreference = getPref(R.string.preferences__voip_force_turn)
+                    val rejectCalls: CheckBoxPreference = getPref(R.string.preferences__voip_reject_mobile_calls)
+
+                    forceTurn.dependency = null
+                    rejectCalls.dependency = null
                 }
             }
 

@@ -12,7 +12,7 @@
     <string name="voip_error_call">Помилка під час виклику Threema</string>
     <string name="voip_error_init_call">Помилка під час підготовки виклику</string>
     <string name="voip_notification_title">Вхідний виклик Threema</string>
-    <string name="voip_notification_text">Дзвонить \"%1$s\"</string>
+    <string name="voip_notification_text">Дзвонить %1$s</string>
     <!-- Shown when starting a call, before the peer device is ringing -->
     <string name="voip_status_initializing">Підготовка</string>
     <!-- Shown when the callee has accepted the call and the connection is being established -->
@@ -34,7 +34,7 @@
     <string name="voip_call_finished_outbox">Вихідний виклик</string>
     <string name="voip_call_finished_inbox">Вхідний виклик</string>
     <string name="voip_call_status_aborted">Виклик скасовано</string>
-    <string name="voip_return_call">Зворотній виклик</string>
+    <string name="voip_return_call">Зворотний виклик</string>
     <string name="voip_accept">Прийняти</string>
     <string name="voip_reject">Відхилити</string>
     <string name="voip_speakerphone">Гучний зв\'язок</string>

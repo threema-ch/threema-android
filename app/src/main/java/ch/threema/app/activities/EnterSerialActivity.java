@@ -41,17 +41,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.push.PushService;
 import ch.threema.app.services.AppRestrictionService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
@@ -341,7 +341,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (!TestUtil.empty(licenseKeyOrUsernameText.getText())) {
+		if (licenseKeyOrUsernameText != null && !TestUtil.empty(licenseKeyOrUsernameText.getText())) {
 			outState.putString(BUNDLE_LICENSE_KEY, licenseKeyOrUsernameText.getText().toString());
 		}
 

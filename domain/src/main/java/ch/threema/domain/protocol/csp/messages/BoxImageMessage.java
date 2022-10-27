@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import com.neilalexander.jnacl.NaCl;
+
 import org.apache.commons.io.EndianUtils;
 
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -31,7 +32,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * The contents are referenced by the {@code blobId}, the file {@code size} in bytes,
  * and the nonce to be used when decrypting the image blob.
+ *
+ *  @Deprecated Use FileMessage instead
  */
+@Deprecated
 public class BoxImageMessage extends AbstractMessage {
 
 	private byte[] blobId;

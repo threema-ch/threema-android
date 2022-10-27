@@ -114,6 +114,7 @@
     <string name="copy_message_action">Copia</string>
     <string name="delete_contact_action">Cancella contatto</string>
     <string name="scan_id">Scansiona ID</string>
+    <string name="id_scanned">ID scansionato</string>
     <string name="id_mismatch">\"La chiave pubblica che hai scansionato non corrisponde alla chiave registrata dal server
 		per questo ID. Ciò significa che qualcuno ha modificato il codice scannerizzato. Sei pregato di non fidarti
 		assolutamente della chiave.</string>
@@ -278,7 +279,7 @@
     <string name="restore_data_password_msg">Inserisci la password utilizzata per creare questo backup.</string>
     <string name="backup_data_media">Comprende file multimediali di grandi dimensioni (video, documenti, immagini originali)</string>
     <string name="backup_data_new">Esegui nuovo backup</string>
-    <string name="pinentry_enter_pin">Inserisci codice PIN</string>
+    <string name="pinentry_enter_pin">Inserisci codice PIN %s</string>
     <string name="pinentry_wrong_pin">Codice PIN errato</string>
     <string name="prefs_sum_security_pin">Bloccare l\'accesso all\'interfaccia utente di Threema</string>
     <string name="prefs_title_pin_switch">Protezione dell\'App</string>
@@ -529,7 +530,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="file_placeholder">File</string>
     <string name="internal_storage">Memoria interna</string>
     <string name="no_activity_for_mime_type">Non è stata trovata alcuna app per aprire questo file.</string>
-    <string name="message_copied">Messaggio copiato</string>
     <string name="open_from">Apri da</string>
     <string name="file_one_contact_not_supported">%1$s non può ricevere file.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Attenzione: %1$d contatti non possono ricevere il tuo file.</string>
@@ -652,6 +652,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="new_wizard_info_fingerprint">Muovendo il dito andrai a creare dati casuali (si parla di \"entropia\") utilizzati per generare la coppia di chiavi associata al nuovo e unico Threema ID.</string>
     <string name="new_wizard_info_id">Hai creato anche una coppia di chiavi. La chiave pubblica è stata trasmessa ai nostri server in modo sicuro. La chiave privata non abbandonerà mai il tuo dispositivo. In questo modo, nessun altro potrà leggere i tuoi messaggi.</string>
     <string name="new_wizard_info_sync_contacts">Attivando questa opzione, Threema utilizzerà la crittografia unidirezionale (hashing) per crittografare indirizzi e-mail e numeri di telefono prima di inviarli al server e cercare i contatti corrispondenti. I dati relativi alla rubrica non vengono salvati.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Sincronizzando i contatti puoi trovare automaticamente i tuoi amici. Se accetti le condizioni, i numeri di cellulare e gli indirizzi e-mail della tua rubrica saranno inviati al nostro server in modo criptato, dove saranno paragonati per trovare i contatti adatti. I dati non saranno né salvati né inoltrati a terzi.\n\nVuoi attivare la sincronizzazione dei contatti?</string>
     <string name="new_wizard_info_link">Se indichi numero di telefono e indirizzo e-mail, potremo aiutare i tuoi amici a trovarti su Threema automaticamente. Queste informazioni verranno conservate in maniera sicura e anonima. Saltando questo passaggio utilizzerai Threema in modo totalmente anonimo.</string>
     <string name="new_wizard_info_link_phone_only">Se indichi il tuo numero di telefono, potremo aiutare i tuoi amici a trovarti su Threema automaticamente. Il numero verrà conservato in maniera sicura e anonima. Saltando questo passaggio utilizzerai Threema in modo totalmente anonimo.</string>
     <string name="new_wizard_info_nickname">Il nickname viene utilizzato nelle notifiche push su alcuni dispositivi o come strumento aggiuntivo di identificazione per gli utenti che non ti hanno in rubrica. Consigliamo di inserire soltanto il nome o uno pseudonimo. Se non imposti il nickname, utilizzeremo il Threema ID come impostazione predefinita.</string>
@@ -1399,6 +1400,8 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="last_added_contact">Ultimo contatto aggiunto</string>
     <string name="directory_explain_text">Cerca nell\'indice dell\'impresa tutti i collaboratori che ancora non figurano nella tua rubrica.</string>
     <string name="cannot_display_location">Questo luogo non può essere visualizzato.</string>
+    <string name="unable_to_restore_identity_because">Impossibile ripristinare l\'ID. Motivo: %s</string>
+    <string name="share_with_app">Condividi con Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>
@@ -1414,5 +1417,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <plurals name="selection_counter_label">
         <item quantity="one">%d immagine selezionata</item>
         <item quantity="other">%d immagini selezionate</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Messaggio copiato</item>
+        <item quantity="other">Messaggi copiati</item>
     </plurals>
 </resources>

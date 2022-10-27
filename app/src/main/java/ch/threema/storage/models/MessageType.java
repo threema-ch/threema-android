@@ -23,9 +23,9 @@ package ch.threema.storage.models;
 
 public enum MessageType {
 	TEXT,
-	IMAGE,
-	VIDEO,
-	VOICEMESSAGE,
+	@Deprecated IMAGE,
+	@Deprecated VIDEO,
+	@Deprecated VOICEMESSAGE,
 	LOCATION,
 	CONTACT,
 	STATUS,

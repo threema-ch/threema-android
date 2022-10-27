@@ -1214,6 +1214,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				logCallInfo(callId, "Peer device is ringing");
 				startLoopingSound(callId, R.raw.ringing_tone, "ringing");
 				VoipUtil.sendVoipBroadcast(getAppContext(), CallActivity.ACTION_PEER_RINGING);
+				voipStateService.setPeerRinging(true);
 
 				if (launchVideo) {
 					startCapturing();
@@ -1471,7 +1472,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 					} else if (duration == null) {
 						logger.error("duration is null in disconnect()");
 					} else {
-						listener.onFinished(contactIdentity, isInitiator, duration);
+						listener.onFinished(callId, contactIdentity, isInitiator, duration);
 					}
 				});
 			}

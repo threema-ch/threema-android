@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="webclient_qr_scan_error">无效的二维码数据</string>
-    <string name="webclient_init_session">发起新的会话</string>
+    <string name="webclient_init_session">建立新会话</string>
     <string name="webclient_sessions_really_delete">您确定要删除桌面版/网页版会话吗？</string>
     <string name="webclient_last_usage">上次使用：%s</string>
     <string name="webclient_created_at">创建于： %1$s (%2$s)</string>
@@ -19,7 +19,7 @@
     <string name="webclient_welcome_title">在您的电脑上聊天！</string>
     <string name="webclient_welcome_explain">桌面版应用程序/网页版可让您在台式机或笔记本电脑上聊天，同时拥有对所有联系人，媒体和聊天甚至过去对话记录的完全访问权限。\n\n<b>手机和电脑之间的所有通信都是完全端到端加密的</b>，如果手机和电脑都在同一网络上，则使用直接连接。\n\n请注意：当桌面版应用程序/网页版运行时，可能会消耗更多电量。您可以随时启用或禁用。</string>
     <string name="webclient_launch">立即启动桌面版应用程序/网页版</string>
-    <string name="webclient_qr_scan_message">请扫描屏幕上显示的二维码。</string>
+    <string name="webclient_qr_scan_message">请扫描电脑屏幕上显示的二维码。</string>
     <string name="webclient_invalid_qr_code">二维码无效</string>
     <string name="webclient_new_connection_toast">桌面版/网页版会话已开始</string>
     <string name="webclient_protocol_error">协议错误</string>

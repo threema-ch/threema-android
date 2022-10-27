@@ -39,7 +39,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * Video:     0x000000000000000000000000000000000000000000000001
  * Thumbnail: 0x000000000000000000000000000000000000000000000002
+ *
+ *  @Deprecated Use FileMessage instead
  */
+@Deprecated
 public class BoxVideoMessage extends AbstractMessage {
 
 	private int duration;

@@ -63,21 +63,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.datatheorem.android.trustkit.TrustKit;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.slf4j.Logger;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.net.ssl.SSLSocketFactory;
-
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -98,6 +83,23 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
+
+import com.datatheorem.android.trustkit.TrustKit;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.slf4j.Logger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -265,7 +267,10 @@ public class ConfigUtils {
 	 * Get a Socket Factory for certificate pinning and forced TLS version upgrade.
 	 */
 	public static @NonNull SSLSocketFactory getSSLSocketFactory(String host) {
-		return new TLSUpgradeSocketFactoryWrapper(TrustKit.getInstance().getSSLSocketFactory(host));
+		return new TLSUpgradeSocketFactoryWrapper(
+			ConfigUtils.isOnPremBuild() ?
+				HttpsURLConnection.getDefaultSSLSocketFactory() :
+				TrustKit.getInstance().getSSLSocketFactory(host));
 	}
 
 	public static boolean hasNoMapLibreSupport() {
@@ -503,6 +508,22 @@ public class ConfigUtils {
 		final StringBuilder info = new StringBuilder();
 		if (includeAppVersion) {
 			info.append(getAppVersion(context)).append("/");
+			if (ConfigUtils.isWorkRestricted()) {
+				AppRestrictionService appRestrictionService = AppRestrictionService.getInstance();
+				if (appRestrictionService != null) {
+					final StringBuilder mdmBuilder = new StringBuilder();
+					if (appRestrictionService.hasThreemaMDMRestrictions()) {
+						mdmBuilder.append("m");
+					}
+					if (appRestrictionService.hasExternalMDMRestrictions()) {
+						mdmBuilder.append("e");
+					}
+
+					if (mdmBuilder.length() > 0) {
+						info.append(mdmBuilder).append("/");
+					}
+				}
+			}
 		}
 		info.append(Build.MANUFACTURER).append(";")
 			.append(Build.MODEL).append("/")

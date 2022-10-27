@@ -112,6 +112,7 @@
     <string name="copy_message_action">Kopírovať</string>
     <string name="delete_contact_action">Vymazať kontakt</string>
     <string name="scan_id">Skenovať ID</string>
+    <string name="id_scanned">ID zoskenované</string>
     <string name="id_mismatch">Naskenovaný verejný kľúč sa nezhoduje s kľúčom, ktorý je uložený na serveri pre toto ID. To znamená, že niekto s naskenovaným kódom manipuloval a kľúč preto nie je možné považovať za dôveryhodný.</string>
     <string name="scan_successful">ID bolo úspešne zoskenované a kontakt je overený.</string>
     <string name="scan_duplicate">ID bolo úspešne zoskenované a skontrolované.</string>
@@ -508,7 +509,6 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="file_placeholder">Súbor</string>
     <string name="internal_storage">Vnútorné úložisko</string>
     <string name="no_activity_for_mime_type">Na otvorenie tohto súboru nenájdená aplikácia.</string>
-    <string name="message_copied">Správa skopírovaná</string>
     <string name="open_from">Otvoriť z</string>
     <string name="file_one_contact_not_supported">%1$s nemôže prijímať súbory</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Upozornenie: %1$d kontaktov nemôže prijať váš súbor.</string>
@@ -632,6 +632,7 @@ Už ich nebude možné obnoviť.</string>
     <string name="new_wizard_info_fingerprint">Posúvaním prstom po displeji vytvoríte náhodné údaje (tzv. entropia), které sa použijú k vygenerovaniu páru šifrovacích kľúčov zviazaných s vaším Threema ID. Dvojica šifrovacích kľúčov sa skládá z <b>verejného kľúča</b>, ktorý je distribuovaný vaším priateľom a zo <b>súkromého kľúča</b>, ktorý je bezpečne uložený len vo vašom zariadení. Správy, ktoré vám odošlú vaši priatelia budú zašifrované vaším verejným kľúčom. Tieto správy môže dešifrovať iba ten, kto vlastní súkromný kľúč, nikto iný.</string>
     <string name="new_wizard_info_id">Vytvorili jste dvojicu šifrovacích kľúčov. Verejný kľúč bol bezpečne prenesený na naše servery. Súkromný kľúč nikdy neopustí vaše zariadenie. Tým je zaistené, že nikto nepovolaný se nebude môcť dostať k vašim správam.</string>
     <string name="new_wizard_info_sync_contacts">Pokiaľ túto možnosť povolíte, odošlú sa jednosmerne šifrované (hashe) e-mailové adresy a telefónne čísla na náš server. Tu sa porovnajú s kontaktmi ostatných užívateľov. Neukladáme žiadne údaje z vášho adresára.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Synchronizácia kontaktov vám pomôže automaticky nájsť priateľov. Ak súhlasíte, telefónne čísla a e-mailové adresy z vášho telefónneho zoznamu budú pred odoslaním na náš server zašifrované, aby sme vyhľadali zodpovedajúce kontakty. Absolútne žiadne údaje nebudú uložené ani zdieľané.\n\nChcete povoliť synchronizáciu kontaktov?</string>
     <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a e-mailovej adresy môže Threema pomôcť vašim kontaktom automaticky pridať vaše ID do ich adresára, ak vás majú v zozname. Údaje budú jednosmerne šifrované (hashované) a uložené na našom serveri. Tento krok môžete preskočiť, ak chcete používať Threemu výlučne anonymne.</string>
     <string name="new_wizard_info_link_phone_only">Poskytnutím svojho telefónneho čísla môže Threema pomôcť vašim kontaktom automaticky pridať vaše ID do ich adresára, ak vás majú v zozname. Číslo bude jednosmerne šifrované (hashované) a uložené na našom serveri. Tento krok môžete preskočiť, ak chcete používať Threemu výlučne anonymne.</string>
     <string name="new_wizard_info_nickname">Prezývka sa používa na niektorých zariadeniach pri push upozorneniach, alebo ako ďalšia možnosť, ako vás identifikovať užívateľom, ktorí vás nemajú vo svojom adresári. Doporučujeme zadať iba vaše krstné meno alebo pseudonym. Ak prezývku nenastavíte, použijeme vo východzom nastavení vaše Threema ID.</string>
@@ -1385,6 +1386,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="last_added_contact">Najnovší kontakt</string>
     <string name="directory_explain_text">V adresári spoločnosti vyhľadajte zamestnancov, ktorí ešte nie sú vo vašom zozname kontaktov.</string>
     <string name="cannot_display_location">Toto miesto nie je možné zobraziť.</string>
+    <string name="unable_to_restore_identity_because">ID sa nepodarilo obnoviť. Dôvod: %s</string>
+    <string name="share_with_app">Zdieľať cez Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>
@@ -1408,5 +1411,11 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
         <item quantity="many">Vybratých obrázkov: %d</item>
         <item quantity="one">Vybratých obrázkov: %d</item>
         <item quantity="other">Vybratých obrázkov: %d</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Správa skopírovaná</item>
+        <item quantity="other">Správy skopírované</item>
+        <item quantity="few">Správy skopírované</item>
+        <item quantity="many">Správy skopírované</item>
     </plurals>
 </resources>

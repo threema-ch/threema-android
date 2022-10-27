@@ -76,5 +76,11 @@ public interface ThreemaSafeService {
 
 	@Nullable ArrayList<String> searchID(String phone, String email);
 
-	void launchForcedPasswordDialog(Activity activity);
+	/**
+	 * Launch the password dialog to setup Threema Safe.
+	 *
+	 * @param activity         the activity that starts the threema safe config activity
+	 * @param openHomeActivity if set to true, the home activity is started after successfully choosing a password
+	 */
+	void launchForcedPasswordDialog(Activity activity, boolean openHomeActivity);
 }

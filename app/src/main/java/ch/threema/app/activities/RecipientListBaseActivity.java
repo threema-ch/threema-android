@@ -855,7 +855,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	private void sendSharedMedia(final MessageReceiver[] messageReceivers, final Intent intent) {
 		if (messageReceivers.length == 1 && mediaItems.size() == 1 && TYPE_TEXT == mediaItems.get(0).getType()) {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getCaption());
+			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getTrimmedCaption());
 			startComposeActivity(intent);
 		} else if (messageReceivers.length > 1 || mediaItems.size() > 0) {
 			messageService.sendMediaSingleThread(mediaItems, Arrays.asList(messageReceivers));

@@ -25,14 +25,15 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.cache.ThumbnailCache;
@@ -46,6 +47,7 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.MessageContentsType;
 
 import static ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT;
 import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST;
@@ -173,9 +175,12 @@ public class QuoteUtil {
 				final @NonNull String quotedText = TestUtil.empty(viewElement.text) ? (viewElement.placeholder != null ? viewElement.placeholder : "") : viewElement.text;
 				final @DrawableRes Integer icon = viewElement.icon;
 				Bitmap thumbnail = null;
-				try {
-					thumbnail = fileService.getMessageThumbnailBitmap(quotedMessageModel, thumbnailCache);
-				} catch (Exception ignore) {
+				if (quotedMessageModel.getMessageContentsType() != MessageContentsType.VOICE_MESSAGE) {
+					// ignore thumbnails of voice messages
+					try {
+						thumbnail = fileService.getMessageThumbnailBitmap(quotedMessageModel, thumbnailCache);
+					} catch (Exception ignore) {
+					}
 				}
 				return QuoteContent.createV2(
 						identity,

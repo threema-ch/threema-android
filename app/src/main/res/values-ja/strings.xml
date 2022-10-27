@@ -110,6 +110,7 @@
     <string name="copy_message_action">コピー</string>
     <string name="delete_contact_action">連絡先を削除する</string>
     <string name="scan_id">IDをスキャン</string>
+    <string name="id_scanned">IDをスキャンしました</string>
     <string name="id_mismatch">スキャンした公開鍵が、サーバーが保存しているこのIDの鍵と一致しません。
 これは、誰かがスキャンしたコードを操作したことを意味し、その鍵を信用してはいけないということになります。</string>
     <string name="scan_successful">IDが正常にスキャンされ、連絡先が確認されました。</string>
@@ -512,7 +513,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="file_placeholder">ファイル</string>
     <string name="internal_storage">内部容量</string>
     <string name="no_activity_for_mime_type">このファイルを開くためのアプリが見つかりませんでした</string>
-    <string name="message_copied">メッセージがコピーされました</string>
     <string name="open_from">で開く</string>
     <string name="file_one_contact_not_supported">%1$sファイルを受信できません</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告: %1$d 連絡先がファイルを受信できません。</string>
@@ -1225,6 +1225,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="header_nickname_entry">"ニックネーム"</string>
     <string name="organization_type">組織</string>
     <string name="messages_cannot_be_recovered">削除後はメッセージを復元することはできません。</string>
+    <string name="share_with_app">Threemaで共有</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>

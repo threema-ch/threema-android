@@ -68,4 +68,10 @@ public class VoipCallHangupMessage extends VoipMessage {
 			throw new ThreemaException("Could not serialize VoipCallHangupMessage");
 		}
 	}
+
+	@Override
+	public boolean flagShortLivedServerQueuing() {
+		// Hangup messages should persist in the message queue
+		return false;
+	}
 }

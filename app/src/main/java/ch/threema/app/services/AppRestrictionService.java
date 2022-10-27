@@ -51,6 +51,7 @@ public class AppRestrictionService {
 
 	private Bundle appRestrictions;
 	private volatile WorkMDMSettings workMDMSettings;
+	private boolean hasExternalMDMRestrictions;
 	private static final String PREFERENCE_KEY = "wrk_app_restriction";
 
 	/**
@@ -86,6 +87,22 @@ public class AppRestrictionService {
 			}
 		}
 		return this.workMDMSettings;
+	}
+
+	/**
+	 * Determine if this app is under control of Threema MDM and has at least one parameter set
+	 * @return true if Threema MDM is active
+	 */
+	public boolean hasThreemaMDMRestrictions() {
+		return this.workMDMSettings != null && this.workMDMSettings.parameters != null && this.workMDMSettings.parameters.size() > 0;
+	}
+
+	/**
+	 * Determine if this app is under control of an external MDM/EMM with a local DPC and at least one parameter set
+	 * @return true if an external MDM is active
+	 */
+	public boolean hasExternalMDMRestrictions() {
+		return this.hasExternalMDMRestrictions;
 	}
 
 	/**
@@ -126,9 +143,11 @@ public class AppRestrictionService {
 			this.appRestrictions = new Bundle();
 		}
 
+		hasExternalMDMRestrictions = this.appRestrictions.size() > 0;
+
 		WorkMDMSettings settings = this.getWorkMDMSettings();
 
-		// Get Mini MDM Settings and override
+		// Get Threema MDM Settings and override
 		if (settings != null) {
 			for(Map.Entry<String, Object> miniMDMSetting: settings.parameters.entrySet()) {
 				if (settings.override

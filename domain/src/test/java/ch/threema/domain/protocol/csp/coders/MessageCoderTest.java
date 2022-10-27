@@ -77,8 +77,8 @@ public class MessageCoderTest {
 			});
 		msg.setData(candidatesData);
 		final MessageBox boxed = this.box(msg);
-		// Flags: Voip (Now it should push, my friend)
-		Assert.assertEquals(0x21, boxed.getFlags());
+		// Flags: Voip + Push
+		Assert.assertEquals(0x20 | 0x01, boxed.getFlags());
 	}
 
 	@Test
@@ -86,8 +86,8 @@ public class MessageCoderTest {
 		final VoipCallHangupMessage msg = new VoipCallHangupMessage();
 		msg.setData(new VoipCallHangupData());
 		final MessageBox boxed = this.box(msg);
-		// Flags: Voip + Push
-		Assert.assertEquals(0x20 | 0x01, boxed.getFlags());
+		// Flags: Push only
+		Assert.assertEquals(0x01, boxed.getFlags());
 	}
 
 }

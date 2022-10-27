@@ -122,6 +122,7 @@
 	<string name="copy_message_action">Kopieren</string>
 	<string name="delete_contact_action">Kontakt löschen</string>
 	<string name="scan_id">ID scannen</string>
+	<string name="id_scanned">ID gescannt</string>
 	<string name="id_mismatch">Der öffentliche Schlüssel, den Sie eingescannt haben, stimmt nicht mit dem Schlüssel
 		überein, den der Server für diesen Kontakt verzeichnet hat. Dies deutet auf Manipulationen hin, welche die
 		Sicherheit der Kommunikation gefährden. Bitte melden Sie dieses Vorkommnis an security@threema.ch, wenn möglich
@@ -591,7 +592,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="file_placeholder">Datei</string>
 	<string name="internal_storage">Int. Speicher</string>
 	<string name="no_activity_for_mime_type">Keine passende App für diese Datei gefunden.</string>
-	<string name="message_copied">Nachricht kopiert</string>
 	<string name="open_from">Öffnen von</string>
 	<string name="file_one_contact_not_supported">%1$s kann noch keine Dateien erhalten.</string>
 	<string name="file_x_contact_not_supported">Warnung: %1$d Kontakte können keine Dateien erhalten.</string>
@@ -1391,7 +1391,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="forward_captions">Beschriftungen mitsenden</string>
 	<string name="importing_files_failed">Importieren der Backup-Datei fehlgeschlagen. Stellen Sie sicher, dass genügend freier Platz im internen Speicher vorhanden ist.</string>
 	<string name="label_continue">Weiter</string>
-	<string name="select_date">Datum auswälen</string>
+	<string name="select_date">Datum auswählen</string>
 	<string name="select_time">Zeit auswählen</string>
 	<string name="send_to">Senden an %s</string>
 	<string name="receipts_override_choice_send">Senden</string>
@@ -1494,6 +1494,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="last_added_contact">Zuletzt hinzugefügt</string>
 	<string name="directory_explain_text">Suchen Sie im Firmenverzeichnis nach beliebigen Mitarbeitern, die sich noch nicht in Ihrer Kontaktliste befinden.</string>
 	<string name="cannot_display_location">Dieser Ort kann nicht angezeigt werden.</string>
+    <string name="unable_to_restore_identity_because">Die ID konnte nicht wiederhergestellt werden. Grund: %s</string>
+	<string name="share_with_app">Mit Threema teilen</string>
+	<string name="new_wizard_info_sync_contacts_dialog">Die Kontakt-Synchronisation hilft Ihnen, Ihre Freunde automatisch zu finden. Wenn Sie zustimmen, werden Handynummern und E-Mail-Adressen aus Ihrem Telefonbuch verschlüsselt an unseren Server gesendet und dort verglichen, um passende Kontakte zu finden. Die Daten werden weder gespeichert noch weitergegeben.\n\nMöchten Sie die Kontakt-Synchronisation aktivieren?</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>
@@ -1509,5 +1512,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<plurals name="selection_counter_label">
 		<item quantity="one">%d Bild ausgewählt</item>
 		<item quantity="other">%d Bilder ausgewählt</item>
+	</plurals>
+	<plurals name="message_copied">
+		<item quantity="one">Nachricht kopiert</item>
+		<item quantity="other">Nachrichten kopiert</item>
 	</plurals>
 </resources>

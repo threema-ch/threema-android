@@ -47,6 +47,23 @@ import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.multidex.MultiDexApplication;
+import androidx.preference.PreferenceManager;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.datatheorem.android.trustkit.TrustKit;
 import com.datatheorem.android.trustkit.reporting.BackgroundReporter;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -71,22 +88,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ProcessLifecycleOwner;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.multidex.MultiDexApplication;
-import androidx.preference.PreferenceManager;
-import androidx.work.Constraints;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -287,8 +288,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
 	private static HashMap<String, String> quoteDrafts = new HashMap<>();
 
-	public static ExecutorService sendMessageExecutorService = Executors.newFixedThreadPool(4);
-	public static ExecutorService sendMessageSingleThreadExecutorService = Executors.newSingleThreadExecutor();
+	public static final ExecutorService sendMessageExecutorService = Executors.newFixedThreadPool(4);
+	public static final ExecutorService sendMessageSingleThreadExecutorService = Executors.newSingleThreadExecutor();
+	public static final ExecutorService voiceMessageThumbnailExecutorService = Executors.newFixedThreadPool(4);
 
 	private static boolean checkAppReplacingState(Context context) {
 		// workaround https://code.google.com/p/android/issues/detail?id=56296
@@ -369,7 +371,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 
 		// Initialize TrustKit for CA pinning
-		TrustKit.initializeWithNetworkSecurityConfiguration(this);
+		if (!ConfigUtils.isOnPremBuild()) {
+			TrustKit.initializeWithNetworkSecurityConfiguration(this);
+		}
 
 		// Set unhandled exception logger
 		LoggingUEH loggingUEH = new LoggingUEH(getAppContext());
@@ -1979,41 +1983,41 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			}
 
 			@Override
-			public void onFinished(@NonNull String peerIdentity, boolean outgoing, int duration) {
+			public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
 				final String direction = outgoing ? "to" : "from";
 				this.logger.info("Call {} {} finished", direction, peerIdentity);
 				this.saveStatus(peerIdentity,
 						outgoing,
-						VoipStatusDataModel.createFinished(duration),
+						VoipStatusDataModel.createFinished(callId, duration),
 						true);
 			}
 
 			@Override
-			public void onRejected(String peerIdentity, boolean outgoing, byte reason) {
+			public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
 				final String direction = outgoing ? "to" : "from";
 				this.logger.info("Call {} {} rejected (reason {})", direction, peerIdentity, reason);
 				this.saveStatus(peerIdentity,
 						// on rejected incoming, the outgoing was rejected!
 						!outgoing,
-						VoipStatusDataModel.createRejected(reason),
+						VoipStatusDataModel.createRejected(callId, reason),
 						true);
 			}
 
 			@Override
-			public void onMissed(String peerIdentity, boolean accepted) {
+			public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
 				this.logger.info("Call from {} missed", peerIdentity);
 				this.saveStatus(peerIdentity,
 						false,
-						VoipStatusDataModel.createMissed(),
+						VoipStatusDataModel.createMissed(callId, date),
 						accepted);
 			}
 
 			@Override
-			public void onAborted(String peerIdentity) {
+			public void onAborted(long callId, String peerIdentity) {
 				this.logger.info("Call to {} aborted", peerIdentity);
 				this.saveStatus(peerIdentity,
 						true,
-						VoipStatusDataModel.createAborted(),
+						VoipStatusDataModel.createAborted(callId),
 						true);
 			}
 

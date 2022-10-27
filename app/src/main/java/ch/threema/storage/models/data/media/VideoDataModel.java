@@ -24,16 +24,18 @@ package ch.threema.storage.models.data.media;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
+@Deprecated
 public class VideoDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoDataModel");
 

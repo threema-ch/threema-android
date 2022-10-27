@@ -13,7 +13,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "4.831"
+def app_version = "4.84"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -92,7 +92,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 756
+        versionCode 761
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -656,7 +656,7 @@ dependencies {
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
-    implementation 'net.lingala.zip4j:zip4j:2.11.1'
+    implementation 'net.lingala.zip4j:zip4j:2.11.2'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
@@ -821,6 +821,8 @@ dependencies {
     sandboxImplementation maplibreDependency
     sandbox_workImplementation maplibreDependency
     redImplementation maplibreDependency
+    hmsImplementation maplibreDependency
+    hms_workImplementation maplibreDependency
 
     // Huawei related libraries (only for hms* build variants)
     def huaweiDependencies = [

@@ -26,9 +26,10 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 
-import androidx.annotation.Nullable;
 import ch.threema.app.utils.MimeUtil;
 
 /**
@@ -43,6 +44,8 @@ public class MediaComponent {
     private Context mContext;
     private final Uri mSrcUri;
     private final int mType;
+	private String mimeType;
+	private long durationUs;
 
     private MediaExtractor mMediaExtractor;
     private MediaFormat mTrackFormat;
@@ -100,6 +103,18 @@ public class MediaComponent {
         return mType;
     }
 
+	/**
+	 * Get mime type of selected track for this component.
+	 * @return
+	 */
+	public @Nullable String getMimeType() {
+		return mimeType;
+	}
+
+	public long getDurationUs() {
+		return durationUs;
+	}
+
     public void release() {
         mContext = null;
         mMediaExtractor.release();
@@ -139,11 +154,19 @@ public class MediaComponent {
                 mMediaExtractor.selectTrack(index);
                 mSelectedTrackIndex = index;
                 mTrackFormat = trackFormat;
+				this.mimeType = mimeType;
+
+				if (trackFormat.containsKey(MediaFormat.KEY_DURATION)) {
+					this.durationUs = trackFormat.getLong(MediaFormat.KEY_DURATION);
+				} else {
+					this.durationUs = 0L;
+				}
                 return;
             }
         }
 
         mSelectedTrackIndex = -1;
         mTrackFormat = null;
+		mimeType = null;
     }
 }

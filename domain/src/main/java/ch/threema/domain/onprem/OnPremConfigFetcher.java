@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
+import ch.threema.domain.protocol.ProtocolStrings;
 
 public class OnPremConfigFetcher {
 
@@ -54,6 +55,7 @@ public class OnPremConfigFetcher {
 			if (configUrl.getUserInfo() != null) {
 				String basicAuth = "Basic " + Base64.encodeBytes(URLDecoder.decode(configUrl.getUserInfo(), "UTF-8").getBytes());
 				uc.setRequestProperty("Authorization", basicAuth);
+				uc.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT);
 			}
 
 			String oppfData = IOUtils.toString(uc.getInputStream(), StandardCharsets.UTF_8);

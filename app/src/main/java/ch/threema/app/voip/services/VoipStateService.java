@@ -49,10 +49,12 @@ import org.webrtc.SessionDescription;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -98,6 +100,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
@@ -152,6 +155,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private volatile Boolean initiator = null;
 	private final CallState callState = new CallState();
 	private Long callStartTimestamp = null;
+	private boolean isPeerRinging = false;
 
 	// Map that stores incoming offers
 	private final HashMap<Long, VoipCallOfferData> offerMap = new HashMap<>();
@@ -161,6 +165,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 	// Candidate cache
 	private final Map<String, List<VoipICECandidatesData>> candidatesCache;
+
+	// Call cache
+	private final Set<Long> recentCallIds = new HashSet<>();
 
 	// Notifications
 	private final List<String> callNotificationTags = new ArrayList<>();
@@ -294,6 +301,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			newState.getName(), newState.getCallId(), newState.getIncomingCallCounter()
 		);
 
+		// As soon as the callers state changes from initializing to another state, the callee is
+		// not ringing anymore
+		if (oldState.isInitializing()) {
+			isPeerRinging = false;
+		}
+
 		// Clear pending accept intent
 		if (!newState.isRinging()) {
 			this.acceptIntent = null;
@@ -308,6 +321,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Ensure bluetooth media button receiver is deregistered when a call ends
 		if (newState.isDisconnecting() || newState.isIdle()) {
 			audioManager.unregisterMediaButtonEventReceiver(new ComponentName(appContext, VoipMediaButtonReceiver.class));
+		}
+
+		long callId = oldState.getCallId();
+		if (callId != 0L) {
+			recentCallIds.add(callId);
 		}
 	}
 
@@ -440,6 +458,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, VOIP_CONNECTION_LINGER);
 			this.connectionAcquired = false;
 		}
+	}
+
+	/**
+	 * Set the current state of the peer device regarding ringing.
+	 *
+	 * @param isPeerRinging the current peer ringing state
+	 */
+	public void setPeerRinging(boolean isPeerRinging) {
+		this.isPeerRinging = isPeerRinging;
+	}
+
+	/**
+	 * Check whether the peer device is currently ringing. This function returns {@code true} from
+	 * the time the other device rings until the call state changes on this device.
+	 *
+	 * @return {@code true} if the other device is ringing, {@code false} otherwise
+	 */
+	public boolean isPeerRinging() {
+		return this.isPeerRinging;
 	}
 
 	//endregion
@@ -741,7 +778,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				case VoipCallAnswerData.Action.REJECT:
 					// TODO: only for tests!
 					VoipListenerManager.callEventListener.handle(listener -> {
-						listener.onRejected(msg.getFromIdentity(), false, callAnswerData.getRejectReason());
+						listener.onRejected(callId, msg.getFromIdentity(), false, callAnswerData.getRejectReason());
 					});
 					logCallInfo(callId, "Call answer received from {}: reject/{}",
 						msg.getFromIdentity(), callAnswerData.getRejectReasonName());
@@ -885,10 +922,16 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Validate Call ID
 		//
 		// NOTE: Hangup messages from older Threema versions may not have any associated data!
+		// NOTE: If a remote hangup message arrives with an invalid call id that does not appear
+		// in the call history, it is a missed call
 		final long callId = msg.getData() == null
 			? 0L
 			: msg.getData().getCallIdOrDefault(0L);
 		if (!this.isCallIdValid(callId)) {
+			if (isMissedCall(msg, callId)) {
+				handleMissedCall(msg, callId);
+				return true;
+			}
 			logger.info(
 				"Call hangup message received from {} for an invalid Call ID ({}, local={}), ignoring",
 				msg.getFromIdentity(), callId, this.callState.getCallId()
@@ -925,16 +968,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			VoipListenerManager.callEventListener.handle(
 				listener -> {
 					final boolean accepted = prevState.isInitializing();
-					listener.onMissed(identity, accepted);
+					listener.onMissed(callId, identity, accepted, msg.getDate());
 				}
 			);
 		} else if (prevState.isCalling() && duration != null) {
 			VoipListenerManager.callEventListener.handle(listener -> {
-				listener.onFinished(msg.getFromIdentity(), !incoming, duration);
+				listener.onFinished(callId, msg.getFromIdentity(), !incoming, duration);
 			});
 		}
 
 		return true;
+	}
+
+	/**
+	 * Handle a missed call.
+	 *
+	 * @param msg the hangup message of the missed call
+	 * @param callId the call id of the missed call
+	 */
+	private void handleMissedCall(@NonNull final VoipCallHangupMessage msg, final long callId) {
+		logger.info("Missed call received from {} with call id {}", msg.getFromIdentity(), callId);
+		VoipListenerManager.callEventListener.handle(
+			listener -> listener.onMissed(callId, msg.getFromIdentity(), false, msg.getDate())
+		);
 	}
 
 	//endregion
@@ -964,6 +1020,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Otherwise, there's a call ID mismatch.
 		return false;
 	}
+
+	/**
+	 * Check whether this hangup voip message is a missed call.
+	 *
+	 * @param msg the received voip message that is checked for a missed call
+	 * @param callId the call id
+	 * @return {@code true} if it is a missed call, {@code false} otherwise
+	 */
+	public boolean isMissedCall(VoipMessage msg, long callId) {
+		if (recentCallIds.contains(callId)) {
+			logger.info("No missed call: call id {} is contained in recent call ids", callId);
+			return false;
+		}
+		// Limit the check to the last 4 calls. Note that only call status messages with the
+		// contact of this hangup message are considered.
+		if (contactService.createReceiver(contactService.getByIdentity(msg.getFromIdentity())).hasVoipCallStatus(callId, 4)) {
+			logger.info("No missed call: call id {} found in database", callId);
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Send a call offer to the specified contact.
@@ -1072,10 +1151,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					case VoipCallAnswerData.RejectReason.BUSY:
 					case VoipCallAnswerData.RejectReason.TIMEOUT:
 					case VoipCallAnswerData.RejectReason.OFF_HOURS:
-						listener.onMissed(receiver.getIdentity(), false);
+						listener.onMissed(callId, receiver.getIdentity(), false, null);
 						break;
 					default:
-						listener.onRejected(receiver.getIdentity(), true, reason);
+						listener.onRejected(callId, receiver.getIdentity(), true, reason);
 						break;
 				}
 			});
@@ -1236,9 +1315,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			VoipListenerManager.callEventListener.handle(
 				listener -> {
 					if (outgoing) {
-						listener.onAborted(peerIdentity);
+						listener.onAborted(callId, peerIdentity);
 					} else {
-						listener.onMissed(peerIdentity, true);
+						listener.onMissed(callId, peerIdentity, true, null);
 					}
 				}
 			);

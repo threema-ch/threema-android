@@ -113,7 +113,8 @@
     <string name="copy_message_action">複製</string>
     <string name="delete_contact_action">刪除聯絡人</string>
     <string name="scan_id">掃描ID</string>
-    <string name="id_mismatch">您掃描的公鑰與伺服器為該ID所儲存的金鑰不匹配。
+    <string name="id_scanned">ID已掃描</string>
+    <string name="id_mismatch">您掃描的公鑰與伺服器為該ID所儲存的金鑰不相符。
 這意味著有人操控了掃描後的代碼，並且該金鑰不應受到信任。</string>
     <string name="scan_successful">該ID已成功掃描，現在已驗證聯絡人。</string>
     <string name="scan_duplicate">此ID已被掃描和驗證。</string>
@@ -303,8 +304,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="action_leave_group">離開群組</string>
     <string name="group_edit_title">編輯群組</string>
     <string name="really_leave_group_message">您確定要離開這個群組嗎？</string>
-    <string name="search_no_matches">找不到匹配項</string>
-    <string name="search_no_more_matches">没有更多的匹配項</string>
+    <string name="search_no_matches">找不到相符項</string>
+    <string name="search_no_more_matches">没有更多的相符項</string>
     <string name="backup_share">分享備份</string>
     <string name="my_backups_title">備份</string>
     <string name="backup_delete_confirm">備份檔案已刪除</string>
@@ -401,7 +402,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_distribution_list_name">為此清單選擇名稱</string>
     <string name="distribution_list">通訊群組清單</string>
     <string name="title_tab_distribution_list">通訊群組清單</string>
-    <string name="no_matching_distribution_lists">沒有匹配的通訊群組清單</string>
+    <string name="no_matching_distribution_lists">沒有相符的通訊群組清單</string>
     <string name="is_typing">輸入中…</string>
     <string name="push_not_available_title">找不到推播服務</string>
     <string name="push_not_available_text1">我們無法在您的裝置上找到推播服務，因為 Google Play 服務未安裝或過期。</string>
@@ -477,8 +478,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_subject_hint">輸入這次投票的標題</string>
     <string name="ballot_no_ballots_yet">還沒有人投票。</string>
     <string name="print">列印</string>
-    <string name="ballot_wizard0_explain">直接用 Threema 快速建立線上投票。安排活動，
-建立問卷調查或問好友任何您想要的。</string>
+    <string name="ballot_wizard0_explain">您可以直接用 Threema 快速建立線上投票，例如安排活動、建立問卷調查或向好友問任何問題。</string>
     <string name="ballot_add_choices">新增答案</string>
     <string name="blocked_cannot_send">您無法將訊息傳送給被封鎖的聯絡人</string>
     <string name="really_block_contact">來自此聯絡人今後的訊息將被捨棄。是否繼續？</string>
@@ -527,7 +527,6 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="file_placeholder">檔案</string>
     <string name="internal_storage">內部儲存</string>
     <string name="no_activity_for_mime_type">找不到開啟此檔案的應用程式。</string>
-    <string name="message_copied">訊息已複製</string>
     <string name="open_from">從...開啟</string>
     <string name="file_one_contact_not_supported">%1$s 無法接收檔案。</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d個聯絡人無法接收您的檔案。</string>
@@ -591,9 +590,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="android_emojis_warning">注意：系統的字元集可能無法顯示
 Threema 支援的所有表情符號。</string>
     <string name="crop">裁剪</string>
-    <string name="scan_id_mismatch_title">ID不匹配</string>
-    <string name="scan_id_mismatch_message">您掃描的ID與
-您儲存的聯絡人不匹配。</string>
+    <string name="scan_id_mismatch_title">ID不相符</string>
+    <string name="scan_id_mismatch_message">您掃描的ID與您儲存的聯絡人不相符。</string>
     <string name="title_remove_picture">移除圖片</string>
     <string name="blocked">已封鎖</string>
     <string name="name">名稱</string>
@@ -658,7 +656,8 @@ Threema 支援的所有表情符號。</string>
     <string name="new_wizard_info_id">您還建立了一個金鑰對。金鑰已安全地傳輸到我們的伺服器。
 私鑰永遠不會離開您的裝置。這樣可以確保沒有其他人可以閱讀您的訊息。</string>
     <string name="new_wizard_info_sync_contacts">如果開啟此選項，Threema 會將電子郵件地址和電話號碼單向加密（雜湊），
-然後將其傳送到伺服器以尋找匹配的聯絡人。我們不會儲存任何通訊錄資料。</string>
+然後將其傳送到伺服器以尋找相符的聯絡人。我們不會儲存任何通訊錄資料。</string>
+    <string name="new_wizard_info_sync_contacts_dialog">聯絡人同步可以協助您找到您的好友。如果選擇同意，電話簿中的電話號碼和電郵地址將先以加密的形式傳送到我們的伺服器，來尋找相符的聯絡人。我們絕對不會儲存或分享任何資料。\n\n是否要開啟聯絡人同步？</string>
     <string name="new_wizard_info_link">透過提供您的電話號碼和電子郵件地址，Threema 可以協助您的好友自動在您的電話通訊錄中找到您。
 資料將以單向加密（雜湊）形式儲存在我們的伺服器上。
 如果您想完全匿名使用 Threema，則可以跳過此步驟。</string>
@@ -896,7 +895,7 @@ Threema 支援的所有表情符號。</string>
     <string name="quote_not_found">找不到引用的訊息</string>
     <string name="ballot_secret">秘密</string>
     <string name="password_too_short_generic">密碼長度太短</string>
-    <string name="passwords_dont_match">密碼不匹配</string>
+    <string name="passwords_dont_match">密碼不相符</string>
     <string name="test_unsuccessful">測試失敗</string>
     <string name="preparing_threema_safe">正在準備 Threema Safe</string>
     <string name="disable_powermanager_title">電源限制</string>
@@ -1086,7 +1085,7 @@ Threema 支援的所有表情符號。</string>
     <string name="play_services_not_installed_unable_to_use_push">由於您還未安裝推播服務，因此無法切換至 Google FCM 或 HMS 推播訊息。</string>
     <string name="unable_to_get_current_location">無法判斷現在的位置。</string>
     <string name="lp_search_place_min_chars">請輸入至少三個字元以搜尋地點。</string>
-    <string name="lp_search_place_no_matches">找不到匹配的地點。請修改您的查詢。</string>
+    <string name="lp_search_place_no_matches">找不到相符的地點。請修改您的查詢。</string>
     <string name="wallpaper_default">預設背景圖片</string>
     <string name="wallpaper_gallery">從圖片庫中選擇</string>
     <string name="wallpaper_none">空白背景圖片</string>
@@ -1241,7 +1240,7 @@ Threema 支援的所有表情符號。</string>
     <string name="group_response_full">您的 %s 群組加入要求被拒絕，因為群組已滿。</string>
     <string name="group_response_rejected">您的 %s 群組加入要求被拒絕</string>
     <string name="group_link_expiration_none">無限制</string>
-    <string name="group_request_hint">哈囉！大家好。</string>
+    <string name="group_request_hint">哈囉，大家好！</string>
     <string name="group_request_send_title">傳送群組加入要求</string>
     <string name="group_request_message_empty">群組加入要求不能為空</string>
     <string name="group_requests_all_title">所有群組加入要求</string>
@@ -1419,6 +1418,8 @@ Threema 支援的所有表情符號。</string>
     <string name="last_added_contact">最後新增</string>
     <string name="directory_explain_text">在公司目錄中搜尋任何尚未列在您的聯絡人清單中的員工。</string>
     <string name="cannot_display_location">無法顯示此位置。</string>
+    <string name="unable_to_restore_identity_because">無法還原ID。原因：%s</string>
+    <string name="share_with_app">分享至 Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1430,5 +1431,8 @@ Threema 支援的所有表情符號。</string>
     </plurals>
     <plurals name="selection_counter_label">
         <item quantity="other">已選定%d張圖片</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="other">訊息已複製</item>
     </plurals>
 </resources>

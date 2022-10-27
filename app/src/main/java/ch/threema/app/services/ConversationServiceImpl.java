@@ -41,6 +41,7 @@ import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.MessageUtil;
+import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
@@ -192,7 +193,7 @@ public class ConversationServiceImpl implements ConversationService {
 					filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
 						@Override
 						public boolean apply(@NonNull ConversationModel conversationModel) {
-							return TestUtil.contains(filter.filterQuery(), conversationModel.getReceiver().getDisplayName());
+							return TestUtil.matchesConversationSearch(filter.filterQuery(), conversationModel.getReceiver().getDisplayName());
 						}
 					});
 				}
@@ -631,15 +632,10 @@ public class ConversationServiceImpl implements ConversationService {
 			List<ConversationResult> res = this.selectAll(true);
 
 			if (!TestUtil.empty(constraint)) {
-				constraint = constraint.toLowerCase();
 				for(ConversationResult r: res) {
 					ConversationModel conversationModel = this.parseResult(r, null, false);
-					String title = conversationModel.toString();
-
-					if (!TestUtil.empty(title)) {
-						if (title.toLowerCase().contains(constraint)) {
-							conversationModels.add(conversationModel);
-						}
+					if (TestUtil.matchesConversationSearch(constraint, conversationModel.toString())) {
+						conversationModels.add(conversationModel);
 					}
 				}
 			} else {

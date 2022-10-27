@@ -65,6 +65,7 @@ import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.ContactModel;
 
@@ -496,12 +497,12 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			} else {
 				// perform filtering
 				List<ContactModel> nContactList = new ArrayList<ContactModel>();
-				filterString = LocaleUtil.normalize(constraint.toString());
+				filterString = constraint.toString();
 
 				for (ContactModel contactModel : ovalues) {
 					if (contactModel != null) {
-						if ((LocaleUtil.normalize(NameUtil.getDisplayNameOrNickname(contactModel, false)).contains(filterString)) ||
-							(contactModel.getIdentity().toUpperCase().contains(filterString))) {
+						if ((TestUtil.matchesConversationSearch(filterString, NameUtil.getDisplayNameOrNickname(contactModel, false))) ||
+							(contactModel.getIdentity().toUpperCase().contains(filterString.toUpperCase()))) {
 							nContactList.add(contactModel);
 						}
 					}

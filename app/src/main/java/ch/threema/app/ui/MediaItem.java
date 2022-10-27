@@ -237,6 +237,13 @@ public class MediaItem implements Parcelable {
 		return caption;
 	}
 
+	public @Nullable String getTrimmedCaption() {
+		if (caption != null) {
+			return caption.trim();
+		}
+		return null;
+	}
+
 	public void setCaption(@Nullable String caption) {
 		this.caption = caption;
 	}

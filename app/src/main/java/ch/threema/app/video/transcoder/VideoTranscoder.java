@@ -21,7 +21,6 @@
 
 package ch.threema.app.video.transcoder;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,8 +33,10 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
 import android.view.Surface;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
 
@@ -46,8 +47,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.video.transcoder.audio.AbstractAudioTranscoder;
 import ch.threema.app.video.transcoder.audio.AudioComponent;
@@ -56,6 +55,8 @@ import ch.threema.app.video.transcoder.audio.AudioNullTranscoder;
 import ch.threema.app.video.transcoder.audio.UnsupportedAudioFormatException;
 import ch.threema.base.utils.LoggingUtil;
 import java8.util.Optional;
+
+import static ch.threema.app.video.transcoder.VideoTranscoderUtil.getRoundedSize;
 
 /**
  * Based on https://github.com/groupme/android-video-kit
@@ -73,7 +74,6 @@ import java8.util.Optional;
  * limitations under the License.
  */
 
-@TargetApi(18)
 public class VideoTranscoder {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoder");
 	private @NonNull Optional<AbstractAudioTranscoder> audioTranscoder = Optional.empty();
@@ -93,8 +93,6 @@ public class VideoTranscoder {
 	private static final int POLLING_SUCCESS = 0;
 	private static final int POLLING_ERROR = -1;
 	private static final int POLLING_CANCELED = 1;
-
-	private static final String KEY_ROTATION = "rotation";
 
 	/**
 	 * How long to wait for the next buffer to become available in microseconds.
@@ -267,7 +265,7 @@ public class VideoTranscoder {
 		mStats = new Stats();
 		createComponents();
 
-		setOrientationHint();
+		mOrientationHint = VideoTranscoderUtil.getOrientationHint(mContext, mInputVideoComponent, mSrcUri);
 		if (!calculateOutputDimensions()) {
 			throw new UnrecoverableVideoTranscoderException("Unable to calculate dimensions");
 		}
@@ -869,33 +867,6 @@ public class VideoTranscoder {
 		return false;
 	}
 
-	private int getRoundedSize(float ratio, int size) {
-		// width/height need to be a multiple of 2 otherwise mediacodec encoder will crash
-		// with android.media.MediaCodec$CodecException: Error 0xfffffc0e
-		return 16 * Math.round(size * ratio / 16);
-	}
-
-
-	private void setOrientationHint() {
-		MediaFormat trackFormat = mInputVideoComponent.getTrackFormat();
-
-		if (trackFormat.containsKey(KEY_ROTATION)) {
-			mOrientationHint = trackFormat.getInteger(KEY_ROTATION);
-		} else {
-			// do not use automatic resource management on MediaMetadataRetriever
-			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			try {
-				retriever.setDataSource(mContext, mSrcUri);
-				String orientation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-				if (!TextUtils.isEmpty(orientation)) {
-					mOrientationHint = Integer.parseInt(orientation);
-				}
-			} finally {
-				retriever.release();
-			}
-		}
-	}
-
 	private void createOutputFormats() {
 		createVideoOutputFormat();
 
@@ -933,21 +904,21 @@ public class VideoTranscoder {
 
 	private void createVideoDecoder() throws IOException {
 		MediaFormat inputFormat = mInputVideoComponent.getTrackFormat();
-		if(inputFormat == null) {
+		if (inputFormat == null) {
 			throw new UnrecoverableVideoTranscoderException("Could not detect video track");
 		}
 
 		if (mTrimEndTimeMs == TRIM_TIME_END) {
-			if (!inputFormat.containsKey(MediaFormat.KEY_DURATION)) {
+			if (mInputVideoComponent.getDurationUs() == 0L) {
 				throw new UnrecoverableVideoTranscoderException("Video key length duration could not be detected");
 			}
-			outputDurationUs = inputFormat.getLong(MediaFormat.KEY_DURATION);
+			outputDurationUs = mInputVideoComponent.getDurationUs();
 		} else {
 			outputDurationUs = (mTrimEndTimeMs - mTrimStartTimeMs) * 1000;
 		}
 		outputStartTimeUs = mTrimStartTimeMs * 1000;
 
-		mVideoDecoder = MediaCodec.createDecoderByType(getMimeTypeFor(inputFormat));
+		mVideoDecoder = MediaCodec.createDecoderByType(mInputVideoComponent.getMimeType());
 		mVideoDecoder.configure(inputFormat, mOutputSurface.getSurface(), null, 0);
 		mVideoDecoder.start();
 	}
@@ -983,7 +954,6 @@ public class VideoTranscoder {
 				);
 			} finally {
 				retriever.release();
-
 			}
 		}
 
@@ -1040,10 +1010,6 @@ public class VideoTranscoder {
 				audioExtractedFrameCount++;
 			}
 		}
-	}
-
-	public static String getMimeTypeFor(MediaFormat format) {
-		return format.getString(MediaFormat.KEY_MIME);
 	}
 
 	public static final class Builder {

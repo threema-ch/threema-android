@@ -25,13 +25,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 
 import ch.threema.app.services.messageplayer.MessagePlayer;
+import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.TranscoderView;
 
@@ -47,7 +47,7 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public ImageView attachmentImage;
 	public ViewGroup messageBlockView;
 	public ViewGroup contentView;
-	public SeekBar seekBar;
+	public AudioProgressBarView seekBar;
 	public View quoteBar;
 	public ImageView quoteThumbnail, quoteTypeImage;
 	public TranscoderView transcoderView;

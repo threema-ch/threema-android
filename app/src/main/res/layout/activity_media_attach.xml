@@ -119,7 +119,7 @@
 			android:layout_height="?attr/actionBarSize"
 			android:visibility="invisible"
 			app:menu="@menu/activity_media_attach"
-			app:navigationIcon="@drawable/ic_arrow_down_ios_black_24dp"
+			app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
 			app:navigationIconTint="?attr/textColorSecondary">
 
 			<LinearLayout

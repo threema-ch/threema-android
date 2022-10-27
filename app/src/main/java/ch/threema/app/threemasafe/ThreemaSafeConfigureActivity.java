@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -68,6 +70,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
 	public static final String EXTRA_CHANGE_PASSWORD = "cp";
 	public static final String EXTRA_WORK_FORCE_PASSWORD = "fp";
+	public static final String EXTRA_OPEN_HOME_ACTIVITY = "oha";
 	private static final String DIALOG_TAG_UNSAFE_PASSWORD = "unsafe";
 	private static final String DIALOG_TAG_UNSAFE_PASSWORD_WORK = "unsafework";
 
@@ -80,6 +83,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 	private Button nextButton;
 	private boolean updatePasswordOnly;
 	private ThreemaSafeServerInfo serverInfo;
+	private boolean openHomeActivity = false;
 
 	@SuppressLint("SetTextI18n")
 	@Override
@@ -147,7 +151,17 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 			}
 		}
 
+		openHomeActivity = (intent != null && intent.getBooleanExtra(EXTRA_OPEN_HOME_ACTIVITY, false))
+			|| (savedInstanceState != null && savedInstanceState.getBoolean(EXTRA_OPEN_HOME_ACTIVITY, false));
+
 		return true;
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+		super.onSaveInstanceState(outState, outPersistentState);
+
+		outState.putBoolean(EXTRA_OPEN_HOME_ACTIVITY, openHomeActivity);
 	}
 
 	@Override
@@ -246,6 +260,11 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 		} else {
 			Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_activated, Toast.LENGTH_LONG).show();
 		}
+
+		if (openHomeActivity) {
+			startActivity(new Intent(ThreemaSafeConfigureActivity.this, HomeActivity.class));
+		}
+
 		finish();
 	}
 

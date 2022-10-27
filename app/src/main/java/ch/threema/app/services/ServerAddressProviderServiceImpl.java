@@ -130,6 +130,16 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 			public String getWebServerUrl() throws ThreemaException {
 				return BuildConfig.WEB_SERVER_URL;
 			}
+
+			@Override
+			public String getWebOverrideSaltyRtcHost() throws ThreemaException {
+				return null;
+			}
+
+			@Override
+			public int getWebOverrideSaltyRtcPort() throws ThreemaException {
+				return 0;
+			}
 		};
 	}
 

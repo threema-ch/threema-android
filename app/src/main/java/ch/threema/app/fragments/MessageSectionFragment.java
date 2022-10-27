@@ -34,6 +34,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -46,16 +47,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -67,6 +58,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -102,7 +104,6 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
@@ -123,6 +124,7 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -191,7 +193,6 @@ public class MessageSectionFragment extends MainFragment
 
 	private ServiceManager serviceManager;
 	private ConversationService conversationService;
-	private AvatarCacheService avatarCacheService;
 	private ContactService contactService;
 	private GroupService groupService;
 	private MessageService messageService;
@@ -382,7 +383,6 @@ public class MessageSectionFragment extends MainFragment
 	protected boolean checkInstances() {
 		return TestUtil.required(
 				this.serviceManager,
-				this.avatarCacheService,
 				this.contactListener,
 				this.groupService,
 				this.conversationService,
@@ -401,7 +401,6 @@ public class MessageSectionFragment extends MainFragment
 
 		if (this.serviceManager != null) {
 			try {
-				this.avatarCacheService = this.serviceManager.getAvatarCacheService();
 				this.contactService = this.serviceManager.getContactService();
 				this.groupService = this.serviceManager.getGroupService();
 				this.messageService = this.serviceManager.getMessageService();
@@ -572,6 +571,11 @@ public class MessageSectionFragment extends MainFragment
 
 	private void showConversation(ConversationModel conversationModel, View v) {
 		conversationTagService.unTag(conversationModel, unreadTagModel);
+
+		// Close keyboard if search view is expanded
+		if (searchView != null && !searchView.isIconified()) {
+			EditTextUtil.hideSoftKeyboard(searchView);
+		}
 
 		Intent intent = IntentDataUtil.getShowConversationIntent(conversationModel, activity);
 
@@ -869,7 +873,7 @@ public class MessageSectionFragment extends MainFragment
 						updateList(null, conversationModels, new Runnable() {
 							@Override
 							public void run() {
-								ListenerManager.conversationListeners.handle((ConversationListener listener) -> {
+								conversationListeners.handle((ConversationListener listener) -> {
 									listener.onModified(holder.getConversationModel(), oldPosition);
 								});
 							}
@@ -999,24 +1003,29 @@ public class MessageSectionFragment extends MainFragment
 					}
 				}
 			});
-			recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-				private final int TOUCH_SAFE_AREA_PX = 5;
 
-				// ignore touches at the very left and right edge of the screen to prevent interference with UI gestures
-				@Override
-				public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-					int width = getResources().getDisplayMetrics().widthPixels;
-					int touchX = (int) e.getRawX();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && getActivity() != null && getActivity().isInMultiWindowMode()) {
+				recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+					private final int TOUCH_SAFE_AREA_PX = 5;
 
-					return touchX < TOUCH_SAFE_AREA_PX || touchX > width - TOUCH_SAFE_AREA_PX;
-				}
+					// ignore touches at the very left and right edge of the screen to prevent interference with UI gestures
+					@Override
+					public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+						int width = getResources().getDisplayMetrics().widthPixels;
+						int touchX = (int) e.getRawX();
 
-				@Override
-				public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) { }
+						return touchX < TOUCH_SAFE_AREA_PX || touchX > width - TOUCH_SAFE_AREA_PX;
+					}
 
-				@Override
-				public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
-			});
+					@Override
+					public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+					}
+
+					@Override
+					public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+					}
+				});
+			}
 
 			//instantiate fragment
 			//
@@ -1473,7 +1482,6 @@ public class MessageSectionFragment extends MainFragment
 			logger.error("could not instantiate required objects");
 			return;
 		}
-
 		logger.debug("*** update list [" + scrollToPosition + ", " + (changedPositions != null ? changedPositions.size() : "0") + "]");
 
 		Thread updateListThread = new Thread(new Runnable() {

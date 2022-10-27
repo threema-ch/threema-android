@@ -27,6 +27,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 import androidx.annotation.AnyThread;
+
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.RuntimeUtil;
 
@@ -63,9 +64,9 @@ abstract class AdapterDecorator {
 	@AnyThread
 	protected void invalidate(final AbstractListItemHolder holder, final int position) {
 		RuntimeUtil.runOnUiThread(() -> {
-		if(holder != null && holder.position == position) {
-			configure(holder, position);
-		}
+			if (holder != null && holder.position == position) {
+				configure(holder, position);
+			}
 		});
 	}
 	abstract protected void configure(AbstractListItemHolder holder, int position);

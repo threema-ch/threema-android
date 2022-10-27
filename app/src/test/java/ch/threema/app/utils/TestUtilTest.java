@@ -140,4 +140,24 @@ public class TestUtilTest {
 
 	}
 
+	@Test
+	public void testMatchesConversationSearch() {
+		assertTrue(TestUtil.matchesConversationSearch("aaaaaaa", "aàáâãäå"));
+		assertTrue(TestUtil.matchesConversationSearch("eeeee", "eèéêë"));
+		assertTrue(TestUtil.matchesConversationSearch("iiiii", "iíìîï"));
+		assertTrue(TestUtil.matchesConversationSearch("oooooo", "oóòôöõ"));
+		assertTrue(TestUtil.matchesConversationSearch("uuuuu", "uüúùû"));
+		assertTrue(TestUtil.matchesConversationSearch("n", "ñ"));
+		assertTrue(TestUtil.matchesConversationSearch("c", "ç"));
+
+		assertTrue(TestUtil.matchesConversationSearch("A", "ä"));
+		assertTrue(TestUtil.matchesConversationSearch("a", "ä"));
+		assertTrue(TestUtil.matchesConversationSearch("a", "Ä"));
+		assertTrue(TestUtil.matchesConversationSearch("A", "Ä"));
+		assertFalse(TestUtil.matchesConversationSearch("Ä", "a"));
+
+		assertFalse(TestUtil.matchesConversationSearch(null, "a"));
+		assertFalse(TestUtil.matchesConversationSearch("a", null));
+	}
+
 }

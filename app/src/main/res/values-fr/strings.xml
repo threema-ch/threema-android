@@ -112,6 +112,7 @@
     <string name="copy_message_action">Copier</string>
     <string name="delete_contact_action">Supprimer le contact</string>
     <string name="scan_id">Scanner un ID</string>
+    <string name="id_scanned">ID scanné</string>
     <string name="id_mismatch">La clé publique que vous avez scannée ne correspond pas à celle stockée par le serveur pour cet ID. Cela signifie que quelqu\'un a manipulé le code scanné, et que la clé n\'est pas fiable.</string>
     <string name="scan_successful">L\'ID a bien été scanné et le contact est vérifié.</string>
     <string name="scan_duplicate">L\'ID a déjà été scanné et vérifié.</string>
@@ -509,7 +510,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="file_placeholder">Fichier</string>
     <string name="internal_storage">Stockage interne</string>
     <string name="no_activity_for_mime_type">Aucune application trouvée pour ouvrir ce fichier.</string>
-    <string name="message_copied">Message copié</string>
     <string name="open_from">Ouvrir depuis</string>
     <string name="file_one_contact_not_supported">%1$s ne peut pas recevoir de fichiers.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Attention : %1$d contacts ne peuvent pas recevoir votre fichier.</string>
@@ -634,6 +634,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="new_wizard_info_fingerprint">En déplaçant vos doigt, vous créez des données aléatoires (appelées entropie), qui sont utilisées pour générer une paire de clés associées à votre ID Threema unique.</string>
     <string name="new_wizard_info_id">Vous avez également créé une paire de clés. La clé publique a été transmise de façon sécurisée à nos serveurs. La clé privée ne quitte jamais votre appareil. Ceci assure que personne d\'autre ne peut lire vos messages.</string>
     <string name="new_wizard_info_sync_contacts">Si vous activez cette option, Threema chiffrera de façon unidirectionnelle (hachage) les adresses e-mail et les numéros de téléphone avant de les envoyer au serveur pour chercher des contacts correspondants. Nous ne stockons pas les données du carnet d\'adresses.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">La synchronisation des contacts peut vous aider à retrouver automatiquement vos amis. Si vous acceptez, les numéros de téléphone et les adresses e-mail de votre carnet d\'adresses seront chiffrés avant d\'être envoyés à notre serveur pour rechercher des contacts correspondants. Absolument aucune donnée ne sera stockée ou partagée.\n\nVoulez-vous activer la synchronisation des contacts ?</string>
     <string name="new_wizard_info_link">En nous donnant votre numéro de téléphone et votre adresse e-mail, nous pouvons aider vos amis à vous trouver automatiquement sur Threema. Ces informations seront stockées de façon sécurisée et anonyme. Si vous ignorez cette étape, vous utiliserez Threema de façon complètement anonyme.</string>
     <string name="new_wizard_info_link_phone_only">En donnant votre numéro de téléphone, Theema peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d’adresses. Le numéro sera stocké de manière chiffrée (hashée) sur notre serveur. Vous pouvez simplement passer cette étape si vous souhaitez utiliser Threema de manière complètement anonyme.</string>
     <string name="new_wizard_info_nickname">Le surnom est utilisé dans les notifications push sur certains appareils, ou comme moyen supplémentaire de vous identifier auprès des utilisateurs dont vous n\'êtes pas encore dans le carnet d\'adresse. Nous vous recommandons de ne donner que votre prénom ou un pseudo. Si vous ne définissez pas de surnom, nous utiliserons par défaut votre ID Threema.</string>
@@ -1387,14 +1388,16 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="last_added_contact">Dernier ajout</string>
     <string name="directory_explain_text">Recherchez dans le répertoire de l\'entreprise tout employé ne faisant pas encore partie de votre liste de contacts.</string>
     <string name="cannot_display_location">Impossible d\'afficher cet emplacement.</string>
+    <string name="unable_to_restore_identity_because">Impossible de restaurer l\'ID. Raison : %s</string>
+    <string name="share_with_app">Partager avec Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="many">%d contacts</item>
         <item quantity="other">%d contacts</item>
     </plurals>
     <plurals name="really_delete_thread_message">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Souhaitez-vous vraiment supprimer ce fil ?</item>
-        <item quantity="many">Souhaitez-vous vraiment supprimer %d fils ?</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Souhaitez-vous vraiment supprimer ce fil?</item>
+        <item quantity="many">Souhaitez-vous vraiment supprimer %d fils?</item>
         <item quantity="other">Souhaitez-vous vraiment supprimer %d fils ?</item>
     </plurals>
     <plurals name="sending_message_failed">
@@ -1406,5 +1409,10 @@ Veuillez saisir une question pour votre enquête.</string>
         <item quantity="one">%d image sélectionnée</item>
         <item quantity="many">%d images sélectionnées</item>
         <item quantity="other">%d images sélectionnées</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Message copié</item>
+        <item quantity="many">Messages copiés</item>
+        <item quantity="other">Messages copiés</item>
     </plurals>
 </resources>

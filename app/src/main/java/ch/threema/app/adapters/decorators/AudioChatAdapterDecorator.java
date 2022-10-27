@@ -30,16 +30,18 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.annotation.UiThread;
+
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
+import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
@@ -82,29 +84,13 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		keepScreenOnUpdate();
 	}
 
-	private void keepScreenOnUpdate() {
-/*		RuntimeUtil.runOnUiThread(() -> {
-			try {
-				helper.getFragment().getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			} catch (Exception e) {
-				//
-			}
-		});
-*/	}
+	private void keepScreenOnUpdate() {}
 
 	private void keepScreenOff() {
 		if (audioPlayerWakelock != null && audioPlayerWakelock.isHeld()) {
 			audioPlayerWakelock.release();
 		}
-
-/*		RuntimeUtil.runOnUiThread(() -> {
-			try {
-				helper.getFragment().getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			} catch (Exception e) {
-				//
-			}
-		});
-*/	}
+	}
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
@@ -139,6 +125,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		});
 
 		setSpeedButtonText(holder, getPreferenceService().getAudioPlaybackSpeed());
+		holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
 		holder.readOnButton.setVisibility(View.GONE);
 		holder.messageTypeButton.setVisibility(View.VISIBLE);
 		holder.controller.setOnClickListener(v -> {
@@ -181,6 +168,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 				switch (audioMessagePlayer.getState()) {
 					case MessagePlayer.State_NONE:
 						if (isDownloaded) {
+							if (holder.seekBar != null) {
+								holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
+							}
 							holder.controller.setPlay();
 						} else {
 							if (helper.getDownloadService().isDownloading(getMessageModel().getId())) {
@@ -197,6 +187,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						break;
 					case MessagePlayer.State_DOWNLOADED:
 					case MessagePlayer.State_DECRYPTED:
+						if (holder.seekBar != null) {
+							holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
+						}
 						holder.controller.setPlay();
 						break;
 					case MessagePlayer.State_PLAYING:
@@ -217,7 +210,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 							holder.seekBar.setMax(audioMessagePlayer.getDuration());
 							logger.debug("SeekBar: Position = " + audioMessagePlayer.getPosition());
 							updateProgressCount(holder, audioMessagePlayer.getPosition());
-							holder.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+							holder.seekBar.setOnSeekBarChangeListener(new AudioProgressBarView.OnSeekBarChangeListener() {
 								@Override
 								public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 									if (fromUser) {

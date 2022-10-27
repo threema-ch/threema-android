@@ -113,6 +113,7 @@ når den første meldingen mottas.</string>
     <string name="copy_message_action">Kopier</string>
     <string name="delete_contact_action">Slett kontakt</string>
     <string name="scan_id">Skann ID</string>
+    <string name="id_scanned">ID skannet</string>
     <string name="id_mismatch">Den offentlige nøkkelen du har skannet samsvarer ikke med nøkkelen som er lagret på serveren for denne IDen. Dette betyr at noen har manipulert den skannede koden og at du ikke bør stole på nøkkelen.</string>
     <string name="scan_successful">ID-en har blitt skannet og kontakten er nå verifisert.</string>
     <string name="scan_duplicate">IDen har allerede blitt skannet og verifisert.</string>
@@ -508,7 +509,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="file_placeholder">Fil</string>
     <string name="internal_storage">Intern lagring</string>
     <string name="no_activity_for_mime_type">Fant ingen app for å åpne denne filen.</string>
-    <string name="message_copied">Melding kopiert</string>
     <string name="open_from">Åpne fra</string>
     <string name="file_one_contact_not_supported">%1$s kan ikke motta filer.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Varsel: %1$d kontakter kan ikke motta filen.</string>
@@ -631,6 +631,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike Threema ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine venner og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Vennene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
     <string name="new_wizard_info_id">Du har også laget et nøkkelpar. Den offentlige nøkkelen har blitt sendt til våre servere på en sikker måte. Den private nøkkelen forlater aldri din enhet. Dette sørger for at ingen andre kan lese dine meldinger.</string>
     <string name="new_wizard_info_sync_contacts">Om du aktiverer denne funksjonen, så krypterer Threema e-postadresser og telefonnummer på en sikker måte (en-veis ved hjelp av hash), før det blir sendt til serveren for å sjekke om der finnes matcher. Vi lagrer aldri data fra adresseboken din på våre servere.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Kontaktsynkronisering kan hjelpe deg å finne vennene dine automatisk. Om du godtar, så vil telefonnummer og e-postadresser fra din kontaktliste bli kryptert og sendt til vår server for å se etter treff. Ingen data vil bli lagret eller delt med noen. \n\nVil du aktivere kontaktsynkronisering?</string>
     <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan Threema hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema helt anonymt, så kan du hoppe over dette trinnet.</string>
     <string name="new_wizard_info_link_phone_only">Ved å oppgi ditt telefonnummer, så kan Threema hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Telefonnummeret blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema helt anonymt, så kan du hoppe over dette trinnet.</string>
     <string name="new_wizard_info_nickname">Kallenavnet blir brukt i push-varsler på noen enheter eller som en ekstra måte å identifisere deg for brukere som ikke enda har deg i sin adressebok. Vi anbefaler å bare oppgi fornavnet ditt eller et pseudonym. Om du ikke velger et kallenavn så blir din Threema ID brukt som standard.</string>
@@ -1384,6 +1385,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="last_added_contact">Sist lagt til</string>
     <string name="directory_explain_text">Søk i firmaets oppføringsliste etter ansatte som ikke er lagt til i din kontaktliste.</string>
     <string name="cannot_display_location">Denne posisjonen kan ikke vises.</string>
+    <string name="unable_to_restore_identity_because">Ikke mulig å gjenopprette IDen. Årsak: %s</string>
+    <string name="share_with_app">Del med Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1399,5 +1402,9 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <plurals name="selection_counter_label">
         <item quantity="one">%d bilde valgt</item>
         <item quantity="other">%d bilder valgt</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Melding kopiert</item>
+        <item quantity="other">Meldinger kopiert</item>
     </plurals>
 </resources>

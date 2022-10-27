@@ -3,7 +3,7 @@
     <string name="title_section2">Contatos</string>
     <string name="title_section1">Mensagens</string>
     <string name="title_compose_message">Nova mensagem</string>
-    <string name="title_choose_recipient">Selecionar destinatários</string>
+    <string name="title_choose_recipient">Selecionar destinatário</string>
     <string name="title_keyfingerprint">Impressão digital da chave</string>
     <string name="title_mythreemaid">Minha ID Threema</string>
     <string name="title_threemaid">ID Threema</string>
@@ -112,6 +112,7 @@
     <string name="copy_message_action">Copiar</string>
     <string name="delete_contact_action">Excluir contato</string>
     <string name="scan_id">Ler ID</string>
+    <string name="id_scanned">ID escaneada</string>
     <string name="id_mismatch">A chave pública que você leu não corresponde a chave que o servidor armazenou para esse ID. Isso significa que alguém manipulou o código que foi lido e que a chave não deve ser confiável.</string>
     <string name="scan_successful">A ID foi lida com sucesso e o contato foi confirmado agora.</string>
     <string name="scan_duplicate">Este ID já foi lido e confirmado.</string>
@@ -510,7 +511,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="file_placeholder">Arquivo</string>
     <string name="internal_storage">Armazenamento interno</string>
     <string name="no_activity_for_mime_type">Nenhum app encontrado para abrir esse arquivo.</string>
-    <string name="message_copied">Mensagem copiada</string>
     <string name="open_from">Abrir do</string>
     <string name="file_one_contact_not_supported">%1$s não pode receber arquivos.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Aviso: %1$d contatos não podem receber o seu arquivo.</string>
@@ -635,6 +635,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="new_wizard_info_fingerprint">Ao mover seus dedos, você cria dados aleatórios (chamados de entropia) que são usados para gerar o par de chaves associado à sua ID exclusiva do Threema.</string>
     <string name="new_wizard_info_id">Você também criou um par de chaves. A chave pública foi transmitida de forma segura aos nossos servidores. A chave privada nunca sai do seu aparelho. Isso garante que nenhuma outra pessoa possa ler as suas mensagens.</string>
     <string name="new_wizard_info_sync_contacts">Se você habilitar esta opção, o Threema irá criptografar unilateralmente endereços de e-mail e números de telefone antes de enviá-los ao servidor para procurar por contatos correspondentes. Nós não armazenamos nenhum dado do catálogo de endereços.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">A sincronização dos contatos pode ajudá-lo a encontrar seus amigos automaticamente. Se concordar, os números de telefone e endereços de e-mail de sua lista telefônica serão criptografados antes de serem enviados ao nosso servidor para procurar contatos correspondentes. Absolutamente nenhum dado será armazenado ou compartilhado.\n\nDeseja ativar a sincronização de contatos?</string>
     <string name="new_wizard_info_link">Ao nos dar o seu número de telefone e endereço de e-mail, nós podemos ajudar seus amigos a encontrarem você automaticamente no Threema. Essas informações serão armazenadas de forma anônima e segura. Se pular essa etapa, você usará o Threema de forma completamente anônima.</string>
     <string name="new_wizard_info_link_phone_only">Ao fornecer o seu número de telefone, o Threema pode ajudar os seus amigos a encontrá-lo automaticamente se eles tiverem seu número no catálogo de endereços. O número será armazenado de forma criptografada unidirecional (de hash) em nosso servidor. Você pode pular esta etapa se deseja usar o Threema completamente anônima.</string>
     <string name="new_wizard_info_nickname">O apelido é usado em notificações push em alguns aparelhos ou como um meio adicional de lhe identificar a usuários que ainda não têm você em seus catálogos de endereços. Nós recomendamos que você forneça apenas seu primeiro nome ou um pseudônimo. Se não definir um apelido, nós usaremos sua ID do Threema por padrão.</string>
@@ -1391,6 +1392,8 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="last_added_contact">Mais recentes</string>
     <string name="directory_explain_text">Encontre o diretório da empresa para qualquer funcionário que ainda não estiver na sua lista de contatos.</string>
     <string name="cannot_display_location">Esta localização não pode ser exibida.</string>
+    <string name="unable_to_restore_identity_because">Não é possível restaurar a ID. Motivo: %s</string>
+    <string name="share_with_app">Compartilhar com o Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>
@@ -1406,5 +1409,9 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <plurals name="selection_counter_label">
         <item quantity="one">%d imagem selecionada</item>
         <item quantity="other">%d imagemns selecionadas</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Mensagem copiada</item>
+        <item quantity="other">Mensagens copiadas</item>
     </plurals>
 </resources>

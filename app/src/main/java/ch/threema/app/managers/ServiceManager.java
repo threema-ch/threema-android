@@ -23,13 +23,14 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
@@ -518,7 +519,6 @@ public class ServiceManager {
 	public BackupRestoreDataService getBackupRestoreDataService() throws FileSystemNotPresentException {
 		if(this.backupRestoreDataService == null) {
 			this.backupRestoreDataService = new BackupRestoreDataServiceImpl(
-					this.getContext(),
 					this.getFileService());
 		}
 

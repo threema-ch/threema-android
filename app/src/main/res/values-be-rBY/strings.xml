@@ -112,6 +112,7 @@
     <string name="copy_message_action">Капіяваць</string>
     <string name="delete_contact_action">Выдаліць кантакт</string>
     <string name="scan_id">СканавацьID</string>
+    <string name="id_scanned">ID адсканаваны</string>
     <string name="id_mismatch">Адкрыты ключ, які вы адсканавалі, не адпавядае ключу, які захоўваецца на сэрвэры для гэтага ID. Гэта азначае, што нехта змяніў адсканаваны код і ключу нельга давяраць.</string>
     <string name="scan_successful">ID паспяхова адсканаваны, а кантакт правераны.</string>
     <string name="scan_duplicate">Гэты ID ужо быў адсканаваны і правераны.</string>
@@ -507,7 +508,6 @@
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Унутранае сховішча</string>
     <string name="no_activity_for_mime_type">Не знайшлі праграму для адкрыцця гэтага файла.</string>
-    <string name="message_copied">Паведамл. скапіявана</string>
     <string name="open_from">Адкрыць з</string>
     <string name="file_one_contact_not_supported">%1$s не можа прымаць файлы.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Увага: %1$d кантакты(аў) не могуць прыняць ваш файл.</string>
@@ -630,6 +630,7 @@
     <string name="new_wizard_info_fingerprint">Соўваючы пальцам па экране, вы ствараеце выпадковыя даныя (званыя энтрапіяй), якія выкарыстоўваюцца для стварэння пары ключоў, звязаных з вашым новым унікальным Threema ID. Пара ключоў складаецца з <b>адчыненага ключа</b>, які рассылаецца вашым сябрам, і <b>зачыненага ключа</b>, які бяспечна захоўваецца ў вашым тэлефоне. Вашыя сябры будуць шыфраваць паведамленні пры дапамозе адчыненага ключа.  Толькі ўладальнік зачыненага ключа, і ніхто іншы, можа расшыфраваць гэтыя паведамленні.</string>
     <string name="new_wizard_info_id">Вы стварылі пару ключоў. Адчынены ключ па абароненым канале перададзены на нашыя сэрверы. Зачынены ключ заўсёды застаецца на вашай прыладзе. Гэта гарантуе, што ніхто іншы не зможа прачытаць вашыя паведамленні.</string>
     <string name="new_wizard_info_sync_contacts">Калі ўключыць гэтую опцыю, Threema шыфруе (хэшуе) адрасы электроннай пошты і нумары мабільных тэлефонаў перад адпраўкай іх на сэрвер, для пошуку адпаведных кантактаў. Мы не захоўваем даныя адраснай кнігі.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Аўтаматычная сінхранізацыя кантактаў можа дапамагчы вам знайсці вашых сяброў аўтаматычна.  Калі вы згодныя, нумары тэлефонаў і адрасы электроннай пошты з вашай тэлефоннай кнігі будуць зашыфраваны перад адпраўкай на наш сервер для пошуку адпаведных кантактаў.  Абсалютна ніякія даныя не будуць захоўвацца або распаўсюджвацца.\n\n Вы хочаце ўключыць сінхранізацыю кантактаў?</string>
     <string name="new_wizard_info_link">Калі вы пакажаце свой нумар тэлефона і адрас электроннай пошты, Threema дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
 Адрасы электроннай пошты будуць захоўвацца ў зашыфраваным (хэшаваным) выглядзе на нашым сэрверы. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць Threema ананімна.</string>
     <string name="new_wizard_info_link_phone_only">Калі вы пакажаце свой нумар тэлефона, Threema дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
@@ -816,6 +817,7 @@
     <string name="unpin">Зняць</string>
     <string name="location_services_disabled">Службы вызначэння месцазнаходжання адключаны. Хочаце ўключыць іх зараз?</string>
     <string name="send_location">Адправіць месцазн.</string>
+    <string name="forward_location">Месцазнаходжанне</string>
     <string name="unknown_address">Невядомы адрас</string>
     <string name="your_location">Ваша месцазнаходж.</string>
     <string name="network_blocked_title">Фонавая перадача даных адключана</string>
@@ -1379,6 +1381,12 @@
     <string name="spam_report_short">Справаздача</string>
     <string name="wizard_incompatible_contact_sync_params">Устаноўлены несумяшчальныя параметры MDM.  Параметр Threema MDM th_contact_sync не можа мець значэнне true, калі ўсталявана абмежаванне карыстальніка DISALLOW_MODIFY_ACCOUNTS.  Звярніцеся да адміністратара вашай прылады.</string>
     <string name="messages_cannot_be_recovered">Вы не зможаце аднавіць паведамленні.</string>
+    <string name="contact_deleted">Кантакт выдалены</string>
+    <string name="last_added_contact">Апошні дададзены</string>
+    <string name="directory_explain_text">Шукайце ў каталогу кампаніі супрацоўнікаў, якіх яшчэ няма ў вашым спісе кантактаў.</string>
+    <string name="cannot_display_location">Гэта месца не можа быць паказана.</string>
+    <string name="unable_to_restore_identity_because">Немагчыма аднавіць ID. Прычына: %s</string>
+    <string name="share_with_app">Падзяліцеся з Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1386,9 +1394,9 @@
         <item quantity="other">%d кантактаў</item>
     </plurals>
     <plurals name="really_delete_thread_message">
-        <item quantity="one">Вы сапраўды хочаце выдаліць %d чат?</item>
         <item quantity="few">Вы сапраўды хочаце выдаліць %d чат?</item>
         <item quantity="many">Вы сапраўды хочаце выдаліць %d чат?</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d чат?</item>
         <item quantity="other">Вы сапраўды хочаце выдаліць %d чат?</item>
     </plurals>
     <plurals name="sending_message_failed">
@@ -1402,5 +1410,11 @@
         <item quantity="many">Выбрана відарысы %d</item>
         <item quantity="one">Выбрана відарысаў %d</item>
         <item quantity="other">Выбрана %d відарысаў</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Паведамленне скапіявана</item>
+        <item quantity="other">Паведамленні скапіяваны</item>
+        <item quantity="few">Паведамленні скапіяваны</item>
+        <item quantity="many">Паведамленні скапіяваны</item>
     </plurals>
 </resources>

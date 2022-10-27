@@ -203,7 +203,7 @@ public class PinLockActivity extends ThreemaActivity {
 			if (isCheckOnly) {
 				passwordEntry.setEnabled(false);
 
-				handler.postDelayed(() -> RuntimeUtil.runOnUiThread(this::finish), 1000);
+				handler.postDelayed(() -> RuntimeUtil.runOnUiThread(this::quit), 1000);
 			}
 			if (++numWrongConfirmAttempts >= FAILED_ATTEMPTS_BEFORE_TIMEOUT) {
 				long deadline = setLockoutAttemptDeadline(DEFAULT_LOCKOUT_TIMEOUT); // TODO default value

@@ -109,6 +109,7 @@ import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
@@ -1075,6 +1076,11 @@ public class ContactsSectionFragment
 	}
 
 	private void openConversationForIdentity(@Nullable View v, String identity) {
+		// Close keyboard if search view is expanded
+		if (searchView != null && !searchView.isIconified()) {
+			EditTextUtil.hideSoftKeyboard(searchView);
+		}
+
 		Intent intent = new Intent(getActivity(), ComposeMessageActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);

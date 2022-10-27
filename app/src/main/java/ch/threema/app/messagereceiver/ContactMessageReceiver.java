@@ -334,6 +334,17 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				filter);
 	}
 
+	/**
+	 * Check if there is a call among the latest calls with the given call id.
+	 *
+	 * @param callId the call id
+	 * @param limit the maximum number of latest calls
+	 * @return {@code true} if there is a call with the given id within the latest calls, {@code false} otherwise
+	 */
+	public boolean hasVoipCallStatus(long callId, int limit) {
+		return databaseServiceNew.getMessageModelFactory().hasVoipStatusForCallId(contactModel.getIdentity(), callId, limit);
+	}
+
 	@Override
 	public long getMessagesCount() {
 		return databaseServiceNew.getMessageModelFactory().countMessages(

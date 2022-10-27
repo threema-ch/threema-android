@@ -30,11 +30,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.core.content.ContextCompat;
+
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.listeners.SensorListener;
@@ -59,9 +60,8 @@ import static android.media.AudioManager.STREAM_MUSIC;
 
 public class AudioMessagePlayer extends MessagePlayer implements AudioManager.OnAudioFocusChangeListener, SensorListener {
 	private final Logger logger = LoggingUtil.getThreemaLogger("AudioMessagePlayer");
-	private final String UID;
 
-	private final int SEEKBAR_UPDATE_FREQUENCY = 500;
+	private static final int SEEKBAR_UPDATE_FREQUENCY = 250;
 	private MediaPlayerStateWrapper mediaPlayer;
 	private File decryptedFile = null;
 	private int duration = 0;
@@ -90,12 +90,12 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		this.mediaPlayer = null;
 		this.micPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
 
-		this.UID = messageModel.getUid();
-		logger.info("New MediaPlayer instance: {}", this.UID);
+		String UID = messageModel.getUid();
+		logger.info("New MediaPlayer instance: {}", UID);
 
 		// Set logger prefix
 		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(String.valueOf(this.UID));
+			((ThreemaLogger) logger).setPrefix(String.valueOf(UID));
 		}
 	}
 

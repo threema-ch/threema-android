@@ -6,10 +6,10 @@
     <string name="isolated_dwelling">İzole konut</string>
     <string name="island">Ada</string>
     <string name="islet">Adacık</string>
-    <string name="suburb">Kenar mahalle</string>
+    <string name="suburb">Banliyo</string>
     <string name="city">Şehir</string>
-    <string name="city_block">Şehir Bloğu</string>
-    <string name="neighbourhood">Komşu</string>
+    <string name="city_block">Şehir bloğu</string>
+    <string name="neighbourhood">Mahalle</string>
     <string name="locality">Muhit</string>
     <string name="state">Eyalet</string>
     <string name="farm">Çiftlik</string>

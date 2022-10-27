@@ -21,6 +21,12 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.ui.MediaItem.TYPE_GIF;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
+import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
+import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
+
 import android.Manifest;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
@@ -57,16 +63,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
@@ -78,6 +74,17 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.SendMediaAdapter;
@@ -113,12 +120,6 @@ import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import pl.droidsonroids.gif.GifImageView;
-
-import static ch.threema.app.ui.MediaItem.TYPE_GIF;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
-import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
-import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
 
 public class SendMediaActivity extends ThreemaToolbarActivity implements
 	GenericAlertDialog.DialogClickListener,
@@ -1229,12 +1230,14 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					protected void onPostExecute(Bitmap bitmap) {
 						super.onPostExecute(bitmap);
 						bigProgressBar.setVisibility(View.GONE);
-						bigImageView.setRotation(0f);
-						bigImageView.setScaleX(1f);
-						bigImageView.setScaleY(1f);
-						bigImageView.setRotationY(0f);
-						bigImageView.setVisibility(View.VISIBLE);
-						bigGifImageView.setVisibility(View.GONE);
+						if (position == bigImagePos) {
+							bigImageView.setRotation(0f);
+							bigImageView.setScaleX(1f);
+							bigImageView.setScaleY(1f);
+							bigImageView.setRotationY(0f);
+							bigImageView.setVisibility(View.VISIBLE);
+							bigGifImageView.setVisibility(View.GONE);
+						}
 					}
 				}.execute(bitmapParams);
 			}

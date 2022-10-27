@@ -23,4 +23,5 @@
     <string name="directory_search">Szukaj w książce telefonicznej</string>
     <string name="directory_title">Firmowa książka telefoniczna</string>
     <string name="directory_empty_view_text">Wpisz co najmniej 3 znaki nazwy, aby rozpocząć wyszukiwanie w Twojej firmowej książce telefonicznej użytkowników Threema Work.</string>
+    <string name="share_with_app">Udostępnij z Threema Work</string>
 </resources>

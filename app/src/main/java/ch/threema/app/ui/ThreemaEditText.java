@@ -24,12 +24,14 @@ package ch.threema.app.ui;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.AttributeSet;
 
+import androidx.preference.PreferenceManager;
+
 import com.google.android.material.textfield.TextInputEditText;
 
-import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 
 public class ThreemaEditText extends TextInputEditText {
@@ -54,10 +56,23 @@ public class ThreemaEditText extends TextInputEditText {
 
 	private void init(Context context) {
 		// PreferenceService may not yet be available at this time
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false)) {
-			setImeOptions(getImeOptions() | 0x1000000);
-		}
+		new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... voids) {
+				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+				if (sharedPreferences != null) {
+					return sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false);
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean aBoolean) {
+				if (aBoolean != null && aBoolean == true) {
+					setImeOptions(getImeOptions() | 0x1000000);
+				}
+			}
+		}.execute();
 	}
 
 	@Override

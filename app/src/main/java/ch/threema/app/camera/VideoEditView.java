@@ -30,9 +30,8 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.media.MediaMetadataRetriever;
-import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -43,15 +42,18 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.core.view.ViewCompat;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.source.ClippingMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 
 import org.slf4j.Logger;
 
@@ -59,48 +61,47 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.core.view.ViewCompat;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.VideoUtil;
-import ch.threema.app.video.VideoTimelineCache;
+import ch.threema.app.video.VideoTimelineThumbnailTask;
 import ch.threema.base.utils.LoggingUtil;
 
 import static com.google.android.exoplayer2.C.TIME_END_OF_SOURCE;
 
-public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver {
+public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver, VideoTimelineThumbnailTask.VideoTimelineListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoEditView");
 
 	private static final int MOVING_NONE = 0;
 	private static final int MOVING_LEFT = 1;
 	private static final int MOVING_RIGHT = 2;
 	private static final String THUMBNAIL_THREAD_NAME = "TimelineThumbs";
+	private static final int MARKER_MOVE_MESSAGE_QUEUE_ID = 771294;
+	private static final int MARKER_MOVE_UPDATE_FREQUENCY_MS = 200;
 
 	private Context context;
 	private int targetHeight, calculatedWidth;
 	private Paint borderPaint, arrowPaint, dashPaint, progressPaint, dimPaint;
 	private int arrowWidth, arrowHeight, borderWidth;
 	private int offsetLeft = 0, offsetRight = 0, touchTargetWidth;
-	private long videoCurrentPosition = 0L, videoFileSize = 0L;
+	private long videoCurrentPosition = 0L, videoFileSize = 0L, clippedStartTimeMs, clippedEndTimeMs;
 	private MediaItem videoItem;
 	private int isMoving = MOVING_NONE;
+	private boolean isClipped = false;
 	private GridLayout timelineGridLayout;
 	private PlayerView videoView;
 	private ExoPlayer videoPlayer;
-	private MediaSource videoSource;
+	private com.google.android.exoplayer2.MediaItem videoSourceMediaItem;
+	private DefaultMediaSourceFactory mediaSourceFactory;
+
 	private TextView startTimeTextView, endTimeTextView, sizeTextView;
 	private Thread thumbnailThread;
 	private final Handler progressHandler = new Handler();
+	private final Handler markerMoveHandler = new Handler(Looper.getMainLooper());
 	private final List<Rect> exclusionRects = new ArrayList<>();
 
 	public VideoEditView(Context context) {
@@ -129,6 +130,8 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		((LifecycleOwner)context).getLifecycle().addObserver(this);
 
 		LayoutInflater.from(context).inflate(R.layout.view_video_edit, this, true);
+
+		this.mediaSourceFactory = new DefaultMediaSourceFactory(context);
 
 		this.timelineGridLayout = findViewById(R.id.video_timeline);
 		this.videoView = findViewById(R.id.video_view);
@@ -184,16 +187,6 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			public void onPlaybackStateChanged(int playbackState) {
 				Player.Listener.super.onPlaybackStateChanged(playbackState);
 				updateProgressBar();
-			}
-
-			@Override
-			public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
-				Player.Listener.super.onPositionDiscontinuity(oldPosition, newPosition, reason);
-				// tapping on the play button after moving end time should start playback from beginning
-				if (oldPosition.positionMs == 0 && newPosition.positionMs == videoItem.getEndTimeMs()) {
-					videoPlayer.seekTo(videoItem.getStartTimeMs());
-					videoPlayer.play();
-				}
 			}
 		});
 
@@ -296,6 +289,15 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		}
 	}
 
+	private void resetClipping() {
+		if (isClipped) {
+			videoPlayer.pause();
+			videoPlayer.setMediaItem(videoSourceMediaItem);
+			isClipped = false;
+		}
+		videoCurrentPosition = 0;
+	}
+
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -308,13 +310,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 
 		switch (action) {
 			case MotionEvent.ACTION_DOWN:
+				clippedStartTimeMs = videoItem.getStartTimeMs();
+				clippedEndTimeMs = videoItem.getEndTimeMs();
+
 				if (y >= (this.timelineGridLayout.getTop() - arrowHeight) && y <= (this.timelineGridLayout.getBottom() + arrowHeight)) {
 					if (x >= (left - touchTargetWidth) && x <= (left + touchTargetWidth)) {
-						logger.debug("start moving left: " + x);
+						logger.debug("start moving left: {}", x);
 						isMoving = MOVING_LEFT;
 						return true;
 					} else if (x >= (right - touchTargetWidth) && x <= (right + touchTargetWidth)) {
-						logger.debug("start moving right: " + x);
+						logger.debug("start moving right: {}", x);
 						isMoving = MOVING_RIGHT;
 						return true;
 					}
@@ -322,14 +327,14 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				isMoving = MOVING_NONE;
 				break;
 			case MotionEvent.ACTION_MOVE:
-				logger.debug("moving " + x);
+				logger.debug("moving {}", x);
 				if (isMoving != MOVING_NONE) {
 					int oldOffsetLeft = offsetLeft;
 					int oldOffsetRight = offsetRight;
 
 					switch (isMoving) {
 						case MOVING_LEFT:
-							logger.debug("moving left to: " + x);
+							logger.debug("moving left to: {}", x);
 							offsetLeft = x - this.timelineGridLayout.getLeft();
 
 							if (offsetLeft < 0) {
@@ -338,15 +343,20 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 								offsetLeft = right - this.timelineGridLayout.getLeft() - touchTargetWidth;
 							}
 
-							if (oldOffsetLeft != offsetLeft) {
-								videoItem.setStartTimeMs(getVideoPositionFromTimelinePosition(offsetLeft));
-								updateStartAndEnd();
-								invalidate();
-							}
+							clippedStartTimeMs = getVideoPositionFromTimelinePosition(offsetLeft);
 
+							if (oldOffsetLeft != offsetLeft) {
+								if (!markerMoveHandler.hasMessages(MARKER_MOVE_MESSAGE_QUEUE_ID)) {
+									resetClipping();
+									videoPlayer.seekTo(clippedStartTimeMs);
+									markerMoveHandler.sendMessageDelayed(markerMoveHandler.obtainMessage(MARKER_MOVE_MESSAGE_QUEUE_ID), MARKER_MOVE_UPDATE_FREQUENCY_MS);
+									updateStartAndEnd(clippedStartTimeMs, clippedEndTimeMs);
+									invalidate();
+								}
+							}
 							break;
 						case MOVING_RIGHT:
-							logger.debug("moving right to: " + x);
+							logger.debug("moving right to: {}", x);
 							offsetRight = this.timelineGridLayout.getRight() - x;
 
 							if (offsetRight < 0) {
@@ -355,10 +365,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 								offsetRight = this.timelineGridLayout.getRight() - (left + touchTargetWidth);
 							}
 
+							clippedEndTimeMs = getVideoPositionFromTimelinePosition(timelineGridLayout.getWidth() - offsetRight);
+
 							if (oldOffsetRight != offsetRight) {
-								videoItem.setEndTimeMs(getVideoPositionFromTimelinePosition(this.timelineGridLayout.getWidth() - offsetRight));
-								updateStartAndEnd();
-								invalidate();
+								if (!markerMoveHandler.hasMessages(MARKER_MOVE_MESSAGE_QUEUE_ID)) {
+									resetClipping();
+									videoPlayer.seekTo(clippedEndTimeMs);
+									markerMoveHandler.sendMessageDelayed(markerMoveHandler.obtainMessage(MARKER_MOVE_MESSAGE_QUEUE_ID), MARKER_MOVE_UPDATE_FREQUENCY_MS);
+									updateStartAndEnd(clippedStartTimeMs, clippedEndTimeMs);
+									invalidate();
+								}
 							}
 							break;
 					}
@@ -367,16 +383,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				break;
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
-				if (isMoving == MOVING_LEFT || isMoving == MOVING_RIGHT) {
-					boolean previewLastFrame = isMoving == MOVING_RIGHT;
+				markerMoveHandler.removeCallbacksAndMessages(null);
 
+				if (isMoving == MOVING_LEFT || isMoving == MOVING_RIGHT) {
 					videoItem.setStartTimeMs(getVideoPositionFromTimelinePosition(offsetLeft));
 					videoItem.setEndTimeMs(getVideoPositionFromTimelinePosition(this.timelineGridLayout.getWidth() - offsetRight));
 
 					isMoving = MOVING_NONE;
 
-					updateStartAndEnd();
-					preparePlayer(previewLastFrame);
+					updateStartAndEnd(videoItem.getStartTimeMs(), videoItem.getEndTimeMs());
+					preparePlayer();
 
 					return true;
 				}
@@ -412,6 +428,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 			imageView.setAdjustViewBounds(false);
 			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			imageView.setScaleY(-1);
 			imageView.setTag(i);
 			frameLayout.addView(imageView);
 			GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
@@ -427,147 +444,49 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			this.timelineGridLayout.setColumnCount(numColumns);
 		} catch (IllegalArgumentException e) {
 			logger.debug("Invalid column count. Num columns {}", numColumns);
+			return;
 		}
 
-		thumbnailThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				int height = 0, width = 0, duration = 0;
+		if (numColumns != GridLayout.UNDEFINED) {
+			thumbnailThread = new Thread(
+			new VideoTimelineThumbnailTask(context,
+				videoItem,
+				numColumns,
+				calculatedWidth,
+				targetHeight,
+				this), THUMBNAIL_THREAD_NAME);
 
-				// do not use automatic resource management on MediaMetadataRetriever
-				MediaMetadataRetriever metaDataRetriever = new MediaMetadataRetriever();
-				try {
-					metaDataRetriever.setDataSource(ThreemaApplication.getAppContext(), mediaItem.getUri());
-					try {
-						height = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-						width = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-						duration = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-					} catch (NumberFormatException e) {
-						// some phones (notably the galaxy s7) do not provide width/height.
-						Bitmap bitmap = metaDataRetriever.getFrameAtTime(1);
-						if (bitmap != null) {
-							height = bitmap.getHeight();
-							width = bitmap.getWidth();
-						}
-					}
-
-					if (duration == 0 || height == 0 || width == 0) {
-						return;
-					}
-
-					// works with file URIs only
-					String path = FileUtil.getRealPathFromURI(ThreemaApplication.getAppContext(), mediaItem.getUri());
-					if (path != null) {
-						File f = new File(path);
-						videoFileSize = f.length();
-					}
-
-					if (videoItem.getStartTimeMs() < 0) {
-						videoItem.setStartTimeMs(0);
-					}
-					if (videoItem.getEndTimeMs() == MediaItem.TIME_UNDEFINED) {
-						videoItem.setEndTimeMs(duration);
-					}
-					videoItem.setDurationMs(duration);
-
-					offsetLeft = VideoEditView.this.getTimelinePositionFromVideoPosition(videoItem.getStartTimeMs());
-					offsetRight = timelineGridLayout.getWidth() - VideoEditView.this.getTimelinePositionFromVideoPosition(videoItem.getEndTimeMs());
-
-					RuntimeUtil.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							if (isAttachedToWindow()) {
-								updateStartAndEnd();
-							}
-						}
-					});
-
-					int numColumns = timelineGridLayout.getColumnCount();
-
-					if (numColumns != GridLayout.UNDEFINED) {
-						int step = (int) ((float) duration * 1000 / numColumns);
-
-						for (int i = 0; i < numColumns; i++) {
-							int position = i * step;
-
-							logger.debug("*** frame at position: " + position);
-
-							Bitmap bitmap = VideoTimelineCache.getInstance().get(mediaItem.getUri(), i);
-							if (bitmap == null) {
-								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
-									bitmap = metaDataRetriever.getFrameAtTime(position, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-									if (bitmap.getWidth() > calculatedWidth || bitmap.getHeight() > targetHeight) {
-										bitmap = BitmapUtil.resizeBitmap(bitmap, calculatedWidth, targetHeight);
-									}
-								} else {
-									bitmap = metaDataRetriever.getScaledFrameAtTime(position, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, calculatedWidth, targetHeight);
-								}
-
-								VideoTimelineCache.getInstance().set(mediaItem.getUri(), i, bitmap);
-
-								logger.debug("*** bitmap width: " + bitmap.getWidth() + " height: " + bitmap.getHeight());
-							}
-							final int column = i;
-							Bitmap finalBitmap = bitmap;
-
-							if (Thread.interrupted()) {
-								throw new InterruptedException();
-							} else {
-								RuntimeUtil.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										if (isAttachedToWindow()) {
-											ImageView imageView = findViewWithTag(column);
-											if (imageView != null) {
-												imageView.setImageBitmap(finalBitmap);
-											}
-										}
-									}
-								});
-							}
-						}
-					}
-				} catch (Exception e) {
-					if (!(e instanceof InterruptedException)) {
-						logger.error("Exception", e);
-					}
-				} finally {
-					metaDataRetriever.release();
-				}
+			if (isAttachedToWindow() && context != null) {
+				thumbnailThread.start();
+				videoSourceMediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri());
+				preparePlayer();
 			}
-		}, THUMBNAIL_THREAD_NAME);
-
-		if (isAttachedToWindow() && context != null) {
-			thumbnailThread.start();
-
-			DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, Util.getUserAgent(context, context.getString(R.string.app_name)));
-			videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
-				.createMediaSource(com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri()));
-
-			preparePlayer(false);
 		}
 	}
 
-	private void preparePlayer(boolean seekToEnd) {
-		if (videoPlayer != null && videoSource != null) {
+	private void preparePlayer() {
+		if (videoPlayer != null && videoSourceMediaItem != null) {
+			long startPosition = videoItem.getStartTimeMs() * 1000;
 			long endPosition = (videoItem.getEndTimeMs() == videoItem.getDurationMs() || videoItem.getEndTimeMs() == 0 || videoItem.getEndTimeMs() == MediaItem.TIME_UNDEFINED) ?
 							TIME_END_OF_SOURCE :
 							videoItem.getEndTimeMs() * 1000;
 
-			logger.debug("startPosition: " + (videoItem.getStartTimeMs() * 1000) + " endPosition: " + endPosition);
+			logger.debug("startPosition: " + startPosition + " endPosition: " + endPosition);
 
-			ClippingMediaSource clippingSource = new ClippingMediaSource(videoSource,
-					videoItem.getStartTimeMs() * 1000,
+			videoPlayer.setMediaItem(videoSourceMediaItem);
+			ClippingMediaSource clippingSource = new ClippingMediaSource(mediaSourceFactory.createMediaSource(videoSourceMediaItem),
+					startPosition,
 					endPosition);
+			isClipped = true;
 
 			if (videoPlayer.isLoading() || videoPlayer.isPlaying()) {
-				videoPlayer.stop(true);
+				videoPlayer.stop();
+				videoPlayer.clearMediaItems();
 			}
+
+			videoPlayer.setMediaSource(clippingSource);
 			videoPlayer.setPlayWhenReady(false);
-			videoPlayer.prepare(clippingSource);
-			if (seekToEnd) {
-				videoPlayer.seekTo(videoItem.getEndTimeMs());
-			}
+			videoPlayer.prepare();
 		}
 	}
 
@@ -589,12 +508,12 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	}
 
 	@MainThread
-	private void updateStartAndEnd() {
-		startTimeTextView.setText(LocaleUtil.formatTimerText(videoItem.getStartTimeMs(), true));
-		endTimeTextView.setText(LocaleUtil.formatTimerText(videoItem.getEndTimeMs(), true));
+	private void updateStartAndEnd(long startTime, long endTime) {
+		startTimeTextView.setText(LocaleUtil.formatTimerText(startTime, true));
+		endTimeTextView.setText(LocaleUtil.formatTimerText(endTime, true));
 
 		if (videoFileSize > 0L) {
-			long croppedDurationMs = videoItem.getEndTimeMs() - videoItem.getStartTimeMs();
+			long croppedDurationMs = endTime - startTime;
 
 			long size = videoFileSize * croppedDurationMs / videoItem.getDurationMs();
 			sizeTextView.setText(Formatter.formatFileSize(context, size));
@@ -664,5 +583,45 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		}
 
 		this.context = null;
+	}
+
+	@Override
+	public boolean setThumbnail(int column, Bitmap thumbnail) {
+		if (isAttachedToWindow()) {
+			RuntimeUtil.runOnUiThread(() -> {
+				if (isAttachedToWindow()) {
+					ImageView imageView = findViewWithTag(column);
+					if (imageView != null) {
+						imageView.setImageBitmap(thumbnail);
+					}
+				}
+			});
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void onMetadataReady() {
+		// works with file URIs only
+		String path = FileUtil.getRealPathFromURI(ThreemaApplication.getAppContext(), videoItem.getUri());
+		if (path != null) {
+			File f = new File(path);
+			videoFileSize = f.length();
+		}
+
+		offsetLeft = VideoEditView.this.getTimelinePositionFromVideoPosition(videoItem.getStartTimeMs());
+		offsetRight = timelineGridLayout.getWidth() - VideoEditView.this.getTimelinePositionFromVideoPosition(videoItem.getEndTimeMs());
+
+		RuntimeUtil.runOnUiThread(() -> {
+			if (isAttachedToWindow()) {
+				updateStartAndEnd(videoItem.getStartTimeMs(), videoItem.getEndTimeMs());
+			}
+		});
+	}
+
+	@Override
+	public void onError(String errorMessage) {
+		logger.info("Unable to get video thumbnails. Reason: {}", errorMessage);
 	}
 }

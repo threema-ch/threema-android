@@ -37,6 +37,10 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.FileHeader;
@@ -55,9 +59,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -475,7 +476,7 @@ public class RestoreService extends Service {
 					} catch (UnknownHostException e) {
 						throw e;
 					} catch (Exception e) {
-						throw new ThreemaException("failed to restore identity: " + e.getMessage());
+						throw new ThreemaException(getString(R.string.unable_to_restore_identity_because, e.getMessage()));
 					}
 
 					updateProgress(STEP_SIZE_IDENTITY);

@@ -1515,7 +1515,15 @@ public class CallActivity extends ThreemaActivity implements
 					// Call is not yet connected
 					this.commonViews.callDuration.setVisibility(View.GONE);
 					this.commonViews.callStatus.setVisibility(View.VISIBLE);
-					this.commonViews.callStatus.setText(getString(R.string.voip_status_connecting));
+					if (this.voipStateService.isPeerRinging()) {
+						this.commonViews.callStatus.setText(getString(R.string.voip_status_ringing));
+					} else {
+						// If it is not ringing, show initialization text. The connecting state is
+						// usually very short and it is unlikely to restart this activity in this
+						// state. However, if it is still resumed while connecting, the call will be
+						// initialized very soon anyway and the call status text will be replaced.
+						this.commonViews.callStatus.setText(getString(R.string.voip_status_initializing));
+					}
 					if (this.videoViews != null) {
 						this.videoViews.switchCamButton.setVisibility(View.GONE);
 					}

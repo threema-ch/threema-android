@@ -51,7 +51,7 @@ public class WizardFragment2 extends WizardFragment {
 							 Bundle savedInstanceState) {
 		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+		WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 
 		TextView title = rootView.findViewById(R.id.wizard_title);
 		title.setText(R.string.new_wizard_choose_nickname);
@@ -133,7 +133,7 @@ public class WizardFragment2 extends WizardFragment {
 
 	private void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 			String nickname = callback.getNickname();
 			nicknameText.setText(nickname);
 			if (!TestUtil.empty(nickname)) {

@@ -579,7 +579,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 											// -> create a new backup with existing password
 											enableSafe(threemaSafeService, newConfig, threemaSafeService.getThreemaSafeMasterKey());
 										} else {
-											threemaSafeService.launchForcedPasswordDialog(this);
+											threemaSafeService.launchForcedPasswordDialog(this, true);
 											finish();
 											return;
 										}
@@ -592,7 +592,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 											enableSafe(threemaSafeService, newConfig, null);
 										} else {
 											// ask user for a new password
-											threemaSafeService.launchForcedPasswordDialog(this);
+											threemaSafeService.launchForcedPasswordDialog(this, true);
 											finish();
 											return;
 										}

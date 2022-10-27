@@ -23,8 +23,11 @@ package ch.threema.app.utils;
 
 import android.text.TextUtils;
 
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Date;
+
+import androidx.annotation.Nullable;
 
 public class TestUtil {
 	@Deprecated
@@ -145,6 +148,42 @@ public class TestUtil {
 				&& (!caseSensitive ?
 					string.toLowerCase().contains(search.toLowerCase()) :
 					string.contains(search));
+	}
+
+	/**
+	 * Check if the query string matches the conversation title. A query matches the conversation
+	 * text if
+	 * <ul>
+	 *     <li>the conversation text contains the query, or</li>
+	 *     <li>the normalized conversation text without the diacritics contains the query.</li>
+	 * </ul>
+	 *
+	 * If any of the arguments is null, {@code false} is returned.
+	 *
+	 * @param query        the query
+	 * @param conversation the conversation text
+	 * @return {@code true} if there is a match, {@code false} otherwise
+	 */
+	public static boolean matchesConversationSearch(@Nullable String query, @Nullable String conversation) {
+		if (query == null || conversation == null) {
+			return false;
+		}
+
+		query = query.toUpperCase();
+		conversation = conversation.toUpperCase();
+
+		if (conversation.contains(query)) {
+			return true;
+		}
+
+		// Only normalize the query without removing the diacritics
+		String queryNorm = Normalizer.isNormalized(query, Normalizer.Form.NFD) ? query :
+			Normalizer.normalize(query, Normalizer.Form.NFD);
+
+		// Normalize conversation and remove diacritics
+		String conversationNormDiacritics = LocaleUtil.normalize(conversation);
+
+		return conversationNormDiacritics.contains(queryNorm);
 	}
 
 	public static boolean empty(CharSequence charSequence) {

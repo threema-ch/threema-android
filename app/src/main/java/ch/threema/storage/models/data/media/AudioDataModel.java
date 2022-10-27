@@ -32,6 +32,7 @@ import java.io.StringWriter;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
+@Deprecated
 public class AudioDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioDataModel");
 

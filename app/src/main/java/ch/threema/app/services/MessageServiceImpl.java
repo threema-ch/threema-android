@@ -21,6 +21,21 @@
 
 package ch.threema.app.services;
 
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE_MB;
+import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
+import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
+import static ch.threema.app.ui.MediaItem.TYPE_FILE;
+import static ch.threema.app.ui.MediaItem.TYPE_GIF;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
+import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
+import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
+import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
+import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
+import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_STICKER;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -40,6 +55,13 @@ import android.provider.DocumentsContract;
 import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 import android.widget.Toast;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.collection.ArrayMap;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.neilalexander.jnacl.NaCl;
 
@@ -74,12 +96,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.collection.ArrayMap;
-import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -180,21 +196,6 @@ import ch.threema.storage.models.data.media.ImageDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 import ch.threema.storage.models.data.media.VideoDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
-
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE_MB;
-import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
-import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
-import static ch.threema.app.ui.MediaItem.TYPE_FILE;
-import static ch.threema.app.ui.MediaItem.TYPE_GIF;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
-import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
-import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
-import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
-import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
-import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
-import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_STICKER;
 
 public class MessageServiceImpl implements MessageService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageServiceImpl");
@@ -358,7 +359,7 @@ public class MessageServiceImpl implements MessageService {
 		final AbstractMessageModel model = receiver.createLocalModel(
 			MessageType.VOIP_STATUS,
 			MessageContentsType.VOIP_STATUS,
-			new Date()
+			data.getDate() != null ? data.getDate() : new Date()
 		);
 		model.setOutbox(isOutbox);
 		model.setVoipStatusData(data);
@@ -2271,26 +2272,27 @@ public class MessageServiceImpl implements MessageService {
 	private boolean saveStrippedImage(byte[] image, AbstractMessageModel messageModel) throws Exception {
 		boolean success = true;
 
-		// extract caption from exif data and strip all metadata, if any
+		// extract caption from exif data (legacy image format only) and strip all metadata, if any
 		try (ByteArrayOutputStream strippedImageOS = new ByteArrayOutputStream()) {
 			try (ByteArrayInputStream originalImageIS = new ByteArrayInputStream(image)) {
 				ExifInterface originalImageExif = new ExifInterface(originalImageIS);
+				if (messageModel.getType() == MessageType.IMAGE) {
+					String caption = originalImageExif.getUTF8StringAttribute(ExifInterface.TAG_ARTIST);
 
-				String caption = originalImageExif.getUTF8StringAttribute(ExifInterface.TAG_ARTIST);
-
-				if (TestUtil.empty(caption)) {
-					caption = originalImageExif.getUTF8StringAttribute(ExifInterface.TAG_USER_COMMENT);
-				}
-
-				if (!TestUtil.empty(caption)) {
-					// strip trailing zero character from EXIF, if any
-					if (caption.charAt(caption.length() - 1) == '\u0000') {
-						caption = caption.substring(0, caption.length() - 1);
+					if (TestUtil.empty(caption)) {
+						caption = originalImageExif.getUTF8StringAttribute(ExifInterface.TAG_USER_COMMENT);
 					}
-					messageModel.setCaption(caption);
-				}
 
-				originalImageIS.reset();
+					if (!TestUtil.empty(caption)) {
+						// strip trailing zero character from EXIF, if any
+						if (caption.charAt(caption.length() - 1) == '\u0000') {
+							caption = caption.substring(0, caption.length() - 1);
+						}
+						messageModel.setCaption(caption);
+					}
+
+					originalImageIS.reset();
+				}
 				// strip all exif data while saving
 				originalImageExif.saveAttributes(originalImageIS, strippedImageOS, true);
 			} catch (IOException e) {
@@ -4133,7 +4135,7 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setState(MessageState.PENDING); // shows a progress bar
 			messageModel.setFileData(fileDataModel);
 			messageModel.setCorrelationId(correlationId);
-			messageModel.setCaption(mediaItem.getCaption());
+			messageModel.setCaption(mediaItem.getTrimmedCaption());
 			messageModel.setSaved(true);
 
 			messageReceiver.saveLocalModel(messageModel);
@@ -4235,7 +4237,7 @@ public class MessageServiceImpl implements MessageService {
 			0,
 			filename,
 			renderingType,
-			mediaItem.getCaption(),
+			mediaItem.getTrimmedCaption(),
 			true,
 			null);
 	}

@@ -24,4 +24,5 @@ La paire de clés comprend une <b>clé publie</b> distribuée à vos contacts et
     <string name="directory_search">Rechercher dans le répertoire</string>
     <string name="directory_title">Répertoire de l\'entreprise</string>
     <string name="directory_empty_view_text">Veuillez saisir au moins 3 caractères d\'un nom pour lancer une recherche dans le répertoire d\'utilisateurs Threema Work de votre entreprise</string>
+    <string name="share_with_app">Partager avec Threema Work</string>
 </resources>

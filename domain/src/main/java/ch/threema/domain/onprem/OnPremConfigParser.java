@@ -96,7 +96,7 @@ public class OnPremConfigParser {
 		if (obj == null) {
 			return null;
 		}
-		return new OnPremConfigWeb(obj.getString("url"));
+		return new OnPremConfigWeb(obj.getString("url"), obj.optString("overrideSaltyRtcHost"), obj.optInt("overrideSaltyRtcPort"));
 	}
 
 	private OnPremConfigMediator parseMediatorConfig(JSONObject obj) throws JSONException {

@@ -40,7 +40,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * Video:     0x000000000000000000000000000000000000000000000001
  * Thumbnail: 0x000000000000000000000000000000000000000000000002
+ *
+ *  @Deprecated Use GroupFileMessage instead
  */
+@Deprecated
 public class GroupVideoMessage extends AbstractGroupMessage {
 
 	private int duration;

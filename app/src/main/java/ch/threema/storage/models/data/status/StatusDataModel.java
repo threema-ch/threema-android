@@ -40,7 +40,7 @@ public abstract class StatusDataModel {
 	public interface StatusDataModelInterface extends MessageDataInterface {
 		int getType();
 		void readData(String key, String value);
-		void readData(String key, int value);
+		void readData(String key, long value);
 		void readData(String key, boolean value);
 		void readDataNull(String key);
 		void writeData(JsonWriter j) throws IOException;
@@ -74,7 +74,7 @@ public abstract class StatusDataModel {
 						} else if (r.peek() == JsonToken.STRING) {
 							data.readData(key, r.nextString());
 						} else if (r.peek() == JsonToken.NUMBER) {
-							data.readData(key, r.nextInt());
+							data.readData(key, r.nextLong());
 						} else if (r.peek() == JsonToken.BOOLEAN) {
 							data.readData(key, r.nextBoolean());
 						}

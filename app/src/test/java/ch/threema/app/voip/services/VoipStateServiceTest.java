@@ -34,16 +34,20 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.listeners.VoipMessageListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.util.VoipUtil;
@@ -62,6 +66,8 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyByte;
@@ -83,6 +89,7 @@ public class VoipStateServiceTest {
 	private NotificationManager mockNotificationManager;
 	private AudioManager mockAudioManager;
 	private ContactService mockContactService;
+	private ContactMessageReceiver contactMessageReceiver;
 	private MessageService mockMessageService;
 	private RingtoneService mockRingtoneService;
 	private PreferenceService mockPreferenceService;
@@ -110,10 +117,15 @@ public class VoipStateServiceTest {
 		this.mockPreferenceService = PowerMockito.mock(PreferenceService.class);
 		this.mockLifetimeService = PowerMockito.mock(LifetimeService.class);
 
+		// Mock contact message receiver
+		this.contactMessageReceiver = PowerMockito.mock(ContactMessageReceiver.class);
+		when(this.contactMessageReceiver.hasVoipCallStatus(anyLong(), anyInt())).thenReturn(false);
+
 		// Set up return values for contact service
 		when(this.mockContactService.getByIdentity("INVALID")).thenReturn(null);
 		when(this.mockContactService.getByIdentity("AAAAAAAA")).thenReturn(new ContactModel("AAAAAAAA", new byte[] { 1, 2, 3 }));
 		when(this.mockContactService.getByIdentity("BBBBBBBB")).thenReturn(new ContactModel("BBBBBBBB", new byte[] { 2, 3, 4 }));
+		when(this.mockContactService.createReceiver(any(ContactModel.class))).thenReturn(this.contactMessageReceiver);
 
 		// Set up return values for preference service
 		when(this.mockPreferenceService.isVoipEnabled()).thenReturn(true);
@@ -128,6 +140,7 @@ public class VoipStateServiceTest {
 
 		// Clear message listeners (used by tests)
 		VoipListenerManager.messageListener.clear();
+		VoipListenerManager.callEventListener.clear();
 
 		// Instantiate service
 		this.service = new VoipStateService(
@@ -479,6 +492,77 @@ public class VoipStateServiceTest {
 		msg.setData(new VoipCallHangupData());
 		service.handleRemoteCallHangup(msg);
 		assertTrue("Hangup should have been handled", service.getCallState().isIdle());
+	}
+
+	/**
+	 * Handle hangup message with unknown call id as missed call
+	 */
+	@Test
+	public void handleMissedCall() {
+		// Create hangup
+		final VoipCallHangupMessage msg = new VoipCallHangupMessage();
+		msg.setFromIdentity("AAAAAAAA");
+		msg.setToIdentity("BBBBBBBB");
+
+		// The call id that belongs to a past call (no missed call!)
+		final long pastCallId = 1;
+		// The call id that belongs to the missed call
+		final long missedCallId = 2;
+
+		VoipCallEventListener listenerSpy = spy(new VoipCallEventListener() {
+			@Override
+			public void onRinging(String peerIdentity) {
+				// This must not be executed
+				fail();
+			}
+
+			@Override
+			public void onStarted(String peerIdentity, boolean outgoing) {
+				// This must not be executed
+				fail();
+			}
+
+			@Override
+			public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
+				// This must not be executed
+				fail();
+			}
+
+			@Override
+			public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
+				// This must not be executed
+				fail();
+			}
+
+			@Override
+			public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
+				// This must be called with the missed call id
+				assertEquals(callId, missedCallId);
+			}
+
+			@Override
+			public void onAborted(long callId, String peerIdentity) {
+				// This must not be executed
+				fail();
+			}
+		});
+
+		VoipListenerManager.callEventListener.add(listenerSpy);
+
+		// Initialize a call and set state to idle again
+		service.setStateInitializing(pastCallId);
+		service.setStateCalling(pastCallId);
+		service.setStateIdle();
+
+		// Send a delayed hangup message (after call has been finished => no missed call!)
+		msg.setData(new VoipCallHangupData().setCallId(pastCallId));
+		service.handleRemoteCallHangup(msg);
+
+		// Send hangup message with unknown call id => missed call
+		msg.setData(new VoipCallHangupData().setCallId(missedCallId));
+		service.handleRemoteCallHangup(msg);
+
+		verify(listenerSpy, times(1)).onMissed(eq(missedCallId), anyString(), eq(false), any());
 	}
 
 	/**

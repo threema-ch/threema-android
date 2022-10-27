@@ -97,6 +97,7 @@ import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -859,12 +860,23 @@ public class SessionsActivity extends ThreemaToolbarActivity
 			// Make sure that all listeners are initialized
 			this.init();
 
+			// Override saltyRtcHost/Port from OPPF?
+			String saltyRtcHost = qrCodeResult.saltyRtcHost;
+			int saltyRtcPort = qrCodeResult.saltyRtcPort;
+			ServerAddressProvider serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
+			if (serverAddressProvider.getWebOverrideSaltyRtcHost() != null) {
+				saltyRtcHost = serverAddressProvider.getWebOverrideSaltyRtcHost();
+			}
+			if (serverAddressProvider.getWebOverrideSaltyRtcPort() != 0) {
+				saltyRtcPort = serverAddressProvider.getWebOverrideSaltyRtcPort();
+			}
+
 			// Create new session
 			this.sessionService.create(
 				qrCodeResult.key,
 				qrCodeResult.authToken,
-				qrCodeResult.saltyRtcHost,
-				qrCodeResult.saltyRtcPort,
+				saltyRtcHost,
+				saltyRtcPort,
 				qrCodeResult.serverKey,
 				qrCodeResult.isPermanent,
 				qrCodeResult.isSelfHosted,

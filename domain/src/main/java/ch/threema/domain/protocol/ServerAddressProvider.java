@@ -43,4 +43,6 @@ public interface ServerAddressProvider {
 
 	String getSafeServerUrl(boolean ipv6) throws ThreemaException;
 	String getWebServerUrl() throws ThreemaException;
+	String getWebOverrideSaltyRtcHost() throws ThreemaException;
+	int getWebOverrideSaltyRtcPort() throws ThreemaException;
 }

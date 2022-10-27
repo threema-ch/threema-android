@@ -29,4 +29,5 @@
     <string name="directory_search">Buscar en el directorio</string>
     <string name="directory_title">Directorio de la empresa</string>
     <string name="directory_empty_view_text">Introduce al menos 3 caracteres de un nombre para comenzar la búsqueda en el directorio de usuarios de Threema Work de tu empresa.</string>
+    <string name="share_with_app">Compartir con Threema Work</string>
 </resources>

@@ -24,13 +24,14 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.NonNull;
+import androidx.core.os.ConfigurationCompat;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.Normalizer;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.core.os.ConfigurationCompat;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PreferenceService;
 
@@ -102,7 +103,16 @@ public class LocaleUtil {
 
 		if (showMs) {
 			int milliseconds = (int) ((elapsedTime % 60000) % 1000);
-			return String.format(Locale.US, "%01d:%02d:%02d", minutes, seconds, milliseconds / 10);
+
+			if (elapsedTime > DateUtils.HOUR_IN_MILLIS) {
+				return String.format(Locale.US, "%d:%02d:%02d.%02d",
+					minutes / 60,
+					minutes % 60,
+					seconds,
+					milliseconds / 10);
+			} else {
+				return String.format(Locale.US, "%01d:%02d.%02d", minutes, seconds, milliseconds / 10);
+			}
 		}
 		return String.format(Locale.US, "%01d:%02d", minutes, seconds);
 	}

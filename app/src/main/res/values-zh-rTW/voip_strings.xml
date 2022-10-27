@@ -57,7 +57,7 @@
     <string name="prefs_voip_reject_incoming_calls_title">拒絕電話通話</string>
     <string name="prefs_voip_reject_incoming_calls_summary">在 Threema 通話時拒絕來電。</string>
     <string name="voip_contact_not_found">找不到此號碼與 Threema 連結的聯絡人。</string>
-    <string name="voip_another_pstn_call">無法發起通話，常規電話仍正在進行中。</string>
+    <string name="voip_another_pstn_call">無法建立通話，常規電話仍正在進行中。</string>
     <string name="voip_call_status_off_hours">非工作時間通話</string>
     <string name="voip_peer_video_disabled">對方已禁用視訊通話。</string>
     <!-- WebRTC debugger -->

@@ -44,6 +44,15 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.preference.PreferenceManager;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.commons.io.FileUtils;
@@ -72,14 +81,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.preference.PreferenceManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
@@ -564,12 +565,12 @@ public class FileServiceImpl implements FileService {
 		try {
 			is = getDecryptedMessageStream(messageModel);
 			if (is != null) {
-				File decoded = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
-				fos = new FileOutputStream(decoded);
+				File decrypted = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
+				fos = new FileOutputStream(decrypted);
 
 				IOUtils.copy(is, fos);
 
-				return decoded;
+				return decrypted;
 			}
 		} finally {
 			if (fos != null) {

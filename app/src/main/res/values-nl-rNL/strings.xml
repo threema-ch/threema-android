@@ -112,6 +112,7 @@
     <string name="copy_message_action">Kopiëren</string>
     <string name="delete_contact_action">Contactpersoon verwijderen</string>
     <string name="scan_id">ID scannen</string>
+    <string name="id_scanned">ID gescand</string>
     <string name="id_mismatch">De openbare sleutel die u hebt gescand komt niet overeen met een sleutel die op de server is opgeslagen voor dit ID. Dit betekent dat iemand de gescande code heeft gemanipuleerd en dat de sleutel niet betrouwbaar is.</string>
     <string name="scan_successful">De ID is gescand en de contactpersoon is geverifieerd.</string>
     <string name="scan_duplicate">Dit ID is al gescand en geverifieerd.</string>
@@ -512,7 +513,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="file_placeholder">Bestand</string>
     <string name="internal_storage">Interne opslag</string>
     <string name="no_activity_for_mime_type">Geen app gevonden om dit bestand te openen.</string>
-    <string name="message_copied">Bericht gekopieerd</string>
     <string name="open_from">Openen vanaf</string>
     <string name="file_one_contact_not_supported">%1$s kan geen bestanden ontvangen.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Waarschuwing: %1$d contactpersonen kunnen uw bestand niet ontvangen.</string>
@@ -635,6 +635,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="new_wizard_info_fingerprint">Door uw vinger te bewegen maakt u een willekeurig patroon aan (entropie) dat wordt gebruikt om een sleutelpaar aan te maken dat wordt gekoppeld aan uw nieuwe unieke Threema ID. Het sleutelpaar bestaat uit een <b>openbare sleutel</b> die aan uw vrienden wordt gestuurd en een <b>privésleutel</b> die veilig wordt opgeslagen op uw telefoon. Uw vrienden kunnen boodschappen aan u versleutelen met uw openbare sleutel. Alleen de eigenaar van de privésleutel (u) en niemand anders kan deze boodschappen ontcijferen.</string>
     <string name="new_wizard_info_id">U maakt ook een sleutelpaar aan. De openbare sleutel wordt veilig verzonden naar onze servers. De privésleutel verlaat uw apparaat niet. Hierdoor kan alleen u uw berichten lezen.</string>
     <string name="new_wizard_info_sync_contacts">Als u deze optie inschakelt, versleutelt (hasht) Threema uw e-mailadressen en telefoonnummers voordat ze naar de server worden verstuurd op zoek naar overeenkomende contactpersonen. We slaan geen adresboekgegevens op.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Met contactsynchronisatie kunt u uw vrienden automatisch vinden. Als u akkoord gaat, worden de telefoonnummers en de e-mailadressen uit uw telefoonboek versleuteld voordat ze naar onze server worden gestuurd om naar overeenkomstige contacten te zoeken. Er worden geen gegevens opgeslagen of gedeeld.\n\nWilt u contactsynchronisatie inschakelen?</string>
     <string name="new_wizard_info_link">Als u uw telefoonnummer en e-mailadres opgeeft, kan Threema helpen uw vrienden automatisch te vinden als u in hun lijst van contactpersonen staat. E-mailadressen worden versleuteld (hashed) op onze server opgeslagen. U kunt deze stap ook overslaan als u Threema liever anoniem gebruikt.</string>
     <string name="new_wizard_info_link_phone_only">Als u uw telefoonnummer opgeeft, kan Threema helpen uw vrienden automatisch te vinden als u in hun lijst van telefonische contactpersonen staat. Het telefoonnummer wordt versleuteld (hashed) op onze server opgeslagen. U kunt deze stap ook overslaan als u Threema liever volledig anoniem gebruikt.</string>
     <string name="new_wizard_info_nickname">De nickname wordt gebruikt in pushberichten op bepaalde apparaten of als aanvullende manier om u aan gebruikers die u nog niet in hun adresboek hebben, te identificeren. We raden aan alleen uw voornaam of een pseudoniem te gebruiken. Als u geen nickname instelt, gebruiken we standaard uw Threema ID.</string>
@@ -1389,6 +1390,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="last_added_contact">Laatst toegevoegd</string>
     <string name="directory_explain_text">Zoek in de bedrijfsgids naar werknemers die nog niet aan je contact lijst zijn toegevoegd.</string>
     <string name="cannot_display_location">Deze locatie kan niet worden getoond.</string>
+    <string name="unable_to_restore_identity_because">Niet mogelijk om de ID te herstellen. Reden: %s</string>
+    <string name="share_with_app">Delen met Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1404,5 +1407,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <plurals name="selection_counter_label">
         <item quantity="one">%d afbeelding geselecteerd</item>
         <item quantity="other">%d afbeeldingen geselecteerd</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Bericht gekopieerd</item>
+        <item quantity="other">Berichten gekopieerd</item>
     </plurals>
 </resources>

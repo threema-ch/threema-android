@@ -28,6 +28,7 @@ import net.sqlcipher.Cursor;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
@@ -355,6 +356,48 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 		this.postFilter(messageModels, filter);
 
 		return messageModels;
+	}
+
+	/**
+	 * Check if there is a call with the given identity and call id within the latest calls.
+	 *
+	 * @param identity the identity of the call partner
+	 * @param callId the call id
+	 * @param limit the maximum number of latest calls
+	 * @return {@code true} if this call exists in the latest calls, {@code false} otherwise
+	 */
+	public boolean hasVoipStatusForCallId(@NonNull String identity, long callId, int limit) {
+		QueryBuilder queryBuilder = new QueryBuilder();
+
+		String orderBy = AbstractMessageModel.COLUMN_CREATED_AT + " DESC";
+
+		queryBuilder.appendWhere(AbstractMessageModel.COLUMN_IDENTITY + "=?");
+		queryBuilder.appendWhere(AbstractMessageModel.COLUMN_TYPE + "=?");
+
+		queryBuilder.setTables(this.getTableName());
+
+		Cursor cursor = queryBuilder.query(this.databaseService.getReadableDatabase(),
+			null,
+			null,
+			new String[]{identity, String.valueOf(MessageType.VOIP_STATUS.ordinal())},
+			null,
+			null,
+			orderBy,
+			String.valueOf(limit));
+
+		if (cursor != null) {
+			try (cursor) {
+				List<MessageModel> messageModels = convertList(cursor);
+				for (MessageModel messageModel : messageModels) {
+					if (callId == messageModel.getVoipStatusData().getCallId()) {
+						return true;
+					}
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+		return false;
 	}
 
 	public List<MessageModel> getByIdentityUnsorted(String identity) {

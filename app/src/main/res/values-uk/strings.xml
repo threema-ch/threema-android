@@ -113,6 +113,7 @@
     <string name="copy_message_action">Копіювати</string>
     <string name="delete_contact_action">Видалити контакт</string>
     <string name="scan_id">Сканувати ID</string>
+    <string name="id_scanned">ID відскановано</string>
     <string name="id_mismatch">Відкритий ключ, який ви відсканували, не співпадає з ключем, збереженим на сервері
 		для цього ID. Це означає, що хтось змінив відсканований вами код, а отже ключ більше не надійний.</string>
     <string name="scan_successful">ID успішно відскановано, а контакт — підтверджено.</string>
@@ -529,7 +530,6 @@
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Внутрішня пам\'ять</string>
     <string name="no_activity_for_mime_type">Немає додатків, які можуть відкрити цей файл.</string>
-    <string name="message_copied">Повідомлення скопійовано</string>
     <string name="open_from">Відкрити з</string>
     <string name="file_one_contact_not_supported">Контакт \"%1$s\" не може отримувати файли.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Увага! Кілька контактів (%1$d) не зможе отримати ваш файл.</string>
@@ -665,6 +665,7 @@
     <string name="new_wizard_info_sync_contacts">Коли цей параметр увімкнено, Threema виконує одностороннє шифрування (хешування) адрес ел. пошти і номерів телефонів,
 		перш ніж надсилати їх на сервер для пошуку відповідних контактів. Ми не зберігаємо
 		дані з телефонної книги.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Синхронізація контактів допомагає знайти друзів автоматично. Якщо ви погодитеся, ми зашифруємо номери телефонів і адреси електронної пошти з вашої телефонної книги, перш ніж надіслати їх на сервер для пошуку збігів серед контактів. Ваші дані не зберігатимуться й не передаватимуться.\n\nУвімкнути синхронізацію контактів?</string>
     <string name="new_wizard_info_link">Якщо ви вкажете свій номер телефону та адресу ел. пошти, ваші друзі зможуть знайти
 		вас у Threema автоматично за умови, що вони зберегли ваші контакти у своїй телефонній книзі. Дані зберігатимуться
 		на нашому сервері в хешованому вигляді. Ви можете пропустити цей крок, якщо хочете використовувати Threema
@@ -962,7 +963,7 @@
     <string name="safe_restore_failed">Помилка відновлення</string>
     <string name="safe_failed_notification">Резервну копію Threema Safe не вдається створити %d дн. поспіль. Торкніться тут, щоб дізнатися більше.</string>
     <string name="safe_restore">Відновити Threema Safe</string>
-    <string name="backup_restore_in_progress">Триває створення або відновлення резервної копії. Перевірте сповіщення, щоб дізнатися про перебіг виконання.</string>
+    <string name="backup_restore_in_progress">Перегляньте сповіщення, щоб дізнатися про перебіг створення або відновлення резервної копії.</string>
     <string name="restore_error_body">Не вдалося завершити відновлення</string>
     <string name="forgot_your_id">Забули свій ID?</string>
     <string name="restore_success_body">Відновлення завершено</string>
@@ -1149,7 +1150,7 @@
     <string name="videocall_profile_max_quality">Максимальна якість</string>
     <string name="unable_to_play_video">Не вдалося відтворити відео</string>
     <string name="tooltip_voip_turn_on_camera">Торкніться тут, щоб увімкнути камеру</string>
-    <string name="prefs_videocall_profile_explain">Реальна якість зображення залежить від мережі та налаштувань контакта, з яким ви спілкуєтеся.</string>
+    <string name="prefs_videocall_profile_explain">Фактична якість зображення залежить від мережі та налаштувань контакта, з яким ви спілкуєтеся.</string>
     <string name="permission_camera_videocall_required">Щоб здійснювати відеовиклики, надайте доступ до камери.</string>
     <string name="feedback">Відгуки</string>
     <string name="tooltip_voip_enable_speakerphone">Торкніться тут, щоб увімкнути гучний зв\'язок</string>
@@ -1433,6 +1434,8 @@
     <string name="last_added_contact">Останній доданий</string>
     <string name="directory_explain_text">Шукайте в каталозі компанії співробітників, яких ще немає у вашому списку контактів.</string>
     <string name="cannot_display_location">Це розташування неможливо показати.</string>
+    <string name="unable_to_restore_identity_because">Не вдалося відновити ID. Причина: %s</string>
+    <string name="share_with_app">Поділитися в Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>
@@ -1446,15 +1449,21 @@
         <item quantity="other">Справді видалити %d чата?</item>
     </plurals>
     <plurals name="sending_message_failed">
-        <item quantity="one">Не вдалося надіслати повідомлення (%1$d)</item>
         <item quantity="few">Не вдалося надіслати повідомлення (%1$d)</item>
         <item quantity="many">Не вдалося надіслати повідомлення (%1$d)</item>
+        <item quantity="one">Не вдалося надіслати повідомлення (%1$d)</item>
         <item quantity="other">Не вдалося надіслати повідомлення (%1$d)</item>
     </plurals>
     <plurals name="selection_counter_label">
-        <item quantity="one">Вибрано зображень: %d</item>
         <item quantity="few">Вибрано зображень: %d</item>
         <item quantity="many">Вибрано зображень: %d</item>
+        <item quantity="one">Вибрано зображень: %d</item>
         <item quantity="other">Вибрано зображень: %d</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Повідомлення скопійовано</item>
+        <item quantity="other">Повідомлення скопійовано</item>
+        <item quantity="few">Повідомлення скопійовано</item>
+        <item quantity="many">Повідомлення скопійовано</item>
     </plurals>
 </resources>

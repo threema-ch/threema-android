@@ -112,6 +112,7 @@
     <string name="copy_message_action">Copiar</string>
     <string name="delete_contact_action">Eliminar contacto</string>
     <string name="scan_id">Escanear ID</string>
+    <string name="id_scanned">ID escaneado</string>
     <string name="id_mismatch">«La clave pública que ha escaneado no coincide con la que tiene registrada el servidor para este ID». Eso significa que alguien ha modificado el código escaneado de forma malintencionada y que la clave no es segura.</string>
     <string name="scan_successful">El ID se ha escaneado correctamente. Ahora el contacto está verificado.</string>
     <string name="scan_duplicate">Este ID ya se ha escaneado y verificado.</string>
@@ -511,7 +512,6 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="file_placeholder">Archivo</string>
     <string name="internal_storage">Almacenamiento interno</string>
     <string name="no_activity_for_mime_type">No hay aplicaciones que puedan abrir este archivo.</string>
-    <string name="message_copied">Mensaje copiado</string>
     <string name="open_from">Abrir desde</string>
     <string name="file_one_contact_not_supported">%1$s no puede recibir archivos.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Aviso: %1$d contactos no pueden recibir el archivo.</string>
@@ -637,6 +637,7 @@ almacenado.</string>
     <string name="new_wizard_info_fingerprint">Al mover los dedos, usted crea datos aleatorios (llamados entropía) que se utilizan para generar el par de claves asociado a su ID único de Threema.</string>
     <string name="new_wizard_info_id">También ha creado un par de claves. La clave pública se ha transmitido de forma segura a nuestros servidores. La clave privada nunca sale de su dispositivo, lo que garantiza que nadie más puede leer sus mensajes.</string>
     <string name="new_wizard_info_sync_contacts">Si activa esta opción, Threema aplica un cifrado unidireccional (hash) a las direcciones de correo electrónico y números de teléfono antes de enviarlos al servidor para buscar coincidencias de contactos. No almacenamos ningún dato de libretas de direcciones.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">La sincronización de contactos puede ayudarle a encontrar a sus amigos automáticamente. Si acepta, los números de teléfono y las direcciones de correo electrónico de la agenda de su teléfono se cifrarán antes de enviarse a nuestro servidor para buscar contactos coincidentes. No se almacenará ni compartirá absolutamente ningún dato.\n\n¿Quiere activar la sincronización de contactos?</string>
     <string name="new_wizard_info_link">Al facilitarnos su número de teléfono y dirección de correo electrónico, ayudamos a sus amigos a encontrarlo automáticamente en Threema. Esta información se almacenará de forma segura. Si se salta este paso, utilizará Threema de forma completamente anónima.</string>
     <string name="new_wizard_info_link_phone_only">Al proporcionar su número de teléfono, Threema podrá ayudar a sus amigos
 		a encontrarle automáticamente si lo tienen en los contactos de su teléfono. El número se guardará en un
@@ -1397,6 +1398,8 @@ almacenado.</string>
     <string name="last_added_contact">Último añadido</string>
     <string name="directory_explain_text">Buscar en el directorio de la compañía empleados que todavía no estén en su lista de contactos.</string>
     <string name="cannot_display_location">No se puede mostrar la ubicación.</string>
+    <string name="unable_to_restore_identity_because">No se puede restaurar el ID. Motivo: %s</string>
+    <string name="share_with_app">Compartir con Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>
@@ -1412,5 +1415,9 @@ almacenado.</string>
     <plurals name="selection_counter_label">
         <item quantity="one">%d imagen seleccionada</item>
         <item quantity="other">%d imágenes seleccionadas</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Mensaje copiado</item>
+        <item quantity="other">Mensajes copiados</item>
     </plurals>
 </resources>

@@ -114,6 +114,26 @@ public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 		throw new ThreemaException("Unable to fetch Threema Web server url");
 	}
 
+	@Override
+	public String getWebOverrideSaltyRtcHost() throws ThreemaException {
+		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+
+		if (onPremConfigWeb != null) {
+			return onPremConfigWeb.getOverrideSaltyRtcHost();
+		}
+		return null;
+	}
+
+	@Override
+	public int getWebOverrideSaltyRtcPort() throws ThreemaException {
+		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+
+		if (onPremConfigWeb != null) {
+			return onPremConfigWeb.getOverrideSaltyRtcPort();
+		}
+		return 0;
+	}
+
 	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {
 		return fetcherProvider.getFetcher();
 	}

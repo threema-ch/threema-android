@@ -18,6 +18,8 @@
 		seus contatos e uma <b>chave particular</b>que é armazenada com segurança no seu telefone. Seus contatos irão criptografar as mensagens enviadas para você com a
 		sua chave pública. Apenas o dono da chave particular e mais ninguém poderá decodificar estas mensagens.</string>
     <string name="new_wizard_info_link">Ao nos dar o seu número de telefone e endereço de e-mail, o Threema OnPrem pode ajudar os seus amigos a encontrarem você automaticamente se tiverem os seus dados na agenda do telefone. Essas informações serão armazenadas de forma criptografada no nosso servidor. Você pode pular essa etapa se preferir usar o Threema OnPrem de forma anônima.</string>
+    <string name="new_wizard_info_sync_contacts">Se você habilitar esta opção, o Threema OnPrem criptografa de forma unidirecional (hashes) endereços de e-mail e números de telefone
+antes de enviá-los ao servidor para procurar contatos correspondentes. Os dados são mantidos apenas na memória e nunca armazenados no servidor.</string>
     <string name="threema_contact">Contato do Threema OnPrem</string>
     <string name="menu_about">Sobre o Threema OnPrem</string>
     <string name="list_theme_light">Claro</string>
@@ -26,4 +28,6 @@
     <string name="directory_search">Pesquisar no diretório</string>
     <string name="directory_title">Diretório da empresa</string>
     <string name="directory_empty_view_text">Insira pelo menos 3 caracteres de um nome para começar a pesquisar no diretório de usuários do Threema OnPrem da sua empresa</string>
+    <string name="safe_configure_server_explain">Salve seu backup do Threema Safe no servidor da sua organização ou especifique um servidor de backup diferente.</string>
+    <string name="share_with_app">Compartilhar com o Threema OnPrem</string>
 </resources>

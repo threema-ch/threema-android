@@ -21,6 +21,15 @@
 
 package ch.threema.app.threemasafe;
 
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_SOME;
+import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
+import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
+import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
+import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
+import static ch.threema.app.threemasafe.ThreemaSafeUploadService.EXTRA_FORCE_UPLOAD;
+
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -65,8 +74,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -89,6 +98,7 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.GzipOutputStream;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
@@ -120,14 +130,6 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
-
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_SOME;
-import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
-import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
-import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
-import static ch.threema.app.threemasafe.ThreemaSafeUploadService.EXTRA_FORCE_UPLOAD;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
@@ -511,11 +513,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		if (!force) {
 			if (hashString.equals(preferenceService.getThreemaSafeHashString())) {
-				Date aWeekAgo = new Date(System.currentTimeMillis() - DateUtils.WEEK_IN_MILLIS);
+				long halfRetentionTimeMillis = (serverTestResponse.retentionDays == 0 ? 180 : serverTestResponse.retentionDays) * DateUtils.DAY_IN_MILLIS / 2;
+				Date reUploadThreshold = new Date(System.currentTimeMillis() - halfRetentionTimeMillis);
 				if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
-					aWeekAgo.before(preferenceService.getThreemaSafeUploadDate())) {
+					reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
 					preferenceService.setThreemaSafeErrorCode(ERROR_CODE_OK);
-					preferenceService.setThreemaSafeBackupDate(new Date());
 					logger.info("Threema Safe contents unchanged. Not uploaded");
 					return;
 				}
@@ -676,13 +678,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			throw new ThreemaException("Unable to decrypt");
 		}
 
-		byte[] uncompressed = gZipUncompress(gzippedData);
-		if (uncompressed == null) {
+		byte[] uncompressedData = gZipUncompress(gzippedData);
+		if (uncompressedData == null) {
 			throw new ThreemaException("Uncompress failed");
 		}
 
-		String json;
-		json = new String(uncompressed, StandardCharsets.UTF_8);
+		String json = new String(uncompressedData, StandardCharsets.UTF_8);
 
 		parseJson(identity, json);
 
@@ -770,7 +771,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		try {
 			userService.restoreIdentity(identity, privateKey, publicKey);
 		} catch (Exception e) {
-			throw new ThreemaException("Unable to restore identity: " + e.getMessage());
+			throw new ThreemaException(context.getString(R.string.unable_to_restore_identity_because, e.getMessage()));
 		}
 
 		String nickname = user.optString(TAG_SAFE_USER_NICKNAME, identity);
@@ -1277,10 +1278,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	}
 
 	@Override
-	public void launchForcedPasswordDialog(Activity activity) {
+	public void launchForcedPasswordDialog(Activity activity, boolean openHomeActivity) {
 		// ask user for a new password
 		Intent intent = new Intent(activity, ThreemaSafeConfigureActivity.class);
 		intent.putExtra(EXTRA_WORK_FORCE_PASSWORD, true);
+		intent.putExtra(EXTRA_OPEN_HOME_ACTIVITY, openHomeActivity);
 		activity.startActivity(intent);
 		activity.overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
 	}
@@ -1338,7 +1340,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private byte[] gZipCompress(byte[] uncompressedBytes) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(uncompressedBytes.length);
-			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+			// Use gzip for backward compatibility, but don't actually compress (to avoid compression oracles)
+			GzipOutputStream gzipOutputStream = new GzipOutputStream(outputStream, Deflater.NO_COMPRESSION, 512, false);
 			gzipOutputStream.write(uncompressedBytes);
 			gzipOutputStream.close();
 			byte[] compressedBytes = outputStream.toByteArray();

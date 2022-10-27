@@ -35,7 +35,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * The contents are referenced by the {@code blobId}, the file {@code size} in bytes,
  * and the symmetric encryption key to be used when decrypting the image blob.
+ *
+ *  @Deprecated Use GroupFileMessage instead
  */
+@Deprecated
 public class GroupImageMessage extends AbstractGroupMessage {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupImageMessage");

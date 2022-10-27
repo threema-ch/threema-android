@@ -114,6 +114,7 @@
 	<string name="copy_message_action">Copy</string>
 	<string name="delete_contact_action">Delete contact</string>
 	<string name="scan_id">Scan ID</string>
+	<string name="id_scanned">ID scanned</string>
 	<string name="id_mismatch">The public key that you have scanned does not match the key that the server has stored
 		for this ID. This means that somebody has manipulated the scanned code, and that the key should not be trusted.</string>
 	<string name="scan_successful">The ID has been successfully scanned and the contact is now verified.</string>
@@ -530,7 +531,6 @@
 	<string name="file_placeholder">File</string>
 	<string name="internal_storage">Internal storage</string>
 	<string name="no_activity_for_mime_type">No app found to open this file.</string>
-	<string name="message_copied">Message copied</string>
 	<string name="open_from">Open from</string>
 	<string name="file_one_contact_not_supported">%1$s cannot receive files.</string>
 	<string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Warning: %1$d contacts cannot receive your file.</string>
@@ -667,6 +667,7 @@
 	<string name="new_wizard_info_sync_contacts">If you enable this option, Threema one-way encrypts (hashes) email addresses and phone numbers
 		before sending them to the server to look for matching contacts. We do not store any
 		addressbook data.</string>
+	<string name="new_wizard_info_sync_contacts_dialog">Contact sync can help you find your friends automatically. If you agree, phone numbers and email addresses from your phone book will be encrypted before being sent to our server to look for matching contacts. Absolutely no data will be stored or shared.\n\nWould you like to enable contact sync?</string>
 	<string name="new_wizard_info_link">By providing your phone number and email address, Threema can help your friends
 		find you automatically if they have you in their phone’s address book. The data will be stored in a
 		one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use Threema
@@ -1437,7 +1438,9 @@
 	<string name="last_added_contact">Last added</string>
 	<string name="directory_explain_text">Search the company directory for any employees who are not yet in your contact list.</string>
 	<string name="cannot_display_location">This location cannot be shown.</string>
-	<plurals name="contacts_counter_label">
+    <string name="unable_to_restore_identity_because">Unable to restore the ID. Reason: %s</string>
+	<string name="share_with_app">Share with Threema</string>
+    <plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>
 		<item quantity="many">%d contacts</item>
@@ -1460,5 +1463,9 @@
 		<item quantity="few">%d images selected</item>
 		<item quantity="many">%d images selected</item>
 		<item quantity="other">%d images selected</item>
+	</plurals>
+	<plurals name="message_copied">
+		<item quantity="one">Message copied</item>
+		<item quantity="other">Messages copied</item>
 	</plurals>
 </resources>

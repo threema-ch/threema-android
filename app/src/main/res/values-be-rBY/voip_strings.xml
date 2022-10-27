@@ -8,7 +8,7 @@
     <string name="voip_switch_cam_front">Пераключана на пярэднюю камеру</string>
     <string name="voip_switch_cam_rear">Пераключана на заднюю камеру</string>
     <string name="voip_toggle_video">Пераключыць рэжым відэа</string>
-    <string name="voip_call_confirm">Жадаеце патэлефанаваць карыстачу %1$s?</string>
+    <string name="voip_call_confirm">Хочаце патэлефанаваць карыстачу %1$s?</string>
     <string name="voip_error_call">Памылка падчас званка Threema</string>
     <string name="voip_error_init_call">Памылка ініцыялізацыі званка</string>
     <string name="voip_notification_title">Уваходны званок Threema</string>

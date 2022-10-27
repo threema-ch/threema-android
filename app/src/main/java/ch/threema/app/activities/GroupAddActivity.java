@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -126,7 +127,11 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 			} else {
 				createOrUpdateGroup(selectedContacts);
 			}
+		} else if (groupModel != null) {
+			// Adding group members to existing group (none selected)
+			createOrUpdateGroup(Collections.emptyList());
 		} else {
+			// Adding group members to new group (none selected)
 			GenericAlertDialog.newInstance(R.string.title_addgroup, R.string.group_create_no_members, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_NO_MEMBERS);
 		}
 	}

@@ -33,6 +33,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
+@Deprecated
 public class ImageDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageDataModel");
 

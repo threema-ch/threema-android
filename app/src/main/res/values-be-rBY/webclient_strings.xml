@@ -27,7 +27,7 @@
     <string name="webclient_protocol_version_too_new_selfhosted">Ваша праграма не падтрымлівае дадзеную версію праграмы для ПК / вэб-кліента. Загрузіце апошнюю версію праграмы для ПК ці папытаеце адміністратара вэб-кліента перайсці на апошнюю версію.</string>
     <string name="webclient_protocol_version_too_new_threema">Ваша праграма не падтрымлівае дадзеную версію праграмы для ПК / вэб-кліента. Выкарыстоўвайце навейшую версію праграмы для ПК / вэб-кліента.</string>
     <string name="webclient_session_already_exists">Сесія, якая адпавядае сканаванаму вамі QR-коду, ужо існуе.  Перазапусціце праграму для ПК / перазапусціце вэб-кліент і паспрабуйце яшчэ раз.</string>
-    <string name="webclient_really_start_webclient_by_payload_body">Жадаеце запусціць гэтую сесію?</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Хочаце запусціць гэтую сесію?</string>
     <string name="webclient_cannot_restore">Не ўдаецца аднавіць сесію</string>
     <string name="webclient_disabled">Праграма для ПК/вэб-в. не актываваная</string>
     <string name="webclient_cannot_start">Не ўдаецца запусціць сесію</string>

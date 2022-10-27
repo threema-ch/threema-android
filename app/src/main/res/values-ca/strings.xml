@@ -227,8 +227,8 @@ de continuar.</string>
     <string name="masterkey_is_unlocked">La clau mestra està desbloquejada</string>
     <string name="file_too_large">El fitxer és més gran que el màxim de %1$d MB</string>
     <string name="deleting_thread">Esborrant el xat</string>
-    <string name="enter_serial_body">Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
-https://shop.threema.ch/retrieve_keys</string>
+    <string name="enter_serial_body"><![CDATA[Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
+https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Desbloquejar Threema</string>
     <string name="serial_required_want_exit">La clau de llicència no és vàlida. Voleu intentar-ho de nou o tancar Threema?</string>
     <string name="checking_serial">Comprovant la llicència</string>
@@ -516,7 +516,6 @@ de contacte</string>
     <string name="file_placeholder">Fitxer</string>
     <string name="internal_storage">Emmagatzematge intern</string>
     <string name="no_activity_for_mime_type">No s\'ha trobat cap aplicació que obri el fitxer.</string>
-    <string name="message_copied">Missatge copiat</string>
     <string name="open_from">Obrir des de</string>
     <string name="file_one_contact_not_supported">%1$s no pot rebre fitxers.</string>
     <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Atenció: %1$d contactes no poden rebre el vostre fitxer.</string>
@@ -1027,7 +1026,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="delete">Eliminar</string>
     <string name="num_archived_chats">%d xats arxivats</string>
     <string name="continue_recording">Continuar gravant</string>
-	<string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
+    <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
     <string name="invalid_backup_path">Camí de còpia no vàlid</string>
     <string name="backup_data_no_permission">No es pot escriure en aquest directori. Escolliu-ne un altre.</string>
@@ -1316,12 +1315,12 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="web_link">Enllaç</string>
     <string name="link_copied">%s copiat</string>
     <string name="invalid_onprem_id_title">No es pot Afegir la ID</string>
-    <string name="full_name">Nom</string>
     <string name="name_given">Nom</string>
     <string name="name_family">Cognoms</string>
     <string name="name_prefix">Prefix del nom</string>
     <string name="name_middle">Segon nom</string>
     <string name="name_suffix">Sufix del nom</string>
+    <string name="full_name">Nom</string>
     <string name="phoneTypeCustom">Personalitzat</string>
     <string name="phoneTypeHome">Casa</string>
     <string name="phoneTypeMobile">Mòbil</string>
@@ -1349,7 +1348,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="relationTypeSpouse">Cònjuge</string>
     <string name="contact_property_key">"Clau"</string>
     <string name="header_nickname_entry">"Àlies"</string>
-	<string name="organization_type">Organització</string>
+    <string name="organization_type">Organització</string>
     <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>
